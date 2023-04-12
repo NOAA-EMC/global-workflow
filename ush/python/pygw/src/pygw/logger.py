@@ -48,7 +48,7 @@ class Logger:
     DEFAULT_FORMAT = '%(asctime)s - %(levelname)-8s - %(name)-12s: %(message)s'
 
     def __init__(self, name: str = None,
-                 level: str = DEFAULT_LEVEL,
+                 level: str = None,
                  _format: str = DEFAULT_FORMAT,
                  colored_log: bool = False,
                  logfile_path: Union[str, Path] = None):
@@ -73,6 +73,9 @@ class Logger:
                        Path for logging to a file
                        default : None
         """
+
+        if level is None:
+            level = os.environ.get("LOGGING_LEVEL", Logger.DEFAULT_LEVEL)
 
         self.name = name
         self.level = level.upper()
@@ -101,7 +104,8 @@ class Logger:
 
         # Add file handler for logger
         if logfile_path is not None:
-            _handler = Logger.add_file_handler(logfile_path, level=self.level, _format=self.format)
+            _handler = Logger.add_file_handler(
+                logfile_path, level=self.level, _format=self.format)
             self._logger.addHandler(_handler)
             _handlers.append(_handler)
 
@@ -179,7 +183,8 @@ class Logger:
 
         handler = logging.StreamHandler(sys.stdout)
         handler.setLevel(level)
-        _format = ColoredFormatter(_format) if colored_log else logging.Formatter(_format)
+        _format = ColoredFormatter(
+            _format) if colored_log else logging.Formatter(_format)
         handler.setFormatter(_format)
 
         return handler
