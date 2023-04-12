@@ -12,12 +12,11 @@ export CDUMP=${RUN/enkf}
 
 # Ignore spelling warning; nothing is misspelled
 # shellcheck disable=SC2153
-xdate=$(${NDATE} -"${VBACKUP_FITS}" "${PDY}${cyc}")
-export xdate
-export CDATE=${xdate} # set CDATE to xdate for use in fit2obs package
-vday=$(echo "${xdate}" | cut -c1-8)
+CDATE=$(${NDATE} -"${VBACKUP_FITS}" "${PDY}${cyc}") # set CDATE to lookback cycle for use in fit2obs package
+export CDATE
+vday=${CDATE:0:8}
 export vday
-vcyc=$(echo "${xdate}" | cut -c9-10)
+vcyc=${CDATE:8:2}
 export vcyc
 
 export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
@@ -49,7 +48,7 @@ echo "echo postmsg">"${DATA}"/postmsg; chmod 755 "${DATA}"/postmsg
 
 # Ignore spelling warning; nothing is misspelled
 # shellcheck disable=SC2153
-if [[ ${xdate} -gt ${SDATE} ]]; then
+if [[ ${CDATE} -gt ${SDATE} ]]; then
   for file in ${PRPI} ${sig1} ${sfc1} ${CNVS}; do
     if [[ ! -f "${file}" ]]; then
       echo "FATAL ERROR: FILE MISSING: ${file}"
