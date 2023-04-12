@@ -28,10 +28,10 @@ class AtmAnalysis(Analysis):
     def __init__(self, config):
         super().__init__(config)
 
-        _res = int(self.config['CASE'][1:])
-        _res_anl = int(self.config['CASE_ANL'][1:])
-        _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
-        _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.atmvar.yaml")
+        _res = int(self.config.CASE[1:])
+        _res_anl = int(self.config.CASE_ANL[1:])
+        _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config.assim_freq}H") / 2)
+        _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -42,9 +42,9 @@ class AtmAnalysis(Analysis):
                 'npz': self.config.LEVS - 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
-                'npz_anl': self.config['LEVS'] - 1,
+                'npz_anl': self.config.LEVS - 1,
                 'ATM_WINDOW_BEGIN': _window_begin,
-                'ATM_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
+                'ATM_WINDOW_LENGTH': f"PT{self.config.assim_freq}H",
                 'comin_ges_atm': self.config.COMIN_GES,
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
@@ -73,13 +73,13 @@ class AtmAnalysis(Analysis):
         super().initialize()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'atm_crtm_coeff.yaml')
+        crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'atm_crtm_coeff.yaml')
         logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
         crtm_fix_list = parse_yamltmpl(crtm_fix_list_path, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'atm_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'atm_jedi_fix.yaml')
         logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
         jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
@@ -94,14 +94,14 @@ class AtmAnalysis(Analysis):
 
         # generate variational YAML file
         logger.debug(f"Generate variational YAML file: {self.task_config.fv3jedi_yaml}")
-        varda_yaml = parse_j2yaml(self.task_config['ATMVARYAML'], self.task_config)
+        varda_yaml = parse_j2yaml(self.task_config.ATMVARYAML, self.task_config)
         save_as_yaml(varda_yaml, self.task_config.fv3jedi_yaml)
         logger.info(f"Wrote variational YAML to: {self.task_config.fv3jedi_yaml}")
 
         # link executable to DATA/ directory
-        exe_src = self.task_config['JEDIVAREXE']
+        exe_src = self.task_config.JEDIVAREXE
         logger.debug(f"Link executable {exe_src} to DATA/")  # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
-        exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
+        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
@@ -109,8 +109,8 @@ class AtmAnalysis(Analysis):
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
-            os.path.join(self.task_config['DATA'], 'anl'),
-            os.path.join(self.task_config['DATA'], 'diags'),
+            os.path.join(self.task_config.DATA, 'anl'),
+            os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
@@ -150,10 +150,10 @@ class AtmAnalysis(Analysis):
         """
         # ---- tar up diags
         # path of output tar statfile
-        atmstat = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['APREFIX']}atmstat")
+        atmstat = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.APREFIX}atmstat")
 
         # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
+        diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc4'))
 
         # gzip the files first
         for diagfile in diags:
@@ -167,59 +167,59 @@ class AtmAnalysis(Analysis):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atmvar.yaml")
-        dest = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atmvar.yaml")
+        src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
+        dest = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
         yaml_copy = {
-            'mkdir': [self.task_config['COMOUTatmos']],
+            'mkdir': [self.task_config.COMOUTatmos],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
 
         # copy bias correction files to ROTDIR
-        biasdir = os.path.join(self.task_config['DATA'], 'bc')
+        biasdir = os.path.join(self.task_config.DATA, 'bc')
         biasls = os.listdir(biasdir)
         biaslist = []
         for bfile in biasls:
             src = os.path.join(biasdir, bfile)
-            dest = os.path.join(self.task_config['COMOUTatmos'], bfile)
+            dest = os.path.join(self.task_config.COMOUTatmos, bfile)
             biaslist.append([src, dest])
 
-        gprefix = f"{self.task_config['GPREFIX']}"
+        gprefix = f"{self.task_config.GPREFIX}"
         gdate = to_YMDH(self.task_config.previous_cycle)
         gsuffix = f"{gdate}" + ".txt"
-        aprefix = f"{self.task_config['APREFIX']}"
+        aprefix = f"{self.task_config.APREFIX}"
         adate = to_YMDH(self.task_config.current_cycle)
         asuffix = f"{adate}" + ".txt"
 
-        obsdir = os.path.join(self.task_config['DATA'], 'obs')
+        obsdir = os.path.join(self.task_config.DATA, 'obs')
         obsls = os.listdir(obsdir)
         for ofile in obsls:
             if ofile.endswith(".txt"):
                 src = os.path.join(obsdir, ofile)
                 tfile = ofile.replace(gprefix, aprefix)
                 tfile = tfile.replace(gsuffix, asuffix)
-                dest = os.path.join(self.task_config['COMOUTatmos'], tfile)
+                dest = os.path.join(self.task_config.COMOUTatmos, tfile)
                 biaslist.append([src, dest])
 
         bias_copy = {
-            'mkdir': [self.task_config['COMOUTatmos']],
+            'mkdir': [self.task_config.COMOUTatmos],
             'copy': biaslist,
         }
         FileHandler(bias_copy).sync()
 
         # rewrite UFS-DA atm increment to UFS model readable format with delp and hydrostatic delz calculation
-        case_berror = int(self.config['CASE_ANL'][1:])
-        case = int(self.config['CASE'][1:])
+        case_berror = int(self.config.CASE_ANL[1:])
+        case = int(self.config.CASE[1:])
         if case_berror == case:
-            atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, f"{self.task_config['GPREFIX']}atmf006.nc")
+            atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, f"{self.task_config.GPREFIX}atmf006.nc")
         else:
-            atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, f"{self.task_config['GPREFIX']}atmf006.ensres.nc")
+            atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, f"{self.task_config.GPREFIX}atmf006.ensres.nc")
 
         cdate = to_fv3time(self.task_config.current_cycle)
         cdate_inc = cdate.replace('.', '_')
-        atminc_jedi = os.path.join(self.task_config['DATA'], 'anl', f'atminc.{cdate_inc}z.nc4')
-        atminc_fv3 = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atminc.nc")
-        incpy = os.path.join(self.task_config['HOMEgfs'], 'sorc/gdas.cd/ush/jediinc2fv3.py')
+        atminc_jedi = os.path.join(self.task_config.DATA, 'anl', f'atminc.{cdate_inc}z.nc4')
+        atminc_fv3 = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")
+        incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
 
         cmd = Executable(incpy)
         cmd.add_default_arg(atmges_fv3)
@@ -251,7 +251,7 @@ class AtmAnalysis(Analysis):
 
         # get FV3 RESTART files, this will be a lot simpler when using history files
         rst_dir = os.path.join(task_config.comin_ges_atm, 'RESTART')  # for now, option later?
-        run_dir = os.path.join(task_config['DATA'], 'bkg')
+        run_dir = os.path.join(task_config.DATA, 'bkg')
 
         # Start accumulating list of background files to copy
         bkglist = []
