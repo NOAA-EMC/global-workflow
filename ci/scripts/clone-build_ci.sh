@@ -78,22 +78,37 @@ echo "${commit}" > "../commit"
 cd sorc
 export BUILD_JOBS=8
 rm -rf log.build
-./checkout.sh -c -g -u
+./checkout.sh -c -g -u &>> log.checkout
+
+checkout_status=$?
+if [[ ${checkout_status} != 0 ]]; then
+  {
+    echo "Checkout:                      *FAILED*"
+    echo "Checkout: Failed at $(date)" || true
+    echo "Checkout: see output at ${PWD}/log.checkout"
+  } >> "${outfile}"
+  exit "${checkout_status}"
+else
+  {
+    echo "Checkout:                      *SUCCESS*"
+    echo "Checkout: Completed at $(date)" || true
+  } >> "${outfile}"
+fi
+
 # build full cycle
 ./build_all.sh  &>> log.build
 
-# Validations
 build_status=$?
 if [[ ${build_status} != 0 ]]; then
   {
-    echo "Build:                                  *FAILED*"
+    echo "Build:                         *FAILED*"
     echo "Build: Failed at $(date)" || true
     echo "Build: see output at ${PWD}/log.build"
   } >> "${outfile}"
   exit "${build_status}"
 else
   {
-    echo "Build:                                 *SUCCESS*"
+    echo "Build:                         *SUCCESS*"
     echo "Build: Completed at $(date)" || true
   } >> "${outfile}"
 fi
