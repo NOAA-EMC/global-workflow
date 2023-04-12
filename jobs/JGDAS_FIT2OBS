@@ -8,7 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
 # Set variables used in the script
 ##############################################
 
-export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 
 export xdate=$(${NDATE} -"${VBACKUP_FITS}" "${CDATE}")
