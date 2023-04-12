@@ -10,7 +10,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
 
 export CDUMP=${RUN/enkf}
 
-export xdate=$(${NDATE} -"${VBACKUP_FITS}" "${CDATE}")
+# Ignore spelling warning; nothing is misspelled
+# shellcheck disable=SC2155
+xdate=$(${NDATE} -"${VBACKUP_FITS}" "${PDY}${cyc}")
+export xdate
 export CDATE=${xdate} # set CDATE to xdate for use in fit2obs package
 export vday=$(echo "${xdate}" | cut -c1-8)
 export vcyc=$(echo "${xdate}" | cut -c9-10)
