@@ -1052,6 +1052,11 @@ class Tasks:
             if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
                 dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
                 deps.append(rocoto.add_dependency(dep_dict))
+        # If all verification and ocean/wave coupling is off, add the gdas/gfs post metatask as a dependency
+        if len(deps) == 0:
+            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+            deps.append(rocoto.add_dependency(dep_dict))
+
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
