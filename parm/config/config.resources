@@ -536,12 +536,12 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x wtime_"${step}"="00:30:00"
-        declare -x wtime_"${step}_gfs"="03:00:00"
+        declare -x "wtime_${step}"="00:30:00"
+        declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384" | "C768" | "C1152")
-        declare -x wtime_"${step}"="01:00:00"
-        declare -x wtime_"${step}_gfs"="06:00:00"
+        declare -x "wtime_${step}"="01:00:00"
+        declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
         echo "FATAL ERROR: Resolution ${CASE} not supported in ${step}"
