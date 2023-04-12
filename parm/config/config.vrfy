@@ -8,12 +8,8 @@ echo "BEGIN: config.vrfy"
 # Get task specific resources
 . $EXPDIR/config.resources vrfy
 
-export VDUMP="gfs"                # Verifying dump
-export CDUMPFCST="gdas"           # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
-
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
-export VRFYFITS="YES"             # Fit to observations
 export VRFYRAD="YES"              # Radiance data assimilation monitoring
 export VRFYOZN="YES"              # Ozone data assimilation monitoring
 export VRFYMINMON="YES"           # GSI minimization monitoring
@@ -21,38 +17,6 @@ export VRFYTRAK="YES"             # Hurricane track verification
 export VRFYGENESIS="YES"          # Cyclone genesis verification
 export VRFYFSU="NO"               # Cyclone genesis verification (FSU)
 export RUNMOS="NO"                # whether to run entire MOS package
-
-#-------------------------------------------------
-# Fit to Observations
-#-------------------------------------------------
-
-if [ $VRFYFITS = "YES" ]; then
-
-    export fit_ver="newm.1.3"
-    export fitdir="$BASE_GIT/verif/global/Fit2Obs/${fit_ver}/batrun"
-    export PRVT=$HOMEgfs/fix/gsi/prepobs_errtable.global
-    export HYBLEVS=$HOMEgfs/fix/am/global_hyblev.l${LEVS}.txt
-    export CUE2RUN=$QUEUE
-
-    export VBACKUP_FITS=24
-
-    export CONVNETC="NO"
-    if [ ${netcdf_diag:-".false."} = ".true." ]; then
-        export CONVNETC="YES"
-    fi
-
-    if [ $machine = "HERA" ]; then
-        export PREPQFITSH="$fitdir/subfits_hera_slurm"
-    elif [ $machine = "S4" ]; then
-        export PREPQFITSH="$fitdir/subfits_s4_slurm"
-    elif [ $machine = "ORION" ]; then
-        export PREPQFITSH="$fitdir/subfits_orion_netcdf"
-    else
-        echo "Fit2Obs NOT supported on this machine"
-    fi
-
-fi
-
 
 #----------------------------------------------------------
 # Minimization, Radiance and Ozone Monitoring

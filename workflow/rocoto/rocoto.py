@@ -78,7 +78,7 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
     threads = resources_dict.get('threads', 1)
     log = task_dict.get('log', 'demo.log')
     envar = task_dict.get('envars', None)
-    dependency = task_dict.get('dependency', None)
+    dependency = task_dict.get('dependency', [])
 
     str_maxtries = str(maxtries)
     str_final = ' final="true"' if final else ''
@@ -109,12 +109,14 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
             strings.append(f'\t{e}\n')
         strings.append('\n')
 
-    if dependency is not None:
+    if dependency is not None and len(dependency) > 0:
         strings.append('\t<dependency>\n')
         for d in dependency:
             strings.append(f'\t\t{d}\n')
         strings.append('\t</dependency>\n')
         strings.append('\n')
+    elif taskname != "gfswaveinit":
+        print("WARNING: No dependencies for task " + taskname)
 
     strings.append('</task>\n')
 
@@ -293,7 +295,7 @@ def _traverse(o, tree_types=(list, tuple)):
         yield o
 
 
-def create_dependency(dep_condition=None, dep=None) -> List[str]:
+def create_dependency(dep_condition=None, dep=[]) -> List[str]:
     """
     create a compound dependency given a list of dependencies, and compounding condition
     the list of dependencies are created using add_dependency
@@ -309,10 +311,10 @@ def create_dependency(dep_condition=None, dep=None) -> List[str]:
 
     strings = []
 
-    if dep_condition is not None:
-        strings.append(f'<{dep_condition}>')
+    if len(dep) > 0:
+        if dep_condition is not None:
+            strings.append(f'<{dep_condition}>')
 
-    if dep[0] is not None:
         for d in dep:
             if dep_condition is None:
                 strings.append(f'{d}')
@@ -320,8 +322,8 @@ def create_dependency(dep_condition=None, dep=None) -> List[str]:
                 for e in _traverse(d):
                     strings.append(f'\t{e}')
 
-    if dep_condition is not None:
-        strings.append(f'</{dep_condition}>')
+        if dep_condition is not None:
+            strings.append(f'</{dep_condition}>')
 
     return strings
 

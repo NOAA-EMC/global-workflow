@@ -59,27 +59,6 @@ fi
 
 ###############################################################
 echo
-echo "=============== START TO RUN FIT2OBS VERIFICATION ==============="
-if [ ${VRFYFITS} = "YES" -a ${CDUMP} = ${CDFNL} -a ${CDATE} != ${SDATE} ]; then
-
-    export CDUMPFCST=${VDUMP}
-    export TMPDIR="${RUNDIR}/${CDATE}/${CDUMP}"
-    [[ ! -d ${TMPDIR} ]] && mkdir -p ${TMPDIR}
-
-    xdate=$(${NDATE} -${VBACKUP_FITS} ${CDATE})
-
-    export RUN_ENVIR_SAVE=${RUN_ENVIR}
-    export RUN_ENVIR="netcdf"
-
-    ${PREPQFITSH} ${PSLOT} ${xdate} ${ROTDIR} ${ARCDIR} ${TMPDIR}
-
-    export RUN_ENVIR=${RUN_ENVIR_SAVE}
-
-fi
-
-
-###############################################################
-echo
 echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
 if [ ${VRFYRAD} = "YES" -a "${CDUMP}" = "${CDFNL}" -a "${CDATE}" != "${SDATE}" ]; then
 

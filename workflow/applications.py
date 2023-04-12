@@ -105,6 +105,7 @@ class AppConfig:
         self.do_awips = _base.get('DO_AWIPS', False)
         self.do_wafs = _base.get('WAFSF', False)
         self.do_vrfy = _base.get('DO_VRFY', True)
+        self.do_fit2obs = _base.get('DO_FIT2OBS', True)
         self.do_metp = _base.get('DO_METP', False)
         self.do_jedivar = _base.get('DO_JEDIVAR', False)
         self.do_jediatmens = _base.get('DO_JEDIENS', False)
@@ -186,7 +187,7 @@ class AppConfig:
         if self.do_ocean:
             configs += ['ocnpost']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
+        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch']
 
         if self.do_gldas:
             configs += ['gldas']
@@ -400,6 +401,9 @@ class AppConfig:
             if self.do_wave_bnd:
                 gdas_tasks += wave_bndpnt_tasks
             gdas_tasks += wave_post_tasks
+
+        if self.do_fit2obs:
+            gdas_tasks += ['fit2obs']
 
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
