@@ -643,7 +643,7 @@ elif [[ ${step} = "vrfy" ]]; then
     fi
     export is_exclusive=True
 
-elif [ ${step} = "fit2obs" ]; then
+elif [[ "${step}" = "fit2obs" ]]; then
 
     export wtime_fit2obs="00:20:00"
     export npe_fit2obs=3
@@ -651,7 +651,7 @@ elif [ ${step} = "fit2obs" ]; then
     export npe_node_fit2obs=1
     if [[ ${machine} == "WCOSS2" ]]; then export npe_node_fit2obs=3 ; fi
 
-elif [[ ${step} = "metp" ]]; then
+elif [[ "${step}" = "metp" ]]; then
 
     export nth_metp=1
     export wtime_metp="03:00:00"

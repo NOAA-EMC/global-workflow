@@ -55,8 +55,8 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN MOS ==============="
-if [[ ${RUNMOS} = "YES" && ${CDUMP} = "gfs" ]]; then
-    ${RUNGFSMOSSH} "${PDY}${cyc}"
+if [ ${RUNMOS} = "YES" -a ${CDUMP} = "gfs" ]; then
+    ${RUNGFSMOSSH} ${PDY}${cyc}
 fi
 
 

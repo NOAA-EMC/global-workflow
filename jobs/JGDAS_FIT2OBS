@@ -8,22 +8,25 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
 # Set variables used in the script
 ##############################################
 
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export CDUMP=${RUN/enkf}
 
-export xdate=$(${NDATE} -${VBACKUP_FITS} ${CDATE})
-export CDATE=${xdate} # Reset CDATE to xdate for lookback
-export vday=$(echo ${xdate} | cut -c1-8)
-export vcyc=$(echo ${xdate} | cut -c9-10)
+# Ignore spelling warning; nothing is misspelled
+# shellcheck disable=SC2153
+CDATE=$(${NDATE} -"${VBACKUP_FITS}" "${PDY}${cyc}") # set CDATE to lookback cycle for use in fit2obs package
+export CDATE
+vday=${CDATE:0:8}
+vcyc=${CDATE:8:2}
 
 export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
+# We want to defer variable expansion, so ignore warning about single quotes
+# shellcheck disable=SC2016
 export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
 export COM_PRP=${ROTDIR}/gdas.${vday}/${vcyc}/obs
 
-export PRPI=${COM_PRP}/${CDUMP}.t${vcyc}z.prepbufr
-export sig1=${COM_INA}/${CDUMP}.t${vcyc}z.atmanl.nc
-export sfc1=${COM_INA}/${CDUMP}.t${vcyc}z.atmanl.nc
-export CNVS=${COM_INA}/${CDUMP}.t${vcyc}z.cnvstat
+export PRPI=${COM_PRP}/${RUN}.t${vcyc}z.prepbufr
+export sig1=${COM_INA}/${RUN}.t${vcyc}z.atmanl.nc
+export sfc1=${COM_INA}/${RUN}.t${vcyc}z.atmanl.nc
+export CNVS=${COM_INA}/${RUN}.t${vcyc}z.cnvstat
 
 export OUTPUT_FILETYPE=${OUTPUT_FILETYPE:-netcdf}
 
@@ -34,16 +37,18 @@ export HORZ_DIR=${ARCDIR}/horiz
 export COMLOX=${DATA}/fitx
 [[ ! -d "${COMLOX}" ]] && mkdir -p "${COMLOX}"
 
-echo "echo err_chk">${DATA}/err_chk; chmod 755 ${DATA}/err_chk
-echo "echo postmsg">${DATA}/postmsg; chmod 755 ${DATA}/postmsg
+echo "echo err_chk">"${DATA}"/err_chk; chmod 755 "${DATA}"/err_chk
+echo "echo postmsg">"${DATA}"/postmsg; chmod 755 "${DATA}"/postmsg
 
 ##############################################
 # Check spinup and available inputs
 ##############################################
 
-if [[ ${xdate} -gt ${SDATE} ]]; then
+# Ignore spelling warning; nothing is misspelled
+# shellcheck disable=SC2153
+if [[ ${CDATE} -gt ${SDATE} ]]; then
   for file in ${PRPI} ${sig1} ${sfc1} ${CNVS}; do
-    if [ ! -f ${file} ]; then
+    if [[ ! -f "${file}" ]]; then
       echo "FATAL ERROR: FILE MISSING: ${file}"
       exit 1
     fi
@@ -77,7 +82,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+cd "${DATAROOT}" || (echo "FATAL ERROR: ${DATAROOT} does not exist. ABORT!"; exit 1)
 [[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0

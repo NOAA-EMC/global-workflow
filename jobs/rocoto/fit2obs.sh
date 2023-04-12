@@ -5,9 +5,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 ###############################################################
 echo
 echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
+. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 export job="fit2obs"
 export jobid="${job}.$$"
@@ -16,8 +16,8 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN FIT2OBS ==============="
 # Execute the JJOB
-${HOMEgfs}/jobs/JGDAS_FIT2OBS
+"${HOMEgfs}/jobs/JGDAS_FIT2OBS"
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 exit 0

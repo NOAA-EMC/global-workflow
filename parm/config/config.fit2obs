@@ -6,10 +6,10 @@
 echo "BEGIN: config.fit2obs"
 
 # Get task specific resources
-. $EXPDIR/config.resources fit2obs
+. "${EXPDIR}/config.resources" fit2obs
 
-export fit_ver="newm.1.7"
-export fitdir="${BASE_GIT}/verif/global/Fit2Obs/${fit_ver}"
+export fit_ver="wflow.1.0"
+export fitdir="${BASE_GIT}/Fit2Obs/${fit_ver}"
 
 export HOMEcfs=${fitdir}
 export EXECcfs=${HOMEcfs}/exec
@@ -23,7 +23,7 @@ export OUTPUT_FILETYPE="netcdf"
 export CONVNETC="YES"
 export ACPROFit="YES"
 
-if [ ${netcdf_diag:-".false."} = ".true." ]; then
+if [[ ${netcdf_diag:-".false."} = ".true." ]]; then
     export CONVNETC="YES"
 fi
 
