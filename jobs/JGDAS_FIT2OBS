@@ -16,13 +16,13 @@ export vday=$(echo "${xdate}" | cut -c1-8)
 export vcyc=$(echo "${xdate}" | cut -c9-10)
 
 export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
-export COM_INF="$ROTDIR/vrfyarch/gfs.$fdy/$fzz"
+export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
 export COM_PRP=${ROTDIR}/gdas.${vday}/${vcyc}/obs
 
-export PRPI=${COM_PRP}/${CDUMP}.t${vcyc}z.prepbufr
-export sig1=${COM_INA}/${CDUMP}.t${vcyc}z.atmanl.nc
-export sfc1=${COM_INA}/${CDUMP}.t${vcyc}z.atmanl.nc
-export CNVS=${COM_INA}/${CDUMP}.t${vcyc}z.cnvstat
+export PRPI=${COM_PRP}/${RUN}.t${vcyc}z.prepbufr
+export sig1=${COM_INA}/${RUN}.t${vcyc}z.atmanl.nc
+export sfc1=${COM_INA}/${RUN}.t${vcyc}z.atmanl.nc
+export CNVS=${COM_INA}/${RUN}.t${vcyc}z.cnvstat
 
 export OUTPUT_FILETYPE=${OUTPUT_FILETYPE:-netcdf}
 
