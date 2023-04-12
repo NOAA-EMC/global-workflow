@@ -89,13 +89,13 @@ if [[ ${build_status} != 0 ]]; then
     echo "Build:                                  *FAILED*"
     echo "Build: Failed at $(date)" || true
     echo "Build: see output at ${PWD}/log.build"
-  } echo '```' >> "${outfile}"
+  } >> "${outfile}"
   exit "${build_status}"
 else
   {
     echo "Build:                                 *SUCCESS*"
     echo "Build: Completed at $(date)" || true
-  }  >> "${outfile}"
+  } >> "${outfile}"
 fi
 
 ./link_workflow.sh
