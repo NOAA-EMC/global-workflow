@@ -31,7 +31,7 @@ case ${MACHINE_ID} in
 esac
 
 module use "${HOMEGFS_DIR}/modulefiles"
-module load "module_ci.${MACHINE_ID}"
+module load "module_gwsetup.${MACHINE_ID}"
 module list
 
 rocotorun=$(which rocotorun)
