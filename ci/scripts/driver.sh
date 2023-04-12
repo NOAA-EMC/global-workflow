@@ -50,7 +50,7 @@ export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 # setup runtime env for correct python install and git
 ######################################################
 module use "${HOMEGFS_DIR}/modulefiles"
-module load "module_ci.${MACHINE_ID}"
+module load "module_gwsetup.${MACHINE_ID}"
 
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
@@ -89,6 +89,7 @@ for pr in ${pr_list}; do
     # loop over every yaml file in ${HOMEGFS_DIR}/ci/experiments
     # and create an run directory for each one for this PR loop
     #############################################################
+    module load "module_gwsetup.${MACHINE_ID}"
     for yaml_config in "${HOMEGFS_DIR}/ci/experiments/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
@@ -96,12 +97,12 @@ for pr in ${pr_list}; do
       ci_status=$?
       if [[ ${ci_status} -eq 0 ]]; then
         {
-          echo "Created experiment"
+          echo "Created experiment:            *SUCCESS*"
           echo "Experiment setup: Completed at $(date) for expirment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       else 
         {
-          echo "Failed on createing experiment ${pslot}"
+          echo "Failed to create experiment}:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
@@ -118,8 +119,6 @@ for pr in ${pr_list}; do
   "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
 
 done # looping over each open and labeled PR
-
-rm "${GFS_CI_ROOT}/${pr_list_file}"
 
 ##########################################
 # scrub working directory for older files

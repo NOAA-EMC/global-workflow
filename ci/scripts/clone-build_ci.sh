@@ -96,6 +96,7 @@ else
 fi
 
 # build full cycle
+module purge
 ./build_all.sh  &>> log.build
 
 build_status=$?
