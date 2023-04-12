@@ -93,20 +93,15 @@ class Analysis(Task):
         for ob in observers:
             if 'obs bias' in ob.keys():
                 obfile = ob['obs bias']['input file']
+                obdir = os.path.dirname(obfile)
                 basename = os.path.basename(obfile)
-                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
-
-                obfile = obfile.replace('satbias', 'satbias_cov')
-                basename = os.path.basename(obfile)
-                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
-
-                obfile = obfile.replace('satbias_cov', 'tlapse')
-                obfile = obfile.replace('nc4', 'txt')
-                basename = os.path.basename(obfile)
-                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
+                prefix = '.'.join(basename.split('.')[:-2])
+                for file in ['satbias.nc4', 'satbias_cov.nc4', 'tlapse.txt']:
+                    bfile = f"{prefix}.{file}"
+                    copylist.append([os.path.join(self.task_config.comin_ges_atm, bfile), os.path.join(obdir, bfile)])
 
         bias_dict = {
-            'mkdir': [os.path.join(self.runtime_config['DATA'], 'bc')],
+            'mkdir': [os.path.join(self.runtime_config.DATA, 'bc')],
             'copy': copylist
         }
         return bias_dict
