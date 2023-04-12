@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -ux
 
 #####################################################################
 #  Usage and arguments for specfifying cloned directgory
