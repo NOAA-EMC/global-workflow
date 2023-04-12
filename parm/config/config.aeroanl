@@ -19,6 +19,6 @@ export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_var.x
-export CRTM_VER="2.3.0"
+export crtm_VERSION="2.3.0"
 
 echo "END: config.aeroanl"

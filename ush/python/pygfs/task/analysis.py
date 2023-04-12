@@ -32,6 +32,10 @@ class Analysis(Task):
         obs_dict = self.get_obs_dict()
         FileHandler(obs_dict).sync()
 
+        # some analyses need to stage bias corrections
+        bias_dict = self.get_bias_dict()
+        FileHandler(bias_dict).sync()
+
     @logit(logger)
     def get_obs_dict(self: Task) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
@@ -63,6 +67,44 @@ class Analysis(Task):
             'copy': copylist
         }
         return obs_dict
+
+    @logit(logger)
+    def get_bias_dict(self: Task) -> Dict[str, Any]:
+        """Compile a dictionary of observation files to copy
+
+        This method uses the OBS_LIST configuration variable to generate a dictionary
+        from a list of YAML files that specify what observation bias correction files
+        are to be copied to the run directory from the observation input directory
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        bias_dict: Dict
+            a dictionary containing the list of observation bias files to copy for FileHandler
+        """
+        logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
+        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config)
+        logger.debug(f"obs_list_config: {obs_list_config}")
+        # get observers from master dictionary
+        observers = obs_list_config['observers']
+        copylist = []
+        for ob in observers:
+            if 'obs bias' in ob.keys():
+                obfile = ob['obs bias']['input file']
+                obdir = os.path.dirname(obfile)
+                basename = os.path.basename(obfile)
+                prefix = '.'.join(basename.split('.')[:-2])
+                for file in ['satbias.nc4', 'satbias_cov.nc4', 'tlapse.txt']:
+                    bfile = f"{prefix}.{file}"
+                    copylist.append([os.path.join(self.task_config.comin_ges_atm, bfile), os.path.join(obdir, bfile)])
+
+        bias_dict = {
+            'mkdir': [os.path.join(self.runtime_config.DATA, 'bc')],
+            'copy': copylist
+        }
+        return bias_dict
 
     @logit(logger)
     def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:
