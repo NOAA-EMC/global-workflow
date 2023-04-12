@@ -16,6 +16,8 @@ export vday=$(echo "${xdate}" | cut -c1-8)
 export vcyc=$(echo "${xdate}" | cut -c9-10)
 
 export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
+# We want to defer variable expansion, so ignore warning about single quotes
+# shellcheck disable=SC2016
 export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
 export COM_PRP=${ROTDIR}/gdas.${vday}/${vcyc}/obs
 
