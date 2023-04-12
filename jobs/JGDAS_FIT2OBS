@@ -15,9 +15,7 @@ export CDUMP=${RUN/enkf}
 CDATE=$(${NDATE} -"${VBACKUP_FITS}" "${PDY}${cyc}") # set CDATE to lookback cycle for use in fit2obs package
 export CDATE
 vday=${CDATE:0:8}
-export vday
 vcyc=${CDATE:8:2}
-export vcyc
 
 export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
 # We want to defer variable expansion, so ignore warning about single quotes
