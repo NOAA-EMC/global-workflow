@@ -569,7 +569,7 @@ data_out_GFS() {
         done
       fi
     elif [[ ${RUN} =~ "gfs" ]]; then
-      ${NCP} ${DATA}/input.nml ${COM_ATMOS_INPUT}
+      ${NCP} "${DATA}/input.nml" "${COM_ATMOS_HISTORY}/input.nml"
     fi
   fi
 

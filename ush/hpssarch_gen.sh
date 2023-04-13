@@ -89,7 +89,7 @@ if [[ ${type} = "gfs" ]]; then
   #  This uses the bash extended globbing option
   {
     echo "./logs/${PDY}${cyc}/gfs!(arch).log"
-    echo "${COM_ATMOS_INPUT/${ROTDIR}\//}/input.nml"
+    echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/input.nml"
 
     if [[ ${MODE} = "cycled" ]]; then
       echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}gsistat"
