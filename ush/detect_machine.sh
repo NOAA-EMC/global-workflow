@@ -50,7 +50,7 @@ fi
 if [[ -d /lfs/f1 ]] ; then
   # We are on NOAA Cactus or Dogwood
   MACHINE_ID=wcoss2
-elif [[ -d /lfs1 ]] ; then
+elif [[ -d /mnt/lfs1 ]] ; then
   # We are on NOAA Jet
   MACHINE_ID=jet
 elif [[ -d /scratch1 ]] ; then
