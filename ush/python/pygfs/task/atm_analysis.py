@@ -86,8 +86,11 @@ class AtmAnalysis(Analysis):
 
         # stage berror files
         # copy static background error files, otherwise it will assume ID matrix
-        if self.task_config.get('STATICB_TYPE', 'identity') in ['bump', 'gsibec']:
+        if self.task_config.STATICB_TYPE in ['identity', 'bump', 'gsibec']:
+            logger.debug(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
             FileHandler(self.get_berror_dict(self.task_config)).sync()
+        else:
+            raise WorkflowException(f"***ERROR*** STATICB_TYPE = {self.task_config.STATICB_TYPE} is invalid")
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
@@ -263,8 +266,9 @@ class AtmAnalysis(Analysis):
     def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
         """Compile a dictionary of background error files to copy
 
-        This method will construct a dictionary of background error files
-        for global atm DA and return said dictionary for use by the FileHandler class.
+        This method will construct a dictionary of either bump of gsibec background
+        error files for global atm DA and return said dictionary for use by the
+        FileHandler class.
 
         Parameters
         ----------
@@ -277,45 +281,85 @@ class AtmAnalysis(Analysis):
             a dictionary containing the list of atm background error files to copy for FileHandler
         """
         if config.STATICB_TYPE in ['bump']:
-            # BUMP atm static-B needs nicas, cor_rh, cor_rv and stddev files.
-            b_dir = config.BERROR_DATA_DIR
-            b_datestr = to_fv3time(config.BERROR_DATE)
-            berror_list = []
+            berror_list = self.get_berror_bump_list(config)
+        elif config.STATICB_TYPE in ['gsibec']:
+            berror_list = self.get_berror_gsibec_list(config)
 
-            for ftype in ['cor_rh', 'cor_rv', 'stddev']:
-                coupler = f'{b_datestr}.{ftype}.coupler.res'
-                berror_list.append([
-                    os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
-                ])
-                template = '{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
-                for itile in range(1, config.ntiles + 1):
-                    tracer = template.format(tilenum=itile)
-                    berror_list.append([
-                        os.path.join(b_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
-                    ])
-
-            nproc = config.ntiles * config.layout_x * config.layout_y
-            for nn in range(1, nproc + 1):
-                berror_list.append([
-                    os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc'),
-                    os.path.join(config.DATA, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc')
-                ])
-        else:
-            # GSI atm static-B needs namelist and coefficient files.
-            b_dir = os.path.join(config.FV3JEDI_FIX, 'gsibec', config.CASE_ANL)
-            berror_list = []
-            for ftype in ['gfs_gsi_global.nml', 'gsi-coeffs-gfs-global.nc4']:
-                berror_list.append([
-                    os.path.join(b_dir, ftype),
-                    os.path.join(config.DATA, 'berror', ftype)
-                ])
-
-        # stage background error files
+        # create dictionary of background error files to stage
         berror_dict = {
             'mkdir': [os.path.join(config.DATA, 'berror')],
             'copy': berror_list,
         }
         return berror_dict
+
+    @logit(logger)
+    def get_berror_bump_list(self, config: Dict[str, Any]) -> List[str]:
+        """Compile a list of atm bump background error files to copy
+
+        This method will construct a dictionary of atm bump background error
+        files for global atm DA and return said dictionary to the parent
+
+        Parameters
+        ----------
+        config: Dict
+            a dictionary containing all of the configuration needed
+
+        Returns
+        ----------
+        berror_list: list
+            a list of atm bump background error files to copy for FileHandler
+        """
+        # BUMP atm static-B needs nicas, cor_rh, cor_rv and stddev files.
+        b_dir = config.BERROR_DATA_DIR
+        b_datestr = to_fv3time(config.BERROR_DATE)
+        berror_list = []
+
+        for ftype in ['cor_rh', 'cor_rv', 'stddev']:
+            coupler = f'{b_datestr}.{ftype}.coupler.res'
+            berror_list.append([
+                os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
+            ])
+            template = '{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
+            for itile in range(1, config.ntiles + 1):
+                tracer = template.format(tilenum=itile)
+                berror_list.append([
+                    os.path.join(b_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
+                ])
+
+        nproc = config.ntiles * config.layout_x * config.layout_y
+        for nn in range(1, nproc + 1):
+            berror_list.append([
+                os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc'),
+                os.path.join(config.DATA, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc')
+            ])
+        return berror_list
+
+    @logit(logger)
+    def get_berror_gsibec_list(self, config: Dict[str, Any]) -> List[str]:
+        """Compile a list of atm gsibec background error files to copy
+
+        This method will construct a dictionary of atm gsibec background error
+        file for global atm DA and return said dictionary to the parent
+
+        Parameters
+        ----------
+        config: Dict
+            a dictionary containing all of the configuration needed
+
+        Returns
+        ----------
+        berror_list: list
+            a list of atm gsibec background error files to copy for FileHandler
+        """
+        # GSI atm static-B needs namelist and coefficient files.
+        b_dir = os.path.join(config.HOMEgfs, 'fix', 'gdas', 'gsibec', config.CASE_ANL)
+        berror_list = []
+        for ftype in ['gfs_gsi_global.nml', 'gsi-coeffs-gfs-global.nc4']:
+            berror_list.append([
+                os.path.join(b_dir, ftype),
+                os.path.join(config.DATA, 'berror', ftype)
+            ])
+        return berror_list
 
     @logit(logger)
     def jedi2fv3inc(self: Analysis) -> None:
