@@ -25,7 +25,7 @@ export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMRUNSH:-${HOMEgfs}/scripts/exglobal_atm_analysis_run.sh}
+EXSCRIPT=${GDASATMRUNSH:-${HOMEgfs}/scripts/exglobal_atm_analysis_run.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
