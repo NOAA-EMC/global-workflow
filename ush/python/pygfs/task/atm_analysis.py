@@ -280,18 +280,12 @@ class AtmAnalysis(Analysis):
         berror_dict: Dict
             a dictionary containing the list of atm background error files to copy for FileHandler
         """
-##        SUPPORTED_BERROR_STATIC_MAP = {'bump': self.__get_berror_bump_dict(self.config), 'gsibec': self.__get_berror_gsibec_dict(self.config)}
-##        berror_dict = SUPPORTED_BERROR_STATIC_MAP['config.STATICB_TYPE']()
-
-        if config.STATICB_TYPE in ['bump']:
-            berror_dict = self.__get_berror_bump_dict(config)
-        elif config.STATICB_TYPE in ['gsibec']:
-            berror_dict = self.__get_berror_gsibec_dict(config)
-
+        SUPPORTED_BERROR_STATIC_MAP = {'bump': self.__get_berror_bump_dict, 'gsibec': self.__get_berror_gsibec_dict}
+        berror_dict = SUPPORTED_BERROR_STATIC_MAP[config.STATICB_TYPE]()
         return berror_dict
 
     @logit(logger)
-    def __get_berror_bump_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
+    def __get_berror_bump_dict(self: Analysis) -> Dict[str, List[str]]:
         """Compile a dictionary of atm bump background error files to copy
 
         This method will construct a dictionary of atm bump background error
@@ -309,36 +303,36 @@ class AtmAnalysis(Analysis):
         """
         # BUMP atm static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = config.BERROR_DATA_DIR
-        b_datestr = to_fv3time(config.BERROR_DATE)
+        b_datestr = to_fv3time(self.task_config.BERROR_DATE)
         berror_list = []
         for ftype in ['cor_rh', 'cor_rv', 'stddev']:
             coupler = f'{b_datestr}.{ftype}.coupler.res'
             berror_list.append([
-                os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
+                os.path.join(b_dir, coupler), os.path.join(self.task_config.DATA, 'berror', coupler)
             ])
             template = '{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
-            for itile in range(1, config.ntiles + 1):
+            for itile in range(1, self.task_config.ntiles + 1):
                 tracer = template.format(tilenum=itile)
                 berror_list.append([
-                    os.path.join(b_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
+                    os.path.join(b_dir, tracer), os.path.join(self.task_config.DATA, 'berror', tracer)
                 ])
 
-        nproc = config.ntiles * config.layout_x * config.layout_y
+        nproc = self.task_config.ntiles * self.task_config.layout_x * self.task_config.layout_y
         for nn in range(1, nproc + 1):
             berror_list.append([
                 os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc'),
-                os.path.join(config.DATA, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc')
+                os.path.join(self.task_config.DATA, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc')
             ])
 
         # create dictionary of background error files to stage
         berror_dict = {
-            'mkdir': [os.path.join(config.DATA, 'berror')],
+            'mkdir': [os.path.join(self.task_config.DATA, 'berror')],
             'copy': berror_list,
         }
         return berror_dict
 
     @logit(logger)
-    def __get_berror_gsibec_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
+    def __get_berror_gsibec_dict(self: Analysis) -> Dict[str, List[str]]:
         """Compile a dictionary of atm gsibec background error files to copy
 
         This method will construct a dictionary of atm gsibec background error
@@ -355,17 +349,17 @@ class AtmAnalysis(Analysis):
             a dictionary of atm gsibec background error files to copy for FileHandler
         """
         # GSI atm static-B needs namelist and coefficient files.
-        b_dir = os.path.join(config.HOMEgfs, 'fix', 'gdas', 'gsibec', config.CASE_ANL)
+        b_dir = os.path.join(self.task_config.HOMEgfs, 'fix', 'gdas', 'gsibec', self.task_config.CASE_ANL)
         berror_list = []
         for ftype in ['gfs_gsi_global.nml', 'gsi-coeffs-gfs-global.nc4']:
             berror_list.append([
                 os.path.join(b_dir, ftype),
-                os.path.join(config.DATA, 'berror', ftype)
+                os.path.join(self.task_config.DATA, 'berror', ftype)
             ])
 
         # create dictionary of background error files to stage
         berror_dict = {
-            'mkdir': [os.path.join(config.DATA, 'berror')],
+            'mkdir': [os.path.join(self.task_config.DATA, 'berror')],
             'copy': berror_list,
         }
         return berror_dict
