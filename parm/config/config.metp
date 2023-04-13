@@ -6,7 +6,7 @@
 echo "BEGIN: config.metp"
 
 # Get task specific resources
-. "${EXPDIR}"/config.resources metp
+. "${EXPDIR}/config.resources" metp
 
 export RUN_GRID2GRID_STEP1="YES" # Run grid-to-grid verification using METplus
 export RUN_GRID2OBS_STEP1="YES"  # Run grid-to-obs verification using METplus
