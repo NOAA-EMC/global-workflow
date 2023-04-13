@@ -69,11 +69,6 @@ fi
 export ens_tracker_ver=v1.1.15.5
 export HOMEens_tracker=$BASE_GIT/TC_tracker/${ens_tracker_ver}
 
-if [[ ${machine} == "JET" ]]; then
-   export ens_tracker_ver=v1.1.15.6
-   export HOMEens_tracker=/mnt/lfs4/HFIP/hwrfv3/Jiayi.Peng/ens_tracker.${ens_tracker_ver}
-fi
-
 if [[ "${VRFYTRAK}" = "YES" ]]; then
 
     export TRACKERSH="${HOMEgfs}/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
