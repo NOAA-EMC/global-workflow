@@ -16,7 +16,7 @@ elif [[ "${machine}" == "ORION" ]]; then
 elif [[ "${machine}" == "S4" ]]; then
   export BASE_CPLIC="/data/prod/glopara/coupled_ICs"
 elif [[ "${machine}" == "JET" ]]; then
-  export BASE_CPLIC="/lfs4/HFIP/hfv3gfs/glopara/data/IC/IC"
+  export BASE_CPLIC="/mnt/lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/prototype_ICs"
 fi
 
 
