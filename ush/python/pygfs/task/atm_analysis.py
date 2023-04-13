@@ -280,21 +280,19 @@ class AtmAnalysis(Analysis):
         berror_dict: Dict
             a dictionary containing the list of atm background error files to copy for FileHandler
         """
-        if config.STATICB_TYPE in ['bump']:
-            berror_list = self.get_berror_bump_list(config)
-        elif config.STATICB_TYPE in ['gsibec']:
-            berror_list = self.get_berror_gsibec_list(config)
+##        SUPPORTED_BERROR_STATIC_MAP = {'bump': self.__get_berror_bump_dict(self.config), 'gsibec': self.__get_berror_gsibec_dict(self.config)}
+##        berror_dict = SUPPORTED_BERROR_STATIC_MAP['config.STATICB_TYPE']()
 
-        # create dictionary of background error files to stage
-        berror_dict = {
-            'mkdir': [os.path.join(config.DATA, 'berror')],
-            'copy': berror_list,
-        }
+        if config.STATICB_TYPE in ['bump']:
+            berror_dict = self.__get_berror_bump_dict(config)
+        elif config.STATICB_TYPE in ['gsibec']:
+            berror_dict = self.__get_berror_gsibec_dict(config)
+
         return berror_dict
 
     @logit(logger)
-    def get_berror_bump_list(self, config: Dict[str, Any]) -> List[str]:
-        """Compile a list of atm bump background error files to copy
+    def __get_berror_bump_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
+        """Compile a dictionary of atm bump background error files to copy
 
         This method will construct a dictionary of atm bump background error
         files for global atm DA and return said dictionary to the parent
@@ -306,14 +304,13 @@ class AtmAnalysis(Analysis):
 
         Returns
         ----------
-        berror_list: list
-            a list of atm bump background error files to copy for FileHandler
+        berror_dict: Dict
+            a dictionary of atm bump background error files to copy for FileHandler
         """
         # BUMP atm static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = config.BERROR_DATA_DIR
         b_datestr = to_fv3time(config.BERROR_DATE)
         berror_list = []
-
         for ftype in ['cor_rh', 'cor_rv', 'stddev']:
             coupler = f'{b_datestr}.{ftype}.coupler.res'
             berror_list.append([
@@ -332,14 +329,20 @@ class AtmAnalysis(Analysis):
                 os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc'),
                 os.path.join(config.DATA, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc')
             ])
-        return berror_list
+
+        # create dictionary of background error files to stage
+        berror_dict = {
+            'mkdir': [os.path.join(config.DATA, 'berror')],
+            'copy': berror_list,
+        }
+        return berror_dict
 
     @logit(logger)
-    def get_berror_gsibec_list(self, config: Dict[str, Any]) -> List[str]:
-        """Compile a list of atm gsibec background error files to copy
+    def __get_berror_gsibec_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
+        """Compile a dictionary of atm gsibec background error files to copy
 
         This method will construct a dictionary of atm gsibec background error
-        file for global atm DA and return said dictionary to the parent
+        files for global atm DA and return said dictionary to the parent
 
         Parameters
         ----------
@@ -348,8 +351,8 @@ class AtmAnalysis(Analysis):
 
         Returns
         ----------
-        berror_list: list
-            a list of atm gsibec background error files to copy for FileHandler
+        berror_dict: Dict
+            a dictionary of atm gsibec background error files to copy for FileHandler
         """
         # GSI atm static-B needs namelist and coefficient files.
         b_dir = os.path.join(config.HOMEgfs, 'fix', 'gdas', 'gsibec', config.CASE_ANL)
@@ -359,7 +362,13 @@ class AtmAnalysis(Analysis):
                 os.path.join(b_dir, ftype),
                 os.path.join(config.DATA, 'berror', ftype)
             ])
-        return berror_list
+
+        # create dictionary of background error files to stage
+        berror_dict = {
+            'mkdir': [os.path.join(config.DATA, 'berror')],
+            'copy': berror_list,
+        }
+        return berror_dict
 
     @logit(logger)
     def jedi2fv3inc(self: Analysis) -> None:
