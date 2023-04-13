@@ -6,7 +6,7 @@
 echo "BEGIN: config.vrfy"
 
 # Get task specific resources
-. ${EXPDIR}/config.resources vrfy
+. "${EXPDIR}/config.resources" vrfy
 
 export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
