@@ -558,7 +558,12 @@ elif [[ ${step} = "ocnpost" ]]; then
     export npe_ocnpost=1
     export npe_node_ocnpost=1
     export nth_ocnpost=1
-    export memory_ocnpost="88G"
+    export memory_ocnpost="96G"
+    if [[ ${machine} == "JET" ]]; then
+       # JET only has 88GB of requestable memory per node
+       # so a second node is required to meet the requiremtn
+       npe_ocnpost=2
+    fi
 
 elif [[ ${step} = "post" ]]; then
 
