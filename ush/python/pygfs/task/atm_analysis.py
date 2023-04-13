@@ -143,10 +143,8 @@ class AtmAnalysis(Analysis):
         - tar output diag files and place in ROTDIR
         - copy the generated YAML file from initialize to the ROTDIR
         - copy the updated bias correction files to ROTDIR
-        - rewrite UFS-DA atm increment to UFS model readable format with delp and hydrostatic delz calculation
+        - write UFS model readable atm incrment file
 
-        Please note that some of these steps are temporary and will be modified
-        once the model is able to read atm increments.
         """
         # ---- tar up diags
         # path of output tar statfile
@@ -207,25 +205,8 @@ class AtmAnalysis(Analysis):
         }
         FileHandler(bias_copy).sync()
 
-        # rewrite UFS-DA atm increment to UFS model readable format with delp and hydrostatic delz calculation
-        case_berror = int(self.config.CASE_ANL[1:])
-        case = int(self.config.CASE[1:])
-        if case_berror == case:
-            atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, f"{self.task_config.GPREFIX}atmf006.nc")
-        else:
-            atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, f"{self.task_config.GPREFIX}atmf006.ensres.nc")
-
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
-        atminc_jedi = os.path.join(self.task_config.DATA, 'anl', f'atminc.{cdate_inc}z.nc4')
-        atminc_fv3 = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")
-        incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
-
-        cmd = Executable(incpy)
-        cmd.add_default_arg(atmges_fv3)
-        cmd.add_default_arg(atminc_jedi)
-        cmd.add_default_arg(atminc_fv3)
-        cmd(output='stdout', error='stderr')
+        # Create UFS model readable atm increment file from UFS-DA atm increment
+        self.jedi2fv3inc()
 
     def clean(self):
         super().clean()
@@ -335,3 +316,43 @@ class AtmAnalysis(Analysis):
             'copy': berror_list,
         }
         return berror_dict
+
+    @logit(logger)
+    def jedi2fv3inc(self: Analysis) -> None:
+        """Generate UFS model readable analysis increment
+
+        This method writes a UFS DA atm increment in UFS model readable format.
+        This includes:
+        - write UFS-DA atm increments using variable names expected by UFS model
+        - compute and write delp increment
+        - compute and write hydrostatic delz increment
+
+        Please note that some of these steps are temporary and will be modified
+        once the modle is able to directly read atm increments.
+
+        """
+        # Select the atm guess file based on the analysis and background resolutions
+        # Fields from the atm guess are used to compute the delp and delz increments
+        case_anl = int(self.config.CASE_ANL[1:])
+        case = int(self.config.CASE[1:])
+        if case_anl == case:
+            atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, f"{self.task_config.GPREFIX}atmf006.nc")
+        else:
+            atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, f"{self.task_config.GPREFIX}atmf006.ensres.nc")
+
+        # Set the path/name to the input UFS-DA atm increment file (atminc_jedi)
+        # and the output UFS model atm increment file (atminc_fv3)
+        cdate = to_fv3time(self.task_config.current_cycle)
+        cdate_inc = cdate.replace('.', '_')
+        atminc_jedi = os.path.join(self.task_config.DATA, 'anl', f'atminc.{cdate_inc}z.nc4')
+        atminc_fv3 = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")
+
+        # Reference the python script which does the actual work
+        incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
+
+        # Execute incpy to create the UFS model atm increment file
+        cmd = Executable(incpy)
+        cmd.add_default_arg(atmges_fv3)
+        cmd.add_default_arg(atminc_jedi)
+        cmd.add_default_arg(atminc_fv3)
+        cmd(output='stdout', error='stderr')
