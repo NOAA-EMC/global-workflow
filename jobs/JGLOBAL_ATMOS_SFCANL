@@ -20,6 +20,7 @@ fi
 # shellcheck disable=SC2153
 GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
 # shellcheck disable=
+gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 
