@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__.split('.')[-1])
 
 UFS_VARIANTS = ['GFS']
 
+
 class UFS:
 
     @logit(logger, name="UFS")
