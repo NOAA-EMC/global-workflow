@@ -694,7 +694,7 @@ else
          if test "$RUN" = "gdas1"
          then
             "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job} ""${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+            "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
          fi
          if test "$RUN" = "gfs"
          then
