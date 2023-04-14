@@ -654,6 +654,7 @@ elif [[ "${step}" = "fit2obs" ]]; then
     export npe_fit2obs=3
     export nth_fit2obs=1
     export npe_node_fit2obs=1
+    export memory_fit2obs="20G"
     if [[ ${machine} == "WCOSS2" ]]; then export npe_node_fit2obs=3 ; fi
 
 elif [[ "${step}" = "metp" ]]; then
