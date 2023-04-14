@@ -1,26 +1,36 @@
+import re
+import copy
 import logging
-from typing import Dict
+from typing import Dict, Any
 
 from pygw.template import Template, TemplateConstants
 from pygw.logger import logit
 
 logger = logging.getLogger(__name__.split('.')[-1])
 
+UFS_VARIANTS = ['GFS']
 
 class UFS:
 
-    @classmethod
-    @logit(logger)
-    def create(cls, model_name: str, config: Dict, *args, **kwargs):
-        """
-        Call the constructor of the appropriate variant of the UFS.
-        The variant is defined via 'model_name'.
-        E.g.
-        GFS for all global variants
+    @logit(logger, name="UFS")
+    def __init__(self, model_name: str, config: Dict[str, Any]):
+        """Initialize the UFS-weather-model generic class and check if the model_name is a valid variant
+
+        Parameters
+        ----------
+        model_name: str
+            UFS variant
+        config : Dict
+            Incoming configuration dictionary
         """
 
-        return next(cc for cc in cls.__subclasses__() if cc.__name__ == model_name)(config, *args, **kwargs)
+        # First check if this is a valid variant
+        if model_name not in UFS_VARIANTS:
+            logger.warn(f"{model_name} is not a valid UFS variant")
+            raise NotImplementedError(f"{model_name} is not yet implemented")
 
+        # Make a deep copy of incoming config for caching purposes. _config should not be updated
+        self._config = copy.deepcopy(config)
 
     @logit(logger)
     def parse_ufs_templates(input_template, output_file, ctx: Dict) -> None:
@@ -45,5 +55,3 @@ class UFS:
 
         with open(output_file, 'w') as fho:
             fho.write(file_out)
-
-

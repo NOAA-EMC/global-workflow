@@ -1,9 +1,10 @@
 import os
 import logging
-from typing import Dict
+from typing import Dict, Any
 
 from pygw.logger import logit
-from pygfs.ufswm.ufs import UFS
+from pygw.task import Task
+from pygfs.ufswm.gfs import GFS
 
 logger = logging.getLogger(__name__.split('.')[-1])
 
@@ -14,7 +15,7 @@ class GFSForecast(Task):
     """
 
     @logit(logger, name="GFSForecast")
-    def __init__(self, config, *args, **kwargs):
+    def __init__(self, config: Dict[str, Any], *args, **kwargs):
         """
         Parameters
         ----------
@@ -31,5 +32,4 @@ class GFSForecast(Task):
         super().__init__(config, *args, **kwargs)
 
         # Create and initialize the GFS variant of the UFS
-        self.gfs = UFS.create(model_name:str = "GFS", config: Dict)
-
+        self.gfs = GFS(config)

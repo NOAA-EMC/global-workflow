@@ -12,13 +12,9 @@ class GFS(UFS):
     @logit(logger, name="GFS")
     def __init__(self, config):
 
-        # Note there is no super() here needed since UFS does not initialize for all configurations equally.  If this need comes along, we can adjust.
-
-        # Make a deep copy of incoming config for caching purposes. _config should not be updated
-        self._config = copy.deepcopy(config)
+        super().__init__("GFS", config)
 
         # Start putting fixed properties of the GFS
         self.ntiles = 6
 
         # Determine coupled/uncoupled from config and define as appropriate
-
