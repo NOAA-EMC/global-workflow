@@ -71,6 +71,7 @@ fi
 #######################################################################
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
+#export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.py"  # Temp. while this is worked on
 export FCSTEXECDIR="$HOMEgfs/exec"
 export FCSTEXEC="ufs_model.x"
 
