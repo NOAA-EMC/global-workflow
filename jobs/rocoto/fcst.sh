@@ -22,6 +22,7 @@ if [[ "${MACHINE_ID}" = "hera" ]]; then
   module use "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/modulefiles/core"
   module load "miniconda3/4.6.14"
   module load "gfs_workflow/1.0.0"
+# TODO: orion and wcoss2 will be uncommented when they are ready.  This comment block will be removed in the next PR
 #elif [[ "${MACHINE_ID}" = "orion" ]]; then
 #  module use "/home/rmahajan/opt/global-workflow/modulefiles/core"
 #  module load "python/3.7.5"
