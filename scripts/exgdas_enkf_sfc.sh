@@ -189,7 +189,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             ${NLN} "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc" \
                 "${DATA}/fnbgso.${cmem}"
             ${NLN} "${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
-            ${NLN} "${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc " "${DATA}/fnorog.${cmem}"
+            ${NLN} "${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
         done
 
