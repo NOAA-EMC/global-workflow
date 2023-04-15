@@ -177,7 +177,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            MEMDIR=${memchar} YMD=${gPDY} HH=${gcyc} generate_com \
+            RUN="${GDUMP_ENS}" MEMDIR=${memchar} YMD=${gPDY} HH=${gcyc} generate_com \
                 COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
