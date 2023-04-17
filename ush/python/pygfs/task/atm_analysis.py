@@ -301,13 +301,18 @@ class AtmAnalysis(Analysis):
     @staticmethod
     @logit(logger)
     def _get_berror_dict_identity(config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Placeholder for atm identity background error files to copy
-
-        This method currently does nothing since the identity background error
-        does not require any external files.
+        """Identity BE does not need any files for staging.
 
         This is a private method and should not be accessed directly.
 
+        Parameters
+        ----------
+        config: Dict
+            a dictionary containing all of the configuration needed
+        Returns
+        ----------
+        berror_dict: Dict
+            Empty dictionary [identity BE needs not files to stage]
         """
         logger.info(f"Identity background error does not use staged files.  Return empty dictionary")
         return {}
