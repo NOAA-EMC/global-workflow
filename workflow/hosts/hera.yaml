@@ -1,5 +1,4 @@
-# BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git'
-BASE_GIT: '/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/gw_external_git'
+BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git'
 DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump'
 PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara'
 COMROOT: '/scratch1/NCEPDEV/global/glopara/com'
