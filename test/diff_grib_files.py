@@ -66,10 +66,17 @@ def count_nonid_corr(test_string: str, quiet=False):
 
 
 if __name__ == '__main__':
-    fileA = sys.argv[0]
-    fileB = sys.argv[1]
+    fileA = sys.argv[1]
+    fileB = sys.argv[2]
+
+    print(fileA)
+    print(fileB)
 
     wgrib2_cmd = f"wgrib2 {fileA} -var -rpn 'sto_1' -import_grib {fileB} -rpn 'rcl_1:print_corr'"
+    print()
+    print(wgrib2_cmd)
+    print()
 
     string = subprocess.run(wgrib2_cmd, shell=True, stdout=subprocess.PIPE).stdout.decode("utf-8")
+    
     count_nonid_corr(string)
