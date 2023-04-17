@@ -81,7 +81,7 @@ class UFS:
         return fix
 
     @logit(logger)
-    def set_ufs_config(self) -> Dict['str', Any]:
+    def set_ufs_config(self) -> Dict[str, Any]:
         """
         This method sets the UFS-weather-model configuration based on the big experiment config
 
