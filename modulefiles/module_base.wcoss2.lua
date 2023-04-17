@@ -26,15 +26,10 @@ load(pathJoin("prod_util", os.getenv("prod_util_ver")))
 load(pathJoin("grib_util", os.getenv("grib_util_ver")))
 load(pathJoin("bufr_dump", os.getenv("bufr_dump_ver")))
 load(pathJoin("util_shared", os.getenv("util_shared_ver")))
-load(pathJoin("crtm", os.getenv("crtm_ver")))
 load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
-load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
-
-pushenv("HPC_OPT", "/apps/ops/para/libs")
-append_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304")
-append_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/mpi/intel/19.1.3.304/cray-mpich/8.1.7")
-
 load(pathJoin("ncdiag", os.getenv("ncdiag_ver")))
+load(pathJoin("crtm", os.getenv("crtm_ver")))
+load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 
 prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))

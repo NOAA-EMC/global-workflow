@@ -161,16 +161,16 @@ checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" 
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "31b8b29" "NO"; errs=$((errs + $?))
+  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "113e307" "NO"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "6aa55fa"; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "db2f998"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
   checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
-  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "c64cc47"; errs=$((errs + $?))
+  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "8cf16de"; errs=$((errs + $?))
   checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"       "fd8ba62"; errs=$((errs + $?))
 fi
 

@@ -12,7 +12,7 @@ if [ $# -ne 1 ]; then
     echo "atmanalprep atmanalrun atmanalpost"
     echo "atmensanalprep atmensanalrun atmensanalpost"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -60,11 +60,12 @@ if [ ${step} = "prep" ]; then
       export memory_prep="40G"
     fi
 
-elif [ ${step} = "aerosol_init" ]; then
+elif [[ "${step}" = "aerosol_init" ]]; then
     export wtime_aerosol_init="00:05:00"
     export npe_aerosol_init=1
     export nth_aerosol_init=1
-    export npe_node_aerosol_init=$(echo "${npe_node_max} / ${nth_aerosol_init}" | bc)
+    npe_node_aerosol_init=$(echo "${npe_node_max} / ${nth_aerosol_init}" | bc)
+    export npe_node_aerosol_init
     export NTASKS=${npe_aerosol_init}
     export memory_aerosol_init="6G"
 
@@ -621,6 +622,14 @@ elif [ ${step} = "vrfy" ]; then
       export memory_vrfy="16384M"
     fi
     export is_exclusive=True
+
+elif [[ "${step}" = "fit2obs" ]]; then
+
+    export wtime_fit2obs="00:20:00"
+    export npe_fit2obs=3
+    export nth_fit2obs=1
+    export npe_node_fit2obs=1
+    if [[ ${machine} == "WCOSS2" ]]; then export npe_node_fit2obs=3 ; fi
 
 elif [ ${step} = "metp" ]; then
 
