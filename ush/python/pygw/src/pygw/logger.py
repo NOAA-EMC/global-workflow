@@ -2,6 +2,7 @@
 Logger
 """
 
+import os
 import sys
 from functools import wraps
 from pathlib import Path
@@ -48,7 +49,7 @@ class Logger:
     DEFAULT_FORMAT = '%(asctime)s - %(levelname)-8s - %(name)-12s: %(message)s'
 
     def __init__(self, name: str = None,
-                 level: str = None,
+                 level: str = os.environ.get("LOGGING_LEVEL"),
                  _format: str = DEFAULT_FORMAT,
                  colored_log: bool = False,
                  logfile_path: Union[str, Path] = None):
@@ -74,18 +75,15 @@ class Logger:
                        default : None
         """
 
-        if level is None:
-            level = os.environ.get("LOGGING_LEVEL", Logger.DEFAULT_LEVEL)
-
         self.name = name
-        self.level = level.upper()
+        self.level = level.upper() if level else Logger.DEFAULT_LEVEL
         self.format = _format
         self.colored_log = colored_log
 
         if self.level not in Logger.LOG_LEVELS:
-            raise LookupError('{self.level} is unknown logging level\n' +
-                              'Currently supported log levels are:\n' +
-                              f'{" | ".join(Logger.LOG_LEVELS)}')
+            raise LookupError(f"{self.level} is unknown logging level\n" +
+                              f"Currently supported log levels are:\n" +
+                              f"{' | '.join(Logger.LOG_LEVELS)}")
 
         # Initialize the root logger if no name is present
         self._logger = logging.getLogger(name) if name else logging.getLogger()
