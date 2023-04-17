@@ -19,7 +19,7 @@ mkdir -p "${COMOUT}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSRUNSH:-${HOMEgfs}/scripts/exglobal_atmens_analysis_run.sh}
+EXSCRIPT=${GDASATMENSRUNSH:-${HOMEgfs}/scripts/exglobal_atmens_analysis_run.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
