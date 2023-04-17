@@ -328,7 +328,7 @@ if __name__ == '__main__':
             logger.info(f'{num_missmatched_files} files found in {os.path.basename(foldera)} that are not in {os.path.basename(folderb)}')
             match_pass = False
     if match_pass:
-        logger.info(f"Both directorires: {os.path.basename(foldera)} and {os.path.basename(folderb)} match with "
+        logger.info(f"Both directories: {os.path.basename(foldera)} and {os.path.basename(folderb)} match with "
                     f"{len(results['both'])} distinct files and directories")
     else:
         logger.info(f"Total number of distinct files and directories found in both: {len(results['both'])}")
