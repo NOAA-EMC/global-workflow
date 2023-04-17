@@ -238,7 +238,7 @@ def check_diff_files(dcmp, ignore_list):
     if num_differing_files != 0:
         logger.info(f'{num_differing_files} files differed that was not NetCDF nor tar files')
     files_compared += len(dcmp.common_files)
-    total_num_diff_files += num_differing_files + num_tar_differing_files +                      \
+    total_num_diff_files += num_differing_files + num_tar_differing_files + \
                             num_netcdf_differing_files + num_netcdf_differing_files_onlyheader + \
                             num_grib_differing_files
     if verbose:
