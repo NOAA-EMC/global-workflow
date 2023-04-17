@@ -15,7 +15,7 @@ class GFSForecast(Task):
     """
 
     @logit(logger, name="GFSForecast")
-    def __init__(self, config: Dict[str, Any], *args, **kwargs):
+    def __init__(self: Task, config: Dict[str, Any], *args, **kwargs):
         """
         Parameters
         ----------
@@ -33,3 +33,18 @@ class GFSForecast(Task):
 
         # Create and initialize the GFS variant of the UFS
         self.gfs = GFS(config)
+
+    @logit(logger)
+    def configure(self: Task) -> None:
+        """
+
+        """
+
+    @logit(logger)
+    def initialize(self: Task) -> None:
+        """
+
+        """
+
+        # Build the directory tree and link the relevant fixed-files.
+        self.gfs.build_dirtree()
