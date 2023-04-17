@@ -1,9 +1,12 @@
+import os
 import re
 import copy
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Union, List
 
+from pygw.attrdict import AttrDict
 from pygw.template import Template, TemplateConstants
+from pygw.file_utils import FileHandler
 from pygw.logger import logit
 
 logger = logging.getLogger(__name__.split('.')[-1])
@@ -33,6 +36,8 @@ class UFS:
         # Make a deep copy of incoming config for caching purposes. _config should not be updated
         self._config = copy.deepcopy(config)
 
+
+    @staticmethod
     @logit(logger)
     def parse_ufs_templates(input_template, output_file, ctx: Dict) -> None:
         """
@@ -56,3 +61,58 @@ class UFS:
 
         with open(output_file, 'w') as fho:
             fho.write(file_out)
+
+    @staticmethod
+    @logit(logger)
+    def set_ufs_fix(FIX_dir: str) -> Dict[str, str]:
+        """
+        This method sets the paths to the UFS-weather-model fixed files based on the FIX_dir
+        TODO:  extract this out to a YAML when we have a better idea of what the structure will be
+        """
+
+        fix = AttrDict()
+
+        fix.FIX_aer = os.path.join(FIX_dir, 'aer')
+        fix.FIX_am = os.path.join(FIX_dir, 'am')
+        fix.FIX_lut = os.path.join(FIX_dir, 'lut')
+        fix.FIX_orog = os.path.join(FIX_dir, 'orog')
+        fix.FIX_ugwd = os.path.join(FIX_dir, 'ugwd')
+
+        return fix
+
+    @logit(logger)
+    def set_ufs_config(self) -> Dict[str, Any]:
+        """
+        This method sets the UFS-weather-model configuration based on the big experiment config
+
+
+        Returns
+        -------
+        cfg : Dict
+            UFS-weather-model resolution and other configuration as necessary
+
+        TODO: This method could be broken up into smaller methods for each component, but maintain this as the entry point
+        """
+
+        cfg = AttrDict()
+
+        # TODO: break this into smaller methods for atmos, ocean, etc.
+        cfg.atm_res = self._config.get('CASE', 'C96')
+        cfg.atm_levs = self._config.get('LEVS', 127)
+
+        cfg.ocn_res = self._config.get('OCNRES', '100')
+
+        return cfg
+
+    @staticmethod
+    @logit(logger)
+    def stage(data: Union[List[Dict[str, List]], Dict[str, List]]) -> None:
+        """
+        This method stages the UFS-weather-model fixed files
+        """
+
+        if isinstance(data, list):
+            for item in data:
+                FileHandler(item).sync()
+        else:
+            FileHandler(data).sync()
