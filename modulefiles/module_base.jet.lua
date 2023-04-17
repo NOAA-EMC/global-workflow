@@ -22,4 +22,7 @@ load(pathJoin("g2tmpl", "1.10.0"))
 load(pathJoin("crtm", "2.4.0"))
 load(pathJoin("wgrib2", "2.0.8"))
 
+prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/feature-GFSv17_com_reorg/modulefiles"))
+load(pathJoin("prepobs", "1.0.1"))
+
 whatis("Description: GFS run environment")
