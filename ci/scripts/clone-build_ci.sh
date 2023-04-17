@@ -51,14 +51,14 @@ done
 }  >> "${outfile}"
 ######################################################################
 
-cd "${repodir}"
+cd "${repodir}" || exit
 # clone copy of repo
 if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
 
 git clone "${REPO_URL}"
-cd global-workflow
+cd global-workflow || exit
 
 pr_state=$(gh pr view "${PR}" --json state --jq '.state')
 if [[ "${pr_state}" != "OPEN" ]]; then
@@ -75,7 +75,7 @@ commit=$(git log --pretty=format:'%h' -n 1)
 echo "${commit}" > "../commit"
 
 # run build script
-cd sorc
+cd sorc || exit
 export BUILD_JOBS=8
 rm -rf log.build
 ./checkout.sh -c -g -u &>> log.checkout
