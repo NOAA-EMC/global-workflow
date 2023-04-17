@@ -1,0 +1,85 @@
+copy:
+  # Atmosphere mosaic file linked as the grid_spec file (atm only)
+  - [$(FIX_orog)/$(atm_res)/$(atm_res)_mosaic.nc, $(DATA)/INPUT/grid_spec.nc]
+
+  # Atmosphere grid tile files
+  - [$(FIX_orog)/$(atm_res)/$(atm_res)_grid.tile1.nc, $(DATA)/INPUT/]
+  - [$(FIX_orog)/$(atm_res)/$(atm_res)_grid.tile2.nc, $(DATA)/INPUT/]
+  - [$(FIX_orog)/$(atm_res)/$(atm_res)_grid.tile3.nc, $(DATA)/INPUT/]
+  - [$(FIX_orog)/$(atm_res)/$(atm_res)_grid.tile4.nc, $(DATA)/INPUT/]
+  - [$(FIX_orog)/$(atm_res)/$(atm_res)_grid.tile5.nc, $(DATA)/INPUT/]
+  - [$(FIX_orog)/$(atm_res)/$(atm_res)_grid.tile6.nc, $(DATA)/INPUT/]
+
+  # oro_data_ls and oro_data_ss files from FIX_ugwd
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ls.tile1.nc, $(DATA)/INPUT/oro_data_ls.tile1.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ls.tile2.nc, $(DATA)/INPUT/oro_data_ls.tile2.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ls.tile3.nc, $(DATA)/INPUT/oro_data_ls.tile3.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ls.tile4.nc, $(DATA)/INPUT/oro_data_ls.tile4.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ls.tile5.nc, $(DATA)/INPUT/oro_data_ls.tile5.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ls.tile6.nc, $(DATA)/INPUT/oro_data_ls.tile6.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ss.tile1.nc, $(DATA)/INPUT/oro_data_ss.tile1.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ss.tile2.nc, $(DATA)/INPUT/oro_data_ss.tile2.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ss.tile3.nc, $(DATA)/INPUT/oro_data_ss.tile3.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ss.tile4.nc, $(DATA)/INPUT/oro_data_ss.tile4.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ss.tile5.nc, $(DATA)/INPUT/oro_data_ss.tile5.nc]
+  - [$(FIX_ugwd)/$(atm_res)/$(atm_res)_oro_data_ss.tile6.nc, $(DATA)/INPUT/oro_data_ss.tile6.nc]
+
+  # GWD??
+  - [$(FIX_ugwd)/ugwp_limb_tau.nc, $(DATA)/ugwp_limb_tau.nc]
+
+  # CO2 climatology
+  - [$(FIX_am)/co2monthlycyc.txt,                              $(DATA)/co2monthlycyc.txt]
+  - [$(FIX_am)/global_co2historicaldata_glob.txt,              $(DATA)/co2historicaldata_glob.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2009.txt, $(DATA)/co2historicaldata_2009.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2010.txt, $(DATA)/co2historicaldata_2010.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2011.txt, $(DATA)/co2historicaldata_2011.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2012.txt, $(DATA)/co2historicaldata_2012.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2013.txt, $(DATA)/co2historicaldata_2013.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2014.txt, $(DATA)/co2historicaldata_2014.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2015.txt, $(DATA)/co2historicaldata_2015.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2016.txt, $(DATA)/co2historicaldata_2016.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2017.txt, $(DATA)/co2historicaldata_2017.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2018.txt, $(DATA)/co2historicaldata_2018.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2019.txt, $(DATA)/co2historicaldata_2019.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2020.txt, $(DATA)/co2historicaldata_2020.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2021.txt, $(DATA)/co2historicaldata_2021.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2022.txt, $(DATA)/co2historicaldata_2022.txt]
+  - [$(FIX_am)/fix_co2_proj/global_co2historicaldata_2023.txt, $(DATA)/co2historicaldata_2023.txt]
+
+  # FIX_am files
+  - [$(FIX_am)/global_climaeropac_global.txt,                 $(DATA)/aerosol.dat]
+  - [$(FIX_am)/ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77,    $(DATA)/global_o3prdlos.f77]
+  - [$(FIX_am)/global_h2o_pltc.f77,                           $(DATA)/global_h2oprdlos.f77]
+  - [$(FIX_am)/global_glacier.2x2.grb,                        $(DATA)/global_glacier.2x2.grb]
+  - [$(FIX_am)/global_maxice.2x2.grb,                         $(DATA)/global_maxice.2x2.grb]
+  - [$(FIX_am)/global_snoclim.1.875.grb,                      $(DATA)/global_snoclim.1.875.grb]
+  - [$(FIX_am)/global_slmask.t1534.3072.1536.grb,             $(DATA)/global_slmask.t1534.3072.1536.grb]
+  - [$(FIX_am)/global_soilmgldas.statsgo.t1534.3072.1536.grb, $(DATA)/global_soilmgldas.statsgo.t1534.3072.1536.grb]
+  - [$(FIX_am)/global_solarconstant_noaa_an.txt,              $(DATA)/solarconstant_noaa_an.txt]
+  - [$(FIX_am)/global_sfc_emissivity_idx.txt,                 $(DATA)/sfc_emissivity_idx.txt]
+  - [$(FIX_am)/RTGSST.1982.2012.monthly.clim.grb,             $(DATA)/RTGSST.1982.2012.monthly.clim.grb]
+  - [$(FIX_am)/IMS-NIC.blended.ice.monthly.clim.grb,          $(DATA)/IMS-NIC.blended.ice.monthly.clim.grb]
+
+  # MERRA2 Aerosol Climatology
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m01.nc, $(DATA)/aeroclim.m01.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m02.nc, $(DATA)/aeroclim.m02.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m03.nc, $(DATA)/aeroclim.m03.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m04.nc, $(DATA)/aeroclim.m04.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m05.nc, $(DATA)/aeroclim.m05.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m06.nc, $(DATA)/aeroclim.m06.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m07.nc, $(DATA)/aeroclim.m07.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m08.nc, $(DATA)/aeroclim.m08.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m09.nc, $(DATA)/aeroclim.m09.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m10.nc, $(DATA)/aeroclim.m10.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m11.nc, $(DATA)/aeroclim.m11.nc]
+  - [$(FIX_aer)/merra2.aerclim.2003-2014.m12.nc, $(DATA)/aeroclim.m12.nc]
+
+  # Optical depth
+  - [$(FIX_lut)/optics_BC.v1_3.dat,  $(DATA)/optics_BC.dat]
+  - [$(FIX_lut)/optics_DU.v15_3.dat, $(DATA)/optics_DU.dat]
+  - [$(FIX_lut)/optics_OC.v1_3.dat,  $(DATA)/optics_OC.dat]
+  - [$(FIX_lut)/optics_SS.v3_3.dat,  $(DATA)/optics_SS.dat]
+  - [$(FIX_lut)/optics_SU.v1_3.dat,  $(DATA)/optics_SU.dat]
+
+  # fd_nems.yaml file
+  - [$(HOMEgfs)/sorc/ufs_model.fd/tests/parm/fd_nems.yaml, $(DATA)/]
