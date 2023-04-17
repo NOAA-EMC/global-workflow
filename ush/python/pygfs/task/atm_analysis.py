@@ -310,6 +310,7 @@ class AtmAnalysis(Analysis):
 
         """
         logger.info(f"Identity background error does not use staged files.  Return empty dictionary")
+        return {}
 
     @staticmethod
     @logit(logger)
