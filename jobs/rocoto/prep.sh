@@ -113,15 +113,6 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
-    export DEBUG_LEVEL="4"
-    export LOUD="YES"
-    export HOMEprepobs="${BASE_GIT}/prepobs/v1.0.1"
-    export EXECprepobs=${HOMEprepobs}/exec
-    export FIXprepobs=${HOMEprepobs}/fix
-    export SCRIPTprepobs=${HOMEprepobs}/script
-    export USHprepobs=${HOMEprepobs}/ush
-
-
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP"
     status=$?
     [[ ${status} -ne 0 ]] && exit ${status}

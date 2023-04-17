@@ -28,7 +28,7 @@ load(pathJoin("crtm", "2.4.0"))
 load(pathJoin("wgrib2", "2.0.8"))
 setenv("WGRIB2","wgrib2")
 
-prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v1.0.1/modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/feature-GFSv17_com_reorg/modulefiles"))
 load(pathJoin("prepobs", "1.0.1"))
 
 -- Temporary until official hpc-stack is updated
