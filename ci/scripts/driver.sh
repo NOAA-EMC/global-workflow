@@ -43,7 +43,6 @@ case ${MACHINE_ID} in
     exit 1
     ;;
 esac
-export MACHINE_ID
 export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 ######################################################
