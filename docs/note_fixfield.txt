@@ -4,6 +4,8 @@ They are saved locally on all platforms
 
 Hera: /scratch1/NCEPDEV/global/glopara/fix
 Orion: /work/noaa/global/glopara/fix
+Jet: /mnt/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix
+S4: /data/prod/glopara/fix
 
 ------------------------------------------------------------------------------
 09/28/2018
