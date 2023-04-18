@@ -60,6 +60,7 @@ Observation data, also known as dump data, is prepared in production and then ar
 
 * Hera: /scratch1/NCEPDEV/global/glopara/dump
 * Orion: /work/noaa/rstprod/dump
+* Jet: /mnt/lfs4/HFIP/hfv3gfs/glopara/dump
 * WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/dump
 * S4: /data/prod/glopara/dump
 
