@@ -37,7 +37,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
     echo "Running Automated Testing on ${MACHINE_ID}"
-    source "${HOMEgfs}/ci/environments/${MACHINE_ID}.sh"
+    source "${HOMEgfs}/ci/platforms/${MACHINE_ID}.sh"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -69,7 +69,7 @@ fi
  
 #############################################################
 # Loop throu all open PRs
-# Clone, checkout, build, creat set of experiments, for each
+# Clone, checkout, build, creat set of cases, for each
 #############################################################
 
 for pr in ${pr_list}; do
@@ -86,13 +86,13 @@ for pr in ${pr_list}; do
     export RUNTESTS="${pr_dir}/RUNTESTS"
     rm -Rf "${RUNTESTS:?}"/*
     #############################################################
-    # loop over every yaml file in ${HOMEgfs}/ci/experiments
+    # loop over every yaml file in ${HOMEgfs}/ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for yaml_config in "${HOMEgfs}/ci/experiments/"*.yaml; do
+    for yaml_config in "${HOMEgfs}/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
-      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/experiments/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
+      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
       if [[ ${ci_status} -eq 0 ]]; then
         {

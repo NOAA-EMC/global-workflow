@@ -3,7 +3,7 @@ set -eux
 
 #####################################################################################
 #
-# Script description: BASH script for checking for experiments in a given PR and 
+# Script description: BASH script for checking for cases in a given PR and 
 #                     simply running rocotorun on each.  This script is intended
 #                     to run from within a cron job in the CI Managers account
 # Abstract TODO
@@ -22,7 +22,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
    echo "Running Automated Testing on ${MACHINE_ID}"
-   source "${HOMEgfs}/ci/environments/${MACHINE_ID}.sh"
+   source "${HOMEgfs}/ci/platforms/${MACHINE_ID}.sh"
    ;;
  *)
    echo "Unsupported platform. Exiting with error."
@@ -57,10 +57,10 @@ fi
 #############################################################
 
 for pr in ${pr_list}; do
-  echo "Processing Pull Request #${pr} and looking for experiments"
+  echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  for experiments in "${pr_dir}/RUNTESTS/"*; do
-    pslot=$(basename "${experiments}")
+  for cases in "${pr_dir}/RUNTESTS/"*; do
+    pslot=$(basename "${cases}")
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPERIMENT/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPERIMENT/${pslot}/${pslot}.db"
     echo "Running: ${rocotorun} -v 6 -w ${xml} -d ${db}"
