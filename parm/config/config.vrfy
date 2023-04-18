@@ -6,7 +6,7 @@
 echo "BEGIN: config.vrfy"
 
 # Get task specific resources
-. $EXPDIR/config.resources vrfy
+. "${EXPDIR}/config.resources" vrfy
 
 export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
@@ -22,40 +22,40 @@ export RUNMOS="NO"                # whether to run entire MOS package
 # Minimization, Radiance and Ozone Monitoring
 #----------------------------------------------------------
 
-if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
+if [[ ${VRFYRAD} = "YES" || ${VRFYMINMON} = "YES" || ${VRFYOZN} = "YES" ]]; then
 
     export envir="para"
-    export COM_IN=$ROTDIR
+    export COM_IN=${ROTDIR}
 
     # Radiance Monitoring
-    if [[ "$VRFYRAD" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
+    if [[ "${VRFYRAD}" == "YES" && "${RUN}" == "${CDFNL}" ]] ; then
 
-        export RADMON_SUFFIX=$PSLOT
-        export TANKverf="$NOSCRUB/monitor/radmon"
-        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFRAD"
+        export RADMON_SUFFIX=${PSLOT}
+        export TANKverf="${NOSCRUB}/monitor/radmon"
+        export VRFYRADSH="${HOMEgfs}/jobs/JGDAS_ATMOS_VERFRAD"
 
     fi
 
     # Minimization Monitoring
-    if [[ "$VRFYMINMON" = "YES" ]] ; then
+    if [[ "${VRFYMINMON}" = "YES" ]] ; then
 
-        export MINMON_SUFFIX=$PSLOT
-        export M_TANKverf="$NOSCRUB/monitor/minmon"
-        if [[ "$CDUMP" = "gdas" ]] ; then
-            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_ATMOS_VMINMON"
-        elif [[ "$CDUMP" = "gfs" ]] ; then
-            export VRFYMINSH="$HOMEgfs/jobs/JGFS_ATMOS_VMINMON"
+        export MINMON_SUFFIX=${PSLOT}
+        export M_TANKverf="${NOSCRUB}/monitor/minmon"
+        if [[ "${RUN}" = "gdas" ]] ; then
+            export VRFYMINSH="${HOMEgfs}/jobs/JGDAS_ATMOS_VMINMON"
+        elif [[ "${RUN}" = "gfs" ]] ; then
+            export VRFYMINSH="${HOMEgfs}/jobs/JGFS_ATMOS_VMINMON"
         fi
 
     fi
 
     # Ozone Monitoring
-    if [[ "$VRFYOZN" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
+    if [[ "${VRFYOZN}" == "YES" && "${RUN}" == "${CDFNL}" ]] ; then
 
-        export HOMEgfs_ozn="$HOMEgfs"
-        export OZNMON_SUFFIX=$PSLOT
-        export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
-        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFOZN"
+        export HOMEgfs_ozn="${HOMEgfs}"
+        export OZNMON_SUFFIX=${PSLOT}
+        export TANKverf_ozn="${NOSCRUB}/monitor/oznmon"
+        export VRFYOZNSH="${HOMEgfs}/jobs/JGDAS_ATMOS_VERFOZN"
 
     fi
 
@@ -70,33 +70,35 @@ fi
 export ens_tracker_ver=feature-GFSv17_com_reorg # TODO - temporary ahead of new tag/version
 export HOMEens_tracker=$BASE_GIT/TC_tracker/${ens_tracker_ver}
 
-if [ "$VRFYTRAK" = "YES" ]; then
+if [[ "${VRFYTRAK}" = "YES" ]]; then
 
-    export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
-    export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
-    if [ "$CDUMP" = "gdas" ]; then
+    export TRACKERSH="${HOMEgfs}/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
+    COMINsyn=${COMINsyn:-$(compath.py "${envir}"/com/gfs/"${gfs_ver}")/syndat}
+    export COMINsyn
+    if [[ "${RUN}" = "gdas" ]]; then
         export FHOUT_CYCLONE=3
-        export FHMAX_CYCLONE=$FHMAX
+        export FHMAX_CYCLONE=${FHMAX}
     else
         export FHOUT_CYCLONE=6
-        export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
+        FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
+        export FHMAX_CYCLONE
     fi
 fi
 
 
-if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
+if [[ "${VRFYGENESIS}" == "YES" && "${RUN}" == "gfs" ]]; then
 
-    export GENESISSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_GENESIS"
+    export GENESISSH="${HOMEgfs}/jobs/JGFS_ATMOS_CYCLONE_GENESIS"
 fi
 
-if [[ "$VRFYFSU" == "YES" && "$CDUMP" == "gfs" ]]; then
+if [[ "${VRFYFSU}" == "YES" && "${RUN}" == "gfs" ]]; then
 
-    export GENESISFSU="$HOMEgfs/jobs/JGFS_ATMOS_FSU_GENESIS"
+    export GENESISFSU="${HOMEgfs}/jobs/JGFS_ATMOS_FSU_GENESIS"
 fi
 
-if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
+if [[ "${RUNMOS}" == "YES" && "${RUN}" == "gfs" ]]; then
 
-    if [ "$machine" = "HERA" ] ; then
+    if [[ "${machine}" = "HERA" ]] ; then
         export RUNGFSMOSSH="${HOMEgfs}/scripts/run_gfsmos_master.sh.hera"
     else
         echo "WARNING: MOS package is not enabled on ${machine}!"

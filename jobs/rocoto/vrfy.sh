@@ -44,7 +44,7 @@ if [[ ${MKPGB4PRCP} = "YES" && ${CDUMP} == "gfs" ]]; then
        fhr3=$(printf %03i ${fhr})
        fname=${RUN}.t${cyc}z.sfluxgrbf${fhr3}.grib2
        fileout=${ARCDIR}/pgbq${fhr2}.${RUN}.${PDY}${cyc}.grib2
-       ${WGRIB2} ${fname} -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib ${fileout}
+       ${WGRIB2} "${fname}" -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib "${fileout}"
        (( fhr = ${fhr} + 6 ))
     done
     export OMP_NUM_THREADS=${nthreads_env} # revert to threads set in env
@@ -62,6 +62,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
+
 if [[ "${VRFYRAD}" == "YES" && "${CDUMP}" == "${CDFNL}" && "${PDY}${cyc}" != "${SDATE}" ]]; then
 
     export EXP=${PSLOT}
@@ -106,9 +107,10 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE TRACK VERIFICATION ==============="
-if [ ${VRFYTRAK} = "YES" ]; then
+if [[ ${VRFYTRAK} = "YES" ]]; then
 
-    export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
+    COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
+    export COMINsyn
 
     ${TRACKERSH}
 fi
@@ -117,7 +119,7 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION ==============="
-if [ ${VRFYGENESIS} = "YES" -a "${CDUMP}" = "gfs" ]; then
+if [[ ${VRFYGENESIS} = "YES" && "${CDUMP}" = "gfs" ]]; then
     ${GENESISSH}
 fi
 
@@ -125,15 +127,15 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION (FSU) ==============="
-if [ ${VRFYFSU} = "YES" -a "${CDUMP}" = "gfs" ]; then
+if [[ ${VRFYFSU} = "YES" && "${CDUMP}" = "gfs" ]]; then
     ${GENESISFSU}
 fi
 
 
 ###############################################################
 # Force Exit out cleanly
-cd ${DATAROOT}
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf ${DATA} ; fi
+cd "${DATAROOT}"
+if [[ ${KEEPDATA:-"NO"} = "NO" ]] ; then rm -rf "${DATA}" ; fi
 
 
 exit 0
