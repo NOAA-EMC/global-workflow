@@ -38,14 +38,12 @@ if [[ ${MKPGB4PRCP} = "YES" && ${CDUMP} == "gfs" ]]; then
     export OMP_NUM_THREADS=1
     cd "${COM_ATMOS_MASTER}" || exit 9
     fhmax=${vhr_rain:-${FHMAX_GFS}}
-    fhr=0
-    while [ ${fhr} -le ${fhmax} ]; do
-       fhr2=$(printf %02i ${fhr})
-       fhr3=$(printf %03i ${fhr})
+    for (( fhr=0; fhr <= fhmax; fhr+=6 )); do
+       fhr2=$(printf %02i "${fhr}")
+       fhr3=$(printf %03i "${fhr}")
        fname=${RUN}.t${cyc}z.sfluxgrbf${fhr3}.grib2
        fileout=${ARCDIR}/pgbq${fhr2}.${RUN}.${PDY}${cyc}.grib2
        ${WGRIB2} "${fname}" -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib "${fileout}"
-       (( fhr = ${fhr} + 6 ))
     done
     export OMP_NUM_THREADS=${nthreads_env} # revert to threads set in env
 fi
@@ -54,7 +52,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN MOS ==============="
-if [ ${RUNMOS} = "YES" -a ${CDUMP} = "gfs" ]; then
+if [[ "${RUNMOS}" == "YES" && "${CDUMP}" == "gfs" ]]; then
     ${RUNGFSMOSSH} "${PDY}${cyc}"
 fi
 
