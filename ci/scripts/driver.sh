@@ -23,7 +23,7 @@ export GH=${HOME}/bin/gh
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
 ################################################################
-HOMEGFS_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
+HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
@@ -32,11 +32,11 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source "${HOMEGFS_DIR}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
     echo "Running Automated Testing on ${MACHINE_ID}"
-    source "${HOMEGFS_DIR}/ci/environments/${MACHINE_ID}.sh"
+    source "${HOMEgfs}/ci/environments/${MACHINE_ID}.sh"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -49,7 +49,7 @@ export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 ######################################################
 # setup runtime env for correct python install and git
 ######################################################
-module use "${HOMEGFS_DIR}/modulefiles"
+module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 
 ############################################################
@@ -79,21 +79,21 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
-  "${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
     #setup space to put an experiment
     export RUNTESTS="${pr_dir}/RUNTESTS"
     rm -Rf "${RUNTESTS:?}"/*
     #############################################################
-    # loop over every yaml file in ${HOMEGFS_DIR}/ci/experiments
+    # loop over every yaml file in ${HOMEgfs}/ci/experiments
     # and create an run directory for each one for this PR loop
     #############################################################
     module load "module_gwsetup.${MACHINE_ID}"
-    for yaml_config in "${HOMEGFS_DIR}/ci/experiments/"*.yaml; do
+    for yaml_config in "${HOMEgfs}/ci/experiments/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
-      "${HOMEGFS_DIR}/ci/scripts/create_experiment.py" --yaml "${HOMEGFS_DIR}/ci/experiments/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
+      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/experiments/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
       if [[ ${ci_status} -eq 0 ]]; then
         {

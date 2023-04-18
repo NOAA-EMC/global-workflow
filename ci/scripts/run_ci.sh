@@ -5,11 +5,11 @@
 #
 # Script description: BASH script for checking for experiments in a given PR and 
 #                     simply running rocotorun on each.  This script is intended
-#                     to run from within a cron job in the CI Mangers account
+#                     to run from within a cron job in the CI Managers account
 # Abstract TODO
 #####################################################################################
 
-HOMEGFS_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
+HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
@@ -18,11 +18,11 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source "${HOMEGFS_DIR}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
    echo "Running Automated Testing on ${MACHINE_ID}"
-   source "${HOMEGFS_DIR}/ci/environments/${MACHINE_ID}.sh"
+   source "${HOMEgfs}/ci/environments/${MACHINE_ID}.sh"
    ;;
  *)
    echo "Unsupported platform. Exiting with error."
@@ -30,7 +30,7 @@ case ${MACHINE_ID} in
    ;;
 esac
 
-module use "${HOMEGFS_DIR}/modulefiles"
+module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
 
