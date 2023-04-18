@@ -22,6 +22,7 @@ HPC helpdesks
 * HPSS: rdhpcs.hpss.help@noaa.gov
 * Gaea: oar.gfdl.help@noaa.gov
 * S4: david.huber@noaa.gov
+* Jet: rdhpcs.jet.help@noaa.gov
 
 ======================
 Restricted data access
@@ -76,6 +77,8 @@ It is advised to use Git v2+ when available. At the time of writing this documen
 +---------+----------+---------------------------------------+
 | Orion   | v1.8.3.1 | **module load git/2.28.0**            |
 +---------+----------+---------------------------------------+
+| Jet     | v2.18.0  | default                               |
++---------+----------+---------------------------------------+
 | WCOSS2  | v2.26.2  | default or **module load git/2.29.0** |
 +---------+----------+---------------------------------------+
 | S4      | v1.8.3.1 | **module load git/2.30.0**            |
@@ -96,9 +99,9 @@ For the manage_externals utility functioning::
    Error: fatal: ssh variant 'simple' does not support setting port
    Fix: git config --global ssh.variant ssh
 
-===================================
-Stacksize on R&Ds (Hera, Orion, S4)
-===================================
+========================================
+Stacksize on R&Ds (Hera, Orion, Jet, S4)
+========================================
 
 Some GFS components, like the UPP, need an unlimited stacksize. Add the following setting into your appropriate .*rc file to support these components:
 
