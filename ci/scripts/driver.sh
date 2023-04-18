@@ -48,6 +48,7 @@ export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 ######################################################
 # setup runtime env for correct python install and git
 ######################################################
+source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 
@@ -88,7 +89,6 @@ for pr in ${pr_list}; do
     # loop over every yaml file in ${HOMEgfs}/ci/experiments
     # and create an run directory for each one for this PR loop
     #############################################################
-    module load "module_gwsetup.${MACHINE_ID}"
     for yaml_config in "${HOMEgfs}/ci/experiments/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot

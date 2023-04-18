@@ -66,11 +66,8 @@ def count_nonid_corr(test_string: str, quiet=False):
 
 
 if __name__ == '__main__':
-    fileA = sys.argv[1]
-    fileB = sys.argv[2]
-
-    print(fileA)
-    print(fileB)
+    fileA = sys.argv[0]
+    fileB = sys.argv[1]
 
     wgrib2_cmd = f"wgrib2 {fileA} -var -rpn 'sto_1' -import_grib {fileB} -rpn 'rcl_1:print_corr'"
     print()

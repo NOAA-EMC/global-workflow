@@ -40,16 +40,12 @@ while getopts "p:d:o:h" opt; do
   esac
 done
 
-####################################################################
-# start output file
-{
- echo "Automated global-workflow Testing Results:"
- echo "Machine: ${MACHINE_ID^}"
- echo '```'
- echo "Start: $(date) on $(hostname)" || true
- echo "---------------------------------------------------"
-}  >> "${outfile}"
-######################################################################
+pr_state=$(gh pr view "${PR}" --json state --jq '.state')
+if [[ "${pr_state}" != "OPEN" ]]; then
+  title=$(gh pr view "${PR}" --json title --jq '.title')
+  echo "PR ${title} is no longer open, state is ${pr_state} ... quitting"
+  exit 1
+fi  
 
 cd "${repodir}" || exit
 # clone copy of repo
@@ -59,16 +55,22 @@ fi
 
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
-
-pr_state=$(gh pr view "${PR}" --json state --jq '.state')
-if [[ "${pr_state}" != "OPEN" ]]; then
-  title=$(gh pr view "${PR}" --json title --jq '.title')
-  echo "PR ${title} is no longer open, state is ${pr_state} ... quitting"
-  exit 1
-fi  
  
 # checkout pull request
 "${GH}" pr checkout "${PR}" --repo "${REPO_URL}"
+HOMEgfs="${PWD}"
+source "${HOMEgfs}/ush/detect_machine.sh"
+
+####################################################################
+# start output file
+{
+ echo "Automated global-workflow Testing Results:"
+ echo '```'
+ echo "Machine: ${MACHINE_ID^}"
+ echo "Start: $(date) on $(hostname)" || true
+ echo "---------------------------------------------------"
+}  >> "${outfile}"
+######################################################################
 
 # get commit hash
 commit=$(git log --pretty=format:'%h' -n 1)
@@ -95,7 +97,8 @@ else
 fi
 
 # build full cycle
-module purge
+
+source "${HOMEgfs}/ush/module-setup.sh"
 ./build_all.sh  &>> log.build
 
 build_status=$?
