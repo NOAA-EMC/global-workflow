@@ -29,7 +29,7 @@ case ${MACHINE_ID} in
    exit 1
    ;;
 esac
-
+set +x
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
