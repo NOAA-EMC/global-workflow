@@ -70,9 +70,6 @@ if __name__ == '__main__':
     fileB = sys.argv[1]
 
     wgrib2_cmd = f"wgrib2 {fileA} -var -rpn 'sto_1' -import_grib {fileB} -rpn 'rcl_1:print_corr'"
-    print()
-    print(wgrib2_cmd)
-    print()
 
     string = subprocess.run(wgrib2_cmd, shell=True, stdout=subprocess.PIPE).stdout.decode("utf-8")
 
