@@ -19,6 +19,7 @@ set -ux
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
+export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
@@ -43,7 +44,6 @@ case ${MACHINE_ID} in
     exit 1
     ;;
 esac
-export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 ######################################################
 # setup runtime env for correct python install and git
