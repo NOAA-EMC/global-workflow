@@ -58,7 +58,7 @@ if [[ -d global-workflow ]]; then
 fi
 
 git clone "${REPO_URL}"
-cd global-workflow || exit
+cd global-workflow || exit 1
 
 pr_state=$(gh pr view "${PR}" --json state --jq '.state')
 if [[ "${pr_state}" != "OPEN" ]]; then
