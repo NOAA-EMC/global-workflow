@@ -2,6 +2,7 @@ import os
 import logging
 from typing import Dict, Any
 
+from pygw.attrdict import AttrDict
 from pygw.logger import logit
 from pygw.task import Task
 from pygfs.ufswm.gfs import GFS
@@ -31,5 +32,19 @@ class GFSForecast(Task):
 
         super().__init__(config, *args, **kwargs)
 
+        self.task_config = AttrDict(**self.config, **self.runtime_config)
+
         # Create and initialize the GFS variant of the UFS
-        self.gfs = GFS(config)
+        self.gfs = GFS(self.task_config)
+
+    @logit(logger)
+    def initialize(self) -> None:
+        """
+        Initialize the GFS forecast task
+        """
+
+        # Create the necessary directories
+        self.gfs.prepare_DATA()
+
+        # Stage the fix files
+        self.gfs.stage_fix()
