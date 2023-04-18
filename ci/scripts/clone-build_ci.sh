@@ -76,10 +76,8 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 commit=$(git log --pretty=format:'%h' -n 1)
 echo "${commit}" > "../commit"
 
-# run build script
+# run checkout script
 cd sorc || exit 1
-export BUILD_JOBS=8
-rm -rf log.build
 ./checkout.sh -c -g -u &>> log.checkout
 checkout_status=$?
 if [[ ${checkout_status} != 0 ]]; then
@@ -97,11 +95,12 @@ else
 fi
 
 # build full cycle
-
 source "${HOMEgfs}/ush/module-setup.sh"
+export BUILD_JOBS=8
+rm -rf log.build
 ./build_all.sh  &>> log.build
-
 build_status=$?
+
 if [[ ${build_status} != 0 ]]; then
   {
     echo "Build:                         *FAILED*"
@@ -117,7 +116,6 @@ else
 fi
 
 ./link_workflow.sh
-build_status=$?
 
 echo "check/build/link test completed"
 exit "${build_status}"
