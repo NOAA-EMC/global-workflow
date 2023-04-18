@@ -75,7 +75,7 @@ commit=$(git log --pretty=format:'%h' -n 1)
 echo "${commit}" > "../commit"
 
 # run build script
-cd sorc || exit
+cd sorc || exit 1
 export BUILD_JOBS=8
 rm -rf log.build
 ./checkout.sh -c -g -u &>> log.checkout
