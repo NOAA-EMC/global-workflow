@@ -61,7 +61,7 @@ for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   for experiments in "${pr_dir}/RUNTESTS/"*; do
     pslot=$(basename "${experiments}")
-    xml="${pr_dir}/RUNTESTS/${pslot}/EXPERMENT/${pslot}/${pslot}.xml"
+    xml="${pr_dir}/RUNTESTS/${pslot}/EXPERIMENT/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPERMENT/${pslot}/${pslot}.db"
     echo "Running: ${rocotorun} -v 6 -w ${xml} -d ${db}"
     "${rocotorun}" -v 6 -w "${xml}" -d "${db}"
