@@ -22,7 +22,7 @@ if [[ -d /lfs/f1 ]] ; then
         source /usr/share/lmod/lmod/init/$__ms_shell
     fi
     module reset
-elif [[ -d /lfs3 ]] ; then
+elif [[ -d /mnt/lfs1 ]] ; then
     # We are on NOAA Jet
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/$__ms_shell
