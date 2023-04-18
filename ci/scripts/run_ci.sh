@@ -64,7 +64,7 @@ for pr in ${pr_list}; do
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPERIMENT/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPERIMENT/${pslot}/${pslot}.db"
     echo "Running: ${rocotorun} -v 6 -w ${xml} -d ${db}"
-    "${rocotorun}" -v 6 -w "${xml}" -d "${db}"
+    "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
   done
 done
 
