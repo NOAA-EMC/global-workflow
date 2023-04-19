@@ -40,13 +40,6 @@ while getopts "p:d:o:h" opt; do
   esac
 done
 
-pr_state=$(gh pr view "${PR}" --json state --jq '.state')
-if [[ "${pr_state}" != "OPEN" ]]; then
-  title=$(gh pr view "${PR}" --json title --jq '.title')
-  echo "PR ${title} is no longer open, state is ${pr_state} ... quitting"
-  exit 1
-fi  
-
 cd "${repodir}" || exit
 # clone copy of repo
 if [[ -d global-workflow ]]; then
@@ -55,6 +48,13 @@ fi
 
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
+
+pr_state=$(gh pr view "${PR}" --json state --jq '.state')
+if [[ "${pr_state}" != "OPEN" ]]; then
+  title=$(gh pr view "${PR}" --json title --jq '.title')
+  echo "PR ${title} is no longer open, state is ${pr_state} ... quitting"
+  exit 1
+fi  
  
 # checkout pull request
 "${GH}" pr checkout "${PR}" --repo "${REPO_URL}"
