@@ -67,7 +67,6 @@ class AtmEnsAnalysis(Analysis):
         - staging FV3-JEDI fix files
         - staging model backgrounds
         - generating a YAML file for the JEDI executable
-        - linking the JEDI executable (TODO make it copyable, requires JEDI fix)
         - creating output directories
 
         Parameters
@@ -100,14 +99,6 @@ class AtmEnsAnalysis(Analysis):
         ensda_yaml = parse_j2yaml(self.task_config.ATMENSYAML, self.task_config)
         save_as_yaml(ensda_yaml, self.task_config.fv3jedi_yaml)
         logger.info(f"Wrote ensemble da YAML to: {self.task_config.fv3jedi_yaml}")
-
-        # link executable to DATA/ directory
-        exe_src = self.task_config.JEDIENSEXE
-        logger.debug(f"Link executable {exe_src} to DATA/")  # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
-        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
-        if os.path.exists(exe_dest):
-            rm_p(exe_dest)
-        os.symlink(exe_src, exe_dest)
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
