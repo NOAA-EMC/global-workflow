@@ -4,7 +4,7 @@
 #
 # Script description: BASH script for checking for cases in a given PR and 
 #                     running rocotostat on each to determine if the experiment has
-#                     successed or faild.  This script is intended
+#                     succeeded or faild.  This script is intended
 #                     to run from within a cron job in the CI Managers account
 # Abstract TODO
 #####################################################################################
@@ -14,9 +14,8 @@ scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-export GH=${HOME}/bin/gh
-export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
-
+GH=${HOME}/bin/gh
+REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
