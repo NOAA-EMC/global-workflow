@@ -8,7 +8,7 @@ load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-intel", "18.0.5.274"))
 load(pathJoin("hpc-impi", "2018.0.4"))
 
-load(pathJoin("netcdf","4.7.0"))
+load(pathJoin("netcdf","4.7.4"))
 load(pathJoin("nccmp","1.8.5"))
 load(pathJoin("wgrib2", "2.0.8"))
 
