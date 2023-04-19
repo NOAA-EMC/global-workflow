@@ -227,12 +227,12 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then
    export layout_x
    export layout_y
 
-   declare -x wtime_${step}="00:10:00"
-   declare -x npe_${step}=1
-   declare -x nth_${step}=1
+   declare -x "wtime_${step}"="00:10:00"
+   declare -x "npe_${step}"=1
+   declare -x "nth_${step}"=1
    temp_stepname="nth_${step}"
-   declare -x npe_node_${step}=$(echo "${npe_node_max} / ${!temp_stepname}" | bc)
-   declare -x memory_${step}="3072M"
+   declare -x "npe_node_${step}"=$(echo "${npe_node_max} / ${!temp_stepname}" | bc)
+   declare -x "memory_${step}"="3072M"
 
 elif [[ "${step}" = "landanlrun" ]]; then
 
