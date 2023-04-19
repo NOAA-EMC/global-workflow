@@ -58,7 +58,7 @@ if [[ ${CDATE} -gt ${SDATE} ]]; then
   # RUN FIT2OBS VERIFICATION
   ##############################################
 
-  "${fitdir}/batrun/excfs_gdas_vrfyfits.sh.ecf"
+  "${SCRIPTSfit2obs}/excfs_gdas_vrfyfits.sh"
   status=$?
   [[ ${status} -ne 0 ]] && exit "${status}"
 
