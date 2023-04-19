@@ -2,7 +2,11 @@ help([[
 Load environment to run GFS workflow ci scripts on Orion
 ]])
 
-prepend_path("MODULEPATH", "/apps/modulefiles/core")
+prepend_path("MODULEPATH", "/apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/stack")
+
+load(pathJoin("hpc", "1.1.0"))
+load(pathJoin("hpc-intel", "2018.4"))
+load(pathJoin("hpc-impi", "2018.4"))
 load(pathJoin("netcdf","4.7.4"))
 load(pathJoin("nccmp","1.8.5"))
 load(pathJoin("contrib","0.1"))
