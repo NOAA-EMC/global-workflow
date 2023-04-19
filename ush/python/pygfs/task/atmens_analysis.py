@@ -242,15 +242,13 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': bkgdir}).sync()
 
         # loop over ensemble members
+        dirlist = []
         bkglist = []
         for imem in range(1, task_config.NMEM_ENKF + 1):
             memchar = f"mem{imem:03d}"
 
-            # make run directory for member restart files
-            bkgdir = [
-                os.path.join(task_config.DATA, 'bkg', memchar)
-            ]
-            FileHandler({'mkdir': bkgdir}).sync()
+            # accumulate directory list for member restart files
+            dirlist.append(os.path.join(task_config.DATA, 'bkg', memchar))
 
             # get FV3 RESTART files, this will be a lot simpler when using history files
             rst_dir = os.path.join(task_config.comin_ges_atmens, memchar, 'atmos/RESTART')
@@ -273,6 +271,7 @@ class AtmEnsAnalysis(Analysis):
                     bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
 
         bkg_dict = {
+            'mkdir': dirlist,
             'copy': bkglist,
         }
 
