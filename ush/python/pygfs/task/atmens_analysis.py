@@ -251,9 +251,10 @@ class AtmEnsAnalysis(Analysis):
             # atmens DA needs coupler
             basename = f'{to_fv3time(task_config.current_cycle)}.coupler.res'
             bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config.DATA, 'bkg', memchar, basename)])
+
             # atmens DA needs core, srf_wnd, tracer, phy_data, sfc_data
-            template = f'{to_fv3time(self.task_config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
             for ftype in ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']:
+                template = f'{to_fv3time(self.task_config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
                 for itile in range(1, task_config.ntiles + 1):
                     basename = template.format(tilenum=itile)
                     bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
