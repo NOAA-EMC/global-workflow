@@ -42,7 +42,6 @@ class GFS(UFS):
 
         data = parse_yamltmpl(self.ufs_config_yaml, localconf)
         self.stage(data.stage)
-
         self.mdl_config()
 
     @logit(logger)
@@ -61,4 +60,4 @@ class GFS(UFS):
         localconf.ocn_res = self.ufs_config.ocn_res
 
         data = parse_yamltmpl(self.ufs_config_yaml, localconf)
-        # self.stage(data.fix) HRW: for now
+        self.stage(data.fix)

@@ -1,0 +1,8 @@
+stage:
+  mkdir:
+    - $(DATA)/INPUT
+    - $(DATA)/RESTART
+
+fix:
+  - !INC ${HOMEgfs}/parm/ufs/fix/gfs/atmos.fixed_files.yaml
+  - !INC ${HOMEgfs}/parm/ufs/fix/gfs/land.fixed_files.yaml
