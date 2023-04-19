@@ -16,7 +16,7 @@ class Tasks:
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
-                   'atmensanlprep', 'atmensanlrun', 'atmensanlpost',
+                   'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
@@ -1178,7 +1178,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jediens:
+        if self.app_config.do_jediatmens:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
@@ -1207,7 +1207,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jediens:
+        if self.app_config.do_jediatmens:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
