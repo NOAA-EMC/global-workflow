@@ -19,6 +19,9 @@ case $machine in
   "WCOSS2")
     AERO_INPUTS_DIR="/lfs/h2/emc/global/noscrub/emc.global/data/gocart_emissions"
     ;;
+  "JET")
+    AERO_INPUTS_DIR="/lfs4/HFIP/hfv3gfs/glopara/data/gocart_emissions"
+    ;;
   *)
     echo "FATAL ERROR: Machine $machine unsupported for aerosols"
     exit 2

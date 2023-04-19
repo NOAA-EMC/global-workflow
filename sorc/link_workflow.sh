@@ -187,6 +187,7 @@ fi
 if [[ -d "${script_dir}/gdas.cd" ]]; then
   cd "${top_dir}/ush" || exit 1
     ${LINK} "${script_dir}/gdas.cd/ush/ufsda"                              .
+    ${LINK} "${script_dir}/gdas.cd/ush/jediinc2fv3.py"                     .
 fi
 
 
