@@ -73,6 +73,7 @@ fi
 #############################################################
 
 for pr in ${pr_list}; do
+
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Running"
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
@@ -85,6 +86,7 @@ for pr in ${pr_list}; do
     #setup space to put an experiment
     export RUNTESTS="${pr_dir}/RUNTESTS"
     rm -Rf "${RUNTESTS:?}"/*
+
     #############################################################
     # loop over every yaml file in ${HOMEgfs}/ci/cases
     # and create an run directory for each one for this PR loop
@@ -99,6 +101,7 @@ for pr in ${pr_list}; do
           echo "Created experiment:            *SUCCESS*"
           echo "Experiment setup: Completed at $(date) for expirment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+        "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
       else 
         {
           echo "Failed to create experiment}:  *FAIL* ${pslot}"
@@ -107,7 +110,7 @@ for pr in ${pr_list}; do
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       fi
     done
-    "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
+
   else 
     {
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
