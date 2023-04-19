@@ -107,7 +107,7 @@ class AppConfig:
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_fit2obs = _base.get('DO_FIT2OBS', True)
         self.do_metp = _base.get('DO_METP', False)
-        self.do_jedivar = _base.get('DO_JEDIVAR', False)
+        self.do_jediatmvar = _base.get('DO_JEDIVAR', False)
         self.do_jediens = _base.get('DO_JEDIENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
 
@@ -177,8 +177,8 @@ class AppConfig:
 
         configs = ['prep']
 
-        if self.do_jedivar:
-            configs += ['atmanalprep', 'atmanalrun', 'atmanalpost']
+        if self.do_jediatmvar:
+            configs += ['atmanlinit', 'atmanlrun', 'atmanlfinal']
         else:
             configs += ['anal', 'analdiag']
 
@@ -354,8 +354,8 @@ class AppConfig:
 
         gdas_gfs_common_cleanup_tasks = ['arch']
 
-        if self.do_jedivar:
-            gdas_gfs_common_tasks_before_fcst += ['atmanalprep', 'atmanalrun', 'atmanalpost']
+        if self.do_jediatmvar:
+            gdas_gfs_common_tasks_before_fcst += ['atmanlinit', 'atmanlrun', 'atmanlfinal']
         else:
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
@@ -384,7 +384,7 @@ class AppConfig:
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
-        if not self.do_jedivar:
+        if not self.do_jediatmvar:
             gdas_tasks += ['analdiag']
 
         if self.do_gldas:
