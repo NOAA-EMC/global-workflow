@@ -34,4 +34,7 @@ load(pathJoin("wgrib2", "2.0.7"))
 prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/v1.0.1/modulefiles"))
 load(pathJoin("prepobs", "1.0.1"))
 
+prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/Fit2Obs/v1.0.0/modulefiles"))
+load(pathJoin("fit2obs", "1.0.0"))
+
 whatis("Description: GFS run environment")
