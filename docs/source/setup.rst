@@ -28,6 +28,13 @@ Experiment Setup
 
            module load miniconda/3.8-s4
 
+   * - Jet
+     - ::
+
+           module use /mnt/lfs4/HFIP/hfv3gfs/role.epic/miniconda3/modulefiles
+           module load miniconda3/4.12.0
+           conda activate ufswm
+
 If running with Rocoto make sure to have a Rocoto module loaded before running setup scripts:
 
 .. list-table:: ROCOTO Module Load Commands
@@ -54,6 +61,10 @@ If running with Rocoto make sure to have a Rocoto module loaded before running s
      - ::
 
            module load rocoto/1.3.4
+   * - Jet
+     - ::
+
+           module load rocoto/1.3.3
 
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Forecast-only experiment

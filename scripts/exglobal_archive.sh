@@ -109,8 +109,10 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
 # --set the archiving command and create local directories, if necessary
 TARCMD="htar"
+HSICMD="hsi"
 if [[ ${LOCALARCH} = "YES" ]]; then
    TARCMD="tar"
+   HSICMD=''
    [ ! -d "${ATARDIR}"/"${CDATE}" ] && mkdir -p "${ATARDIR}"/"${CDATE}"
    [ ! -d "${ATARDIR}"/"${CDATE_MOS}" ] && [ -d "${ROTDIR}"/gfsmos."${PDY_MOS}" ] && [ "${cyc}" -eq 18 ] && mkdir -p "${ATARDIR}"/"${CDATE_MOS}"
 fi
@@ -255,6 +257,13 @@ for targrp in ${targrp_list}; do
     set +e
     ${TARCMD} -P -cvf "${ATARDIR}"/"${CDATE}"/"${targrp}".tar $(cat "${ARCH_LIST}"/"${targrp}".txt)
     status=$?
+    case ${targrp} in
+    	'gdas'|'gdas_restarta')
+			${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${targrp}.tar"
+			${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${targrp}.tar"
+	 		;;
+		*) ;;
+	esac
     if [ "${status}" -ne 0 ] && [ "${CDATE}" -ge "${firstday}" ]; then
         echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${targrp}.tar failed"
         exit "${status}"

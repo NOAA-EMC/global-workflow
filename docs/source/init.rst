@@ -190,6 +190,7 @@ Forecast-only P8 prototype initial conditions are made available to users on sup
     WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
     HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
     ORION: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
+    JET: /mnt/lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/prototype_ICs
     S4: /data/prod/glopara/coupled_ICs
 
 These locations are known within the workflow via paths set in ``parm/config/config.coupled_ic``.
@@ -217,7 +218,7 @@ Not yet supported. See :ref:`Manual Generation<manual-generation>` section below
 ---------------------
 Forecast-only coupled
 ---------------------
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, Jet, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
 
 .. _forecastonly-atmonly:
 
