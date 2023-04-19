@@ -30,6 +30,7 @@ case ${MACHINE_ID} in
    ;;
 esac
 set +x
+source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
@@ -61,8 +62,8 @@ for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   for cases in "${pr_dir}/RUNTESTS/"*; do
     pslot=$(basename "${cases}")
-    xml="${pr_dir}/RUNTESTS/${pslot}/EXPERIMENT/${pslot}/${pslot}.xml"
-    db="${pr_dir}/RUNTESTS/${pslot}/EXPERIMENT/${pslot}/${pslot}.db"
+    xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
+    db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
     echo "Running: ${rocotorun} -v 6 -w ${xml} -d ${db}"
     "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
   done
