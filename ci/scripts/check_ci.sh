@@ -4,7 +4,7 @@
 #
 # Script description: BASH script for checking for cases in a given PR and 
 #                     running rocotostat on each to determine if the experiment has
-#                     successed or faild.  This script is intended
+#                     succeeded or faild.  This script is intended
 #                     to run from within a cron job in the CI Managers account
 # Abstract TODO
 #####################################################################################
