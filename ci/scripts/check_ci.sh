@@ -61,7 +61,7 @@ fi
 #############################################################
 
 for pr in ${pr_list}; do
-  id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
+  id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
   echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   for cases in "${pr_dir}/RUNTESTS/"*; do
@@ -69,18 +69,17 @@ for pr in ${pr_list}; do
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
     rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
-    num_cycles=$(echo "${rocoto_stat_output}" | wc -l)
+    num_cycles=$(echo "${rocoto_stat_output}" | wc -l) || true
     num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
-    num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED)
-    echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_done}"
-    num_failed=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD')
+    num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED) || true
+    echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_done}" || true
+    num_failed=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD') || true
     if [[ ${num_failed} -ne 0 ]]; then
       {
         echo "Experiment ${pslot} completed: *FAILED*"
         echo "Experiment ${pslot} Completed with failure at $(date)" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Built" --add-label "CI-${MACHINE_ID^}-Failed"
       sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
     fi
     if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
@@ -90,8 +89,7 @@ for pr in ${pr_list}; do
         echo "with ${num_succeeded} successfully completed jobs" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       #TODO Check PR passes as soon as any case succeedes
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Passed"
-      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Built" --add-label "CI-${MACHINE_ID^}-Passed"
       #REMOVE Experment cases that completed succesfully
       rm -Rf "${pr_dir}/RUNTESTS/${pslot}"
       sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
