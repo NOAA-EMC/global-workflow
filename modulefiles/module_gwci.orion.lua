@@ -3,8 +3,7 @@ Load environment to run GFS workflow ci scripts on Orion
 ]])
 
 prepend_path("MODULEPATH", "/apps/modulefiles/core")
-load(pathJoin("netcdf","/4.7.2"))
-load(pathJoin("netcdf","4.7.2-parallel"))
+load(pathJoin("netcdf","4.7.4"))
 load(pathJoin("nccmp","1.8.5"))
 load(pathJoin("contrib","0.1"))
 load(pathJoin("wgrib2","3.0.2"))
