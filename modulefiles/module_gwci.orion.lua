@@ -2,8 +2,6 @@ help([[
 Load environment to run GFS workflow ci scripts on Orion
 ]])
 
--- Temporary until official hpc-stack is updated
-
 prepend_path("MODULEPATH", "/apps/modulefiles/core")
 load(pathJoin("netcdf","/4.7.2"))
 load(pathJoin("netcdf","4.7.2-parallel"))
