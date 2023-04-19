@@ -235,12 +235,6 @@ class AtmEnsAnalysis(Analysis):
             a dictionary containing the list of model background files to copy for FileHandler
         """
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
-
-        bkgdir = [
-            os.path.join(task_config.DATA, 'bkg'),
-        ]
-        FileHandler({'mkdir': bkgdir}).sync()
-
         # loop over ensemble members
         dirlist = []
         bkglist = []
