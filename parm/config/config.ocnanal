@@ -15,8 +15,7 @@ export SOCA_VARS=tocn,socn,ssh
 export SABER_BLOCKS_YAML=@SABER_BLOCKS_YAML@
 export SOCA_NINNER=@SOCA_NINNER@
 export CASE_ANL=@CASE_ANL@
-#TODO: Make the stack size reolution dependent 
-export DOMAIN_STACK_SIZE=116640000
+export DOMAIN_STACK_SIZE=116640000 #TODO: Make the stack size reolution dependent 
 export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin
 
 # R2D2
