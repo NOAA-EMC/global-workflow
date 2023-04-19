@@ -9,7 +9,7 @@ if [[ $# -ne 1 ]]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "getic init coupled_ic aerosol_init"
-    echo "atmanalprep atmanalrun atmanalpost"
+    echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanalprep atmensanalrun atmensanalpost"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag gldas fcst post vrfy fit2obs metp arch echgres"
@@ -167,39 +167,39 @@ elif [[ ${step} = "waveawipsgridded" ]]; then
     export NTASKS=${npe_waveawipsgridded}
     export memory_waveawipsgridded_gfs="1GB"
 
-elif [[ "${step}" = "atmanalprep" ]]; then
+elif [[ "${step}" = "atmanlinit" ]]; then
 
-    export wtime_atmanalprep="00:10:00"
-    export npe_atmanalprep=1
-    export nth_atmanalprep=1
-    npe_node_atmanalprep=$(echo "${npe_node_max} / ${nth_atmanalprep}" | bc)
-    export npe_node_atmanalprep
-    export memory_atmanalprep="3072M"
+    export wtime_atmanlinit="00:10:00"
+    export npe_atmanlinit=1
+    export nth_atmanlinit=1
+    npe_node_atmanlinit=$(echo "${npe_node_max} / ${nth_atmanlinit}" | bc)
+    export npe_node_atmanlinit
+    export memory_atmanlinit="3072M"
 
-elif [[ "${step}" = "atmanalrun" ]]; then
+elif [[ "${step}" = "atmanlrun" ]]; then
 
     # make below case dependent later
     export layout_x=1
     export layout_y=1
 
-    export wtime_atmanalrun="00:30:00"
-    npe_atmanalrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmanalrun
-    npe_atmanalrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmanalrun_gfs
-    export nth_atmanalrun=1
-    export nth_atmanalrun_gfs=${nth_atmanalrun}
-    npe_node_atmanalrun=$(echo "${npe_node_max} / ${nth_atmanalrun}" | bc)
-    export npe_node_atmanalrun
+    export wtime_atmanlrun="00:30:00"
+    npe_atmanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_atmanlrun
+    npe_atmanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_atmanlrun_gfs
+    export nth_atmanlrun=1
+    export nth_atmanlrun_gfs=${nth_atmanlrun}
+    npe_node_atmanlrun=$(echo "${npe_node_max} / ${nth_atmanlrun}" | bc)
+    export npe_node_atmanlrun
     export is_exclusive=True
 
-elif [[ "${step}" = "atmanalpost" ]]; then
+elif [[ "${step}" = "atmanlfinal" ]]; then
 
-    export wtime_atmanalpost="00:30:00"
-    export npe_atmanalpost=${npe_node_max}
-    export nth_atmanalpost=1
-    npe_node_atmanalpost=$(echo "${npe_node_max} / ${nth_atmanalpost}" | bc)
-    export npe_node_atmanalpost
+    export wtime_atmanlfinal="00:30:00"
+    export npe_atmanlfinal=${npe_node_max}
+    export nth_atmanlfinal=1
+    npe_node_atmanlfinal=$(echo "${npe_node_max} / ${nth_atmanlfinal}" | bc)
+    export npe_node_atmanlfinal
     export is_exclusive=True
 
 elif [[ "${step}" = "aeroanlinit" ]]; then

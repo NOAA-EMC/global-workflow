@@ -1,0 +1,51 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+export WIPE_DATA="NO"
+export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfinal"
+
+##############################################
+# Set variables used in the script
+##############################################
+GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+GDUMP="gdas"
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+mkdir -p "${COMOUT}"
+
+# COMIN_GES and COMIN_GES_ENS are used in script
+export COMIN_GES="${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASATMFINALPY:-${HOMEgfs}/scripts/exglobal_atm_analysis_finalize.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || ( echo "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"; exit 1 )
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+
+exit 0
