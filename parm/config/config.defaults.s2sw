@@ -16,13 +16,13 @@ use_cice_alb=".true."
 
 # config.wave
 
-waveGRD='mx025'
-waveinterpGRD='reg025'
-waveuoutpGRD='mx025'
-MESH_WAV='mesh.mx025.nc'
+waveGRD='gefsv13_025'
+waveinterpGRD=' '
+waveuoutpGRD='gefsv13_025'
+MESH_WAV='mesh.gefsv13_025.nc'
 
 waveesmfGRD=' '
-wavepostGRD=' '
+wavepostGRD='gefsv13_025'
 waveGRDN="1"
 waveGRDG="10"
 USE_WAV_RMP="NO"
