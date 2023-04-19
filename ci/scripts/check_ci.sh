@@ -61,7 +61,7 @@ fi
 #############################################################
 
 for pr in ${pr_list}; do
-  id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
+  id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   for cases in "${pr_dir}/RUNTESTS/"*; do
