@@ -68,12 +68,12 @@ for pr in ${pr_list}; do
     pslot=$(basename "${cases}")
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
-    rocoto_stat_output=$(${rocotostat} -w ${xml} -d ${db} -s | grep -v CYCLE)
+    rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
     num_cycles=$(echo "${rocoto_stat_output}" | wc -l)
-    num_done=$(echo "${rocoto_stat_output}" | grep Done | wc -l)
-    num_succeeded=$(${rocotostat} -w ${xml} -d "${db}" -a | grep SUCCEEDED | wc -l)
+    num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
+    num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED)
     echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_done}"
-    num_failed=$(${rocotostat} -w ${xml} -d ${db} -a | grep -E 'FAIL|DEAD' | wc -l)
+    num_failed=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD')
     if [[ ${num_failed} -ne 0 ]]; then
       {
         echo "Experiment ${pslot} completed: *FAILED*"
