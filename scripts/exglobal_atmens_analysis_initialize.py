@@ -4,7 +4,7 @@
 # and runs the initialize method
 # which create and stage the runtime directory
 # and create the YAML configuration
-# for a global atmens variational analysis
+# for a global atm local ensemble analysis
 import os
 
 from pygw.logger import Logger

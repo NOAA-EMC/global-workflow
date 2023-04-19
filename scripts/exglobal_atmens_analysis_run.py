@@ -2,7 +2,7 @@
 # exgdas_global_atmens_analysis_run.py
 # This script creates an AtmEnsAnalysis object
 # and runs the execute method
-# which executes the global atm ensemble analysis
+# which executes the global atm local ensemble analysis
 import os
 
 from pygw.logger import Logger

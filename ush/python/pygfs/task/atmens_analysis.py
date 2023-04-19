@@ -69,6 +69,14 @@ class AtmEnsAnalysis(Analysis):
         - generating a YAML file for the JEDI executable
         - linking the JEDI executable (TODO make it copyable, requires JEDI fix)
         - creating output directories
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
         """
         super().initialize()
 
@@ -119,7 +127,21 @@ class AtmEnsAnalysis(Analysis):
 
     @logit(logger)
     def execute(self: Analysis) -> None:
+        """Execute a global atmens analysis
 
+        This method will execute a global atmens analysis using JEDI.
+        This includes:
+        - changing to the run directory
+        - running the global atmens analysis executable
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_ATMENSANL)
@@ -147,6 +169,13 @@ class AtmEnsAnalysis(Analysis):
         - copy the generated YAML file from initialize to the ROTDIR
         - write UFS model readable atm incrment file
 
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
         """
         # ---- tar up diags
         # path of output tar statfile
@@ -262,6 +291,13 @@ class AtmEnsAnalysis(Analysis):
         Please note that some of these steps are temporary and will be modified
         once the modle is able to directly read atm increments.
 
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
         """
         # Select the atm guess file based on the analysis and background resolutions
         # Fields from the atm guess are used to compute the delp and delz increments

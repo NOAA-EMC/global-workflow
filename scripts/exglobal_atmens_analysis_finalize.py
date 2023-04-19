@@ -3,10 +3,10 @@
 # This script creates an AtmEnsAnalysis class
 # and runs the finalize method
 # which perform post-processing and clean up activities
-# for a global atmens variational analysis
+# for a global atm local ensemble analysis
 import os
 
-from pygw.logger import Logger, logit
+from pygw.logger import Logger
 from pygw.configuration import cast_strdict_as_dtypedict
 from pygfs.task.atmens_analysis import AtmEnsAnalysis
 
