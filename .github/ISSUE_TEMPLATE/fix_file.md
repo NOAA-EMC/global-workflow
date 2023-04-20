@@ -4,6 +4,8 @@ about: Use this template for adding, updating, or removing fix files from global
 title:
 labels: Fix Files
 assignees:
+  - KateFriedman-NOAA
+  - WalterKolczynski-NOAA
 
 ---
 
