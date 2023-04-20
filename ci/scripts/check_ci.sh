@@ -61,7 +61,7 @@ fi
 #############################################################
 
 for pr in ${pr_list}; do
-  id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
+  id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   for cases in "${pr_dir}/RUNTESTS/"*; do
@@ -76,10 +76,11 @@ for pr in ${pr_list}; do
     num_failed=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD') || true
     if [[ ${num_failed} -ne 0 ]]; then
       {
-        echo "Experiment ${pslot} completed: *FAILED*"
-        echo "Experiment ${pslot} Completed with failure at $(date)" || true
+        echo "Experiment ${pslot} Terminated: *FAILED*"
+        echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Built" --add-label "CI-${MACHINE_ID^}-Failed"
+      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
+      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
     fi
     if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
@@ -88,9 +89,9 @@ for pr in ${pr_list}; do
         echo "Experiment ${pslot} Completed at $(date)" || true
         echo -n "with ${num_succeeded} successfully completed jobs" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      #TODO Check PR passes as soon as any case succeedes
+      #TODO for now the PR passes as soon as any case succeedes
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Built" --add-label "CI-${MACHINE_ID^}-Passed"
+      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
       #REMOVE Experment cases that completed succesfully
       rm -Rf "${pr_dir}/RUNTESTS/${pslot}"
       sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
