@@ -1,5 +1,5 @@
 #!/bin/bash
-set -aux
+set -eux
 #####################################################################################
 #
 # Script description: BASH script for checking for cases in a given PR and 
