@@ -10,7 +10,6 @@ export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype_3d.yam
 export ATMVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/variational/3dvar_dripcg.yaml
 export STATICB_TYPE="gsibec"
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
-export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
 export INTERP_METHOD='barycentric'
 
 export layout_x=1
