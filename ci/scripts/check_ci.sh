@@ -64,7 +64,7 @@ for pr in ${pr_list}; do
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  num_cases=$(find "${pr_dir}/RUNTESTS" -mindepth 1 -maxdepth 1 -type d | wc -l)
+  num_cases=$(find "${pr_dir}/RUNTESTS" -mindepth 1 -maxdepth 1 -type d | wc -l) || true
   for cases in "${pr_dir}/RUNTESTS/"*; do
     pslot=$(basename "${cases}")
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
