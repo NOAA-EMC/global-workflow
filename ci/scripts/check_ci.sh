@@ -98,6 +98,7 @@ for pr in ${pr_list}; do
   #Check passes PR when ${pr_dir}/RUNTESTS is void of subfolders since all succesfull ones where previously removed
   if [[ "${num_cases}" -eq 0 ]]; then
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
+      sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
   fi
 done
 
