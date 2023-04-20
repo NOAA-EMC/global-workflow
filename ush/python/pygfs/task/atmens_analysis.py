@@ -302,7 +302,7 @@ class AtmEnsAnalysis(Analysis):
                                       f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")
 
             # Execute incpy to create the UFS model atm increment file
-            # TODO: use MPMD or parallelize with mpi4py.  
+            # TODO: use MPMD or parallelize with mpi4py
             # See https://github.com/NOAA-EMC/global-workflow/pull/1373#discussion_r1173060656
             cmd = Executable(incpy)
             cmd.add_default_arg(atmges_fv3)
