@@ -397,6 +397,7 @@ class Tasks:
         return task
 
     def atmanlinit(self):
+
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -407,7 +408,13 @@ class Tasks:
         else:
             dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = "gdas"
+        gfs_cyc = self._base["gfs_cyc"]
+        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
+
+        cycledef = self.cdump
+        if self.cdump in ['gfs'] and gfs_enkf and gfs_cyc != 4:
+            cycledef = 'gdas'
+
         resources = self.get_resource('atmanlinit')
         task = create_wf_task('atmanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
                               cycledef=cycledef)
