@@ -58,9 +58,9 @@ set -x
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
 pr_list_file="open_pr_list"
-rm -f "${pr_list_file}"
+touch "${GFS_CI_ROOT}/${pr_list_file}"
 list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open")
-list=$(echo "${list}" | awk '{print $1;}' > "${GFS_CI_ROOT}/${pr_list_file}")
+list=$(echo "${list}" | awk '{print $1;}' >> "${GFS_CI_ROOT}/${pr_list_file}")
 
 if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
  pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
@@ -89,7 +89,7 @@ for pr in ${pr_list}; do
   if [[ ${ci_status} -eq 0 ]]; then
     #setup space to put an experiment
     export RUNTESTS="${pr_dir}/RUNTESTS"
-    rm -Rf "${RUNTESTS:?}"/*
+    rm -Rf "${pr_dir:?}"/*
 
     #############################################################
     # loop over every yaml file in ${HOMEgfs}/ci/cases
