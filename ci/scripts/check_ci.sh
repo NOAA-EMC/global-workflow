@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -aux
 #####################################################################################
 #
 # Script description: BASH script for checking for cases in a given PR and 
@@ -37,6 +37,7 @@ source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
+set -x
 rocotostat=$(which rocotostat)
 if [[ -z ${rocotostat+x} ]]; then
   echo "rocotostat not found on system"
@@ -85,9 +86,10 @@ for pr in ${pr_list}; do
       {
         echo "Experiment ${pslot} completed: *SUCCESS*"
         echo "Experiment ${pslot} Completed at $(date)" || true
-        echo "with ${num_succeeded} successfully completed jobs" || true
+        echo -n "with ${num_succeeded} successfully completed jobs" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       #TODO Check PR passes as soon as any case succeedes
+      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Built" --add-label "CI-${MACHINE_ID^}-Passed"
       #REMOVE Experment cases that completed succesfully
       rm -Rf "${pr_dir}/RUNTESTS/${pslot}"

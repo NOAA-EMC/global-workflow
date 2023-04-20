@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ux
+set -eux
 
 #####################################################################################
 #
@@ -48,9 +48,11 @@ esac
 ######################################################
 # setup runtime env for correct python install and git
 ######################################################
+set +x
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
+set -x
 
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
@@ -80,8 +82,10 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
+  set +e
   "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
+  set -e
   if [[ ${ci_status} -eq 0 ]]; then
     #setup space to put an experiment
     export RUNTESTS="${pr_dir}/RUNTESTS"
@@ -94,8 +98,10 @@ for pr in ${pr_list}; do
     for yaml_config in "${HOMEgfs}/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
+      set +e
       "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
+      set -e
       if [[ ${ci_status} -eq 0 ]]; then
         {
           echo "Created experiment:            *SUCCESS*"

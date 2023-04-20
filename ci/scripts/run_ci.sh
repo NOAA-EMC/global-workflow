@@ -34,7 +34,7 @@ source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
-set -x
+set -eux
 rocotorun=$(which rocotorun)
 if [[ -z ${var+x} ]]; then
   echo "rocotorun being used from ${rocotorun}"
