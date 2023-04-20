@@ -109,12 +109,11 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
         # Make directories for member analysis files
+        anldir = []
         for imem in range(1, self.task_config.NMEM_ENKF + 1):
             memchar = f"mem{imem:03d}"
-            anldir = [
-                os.path.join(self.task_config.DATA, 'anl', memchar)
-            ]
-            FileHandler({'mkdir': anldir}).sync()
+            anldir.append(os.path.join(self.task_config.DATA, 'anl', f'mem{imem:03d}'))
+        FileHandler({'mkdir': anldir}).sync()
 
     @logit(logger)
     def execute(self: Analysis) -> None:
