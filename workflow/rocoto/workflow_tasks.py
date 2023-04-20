@@ -358,7 +358,7 @@ class Tasks:
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_land:
+        if self.app_config.do_jedilandda:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -698,7 +698,7 @@ class Tasks:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_land:
+        if self.app_config.do_jedilandda:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 

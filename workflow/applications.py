@@ -99,7 +99,6 @@ class AppConfig:
         self.do_ocean = _base.get('DO_OCN', False)
         self.do_ice = _base.get('DO_ICE', False)
         self.do_aero = _base.get('DO_AERO', False)
-        self.do_land = _base.get('DO_LAND', False)
         self.do_gldas = _base.get('DO_GLDAS', False)
         self.do_bufrsnd = _base.get('DO_BUFRSND', False)
         self.do_gempak = _base.get('DO_GEMPAK', False)
@@ -111,6 +110,7 @@ class AppConfig:
         self.do_jediatmvar = _base.get('DO_JEDIVAR', False)
         self.do_jediens = _base.get('DO_JEDIENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
+        self.do_jedilandda = _base.get('DO_JEDILANDDA', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
@@ -227,7 +227,7 @@ class AppConfig:
         if self.do_aero:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
-        if self.do_land:
+        if self.do_jedilandda:
             configs += ['landanlinit', 'landanlrun', 'landanlfinal']
 
         return configs
@@ -371,7 +371,7 @@ class AppConfig:
         if self.do_aero:
             gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
-        if self.do_land:
+        if self.do_jedilandda:
             gdas_gfs_common_tasks_before_fcst += ['landanlinit', 'landanlrun', 'landanlfinal']
 
         gldas_tasks = ['gldas']
