@@ -19,6 +19,8 @@ if [[ $# -ne 1 ]]; then
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
     echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
+    echo "ocnanalprep ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost"
+
     exit 1
 
 fi
@@ -326,6 +328,25 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
     export is_exclusive=True
     npe_node_ocnanalrun=$(echo "${npe_node_max} / ${nth_ocnanalrun}" | bc)
     export npe_node_ocnanalrun
+
+elif [[ "${step}" = "ocnanalchkpt" ]]; then
+
+   export wtime_ocnanalchkpt="00:10:00"
+   export npe_ocnanalchkpt=1
+   export nth_ocnanalchkpt=1
+   npe_node_ocnanalchkpt=$(echo "${npe_node_max} / ${nth_ocnanalchkpt}" | bc)
+   export npe_node_ocnanalchkpt
+   case ${CASE} in
+      C384)
+        export memory_ocnanalchkpt="128GB"
+        ;;
+      C48)
+        export memory_ocnanalchkpt="32GB"
+        ;;
+      *)
+          echo "FATAL: Resolution not supported'"
+          exit 1
+    esac
 
 elif [[ "${step}" = "ocnanalpost" ]]; then
 

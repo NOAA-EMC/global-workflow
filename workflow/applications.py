@@ -110,6 +110,7 @@ class AppConfig:
         self.do_jediatmvar = _base.get('DO_JEDIVAR', False)
         self.do_jediatmens = _base.get('DO_JEDIENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
+        self.do_mergensst = _base.get('DO_MERGENSST', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
@@ -183,7 +184,7 @@ class AppConfig:
             configs += ['anal', 'analdiag']
 
         if self.do_jediocnvar:
-            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost']
+            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost']
         if self.do_ocean:
             configs += ['ocnpost']
 
@@ -360,7 +361,8 @@ class AppConfig:
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
         if self.do_jediocnvar:
-            gdas_gfs_common_tasks_before_fcst += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost']
+            gdas_gfs_common_tasks_before_fcst += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun',
+                                                  'ocnanalchkpt', 'ocnanalpost']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
