@@ -31,4 +31,7 @@ setenv("WGRIB2","wgrib2")
 prepend_path("MODULEPATH", pathJoin("/data/prod/glopara/git/prepobs/v1.0.1/modulefiles"))
 load(pathJoin("prepobs", "1.0.1"))
 
+prepend_path("MODULEPATH", pathJoin("/data/prod/glopara/git/Fit2Obs/v1.0.0/modulefiles"))
+load(pathJoin("fit2obs", "1.0.0"))
+
 whatis("Description: GFS run environment")
