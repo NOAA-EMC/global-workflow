@@ -6,3 +6,18 @@ stage:
 fix:
   - !INC ${HOMEgfs}/parm/ufs/fix/gfs/atmos.fixed_files.yaml
   - !INC ${HOMEgfs}/parm/ufs/fix/gfs/land.fixed_files.yaml
+
+model_configure:
+  - ${HOMEgfs}/sorc/ufs_model.fd/parm/model_configure.IN
+
+diag_table:  # This list will be concatenated into a "$(DATA)/diag_table.tmpl"
+  gdas:  # Use this set for RUN = gdas (DA cycles)
+    - ${HOMEgfs}/parm/parm_fv3diag/diag_table.header  # This must always be the first
+    - ${HOMEgfs}/parm/parm_fv3diag/diag_table_da.atm
+  gfs:  # Use this set for RUN = gfs (early cycle forecasts)
+    - ${HOMEgfs}/parm/parm_fv3diag/diag_table.header  # This must always be the first
+    - ${HOMEgfs}/parm/parm_fv3diag/diag_table.atm
+
+field_table:  # This list will be concatenated into a "$(DATA)/field_table"
+  default:
+    - ${HOMEgfs}/parm/parm_fv3diag/field_table

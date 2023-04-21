@@ -3,11 +3,13 @@ import re
 import copy
 import logging
 from typing import Dict, Any, Union, List
+from pprint import pformat
 
 from pygw.attrdict import AttrDict
 from pygw.template import Template, TemplateConstants
 from pygw.file_utils import FileHandler
 from pygw.logger import logit
+from pygw.yaml_file import parse_yamltmpl
 
 logger = logging.getLogger(__name__.split('.')[-1])
 
@@ -17,7 +19,7 @@ UFS_VARIANTS = ['GFS']
 class UFS:
 
     @logit(logger, name="UFS")
-    def __init__(self, model_name: str, config: Dict[str, Any]):
+    def __init__(self, model_name: str, config: Dict[str, Any], HOMEufs: str = None):
         """Initialize the UFS-weather-model generic class and check if the model_name is a valid variant
 
         Parameters
@@ -26,6 +28,8 @@ class UFS:
             UFS variant
         config : Dict
             Incoming configuration dictionary
+        HOMEufs : str, optional
+            Path to the UFS-weather-model directory (as if it were in a vertical structure), by default None
         """
 
         # First check if this is a valid variant
@@ -35,6 +39,27 @@ class UFS:
 
         # Make a deep copy of incoming config for caching purposes. _config should not be updated
         self._config = copy.deepcopy(config)
+
+        # Collect all model specific configuration attributes in the ufs_model dict
+        # Some will be from _config, others will be determined internally e.g. warm_start etc.
+        self.ufs_model = AttrDict()  # Initialize the ufs_model container
+
+        self.ufs_model.HOMEufs = HOMEufs
+
+        # Add the yaml_config used to control the configuration defined in the config
+        # This file will contain the list of fix files, diag_tables, etc.
+        # Over time, this can be contain more information that typically was provided via _config.
+        try:
+            self.ufs_model.yaml_config = config['UFS_CONFIG_FILE']
+        except KeyError:
+            raise KeyError(f"FATAL_ERROR: 'UFS_CONFIG_FILE' is not defined in the configuration, ABORT!")
+
+        # Add basic keys from `config` to self.ufs_model
+        # TODO: we will need COM keys for current and previous cycle dirs
+        # TODO: see if this map can be abstracted out to a yaml or included in yaml_config
+        config_keys = ['current_cycle', 'previous_cycle', 'DATA', 'RUN']
+        for key in config_keys:
+            self.ufs_model[key] = config[key]
 
 
     @staticmethod
@@ -64,51 +89,21 @@ class UFS:
 
     @staticmethod
     @logit(logger)
-    def set_ufs_fix(FIX_dir: str) -> Dict[str, str]:
+    def stage(data: Union[List[Dict[str, List]], Dict[str, List]]) -> None:
         """
-        This method sets the paths to the UFS-weather-model fixed files based on the FIX_dir
-        TODO:  extract this out to a YAML when we have a better idea of what the structure will be
-        """
+        Description
+        -----------
+        This method stages the UFS-weather-model files to the appropriate location
 
-        fix = AttrDict()
-
-        fix.FIX_aer = os.path.join(FIX_dir, 'aer')
-        fix.FIX_am = os.path.join(FIX_dir, 'am')
-        fix.FIX_lut = os.path.join(FIX_dir, 'lut')
-        fix.FIX_orog = os.path.join(FIX_dir, 'orog')
-        fix.FIX_ugwd = os.path.join(FIX_dir, 'ugwd')
-
-        return fix
-
-    @logit(logger)
-    def set_ufs_config(self) -> Dict[str, Any]:
-        """
-        This method sets the UFS-weather-model configuration based on the big experiment config
-
+        Parameters
+        ----------
+        data : dict or list[dict]
+            List of dictionaries containing the source and destination paths
+            or a single dictionary containing the source and destination paths
 
         Returns
         -------
-        cfg : Dict
-            UFS-weather-model resolution and other configuration as necessary
-
-        TODO: This method could be broken up into smaller methods for each component, but maintain this as the entry point
-        """
-
-        cfg = AttrDict()
-
-        # TODO: break this into smaller methods for atmos, ocean, etc.
-        cfg.atm_res = self._config.get('CASE', 'C96')
-        cfg.atm_levs = self._config.get('LEVS', 127)
-
-        cfg.ocn_res = self._config.get('OCNRES', '100')
-
-        return cfg
-
-    @staticmethod
-    @logit(logger)
-    def stage(data: Union[List[Dict[str, List]], Dict[str, List]]) -> None:
-        """
-        This method stages the UFS-weather-model fixed files
+        None
         """
 
         if isinstance(data, list):
@@ -116,3 +111,39 @@ class UFS:
                 FileHandler(item).sync()
         else:
             FileHandler(data).sync()
+
+    def get_ics(self):
+
+        ics = AttrDict()
+        ics.atm_ics = self._get_atm_ics()
+
+        return ics
+
+    def _get_atm_ics(self):
+        pass
+
+    def stage_tables(self, tables, target):
+        """
+        Description
+        -----------
+        Concatenate the tables into a single file and stage it to the target location
+
+        Parameters
+        ----------
+        tables : list
+            List of tables to concatenate
+        target : str
+            Target location
+
+        Returns
+        -------
+        None
+        """
+
+        if not isinstance(tables, list):
+               tables = list(tables)
+
+        with open(target, 'w') as fh:
+            for tt in tables:
+                with open(tt, 'r') as fih:
+                    fh.write(fih.read())

@@ -1,0 +1,11 @@
+"ocn_da%4yr%2mo%2dy%2hr", 1, "hours", 1, "hours", "time", 1,  "hours"
+
+"ocean_model",  "geolon",    "geolon",   "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
+"ocean_model",  "geolat",    "geolat",   "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
+"ocean_model",  "SSH",       "ave_ssh",  "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
+"ocean_model",  "MLD_0125",  "MLD",      "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
+"ocean_model",  "u",         "u",        "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
+"ocean_model",  "v",         "v",        "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
+"ocean_model",  "h",         "h",        "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
+"ocean_model",  "salt",      "Salt",     "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
+"ocean_model",  "temp",      "Temp",     "ocn_da%4yr%2mo%2dy%2hr",  "all",  "none",  "none",  2
