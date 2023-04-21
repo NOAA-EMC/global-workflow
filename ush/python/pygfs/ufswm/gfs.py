@@ -56,9 +56,6 @@ class GFS(UFS):
 
         logger.debug(f"UFS-weather-model configuration:\n{pformat(self.ufs_model)}")
 
-
-    @logit(logger)
-
     @logit(logger)
     def _get_fix_info(self) -> None:
         self.ufs_model.fix = AttrDict()
@@ -90,9 +87,11 @@ class GFS(UFS):
         Description
         -----------
         This method determines if the current run is a warm start or a cold start
+
         Returns
         -------
-        bool
+        is_warm_start: bool
+            Returns True if this is a warm start, False otherwise
         """
         # TODO: This method will be replaced with a data driven decision after the COM reorg PR goes in
         return False
@@ -103,10 +102,11 @@ class GFS(UFS):
         Description
         -----------
         This method determines if the current run is a continuation of a previous run
+
         Returns
         -------
-        bool
-            _description_
+        is_a_rerun: bool
+            Returns True if this is a rerun, False otherwise
         """
         # A rerun is still a warm start, but not with IAU
         self.ufs_model.do_iau = False
@@ -233,4 +233,4 @@ class GFS(UFS):
         localconf.SHOUR = self.ufs_model.start_date.hour
 
         diag_table = os.path.join(self._config.DATA, 'diag_table')
-        self.parse_ufs_templates(diag_table+'.tmpl', diag_table, localconf)
+        self.parse_ufs_templates(diag_table + '.tmpl', diag_table, localconf)

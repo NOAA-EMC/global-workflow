@@ -61,7 +61,6 @@ class UFS:
         for key in config_keys:
             self.ufs_model[key] = config[key]
 
-
     @staticmethod
     @logit(logger)
     def parse_ufs_templates(input_template, output_file, ctx: Dict) -> None:
@@ -141,7 +140,7 @@ class UFS:
         """
 
         if not isinstance(tables, list):
-               tables = list(tables)
+            tables = list(tables)
 
         with open(target, 'w') as fh:
             for tt in tables:
