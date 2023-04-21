@@ -1,9 +1,7 @@
-import os
 import re
 import copy
 import logging
 from typing import Dict, Any, Union, List
-from pprint import pformat
 
 from pygw.attrdict import AttrDict
 from pygw.template import Template, TemplateConstants
