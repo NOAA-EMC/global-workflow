@@ -75,10 +75,11 @@ for pr in ${pr_list}; do
   # since all successfull ones where previously removed
   if [[ "${num_cases}" -eq 0 ]] && [[ -d "${pr_dir}/RUNTESTS" ]]; then
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
-     sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
-     # Completely remove the PR and its cloned repo on sucess of all cases
-     rm -Rf ${pr_dir} 
-     continue 
+    ${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+    sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
+    # Completely remove the PR and its cloned repo on sucess of all cases
+    rm -Rf "${pr_dir}" 
+    continue 
   fi
 
   for cases in "${pr_dir}/RUNTESTS/"*; do
