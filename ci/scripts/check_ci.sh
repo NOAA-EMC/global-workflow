@@ -64,10 +64,23 @@ for pr in ${pr_list}; do
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  num_cases=$(find "${pr_dir}/RUNTESTS" -mindepth 1 -maxdepth 1 -type d | wc -l) || true
-  if [[ "${num_cases}" -eq 0 ]]; then
-     break
+
+  # If there is no RUNTESTS dir for this PR then cases have not been made yet
+  if [[ ! -d "${pr_dir}/RUNTESTS" ]]; then
+     continue
   fi
+  num_cases=$(find "${pr_dir}/RUNTESTS" -mindepth 1 -maxdepth 1 -type d | wc -l) || true
+
+  #Check for PR success  when ${pr_dir}/RUNTESTS is void of subfolders
+  # since all successfull ones where previously removed
+  if [[ "${num_cases}" -eq 0 ]] && [[ -d "${pr_dir}/RUNTESTS" ]]; then
+    "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
+     sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
+     # Completely remove the PR and its cloned repo on sucess of all cases
+     rm -Rf ${pr_dir} 
+     continue 
+  fi
+
   for cases in "${pr_dir}/RUNTESTS/"*; do
     pslot=$(basename "${cases}")
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
@@ -99,9 +112,3 @@ for pr in ${pr_list}; do
     fi
   done
 done
-#Check passes PR when ${pr_dir}/RUNTESTS is void of subfolders since all successfull ones where previously removed
-if [[ "${num_cases}" -eq 0 ]] && [[ -d "${pr_dir}/RUNTESTS" ]]; then
-  "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
-  sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
-fi
-

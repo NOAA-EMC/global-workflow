@@ -7,8 +7,8 @@ prepend_path("MODULEPATH", "/apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefi
 load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-intel", "2018.4"))
 load(pathJoin("hpc-impi", "2018.4"))
-load(pathJoin("netcdf","4.7.2-parallel"))
-load(pathJoin("nccmp","1.8.5"))
+load(pathJoin("netcdf","4.7.4"))
+load(pathJoin("nccmp"," 1.8.7.0"))
 load(pathJoin("contrib","0.1"))
 load(pathJoin("wgrib2","3.0.2"))
 

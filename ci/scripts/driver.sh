@@ -88,8 +88,9 @@ for pr in ${pr_list}; do
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
     #setup space to put an experiment
+    # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
-    rm -Rf "${pr_dir:?}"/*
+    rm -Rf "${pr_dir:?}/RUNTESTS/"*
 
     #############################################################
     # loop over every yaml file in ${HOMEgfs}/ci/cases
