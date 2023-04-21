@@ -50,7 +50,7 @@ class GFSForecast(Task):
         self.gfs.prepare_DATA()
 
         # Stage the fix files
-        #self.gfs.stage_fix()
+        self.gfs.stage_fix()
 
         # Stage the different tables
         self.gfs.stage_tables(table='diag_table', target=os.path.join(self.task_config.DATA, 'diag_table.tmpl'))
