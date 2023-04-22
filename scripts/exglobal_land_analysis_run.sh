@@ -125,7 +125,7 @@ EOF
 fi
 ################################################################################
 # run executable
-export pgm=${JEDIVAREXE}
+export pgm=${JEDIEXE}
 . prep_step
 ${APRUN_LANDANL} "${DATA}/fv3jedi_letkf.x" "${DATA}/${CDUMP}.t${cyc}z.letkfoi.yaml" 1>&1 2>&2
 ################################################################################

@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
 
 ########## config.landanl ##########
 # configuration common to all land analysis tasks
@@ -18,6 +18,6 @@ export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_letkf.x
+export JEDIEXE=${HOMEgfs}/exec/fv3jedi_letkf.x
 
 echo "END: config.landanl"

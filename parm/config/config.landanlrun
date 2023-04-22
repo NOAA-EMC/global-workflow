@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
 
 ########## config.landanlrun ##########
 # Land Analysis specific

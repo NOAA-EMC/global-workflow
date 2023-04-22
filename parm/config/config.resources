@@ -203,8 +203,7 @@ elif [[ "${step}" = "atmanlfinal" ]]; then
     export npe_node_atmanlfinal
     export is_exclusive=True
 
-elif [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then
-
+elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
    # below lines are for creating JEDI YAML
    case ${CASE} in
      C768)
@@ -227,46 +226,25 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then
    export layout_x
    export layout_y
 
-   declare -x "wtime_${step}"="00:10:00"
-   declare -x "npe_${step}"=1
-   declare -x "nth_${step}"=1
-   temp_stepname="nth_${step}"
-   declare -x "npe_node_${step}"="$(echo "${npe_node_max} / ${!temp_stepname}" | bc)"
-   declare -x "memory_${step}"="3072M"
-
-elif [[ "${step}" = "landanlrun" ]]; then
-
-   case ${CASE} in
-     C768)
-        layout_x=6
-        layout_y=6
-        ;;
-     C384)
-        layout_x=5
-        layout_y=5
-        ;;
-     C192 | C96 | C48)
-        layout_x=1
-        layout_y=1
-        ;;
-     *)
-        echo "FATAL: Resolution not supported'"
-        exit 1
-   esac
-
-   export layout_x
-   export layout_y
-
-   export wtime_landanlrun="00:30:00"
-   npe_landanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-   export npe_landanlrun
-   npe_landanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-   export npe_landanlrun_gfs
-   export nth_landanlrun=1
-   export nth_landanlrun_gfs=1
-   npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
-   export npe_node_landanlrun
-   export is_exclusive=True
+   if [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then 
+       declare -x "wtime_${step}"="00:10:00"
+       declare -x "npe_${step}"=1
+       declare -x "nth_${step}"=1
+       temp_stepname="nth_${step}"
+       declare -x "npe_node_${step}"="$(echo "${npe_node_max} / ${!temp_stepname}" | bc)"
+       declare -x "memory_${step}"="3072M"
+   elif [[ "${step}" = "landanlrun" ]]; then
+       export wtime_landanlrun="00:30:00"
+       npe_landanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+       export npe_landanlrun
+       npe_landanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+       export npe_landanlrun_gfs
+       export nth_landanlrun=1
+       export nth_landanlrun_gfs=1
+       npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
+       export npe_node_landanlrun
+       export is_exclusive=True
+   fi
 
 elif [[ "${step}" = "aeroanlinit" ]]; then
 
