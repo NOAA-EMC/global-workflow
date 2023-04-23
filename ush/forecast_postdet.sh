@@ -997,7 +997,12 @@ CICE_postdet() {
 
   # Copy/link CICE IC to DATA
   if [[ "${warm_start}" = ".true." ]]; then
-    $NLN "${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+    cice_ana="${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model_anl.res.nc"
+    if [[ -e ${cice_ana} ]]; then
+      ${NLN} "${cice_ana}" "${DATA}/cice_model.res.nc"
+    else
+      ${NLN} "${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+    fi
   else # cold start are typically SIS2 restarts obtained from somewhere else e.g. CPC
     $NLN "${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   fi

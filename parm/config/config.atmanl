@@ -10,7 +10,6 @@ export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype_3d.yam
 export ATMVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/variational/3dvar_dripcg.yaml
 export STATICB_TYPE="gsibec"
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
-export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
 export INTERP_METHOD='barycentric'
 
 export layout_x=1
@@ -19,7 +18,7 @@ export layout_y=1
 export io_layout_x=1
 export io_layout_y=1
 
-export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_var.x
+export JEDIEXE=${HOMEgfs}/exec/fv3jedi_var.x
 export crtm_VERSION="2.3.0"
 
 echo "END: config.atmanl"

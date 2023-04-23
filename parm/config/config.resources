@@ -10,7 +10,7 @@ if [[ $# -ne 1 ]]; then
     echo "argument can be any one of the following:"
     echo "getic init coupled_ic aerosol_init"
     echo "atmanlinit atmanlrun atmanlfinal"
-    echo "atmensanalprep atmensanalrun atmensanalpost"
+    echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag gldas fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -19,6 +19,8 @@ if [[ $# -ne 1 ]]; then
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
     echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
+    echo "ocnanalprep ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost"
+
     exit 1
 
 fi
@@ -326,6 +328,25 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
     export is_exclusive=True
     npe_node_ocnanalrun=$(echo "${npe_node_max} / ${nth_ocnanalrun}" | bc)
     export npe_node_ocnanalrun
+
+elif [[ "${step}" = "ocnanalchkpt" ]]; then
+
+   export wtime_ocnanalchkpt="00:10:00"
+   export npe_ocnanalchkpt=1
+   export nth_ocnanalchkpt=1
+   npe_node_ocnanalchkpt=$(echo "${npe_node_max} / ${nth_ocnanalchkpt}" | bc)
+   export npe_node_ocnanalchkpt
+   case ${CASE} in
+      C384)
+        export memory_ocnanalchkpt="128GB"
+        ;;
+      C48)
+        export memory_ocnanalchkpt="32GB"
+        ;;
+      *)
+          echo "FATAL: Resolution not supported'"
+          exit 1
+    esac
 
 elif [[ "${step}" = "ocnanalpost" ]]; then
 
@@ -719,39 +740,39 @@ elif [[ ${step} = "coupled_ic" ]]; then
     export nth_coupled_ic=1
     export is_exclusive=True
 
-elif [[ ${step} = "atmensanalprep" ]]; then
+elif [[ "${step}" = "atmensanlinit" ]]; then
 
-    export wtime_atmensanalprep="00:10:00"
-    export npe_atmensanalprep=1
-    export nth_atmensanalprep=1
-    npe_node_atmensanalprep=$(echo "${npe_node_max} / ${nth_atmensanalprep}" | bc)
-    export npe_node_atmensanalprep
-    export is_exclusive=True
+    export wtime_atmensanlinit="00:10:00"
+    export npe_atmensanlinit=1
+    export nth_atmensanlinit=1
+    npe_node_atmensanlinit=$(echo "${npe_node_max} / ${nth_atmensanlinit}" | bc)
+    export npe_node_atmensanlinit
+    export memory_atmensanlinit="3072M"
 
-elif [[ ${step} = "atmensanalrun" ]]; then
+elif [[ "${step}" = "atmensanlrun" ]]; then
 
     # make below case dependent later
-    export layout_x=2
-    export layout_y=3
+    export layout_x=1
+    export layout_y=1
 
-    export wtime_atmensanalrun="00:30:00"
-    npe_atmensanalrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmensanalrun
-    npe_atmensanalrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmensanalrun_gfs
-    export nth_atmensanalrun=1
-    export nth_atmensanalrun_gfs=${nth_atmensanalrun}
+    export wtime_atmensanlrun="00:30:00"
+    npe_atmensanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_atmensanlrun
+    npe_atmensanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_atmensanlrun_gfs
+    export nth_atmensanlrun=1
+    export nth_atmensanlrun_gfs=${nth_atmensanlrun}
+    npe_node_atmensanlrun=$(echo "${npe_node_max} / ${nth_atmensanlrun}" | bc)
+    export npe_node_atmensanlrun
     export is_exclusive=True
-    npe_node_atmensanalrun=$(echo "${npe_node_max} / ${nth_atmensanalrun}" | bc)
-    export npe_node_atmensanalrun
 
-elif [[ ${step} = "atmensanalpost" ]]; then
+elif [[ "${step}" = "atmensanlfinal" ]]; then
 
-    export wtime_atmensanalpost="00:30:00"
-    export npe_atmensanalpost=${npe_node_max}
-    export nth_atmensanalpost=1
-    npe_node_atmensanalpost=$(echo "${npe_node_max} / ${nth_atmensanalpost}" | bc)
-    export npe_node_atmensanalpost
+    export wtime_atmensanlfinal="00:30:00"
+    export npe_atmensanlfinal=${npe_node_max}
+    export nth_atmensanlfinal=1
+    npe_node_atmensanlfinal=$(echo "${npe_node_max} / ${nth_atmensanlfinal}" | bc)
+    export npe_node_atmensanlfinal
     export is_exclusive=True
 
 elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then

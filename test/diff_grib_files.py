@@ -72,4 +72,5 @@ if __name__ == '__main__':
     wgrib2_cmd = f"wgrib2 {fileA} -var -rpn 'sto_1' -import_grib {fileB} -rpn 'rcl_1:print_corr'"
 
     string = subprocess.run(wgrib2_cmd, shell=True, stdout=subprocess.PIPE).stdout.decode("utf-8")
+
     count_nonid_corr(string)
