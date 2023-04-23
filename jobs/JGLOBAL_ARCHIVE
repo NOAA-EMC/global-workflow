@@ -18,9 +18,9 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_BUFR COM_ATMO
   COM_OCEAN_DAILY COM_OCEAN_HISTORY COM_OCEAN_INPUT COM_OCEAN_XSECT \
   COM_WAVE_GRID COM_WAVE_HISTORY COM_WAVE_STATION 
 
-for res in "0p25" "0p50" "1p00"; do
-  YMD=${PDY} HH=${cyc} RES=${res} generate_com -rx "COM_ATMOS_GRIB_${res}:COM_ATMOS_GRIB_TMPL"
-  YMD=${PDY} HH=${cyc} RES=${res} generate_com -rx "COM_OCEAN_GRIB_${res}:COM_OCEAN_GRIB_TMPL"
+for grid in "0p25" "0p50" "1p00"; do
+  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_TMPL"
+  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_OCEAN_GRIB_${grid}:COM_OCEAN_GRIB_TMPL"
 done
 
 ###############################################################

@@ -33,7 +33,7 @@ export SCRIPTens_tracker=${SCRIPTens_tracker:-${HOMEens_tracker}/scripts}
 # Define COM directories
 ##############################################
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GENESIS
-YMD=${PDY} HH=${cyc} RES="0p25" generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_TMPL
+YMD=${PDY} HH=${cyc} GRID="0p25" generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_TMPL
 
 # The following variables are used by the tracker scripts which are outside
 #   of global-workflow and therefore can't be standardized at this time

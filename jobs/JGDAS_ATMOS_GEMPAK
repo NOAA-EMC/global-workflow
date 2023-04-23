@@ -39,15 +39,18 @@ export model=${model:-gdas}
 ##############################################
 # Define COM directories
 ##############################################
-for res in 0p25 0p50 1p00; do
-  RES=${res} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GRIB_${res}:COM_ATMOS_GRIB_TMPL"
+for grid in 0p25 0p50 1p00; do
+  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_TMPL"
 done
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GEMPAK
+for grid in 1p00 0p25; do
+  prod_dir="COM_ATMOS_GEMPAK_${grid}"
+  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
 
-if [[ ${SENDCOM} = YES && ! -d "${COM_ATMOS_GEMPAK}" ]] ; then
-  mkdir -m 775 -p "${COM_ATMOS_GEMPAK}"
-fi
+  if [[ ${SENDCOM} == YES && ! -d "${!prod_dir}" ]] ; then
+    mkdir -m 775 -p "${!prod_dir}"
+  fi
+done
 
 
 # TODO: These actions belong in an ex-script not a j-job
@@ -57,12 +60,12 @@ fi
 
 ########################################################
 # Execute the script.
-echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK " >> poescript
+echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}" >> poescript
 ########################################################
 
 ########################################################
 # Execute the script for quater-degree grib
-echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >> poescript
+echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}" >> poescript
 ########################################################
 
 cat poescript

@@ -21,6 +21,7 @@ cd $DATA
 RUN2=$1
 fend=$2
 DBN_ALERT_TYPE=$3
+destination=${4}
 
 DATA_RUN=$DATA/$RUN2
 mkdir -p $DATA_RUN
@@ -148,10 +149,10 @@ EOF
     export err=$?;err_chk
 
     if [[ ${SENDCOM} == "YES" ]] ; then
-       cpfs "${GEMGRD}" "${COM_ATMOS_GEMPAK}/${GEMGRD}"
+       cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
        if [[ ${SENDDBN} == "YES" ]] ; then
            "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-             "${COM_ATMOS_GEMPAK}/${GEMGRD}"
+             "${destination}/${GEMGRD}"
        fi
     fi
     cd $DATA_RUN

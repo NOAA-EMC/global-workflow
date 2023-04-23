@@ -16,6 +16,7 @@ cd $DATA
 RUN2=$1
 fend=$2
 DBN_ALERT_TYPE=$3
+destination=$4
 
 DATA_RUN=$DATA/$RUN2
 mkdir -p $DATA_RUN
@@ -135,17 +136,17 @@ EOF
   export err=$?;err_chk
 
   if [ $SENDCOM = "YES" ] ; then
-     cp "${GEMGRD}" "${COM_ATMOS_GEMPAK}/.${GEMGRD}"
+     cp "${GEMGRD}" "${destination}/.${GEMGRD}"
      export err=$?
      if [[ ${err} -ne 0 ]] ; then
         echo " File ${GEMGRD} does not exist."
         exit "${err}"
      fi
 
-     mv "${COM_ATMOS_GEMPAK}/.${GEMGRD}" "${COM_ATMOS_GEMPAK}/${GEMGRD}"
+     mv "${destination}/.${GEMGRD}" "${destination}/${GEMGRD}"
      if [[ ${SENDDBN} = "YES" ]] ; then
          "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-           "${COM_ATMOS_GEMPAK}/${GEMGRD}"
+           "${destination}/${GEMGRD}"
      else
        echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
      fi
