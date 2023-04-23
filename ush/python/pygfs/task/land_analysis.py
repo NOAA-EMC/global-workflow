@@ -89,7 +89,7 @@ class LandAnalysis(Analysis):
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.fv3jedi_yaml}")
 
         # link executable to DATA/ directory
-        exe_src = self.task_config['JEDIVAREXE']
+        exe_src = self.task_config['JEDIEXE']
         logger.debug(f"Link executable {exe_src} to DATA/")  # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
         exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
         if os.path.exists(exe_dest):
