@@ -237,10 +237,7 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "l
        export wtime_landanlrun="00:30:00"
        npe_landanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
        export npe_landanlrun
-       npe_landanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-       export npe_landanlrun_gfs
        export nth_landanlrun=1
-       export nth_landanlrun_gfs=1
        npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
        export npe_node_landanlrun
        export is_exclusive=True
