@@ -57,7 +57,8 @@ class Task:
         logger.debug(f"current cycle: {self.runtime_config['current_cycle']}")
 
         # Construct the previous cycle datetime object
-        self.runtime_config['previous_cycle'] = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H"))
+        cadence = self.config.get('assim_freq', 0)
+        self.runtime_config['previous_cycle'] = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{cadence}H"))
         logger.debug(f"previous cycle: {self.runtime_config['previous_cycle']}")
 
         pass

@@ -43,8 +43,24 @@ class GFSForecast(Task):
         Initialize the GFS forecast task
         """
 
+        # Is this a warm start or cold start, with or without IAU?
+        self.gfs.get_start_info()
+
         # Create the necessary directories
         self.gfs.prepare_DATA()
 
         # Stage the fix files
         self.gfs.stage_fix()
+
+        # Stage the different tables
+        self.gfs.stage_tables(table='diag_table', target=os.path.join(self.task_config.DATA, 'diag_table.tmpl'))
+        self.gfs.stage_tables(table='field_table', target=os.path.join(self.task_config.DATA, 'field_table'))
+
+    @logit(logger)
+    def configure(self) -> None:
+        """
+        Configure the GFS forecast task
+        """
+
+        # Generate the diag_table
+        self.gfs.generate_diag_table()
