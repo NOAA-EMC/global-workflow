@@ -24,7 +24,8 @@ class GFS(UFS):
         self.ufs_config_dict = parse_yamltmpl(self.ufs_config_yaml)
 
         # Set the paths to the various fix directories
-        self.ufs_fix = self.set_ufs_fix(os.path.join(self._config.HOMEgfs, "fix"))
+        self.ufs_fix = self.set_ufs_fix(
+            os.path.join(self._config.HOMEgfs, "fix"))
 
         # Determine coupled/uncoupled from config and define as appropriate
         self.ufs_config = self.set_ufs_config()
@@ -41,6 +42,8 @@ class GFS(UFS):
 
         data = parse_yamltmpl(self.ufs_config_yaml, localconf)
         self.stage(data.stage)
+
+        self.mdl_config()
 
     @logit(logger)
     def stage_fix(self) -> None:
