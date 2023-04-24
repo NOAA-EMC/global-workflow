@@ -358,11 +358,13 @@ if [[ ${type} == "gdas" ]]; then
     done
     flist="001 002 004 005 007 008"
     for fhr in ${flist}; do
-      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2"
-      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
+      file="${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2"
+      if [[ -s ${file}} ]]; then
+        echo "${file}"
+        echo "${file}.idx"
+      fi
     done
   } >> gdas.txt
-
 
   #..................
   if [[ -s "${COM_ATMOS_ANALYSIS}/${head}cnvstat" ]]; then
