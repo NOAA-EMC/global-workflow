@@ -113,9 +113,9 @@ case "${fv3_res}" in
         export nthreads_fv3_gfs=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=2
+        export WRTTASK_PER_GROUP=6
         export WRITE_GROUP_GFS=1
-        export WRTTASK_PER_GROUP_GFS=2
+        export WRTTASK_PER_GROUP_GFS=6
         ;;
     "C96")
         export DELTIM=600
@@ -127,9 +127,9 @@ case "${fv3_res}" in
         export nthreads_fv3_gfs=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=4
+        export WRTTASK_PER_GROUP=6
         export WRITE_GROUP_GFS=1
-        export WRTTASK_PER_GROUP_GFS=4
+        export WRTTASK_PER_GROUP_GFS=6
         ;;
     "C192")
         export DELTIM=450
@@ -141,9 +141,9 @@ case "${fv3_res}" in
         export nthreads_fv3_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=64
+        export WRTTASK_PER_GROUP=66
         export WRITE_GROUP_GFS=2
-        export WRTTASK_PER_GROUP_GFS=64
+        export WRTTASK_PER_GROUP_GFS=66
         ;;
     "C384")
         export DELTIM=300
@@ -169,9 +169,9 @@ case "${fv3_res}" in
         export nthreads_fv3_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=64
+        export WRTTASK_PER_GROUP=66
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=64
+        export WRTTASK_PER_GROUP_GFS=66
         ;;
     "C1152")
         export DELTIM=120
@@ -183,9 +183,9 @@ case "${fv3_res}" in
         export nthreads_fv3_gfs=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=64  # TODO: refine these numbers when a case is available
+        export WRTTASK_PER_GROUP=66  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=64  # TODO: refine these numbers when a case is available
+        export WRTTASK_PER_GROUP_GFS=66  # TODO: refine these numbers when a case is available
         ;;
     "C3072")
         export DELTIM=90
@@ -197,9 +197,9 @@ case "${fv3_res}" in
         export nthreads_fv3_gfs=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=64  # TODO: refine these numbers when a case is available
+        export WRTTASK_PER_GROUP=66  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=64  # TODO: refine these numbers when a case is available
+        export WRTTASK_PER_GROUP_GFS=66  # TODO: refine these numbers when a case is available
         ;;
     *)
         echo "FATAL ERROR: Unsupported FV3 resolution = ${fv3_res}, ABORT!"
