@@ -1,0 +1,43 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlinit" -c "base atmensanl atmensanlinit"
+
+##############################################
+# Set variables used in the script
+##############################################
+GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+GDUMP="gdas"
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}}
+mkdir -p "${COMOUT}"
+
+# COMIN_GES and COMIN_GES_ENS are used in script
+export COMIN_GES="${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}"
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASATMENSINITPY:-${HOMEgfs}/scripts/exglobal_atmens_analysis_initialize.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+exit 0
