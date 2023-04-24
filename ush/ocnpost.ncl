@@ -93,7 +93,8 @@ begin
 ; pull from environment
   COMDIR          = getenv("COMOUTocean")
   IDATE           = getenv("IDATE")
-  FHR2             = getenv("FHR")
+  VDATE           = getenv("VDATE")
+  FHR2            = getenv("FHR")
   FHR=FHR2
   ENSMEM          = getenv("ENSMEM")
   DATA_TMP        = getenv("DATA")
@@ -101,7 +102,7 @@ begin
 ;  nemsrc     = "/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post/FIXDIR/"
 
 ; calculate and break apart verification date
-  VDATE = tochar(systemfunc("$NDATE "+FHR+" "+IDATE))
+  ; VDATE = tochar(systemfunc("$NDATE "+FHR+" "+IDATE))
 ;  YYYY  = tostring(VDATE(0:3))
 ;  MM    = tostring(VDATE(4:5))
 ;  DD    = tostring(VDATE(6:7))

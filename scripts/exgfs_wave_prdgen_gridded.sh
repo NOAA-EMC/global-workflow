@@ -23,7 +23,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 0.a Basic modes of operation
 
- export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
+ export RUNwave=${RUNwave:-${RUN}wave}
  export envir=${envir:-ops}
  export fstart=${fstart:-0}
  export FHMAX_WAV=${FHMAX_WAV:-180}       #180 Total of hours to process
@@ -40,12 +40,13 @@ source "$HOMEgfs/ush/preamble.sh"
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
  mkdir -p $DATA
  cd $DATA
- export wavelog=${DATA}/${COMPONENTwave}_prdggridded.log
+ export wavelog=${DATA}/${RUNwave}_prdggridded.log
  
  echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
 # Output grids
- grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
-# grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
+ # grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
+grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
+# export grids=${wavepostGRD}
  maxtries=${maxtries:-720}
 # 0.b Date and time stuff
  export date=$PDY
@@ -97,7 +98,7 @@ source "$HOMEgfs/ush/preamble.sh"
      esac
      #
 
-     GRIBIN=$COMIN/gridded/$RUNwave.$cycle.$grdID.f${fhr}.grib2
+     GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2"
      GRIBIN_chk=$GRIBIN.idx
 
      icnt=1
@@ -110,7 +111,7 @@ source "$HOMEgfs/ush/preamble.sh"
          sleep 5
        fi
        if [ $icnt -ge $maxtries ]; then
-         echo "ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
+         msg="ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
          echo ' '
          echo '**************************** '
          echo '*** ERROR : NO GRIB FILE *** '
@@ -185,7 +186,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
      if [ "$OK" != '0' ]
      then
-       echo "ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdID"
+       msg="ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdID"
        #set +x
        echo ' '
        echo '******************************************** '
@@ -214,7 +215,7 @@ source "$HOMEgfs/ush/preamble.sh"
      OK=$?
      if [ "$OK" != '0' ]; then
        cat tocgrib2.out
-       echo "ABNORMAL EXIT: ERROR IN tocgrib2"
+       msg="ABNORMAL EXIT: ERROR IN tocgrib2"
        #set +x
        echo ' '
        echo '*************************************** '
@@ -236,16 +237,16 @@ source "$HOMEgfs/ush/preamble.sh"
      then
        #set +x
        echo "      Saving $AWIPSGRB.$grdOut.f${fhr} as grib2.$cycle.awipsww3_${grdID}.f${fhr}"
-       echo "          in $PCOM"
+       echo "          in ${COM_WAVE_WMO}"
        #set_trace
-       cp $AWIPSGRB.$grdID.f${fhr} $PCOM/grib2.$cycle.f${fhr}.awipsww3_${grdOut}
+       cp "${AWIPSGRB}.${grdID}.f${fhr}" "${COM_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
        #set +x
      fi
 
      if [ "$SENDDBN" = 'YES' ]
      then
        echo "      Sending $AWIPSGRB.$grdID.f${fhr} to DBRUN."
-       $DBNROOT/bin/dbn_alert GRIB_LOW $RUN $job $PCOM/grib2.$cycle.f${fhr}.awipsww3_${grdOut}
+       "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${RUN}" "${job}" "${COM_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
      fi
      rm -f $AWIPSGRB.$grdID.f${fhr} tocgrib2.out
    done # For grids

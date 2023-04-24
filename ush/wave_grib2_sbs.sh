@@ -25,55 +25,54 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 # 0.a Basic modes of operation
 
-  cd $GRIBDATA
+cd "${GRIBDATA}" || exit 2
 
-  alertName=$(echo $RUN|tr [a-z] [A-Z])
+alertName=${RUN^^}
 
-  grdID=$1
-  gribDIR=${grdID}_grib
-  rm -rfd ${gribDIR}
-  mkdir ${gribDIR}
-  err=$?
-  if [ $err != 0 ]
-  then
-    set +x
-    echo ' '
-    echo '******************************************************************************* '
-    echo '*** FATAL ERROR : ERROR IN ww3_grib2 (COULD NOT CREATE TEMP DIRECTORY) *** '
-    echo '******************************************************************************* '
-    echo ' '
-    set_trace
-    exit 1
-  fi
+grdID=$1
+gribDIR="${grdID}_grib"
+rm -rfd "${gribDIR}"
+mkdir "${gribDIR}"
+err=$?
+if [[ ${err} != 0 ]]; then
+  set +x
+  echo ' '
+  echo '******************************************************************************* '
+  echo '*** FATAL ERROR : ERROR IN ww3_grib2 (COULD NOT CREATE TEMP DIRECTORY) *** '
+  echo '******************************************************************************* '
+  echo ' '
+  set_trace
+  exit 1
+fi
 
-  cd ${gribDIR}
+cd "${gribDIR}" || exit 2
 
 # 0.b Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  GRIDNR=$2
-  MODNR=$3
-  ymdh=$4
-  fhr=$5
-  grdnam=$6
-  grdres=$7
-  gribflags=$8
-  ngrib=1 # only one time slice
-  dtgrib=3600 # only one time slice
+GRIDNR=$2
+MODNR=$3
+ymdh=$4
+fhr=$5
+grdnam=$6
+grdres=$7
+gribflags=$8
+ngrib=1 # only one time slice
+dtgrib=3600 # only one time slice
 # SBS one time slice per file
-  FH3=$(printf %03i $fhr)
+FH3=$(printf %03i "${fhr}")
 
 # Verify if grib2 file exists from interrupted run
-  ENSTAG=""
-  if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-  outfile=${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
+ENSTAG=""
+if [[ -n ${waveMEMB} ]]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
+outfile="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2"
 
 # Only create file if not present in COM
-  if [ ! -s ${COMOUT}/gridded/${outfile}.idx ]; then
+if [[ ! -s "${COM_WAVE_GRID}/${outfile}.idx" ]]; then
 
   set +x
   echo ' '
@@ -83,11 +82,10 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Model ID         : $WAV_MOD_TAG"
   set_trace
 
-  if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
-     [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$gribflags" ] || \
-     [ -z "$GRIDNR" ] || [ -z "$MODNR" ] || [ -z "$SENDDBN" ]
-  then
+  if [[ -z "${PDY}" ]] || [[ -z ${cyc} ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECwave}" ]] || \
+     [[ -z "${COM_WAVE_GRID}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDCOM}" ]] || \
+     [[ -z "${gribflags}" ]] || [[ -z "${GRIDNR}" ]] || [[ -z "${MODNR}" ]] || \
+     [[ -z "${SENDDBN}" ]]; then
     set +x
     echo ' '
     echo '***************************************************'
@@ -98,75 +96,76 @@ source "$HOMEgfs/ush/preamble.sh"
     exit 1
   fi
 
-# 0.c Starting time for output
+  # 0.c Starting time for output
 
-  tstart="$(echo $ymdh | cut -c1-8) $(echo $ymdh | cut -c9-10)0000"
+  tstart="${ymdh:0:8} ${ymdh:8:2}0000"
 
   set +x
-  echo "   Starting time    : $tstart"
-  echo "   Time step        : Single SBS
-  echo "   Number of times  : Single SBS
-  echo "   GRIB field flags : $gribflags"
+  echo "   Starting time    : ${tstart}"
+  echo "   Time step        : Single SBS"
+  echo "   Number of times  : Single SBS"
+  echo "   GRIB field flags : ${gribflags}"
   echo ' '
   set_trace
 
-# 0.e Links to working directory
+  # 0.e Links to working directory
 
-  ln -s ${DATA}/mod_def.$grdID mod_def.ww3
-  ln -s ${DATA}/output_${ymdh}0000/out_grd.$grdID out_grd.ww3
+  ln -s "${DATA}/mod_def.${grdID}" "mod_def.ww3"
+  ln -s "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "out_grd.ww3"
 
-# --------------------------------------------------------------------------- #
-# 1.  Generate GRIB file with all data
-# 1.a Generate input file for ww3_grib2
-#     Template copied in mother script ...
+  # --------------------------------------------------------------------------- #
+  # 1.  Generate GRIB file with all data
+  # 1.a Generate input file for ww3_grib2
+  #     Template copied in mother script ...
 
   set +x
   echo "   Generate input file for ww3_grib2"
   set_trace
 
-  sed -e "s/TIME/$tstart/g" \
-      -e "s/DT/$dtgrib/g" \
-      -e "s/NT/$ngrib/g" \
-      -e "s/GRIDNR/$GRIDNR/g" \
-      -e "s/MODNR/$MODNR/g" \
-      -e "s/FLAGS/$gribflags/g" \
-                               ${DATA}/ww3_grib2.${grdID}.inp.tmpl > ww3_grib.inp
+  sed -e "s/TIME/${tstart}/g" \
+      -e "s/DT/${dtgrib}/g" \
+      -e "s/NT/${ngrib}/g" \
+      -e "s/GRIDNR/${GRIDNR}/g" \
+      -e "s/MODNR/${MODNR}/g" \
+      -e "s/FLAGS/${gribflags}/g" \
+      "${DATA}/ww3_grib2.${grdID}.inp.tmpl" > ww3_grib.inp
 
 
   echo "ww3_grib.inp"
   cat ww3_grib.inp
-# 1.b Run GRIB packing program
+
+  # 1.b Run GRIB packing program
 
   set +x
   echo "   Run ww3_grib2"
-  echo "   Executing $EXECwave/ww3_grib"
+  echo "   Executing ${EXECwave}/ww3_grib"
   set_trace
 
   export pgm=ww3_grib;. prep_step
-  $EXECwave/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
+  "${EXECwave}/ww3_grib" > "grib2_${grdnam}_${FH3}.out" 2>&1
   export err=$?;err_chk
 
-    if [ ! -s gribfile ]; then
-      set +x
-      echo ' '
-      echo '************************************************ '
-      echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
-      echo '************************************************ '
-      echo ' '
-      set_trace
-      exit 3
-    fi
+  if [ ! -s gribfile ]; then
+    set +x
+    echo ' '
+    echo '************************************************ '
+    echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
+    echo '************************************************ '
+    echo ' '
+    set_trace
+    exit 3
+  fi
 
-  if [ $fhr -gt 0 ]; then 
-    $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
+  if (( fhr > 0 )); then 
+    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${COM_WAVE_GRID}/${outfile}"
     err=$?
   else
-    $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -set table_1.4 1 -set table_1.2 1 -grib ${COMOUT}/gridded/${outfile}
+    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
+      -set table_1.4 1 -set table_1.2 1 -grib "${COM_WAVE_GRID}/${outfile}"
     err=$?
   fi
 
-  if [ $err != 0 ]
-  then
+  if [[ ${err} != 0 ]]; then
     set +x
     echo ' '
     echo '********************************************* '
@@ -177,65 +176,62 @@ source "$HOMEgfs/ush/preamble.sh"
     exit 3
   fi
 
-# Create index
-    $WGRIB2 -s $COMOUT/gridded/${outfile} > $COMOUT/gridded/${outfile}.idx
+  # Create index
+  ${WGRIB2} -s "${COM_WAVE_GRID}/${outfile}" > "${COM_WAVE_GRID}/${outfile}.idx"
 
-# Create grib2 subgrid is this is the source grid
-  if [ "${grdID}" = "${WAV_SUBGRBSRC}" ]; then
+  # Create grib2 subgrid is this is the source grid
+  if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
     for subgrb in ${WAV_SUBGRB}; do
       subgrbref=$(echo ${!subgrb} | cut -d " " -f 1-20)
       subgrbnam=$(echo ${!subgrb} | cut -d " " -f 21)
       subgrbres=$(echo ${!subgrb} | cut -d " " -f 22)
       subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
-      $COPYGB2 -g "${subgrbref}" -i0 -x  ${COMOUT}/gridded/${outfile} ${COMOUT}/gridded/${subfnam}
-      $WGRIB2 -s $COMOUT/gridded/${subfnam} > $COMOUT/gridded/${subfnam}.idx
+      ${COPYGB2} -g "${subgrbref}" -i0 -x "${COM_WAVE_GRID}/${outfile}" "${COM_WAVE_GRID}/${subfnam}"
+      ${WGRIB2} -s "${COM_WAVE_GRID}/${subfnam}" > "${COM_WAVE_GRID}/${subfnam}.idx"
    done
   fi
 
-# 1.e Save in /com
+  # 1.e Save in /com
 
-    if [ ! -s $COMOUT/gridded/${outfile} ]
-    then
-      set +x
-      echo ' '
-      echo '********************************************* '
-      echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
-      echo '********************************************* '
-      echo ' '
-      echo " Error in moving grib file ${outfile} to com"
-      echo ' '
-      set_trace
-      exit 4
-    fi
-    if [ ! -s $COMOUT/gridded/${outfile} ]
-    then
-      set +x
-      echo ' '
-      echo '*************************************************** '
-      echo '*** FATAL ERROR : ERROR IN ww3_grib2 INDEX FILE *** '
-      echo '*************************************************** '
-      echo ' '
-      echo " Error in moving grib file ${outfile}.idx to com"
-      echo ' '
-      set_trace
-      exit 4
-    fi
+  if [[ ! -s "${COM_WAVE_GRID}/${outfile}" ]]; then
+    set +x
+    echo ' '
+    echo '********************************************* '
+    echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
+    echo '********************************************* '
+    echo ' '
+    echo " Error in moving grib file ${outfile} to com"
+    echo ' '
+    set_trace
+    exit 4
+  fi
+  if [[ ! -s "${COM_WAVE_GRID}/${outfile}.idx" ]]; then
+    set +x
+    echo ' '
+    echo '*************************************************** '
+    echo '*** FATAL ERROR : ERROR IN ww3_grib2 INDEX FILE *** '
+    echo '*************************************************** '
+    echo ' '
+    echo " Error in moving grib file ${outfile}.idx to com"
+    echo ' '
+    set_trace
+    exit 4
+  fi
 
-    if [[ "$SENDDBN" = 'YES' ]] && [[ ${outfile} != *global.0p50* ]]
-    then
-      set +x
-      echo "   Alerting GRIB file as $COMOUT/gridded/${outfile}"
-      echo "   Alerting GRIB index file as $COMOUT/gridded/${outfile}.idx"
-      set_trace
-      $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2 $job $COMOUT/gridded/${outfile}
-      $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
-    else
-      echo "${outfile} is global.0p50, not alert out"
-    fi
+  if [[ "${SENDDBN}" = 'YES' ]] && [[ ${outfile} != *global.0p50* ]]; then
+    set +x
+    echo "   Alerting GRIB file as ${COM_WAVE_GRID}/${outfile}"
+    echo "   Alerting GRIB index file as ${COM_WAVE_GRID}/${outfile}.idx"
+    set_trace
+    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2" "${job}" "${COM_WAVE_GRID}/${outfile}"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2_WIDX" "${job}" "${COM_WAVE_GRID}/${outfile}.idx"
+  else
+    echo "${outfile} is global.0p50 or SENDDBN is NO, no alert sent"
+  fi
 
 
-# --------------------------------------------------------------------------- #
-# 3.  Clean up the directory
+  # --------------------------------------------------------------------------- #
+  # 3.  Clean up the directory
 
   rm -f gribfile
 
@@ -244,15 +240,15 @@ source "$HOMEgfs/ush/preamble.sh"
   set_trace
 
   cd ../
-  mv -f ${gribDIR} done.${gribDIR}
+  mv -f "${gribDIR}" "done.${gribDIR}"
 
-  else
-    set +x
-    echo ' '
-    echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
-    echo ' '
-    set_trace
-  fi
+else
+  set +x
+  echo ' '
+  echo " File ${COM_WAVE_GRID}/${outfile} found, skipping generation process"
+  echo ' '
+  set_trace
+fi
 
 
 # End of ww3_grib2.sh -------------------------------------------------- #

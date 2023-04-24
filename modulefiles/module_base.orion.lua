@@ -27,8 +27,11 @@ load(pathJoin("crtm", "2.4.0"))
 load(pathJoin("wgrib2", "2.0.8"))
 setenv("WGRIB2","wgrib2")
 
-prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v1.0.1/modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/feature-GFSv17_com_reorg/modulefiles"))
 load(pathJoin("prepobs", "1.0.1"))
+
+prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/Fit2Obs/v1.0.0/modulefiles"))
+load(pathJoin("fit2obs", "1.0.0"))
 
 -- Temporary until official hpc-stack is updated
 prepend_path("MODULEPATH", "/work2/noaa/global/wkolczyn/save/hpc-stack/modulefiles/stack")

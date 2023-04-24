@@ -16,6 +16,7 @@ cd $DATA
 RUN2=$1
 fend=$2
 DBN_ALERT_TYPE=$3
+destination=$4
 
 DATA_RUN=$DATA/$RUN2
 mkdir -p $DATA_RUN
@@ -77,18 +78,18 @@ while [ $fhcnt -le $fend ] ; do
 
   GEMGRD=${RUN2}_${PDY}${cyc}f${fhr3}
 
-  if [ $RUN2 = "gdas_0p25" ]; then
-    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
-    if [ ! -f $GRIBIN ] ; then
-       echo "WARNING: $GRIBIN FILE is missing"
+  if [[ ${RUN2} = "gdas_0p25" ]]; then
+    export GRIBIN=${COM_ATMOS_GRIB_0p25}/${model}.${cycle}.pgrb2.0p25.f${fhr}
+    if [[ ! -f ${GRIBIN} ]] ; then
+       echo "WARNING: ${GRIBIN} FILE is missing"
     fi
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
+    GRIBIN_chk=${COM_ATMOS_GRIB_0p25}${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
-    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}
-    if [ ! -f $GRIBIN ] ; then
-       echo "WARNING: $GRIBIN FILE is missing"
+    export GRIBIN=${COM_ATMOS_GRIB_1p00}/${model}.${cycle}.pgrb2.1p00.f${fhr}
+    if [[ ! -f ${GRIBIN} ]] ; then
+       echo "WARNING: ${GRIBIN} FILE is missing"
     fi
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}.idx
+    GRIBIN_chk=${COM_ATMOS_GRIB_1p00}/${model}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
 
   icnt=1
@@ -135,17 +136,17 @@ EOF
   export err=$?;err_chk
 
   if [ $SENDCOM = "YES" ] ; then
-     cp $GEMGRD $COMOUT/.$GEMGRD
+     cp "${GEMGRD}" "${destination}/.${GEMGRD}"
      export err=$?
-     if [[ $err -ne 0 ]] ; then
-        echo " File $GEMGRD does not exist."
-        exit $err
+     if [[ ${err} -ne 0 ]] ; then
+        echo " File ${GEMGRD} does not exist."
+        exit "${err}"
      fi
 
-     mv $COMOUT/.$GEMGRD $COMOUT/$GEMGRD
-     if [ $SENDDBN = "YES" ] ; then
-         $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-           $COMOUT/$GEMGRD
+     mv "${destination}/.${GEMGRD}" "${destination}/${GEMGRD}"
+     if [[ ${SENDDBN} = "YES" ]] ; then
+         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+           "${destination}/${GEMGRD}"
      else
        echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
      fi

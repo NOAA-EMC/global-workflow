@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 # Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export CDUMP=${RUN/enkf}
 export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
@@ -19,37 +19,34 @@ export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-gPDY=$(echo ${GDATE} | cut -c1-8)
-gcyc=$(echo ${GDATE} | cut -c9-10)
-GDUMP=${GDUMP:-"gdas"}
+GDATE=$(${NDATE} -${assim_freq} ${PDY}${cyc})
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
 
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX_ENS="enkf${GDUMP}.t${gcyc}z."
+export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/atmos}
-if [ ${RUN_ENVIR} = "nco" ]; then
-  export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/atmos}
-else
-  export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
-fi
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_ATMOS_ANALYSIS
 
-mkdir -m 775 -p ${COMOUT}
-# COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
+    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
 
-export ATMGES="${COMIN_GES}/${GPREFIX}atmf006.nc"
+mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
+
+export ATMGES="${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
 fi
-
 
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
@@ -58,7 +55,7 @@ status=$?
 
 
 if [ ${DOHYBVAR} = "YES" ]; then
-    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/enkf${GPREFIX}atmf006.ensmean.nc"
+    export ATMGES_ENSMEAN="${COM_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc"
     if [ ! -f ${ATMGES_ENSMEAN} ]; then
         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
@@ -67,17 +64,17 @@ fi
 
 
 # Link observational data
-export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
+export PREPQC="${COM_OBS}/${OPREFIX}prepbufr"
 if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
-export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
+export TCVITL="${COM_OBS}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
    if [[ ${MAKE_NSSTBUFR} == "YES" ]]; then
-      export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+      export NSSTBF="${COM_OBS}/${OPREFIX}nsstbufr"
    fi
 fi
-export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
+export PREPQCPF="${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Copy fix file for obsproc  # TODO: Why is this necessary?
 if [[ ${RUN} = "gfs" ]]; then
@@ -98,9 +95,9 @@ status=$?
 # Send Alerts
 ##############################################
 if [ ${SENDDBN} = YES -a ${RUN} = gdas ] ; then
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias ${job} ${COMOUT}/${APREFIX}abias
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_pc ${job} ${COMOUT}/${APREFIX}abias_pc
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_air ${job} ${COMOUT}/${APREFIX}abias_air
+    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias ${job} ${COM_ATMOS_ANALYSIS}/${APREFIX}abias
+    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_pc ${job} ${COM_ATMOS_ANALYSIS}/${APREFIX}abias_pc
+    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_air ${job} ${COM_ATMOS_ANALYSIS}/${APREFIX}abias_air
 fi
 
 

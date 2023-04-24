@@ -3,12 +3,8 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostsbs" -c "base wave wavepostsbs"
 
-export COMPONENT="wave"
-
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
-
-export CDATE=${PDY}${cyc}
 
 export MP_PULSE=0
 
@@ -19,14 +15,9 @@ export USHwave=${USHwave:-${HOMEgfs}/ush}
 export EXECwave=${EXECwave:-${HOMEgfs}/exec}
 
 # Set COM Paths and GETGES environment
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
+YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP COM_WAVE_HISTORY COM_WAVE_GRID
 
-export COMINice=${COMINice:-${COMROOTp2:-${COMROOT}}/omb/prod}
-export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
-export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$(compath.py ${envir}/rtofs/${rtofs_ver})}
-
-mkdir -p ${COMOUT}/gridded
+mkdir -p "${COM_WAVE_GRID}"
 
 
 # Set wave model ID tag to include member number
@@ -36,7 +27,7 @@ mkdir -p ${COMOUT}/gridded
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
 export membTAG
-export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+export WAV_MOD_TAG=${RUN}wave${waveMEMB}
 
 export CFP_VERBOSE=1
 

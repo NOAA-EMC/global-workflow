@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+########## config.landanl ##########
+# configuration common to all land analysis tasks
+
+echo "BEGIN: config.landanl"
+
+obs_list_name=gdas_land_adpsfc_only.yaml
+if [[ "${cyc}" == "18" ]]; then
+    obs_list_name=gdas_land_prototype.yaml
+fi
+
+export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/config/
+export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/${obs_list_name}
+export LANDVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml
+export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
+
+export io_layout_x=@IO_LAYOUT_X@
+export io_layout_y=@IO_LAYOUT_Y@
+
+export JEDIEXE=${HOMEgfs}/exec/fv3jedi_letkf.x
+
+echo "END: config.landanl"

@@ -43,7 +43,7 @@ export DATA=${DATA:-$(pwd)}
 ########################################
 #  Filenames
 ########################################
-gsistat=${gsistat:-$COMIN/gfs.t${cyc}z.gsistat}
+gsistat=${gsistat:-${COM_ATMOS_ANALYSIS}/gfs.t${cyc}z.gsistat}
 export mm_gnormfile=${gnormfile:-${M_FIXgfs}/gfs_minmon_gnorm.txt}
 export mm_costfile=${costfile:-${M_FIXgfs}/gfs_minmon_cost.txt}
 

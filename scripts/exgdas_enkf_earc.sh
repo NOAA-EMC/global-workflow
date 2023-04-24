@@ -6,8 +6,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Begin JOB SPECIFIC work
 ##############################################
 export n=$((10#${ENSGRP}))
-export CDUMP_ENKF=$(echo "${EUPD_CYC:-"gdas"}" | tr a-z A-Z)
-export ARCH_LIST="${ROTDIR}/${RUN}.${PDY}/${cyc}/earc${ENSGRP}"
+export CDUMP_ENKF="${EUPD_CYC:-"gdas"}"
+
+export ARCH_LIST="${COM_TOP}/earc${ENSGRP}"
 
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=${ARCH_CYC}
@@ -18,16 +19,16 @@ fi
 
 [[ -d ${ARCH_LIST} ]] && rm -rf "${ARCH_LIST}"
 mkdir -p "${ARCH_LIST}"
-cd "${ARCH_LIST}"
+cd "${ARCH_LIST}" || exit 2
 
-"${HOMEgfs}"/ush/hpssarch_gen.sh "${RUN}"
+"${HOMEgfs}/ush/hpssarch_gen.sh" "${RUN}"
 status=$?
 if [ "${status}" -ne 0 ]; then
    echo "${HOMEgfs}/ush/hpssarch_gen.sh ${RUN} failed, ABORT!"
    exit "${status}"
 fi
 
-cd "${ROTDIR}"
+cd "${ROTDIR}" || exit 2
 
 source "${HOMEgfs}/ush/file_utils.sh"
 
@@ -40,18 +41,18 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
    TARCMD="htar"
    if [[ ${LOCALARCH} = "YES" ]]; then
        TARCMD="tar"
-       [ ! -d "${ATARDIR}"/"${CDATE}" ] && mkdir -p "${ATARDIR}"/"${CDATE}"
+       if [[ ! -d "${ATARDIR}/${PDY}${cyc}" ]]; then mkdir -p "${ATARDIR}/${PDY}${cyc}"; fi
    fi
 
 #--determine when to save ICs for warm start
    SAVEWARMICA="NO"
    SAVEWARMICB="NO"
-   mm=$(echo "${CDATE}"|cut -c 5-6)
-   dd=$(echo "${CDATE}"|cut -c 7-8)
+   mm="${PDY:4:2}"
+   dd="${PDY:6:2}"
    nday=$(( (10#${mm}-1)*30+10#${dd} ))
    mod=$((nday % ARCH_WARMICFREQ))
-   if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
-   if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
+   if [ "${PDY}${cyc}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
+   if [ "${PDY}${cyc}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
    if [ "${mod}" -eq 0 ] && [ "${cyc}" ] && [ "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
    if [ "${mod}" -eq 0 ] && [ "${cyc}" ] && [ "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
 
@@ -60,32 +61,32 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
        mod1=$((nday1 % ARCH_WARMICFREQ))
        if [ "${mod1}" -eq 0 ] && [ "${cyc}" -eq "${EARCICS_CYC}" ] ; then SAVEWARMICB="YES" ; fi
        if [ "${mod1}" -ne 0 ] && [ "${cyc}" -eq "${EARCICS_CYC}" ] ; then SAVEWARMICB="NO" ; fi
-       if [ "${CDATE}" -eq "${SDATE}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ] ; then SAVEWARMICB="YES" ; fi
+       if [ "${PDY}${cyc}" -eq "${SDATE}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ] ; then SAVEWARMICB="YES" ; fi
    fi
 
-   if [ "${CDATE}" -gt "${SDATE}" ]; then # Don't run for first half cycle
+   if [ "${PDY}${cyc}" -gt "${SDATE}" ]; then # Don't run for first half cycle
 
-     ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_grp${n}.txt")
+     ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_grp${n}.txt")
      status=$?
-     if [ "${status}" -ne 0 ] && [ "${CDATE}" -ge "${firstday}" ]; then
-         echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}_grp${ENSGRP}.tar failed"
+     if [ "${status}" -ne 0 ] && [ "${PDY}${cyc}" -ge "${firstday}" ]; then
+         echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}_grp${ENSGRP}.tar failed"
          exit "${status}"
      fi
 
      if [ "${SAVEWARMICA}" = "YES" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then
-       ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}_restarta_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restarta_grp${n}.txt")
+       ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_restarta_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restarta_grp${n}.txt")
        status=$?
        if [ "${status}" -ne 0 ]; then
-           echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}_restarta_grp${ENSGRP}.tar failed"
+           echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}_restarta_grp${ENSGRP}.tar failed"
            exit "${status}"
        fi
      fi
 
      if [ "${SAVEWARMICB}" = "YES" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then
-       ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}_restartb_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restartb_grp${n}.txt")
+       ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_restartb_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restartb_grp${n}.txt")
        status=$?
        if [ "${status}" -ne 0 ]; then
-           echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}_restartb_grp${ENSGRP}.tar failed"
+           echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}_restartb_grp${ENSGRP}.tar failed"
            exit "${status}"
        fi
      fi
@@ -101,22 +102,22 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
     if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
-#--set the archiving command and create local directories, if necessary
+        #--set the archiving command and create local directories, if necessary
         TARCMD="htar"
         HSICMD="hsi"
         if [[ ${LOCALARCH} = "YES" ]]; then
             TARCMD="tar"
             HSICMD=""
-            [ ! -d "${ATARDIR}"/"${CDATE}" ] && mkdir -p "${ATARDIR}"/"${CDATE}"
+            if [[ ! -d "${ATARDIR}/${PDY}${cyc}" ]]; then mkdir -p "${ATARDIR}/${PDY}${cyc}"; fi
         fi
 
         set +e
-        ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")
+        ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")
         status=$?
-        ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${RUN}.tar"
-        ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${RUN}.tar"
-        if [ "${status}" -ne 0 ] && [ "${CDATE}" -ge "${firstday}" ]; then
-            echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}.tar failed"
+        ${HSICMD} chgrp rstprod "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
+        ${HSICMD} chmod 640 "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
+        if (( status != 0 && ${PDY}${cyc} >= firstday )); then
+            echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}.tar failed"
             exit "${status}"
         fi
         set_strict
@@ -124,16 +125,12 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
     #-- Archive online for verification and diagnostics
     [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
-    cd "${ARCDIR}"
+    cd "${ARCDIR}" || exit 2
 
-    nb_copy "${ROTDIR}/${RUN}.${PDY}/${cyc}/${RUN}.t${cyc}z.enkfstat"        "enkfstat.${RUN}.${CDATE}"
-    nb_copy "${ROTDIR}/${RUN}.${PDY}/${cyc}/${RUN}.t${cyc}z.gsistat.ensmean" "gsistat.${RUN}.${CDATE}.ensmean"
-
-    if [ "${CDUMP_ENKF}" != "GDAS" ]; then
-      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/${RUN}.t${cyc}z.enkfstat"        "enkfstat.gfs.${CDATE}"
-      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/${RUN}.t${cyc}z.gsistat.ensmean" "gsistat.gfs.${CDATE}.ensmean"
-    fi
-
+    nb_copy "${COM_ATMOS_ANALYSIS_ENSSTAT}/${RUN}.t${cyc}z.enkfstat" \
+        "enkfstat.${RUN}.${PDY}${cyc}"
+    nb_copy "${COM_ATMOS_ANALYSIS_ENSSTAT}/${RUN}.t${cyc}z.gsistat.ensmean" \
+        "gsistat.${RUN}.${PDY}${cyc}.ensmean"
 fi
 
 
@@ -143,53 +140,154 @@ fi
 
 ###############################################################
 # ENSGRP 0 also does clean-up
-if [ "${ENSGRP}" -eq 0 ]; then
+###############################################################
+if [[ "${ENSGRP}" -eq 0 ]]; then
+    function remove_files() {
+        # TODO: move this to a new location
+        local directory=$1
+        shift
+        if [[ ! -d ${directory} ]]; then
+            echo "No directory ${directory} to remove files from, skiping"
+            return
+        fi
+        local exclude_list=""
+        if (($# > 0)); then
+            exclude_list=$*
+        fi
+        local file_list
+        declare -a file_list
+        # Suppress warnings about chained commands suppressing exit codes
+        # shellcheck disable=SC2312
+        readarray -t file_list < <(find -L "${directory}" -type f)
+        if (( ${#file_list[@]} == 0 )); then return; fi
+        for exclude in ${exclude_list}; do
+            echo "Excluding ${exclude}"
+            declare -a file_list_old=("${file_list[@]}")
+            # Suppress warnings about chained commands suppressing exit codes
+            # shellcheck disable=SC2312
+            readarray file_list < <(printf -- '%s\n' "${file_list_old[@]}" | grep -v "${exclude}")
+            if (( ${#file_list[@]} == 0 )); then return; fi
+        done
+
+        for file in "${file_list[@]}"; do
+            rm -f "${file}"
+        done
+        # Remove directory if empty
+        rmdir "${directory}" || true
+    }
 
     # Start start and end dates to remove
-    GDATEEND=$(${NDATE} -"${RMOLDEND_ENKF:-24}"  "${CDATE}")
-    GDATE=$(${NDATE} -"${RMOLDSTD_ENKF:-120}" "${CDATE}")
+    GDATEEND=$(${NDATE} -"${RMOLDEND_ENKF:-24}"  "${PDY}${cyc}")
+    GDATE=$(${NDATE} -"${RMOLDSTD_ENKF:-120}" "${PDY}${cyc}")
+
     while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
-        gPDY=$(echo "${GDATE}" | cut -c1-8)
-        gcyc=$(echo "${GDATE}" | cut -c9-10)
+        gPDY="${GDATE:0:8}"
+        gcyc="${GDATE:8:2}"
 
-        # Loop over GDAS and GFS EnKF directories separately.
-        clist="gdas gfs"
-        for ctype in ${clist}; do
-            COMIN_ENS="${ROTDIR}/enkf${ctype}.${gPDY}/${gcyc}"
-            if [ -d "${COMIN_ENS}" ]; then
-                rocotolog="${EXPDIR}/logs/${GDATE}.log"
-                if [ -f "${rocotolog}" ]; then
-                    set +e
-                    testend=$(tail -n 1 "${rocotolog}" | grep "This cycle is complete: Success")
-                    rc=$?
-                    set_strict
-                    if [ "${rc}" -eq 0 ]; then
-                        # Retain f006.ens files.  Remove everything else
-                        for file in $(ls "${COMIN_ENS}" | grep -v f006.ens); do
-                            rm -rf "${COMIN_ENS}"/"${file}"
+        if [[ -d ${COM_TOP} ]]; then
+            rocotolog="${EXPDIR}/logs/${GDATE}.log"
+            if [[ -f "${rocotolog}" ]]; then
+                set +e
+                 # Suppress warnings about chained commands suppressing exit codes
+                # shellcheck disable=SC2312
+                testend=$(tail -n 1 "${rocotolog}" | grep "This cycle is complete: Success")
+                rc=$?
+                set_strict
+                if [ "${rc}" -eq 0 ]; then
+                    case ${CDUMP} in
+                        gdas)   nmem=${NMEM_ENKF};;
+                        gfs)    nmem=${NMEM_EFCS};;
+                        *)
+                            echo "FATAL ERROR: Unknown CDUMP ${CDUMP} during cleanup"
+                            exit 10
+                            ;;
+                    esac
+
+                    readarray memlist< <(seq --format="mem%03g" 1 "${nmem}")
+                    memlist+=("ensstat")
+
+                    for mem in "${memlist[@]}"; do
+                        # Atmos
+                        exclude_list="f006.ens"
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=SC2312
+                        templates=$(compgen -A variable | grep 'COM_ATMOS_.*_TMPL')
+                        for template in ${templates}; do
+                            MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
+                            remove_files "${directory}" "${exclude_list[@]}"
                         done
-                    fi
+
+                        # Wave
+                        exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=SC2312
+                        templates=$(compgen -A variable | grep 'COM_WAVE_.*_TMPL')
+                        for template in ${templates}; do
+                            MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
+                            remove_files "${directory}" "${exclude_list[@]}"
+                        done
+
+                        # Ocean
+                        exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=SC2312
+                        templates=$(compgen -A variable | grep 'COM_OCEAN_.*_TMPL')
+                        for template in ${templates}; do
+                            YMEMDIR="${mem}" MD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
+                            remove_files "${directory}" "${exclude_list[@]}"
+                        done
+
+                        # Ice
+                        exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=SC2312
+                        templates=$(compgen -A variable | grep 'COM_ICE_.*_TMPL')
+                        for template in ${templates}; do
+                            MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
+                            remove_files "${directory}" "${exclude_list[@]}"
+                        done
+
+                        # Aerosols (GOCART)
+                        exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=SC2312
+                        templates=$(compgen -A variable | grep 'COM_CHEM_.*_TMPL')
+                        for template in ${templates}; do
+                            MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
+                            remove_files "${directory}" "${exclude_list[@]}"
+                        done
+
+                        # Mediator
+                        exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=SC2312
+                        templates=$(compgen -A variable | grep 'COM_MED_.*_TMPL')
+                        for template in ${templates}; do
+                            MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
+                            remove_files "${directory}" "${exclude_list[@]}"
+                        done
+                    done
                 fi
             fi
+        fi
 
-            # Remove empty directories
-            if [ -d "${COMIN_ENS}" ] ; then
-                [[ ! "$(ls -A "${COMIN_ENS}")" ]] && rm -rf "${COMIN_ENS}"
-            fi
-        done
+        # Remove any empty directories
+        YMD=${gPDY} HH=${gcyc} generate_com target_dir:COM_TOP_TMPL
+        target_dir="${ROTDIR:?}/${RUN}.${gPDY}/${gcyc}/"
+        if [[ -d ${target_dir} ]]; then
+            find "${target_dir}" -empty -type d -delete
+        fi
 
         # Advance to next cycle
         GDATE=$(${NDATE} +"${assim_freq}" "${GDATE}")
-
     done
-
 fi
 
 # Remove enkf*.$rPDY for the older of GDATE or RDATE
-GDATE=$(${NDATE} -"${RMOLDSTD_ENKF:-120}" "${CDATE}")
+GDATE=$(${NDATE} -"${RMOLDSTD_ENKF:-120}" "${PDY}${cyc}")
 fhmax=${FHMAX_GFS}
-RDATE=$(${NDATE} -"${fhmax}" "${CDATE}")
+RDATE=$(${NDATE} -"${fhmax}" "${PDY}${cyc}")
 if [ "${GDATE}" -lt "${RDATE}" ]; then
     RDATE=${GDATE}
 fi

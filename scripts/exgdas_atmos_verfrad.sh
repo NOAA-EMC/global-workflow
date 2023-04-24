@@ -25,21 +25,11 @@ export RUN_ENVIR=${RUN_ENVIR:-nco}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export envir=${envir:-prod}
-export COMPONENT=${COMPONENT:-atmos}
-
-#  Command line arguments
-export PDY=${1:-${PDY:?}} 
-export cyc=${2:-${cyc:?}}
-
-#  Directories
-export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}/${cyc}/$COMPONENT}
-
 
 #  Filenames
-export biascr=${biascr:-$COMIN/gdas.t${cyc}z.abias}
-export radstat=${radstat:-$COMIN/gdas.t${cyc}z.radstat}
-export satype_file=${satype_file:-${FIXgdas}/gdas_radmon_satype.txt}
+biascr=${biascr:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias}
+radstat=${radstat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat}
+satype_file=${satype_file:-${FIXgdas}/gdas_radmon_satype.txt}
 
 #  Other variables
 export RAD_AREA=${RAD_AREA:-glb}

@@ -28,13 +28,9 @@ export NLN=${NLN:-"/bin/ln -sf"}
 # Scripts.
 ANALYSISSH=${ANALYSISSH:-$HOMEgfs/scripts/exglobal_atmos_analysis.sh}
 
-# Prefix and Suffix Variables.
-export APREFIX=${APREFIX:-""}
-
 # Select obs
 export RUN_SELECT=${RUN_SELECT:-"YES"}
 export USE_SELECT=${USE_SELECT:-"NO"}
-export SELECT_OBS=${SELECT_OBS:-$COMOUT/${APREFIX}obsinput}
 
 # Observation Operator GSI namelist initialization
 SETUP_INVOBS=${SETUP_INVOBS:-""}
@@ -60,8 +56,6 @@ if [ ! -d $DATA ]; then
    mkdir -p $DATA
 fi
 cd $DATA || exit 8
-
-[[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 ################################################################################
 # ObsInput file from ensemble mean

@@ -101,7 +101,7 @@ source "$HOMEgfs/ush/preamble.sh"
  
   if [ -f mod_def.ww3 ]
   then
-    cp mod_def.ww3 $COMOUT/rundata/${CDUMP}wave.mod_def.${grdID}
+    cp mod_def.ww3 "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}"
     mv mod_def.ww3 ../mod_def.$grdID
   else
     set +x
