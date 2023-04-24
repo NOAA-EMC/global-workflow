@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgglobal_aero_analysis_initialize.py
+# exglobal_aero_analysis_initialize.py
 # This script creates an AerosolAnalysis class
 # and runs the initialize method
 # which create and stage the runtime directory
