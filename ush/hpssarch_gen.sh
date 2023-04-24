@@ -347,7 +347,7 @@ if [[ ${type} = "gdas" ]]; then
     # Only add to list if file is present.
     if [[ -s "${file}" ]]; then
       echo  "${file}"      >>gdas.txt
-      echo  "${file}$.idx" >>gdas.txt
+      echo  "${file}.idx"  >>gdas.txt
     fi
   done
   
