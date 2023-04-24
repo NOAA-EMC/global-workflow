@@ -144,3 +144,64 @@ class UFS:
             for tt in tables:
                 with open(tt, 'r') as fih:
                     fh.write(fih.read())
+
+    def mdl_config_defs(self) -> AttrDict:
+        """
+        Description
+        -----------
+
+        This method assigns the default (i.e., non-resolution)
+        dependent attributes for the UFS `model_configure` file.
+
+        Returns
+        -------
+
+        cfg: AttrDict
+
+            A Python dictionary containing the default
+            `model_configure` attributes values.
+
+        """
+
+        cfg = AttrDict()
+
+        cfg.SYEAR = self._config.current_cycle.year
+        cfg.SMONTH = self._config.current_cycle.month
+        cfg.SDAY = self._config.current_cycle.day
+        cfg.SHOUR = self._config.current_cycle.hour
+
+        cfg.FHMAX = self._config.FHMAX
+        cfg.RESTART_INTERVAL = self._config.restart_interval
+
+        # TODO: HRW: This is NoneType for now and will be constructed in a subsquent PR.
+        cfg.FHOUT = None
+        cfg.FILENAME_BASE = "atm", "sfc"
+        cfg.IDEFLATE = self._config.ideflate
+
+        # HRW: Is this resolution dependent?
+        cfg.NBITS = self._config.deflate
+
+        # HRW: What is this? Setting to NoneType for now and will fix
+        # in a subsequent PR.
+        cfg.NSOUT = None
+        cfg.OUTPUT_FILE = f"{self._config.OUTPUT_FILETYPE_ATM}", f"{self._config.OUTPUT_FILETYPE_SFC}"
+        cfg.OUTPUT_GRID = self._config.OUTPUT_GRID
+        cfg.QUILTING = self._config.QUILTING
+        cfg.WRITE_DOPOST = self._config.WRITE_DOPOST
+
+        return cfg
+
+    @logit(logger)
+    def mdl_config(self) -> None:
+        """
+        Description
+        -----------
+
+        This method sets the UFS-weather-model `model_configure` template
+        attributes.
+
+        """
+
+        # Initialize the Python dictionary with the default
+        # `model_configure` attribute values.
+        cfg = self.mdl_config_defs()

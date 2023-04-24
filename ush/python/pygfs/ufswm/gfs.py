@@ -232,3 +232,10 @@ class GFS(UFS):
 
         diag_table = os.path.join(self._config.DATA, 'diag_table')
         self.parse_ufs_templates(diag_table + '.tmpl', diag_table, localconf)
+
+    @logit(logger)
+    def prepare_model_configure(self):
+        """
+        Prepare model_configure related attributes etc.
+        """
+        self.mdl_config()
