@@ -124,11 +124,10 @@ class UFS:
 
         cfg = AttrDict()
 
-        CDATE = datetime_to_YMDH(dt=self._config.CDATE)
-        cfg.SYEAR = CDATE[0:4]
-        cfg.SMONTH = CDATE[5:6]
-        cfg.SDAY = CDATE[7:8]
-        cfg.SHOUR = CDATE[9:10]
+        cfg.SYEAR = self._config.current_cycle.year
+        cfg.SMONTH = self._config.current_cycle.month
+        cfg.SDAY = self._config.current_cycle.day
+        cfg.SHOUR = self._config.current_cycle.hour
 
         cfg.FHMAX = self._config.FHMAX
         cfg.RESTART_INTERVAL = self._config.restart_interval
