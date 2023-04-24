@@ -803,7 +803,7 @@ class Tasks:
 
         deps = []
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
-        data = f'{atm_hist_path}/{self.cdump}.t@Hz.log#dep#.txt'
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm.log#dep#.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
@@ -857,7 +857,7 @@ class Tasks:
     def wavepostbndpntbll(self):
         deps = []
         wave_hist_path = self._template_to_rocoto_cycstring(self._base["COM_WAVE_HISTORY_TMPL"])
-        data = f'{wave_hist_path}/{self.cdump}.t@Hz.logf180.txt'
+        data = f'{wave_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
