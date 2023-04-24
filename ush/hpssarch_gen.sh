@@ -341,13 +341,15 @@ if [[ ${type} = "gdas" ]]; then
     echo  "${dirname}${head}sfcf${fhr}.nc              " >>gdas.txt
     fh=$((fh+3))
   done
-  if [[ ${DO_JEDIOCNVAR} = "NO" ]]; then
-    flist="001 002 004 005 007 008"
-    for fhr in ${flist}; do
-      echo  "${dirname}${head}sfluxgrbf${fhr}.grib2      " >>gdas.txt
-      echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx  " >>gdas.txt
-    done
-  fi
+  flist="001 002 004 005 007 008"
+  for fhr in ${flist}; do
+    file="${dirname}${head}sfluxgrbf${fhr}.grib2"
+    # Only add to list if file is present.
+    if [[ -s "${file}" ]]; then
+      echo  "${file}"      >>gdas.txt
+      echo  "${file}$.idx" >>gdas.txt
+    fi
+  done
   
 
 
