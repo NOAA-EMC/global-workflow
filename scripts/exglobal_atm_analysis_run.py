@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_atm_analysis_run.py
+# exglobal_atm_analysis_run.py
 # This script creates an AtmAnalysis object
 # and runs the execute method
 # which executes the global atm variational analysis
