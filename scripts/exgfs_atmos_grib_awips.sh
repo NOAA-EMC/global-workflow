@@ -21,51 +21,45 @@
 # echo "         FEB 2019 - Removed grid 225"
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 fcsthrs="$1"
 num=$#
-job_name=$(echo $job|sed 's/[jpt]gfs/gfs/')
+job_name=${job/[jpt]gfs/gfs}
 
-fcsthrs=$(printf "%03d" $fcsthrs)
-
-export SCALEDEC=${SCALDEC:-$USHgfs/scale_dec.sh}
-
-if test "$num" -ge 1
-then
+if (( num != 1 )); then
    echo ""
-   echo " Appropriate number of arguments were passed"
-   echo ""
-else
-   echo ""
-   echo " FATAL ERROR: Number of arguments were not passed."
+   echo " FATAL ERROR: Incorrect number of arguments "
    echo ""
    echo ""
-   echo "Usage: $0  \$fcsthrs  (3-digit) "
+   echo "Usage: $0  \${fcsthrs} (3 digits) "
    echo ""
    exit 16
 fi
 
-cd $DATA/awips_g1
+cd "${DATA}" || exit 2
+
+fcsthrs=$(printf "%03d" "${fcsthrs}")
+
+export SCALEDEC=${SCALDEC:-${USHgfs}/scale_dec.sh}
+
+cd ${DATA}/awips_g1 || exit 2
 
 ###############################################
 # Wait for the availability of the pgrb file
 ###############################################
 icnt=1
-while [ $icnt -lt 1000 ]
-do
-  if [ -s $COMIN/${RUN}.${cycle}.pgrb2b.0p25.f${fcsthrs}.idx ]
-  then
-     break
-  fi
+while (( icnt < 1000 )); do
+   if [[ -s "${COM_ATMOS_GRIB_0p25}/${RUN}.${cycle}.pgrb2b.0p25.f${fcsthrs}.idx" ]]; then
+      break
+   fi
 
-  sleep 10
-  icnt=$((icnt + 1))
-  if [ $icnt -ge 180 ]
-  then
-    msg="ABORTING after 30 min of waiting for the pgrb file!"
-    err_exit $msg
-  fi
+   sleep 10
+   icnt=$((icnt + 1))
+   if (( icnt >= 180 )); then
+      msg="FATAL ERROR: No GFS pgrb2 file after 30 min of waiting"
+      err_exit "${msg}"
+   fi
 done
 
 echo " ------------------------------------------"
@@ -80,64 +74,63 @@ echo "###############################################"
 echo " "
 set_trace
 
-   cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}   tmpfile2
-   cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b
-   cat tmpfile2    tmpfile2b   >  tmpfile
-   $WGRIB2 tmpfile | grep  -F -f $PARMproduct/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile
-   $SCALEDEC masterfile
-   $CNVGRIB -g21  masterfile  masterfile.grib1
+cp "${COM_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}" "tmpfile2"
+cp "${COM_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}" "tmpfile2b"
+cat tmpfile2 tmpfile2b > tmpfile
+${WGRIB2} tmpfile | grep -F -f "${PARMproduct}/gfs_awips_parmlist_g2" | \
+   ${WGRIB2} -i -grib masterfile tmpfile
+${SCALEDEC} masterfile
+${CNVGRIB} -g21 masterfile masterfile.grib1
 
-   ln -s masterfile.grib1   fort.11
+ln -s masterfile.grib1 fort.11
 
-#   $OVERGRIDID << EOF
-   ${UTILgfs}/exec/overgridid << EOF
+"${HOMEgfs}/exec/overgridid.x" << EOF
 255
 EOF
 
-   mv fort.51 master.grbf${fcsthrs}
-   rm fort.11
+mv fort.51 "master.grbf${fcsthrs}"
+rm fort.11
 
-   $GRBINDEX master.grbf${fcsthrs}   master.grbif${fcsthrs}
+${GRBINDEX} "master.grbf${fcsthrs}" "master.grbif${fcsthrs}"
 
 ###############################################################
 #    Process GFS GRIB1 AWIP GRIDS 211 PRODUCTS
 ###############################################################
 
-   executable=mkgfsawps
-   DBNALERT_TYPE=GRIB_LOW
+DBNALERT_TYPE=GRIB_LOW
 
-   startmsg
+startmsg
 
 # GRID=211 out to 240 hours:
 
-   export GRID=211
-   export FORT11=master.grbf${fcsthrs}
-   export FORT31=master.grbif${fcsthrs}
-   export FORT51=xtrn.awpgfs${fcsthrs}.${GRID}
+export GRID=211
+export FORT11="master.grbf${fcsthrs}"
+export FORT31="master.grbif${fcsthrs}"
+export FORT51="xtrn.awpgfs${fcsthrs}.${GRID}"
 #   $MKGFSAWPS < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
-    ${UTILgfs}/exec/mkgfsawps < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
-   export err=$?; err_chk 
+"${HOMEgfs}/exec/mkgfsawps.x" < "${PARMwmo}/grib_awpgfs${fcsthrs}.${GRID}" parm=KWBC >> "${pgmout}" 2>errfile
+export err=$?; err_chk 
+##############################
+# Post Files to ${COM_ATMOS_WMO}
+##############################
+
+if [[ "${SENDCOM}" = 'YES' ]]; then
+   cp "xtrn.awpgfs${fcsthrs}.${GRID}" "${COM_ATMOS_WMO}/xtrn.awpgfs${fcsthrs}.${GRID}.${job_name}"
+
    ##############################
-   # Post Files to ${COMOUTwmo}
+   # Distribute Data
    ##############################
 
-   if test "$SENDCOM" = 'YES'
-   then
-      cp xtrn.awpgfs${fcsthrs}.${GRID} ${COMOUTwmo}/xtrn.awpgfs${fcsthrs}.${GRID}.$job_name
-
-      ##############################
-      # Distribute Data
-      ##############################
-
-      if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-         $DBNROOT/bin/dbn_alert $DBNALERT_TYPE $NET $job ${COMOUTwmo}/xtrn.awpgfs${fcsthrs}.${GRID}.$job_name
-      else
-         echo "File $output_grb.$job_name not posted to db_net."
-      fi
+   if [[ "${SENDDBN}" == 'YES' || "${SENDAWIP}" == 'YES' ]] ; then
+      "${DBNROOT}/bin/dbn_alert" "${DBNALERT_TYPE}" "${NET}" "${job}" \
+         "${COM_ATMOS_WMO}/xtrn.awpgfs${fcsthrs}.${GRID}.${job_name}"
+   else
+      echo "File ${output_grb}.${job_name} not posted to db_net."
    fi
+fi
 
-if [ -e "$pgmout" ] ; then
-   cat $pgmout
+if [[ -e "${pgmout}" ]] ; then
+   cat ${pgmout}
 fi
 
 ###############################################################################

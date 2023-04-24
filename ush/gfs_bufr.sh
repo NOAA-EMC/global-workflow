@@ -43,7 +43,7 @@ CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
   levs=${LEVS},makebufr=${bufrflag},
-  dird="${COMOUT}/bufr.${cycle}/bufr",
+  dird="${COM_ATMOS_BUFR}/bufr",
   nstart=${FSTART},nend=${FEND},nint=${FINT},
   nend1=${NEND1},nint1=${NINT1},nint3=${NINT3},
   nsfc=80,f00=${f00flag},fformat=${fformat},np1=0
@@ -58,7 +58,7 @@ for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    # Make sure all files are available:
    ic=0
    while (( ic < 1000 )); do
-      if [ ! -f "${COMIN}/${RUN}.${cycle}.logf${hh3}.${logfm}" ]; then
+      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.logf${hh3}.${logfm}" ]]; then
           sleep 10
           ic=$((ic + 1))
       else
@@ -71,8 +71,8 @@ for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
       fi
    done
    #------------------------------------------------------------------
-   ln -sf "${COMIN}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}" 
-   ln -sf "${COMIN}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
+   ln -sf "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}" 
+   ln -sf "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
 done
 
 #  define input BUFR table file.
@@ -85,8 +85,8 @@ export err=$?
 
 if [ $err -ne 0 ]; then
    echo "GFS postsnd job error, Please check files "
-   echo $COMIN/${RUN}.${cycle}.atmf${hh2}.${atmfm}
-   echo $COMIN/${RUN}.${cycle}.sfcf${hh2}.${atmfm}
+   echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh2}.${atmfm}"
+   echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh2}.${atmfm}"
    err_chk
 fi
 

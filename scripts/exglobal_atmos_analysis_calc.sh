@@ -26,17 +26,8 @@ pwd=$(pwd)
 export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 
 # Base variables
-CDATE=${CDATE:-"2001010100"}
 CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
-
-# Derived base variables
-GDATE=$($NDATE -$assim_freq $CDATE)
-BDATE=$($NDATE -3 $CDATE)
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
-bPDY=$(echo $BDATE | cut -c1-8)
-bcyc=$(echo $BDATE | cut -c9-10)
 
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
@@ -82,22 +73,22 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
-ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003.nc}
-ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004.nc}
-ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005.nc}
-ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006.nc}
-ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007.nc}
-ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008.nc}
-ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009.nc}
+ATMG03=${ATMG03:-${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf003.nc}
+ATMG04=${ATMG04:-${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf004.nc}
+ATMG05=${ATMG05:-${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf005.nc}
+ATMGES=${ATMGES:-${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc}
+ATMG07=${ATMG07:-${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf007.nc}
+ATMG08=${ATMG08:-${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf008.nc}
+ATMG09=${ATMG09:-${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf009.nc}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl.nc}
-DTFANL=${DTFANL:-${COMOUT}/${APREFIX}dtfanl.nc}
-ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl.nc}
+SFCANL=${SFCANL:-${COM_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc}
+DTFANL=${DTFANL:-${COM_ATMOS_ANALYSIS}/${APREFIX}dtfanl.nc}
+ATMANL=${ATMANL:-${COM_ATMOS_ANALYSIS}/${APREFIX}atmanl.nc}
 
 # Increment files
-ATMINC=${ATMINC:-${COMOUT}/${APREFIX}atminc.nc}
+ATMINC=${ATMINC:-${COM_ATMOS_ANALYSIS}/${APREFIX}atminc.nc}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -114,18 +105,18 @@ fi
 
 # Set 4D-EnVar specific variables
 if [ $DOHYBVAR = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
-   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003.nc}
-   ATMI03=${ATMI03:-${COMOUT}/${APREFIX}atmi003.nc}
-   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004.nc}
-   ATMI04=${ATMI04:-${COMOUT}/${APREFIX}atmi004.nc}
-   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005.nc}
-   ATMI05=${ATMI05:-${COMOUT}/${APREFIX}atmi005.nc}
-   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007.nc}
-   ATMI07=${ATMI07:-${COMOUT}/${APREFIX}atmi007.nc}
-   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008.nc}
-   ATMI08=${ATMI08:-${COMOUT}/${APREFIX}atmi008.nc}
-   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009.nc}
-   ATMI09=${ATMI09:-${COMOUT}/${APREFIX}atmi009.nc}
+   ATMA03=${ATMA03:-${COM_ATMOS_ANALYSIS}/${APREFIX}atma003.nc}
+   ATMI03=${ATMI03:-${COM_ATMOS_ANALYSIS}/${APREFIX}atmi003.nc}
+   ATMA04=${ATMA04:-${COM_ATMOS_ANALYSIS}/${APREFIX}atma004.nc}
+   ATMI04=${ATMI04:-${COM_ATMOS_ANALYSIS}/${APREFIX}atmi004.nc}
+   ATMA05=${ATMA05:-${COM_ATMOS_ANALYSIS}/${APREFIX}atma005.nc}
+   ATMI05=${ATMI05:-${COM_ATMOS_ANALYSIS}/${APREFIX}atmi005.nc}
+   ATMA07=${ATMA07:-${COM_ATMOS_ANALYSIS}/${APREFIX}atma007.nc}
+   ATMI07=${ATMI07:-${COM_ATMOS_ANALYSIS}/${APREFIX}atmi007.nc}
+   ATMA08=${ATMA08:-${COM_ATMOS_ANALYSIS}/${APREFIX}atma008.nc}
+   ATMI08=${ATMI08:-${COM_ATMOS_ANALYSIS}/${APREFIX}atmi008.nc}
+   ATMA09=${ATMA09:-${COM_ATMOS_ANALYSIS}/${APREFIX}atma009.nc}
+   ATMI09=${ATMI09:-${COM_ATMOS_ANALYSIS}/${APREFIX}atmi009.nc}
 fi
 
 ################################################################################
@@ -194,7 +185,7 @@ if [ $DOGAUSFCANL = "YES" ]; then
     export err=$?; err_chk
 fi
 
-echo "$CDUMP $CDATE atmanl and sfcanl done at $(date)" > $COMOUT/${APREFIX}loganl.txt
+echo "${CDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COM_ATMOS_ANALYSIS}/${APREFIX}loganl.txt"
 
 ################################################################################
 # Postprocessing
