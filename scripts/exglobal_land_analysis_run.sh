@@ -44,8 +44,8 @@ else
     SNOWDEPTHVAR="snwdph"
 fi
 
-echo "DONG:GFSv17: $GFSv17"
-echo "DONG:SNOWDEPTHVAR: $SNOWDEPTHVAR"
+echo "DONG:GFSv17: ${GFSv17}"
+echo "DONG:SNOWDEPTHVAR: ${SNOWDEPTHVAR}"
 # FOR LETKFOI, CREATE THE PSEUDO-ENSEMBLE
 cd "${WORKDIR}" || exit
 for ens in 001 002
@@ -160,7 +160,7 @@ done
 for tile in 1 2 3 4 5 6
 do
   if [[ ! -e ${FILEDATE}.xainc.sfc_data.tile${tile}.nc ]]; then
-    ${NCP} landinc.${FILEDATE}.sfc_data.tile${tile}.nc ${FILEDATE}.xainc.sfc_data.tile${tile}.nc
+    ${NCP} "landinc.${FILEDATE}.sfc_data.tile${tile}.nc" "${FILEDATE}.xainc.sfc_data.tile${tile}.nc"
   fi
 done
 
