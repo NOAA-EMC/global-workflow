@@ -132,7 +132,7 @@ class UFS:
         cfg.FHMAX = self._config.FHMAX
         cfg.RESTART_INTERVAL = self._config.restart_interval
 
-        # HRW: This is NoneType for now and will be constructed in a subsquent PR.
+        # TODO: HRW: This is NoneType for now and will be constructed in a subsquent PR.
         cfg.FHOUT = None
         cfg.FILENAME_BASE = "atm", "sfc"
         cfg.IDEFLATE = self._config.ideflate
