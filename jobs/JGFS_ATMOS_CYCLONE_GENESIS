@@ -7,14 +7,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 # TODO (#1220) Determine if this is still needed
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 
-export COMPONENT="atmos"
-
 ##############################################
 # Set variables used in the exglobal script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export cmodel=${CDUMP}
+export cmodel=${RUN}
 
 ####################################
 # SENDCOM  - Copy Files From TMPDIR to $COMOUT
@@ -36,18 +32,24 @@ export SCRIPTens_tracker=${SCRIPTens_tracker:-${HOMEens_tracker}/scripts}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export gfsdir=${COMIN}
-export COMINgfs=${COMIN}
-export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GENESIS
+YMD=${PDY} HH=${cyc} GRID="0p25" generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_TMPL
 
-export JYYYY=$(echo ${PDY} | cut -c1-4)
-export COMINgenvit=${COMINgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
-export COMOUTgenvit=${COMOUTgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
+# The following variables are used by the tracker scripts which are outside
+#   of global-workflow and therefore can't be standardized at this time
+export COMIN=${COM_ATMOS_GRIB_0p25}
+export gfsdir=${COM_ATMOS_GRIB_0p25}
+export COMINgfs=${COM_ATMOS_GRIB_0p25}
 
-export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
+export COMINgenvit=${COM_ATMOS_GENESIS}
+export COMOUTgenvit=${COM_ATMOS_GENESIS}
+export COMOUT=${COM_ATMOS_GENESIS}
 
-mkdir -m 775 -p ${COMOUTgenvit}
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
+
+mkdir -m 775 -p "${COMOUTgenvit}"
+
+export JYYYY=${PDY:0:4}
 
 ##############################################
 # Run relevant script

@@ -4,6 +4,7 @@ import numpy as np
 from typing import List
 from applications import AppConfig
 import rocoto.rocoto as rocoto
+from pygw.template import Template, TemplateConstants
 
 __all__ = ['Tasks', 'create_wf_task', 'get_wf_tasks']
 
@@ -69,6 +70,51 @@ class Tasks:
     def _is_this_a_gdas_task(cdump, task_name):
         if cdump != 'enkfgdas':
             raise TypeError(f'{task_name} must be part of the "enkfgdas" cycle and not {cdump}')
+
+    def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:
+        '''
+        Takes a string templated with ${ } and converts it into a string suitable
+          for use in a rocoto <cyclestr>. Some common substitutions are defined by
+          default. Any additional variables in the template and overrides of the
+          defaults can be passed in by an optional dict.
+
+          Variables substitued by default:
+            ${ROTDIR} -> '&ROTDIR;'
+            ${RUN}    -> self.cdump
+            ${DUMP}   -> self.cdump
+            ${MEMDIR} -> ''
+            ${YMD}    -> '@Y@m@d'
+            ${HH}     -> '@H'
+
+        Parameters
+        ----------
+        template: str
+                  Template string with variables to be replaced
+        subs_dict: dict, optional
+                   Dictionary containing substitutions
+
+        Returns
+        -------
+        str
+            Updated string with variables substituted
+
+        '''
+
+        # Defaults
+        rocoto_conversion_dict = {
+            'ROTDIR': '&ROTDIR;',
+            'RUN': self.cdump,
+            'DUMP': self.cdump,
+            'MEMDIR': '',
+            'YMD': '@Y@m@d',
+            'HH': '@H'
+        }
+
+        rocoto_conversion_dict.update(subs_dict)
+
+        return Template.substitute_structure(template,
+                                             TemplateConstants.DOLLAR_CURLY_BRACE,
+                                             rocoto_conversion_dict.get)
 
     def get_resource(self, task_name):
         """
@@ -203,13 +249,14 @@ class Tasks:
 
     def getic(self):
 
-        files = ['INPUT/sfc_data.tile6.nc',
-                 'RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc']
+        atm_input_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_INPUT_TMPL'])
+        atm_restart_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_RESTART_TMPL'])
 
         deps = []
-        for file in files:
-            dep_dict = {'type': 'data', 'data': f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/{file}'}
-            deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{atm_input_path}/sfc_data.tile6.nc'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{atm_restart_path}/@Y@m@d.@H0000.sfcanl_data.tile6.nc'}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
 
         resources = self.get_resource('getic')
@@ -219,16 +266,14 @@ class Tasks:
 
     def init(self):
 
-        files = ['gfs.t@Hz.sanl',
-                 'gfs.t@Hz.atmanl.nemsio',
-                 'gfs.t@Hz.atmanl.nc',
-                 'atmos/gfs.t@Hz.atmanl.nc',
-                 'atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc']
+        atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
+        atm_restart_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_RESTART_TMPL"])
 
         deps = []
-        for file in files:
-            dep_dict = {'type': 'data', 'data': f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/{file}'}
-            deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{atm_anl_path}/gfs.t@Hz.atmanl.nc'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{atm_restart_path}/@Y@m@d.@H0000.sfcanl_data.tile6.nc'}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         if self.app_config.do_hpssarch:
@@ -246,15 +291,19 @@ class Tasks:
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
+        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
+                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
+
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
+        data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        data = f'{dump_path}/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -299,11 +348,14 @@ class Tasks:
 
     def aerosol_init(self):
 
+        input_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_INPUT_TMPL'])
+        restart_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_RESTART_TMPL'])
+
         deps = []
         # Files from current cycle
         files = ['gfs_ctrl.nc'] + [f'gfs_data.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
         for file in files:
-            data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/INPUT/{file}'
+            data = f'{input_path}/{file}'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -321,7 +373,7 @@ class Tasks:
                 [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
 
         for file in files:
-            data = [f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RERUN_RESTART/', file]
+            data = [f'{restart_path}', file]
             dep_dict = {'type': 'data', 'data': data, 'offset': [offset, None]}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -455,11 +507,14 @@ class Tasks:
 
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
+        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
+                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
+        data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
@@ -541,9 +596,10 @@ class Tasks:
 
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
+        ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY"])
 
         deps = []
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/ocean/gdas.t@Hz.ocnf009.nc'
+        data = f'{ocean_hist_path}/gdas.t@Hz.ocnf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
@@ -656,10 +712,12 @@ class Tasks:
 
         deps = []
         if self.app_config.do_atm:
-            data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
+            atm_input_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_INPUT_TMPL"])
+            atm_restart_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_RESTART_TMPL"])
+            data = f'{atm_input_path}/sfc_data.tile6.nc'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
-            data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+            data = f'{atm_restart_path}/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
@@ -797,7 +855,8 @@ class Tasks:
             return grp, dep, lst
 
         deps = []
-        data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.log#dep#.txt'
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.log#dep#.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
@@ -826,7 +885,8 @@ class Tasks:
     def wavepostsbs(self):
         deps = []
         for wave_grid in self._configs['wavepostsbs']['waveGRD'].split():
-            data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/wave/rundata/{self.cdump}wave.out_grd.{wave_grid}.@Y@m@d.@H0000'
+            wave_hist_path = self._template_to_rocoto_cycstring(self._base["COM_WAVE_HISTORY_TMPL"])
+            data = f'{wave_hist_path}/{self.cdump}wave.out_grd.{wave_grid}.@Y@m@d.@H0000'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -849,7 +909,8 @@ class Tasks:
 
     def wavepostbndpntbll(self):
         deps = []
-        data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.logf180.txt'
+        wave_hist_path = self._template_to_rocoto_cycstring(self._base["COM_WAVE_HISTORY_TMPL"])
+        data = f'{wave_hist_path}/{self.cdump}.t@Hz.logf180.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
@@ -926,10 +987,12 @@ class Tasks:
         if task_name not in ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25']:
             raise KeyError(f'Invalid WAFS task: {task_name}')
 
+        wafs_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_WAFS_TMPL"])
+
         deps = []
         fhrlst = [6] + [*range(12, 36 + 3, 3)]
         for fhr in fhrlst:
-            data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.wafs.grb2if{fhr:03d}'
+            data = f'{wafs_path}/{self.cdump}.t@Hz.wafs.grb2if{fhr:03d}'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)

@@ -44,11 +44,14 @@ error_message(){
     echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
 }
 
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_INPUT COM_ICE_RESTART COM_WAVE_RESTART
+YMD=${gPDY} HH=${gcyc} generate_com -rx COM_OCEAN_RESTART
+
 ###############################################################
 # Start staging
 
 # Stage the FV3 initial conditions to ROTDIR (cold start)
-ATMdir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/INPUT"
+ATMdir="${COM_ATMOS_INPUT}"
 [[ ! -d "${ATMdir}" ]] && mkdir -p "${ATMdir}"
 source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/gfs_ctrl.nc"
 target="${ATMdir}/gfs_ctrl.nc"
@@ -68,7 +71,7 @@ for ftype in gfs_data sfc_data; do
 done
 
 # Stage ocean initial conditions to ROTDIR (warm start)
-OCNdir="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART"
+OCNdir="${COM_OCEAN_RESTART}"
 [[ ! -d "${OCNdir}" ]] && mkdir -p "${OCNdir}"
 source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res.nc"
 target="${OCNdir}/${PDY}.${cyc}0000.MOM.res.nc"
@@ -97,7 +100,7 @@ case $OCNRES in
 esac
 
 # Stage ice initial conditions to ROTDIR (cold start as these are SIS2 generated)
-ICEdir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice/RESTART"
+ICEdir="${COM_ICE_RESTART}"
 [[ ! -d "${ICEdir}" ]] && mkdir -p "${ICEdir}"
 ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
 source="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/ice/${ICERES}/cice5_model_${ICERESdec}.res_${PDY}${cyc}.nc"
@@ -109,7 +112,7 @@ err=$((err + rc))
 
 # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
 if [[ "${DO_WAVE}" = "YES" ]]; then
-  WAVdir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave/restart"
+  WAVdir="${COM_WAVE_RESTART}"
   [[ ! -d "${WAVdir}" ]] && mkdir -p "${WAVdir}"
   for grdID in ${waveGRD}; do  # TODO: check if this is a bash array; if so adjust
     source="${BASE_CPLIC}/${CPL_WAVIC}/${PDY}${cyc}/wav/${grdID}/${PDY}.${cyc}0000.restart.${grdID}"

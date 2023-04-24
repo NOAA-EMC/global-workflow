@@ -6,13 +6,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 
-
-###############################
-# Specify NET and RUN name
-##############################
-export COMPONENT="atmos"
-
-
 ###########################################################
 # obtain unique process id (pid) and make temp directories
 ###########################################################
@@ -35,31 +28,29 @@ export USHminmon=${USHminmon:-${HOMEminmon}/ush}
 #  determine PDY and cyc for previous cycle
 #############################################
 
-cdate=$(${NDATE} -6 ${PDY}${cyc})
+pdate=$(${NDATE} -6 ${PDY}${cyc})
 echo 'pdate = ${pdate}'
 
-export P_PDY=$(echo ${cdate} | cut -c1-8)
-export p_cyc=$(echo ${cdate} | cut -c9-10)
+export P_PDY=${pdate:0:8}
+export p_cyc=${pdate:8:2}
 
 
 #############################################
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+YMD=${P_PDY} HH=${p_cyc} generate_com -rx COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
 
-M_TANKverf=${M_TANKverf:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}/minmon}
-export M_TANKverfM1=${M_TANKverfM1:-${COM_IN}/${RUN}.${P_PDY}/${p_cyc}/${COMPONENT}/minmon}
-
-export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+M_TANKverf=${M_TANKverf:-${COM_ATMOS_ANALYSIS}/minmon}
+export M_TANKverfM1=${M_TANKverfM1:-${COM_ATMOS_ANALYSIS_PREV}/minmon}
 
 mkdir -p -m 775 ${M_TANKverf}
-
 
 ########################################
 # Set necessary environment variables
 ########################################
 export CYCLE_INTERVAL=6
-export gsistat=${gsistat:-${COMIN}/gfs.t${cyc}z.gsistat}
+export gsistat=${gsistat:-${COM_ATMOS_ANALYSIS}/gfs.t${cyc}z.gsistat}
 
 
 ########################################################

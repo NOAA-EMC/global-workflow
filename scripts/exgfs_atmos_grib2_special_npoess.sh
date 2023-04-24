@@ -47,66 +47,62 @@ SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
 ##############################################################################
 export SHOUR=000
 export FHOUR=024
-export fhr=$(printf "%03d" $SHOUR)
 
 ############################################################
 # Loop Through the Post Forecast Files 
 ############################################################
-while test 10#$fhr -le $FHOUR
-do
+for (( fhr=$((10#${SHOUR})); fhr <= $((10#${FHOUR})); fhr = fhr + FHINC )); do
 
-    ###############################
-    # Start Looping for the
-    # existence of the restart files
-    ###############################
-    export pgm="postcheck"
-    ic=1
-    while [ $ic -le $SLEEP_LOOP_MAX ]
-    do
-       if test -f $COMIN/gfs.t${cyc}z.pgrb2b.0p50.f${fhr}.idx
-       then
-          break
-       else
-          ic=$(expr $ic + 1)
-          sleep $SLEEP_INT
-       fi
-       ###############################
-       # If we reach this point assume
-       # fcst job never reached restart
-       # period and error exit
-       ###############################
-       if [ $ic -eq $SLEEP_LOOP_MAX ]
-       then
-          export err=9
-          err_chk
-       fi
-    done
+   fhr3=$(printf "%03d" "${fhr}")
 
-######################################################################
-# Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
-######################################################################
-    paramlist=${PARMproduct}/global_npoess_paramlist_g2
-    cp $COMIN/gfs.t${cyc}z.pgrb2.0p50.f${fhr}  tmpfile2
-    cp $COMIN/gfs.t${cyc}z.pgrb2b.0p50.f${fhr}  tmpfile2b
-    cat tmpfile2    tmpfile2b   > tmpfile
-    $WGRIB2 tmpfile | grep -F -f $paramlist | $WGRIB2 -i -grib  pgb2file tmpfile
-    export err=$?; err_chk
+   ###############################
+   # Start Looping for the
+   # existence of the restart files
+   ###############################
+   export pgm="postcheck"
+   ic=1
+   while (( ic <= SLEEP_LOOP_MAX )); do
+      if [[ -f "${COM_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}.idx" ]]; then
+         break
+      else
+         ic=$((ic + 1))
+         sleep "${SLEEP_INT}"
+      fi
+      ###############################
+      # If we reach this point assume
+      # fcst job never reached restart
+      # period and error exit
+      ###############################
+      if (( ic == SLEEP_LOOP_MAX )); then
+         echo "FATAL ERROR: 0p50 grib file not available after max sleep time"
+         export err=9
+         err_chk || exit "${err}"
+      fi
+   done
 
-    if test $SENDCOM = "YES"
-    then
-       cp pgb2file $COMOUT/${RUN}.${cycle}.pgrb2f${fhr}.npoess
+   ######################################################################
+   # Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
+   ######################################################################
+   paramlist=${PARMproduct}/global_npoess_paramlist_g2
+   cp "${COM_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2.0p50.f${fhr3}" tmpfile2
+   cp "${COM_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}" tmpfile2b
+   cat tmpfile2 tmpfile2b > tmpfile
+   ${WGRIB2} tmpfile | grep -F -f ${paramlist} | ${WGRIB2} -i -grib  pgb2file tmpfile
+   export err=$?; err_chk
 
-       if test $SENDDBN = "YES"
-       then
-          $DBNROOT/bin/dbn_alert MODEL GFS_PGBNPOESS $job $COMOUT/${RUN}.${cycle}.pgrb2f${fhr}.npoess
-       else
-          msg="File ${RUN}.${cycle}.pgrb2f${fhr}.npoess not posted to db_net."
-          postmsg "$msg"
-       fi
-       echo "$PDY$cyc$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
-    fi
-    rm tmpfile pgb2file
-    export fhr=$(printf "%03d" $(expr $fhr + $FHINC))
+   if [[ ${SENDCOM} == "YES" ]]; then
+      cp pgb2file "${COM_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
+
+      if [[ ${SENDDBN} == "YES" ]]; then
+         "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGBNPOESS "${job}" \
+            "${COM_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
+      else
+         msg="File ${RUN}.${cycle}.pgrb2f${fhr3}.npoess not posted to db_net."
+         postmsg "${msg}" || echo "${msg}"
+      fi
+      echo "${PDY}${cyc}${fhr3}" > "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.halfdeg.npoess"
+   fi
+   rm tmpfile pgb2file
 
 done
 
@@ -115,89 +111,80 @@ done
 ################################################################
 export SHOUR=000
 export FHOUR=180
-export fhr=$(printf "%03d" $SHOUR)
 
 #################################
 # Process GFS PGRB2_SPECIAL_POST
 #################################
 
-while test 10#$fhr -le $FHOUR
-do
-    ###############################
-    # Start Looping for the 
-    # existence of the restart files
-    ###############################
-    set +x
-    export pgm="postcheck"
-    ic=1
-    while [ $ic -le $SLEEP_LOOP_MAX ]
-    do
-       if test -f $restart_file$fhr
-       then
-          break
-       else
-          ic=$(expr $ic + 1)
-          sleep $SLEEP_INT
-       fi
-       ###############################
-       # If we reach this point assume
-       # fcst job never reached restart 
-       # period and error exit
-       ###############################
-       if [ $ic -eq $SLEEP_LOOP_MAX ]
-       then
-          export err=9
-          err_chk
-       fi
-    done
-    set_trace
+for (( fhr=$((10#${SHOUR})); fhr <= $((10#${FHOUR})); fhr = fhr + FHINC )); do
 
-    ###############################
-    # Put restart files into /nwges 
-    # for backup to start Model Fcst
-    ###############################
+   fhr3=$(printf "%03d" "${fhr}")
 
-    cp $COMIN/${RUN}.t${cyc}z.special.grb2f$fhr masterfile
+   ###############################
+   # Start Looping for the 
+   # existence of the restart files
+   ###############################
+   set +x
+   export pgm="postcheck"
+   ic=1
+   while (( ic <= SLEEP_LOOP_MAX )); do
+      if [[ -f "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.special.grb2if${fhr3}.idx" ]]; then
+         break
+      else
+         ic=$((ic + 1))
+         sleep "${SLEEP_INT}"
+      fi
+      ###############################
+      # If we reach this point assume
+      # fcst job never reached restart
+      # period and error exit
+      ###############################
+      if (( ic == SLEEP_LOOP_MAX )); then
+         echo "FATAL ERROR: Special goes grib file not available after max sleep time"
+         export err=9
+         err_chk || exit "${err}"
+      fi
+   done
+   set_trace
+   ###############################
+   # Put restart files into /nwges 
+   # for backup to start Model Fcst
+   ###############################
+   cp "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.special.grb2if${fhr3}" masterfile
+   export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
+   ${WGRIB2} masterfile ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} \
+      ${opt27} ${opt28} -new_grid ${grid0p25} pgb2file
 
-#    $COPYGB2 -g "0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0" -i1,1 -x masterfile pgb2file
+   export gridconus="lambert:253.0:50.0:50.0 214.5:349:32463.0 1.0:277:32463.0"
+   ${WGRIB2} masterfile ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} \
+      ${opt27} ${opt28} -new_grid ${gridconus} pgb2file2
 
-#    export grid1p0="latlon 0:360:1.0 90:181:-1.0" 
-    export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
-    $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid0p25 pgb2file
+   ${WGRIB2} pgb2file -s > pgb2ifile
 
-# creating higher resolution goes files for US centers    
-#    $COPYGB2 -g "30 6 0 0 0 0 0 0 349 277 1000000  214500000 8 50000000 253000000 32463000 32463000 0 64 50000000 50000000 0 0" -i1,1 -x masterfile pgb2file2 
+   if [[ ${SENDCOM} == "YES" ]]; then
 
-    export gridconus="lambert:253.0:50.0:50.0 214.5:349:32463.0 1.0:277:32463.0"
-    $WGRIB2  masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $gridconus pgb2file2
+      cp pgb2file "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}"
+      cp pgb2ifile "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}.idx"
+      cp pgb2file2 "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221"
 
-    $WGRIB2 pgb2file -s > pgb2ifile
+      if [[ ${SENDDBN} == "YES" ]]; then
+         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25 "${job}" \
+            "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}"
+         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25_WIDX "${job}" \
+            "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx"
+         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMGRD221_PGB2 "${job}" \
+            "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221"
+      fi
 
-    if test $SENDCOM = "YES"
-    then
+      echo "${PDY}${cyc}${fhr}" > "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb"
+   fi
+   rm pgb2file2 pgb2ifile
 
-       cp pgb2file $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}
-       cp pgb2ifile $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx
+   if [[ ${SENDECF} == "YES" ]]; then
+      # TODO Does this even do anything?
+      export fhour=$(( fhr % 6 ))
+   fi
 
-       cp pgb2file2 $COMOUT/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221
-
-       if test $SENDDBN = "YES"
-       then
-          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_0P25 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}
-          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_0P25_WIDX $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx
-          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMGRD221_PGB2 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221
-       fi
-
-       echo "$PDY$cyc$fhr" > $COMOUT/${RUN}.t${cyc}z.control.goessimpgrb
-    fi
-    rm pgb2file2  pgb2ifile
-
-    if test "$SENDECF" = 'YES'
-    then
-       export fhour=$(expr ${fhr} % 6 )
-    fi
-
-    export fhr=$(printf "%03d" $(expr $fhr + $FHINC))
 done
 
 

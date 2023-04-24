@@ -26,22 +26,19 @@ export FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
 # Specify NET and RUN Name and model
 ####################################
 export model=${model:-gfs}
-export COMPONENT="atmos"
 
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
-export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
-
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-if [ ${SENDCOM} = YES ] ; then
-  mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
-fi
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
+GRID="0p50" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GRIB_0p50:COM_ATMOS_GRIB_TMPL
 
+if [[ ${SENDCOM} == "YES" ]]; then
+   mkdir -m 775 -p "${COM_ATMOS_GOES}"
+fi
 
 # TODO - This should be in the ex-script (#1226)
 
@@ -51,11 +48,6 @@ fi
 export SHOUR=000
 export FHOUR=180
 export FHINC=003
-
-#######################################
-# Specify Restart File Name to Key Off
-#######################################
-restart_file=${COMIN}/${RUN}.t${cyc}z.special.grb2if
 
 ####################################
 # Specify Timeout Behavior of Post
@@ -71,46 +63,41 @@ export SLEEP_INT=5
 ####################################
 # Check if this is a restart
 ####################################
-if test -f ${COMIN}/${RUN}.t${cyc}z.control.goessimpgrb2
-then
-   modelrecvy=$(cat < ${COMIN}/${RUN}.t${cyc}z.control.goessimpgrb)
-   recvy_pdy=$(echo ${modelrecvy} | cut -c1-8)
-   recvy_cyc=$(echo ${modelrecvy} | cut -c9-10)
-   recvy_shour=$(echo ${modelrecvy} | cut -c11-13)
+if [[ -f "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb2" ]]; then
+   modelrecvy=$(cat < "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
+   recvy_cyc="${modelrecvy:8:2}"
+   recvy_shour="${modelrecvy:10:13}"
 
-   if test ${RERUN} = "NO"
-   then
-      NEW_SHOUR=$(expr ${recvy_shour} + ${FHINC})
-      if test ${NEW_SHOUR} -ge ${SHOUR}
-      then
+   if [[ ${RERUN} == "NO" ]]; then
+      NEW_SHOUR=$(( recvy_shour + FHINC ))
+      if (( NEW_SHOUR >= SHOUR )); then
          export SHOUR=${NEW_SHOUR}
       fi
-      if test ${recvy_shour} -ge ${FHOUR}
-      then
-         echo="Forecast Pgrb Generation Already Completed to ${FHOUR}"
+      if (( recvy_shour >= FHOUR )); then
+         echo "Forecast Pgrb Generation Already Completed to ${FHOUR}"
       else
-         echo="Starting: PDY=${PDY} cycle=t${recvy_cyc}z SHOUR=${SHOUR}      ."
+         echo "Starting: PDY=${PDY} cycle=t${recvy_cyc}z SHOUR=${SHOUR}"
       fi
    fi
 fi
 
 #############################################################
 # Execute the script
-${HOMEgfs}/scripts/exgfs_atmos_grib2_special_npoess.sh
+"${HOMEgfs}/scripts/exgfs_atmos_grib2_special_npoess.sh"
 export err=$?;err_chk
 #############################################################
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "${KEEPDATA}" != "YES" ] ; then
-  rm -rf ${DATA}
+if [[ "${KEEPDATA}" != "YES" ]] ; then
+  rm -rf "${DATA}"
 fi
 

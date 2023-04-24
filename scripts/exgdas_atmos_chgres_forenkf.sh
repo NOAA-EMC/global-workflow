@@ -65,22 +65,22 @@ SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
 APREFIX=${APREFIX:-""}
 APREFIX_ENS=${APREFIX_ENS:-""}
 # at full resolution
-ATMF03=${ATMF03:-${COMOUT}/${APREFIX}atmf003.nc}
-ATMF04=${ATMF04:-${COMOUT}/${APREFIX}atmf004.nc}
-ATMF05=${ATMF05:-${COMOUT}/${APREFIX}atmf005.nc}
-ATMF06=${ATMF06:-${COMOUT}/${APREFIX}atmf006.nc}
-ATMF07=${ATMF07:-${COMOUT}/${APREFIX}atmf007.nc}
-ATMF08=${ATMF08:-${COMOUT}/${APREFIX}atmf008.nc}
-ATMF09=${ATMF09:-${COMOUT}/${APREFIX}atmf009.nc}
+ATMF03=${ATMF03:-${COM_ATMOS_HISTORY}/${APREFIX}atmf003.nc}
+ATMF04=${ATMF04:-${COM_ATMOS_HISTORY}/${APREFIX}atmf004.nc}
+ATMF05=${ATMF05:-${COM_ATMOS_HISTORY}/${APREFIX}atmf005.nc}
+ATMF06=${ATMF06:-${COM_ATMOS_HISTORY}/${APREFIX}atmf006.nc}
+ATMF07=${ATMF07:-${COM_ATMOS_HISTORY}/${APREFIX}atmf007.nc}
+ATMF08=${ATMF08:-${COM_ATMOS_HISTORY}/${APREFIX}atmf008.nc}
+ATMF09=${ATMF09:-${COM_ATMOS_HISTORY}/${APREFIX}atmf009.nc}
 # at ensemble resolution
-ATMF03ENS=${ATMF03ENS:-${COMOUT}/${APREFIX}atmf003.ensres.nc}
-ATMF04ENS=${ATMF04ENS:-${COMOUT}/${APREFIX}atmf004.ensres.nc}
-ATMF05ENS=${ATMF05ENS:-${COMOUT}/${APREFIX}atmf005.ensres.nc}
-ATMF06ENS=${ATMF06ENS:-${COMOUT}/${APREFIX}atmf006.ensres.nc}
-ATMF07ENS=${ATMF07ENS:-${COMOUT}/${APREFIX}atmf007.ensres.nc}
-ATMF08ENS=${ATMF08ENS:-${COMOUT}/${APREFIX}atmf008.ensres.nc}
-ATMF09ENS=${ATMF09ENS:-${COMOUT}/${APREFIX}atmf009.ensres.nc}
-ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COMOUT_ENS}/mem001/atmos/${APREFIX_ENS}atmf006.nc}
+ATMF03ENS=${ATMF03ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf003.ensres.nc}
+ATMF04ENS=${ATMF04ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf004.ensres.nc}
+ATMF05ENS=${ATMF05ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf005.ensres.nc}
+ATMF06ENS=${ATMF06ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf006.ensres.nc}
+ATMF07ENS=${ATMF07ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf007.ensres.nc}
+ATMF08ENS=${ATMF08ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf008.ensres.nc}
+ATMF09ENS=${ATMF09ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf009.ensres.nc}
+ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COM_ATMOS_HISTORY_MEM}/${APREFIX_ENS}atmf006.nc}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -102,16 +102,7 @@ fi
 
 ################################################################################
 ################################################################################
-#  Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
 
-cd $DATA || exit 99
-
-##############################################################
 # get resolution information
 LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMFCST_ENSRES grid_xt)} # get LONB_ENKF
 LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMFCST_ENSRES grid_yt)} # get LATB_ENFK
@@ -196,7 +187,5 @@ fi
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
-
 
 exit $err

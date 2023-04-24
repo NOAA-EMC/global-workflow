@@ -87,7 +87,7 @@
 #                  $FIXWGTS
 #                  $FIXam/global_hyblev.l65.txt
 #
-#     input data : $COMOUT/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile*.nc
+#     input data : ${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile*.nc
 #
 #     output data: $PGMOUT
 #                  $PGMERR
@@ -131,7 +131,6 @@ FIXfv3=${FIXfv3:-$HOMEgfs/fix/orog}
 FIXam=${FIXam:-$HOMEgfs/fix/am}
 FIXWGTS=${FIXWGTS:-$FIXfv3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 DATA=${DATA:-$(pwd)}
-COMOUT=${COMOUT:-$(pwd)}
 
 #  Filenames.
 XC=${XC:-}
@@ -160,7 +159,8 @@ else
    mkdata=YES
 fi
 cd $DATA||exit 99
-[[ -d $COMOUT ]]||mkdir -p $COMOUT
+[[ -d "${COM_ATMOS_ANALYSIS}" ]] || mkdir -p "${COM_ATMOS_ANALYSIS}"
+[[ -d "${COM_ATMOS_RESTART}" ]] || mkdir -p "${COM_ATMOS_RESTART}"
 cd $DATA
 
 ################################################################################
@@ -169,12 +169,10 @@ export PGM=$GAUSFCANLEXE
 export pgm=$PGM
 $LOGSCRIPT
 
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
-iy=$(echo $CDATE | cut -c1-4)
-im=$(echo $CDATE | cut -c5-6)
-id=$(echo $CDATE | cut -c7-8)
-ih=$(echo $CDATE | cut -c9-10)
+iy=${PDY:0:4}
+im=${PDY:4:2}
+id=${PDY:6:2}
+ih=${cyc}
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 
@@ -182,12 +180,12 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 $NLN $FIXWGTS ./weights.nc
 
 # input analysis tiles (with nst records)
-$NLN $COMOUT/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc   ./anal.tile1.nc
-$NLN $COMOUT/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc   ./anal.tile2.nc
-$NLN $COMOUT/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc   ./anal.tile3.nc
-$NLN $COMOUT/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile4.nc   ./anal.tile4.nc
-$NLN $COMOUT/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile5.nc   ./anal.tile5.nc
-$NLN $COMOUT/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile6.nc   ./anal.tile6.nc
+${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
+${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
+${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
+${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
+${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
+${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
 
 # input orography tiles
 $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile1.nc   ./orog.tile1.nc
@@ -200,7 +198,7 @@ $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile6.nc   ./orog.tile6.nc
 $NLN $SIGLEVEL                                 ./vcoord.txt
 
 # output gaussian global surface analysis files
-$NLN $COMOUT/${APREFIX}sfcanl.nc ./sfc.gaussian.analysis.file
+${NLN} "${COM_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
 
 # Executable namelist
 cat <<EOF > fort.41

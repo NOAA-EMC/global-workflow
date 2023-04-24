@@ -35,7 +35,7 @@ _calling_script=$(basename "${BASH_SOURCE[1]}")
 start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${_calling_script} at ${start_time_human}"
 
-export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'"${id}: "
+declare -rx PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'"${id}: "
 
 set_strict() {
     if [[ ${STRICT:-"YES"} == "YES" ]]; then
@@ -86,6 +86,68 @@ postamble() {
 # shellcheck disable=SC2064
 trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 # shellcheck disable=
+
+function generate_com() {
+    #
+    # Generate a list COM variables from a template by substituting in env variables.
+    #
+    # Each argument must have a corresponding template with the name ${ARG}_TMPL. Any 
+    #   variables in the template are replaced with their values. Undefined variables
+    #   are just removed without raising an error.
+    #
+    # Accepts as options `-r` and `-x`, which do the same thing as the same options in
+    #   `declare`. Variables are automatically marked as `-g` so the variable is visible
+    #   in the calling script.
+    #
+    # Syntax:
+    #   generate_com [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
+    #
+    #   options:
+    #       -r: Make variable read-only (same as `decalre -r`)
+    #       -x: Mark variable for export (same as `declare -x`)
+    #   var1, var2, etc: Variable names whose values will be generated from a template
+    #                    and declared
+    #   tmpl1, tmpl2, etc: Specify the template to use (default is "${var}_TMPL")
+    #
+    #   Examples:
+    #       # Current cycle and RUN, implicitly using template COM_ATMOS_ANALYSIS_TMPL
+    #       YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+    #
+    #       # Previous cycle and gdas using an explicit template
+    #       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    #           COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+    #
+    #       # Current cycle and COM for first member
+    #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
+    #
+    local opts="-g"
+    local OPTIND=1
+    while getopts "rx" option; do
+        opts="${opts}${option}"
+    done
+    shift $((OPTIND-1))
+
+    for input in "$@"; do
+        IFS=':' read -ra args <<< "${input}"
+        local com_var="${args[0]}"
+        local template
+        local value
+        if (( ${#args[@]} > 1 )); then
+            template="${args[1]}"
+        else
+            template="${com_var}_TMPL"
+        fi
+        if [[ ! -v "${template}" ]]; then
+            echo "FATAL ERROR in generate_com: Requested template ${template} not defined!"
+            exit 2
+        fi
+        value=$(echo "${!template}" | envsubst)
+        # shellcheck disable=SC2086
+        declare ${opts} "${com_var}"="${value}"
+    done
+}
+# shellcheck disable=
+declare -xf generate_com
 
 # Turn on our settings
 set_strict
