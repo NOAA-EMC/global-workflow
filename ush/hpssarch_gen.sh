@@ -343,8 +343,12 @@ if [[ ${type} = "gdas" ]]; then
   done
   flist="001 002 004 005 007 008"
   for fhr in ${flist}; do
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2      " >>gdas.txt
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx  " >>gdas.txt
+    file="${dirname}${head}sfluxgrbf${fhr}.grib2"
+    # Only add to list if file is present.
+    if [[ -s "${file}" ]]; then
+      echo  "${file}"      >>gdas.txt
+      echo  "${file}.idx"  >>gdas.txt
+    fi
   done
   
 
