@@ -359,7 +359,7 @@ if [[ ${type} == "gdas" ]]; then
     flist="001 002 004 005 007 008"
     for fhr in ${flist}; do
       file="${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2"
-      if [[ -s ${file}} ]]; then
+      if [[ -s "${file}" ]]; then
         echo "${file}"
         echo "${file}.idx"
       fi
