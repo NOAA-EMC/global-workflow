@@ -348,7 +348,7 @@ def input_args():
         subp.add_argument('--yaml', help='Defaults to substitute from', type=str,
                           required=False, default=os.path.join(_top, 'parm/config/yaml/defaults.yaml'))
 
-    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'ATML', 'S2S', 'S2SW']
+    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW']
 
     # cycled mode additional arguments
     cycled.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
