@@ -312,6 +312,7 @@ export DO_JEDIVAR="NO"
 export DO_JEDIENS="NO"
 export DO_JEDIOCNVAR="NO"
 export DO_JEDILANDDA="YES"
+export DO_MERGENSST="NO"
 
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"

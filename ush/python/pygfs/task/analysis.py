@@ -5,7 +5,7 @@ from logging import getLogger
 from netCDF4 import Dataset
 from typing import List, Dict, Any
 
-from pygw.yaml_file import YAMLFile, parse_j2yaml
+from pygw.yaml_file import YAMLFile, parse_j2yaml, parse_yamltmpl
 from pygw.file_utils import FileHandler
 from pygw.template import Template, TemplateConstants
 from pygw.logger import logit
@@ -35,6 +35,9 @@ class Analysis(Task):
         # some analyses need to stage bias corrections
         bias_dict = self.get_bias_dict()
         FileHandler(bias_dict).sync()
+
+        # link jedi executable to run directory
+        self.link_jediexe()
 
     @logit(logger)
     def get_obs_dict(self: Task) -> Dict[str, Any]:
@@ -171,3 +174,28 @@ class Analysis(Task):
         """
         berror_dict = {'foo': 'bar'}
         return berror_dict
+
+    @logit(logger)
+    def link_jediexe(self: Task) -> None:
+        """Compile a dictionary of background error files to copy
+
+        This method links a JEDI executable to the run directory
+
+        Parameters
+        ----------
+        Task: GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        exe_src = self.task_config.JEDIEXE
+
+        # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
+        logger.debug(f"Link executable {exe_src} to DATA/")
+        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        return
