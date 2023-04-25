@@ -7,7 +7,7 @@ from pygw.logger import logit
 from pygw.task import Task
 from pygfs.ufswm.gfs import GFS
 
-logger = logging.getLogger(__name__.split('.')[-1])
+logger = logging.getLogger(__name__.split(".")[-1])
 
 
 class GFSForecast(Task):
@@ -53,10 +53,14 @@ class GFSForecast(Task):
         self.gfs.stage_fix()
 
         # Stage the different tables
-        self.gfs.stage_tables(table='diag_table', target=os.path.join(
-            self.task_config.DATA, 'diag_table.tmpl'))
-        self.gfs.stage_tables(table='field_table', target=os.path.join(
-            self.task_config.DATA, 'field_table'))
+        self.gfs.stage_tables(
+            table="diag_table",
+            target=os.path.join(self.task_config.DATA, "diag_table.tmpl"),
+        )
+        self.gfs.stage_tables(
+            table="field_table",
+            target=os.path.join(self.task_config.DATA, "field_table"),
+        )
 
     @logit(logger)
     def configure(self) -> None:
