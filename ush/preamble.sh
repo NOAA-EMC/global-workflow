@@ -120,6 +120,7 @@ function generate_com() {
     #       # Current cycle and COM for first member
     #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
     #
+    if [[ ${DEBUG_WORKFLOW:-"NO"} == "NO" ]]; then set +x; fi
     local opts="-g"
     local OPTIND=1
     while getopts "rx" option; do
@@ -144,7 +145,9 @@ function generate_com() {
         value=$(echo "${!template}" | envsubst)
         # shellcheck disable=SC2086
         declare ${opts} "${com_var}"="${value}"
+        echo "generate_com :: ${com_var}=${value}"
     done
+    set_trace
 }
 # shellcheck disable=
 declare -xf generate_com
