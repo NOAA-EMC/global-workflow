@@ -100,12 +100,17 @@ for pr in ${pr_list}; do
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
+      for cases in "${pr_dir}/RUNTESTS/"*; do
+         pslot=$(basename "${cases}")
+         sacct --format=jobid,jobname,stat | grep ${pslog} | awk '{print $1}' | xargs scancel
+      done
+      break
     fi
     if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
       {
         echo "Experiment ${pslot} completed: *SUCCESS*"
         echo "Experiment ${pslot} Completed at $(date)" || true
-        echo -n "with ${num_succeeded} successfully completed jobs" || true
+        echo "with ${num_succeeded} successfully completed jobs" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       #Remove Experment cases that completed successfully

@@ -60,6 +60,9 @@ fi
 for pr in ${pr_list}; do
   echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+  if [[ ! -d "${pr_dir}/RUNTESTS" ]]; then
+     continue
+  fi
   for cases in "${pr_dir}/RUNTESTS/"*; do
     pslot=$(basename "${cases}")
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
