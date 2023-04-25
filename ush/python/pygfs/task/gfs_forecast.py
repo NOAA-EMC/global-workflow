@@ -53,8 +53,10 @@ class GFSForecast(Task):
         self.gfs.stage_fix()
 
         # Stage the different tables
-        self.gfs.stage_tables(table='diag_table', target=os.path.join(self.task_config.DATA, 'diag_table.tmpl'))
-        self.gfs.stage_tables(table='field_table', target=os.path.join(self.task_config.DATA, 'field_table'))
+        self.gfs.stage_tables(table='diag_table', target=os.path.join(
+            self.task_config.DATA, 'diag_table.tmpl'))
+        self.gfs.stage_tables(table='field_table', target=os.path.join(
+            self.task_config.DATA, 'field_table'))
 
     @logit(logger)
     def configure(self) -> None:
@@ -64,3 +66,7 @@ class GFSForecast(Task):
 
         # Generate the diag_table
         self.gfs.generate_diag_table()
+
+        # Generate the nems.configure.
+        self.gfs.prepare_nems_configure()
+        # TODO: Create nems.configure here.

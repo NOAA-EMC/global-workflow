@@ -52,16 +52,22 @@ class GFS(UFS):
         # Get model dates relevant for this run
         self._get_date_info()
 
-        logger.debug(f"UFS-weather-model configuration:\n{pformat(self.ufs_model)}")
+        logger.debug(
+            f"UFS-weather-model configuration:\n{pformat(self.ufs_model)}")
 
     @logit(logger)
     def _get_fix_info(self) -> None:
         self.ufs_model.fix = AttrDict()
-        self.ufs_model.fix.FIX_aer = os.path.join(self.ufs_model.HOMEufs, 'fix', 'aer')
-        self.ufs_model.fix.FIX_am = os.path.join(self.ufs_model.HOMEufs, 'fix', 'am')
-        self.ufs_model.fix.FIX_lut = os.path.join(self.ufs_model.HOMEufs, 'fix', 'lut')
-        self.ufs_model.fix.FIX_orog = os.path.join(self.ufs_model.HOMEufs, 'fix', 'orog')
-        self.ufs_model.fix.FIX_ugwd = os.path.join(self.ufs_model.HOMEufs, 'fix', 'ugwd')
+        self.ufs_model.fix.FIX_aer = os.path.join(
+            self.ufs_model.HOMEufs, 'fix', 'aer')
+        self.ufs_model.fix.FIX_am = os.path.join(
+            self.ufs_model.HOMEufs, 'fix', 'am')
+        self.ufs_model.fix.FIX_lut = os.path.join(
+            self.ufs_model.HOMEufs, 'fix', 'lut')
+        self.ufs_model.fix.FIX_orog = os.path.join(
+            self.ufs_model.HOMEufs, 'fix', 'orog')
+        self.ufs_model.fix.FIX_ugwd = os.path.join(
+            self.ufs_model.HOMEufs, 'fix', 'ugwd')
 
     @logit(logger)
     def _get_res_info(self) -> None:
@@ -139,7 +145,8 @@ class GFS(UFS):
         if self.ufs_model.warm_start:  # warm start
             if self.is_a_rerun():  # This is a rerun restart from an intermediate failure point
                 # TODO: To be implemented
-                raise NotImplementedError("Rerun restarts are not yet implemented!")
+                raise NotImplementedError(
+                    "Rerun restarts are not yet implemented!")
             else:  # This is a warm start from the beginning
                 if self.ufs_model.do_iau:
                     start_date = self.ufs_model.previous_cycle
@@ -164,7 +171,8 @@ class GFS(UFS):
 
         logger.debug('Returning from _get_date_info() with:')
         for key in ['start_date', 'current_date', 'iau_offset', 'fhrot']:
-            logger.debug(f"\tself.ufs_model.{key} = {getattr(self.ufs_model, key)}")
+            logger.debug(
+                f"\tself.ufs_model.{key} = {getattr(self.ufs_model, key)}")
 
     @logit(logger)
     def prepare_DATA(self) -> None:
@@ -239,3 +247,36 @@ class GFS(UFS):
         Prepare model_configure related attributes etc.
         """
         self.mdl_config()
+
+    @logit(logger)
+    def prepare_nems_configure(self: UFS):
+        """
+        Description
+        -----------
+
+        Prepare nems.configure.
+
+        Returns
+        -------
+
+        cfg: AttrDict
+
+            A Python dictionary containing the configuration
+            attributes relevant for `nems.configure`.
+
+        """
+
+        # Define the configuration variables required to build the
+        # nems.configure.
+        cfg = AttrDict()
+
+        # TODO: Populate this dictionary as configurations are added.
+        nems_var_dict = {"atm_model": "fv3",
+                         "atm_omp_num_threads": self._config.ATMTHREADS,
+                         "atm_petlist_bounds": self._config.ATMPETS,
+                         }
+
+        for (key, value) in nems_var_dict.items():
+            setattr(cfg, key, value)
+
+        return cfg

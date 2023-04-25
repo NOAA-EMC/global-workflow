@@ -50,7 +50,8 @@ class UFS:
         try:
             self.ufs_model.yaml_config = config['UFS_CONFIG_FILE']
         except KeyError:
-            raise KeyError(f"FATAL_ERROR: 'UFS_CONFIG_FILE' is not defined in the configuration, ABORT!")
+            raise KeyError(
+                f"FATAL_ERROR: 'UFS_CONFIG_FILE' is not defined in the configuration, ABORT!")
 
         # Add basic keys from `config` to self.ufs_model
         # TODO: we will need COM keys for current and previous cycle dirs
@@ -205,3 +206,16 @@ class UFS:
         # Initialize the Python dictionary with the default
         # `model_configure` attribute values.
         cfg = self.mdl_config_defs()
+
+    @logit(logger)
+    def nems_build(self, tmpl: str, target: str) -> None:
+        """
+        Description
+        -----------
+
+        This method prepares and builds the `nems.configure` file for
+        the UFS forecast.
+
+        """
+
+        cfg =
