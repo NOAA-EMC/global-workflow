@@ -105,7 +105,7 @@ echo "--> radmon_diag_ck.sh"
    #  the radstat file (which is a tar file) are gzipped.  
    #  I find that 0 sized, gzipped file has a size of ~52 
    #  (I assume that's for header and block size).
-   #  
+   #
    #  So for this check we'll assume anything in the radstat
    #  file with a size of > 1000 bytes is suspect.  (That's 
    #  overkill, 100 is probably sufficient, but I'm the 
@@ -113,42 +113,29 @@ echo "--> radmon_diag_ck.sh"
    #  the actual file size of those.  Anything with an 
    #  uncompressed size of 0 goes on the zero_len_diag list.
    #
-   verbose_contents=`tar -tvf ${radstat_file} | grep '_ges'`
+   gz_ges_list=$(tar -xvf ${radstat_file} | grep '_ges')
 
+   for gz_ges in ${gz_ges_list}; do
 
-   #-------------------------------------------------------
-   # note:  need to reset the IFS to line breaks otherwise
-   #        the $vc value in the for loop below will break 
-   #        on all white space, not the line break. 
-   SAVEIFS=$IFS
-   IFS=$(echo -en "\n\b")
-
-
-   for vc in ${verbose_contents}; do
-
-      gzip_len=`echo ${vc} | gawk '{print $3}'`
+      # Check file sizes
+      gzip_len=$(du -b "${gz_ges}" | gawk '{print $1}')
 
       if [[ ${gzip_len} -le 1000 ]]; then
-         test_file=`echo ${vc} | gawk '{print $6}'`
-         tar -xf ${radstat_file} ${test_file} 
+         gunzip "${gz_ges}"
+         ges="${gz_ges%.*}"
 
-         gunzip ${test_file}
-         unzipped_file=`echo ${test_file%.*}`
-         
-         uz_file_size=`ls -la ${unzipped_file} | gawk '{print $5}'`
+         uz_file_size=$(du -b "${ges}" | gawk '{print $1}')
 
-         if [[ ${uz_file_size} -le 0 ]]; then
-            sat=`echo ${unzipped_file} | gawk -F"diag_" '{print $2}' | 
-		gawk -F"_ges" '{print $1}'`
+         if [[ ${uz_file_size} -eq 0 ]]; then
+            sat=$(echo "${ges}" | gawk -F"diag_" '{print $2}' | gawk -F"_ges" '{print $1}')
 
             zero_len_diag="${zero_len_diag} ${sat}"
          fi
 
-         rm -f ${unzipped_file}
+         rm -f "${ges}"
       fi
+      rm -f "${gz_ges}"
    done
-
-   IFS=${SAVEIFS}		# reset IFS to default (white space)
 
    echo ""  
    echo "zero_len_diag = ${zero_len_diag}" 
