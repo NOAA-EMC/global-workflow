@@ -66,7 +66,7 @@ fi
 # Cyclone genesis and cyclone track verification
 #-------------------------------------------------
 
-export ens_tracker_ver=v1.1.15.6
+export ens_tracker_ver=feature-GFSv17_com_reorg # TODO - temporary ahead of new tag/version
 export HOMEens_tracker=$BASE_GIT/TC_tracker/${ens_tracker_ver}
 
 if [[ "${VRFYTRAK}" = "YES" ]]; then

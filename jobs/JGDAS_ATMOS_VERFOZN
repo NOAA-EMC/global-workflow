@@ -6,12 +6,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 
-
-###############################
-# Specify NET, RUN, and COMPONENT name
-##############################
-export COMPONENT="atmos"
-
 export OZNMON_SUFFIX=${OZNMON_SUFFIX:-${NET}}
 
 #---------------------------------------------
@@ -39,20 +33,20 @@ export USHoznmon=${USHoznmon:-${HOMEoznmon}/ush}
 #  determine PDY and cyc for previous cycle
 #############################################
 
-cdate=$(${NDATE} -6 ${PDY}${cyc})
-echo 'pdate = ${pdate}'
+pdate=$(${NDATE} -6 ${PDY}${cyc})
+echo "pdate = ${pdate}"
 
-export P_PDY=$(echo ${cdate} | cut -c1-8)
-export p_cyc=$(echo ${cdate} | cut -c9-10)
+export P_PDY=${pdate:0:8}
+export p_cyc=${pdate:8:2}
 
 #---------------------------------------------
 # OZN_TANKDIR - WHERE OUTPUT DATA WILL RESIDE
 #
 export OZN_TANKDIR=${OZN_TANKDIR:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export TANKverf_ozn=${TANKverf_ozn:-${OZN_TANKDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}/oznmon}
-export TANKverf_oznM1=${TANKverf_oznM1:-${OZN_TANKDIR}/${RUN}.${P_PDY}/${p_cyc}/${COMPONENT}/oznmon}
-export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export TANKverf_ozn=${TANKverf_ozn:-${OZN_TANKDIR}/${RUN}.${PDY}/${cyc}/atmos/oznmon}
+export TANKverf_oznM1=${TANKverf_oznM1:-${OZN_TANKDIR}/${RUN}.${P_PDY}/${p_cyc}/atmos/oznmon}
+
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 
 if [[ ! -d ${TANKverf_ozn} ]]; then
    mkdir -p -m 775 ${TANKverf_ozn}
@@ -69,7 +63,7 @@ fi
 # Set necessary environment variables
 #
 export OZN_AREA=${OZN_AREA:-glb}
-export oznstat=${oznstat:-${COMIN}/gdas.t${cyc}z.oznstat}
+export oznstat=${oznstat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.oznstat}
 
 
 #-------------------------------------------------------
