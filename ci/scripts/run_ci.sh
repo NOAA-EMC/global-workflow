@@ -45,8 +45,9 @@ fi
 
 pr_list_file="open_pr_list"
 
+# Get only thie first two PRs on the list
 if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
-  pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
+  pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}" | awk '{$1,$2}')
 else
   echo "no PRs to process .. exit"
   exit 0
@@ -55,15 +56,23 @@ fi
 #############################################################
 # Loop throu all PRs in PR List and look for expirments in
 # the RUNTESTS dir and for each one run runcotorun on them
+# only upto two cases will advance at a time
 #############################################################
 
 for pr in ${pr_list}; do
   echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+  # If the directory RUNTESTS is not present then
+  # setupexpt.py has no been run yet for this PR
   if [[ ! -d "${pr_dir}/RUNTESTS" ]]; then
      continue
   fi
+  num_cases=0
   for cases in "${pr_dir}/RUNTESTS/"*; do
+    [ -d "${cases}" ] || continue
+    ((num_cases=num_cases+1))
+    # No more than two cases are going forward at a time for each PR
+    [ num_cases -gt 2 ] || continue
     pslot=$(basename "${cases}")
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
@@ -71,4 +80,3 @@ for pr in ${pr_list}; do
     "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
   done
 done
-
