@@ -71,4 +71,3 @@ class GFSForecast(Task):
 
         # Generate the input.nml.
         cfg = self.gfs.prepare_input_nml()
-        
