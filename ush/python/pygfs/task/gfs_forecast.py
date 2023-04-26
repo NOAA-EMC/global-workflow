@@ -66,5 +66,8 @@ class GFSForecast(Task):
         self.gfs.generate_diag_table()
 
         # Generate the nems.configure.
-        self.gfs.prepare_nems_configure()
+        cfg = self.gfs.prepare_nems_configure()
         # TODO: Create nems.configure here.
+
+        # Generate the input.nml.
+        cfg = self.gfs.prepare_input_nml()
