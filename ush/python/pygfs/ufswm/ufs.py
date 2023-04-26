@@ -143,6 +143,18 @@ class UFS:
                 with open(tt, "r") as fih:
                     fh.write(fih.read())
 
+    def input_nml_build(self, tmpl: str, target: str) -> None:
+        """ 
+        Description
+        -----------
+
+        This method prepares and builds the `input.nml` file for
+        the UFS forecast.
+
+
+        """
+        pass
+
     def mdl_config_defs(self) -> AttrDict:
         """
         Description
@@ -163,6 +175,7 @@ class UFS:
 
         cfg = AttrDict()
 
+        # TODO: This could be cleaned up via a dictionary.
         cfg.SYEAR = self._config.current_cycle.year
         cfg.SMONTH = self._config.current_cycle.month
         cfg.SDAY = self._config.current_cycle.day
