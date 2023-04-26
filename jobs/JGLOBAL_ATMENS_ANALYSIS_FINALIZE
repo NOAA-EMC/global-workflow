@@ -8,11 +8,12 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlfinal" -c "base atmensanl at
 ##############################################
 # Set variables used in the script
 ##############################################
+# shellcheck disable=SC2153
 GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-export gPDY=${GDATE:0:8}
-export gcyc=${GDATE:8:2}
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
 GDUMP="gdas"
-export GDUMP_ENS="enkf${GDUMP}"
+GDUMP_ENS="enkf${GDUMP}"
 
 ##############################################
 # Begin JOB SPECIFIC work
