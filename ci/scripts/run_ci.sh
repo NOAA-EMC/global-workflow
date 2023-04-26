@@ -47,7 +47,7 @@ pr_list_file="open_pr_list"
 
 # Get only thie first two PRs on the list
 if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
-  pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}" | awk '{$1,$2}')
+  pr_list=$(awk '{$1,$2}' < "${GFS_CI_ROOT}/${pr_list_file}")
 else
   echo "no PRs to process .. exit"
   exit 0
@@ -69,10 +69,14 @@ for pr in ${pr_list}; do
   fi
   num_cases=0
   for cases in "${pr_dir}/RUNTESTS/"*; do
-    [ -d "${cases}" ] || continue
+    if [[ -d "${cases}" ]]; then
+       continue
+    fi
     ((num_cases=num_cases+1))
     # No more than two cases are going forward at a time for each PR
-    [ "${num_cases}" -gt 2 ] || continue
+    if [[ "${num_cases}" -gt 2 ]]; then
+       continue
+    fi
     pslot=$(basename "${cases}")
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
