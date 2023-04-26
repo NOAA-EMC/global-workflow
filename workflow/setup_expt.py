@@ -73,7 +73,7 @@ def fill_COMROT_cycled(host, inputs):
     rdatestr = datetime_to_YMDH(inputs.idate - to_timedelta('T06H'))
     idatestr = datetime_to_YMDH(inputs.idate)
 
-    if os.path.isdir(os.path.join(inputs.icsdir, 'model_data', 'atmos')):
+    if os.path.isdir(os.path.join(inputs.icsdir, f'{inputs.cdump}.{rdatestr[:8]}', rdatestr[8:], 'model_data', 'atmos')):
         flat_structure = False
     else:
         flat_structure = True
@@ -94,7 +94,7 @@ def fill_COMROT_cycled(host, inputs):
 
     if flat_structure:
         # ICs are in the old flat COM structure
-        if inputs.start in ['warm']:  # This is warm start experiment (only meaningful for atmos)
+        if inputs.start in ['warm']:  # This is warm start experiment
             src_atm_dir = os.path.join('atmos', 'RESTART')
             src_med_dir = os.path.join('med', 'RESTART')
         elif inputs.start in ['cold']:  # This is a cold start experiment
@@ -103,7 +103,7 @@ def fill_COMROT_cycled(host, inputs):
             do_med = False
         # ocean and ice have the same filenames for warm and cold
         src_ocn_rst_dir = os.path.join('ocean', 'RESTART')
-        src_ocn_rst_dir = 'ocean'
+        src_ocn_anl_dir = 'ocean'
         src_ice_dir = os.path.join('ice', 'RESTART')
         src_atm_anl_dir = 'atmos'
     else:
@@ -154,7 +154,7 @@ def fill_COMROT_cycled(host, inputs):
     if do_ocean:
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
         dst_dir = os.path.join(comrot, detdir, dst_ocn_rst_dir)
-        src_dir = os.path.join(inputs.icsdir, detdir, 'ocean', src_ocn_rst_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, src_ocn_rst_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
@@ -169,16 +169,16 @@ def fill_COMROT_cycled(host, inputs):
     # Link ice files
     if do_ice:
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-        dst_dir = os.path.join(comrot, detdir, 'ice', dst_ice_dir)
-        src_dir = os.path.join(inputs.icsdir, detdir, 'ice', src_ice_dir)
+        dst_dir = os.path.join(comrot, detdir, dst_ice_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, src_ice_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
     # Link mediator files
     if do_med:
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-        dst_dir = os.path.join(comrot, detdir, 'med', dst_med_dir)
-        src_dir = os.path.join(inputs.icsdir, detdir, 'med', src_med_dir)
+        dst_dir = os.path.join(comrot, detdir, dst_med_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, src_med_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
@@ -188,8 +188,8 @@ def fill_COMROT_cycled(host, inputs):
             detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
         elif inputs.start in ['cold']:
             detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-        dst_dir = os.path.join(comrot, detdir, 'chem', chem_dir)
-        src_dir = os.path.join(inputs.icsdir, detdir, 'chem', chem_dir)
+        dst_dir = os.path.join(comrot, detdir, chem_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, chem_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
