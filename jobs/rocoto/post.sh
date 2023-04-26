@@ -16,16 +16,11 @@ status=$?
 export job="post"
 export jobid="${job}.$$"
 
-export COMPONENT="atmos"
-
 if [ ${FHRGRP} = 'anl' ]; then
     fhrlst="anl"
-    restart_file=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}/${CDUMP}.t${cyc}z.atm
 else
     fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
-    restart_file=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}/${CDUMP}.t${cyc}z.logf
 fi
-
 
 #---------------------------------------------------------------
 for fhr in ${fhrlst}; do

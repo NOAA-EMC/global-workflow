@@ -119,19 +119,9 @@ export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUM
 # TODO: determine where is RUN actually used in the workflow other than here
 # TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
 #       consistent w/ EE2?
-export COMIN_OBS=${COMIN_OBS:-${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/obs}
-export COMIN_GES_OBS=${COMIN_GES_OBS:-${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/obs}
 
-export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
-export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
-export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
-export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
-export COMINocean=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean
-export COMOUTocean=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean
-export COMINice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
-export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
-export COMINaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
-export COMOUTaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
+# Get all the COM path templates
+source "${EXPDIR}/config.com"
 
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
@@ -141,7 +131,7 @@ export REDOUT="1>"
 export REDERR="2>"
 
 export SENDECF=${SENDECF:-"NO"}
-export SENDCOM=${SENDCOM:-"NO"}
+export SENDCOM=${SENDCOM:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
@@ -381,7 +371,7 @@ export binary_diag=".false."
 
 # Verification options
 export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
-export DO_FIT2OBS="YES"      # Run fit to observations package
+export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive

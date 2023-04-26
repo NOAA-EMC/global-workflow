@@ -7,8 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 ##############################################
 # Set variables used in the exglobal script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export CDUMP=${RUN/enkf}
 
 
 ########################################
@@ -34,14 +33,14 @@ export SCRbufrsnd=${SCRbufrsnd:-${HOMEbufrsnd}/scripts}
 ##############################
 # Define COM Directories
 ##############################
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos}
-export pcom=${pcom:-${COMOUT}/wmo}
-export COMAWP=${COMAWP:-${COMOUT}/gempak}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-[[ ! -d ${COMOUT} ]] && mkdir -p ${COMOUT}
-[[ ! -d ${pcom} ]] && mkdir -p ${pcom}
-[[ ! -d ${COMAWP} ]] && mkdir -p ${COMAWP}
+
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
+  COM_ATMOS_WMO COM_ATMOS_GEMPAK
+
+[[ ! -d ${COM_ATMOS_BUFR} ]] && mkdir -p "${COM_ATMOS_BUFR}"
+[[ ! -d ${COM_ATMOS_GEMPAK} ]] && mkdir -p "${COM_ATMOS_GEMPAK}"
+[[ ! -d ${COM_ATMOS_WMO} ]] && mkdir -p "${COM_ATMOS_WMO}"
 
 
 ########################################################

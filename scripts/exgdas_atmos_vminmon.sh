@@ -29,12 +29,6 @@ export RUN=${RUN:-gdas}
 export envir=${envir:-prod}
 
 ########################################
-#  Command line arguments
-########################################
-export PDY=${1:-${PDY:?}} 
-export cyc=${2:-${cyc:?}}
-
-########################################
 #  Directories
 ########################################
 export DATA=${DATA:-$(pwd)}
@@ -43,7 +37,7 @@ export DATA=${DATA:-$(pwd)}
 ########################################
 #  Filenames
 ########################################
-gsistat=${gsistat:-$COMIN/gdas.t${cyc}z.gsistat}
+gsistat=${gsistat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.gsistat}
 export mm_gnormfile=${gnormfile:-${M_FIXgdas}/gdas_minmon_gnorm.txt}
 export mm_costfile=${costfile:-${M_FIXgdas}/gdas_minmon_cost.txt}
 

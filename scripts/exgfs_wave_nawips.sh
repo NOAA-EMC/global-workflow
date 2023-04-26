@@ -14,8 +14,8 @@
 source "$HOMEgfs/ush/preamble.sh"
 
 #export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
-export grids=${grids:-'glo_10m gso_15m ao_9km'}  #Native grids
-export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
+export grids=${grids:-'glo_30m'}  #Native grids
+export RUNwave=${RUNwave:-${RUN}wave}
 export fstart=${fstart:-0}
 export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
 export FHMAX_HF_WAV=${FHMAX_HF_WAV:-72}
@@ -71,7 +71,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
       *)       gridIDin= 
                grdIDout= ;;
     esac
-    GRIBIN=$COMIN/gridded/$RUNwave.$cycle.$grdIDin.f${fhr}.grib2
+    GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
     GRIBIN_chk=$GRIBIN.idx
 
     icnt=1
@@ -83,7 +83,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         sleep 20
       fi
       if [ $icnt -ge $maxtries ]; then
-        echo "ABORTING after 5 minutes of waiting for $GRIBIN."
+        msg="ABORTING after 5 minutes of waiting for $GRIBIN."
         echo ' '
         echo '**************************** '
         echo '*** ERROR : NO GRIB FILE *** '
@@ -102,7 +102,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                                           $GRIBIN 1> out 2>&1
       OK=$?
       if [ "$OK" != '0' ]; then 
-        echo "ABNORMAL EXIT: ERROR IN interpolation the global grid"
+        msg="ABNORMAL EXIT: ERROR IN interpolation the global grid"
         #set +x
         echo ' '
         echo '************************************************************* '
@@ -158,12 +158,11 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
     fi
 
     if [ $SENDCOM = "YES" ] ; then
-      cpfs $GEMGRD $COMOUT/$GEMGRD
+      cpfs "${GEMGRD}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
       if [ $SENDDBN = "YES" ] ; then
-        $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-        $COMOUT/$GEMGRD
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
       else
-        echo "##### DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} $job $COMOUT/$GEMGRD#####"
+        echo "##### DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} ${job} ${COM_WAVE_GEMPAK}/${GEMGRD}#####"
       fi
     fi
     rm grib_$grid

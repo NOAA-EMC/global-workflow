@@ -25,17 +25,9 @@ source "$HOMEgfs/ush/preamble.sh"
 pwd=$(pwd)
 
 # Base variables
-CDATE=${CDATE:-"2001010100"}
+CDATE="${PDY}${cyc}"
 CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
-
-# Derived base variables
-GDATE=$($NDATE -$assim_freq $CDATE)
-BDATE=$($NDATE -3 $CDATE)
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
-bPDY=$(echo $BDATE | cut -c1-8)
-bcyc=$(echo $BDATE | cut -c9-10)
 
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
@@ -61,10 +53,10 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-RADSTAT=${RADSTAT:-${COMOUT}/${APREFIX}radstat}
-PCPSTAT=${PCPSTAT:-${COMOUT}/${APREFIX}pcpstat}
-CNVSTAT=${CNVSTAT:-${COMOUT}/${APREFIX}cnvstat}
-OZNSTAT=${OZNSTAT:-${COMOUT}/${APREFIX}oznstat}
+RADSTAT=${RADSTAT:-${COM_ATMOS_ANALYSIS}/${APREFIX}radstat}
+PCPSTAT=${PCPSTAT:-${COM_ATMOS_ANALYSIS}/${APREFIX}pcpstat}
+CNVSTAT=${CNVSTAT:-${COM_ATMOS_ANALYSIS}/${APREFIX}cnvstat}
+OZNSTAT=${OZNSTAT:-${COM_ATMOS_ANALYSIS}/${APREFIX}oznstat}
 
 # Remove stat file if file already exists
 [[ -s $RADSTAT ]] && rm -f $RADSTAT
@@ -86,7 +78,7 @@ nm=""
 if [ $CFP_MP = "YES" ]; then
     nm=0
 fi
-DIAG_DIR=${DIAG_DIR:-${COMOUT}/gsidiags}
+DIAG_DIR=${DIAG_DIR:-${COM_ATMOS_ANALYSIS}/gsidiags}
 REMOVE_DIAG_DIR=${REMOVE_DIAG_DIR:-"NO"}
 
 # Set script / GSI control parameters

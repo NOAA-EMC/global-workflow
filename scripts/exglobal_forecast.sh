@@ -77,9 +77,9 @@
 # Main body starts here
 #######################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-SCRIPTDIR=$(dirname $(readlink -f "$0") )/../ush
+SCRIPTDIR="${HOMEgfs}/ush"
 echo "MAIN: environment loaded for $machine platform,Current Script locates in $SCRIPTDIR."
 
 # include all subroutines. Executions later.

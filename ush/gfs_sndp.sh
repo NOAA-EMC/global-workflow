@@ -32,7 +32,7 @@ cd $DATA/$m
 
     for stn in $(cat $file_list)
     do
-       cp ${COMOUT}/bufr.${cycle}/bufr.$stn.$PDY$cyc $DATA/${m}/bufrin
+       cp "${COM_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
        export pgm=tocsbufr.x
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
@@ -45,11 +45,11 @@ cd $DATA/$m
   MAXFILESIZE=600000
  /
 EOF
-       # JY export err=$?; err_chk
-       export err=$?; #err_chk
+       export err=$?;
        if (( err != 0 )); then
-          echo "ERROR in $pgm"
+          echo "FATAL ERROR in ${pgm}"
           err_chk
+          exit 3
        fi
 
        cat $DATA/${m}/bufrout >> $DATA/${m}/gfs_collective$m.fil
@@ -57,13 +57,12 @@ EOF
        rm $DATA/${m}/bufrout
     done
 
-#    if test $SENDCOM = 'NO'
-    if test $SENDCOM = 'YES'
-    then 
-      if [ $SENDDBN = 'YES' ] ; then
-         cp $DATA/${m}/gfs_collective$m.fil $pcom/gfs_collective$m.postsnd_$cyc
-         $DBNROOT/bin/dbn_alert NTC_LOW BUFR $job $pcom/gfs_collective$m.postsnd_$cyc
+    if [[ ${SENDCOM} == 'YES' ]]; then 
+      if [[ ${SENDDBN} == 'YES' ]] ; then
+         cp "${DATA}/${m}/gfs_collective${m}.fil" "${COM_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
+         "${DBNROOT}/bin/dbn_alert" NTC_LOW BUFR "${job}" \
+          "${COM_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
       fi
-      cp $DATA/${m}/gfs_collective$m.fil ${COMOUT}/bufr.${cycle}/.
+      cp "${DATA}/${m}/gfs_collective${m}.fil" "${COM_ATMOS_BUFR}/."
     fi
 

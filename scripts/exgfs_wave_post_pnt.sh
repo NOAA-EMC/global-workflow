@@ -116,16 +116,14 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # Copy model definition files
   iloop=0
-  for grdID in $waveuoutpGRD
-  do
-    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
-    then
+  for grdID in ${waveuoutpGRD}; do
+    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
+      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
-      iloop=$(expr $iloop + 1)
+      cp -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      iloop=$((iloop + 1))
     fi
   done
 
@@ -235,29 +233,28 @@ source "$HOMEgfs/ush/preamble.sh"
 
   if [ "$DOSPC_WAV" = 'YES' ] || [ "$DOBLL_WAV" = 'YES' ]
   then
-    ymdh=$($NDATE -${WAVHINDH} $CDATE)
-    tstart="$(echo $ymdh | cut -c1-8) $(echo $ymdh | cut -c9-10)0000"
+    ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
+    tstart="${ymdh:0:8} ${ymdh:8:2}0000"
     dtspec=3600.            # default time step (not used here)
-    sed -e "s/TIME/$tstart/g" \
-        -e "s/DT/$dtspec/g" \
+    sed -e "s/TIME/${tstart}/g" \
+        -e "s/DT/${dtspec}/g" \
         -e "s/POINT/1/g" \
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
     ln -s mod_def.$waveuoutpGRD mod_def.ww3
-    YMD=$(echo $CDATE | cut -c1-8)
-    HMS="$(echo $CDATE | cut -c9-10)0000"
-    if [ -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ]
-    then
-      ln -s $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ./out_pnt.${waveuoutpGRD}
+    HMS="${cyc}0000"
+    if [[ -f "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
+      ln -s "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
+        "./out_pnt.${waveuoutpGRD}"
     else
       echo '*************************************************** '
-      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${YMD}.${HMS} "
+      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${PDY}.${HMS} "
       echo '*************************************************** '
       echo ' '
       set_trace
-      echo "$WAV_MOD_TAG post $waveuoutpGRD $CDATE $cycle : field output missing."
+      echo "${WAV_MOD_TAG} post ${waveuoutpGRD} ${PDY}${cyc} ${cycle} : field output missing."
       err=4; export err;${errchk}
     fi
 
@@ -351,11 +348,11 @@ source "$HOMEgfs/ush/preamble.sh"
   while [ $fhr -le $FHMAX_WAV_PNT ]; do
 
     echo "   Creating the wave point scripts at : $(date)"
-    ymdh=$($NDATE $fhr $CDATE)
-    YMD=$(echo $ymdh | cut -c1-8)
-    HMS="$(echo $ymdh | cut -c9-10)0000"
+    ymdh=$($NDATE "${fhr}" "${PDY}${cyc}")
+    YMD=${ymdh:0:8}
+    HMS="${ymdh:8:2}0000"
     YMDHMS=${YMD}${HMS}
-    FH3=$(printf %03i $fhr)
+    FH3=$(printf %03i ${fhr})
 
     rm -f tmpcmdfile.${FH3}
     touch tmpcmdfile.${FH3}
@@ -367,7 +364,7 @@ source "$HOMEgfs/ush/preamble.sh"
     export BULLDATA=${DATA}/output_$YMDHMS
     cp $DATA/mod_def.${waveuoutpGRD} mod_def.${waveuoutpGRD}
 
-    pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
+    pfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
     if [ -f  ${pfile} ]
     then
       ln -fs ${pfile} ./out_pnt.${waveuoutpGRD}

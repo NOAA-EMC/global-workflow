@@ -18,12 +18,6 @@ export RUN_ENVIR=${RUN_ENVIR:-nco}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export envir=${envir:-prod}
-export COMPONENT=${COMPONENT:-atmos}
-
-#  Command line arguments
-export PDY=${1:-${PDY:?}} 
-export cyc=${2:-${cyc:?}}
-
 
 #  Other variables
 export SATYPE_FILE=${SATYPE_FILE:-$FIXgdas_ozn/gdas_oznmon_satype.txt}

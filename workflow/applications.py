@@ -184,7 +184,8 @@ class AppConfig:
             configs += ['anal', 'analdiag']
 
         if self.do_jediocnvar:
-            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost']
+            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy']
+
         if self.do_ocean:
             configs += ['ocnpost']
 
@@ -362,7 +363,7 @@ class AppConfig:
 
         if self.do_jediocnvar:
             gdas_gfs_common_tasks_before_fcst += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun',
-                                                  'ocnanalchkpt', 'ocnanalpost']
+                                                  'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
