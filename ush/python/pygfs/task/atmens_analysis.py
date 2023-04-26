@@ -45,8 +45,6 @@ class AtmEnsAnalysis(Analysis):
                 'npz_anl': self.config.LEVS - 1,
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'ATM_WINDOW_LENGTH': f"PT{self.config.assim_freq}H",
-                'comin_ges_atm': self.config.COMIN_GES,
-                'comin_ges_atmens': self.config.COMIN_GES_ENS,
                 'OPREFIX': f"{self.config.EUPD_CYC}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
@@ -169,7 +167,7 @@ class AtmEnsAnalysis(Analysis):
         """
         # ---- tar up diags
         # path of output tar statfile
-        atmensstat = os.path.join(self.task_config.COMOUT, f"{self.task_config.APREFIX}atmensstat")
+        atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX}atmensstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc4'))
@@ -190,12 +188,12 @@ class AtmEnsAnalysis(Analysis):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.task_config.fv3jedi_yaml} to {self.task_config.COMOUT}")
+        logger.info(f"Copying {self.task_config.fv3jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
         src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmens.yaml")
-        dest = os.path.join(self.task_config.COMOUT, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmens.yaml")
+        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmens.yaml")
         logger.debug(f"Copying {src} to {dest}")
         yaml_copy = {
-            'mkdir': [self.task_config.COMOUT],
+            'mkdir': [self.task_config.COM_ATMOS_ANALYSIS_ENS],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
@@ -211,7 +209,7 @@ class AtmEnsAnalysis(Analysis):
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
         """Compile a dictionary of model background files to copy
 
-        This method constructs a dictionary of FV3 RESTART files (coupler, core, tracer)
+        This method constructs a dictionary of FV3 restart files (coupler, core, tracer)
         that are needed for global atmens DA and returns said dictionary for use by the FileHandler class.
 
         Parameters
@@ -224,7 +222,7 @@ class AtmEnsAnalysis(Analysis):
         bkg_dict: Dict
             a dictionary containing the list of model background files to copy for FileHandler
         """
-        # NOTE for now this is FV3 RESTART files and just assumed to be fh006
+        # NOTE for now this is FV3 restart files and just assumed to be fh006
         # loop over ensemble members
         dirlist = []
         bkglist = []
@@ -234,8 +232,8 @@ class AtmEnsAnalysis(Analysis):
             # accumulate directory list for member restart files
             dirlist.append(os.path.join(task_config.DATA, 'bkg', memchar))
 
-            # get FV3 RESTART files, this will be a lot simpler when using history files
-            rst_dir = os.path.join(task_config.comin_ges_atmens, memchar, 'atmos/RESTART')
+            # get FV3 restart files, this will be a lot simpler when using history files
+            rst_dir = os.path.join(task_config.COM_TOP_ENS_GES, memchar, 'model_data/atmos/restart')
             run_dir = os.path.join(task_config.DATA, 'bkg', memchar)
 
             # atmens DA needs coupler
@@ -290,15 +288,15 @@ class AtmEnsAnalysis(Analysis):
 
             # make output directory for member increment
             incdir = [
-                os.path.join(self.task_config.COMOUT, memchar, 'atmos')
+                os.path.join(self.task_config.COM_TOP_ENS, memchar, 'analysis/atmos')
             ]
             FileHandler({'mkdir': incdir}).sync()
 
             # rewrite UFS-DA atmens increments
-            atmges_fv3 = os.path.join(self.task_config.COMIN_GES_ENS, memchar, 'atmos',
+            atmges_fv3 = os.path.join(self.task_config.COM_TOP_ENS_GES, memchar, 'model_data/atmos/history',
                                       f"{self.task_config.CDUMP}.t{self.runtime_config.previous_cycle.hour:02d}z.atmf006.nc")
             atminc_jedi = os.path.join(self.task_config.DATA, 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
-            atminc_fv3 = os.path.join(self.task_config.COMOUT, memchar, 'atmos',
+            atminc_fv3 = os.path.join(self.task_config.COM_TOP_ENS, memchar, 'analysis/atmos',
                                       f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")
 
             # Execute incpy to create the UFS model atm increment file

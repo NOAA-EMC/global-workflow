@@ -9,18 +9,25 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlfinal" -c "base atmensanl at
 # Set variables used in the script
 ##############################################
 GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
 GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}}
-mkdir -p "${COMOUT}"
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} generate_com -rx \
+    COM_ATMOS_ANALYSIS_ENS:COM_ATMOS_ANALYSIS_TMPL
 
-# COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}"
+RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} generate_com -rx \
+    COM_TOP_ENS:COM_TOP_TMPL
+
+RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_TOP_ENS_GES:COM_TOP_TMPL
+
+mkdir -m 755 -p "${COM_ATMOS_ANALYSIS_ENS}"
 
 ###############################################################
 # Run relevant script
