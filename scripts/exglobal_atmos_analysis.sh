@@ -55,8 +55,8 @@ lupp=${lupp:-".true."}
 cnvw_option=${cnvw_option:-".false."}
 
 # Observation usage options
-cao_check=${cao_check:-".false."}
-ta2tb=${ta2tb:-".false."}
+cao_check=${cao_check:-".true."}
+ta2tb=${ta2tb:-".true."}
 
 # Diagnostic files options
 lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
@@ -423,9 +423,7 @@ ${NLN} ${RTMFIX}/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.Emis
 ${NLN} ${RTMFIX}/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
 ${NLN} ${RTMFIX}/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
 ${NLN} ${RTMFIX}/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
-${NLN} ${RTMFIX}/CloudCoeff.bin                ./crtm_coeffs/CloudCoeff.bin
-#$NLN $RTMFIX/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
-
+${NLN} ${RTMFIX}/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
 
 ##############################################################
 # Observational data
