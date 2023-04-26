@@ -144,7 +144,7 @@ class UFS:
                     fh.write(fih.read())
 
     def input_nml_build(self, tmpl: str, target: str) -> None:
-        """ 
+        """
         Description
         -----------
 

@@ -246,15 +246,15 @@ class GFS(UFS):
         cfg: AttrDict
 
             A Python dictionary containing the configuration
-            attributes relevant for `input.nml`. 
+            attributes relevant for `input.nml`.
 
         """
 
-        # Deine the configuration variables required to build the 
+        # Deine the configuration variables required to build the
         # `input.nml`` file.
         cfg = AttrDict()
 
-        # TODO: Optional variables which may be set via `schema`. 
+        # TODO: Optional variables which may be set via `schema`.
         nml_var_dict = {"CCPP_SUITE": self._config.CCPP_SUITE,
                         "MAX_OUTPUT_FIELDS": 300,
                         "INPES": self._config.layout_x,
@@ -273,47 +273,46 @@ class GFS(UFS):
                         "RES_LATLON_DYNAMICS": self._config.res_latlon_dynamics,
                         "NPZP": self._config.NLEVS,
                         "FHZERO": self._config.FHZER,
-                        "LDIAG3D": False, # TODO: default value
-                        "QDIAG3D": False, # TODO: default value
+                        "LDIAG3D": False,  # TODO: default value
+                        "QDIAG3D": False,  # TODO: default value
                         "FHCYC": self._config.FHCYC,
                         "IAER": self._config.IAER,
-                        "IOVR": 3, # TODO: default value
-                        "LHEATSTRG": False, # TODO: default value
-                        "LSEASPRAY": True, # TODO: default value 
-                        "RANDOM_CLDS": True, # TODO: default value
-                        "CNVCLD": True, # TODO: default value
-                        "IMFSHALCNV": 2, # TODO: default value
-                        "IMFDEEPCNV": 2, # TODO: default value
-                        "RAS": False, # TODO: default value
-                        "CDMBWD": [3.5, 0.25], # TODO: default value
-                        "CPLCHM": False, # TODO: default value
-                        "CPLWAV": False, # TODO: default value
-                        "CPLWAV2ATM": False, # TODO: default value
-                        "DO_SPPT": False, # TODO: default value
-                        "DO_SHUM": False, # TODO: default value
-                        "DO_SKEB": False, # TODO: default value
-                        "LNDP_TYPE": 2, # TODO: default value
-                        "N_VAR_LNDP": 0, # TODO: default value
-                        "FSCAV_AERO": "*0.0", # TODO: default value
-                        "DO_RRTMG": False, # TODO: default value
-                        "DOGP_CLDOPTICS_LUT": False, # TODO: default value
-                        "DOGP_LWSCAT": False, # TODO: default value
-                        "PROGSIGMA": True, # TODO: default value
+                        "IOVR": 3,  # TODO: default value
+                        "LHEATSTRG": False,  # TODO: default value
+                        "LSEASPRAY": True,  # TODO: default value
+                        "RANDOM_CLDS": True,  # TODO: default value
+                        "CNVCLD": True,  # TODO: default value
+                        "IMFSHALCNV": 2,  # TODO: default value
+                        "IMFDEEPCNV": 2,  # TODO: default value
+                        "RAS": False,  # TODO: default value
+                        "CDMBWD": [3.5, 0.25],  # TODO: default value
+                        "CPLCHM": False,  # TODO: default value
+                        "CPLWAV": False,  # TODO: default value
+                        "CPLWAV2ATM": False,  # TODO: default value
+                        "DO_SPPT": False,  # TODO: default value
+                        "DO_SHUM": False,  # TODO: default value
+                        "DO_SKEB": False,  # TODO: default value
+                        "N_VAR_LNDP": 0,  # TODO: default value
+                        "FSCAV_AERO": "*0.0",  # TODO: default value
+                        "DO_RRTMG": False,  # TODO: default value
+                        "DOGP_CLDOPTICS_LUT": False,  # TODO: default value
+                        "DOGP_LWSCAT": False,  # TODO: default value
+                        "PROGSIGMA": True,  # TODO: default value
                         "FNALBC": self._config.FNALBC,
                         "FNVETC": self._config.FNVETC,
                         "FNSOTC": self._config.FNSOTC,
                         "FNSMCC_control": self._config.FNSMCC,
                         "FNMSKH_control": self._config.FNMSKH,
                         "FNABSC": self._config.FNABSC,
-                        "STOCHINI": None, # TODO: This currently does not have a default value.
+                        "STOCHINI": None,  # TODO: This currently does not have a default value.
                         "SKEB": self._config.SKEB,
                         "SHUM": self._config.SHUM,
                         "SPPT": self._config.SPPT,
                         "LNDP_TYPE": self._config.lndp_type,
-                        "LNDP_MODEL_TYPE": None, # TODO: This currently does not have a default value.
+                        "LNDP_MODEL_TYPE": None,  # TODO: This currently does not have a default value.
                         "LNDP_VAR_LIST": self._config.lndp_var_list,
                         "LNDP_PRT_LIST": self._config.lndp_prt_list
-        }
+                        }
 
         for (key, value) in nml_var_dict.items():
             setattr(cfg, key, value)
