@@ -188,8 +188,8 @@ def fill_COMROT_cycled(host, inputs):
             detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
         elif inputs.start in ['cold']:
             detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-        dst_dir = os.path.join(comrot, detdir, 'chem', chem_dir)
-        src_dir = os.path.join(inputs.icsdir, detdir, 'chem', chem_dir)
+        dst_dir = os.path.join(comrot, detdir, chem_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, chem_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
