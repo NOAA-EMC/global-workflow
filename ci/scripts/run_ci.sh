@@ -47,7 +47,7 @@ pr_list_file="open_pr_list"
 
 # Get only thie first two PRs on the list
 if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
-  pr_list=$(awk '{$1,$2}' < "${GFS_CI_ROOT}/${pr_list_file}")
+  pr_list=$(awk '{print$1,$2}' < "${GFS_CI_ROOT}/${pr_list_file}")
 else
   echo "no PRs to process .. exit"
   exit 0
@@ -69,7 +69,7 @@ for pr in ${pr_list}; do
   fi
   num_cases=0
   for cases in "${pr_dir}/RUNTESTS/"*; do
-    if [[ -d "${cases}" ]]; then
+    if [[ ! -d "${cases}" ]]; then
        continue
     fi
     ((num_cases=num_cases+1))
