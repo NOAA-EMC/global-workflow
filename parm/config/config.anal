@@ -29,7 +29,7 @@ fi
 # Set parameters specific to L127
 if [[ ${LEVS} = "128" ]]; then
   export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
-  export SETUP="gpstop=55,nsig_ext=56,${SETUP:-}"
+  export SETUP="gpstop=55,nsig_ext=45,${SETUP:-}"
 fi
 
 # Set namelist option for LETKF
