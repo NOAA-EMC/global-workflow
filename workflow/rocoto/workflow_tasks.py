@@ -547,7 +547,7 @@ class Tasks:
 
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
-        ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY"])
+        ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"])
 
         deps = []
         data = f'{ocean_hist_path}/gdas.t@Hz.ocnf009.nc'
