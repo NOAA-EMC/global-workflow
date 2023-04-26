@@ -517,7 +517,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
           export layout_x=${layout_x_gfs}
           export layout_y=${layout_y_gfs}
           export WRITE_GROUP=${WRITE_GROUP_GFS}
-          export WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP_GFS}
+          export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GFS}
           ntasks_fv3=${ntasks_fv3_gfs}
           ntasks_quilt=${ntasks_quilt_gfs}
           nthreads_fv3=${nthreads_fv3_gfs}
@@ -530,7 +530,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         # PETS for quilting
         if [[ "${QUILTING:-}" = ".true." ]]; then
           (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
-          (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP ))
+          (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD * nthreads_fv3 ))
           export WRTTASK_PER_GROUP
         else
           QUILTPETS=0
