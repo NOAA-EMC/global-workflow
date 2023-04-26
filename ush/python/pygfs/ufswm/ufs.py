@@ -9,13 +9,12 @@ from pygw.file_utils import FileHandler
 from pygw.logger import logit
 from pygw.yaml_file import parse_yamltmpl
 
-logger = logging.getLogger(__name__.split('.')[-1])
+logger = logging.getLogger(__name__.split(".")[-1])
 
-UFS_VARIANTS = ['GFS']
+UFS_VARIANTS = ["GFS"]
 
 
 class UFS:
-
     @logit(logger, name="UFS")
     def __init__(self, model_name: str, config: Dict[str, Any], HOMEufs: str = None):
         """Initialize the UFS-weather-model generic class and check if the model_name is a valid variant
@@ -48,14 +47,14 @@ class UFS:
         # This file will contain the list of fix files, diag_tables, etc.
         # Over time, this can be contain more information that typically was provided via _config.
         try:
-            self.ufs_model.yaml_config = config['UFS_CONFIG_FILE']
+            self.ufs_model.yaml_config = config["UFS_CONFIG_FILE"]
         except KeyError:
             raise KeyError(f"FATAL_ERROR: 'UFS_CONFIG_FILE' is not defined in the configuration, ABORT!")
 
         # Add basic keys from `config` to self.ufs_model
         # TODO: we will need COM keys for current and previous cycle dirs
         # TODO: see if this map can be abstracted out to a yaml or included in yaml_config
-        config_keys = ['current_cycle', 'previous_cycle', 'DATA', 'RUN']
+        config_keys = ["current_cycle", "previous_cycle", "DATA", "RUN"]
         for key in config_keys:
             self.ufs_model[key] = config[key]
 
@@ -67,10 +66,9 @@ class UFS:
         drawing the value from ctx['VARIABLE']
         """
 
-        with open(input_template, 'r') as fhi:
+        with open(input_template, "r") as fhi:
             file_in = fhi.read()
-            file_out = Template.substitute_structure(
-                file_in, TemplateConstants.AT_SQUARE_BRACES, ctx.get)
+            file_out = Template.substitute_structure(file_in, TemplateConstants.AT_SQUARE_BRACES, ctx.get)
 
         # If there are unrendered bits, find out what they are
         pattern = r"@\[.*?\]+"
@@ -81,7 +79,7 @@ class UFS:
             print(matches)  # TODO: improve the formatting of this message
         # TODO: Should we abort here? or continue to write output_file?
 
-        with open(output_file, 'w') as fho:
+        with open(output_file, "w") as fho:
             fho.write(file_out)
 
     @staticmethod
@@ -140,9 +138,9 @@ class UFS:
         if not isinstance(tables, list):
             tables = list(tables)
 
-        with open(target, 'w') as fh:
+        with open(target, "w") as fh:
             for tt in tables:
-                with open(tt, 'r') as fih:
+                with open(tt, "r") as fih:
                     fh.write(fih.read())
 
     def mdl_config_defs(self) -> AttrDict:
@@ -184,7 +182,10 @@ class UFS:
         # HRW: What is this? Setting to NoneType for now and will fix
         # in a subsequent PR.
         cfg.NSOUT = None
-        cfg.OUTPUT_FILE = f"{self._config.OUTPUT_FILETYPE_ATM}", f"{self._config.OUTPUT_FILETYPE_SFC}"
+        cfg.OUTPUT_FILE = (
+            f"{self._config.OUTPUT_FILETYPE_ATM}",
+            f"{self._config.OUTPUT_FILETYPE_SFC}",
+        )
         cfg.OUTPUT_GRID = self._config.OUTPUT_GRID
         cfg.QUILTING = self._config.QUILTING
         cfg.WRITE_DOPOST = self._config.WRITE_DOPOST
@@ -205,3 +206,16 @@ class UFS:
         # Initialize the Python dictionary with the default
         # `model_configure` attribute values.
         cfg = self.mdl_config_defs()
+
+    @logit(logger)
+    def nems_build(self, tmpl: str, target: str) -> None:
+        """
+        Description
+        -----------
+
+        This method prepares and builds the `nems.configure` file for
+        the UFS forecast.
+
+        """
+
+        pass

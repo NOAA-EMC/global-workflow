@@ -8,7 +8,12 @@ fix:
   - !INC ${HOMEgfs}/parm/ufs/fix/gfs/land.fixed_files.yaml
 
 model_configure:
-  - ${HOMEgfs}/sorc/ufs_model.fd/parm/model_configure.IN
+# TODO: I believe this path should be:
+  - ${HOMEgfs}/sorc/ufs_model.fd/tests/parm/model_configure.IN
+  #- ${HOMEgfs}/sorc/ufs_model.fd/parm/model_configure.IN
+
+nems.configure:
+  - ${HOMEgfs}/sorc/ufs_model.fd/tests/parm/nems.configure.atm.IN
 
 diag_table:  # This list will be concatenated into a "$(DATA)/diag_table.tmpl"
   gdas:  # Use this set for RUN = gdas (DA cycles)
