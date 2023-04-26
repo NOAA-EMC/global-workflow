@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-export GFS_CI_ROOT="TDB" #TODO
-export GFS_MODULE_USE="${GFS_CI_ROOT}/global-workflow/modulefiles"
+export GFS_CI_ROOT=/work2/noaa/global/mterry/GFS_CI_ROOT
+export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
 export SLURM_ACCOUNT=fv3-cpu
 export SALLOC_ACCOUNT=${SLURM_ACCOUNT}
 export SBATCH_ACCOUNT=${SLURM_ACCOUNT}

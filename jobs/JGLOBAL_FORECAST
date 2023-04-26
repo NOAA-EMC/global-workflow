@@ -6,13 +6,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 ##############################################
 # Set variables used in the script
 ##############################################
-# Set wave variables
-if [ ${DO_WAVE:-"NO"} = "YES" ]; then
-  # WAVE component directory
-  export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
-  export COMINwave=${COMINwave:-$(compath.py ${envir}/${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
-  export COMOUTwave=${COMOUTwave:-$(compath.py -o ${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
-fi
+export CDUMP=${RUN/enkf}
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -31,6 +25,45 @@ if [ ${CDUMP} = "gfs" ]; then
 else
     export FHMAX_HF=0
     export FHOUT_HF=0
+fi
+
+
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+# shellcheck disable=
+declare -x gPDY="${GDATE:0:8}"
+declare -x gcyc="${GDATE:8:2}"
+
+# Construct COM variables from templates (see config.com)
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
+  COM_ATMOS_HISTORY COM_ATMOS_MASTER COM_TOP
+
+RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
+  COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+if [[ ${DO_WAVE} == "YES" ]]; then
+  YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
+  RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
+    COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+  declare -rx RUNwave="${RUN}wave"
+fi
+
+if [[ ${DO_OCN} == "YES" ]]; then
+  YMD=${PDY} HH=${cyc} generate_com -rx COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT \
+    COM_OCEAN_HISTORY COM_OCEAN_ANALYSIS
+  RUN=${CDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
+    COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+fi
+
+if [[ ${DO_ICE} == "YES" ]]; then
+  YMD=${PDY} HH=${cyc} generate_com -rx COM_ICE_HISTORY COM_ICE_INPUT COM_ICE_RESTART
+  RUN=${CDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
+    COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+fi
+
+if [[ ${DO_AERO} == "YES" ]]; then
+  YMD=${PDY} HH=${cyc} generate_com -rx COM_CHEM_HISTORY
 fi
 
 

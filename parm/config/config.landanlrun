@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.landanlrun ##########
+# Land Analysis specific
+
+echo "BEGIN: config.landanlrun"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" landanlrun
+
+echo "END: config.landanlrun"

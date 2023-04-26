@@ -43,13 +43,13 @@ else
 fi
 
 #---------------------------------------------------------------
-  $WGRIB2 $COMOUT/${FLUXFL} $option1 $option21 $option22 $option23 $option24 \
-                          $option25 $option26 $option27 $option28 \
-                          -new_grid $grid1p0  fluxfile_${fhr3}_1p00
+  ${WGRIB2} "${COM_ATMOS_MASTER}/${FLUXFL}" ${option1} ${option21} ${option22} ${option23} \
+    ${option24} ${option25} ${option26} ${option27} ${option28} \
+    -new_grid ${grid1p0} fluxfile_${fhr3}_1p00
   export err=$?; err_chk
 
-  $WGRIB2 -s fluxfile_${fhr3}_1p00 > $COMOUT/${PREFIX}flux.1p00.f${fhr3}.idx
-  cp fluxfile_${fhr3}_1p00  $COMOUT/${PREFIX}flux.1p00.f${fhr3}
+  ${WGRIB2} -s "fluxfile_${fhr3}_1p00" > "${COM_ATMOS_GRIB_1p00}/${PREFIX}flux.1p00.f${fhr3}.idx"
+  cp "fluxfile_${fhr3}_1p00" "${COM_ATMOS_GRIB_1p00}/${PREFIX}flux.1p00.f${fhr3}"
 #---------------------------------------------------------------
 
 

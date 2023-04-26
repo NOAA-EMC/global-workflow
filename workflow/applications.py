@@ -108,8 +108,9 @@ class AppConfig:
         self.do_fit2obs = _base.get('DO_FIT2OBS', True)
         self.do_metp = _base.get('DO_METP', False)
         self.do_jediatmvar = _base.get('DO_JEDIVAR', False)
-        self.do_jediens = _base.get('DO_JEDIENS', False)
+        self.do_jediatmens = _base.get('DO_JEDIENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
+        self.do_mergensst = _base.get('DO_MERGENSST', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
@@ -183,7 +184,8 @@ class AppConfig:
             configs += ['anal', 'analdiag']
 
         if self.do_jediocnvar:
-            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost']
+            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy']
+
         if self.do_ocean:
             configs += ['ocnpost']
 
@@ -193,8 +195,8 @@ class AppConfig:
             configs += ['gldas']
 
         if self.do_hybvar:
-            if self.do_jediens:
-                configs += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost']
+            if self.do_jediatmens:
+                configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
@@ -360,7 +362,8 @@ class AppConfig:
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
         if self.do_jediocnvar:
-            gdas_gfs_common_tasks_before_fcst += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost']
+            gdas_gfs_common_tasks_before_fcst += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun',
+                                                  'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
@@ -375,8 +378,8 @@ class AppConfig:
         hybrid_tasks = []
         hybrid_after_eupd_tasks = []
         if self.do_hybvar:
-            if self.do_jediens:
-                hybrid_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
+            if self.do_jediatmens:
+                hybrid_tasks += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal', 'echgres']
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']

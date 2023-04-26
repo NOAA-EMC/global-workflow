@@ -26,7 +26,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -40,7 +40,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '                      *** MWW3 INIT CONFIG  SCRIPT ***'
   echo '                      ********************************'
   echo '                          Initial configuration script'
-  echo "                       Model identifier : ${CDUMP}wave"
+  echo "                       Model identifier : ${RUN}wave"
   echo ' '
   echo "Starting at : $(date)"
   echo ' '
@@ -82,18 +82,16 @@ source "$HOMEgfs/ush/preamble.sh"
   array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavepostGRD $waveinterpGRD)
   grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
-  for grdID in ${grdALL}
-  do
-    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
-    then
+  for grdID in ${grdALL}; do
+    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
+      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
       set_trace
-      cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
+      cp "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
 
     else
       set +x
-      echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
+      echo " Mod def file for ${grdID} not found in ${COM_WAVE_PREP}. Setting up to generate ..."
       echo ' '
       set_trace
       if [ -f $FIXwave/ww3_grid.inp.$grdID ]
@@ -120,7 +118,7 @@ source "$HOMEgfs/ush/preamble.sh"
         err=2;export err;${errchk}
       fi
 
-      [[ ! -d $COMOUT/rundata ]] && mkdir -m 775 -p $COMOUT/rundata
+      [[ ! -d "${COM_WAVE_PREP}" ]] && mkdir -m 775 -p "${COM_WAVE_PREP}"
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
         echo "$nmoddef $USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
       else
@@ -184,10 +182,8 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 1.a.3 File check
 
-  for grdID in ${grdALL}
-  do
-    if [ -f ${COMOUT}/rundata/${CDUMP}wave.mod_def.$grdID ]
-    then
+  for grdID in ${grdALL}; do
+    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
       echo ' '
       echo " mod_def.$grdID succesfully created/copied "
