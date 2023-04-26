@@ -207,13 +207,18 @@ case "${fv3_res}" in
         ;;
 esac
 
+(( WRTTASK_PER_GROUP_PER_THREAD = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6 ))
+(( WRTTASK_PER_GROUP_PER_THREAD_GFS = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS * 6 ))
+export WRTTASK_PER_GROUP_PER_THREAD
+export WRTTASK_PER_GROUP_PER_THREAD_GFS
+
 (( ntasks_fv3 = layout_x * layout_y * 6 ))
 (( ntasks_fv3_gfs = layout_x_gfs * layout_y_gfs * 6 ))
 export ntasks_fv3
 export ntasks_fv3_gfs
 
-(( ntasks_quilt = WRITE_GROUP * WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6 ))
-(( ntasks_quilt_gfs = WRITE_GROUP_GFS * WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS * 6 ))
+(( ntasks_quilt = WRITE_GROUP * WRTTASK_PER_GROUP_PER_THREAD ))
+(( ntasks_quilt_gfs = WRITE_GROUP_GFS * WRTTASK_PER_GROUP_PER_THREAD_GFS ))
 export ntasks_quilt
 export ntasks_quilt_gfs
 
