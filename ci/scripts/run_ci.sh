@@ -72,7 +72,7 @@ for pr in ${pr_list}; do
     [ -d "${cases}" ] || continue
     ((num_cases=num_cases+1))
     # No more than two cases are going forward at a time for each PR
-    [ num_cases -gt 2 ] || continue
+    [ "${num_cases}" -gt 2 ] || continue
     pslot=$(basename "${cases}")
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
