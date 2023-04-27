@@ -103,7 +103,7 @@ def fill_COMROT_cycled(host, inputs):
             do_med = False
         # ocean and ice have the same filenames for warm and cold
         src_ocn_rst_dir = os.path.join('ocean', 'RESTART')
-        src_ocn_rst_dir = 'ocean'
+        src_ocn_anl_dir = 'ocean'
         src_ice_dir = os.path.join('ice', 'RESTART')
         src_atm_anl_dir = 'atmos'
     else:

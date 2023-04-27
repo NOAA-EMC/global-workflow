@@ -45,7 +45,6 @@ class AtmAnalysis(Analysis):
                 'npz_anl': self.config.LEVS - 1,
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'ATM_WINDOW_LENGTH': f"PT{self.config.assim_freq}H",
-                'comin_ges_atm': self.config.COMIN_GES,
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
@@ -139,7 +138,7 @@ class AtmAnalysis(Analysis):
         """
         # ---- tar up diags
         # path of output tar statfile
-        atmstat = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.APREFIX}atmstat")
+        atmstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc4'))
@@ -160,12 +159,12 @@ class AtmAnalysis(Analysis):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.task_config.fv3jedi_yaml} to {self.task_config.COMOUTatmos}")
+        logger.info(f"Copying {self.task_config.fv3jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
         src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
-        dest = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
+        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         logger.debug(f"Copying {src} to {dest}")
         yaml_copy = {
-            'mkdir': [self.task_config.COMOUTatmos],
+            'mkdir': [self.task_config.COM_ATMOS_ANALYSIS],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
@@ -177,7 +176,7 @@ class AtmAnalysis(Analysis):
         biaslist = []
         for bfile in biasls:
             src = os.path.join(biasdir, bfile)
-            dest = os.path.join(self.task_config.COMOUTatmos, bfile)
+            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, bfile)
             biaslist.append([src, dest])
 
         gprefix = f"{self.task_config.GPREFIX}"
@@ -193,11 +192,11 @@ class AtmAnalysis(Analysis):
                 src = os.path.join(obsdir, ofile)
                 tfile = ofile.replace(gprefix, aprefix)
                 tfile = tfile.replace(gsuffix, asuffix)
-                dest = os.path.join(self.task_config.COMOUTatmos, tfile)
+                dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, tfile)
                 biaslist.append([src, dest])
 
         bias_copy = {
-            'mkdir': [self.task_config.COMOUTatmos],
+            'mkdir': [self.task_config.COM_ATMOS_ANALYSIS],
             'copy': biaslist,
         }
         FileHandler(bias_copy).sync()
@@ -213,7 +212,7 @@ class AtmAnalysis(Analysis):
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
         """Compile a dictionary of model background files to copy
 
-        This method constructs a dictionary of FV3 RESTART files (coupler, core, tracer)
+        This method constructs a dictionary of FV3 restart files (coupler, core, tracer)
         that are needed for global atm DA and returns said dictionary for use by the FileHandler class.
 
         Parameters
@@ -226,10 +225,10 @@ class AtmAnalysis(Analysis):
         bkg_dict: Dict
             a dictionary containing the list of model background files to copy for FileHandler
         """
-        # NOTE for now this is FV3 RESTART files and just assumed to be fh006
+        # NOTE for now this is FV3 restart files and just assumed to be fh006
 
-        # get FV3 RESTART files, this will be a lot simpler when using history files
-        rst_dir = os.path.join(task_config.comin_ges_atm, 'RESTART')  # for now, option later?
+        # get FV3 restart files, this will be a lot simpler when using history files
+        rst_dir = os.path.join(task_config.COM_ATMOS_RESTART_PREV)  # for now, option later?
         run_dir = os.path.join(task_config.DATA, 'bkg')
 
         # Start accumulating list of background files to copy
@@ -415,14 +414,14 @@ class AtmAnalysis(Analysis):
         case = int(self.task_config.CASE[1:])
 
         file = f"{self.task_config.GPREFIX}" + "atmf006" + f"{'' if case_anl == case else '.ensres'}" + ".nc"
-        atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, file)
+        atmges_fv3 = os.path.join(self.task_config.COM_ATMOS_HISTORY_PREV, file)
 
         # Set the path/name to the input UFS-DA atm increment file (atminc_jedi)
         # and the output UFS model atm increment file (atminc_fv3)
         cdate = to_fv3time(self.task_config.current_cycle)
         cdate_inc = cdate.replace('.', '_')
         atminc_jedi = os.path.join(self.task_config.DATA, 'anl', f'atminc.{cdate_inc}z.nc4')
-        atminc_fv3 = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc")
+        atminc_fv3 = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc")
 
         # Reference the python script which does the actual work
         incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
