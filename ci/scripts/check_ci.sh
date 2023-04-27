@@ -102,7 +102,7 @@ for pr in ${pr_list}; do
       sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
          pslot=$(basename "${kill_cases}")
-         sacct --format=jobid,jobname%35,stat | grep "${pslot}" | awk '{print $1}' | xargs scancel || true
+         sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
       done
       break
     fi
