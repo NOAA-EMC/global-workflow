@@ -64,7 +64,7 @@ class Analysis(Task):
         for ob in observers:
             obfile = ob['obs space']['obsdatain']['engine']['obsfile']
             basename = os.path.basename(obfile)
-            copylist.append([os.path.join(self.task_config['COMIN_OBS'], basename), obfile])
+            copylist.append([os.path.join(self.task_config['COM_OBS'], basename), obfile])
         obs_dict = {
             'mkdir': [os.path.join(self.runtime_config['DATA'], 'obs')],
             'copy': copylist
@@ -101,7 +101,7 @@ class Analysis(Task):
                 prefix = '.'.join(basename.split('.')[:-2])
                 for file in ['satbias.nc4', 'satbias_cov.nc4', 'tlapse.txt']:
                     bfile = f"{prefix}.{file}"
-                    copylist.append([os.path.join(self.task_config.comin_ges_atm, bfile), os.path.join(obdir, bfile)])
+                    copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
 
         bias_dict = {
             'mkdir': [os.path.join(self.runtime_config.DATA, 'bc')],
