@@ -46,7 +46,6 @@ class LandAnalysis(Analysis):
                 'npz_anl': self.config['LEVS'] - 1,
                 'LAND_WINDOW_BEGIN': _window_begin,
                 'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
-                'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),  # 'chem' is COMPONENT, aerosol fields are in 'atmos' tracers
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
@@ -141,7 +140,7 @@ class LandAnalysis(Analysis):
         """
         # ---- tar up diags
         # path of output tar statfile
-        landstat = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['APREFIX']}landstat")
+        landstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}landstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
@@ -158,10 +157,10 @@ class LandAnalysis(Analysis):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
-        dest = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
+        src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.letkfoi.yaml")
+        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.letkfoi.yaml")
         yaml_copy = {
-            'mkdir': [self.task_config['COMOUTatmos']],
+            'mkdir': [self.task_config.COM_ATMOS_ANALYSIS],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
@@ -173,8 +172,8 @@ class LandAnalysis(Analysis):
         bkglist = []
         for itile in range(1, self.task_config.ntiles + 1):
             sfcdata = template.format(tilenum=itile)
-            src = os.path.join(self.task_config.comin_ges_atm, 'RESTART', sfcdata)
-            dest = os.path.join(self.task_config.COMOUTatmos, f'landges.{sfcdata}')
+            src = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, sfcdata)
+            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f'landges.{sfcdata}')
             bkglist.append([src, dest])
         FileHandler({'copy': bkglist}).sync()
 
@@ -189,7 +188,7 @@ class LandAnalysis(Analysis):
         for itile in range(1, self.task_config.ntiles + 1):
             sfcdata = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'anl', sfcdata)
-            dest = os.path.join(self.task_config.COMOUTatmos, sfcdata)
+            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, sfcdata)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
@@ -200,7 +199,7 @@ class LandAnalysis(Analysis):
         for itile in range(1, self.task_config.ntiles + 1):
             sfcdata = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'anl', sfcdata)
-            dest = os.path.join(self.task_config.COMOUTatmos, sfcdata)
+            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, sfcdata)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
@@ -216,7 +215,7 @@ class LandAnalysis(Analysis):
         # only need the sfc_data files
         template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'landinc.' + template)
-        bkg_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', template)
+        bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, template)
         # get list of increment vars
         incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'landanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
@@ -242,7 +241,7 @@ class LandAnalysis(Analysis):
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
 
         # get FV3 RESTART files, this will be a lot simpler when using history files
-        rst_dir = os.path.join(task_config.comin_ges_atm, 'RESTART')  # for now, option later?
+        rst_dir = os.path.join(task_config.COM_ATMOS_RESTART_PREV)  # for now, option later?
         run_dir = os.path.join(task_config['DATA'], 'bkg')
 
         # Start accumulating list of background files to copy

@@ -8,19 +8,12 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "landanlrun" -c "base landanl landanlr
 ##############################################
 # Set variables used in the script
 ##############################################
-GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-GDUMP="gdas"
+
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-mkdir -p "${COMOUT}"
-
-# COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
 
 ###############################################################
 # Run relevant script
