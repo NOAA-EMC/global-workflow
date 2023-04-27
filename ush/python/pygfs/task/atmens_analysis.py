@@ -9,12 +9,13 @@ from typing import Dict, List, Any
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
-from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMDH
+from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD
 from pygw.fsutils import rm_p, chdir
 from pygw.yaml_file import parse_yamltmpl, parse_j2yaml, save_as_yaml
 from pygw.logger import logit
 from pygw.executable import Executable
 from pygw.exceptions import WorkflowException
+from pygw.template import Template, TemplateConstants
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -233,7 +234,19 @@ class AtmEnsAnalysis(Analysis):
             dirlist.append(os.path.join(task_config.DATA, 'bkg', memchar))
 
             # get FV3 restart files, this will be a lot simpler when using history files
-            rst_dir = os.path.join(task_config.COM_TOP_ENS_GES, memchar, 'model_data/atmos/restart')
+            template = task_config.COM_ATMOS_RESTART_TMPL
+            tmpl_dict = {
+                'ROTDIR': task_config.ROTDIR,
+                'RUN': self.runtime_config.RUN,
+                'YMD': to_YMD(task_config.previous_cycle),
+                'HH': task_config.previous_cycle.strftime('%H')
+            }
+
+            # get FV3 restart files, this will be a lot simpler when using history files
+            tmpl_dict['MEMDIR'] = memchar
+            rst_dir = Template.substitute_structure(template, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_dict.get)
+            os.makedirs(rst_dir, mode=0o775, exist_ok=True)
+
             run_dir = os.path.join(task_config.DATA, 'bkg', memchar)
 
             # atmens DA needs coupler
