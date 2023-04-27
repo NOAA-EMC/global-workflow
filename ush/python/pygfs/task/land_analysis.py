@@ -178,8 +178,8 @@ class LandAnalysis(Analysis):
         FileHandler({'copy': bkglist}).sync()
 
         # ---- add increments to RESTART files
-        #logger.info('Adding increments to RESTART files')
-        #self._add_fms_cube_sphere_increments()
+        # logger.info('Adding increments to RESTART files')
+        # self._add_fms_cube_sphere_increments()
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
@@ -263,4 +263,3 @@ class LandAnalysis(Analysis):
             'copy': bkglist,
         }
         return bkg_dict
-
