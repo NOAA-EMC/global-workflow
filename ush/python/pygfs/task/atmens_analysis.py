@@ -300,17 +300,30 @@ class AtmEnsAnalysis(Analysis):
             memchar = f"mem{imem:03d}"
 
             # make output directory for member increment
-            incdir = [
-                os.path.join(self.task_config.COM_TOP_ENS, memchar, 'analysis/atmos')
-            ]
-            FileHandler({'mkdir': incdir}).sync()
+            template = self.task_config.COM_ATMOS_ANALYSIS_TMPL
+            tmpl_dict = {
+                'ROTDIR': self.task_config.ROTDIR,
+                'RUN': self.runtime_config.RUN,
+                'YMD': to_YMD(self.task_config.current_cycle),
+                'HH': self.task_config.current_cycle.strftime('%H')
+            }
+            tmpl_dict['MEMDIR'] = memchar
+            incdir = Template.substitute_structure(template, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_dict.get)
+            FileHandler({'mkdir': [incdir]}).sync()
 
             # rewrite UFS-DA atmens increments
-            atmges_fv3 = os.path.join(self.task_config.COM_TOP_ENS_GES, memchar, 'model_data/atmos/history',
-                                      f"{self.task_config.CDUMP}.t{self.runtime_config.previous_cycle.hour:02d}z.atmf006.nc")
+            template = self.task_config.COM_ATMOS_HISTORY_TMPL
+            tmpl_dict = {
+                'ROTDIR': self.task_config.ROTDIR,
+                'RUN': self.runtime_config.RUN,
+                'YMD': to_YMD(self.task_config.previous_cycle),
+                'HH': self.task_config.previous_cycle.strftime('%H')
+            }
+            tmpl_dict['MEMDIR'] = memchar
+            gesdir = Template.substitute_structure(template, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_dict.get)
+            atmges_fv3 = os.path.join(gesdir, f"{self.task_config.CDUMP}.t{self.runtime_config.previous_cycle.hour:02d}z.atmf006.nc")
             atminc_jedi = os.path.join(self.task_config.DATA, 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
-            atminc_fv3 = os.path.join(self.task_config.COM_TOP_ENS, memchar, 'analysis/atmos',
-                                      f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")
+            atminc_fv3 = os.path.join(incdir, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")
 
             # Execute incpy to create the UFS model atm increment file
             # TODO: use MPMD or parallelize with mpi4py

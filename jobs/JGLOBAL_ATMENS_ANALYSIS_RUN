@@ -9,11 +9,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlrun" -c "base atmensanl atme
 # Set variables used in the script
 ##############################################
 
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
 
 ###############################################################
 # Run relevant script

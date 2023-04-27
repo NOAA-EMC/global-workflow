@@ -12,28 +12,15 @@ GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 GDUMP="gdas"
-GDUMP_ENS="enkf${GDUMP}"
-
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_ATMOS_ANALYSIS
+RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL 
-
-RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} generate_com -rx \
-    COM_TOP_ENS:COM_TOP_TMPL
-
-RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -rx \
-    COM_TOP_ENS_GES:COM_TOP_TMPL
-
-
-mkdir -m 775 -p "${COM_TOP_ENS}"
-
 
 ###############################################################
 # Run relevant script

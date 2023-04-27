@@ -8,25 +8,15 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlfinal" -c "base atmensanl at
 ##############################################
 # Set variables used in the script
 ##############################################
-# shellcheck disable=SC2153
-GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-gPDY=${GDATE:0:8}
-gcyc=${GDATE:8:2}
 GDUMP="gdas"
 GDUMP_ENS="enkf${GDUMP}"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
+# Generate COM variable from template
 MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} generate_com -rx \
     COM_ATMOS_ANALYSIS_ENS:COM_ATMOS_ANALYSIS_TMPL
-
-RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} generate_com -rx \
-    COM_TOP_ENS:COM_TOP_TMPL
-
-RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -rx \
-    COM_TOP_ENS_GES:COM_TOP_TMPL
 
 mkdir -m 755 -p "${COM_ATMOS_ANALYSIS_ENS}"
 
