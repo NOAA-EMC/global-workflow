@@ -38,10 +38,12 @@ def count_nonid_corr(test_string: str):
     matches = [m.groupdict() for m in pattern.finditer(test_string)]
 
     count = 0
+    var=[]
     for match in matches:
         if float(match['corr']) != 1.0:
             count = count + 1
-    return count
+            var.append(f"{match['var']}: corr={match['corr']}\n")
+    return (count,var)
 
 
 def _recursive_dircmp(folder1, folder2):
@@ -194,7 +196,7 @@ def check_diff_files(dcmp, ignore_list):
         file2 = os.path.join(dcmp.right, name)
         file1_shortpath = '/' + dcmp.left.replace(cwd, '').lstrip('/')
         file2_shortpath = '/' + dcmp.right.replace(cwd, '').lstrip('/')
-        in_dir = f'in directories {file1_shortpath} and {file2_shortpath}\n'
+        in_dir = f'in directories:\n  {file1_shortpath} and\n  {file2_shortpath}\n'
 
         if '.nc' in name:
             net_cdf_type = netcdfver(file1)
@@ -204,7 +206,7 @@ def check_diff_files(dcmp, ignore_list):
                 else:
                     netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
                 if netcdf_diff_output is None:
-                    diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' + in_dir)
+                    #diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' + in_dir)
                     num_netcdf_differing_files_onlyheader += 1
                 else:
                     diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs ' + in_dir)
@@ -216,19 +218,22 @@ def check_diff_files(dcmp, ignore_list):
                 if len(diff_tar_members) != 0:
                     for tar_file in diff_tar_members:
                         diff_file.write(f'tar member file {tar_file} differs in tar file {name} '
-                                        f'from directories {file1_shortpath} and {file2_shortpath}\n')
+                                        f'from directories:\n   {file1_shortpath} and\n  {file2_shortpath}\n')
             if not tarcmp(file1, file2):
                 diff_file.write(f'tar file {name} differs ' + in_dir)
                 num_tar_differing_files += 1
         elif any([x in name for x in ["grib2", "grb2", "flux"]]):
             num_identified_grib_files += 1
             grib2_diff_output = WGRIB2(file1, "-var", "-rpn", "sto_1", "-import_grib", file2, "-rpn", "rcl_1:print_corr", output=str)
-            count = count_nonid_corr(grib2_diff_output)
+            count,var = count_nonid_corr(grib2_diff_output)
             if count != 0:
-                diff_file.write(f'grib file {name} differs with {count} uncorrelated vars' + in_dir)
+                diff_file.write(f'grib file {name} differs with {count} uncorrelated vars ' + in_dir)
+                if verbose:
+                    var[0]="     "+var[0]
+               	    diff_file.write("     ".join(var))
                 num_grib_differing_files += 1
         else:
-            diff_file.write(f'file {name} differs' + in_dir)
+            diff_file.write(f'file {name} differs ' + in_dir)
             num_differing_files += 1
         diff_file.flush()
     if num_netcdf_differing_files != 0:
@@ -322,9 +327,9 @@ if __name__ == '__main__':
             if verbose:
                 basename_a = os.path.basename(foldera)
                 basename_b = os.path.basename(folderb)
-                diff_file.write(f'{num_missmatched_files} files found in:{CR}    {baseame_a} that are not in{CR}    {basename_b}:')
+                diff_file.write(f'{num_missmatched_files} files found in:{CR}    {basename_a}   that are not in{CR}    {basename_b}:{CR}')
                 for file in results[each_side]:
-                    diff_file.write(file)
+                    diff_file.write("       "+file+"\n")
             logger.info(f'{num_missmatched_files} files found in {os.path.basename(foldera)} that are not in {os.path.basename(folderb)}')
             match_pass = False
     if match_pass:
@@ -336,7 +341,7 @@ if __name__ == '__main__':
     logger.info('checking for file differences...')
     ignore_list = ['INPUT', 'RESTART', 'logs']
     compare_files = filecmp.dircmp(folder1, folder2, ignore=ignore_list)
-    ignore_list = ["log", "pathname", "prep_ran"]
+    ignore_list = ["log", "pathname", "prep_ran", "radstat", "oznstat", "cnvstat"]
     check_diff_files(compare_files, ignore_list)
     logger.info(f'Total number of files common to both experiments: {files_compared} of which {total_num_diff_files} differed')
     elapsed_time = time.process_time() - process_time
