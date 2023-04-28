@@ -235,31 +235,35 @@ class AtmEnsAnalysis(Analysis):
         # Reference the python script which does the actual work
         incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
 
+        # create template dictionaries
+        template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
+        tmpl_inc_dict = {
+            'ROTDIR': self.task_config.ROTDIR,
+            'RUN': self.runtime_config.RUN,
+            'YMD': to_YMD(self.task_config.current_cycle),
+            'HH': self.task_config.current_cycle.strftime('%H')
+        }
+
+        template_ges = self.task_config.COM_ATMOS_HISTORY_TMPL
+        tmpl_ges_dict = {
+            'ROTDIR': self.task_config.ROTDIR,
+            'RUN': self.runtime_config.RUN,
+            'YMD': to_YMD(self.task_config.previous_cycle),
+            'HH': self.task_config.previous_cycle.strftime('%H')
+        }
+
+        # loop over ensemble members
         for imem in range(1, self.task_config.NMEM_ENKF + 1):
             memchar = f"mem{imem:03d}"
 
             # make output directory for member increment
-            template = self.task_config.COM_ATMOS_ANALYSIS_TMPL
-            tmpl_dict = {
-                'ROTDIR': self.task_config.ROTDIR,
-                'RUN': self.runtime_config.RUN,
-                'YMD': to_YMD(self.task_config.current_cycle),
-                'HH': self.task_config.current_cycle.strftime('%H')
-            }
-            tmpl_dict['MEMDIR'] = memchar
-            incdir = Template.substitute_structure(template, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_dict.get)
+            tmpl_inc_dict['MEMDIR'] = memchar
+            incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
             FileHandler({'mkdir': [incdir]}).sync()
 
             # rewrite UFS-DA atmens increments
-            template = self.task_config.COM_ATMOS_HISTORY_TMPL
-            tmpl_dict = {
-                'ROTDIR': self.task_config.ROTDIR,
-                'RUN': self.runtime_config.RUN,
-                'YMD': to_YMD(self.task_config.previous_cycle),
-                'HH': self.task_config.previous_cycle.strftime('%H')
-            }
-            tmpl_dict['MEMDIR'] = memchar
-            gesdir = Template.substitute_structure(template, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_dict.get)
+            tmpl_ges_dict['MEMDIR'] = memchar
+            gesdir = Template.substitute_structure(template_ges, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_ges_dict.get)
             atmges_fv3 = os.path.join(gesdir, f"{self.task_config.CDUMP}.t{self.runtime_config.previous_cycle.hour:02d}z.atmf006.nc")
             atminc_jedi = os.path.join(self.task_config.DATA, 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
             atminc_fv3 = os.path.join(incdir, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")

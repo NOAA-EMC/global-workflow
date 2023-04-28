@@ -219,6 +219,16 @@ class Analysis(Task):
             a dictionary containing the list of model background files to copy for FileHandler
         """
         # NOTE for now this is FV3 restart files and just assumed to be fh006
+
+        # create template dictionary
+        template = self.task_config.COM_ATMOS_RESTART_TMPL
+        tmpl_dict = {
+            'ROTDIR': self.task_config.ROTDIR,
+            'RUN': self.runtime_config.RUN,
+            'YMD': to_YMD(self.task_config.previous_cycle),
+            'HH': self.task_config.previous_cycle.strftime('%H')
+        }
+
         # loop over ensemble members
         rstlist = []
         dirlist = []
@@ -228,15 +238,6 @@ class Analysis(Task):
 
             # accumulate directory list for member restart files
             dirlist.append(os.path.join(self.task_config.DATA, 'bkg', memchar))
-
-            # get FV3 restart files, this will be a lot simpler when using history files
-            template = self.task_config.COM_ATMOS_RESTART_TMPL
-            tmpl_dict = {
-                'ROTDIR': self.task_config.ROTDIR,
-                'RUN': self.runtime_config.RUN,
-                'YMD': to_YMD(self.task_config.previous_cycle),
-                'HH': self.task_config.previous_cycle.strftime('%H')
-            }
 
             # get FV3 restart files, this will be a lot simpler when using history files
             tmpl_dict['MEMDIR'] = memchar
@@ -251,9 +252,9 @@ class Analysis(Task):
 
             # atmens DA needs core, srf_wnd, tracer, phy_data, sfc_data
             for ftype in ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']:
-                template = f'{to_fv3time(self.task_config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
+                template_tile = f'{to_fv3time(self.task_config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
                 for itile in range(1, self.task_config.ntiles + 1):
-                    basename = template.format(tilenum=itile)
+                    basename = template_tile.format(tilenum=itile)
                     bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
 
         bkg_dict = {
