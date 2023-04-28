@@ -10,7 +10,6 @@ from pygw.file_utils import FileHandler
 from pygw.template import Template, TemplateConstants
 from pygw.logger import logit
 from pygw.task import Task
-from pygw.timetools import to_fv3time, to_YMD
 
 logger = getLogger(__name__.split('.')[-1])
 
