@@ -186,7 +186,7 @@ class AerosolAnalysis(Analysis):
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
-        template = f'aeroinc.{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}'
+        template = f'aeroinc.{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
         inclist = []
         for itile in range(1, self.task_config.ntiles + 1):
             tracer = template.format(tilenum=itile)

@@ -8,7 +8,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfi
 ##############################################
 # Set variables used in the script
 ##############################################
+# shellcheck disable=SC2153
 GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
 GDUMP="gdas"
 
 
@@ -16,12 +19,16 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-mkdir -p "${COMOUT}"
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 
-# COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
+    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
+    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
+
 
 ###############################################################
 # Run relevant script

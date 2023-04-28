@@ -20,8 +20,7 @@ if [[ $# -ne 1 ]]; then
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
     echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
-    echo "ocnanalprep ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost"
-
+    echo "ocnanalprep ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -228,7 +227,7 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "l
    export layout_x
    export layout_y
 
-   if [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then 
+   if [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then
        declare -x "wtime_${step}"="00:10:00"
        declare -x "npe_${step}"=1
        declare -x "nth_${step}"=1
@@ -396,6 +395,15 @@ elif [[ "${step}" = "ocnanalpost" ]]; then
     export nth_ocnanalpost=1
     npe_node_ocnanalpost=$(echo "${npe_node_max} / ${nth_ocnanalpost}" | bc)
     export npe_node_ocnanalpost
+
+elif [[ "${step}" = "ocnanalvrfy" ]]; then
+
+    export wtime_ocnanalvrfy="00:35:00"
+    export npe_ocnanalvrfy=1
+    export nth_ocnanalvrfy=1
+    npe_node_ocnanalvrfy=$(echo "${npe_node_max} / ${nth_ocnanalvrfy}" | bc)
+    export npe_node_ocnanalvrfy
+    export memory_ocnanalvrfy="24GB"
 
 elif [[ ${step} = "anal" ]]; then
 
