@@ -85,7 +85,7 @@ def fill_COMROT_cycled(host, inputs):
         dst_med_dir = ''  # no mediator files for a "cold start"
         do_med = False
     dst_ocn_rst_dir = os.path.join('model_data', 'ocean', 'restart')
-    dst_ocn_anl_dir = os.path.join('model_data', 'ocean', 'analysis')
+    dst_ocn_anl_dir = os.path.join('analysis', 'ocean')
     dst_ice_dir = os.path.join('model_data', 'ice', 'restart')
     dst_atm_anl_dir = os.path.join('analysis', 'atmos')
 
