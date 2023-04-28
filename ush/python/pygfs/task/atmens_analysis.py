@@ -78,11 +78,25 @@ class AtmEnsAnalysis(Analysis):
         """
         super().initialize()
 
-        # Make directories for member background and analysis files in DATA
+        # Make member directories in DATA for background and in DATA and ROTDIR for analysis files
+        # create template dictionary for output member analysis directories
+        template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
+        tmpl_inc_dict = {
+            'ROTDIR': self.task_config.ROTDIR,
+            'RUN': self.runtime_config.RUN,
+            'YMD': to_YMD(self.task_config.current_cycle),
+            'HH': self.task_config.current_cycle.strftime('%H')
+        }
         dirlist = []
         for imem in range(1, self.task_config.NMEM_ENKF + 1):
             dirlist.append(os.path.join(self.task_config.DATA, 'bkg', f'mem{imem:03d}'))
             dirlist.append(os.path.join(self.task_config.DATA, 'anl', f'mem{imem:03d}'))
+
+            # create output directory path for member analysis
+            tmpl_inc_dict['MEMDIR'] = f"mem{imem:03d}"
+            incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
+            dirlist.append(incdir)
+
         FileHandler({'mkdir': dirlist}).sync()
 
         # stage CRTM fix files
@@ -256,10 +270,9 @@ class AtmEnsAnalysis(Analysis):
         for imem in range(1, self.task_config.NMEM_ENKF + 1):
             memchar = f"mem{imem:03d}"
 
-            # make output directory for member increment
+            # create output path for member analysis increment
             tmpl_inc_dict['MEMDIR'] = memchar
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-            FileHandler({'mkdir': [incdir]}).sync()
 
             # rewrite UFS-DA atmens increments
             tmpl_ges_dict['MEMDIR'] = memchar
