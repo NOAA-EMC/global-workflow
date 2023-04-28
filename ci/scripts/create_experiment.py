@@ -61,7 +61,6 @@ def input_args():
     args: Namespace
 
         Namespace with the value of the file path to a yaml file from the key yaml
-:w
     """
 
     description = """Single argument as a yaml file containing the
