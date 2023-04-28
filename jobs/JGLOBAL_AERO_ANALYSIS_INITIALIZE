@@ -8,6 +8,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlinit" -c "base aeroanl aeroanl
 # Set variables used in the script
 ##############################################
 GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
 GDUMP="gdas"
 
 
@@ -15,12 +17,14 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/chem}
-mkdir -p "${COMOUT}"
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_CHEM_ANALYSIS
 
-# COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/chem"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/chem"
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_CHEM_ANALYSIS_PREV:COM_CHEM_ANALYSIS_TMPL \
+    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+mkdir -m 775 -p "${COM_CHEM_ANALYSIS}"
 
 ###############################################################
 # Run relevant script
