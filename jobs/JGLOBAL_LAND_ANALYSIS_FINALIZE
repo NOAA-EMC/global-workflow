@@ -26,8 +26,6 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
-
 ###############################################################
 # Run relevant script
 

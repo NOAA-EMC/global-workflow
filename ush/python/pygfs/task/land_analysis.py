@@ -62,13 +62,19 @@ class LandAnalysis(Analysis):
 
         This method will initialize a global land analysis using JEDI.
         This includes:
-        #- staging CRTM fix files
         - staging FV3-JEDI fix files
-        #- staging B error files
         - staging model backgrounds
         - generating a YAML file for the JEDI executable
         - linking the JEDI executable (TODO make it copyable, requires JEDI fix)
         - creating output directories
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
         """
         super().initialize()
 
@@ -105,7 +111,21 @@ class LandAnalysis(Analysis):
 
     @logit(logger)
     def execute(self: Analysis) -> None:
+        """Execute a global atmens analysis
 
+        This method will execute a global land analysis using JEDI.
+        This includes:
+        - changing to the run directory
+        - running the global land analysis executable
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_LANDANL)
@@ -137,6 +157,14 @@ class LandAnalysis(Analysis):
 
         Please note that some of these steps are temporary and will be modified
         once the model is able to read land increments.
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
         """
         # ---- tar up diags
         # path of output tar statfile
