@@ -78,6 +78,13 @@ class AtmEnsAnalysis(Analysis):
         """
         super().initialize()
 
+        # Make directories for member background and analysis files in DATA
+        dirlist = []
+        for imem in range(1, self.task_config.NMEM_ENKF + 1):
+            dirlist.append(os.path.join(self.task_config.DATA, 'bkg', f'mem{imem:03d}'))
+            dirlist.append(os.path.join(self.task_config.DATA, 'anl', f'mem{imem:03d}'))
+        FileHandler({'mkdir': dirlist}).sync()
+
         # stage CRTM fix files
         crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'atm_crtm_coeff.yaml')
         logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
@@ -91,7 +98,7 @@ class AtmEnsAnalysis(Analysis):
         FileHandler(jedi_fix_list).sync()
 
         # stage backgrounds
-        FileHandler(self.get_bkg_ens_dict(AttrDict(self.task_config))).sync()
+        FileHandler(self.get_bkg_dict()).sync()
 
         # generate ensemble da YAML file
         logger.debug(f"Generate ensemble da YAML file: {self.task_config.fv3jedi_yaml}")
@@ -106,13 +113,6 @@ class AtmEnsAnalysis(Analysis):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
-
-        # Make directories for member analysis files
-        anldir = []
-        for imem in range(1, self.task_config.NMEM_ENKF + 1):
-            memchar = f"mem{imem:03d}"
-            anldir.append(os.path.join(self.task_config.DATA, 'anl', f'mem{imem:03d}'))
-        FileHandler({'mkdir': anldir}).sync()
 
     @logit(logger)
     def execute(self: Analysis) -> None:
@@ -277,3 +277,62 @@ class AtmEnsAnalysis(Analysis):
             cmd.add_default_arg(atminc_fv3)
             logger.debug(f"Executing {cmd}")
             cmd(output='stdout', error='stderr')
+
+    @logit(logger)
+    def get_bkg_dict(self: Analysis) -> Dict[str, List[str]]:
+        """Compile a dictionary of model background files to copy
+
+        This method constructs a dictionary of ensemble FV3 restart files (coupler, core, tracer)
+        that are needed for global atmens DA and returns said dictionary for use by the FileHandler class.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        bkg_dict: Dict
+            a dictionary containing the list of model background files to copy for FileHandler
+        """
+        # NOTE for now this is FV3 restart files and just assumed to be fh006
+        # loop over ensemble members
+        rstlist = []
+        bkglist = []
+
+        # get FV3 restart files, this will be a lot simpler when using history files
+        template_res = self.task_config.COM_ATMOS_RESTART_TMPL
+        tmpl_res_dict = {
+            'ROTDIR': self.task_config.ROTDIR,
+            'RUN': self.task_config.RUN,
+            'YMD': to_YMD(self.task_config.previous_cycle),
+            'HH': self.task_config.previous_cycle.strftime('%H'),
+            'MEMDIR': None
+        }
+
+        for imem in range(1, self.task_config.NMEM_ENKF + 1):
+            memchar = f"mem{imem:03d}"
+
+            # get FV3 restart files, this will be a lot simpler when using history files
+            tmpl_res_dict['MEMDIR'] = memchar
+            rst_dir = Template.substitute_structure(template_res, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_res_dict.get)
+            rstlist.append(rst_dir)
+
+            run_dir = os.path.join(self.task_config.DATA, 'bkg', memchar)
+
+            # atmens DA needs coupler
+            basename = f'{to_fv3time(self.task_config.current_cycle)}.coupler.res'
+            bkglist.append([os.path.join(rst_dir, basename), os.path.join(self.task_config.DATA, 'bkg', memchar, basename)])
+
+            # atmens DA needs core, srf_wnd, tracer, phy_data, sfc_data
+            for ftype in ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']:
+                template = f'{to_fv3time(self.task_config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
+                for itile in range(1, self.task_config.ntiles + 1):
+                    basename = template.format(tilenum=itile)
+                    bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
+
+        bkg_dict = {
+            'mkdir': rstlist,
+            'copy': bkglist,
+        }
+
+        return bkg_dict
