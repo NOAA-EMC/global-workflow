@@ -43,12 +43,12 @@ fi
 cd "${WORKDIR}" || exit 99
 nmem_land=2
 ntiles=6
-for ens in $(seq -f %03g 1 ${nmem_land}); do
+for ens in "$(seq -f %03g 1 ${nmem_land})"; do
     if [[ -e "${WORKDIR}/mem${ens}" ]]; then
             rm -rf "${WORKDIR}/mem${ens}"
     fi
     mkdir -p "${WORKDIR}/mem${ens}"
-    for tile in $(seq 1 ${ntiles}); do
+    for tile in "$(seq 1 ${ntiles})"; do
         ${NCP} "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"  "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc"
     done
     ${NCP} "${WORKDIR}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res"
@@ -58,9 +58,9 @@ echo 'do_landDA: calling create ensemble'
 
 python "${CREATEENS}" "${FILEDATE}" "${SNOWDEPTHVAR}" "${BERR_STD}" "${WORKDIR}"
 
-for ens in $(seq -f %03g 1 ${nmem_land}); do
+for ens in "$(seq -f %03g 1 ${nmem_land})"; do
     mkdir -p "${WORKDIR}/mem${ens}/RESTART"
-    for tile in $(seq 1 ${ntiles}); do
+    for tile in "$(seq 1 ${ntiles})"; do
       ${NMV} "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}/mem${ens}/RESTART/"
     done
     ${NMV} "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/RESTART/"
@@ -88,7 +88,7 @@ cat >> fims.nml << EOF
 EOF
 
   # stage restarts
-  for tile in $(seq 1 ${ntiles}); do
+  for tile in "$(seq 1 ${ntiles})"; do
     if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
       ${NCP} "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}"
     fi
@@ -137,7 +137,7 @@ cat << EOF > apply_incr_nml
 /
 EOF
 
-for tile in $(seq 1 ${ntiles}); do
+for tile in "$(seq 1 ${ntiles})"; do
 # stage restarts
   if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
     ${NCP} "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"  "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"
