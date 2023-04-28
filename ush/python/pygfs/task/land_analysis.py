@@ -110,40 +110,6 @@ class LandAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self: Analysis) -> None:
-        """Execute a global atmens analysis
-
-        This method will execute a global land analysis using JEDI.
-        This includes:
-        - changing to the run directory
-        - running the global land analysis executable
-
-        Parameters
-        ----------
-        Analysis: parent class for GDAS task
-
-        Returns
-        ----------
-        None
-        """
-        chdir(self.task_config.DATA)
-
-        exec_cmd = Executable(self.task_config.APRUN_LANDANL)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.fv3jedi_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        pass
-
-    @logit(logger)
     def finalize(self: Analysis) -> None:
         """Finalize a global land analysis
 
@@ -206,8 +172,6 @@ class LandAnalysis(Analysis):
         FileHandler({'copy': bkglist}).sync()
 
         # ---- add increments to RESTART files
-        # logger.info('Adding increments to RESTART files')
-        # self._add_fms_cube_sphere_increments()
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
@@ -233,21 +197,6 @@ class LandAnalysis(Analysis):
 
     def clean(self):
         super().clean()
-
-    @logit(logger)
-    def _add_fms_cube_sphere_increments(self: Analysis) -> None:
-        """This method adds increments to RESTART files to get an analysis
-        NOTE this is only needed for now because the model cannot read land increments.
-        This method will be assumed to be deprecated before this is implemented operationally
-        """
-        # only need the sfc_data files
-        template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
-        inc_template = os.path.join(self.task_config.DATA, 'anl', 'landinc.' + template)
-        bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, template)
-        # get list of increment vars
-        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'landanl_inc_vars.yaml')
-        incvars = YAMLFile(path=incvars_list_path)['incvars']
-        super().add_fv3_increments(inc_template, bkg_template, incvars)
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
