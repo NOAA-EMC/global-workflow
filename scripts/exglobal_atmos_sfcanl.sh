@@ -190,8 +190,12 @@ fi
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do
-    ${NCP} "${COM_ATMOS_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
-           "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+    ${NCP} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+            "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+    if [[ -e "${COM_LAND_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" ]]; then
+        ${NCP} "${COM_LAND_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+               "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+    fi
     ${NLN} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
     ${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
     ${NLN} "${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc"                       "${DATA}/fngrid.00${n}"

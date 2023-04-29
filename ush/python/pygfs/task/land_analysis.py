@@ -134,7 +134,7 @@ class LandAnalysis(Analysis):
         """
         # ---- tar up diags
         # path of output tar statfile
-        landstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}landstat")
+        landstat = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config.APREFIX}landstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
@@ -152,9 +152,9 @@ class LandAnalysis(Analysis):
 
         # copy full YAML from executable to ROTDIR
         src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.letkfoi.yaml")
-        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.letkfoi.yaml")
+        dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.letkfoi.yaml")
         yaml_copy = {
-            'mkdir': [self.task_config.COM_ATMOS_ANALYSIS],
+            'mkdir': [self.task_config.COM_LAND_ANALYSIS],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
@@ -167,7 +167,7 @@ class LandAnalysis(Analysis):
         for itile in range(1, self.task_config.ntiles + 1):
             sfcdata = template.format(tilenum=itile)
             src = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, sfcdata)
-            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f'landges.{sfcdata}')
+            dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, f'landges.{sfcdata}')
             bkglist.append([src, dest])
         FileHandler({'copy': bkglist}).sync()
 
@@ -180,7 +180,7 @@ class LandAnalysis(Analysis):
         for itile in range(1, self.task_config.ntiles + 1):
             sfcdata = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'anl', sfcdata)
-            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, sfcdata)
+            dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, sfcdata)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
@@ -191,7 +191,7 @@ class LandAnalysis(Analysis):
         for itile in range(1, self.task_config.ntiles + 1):
             sfcdata = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'anl', sfcdata)
-            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, sfcdata)
+            dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, sfcdata)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 

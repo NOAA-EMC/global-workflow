@@ -551,11 +551,7 @@ class Tasks:
 
     def landanlinit(self):
 
-        dump_suffix = self._base["DUMP_SUFFIX"]
-        dmpdir = self._base["DMPDIR"]
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
-        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
-                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}

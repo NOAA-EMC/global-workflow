@@ -19,10 +19,10 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} generate_com -rx COM_LAND_ANALYSIS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
-    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
+    COM_LAND_ANALYSIS_PREV:COM_LAND_ANALYSIS_TMPL \
     COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
