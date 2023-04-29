@@ -19,7 +19,7 @@ class Tasks:
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'landanlinit', 'landanlrun', 'landanlfinal',
+                   'landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'wafs', 'wafsblending', 'wafsblending0p25',
@@ -567,10 +567,22 @@ class Tasks:
         task = create_wf_task('landanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
         return task
 
-    def landanlrun(self):
+    def landanlprep(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlinit'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('landanlprep')
+        task = create_wf_task('landanlprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def landanlrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlprep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 

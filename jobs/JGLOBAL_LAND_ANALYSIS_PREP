@@ -3,7 +3,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}landanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "landanlrun" -c "base landanl landanlrun"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "landanlprep" -c "base landanl landanlprep"
 
 ##############################################
 # Set variables used in the script
@@ -20,7 +20,7 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASLANDRUNSH:-${HOMEgfs}/scripts/exglobal_land_analysis_run.sh}
+EXSCRIPT=${GDASLANDPREPSH:-${HOMEgfs}/scripts/exglobal_land_analysis_prep.sh}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

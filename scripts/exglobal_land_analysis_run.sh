@@ -18,8 +18,6 @@ ANLDIR=${DATA}/anl
 
 #  Filenames
 export CREATEENS=${CREATEENS:-"${HOMEgfs}/sorc/gdas.cd/ush/land/letkf_create_ens.py"}
-export IMS_IODA=${IMS_IODA:-"${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"}
-export CALCFIMS=${CALCFIMS:-"${HOMEgfs}/sorc/gdas.cd/build/bin/calcfIMS.exe"}
 export ADDJEDIINC=${ADDJEDIINC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/apply_incr.exe"}
 
 export OROGPATH="${HOMEgfs}/fix/orog/C${RES}"
@@ -66,52 +64,6 @@ for ens in $(seq -f %03g 1 "${nmem_land}"); do
     ${NMV} "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/RESTART/"
 done
 ################################################################################
-# IMS proc
-if [[ ${cyc} == "18" ]]; then
-  WORKDIR=${DATA}/obs
-  cd "${WORKDIR}" || exit 99
-  if [[ -e fims.nml ]]; then
-    rm fims.nml
-  fi
-
-cat >> fims.nml << EOF
- &fIMS_nml
-  idim=${RES}, jdim=${RES},
-  otype=${OROGTYPE},
-  jdate=${YYYY}${DOY},
-  yyyymmddhh=${PDY}.${cyc},
-  imsformat=2,
-  imsversion=1.3,
-  IMS_OBS_PATH="${WORKDIR}/",
-  IMS_IND_PATH="${WORKDIR}/"
-  /
-EOF
-
-  # stage restarts
-  for tile in $(seq 1 "${ntiles}"); do
-    if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-      ${NCP} "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}"
-    fi
-  done
-
-  # stage observations
-  ${NCP} "${COMIN_OBS}/gdas.t${cyc}z.ims${YYYY}${DOY}_4km_v1.3.nc" "${WORKDIR}/ims${YYYY}${DOY}_4km_v1.3.nc"
-  ${NCP} "${COMIN_OBS}/gdas.t${cyc}z.IMS4km_to_FV3_mapping.C${RES}_oro_data.nc" "${WORKDIR}/IMS4km_to_FV3_mapping.C${RES}_oro_data.nc"
-
-  ${CALCFIMS}
-
-##  export PYTHONPATH=${PYTHONPATH}:${gdasapp_dir}/build/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/pyioda/
-  export PYTHONPATH=${PYTHONPATH}:${gdasapp_dir}/iodaconv/src/:${gdasapp_dir}/build/lib/python3.7/pyioda/
-
-  echo "PYTHONPATH: ${PYTHONPATH}"
-  echo 'do_landDA: calling ioda converter'
-  python "${IMS_IODA}" -i "IMSscf.${PDY}.${OROGTYPE}.nc" -o "ioda.IMSscf.${PDY}.${OROGTYPE}.nc"
-
-  if [[ -e "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc"  ]]; then
-    ${NCP} "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc" "gdas.t${cyc}z.ims_snow_${PDY}${cyc}.nc4"
-  fi
-
-fi
 ################################################################################
 # run executable
 export pgm=${JEDIEXE}
