@@ -29,10 +29,6 @@ YYYY=${PDY:0:4}
 ntiles=6
 ################################################################################
 # IMS proc
-echo "DONG:PDY: ${PDY}"
-echo "DONG:cyc: ${cyc}"
-echo "DONG:FILEDATE: ${FILEDATE}"
-
 if [[ ${cyc} == "18" ]]; then
   WORKDIR=${DATA}/obs
   cd "${WORKDIR}" || exit 99

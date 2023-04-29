@@ -24,8 +24,6 @@ export OROGPATH="${HOMEgfs}/fix/orog/C${RES}"
 export OROGTYPE="C${RES}_oro_data"
 export FRACGRID=${FRACGRID:-"NO"}
 FILEDATE=${PDY}.${cyc}0000
-DOY=$(date +%j -d "${PDY} + 1 day")
-YYYY=${PDY:0:4}
 ################################################################################
 # Create ensemble member
 WORKDIR=${BKGDIR}
