@@ -40,7 +40,7 @@ TEST_SCHEMA = {"DT_ATMOS": 1200,
                "WRTTASK_PER_GROUP": 4,
 
                # TODO: This needs to be transformed via `f90_bool`.
-               "WRITE_DO_POST": True,
+               "WRITE_DOPOST": True,
                }
 
 # ----
@@ -60,11 +60,11 @@ def main() -> None:
     cls_schema = BuildSchema(yaml_file=schema_yaml).build()
 
     # Attempt to validate the schemas.
-    CheckSchema(cls_schema=cls_schema,
-                cls_opts=TEST_SCHEMA).validate()
+    cfg = CheckSchema(cls_schema=cls_schema,
+                      cls_opts=TEST_SCHEMA).validate()
 
     # Create the file based on the specified template.
-    WriteFromTemplate(cfg=TEST_SCHEMA, tmpl=tmpl_path,
+    WriteFromTemplate(cfg=cfg, tmpl=tmpl_path,
                       output=out_path).write()
 
 

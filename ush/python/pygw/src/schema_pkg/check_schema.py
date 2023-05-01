@@ -66,12 +66,16 @@ class CheckSchema:
         (`cls_schema`) and update `cls_opts` accordingly.
 
         """
+
         for (key, value) in self.cls_schema.items():
 
             # TODO: This may need to be updated.
             if isinstance(key, pygw.schema.Optional):
+
+                # TODO: This will need to be cleanup up; it will be
+                # confusing otherwise.
                 if key not in self.cls_opts:
-                    self.cls_opts[key] = key.default
+                    self.cls_opts[key.key] = key.default
 
     @logit(logger)
     def validate(self: object) -> None:
@@ -91,3 +95,4 @@ class CheckSchema:
 
         # TODO: A logger message and exception if the validation fails
         # would be useful here.
+        return self.cls_opts
