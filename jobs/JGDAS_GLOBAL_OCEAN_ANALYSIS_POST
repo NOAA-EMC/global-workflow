@@ -1,7 +1,7 @@
 #!/bin/bash
 export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
-WIPE_DATA="NO"
+export WIPE_DATA="NO"
 DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalpost" -c "base ocnanalpost"
 
@@ -17,8 +17,8 @@ export GDUMP=${GDUMP:-"gdas"}
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_ICE_RESTART
 
-mkdir -p ${COM_OCEAN_ANALYSIS}
-mkdir -p ${COM_ICE_RESTART}
+mkdir -p "${COM_OCEAN_ANALYSIS}"
+mkdir -p "${COM_ICE_RESTART}"
 
 ##############################################
 # Begin JOB SPECIFIC work
