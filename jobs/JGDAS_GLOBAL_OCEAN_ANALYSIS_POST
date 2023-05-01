@@ -7,15 +7,22 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalpost" -c "base ocnanalpost"
 
 
 ##############################################
+# Set variables used in the script
+##############################################
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export CDATE=${CDATE:-${PDY}${cyc}}
+export GDUMP=${GDUMP:-"gdas"}
+
+# Generate COM variables from templates
+RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL
+RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_ICE_RESTART
+
+mkdir -p ${COM_OCEAN_ANALYSIS}
+mkdir -p ${COM_ICE_RESTART}
+
+##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
-export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
-export CDATE=${CDATE:-${PDY}${cyc}}
-
-mkdir -p "${COMOUT}"
-mkdir -p "${COMOUTice}/RESTART"
 
 # Add UFSDA to PYTHONPATH
 ufsdaPATH="${HOMEgfs}/sorc/gdas.cd/ush/"
