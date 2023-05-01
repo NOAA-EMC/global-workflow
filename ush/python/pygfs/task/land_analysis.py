@@ -172,8 +172,8 @@ class LandAnalysis(Analysis):
         FileHandler({'copy': bkglist}).sync()
 
         # ---- add increments to RESTART files
-        #logger.info('Adding increments to RESTART files')
-        #self._add_fms_cube_sphere_increments()
+        # logger.info('Adding increments to RESTART files')
+        # self._add_fms_cube_sphere_increments()
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
@@ -223,7 +223,7 @@ class LandAnalysis(Analysis):
         chdir(workdir)
 
         exec_cmd = Executable(self.task_config.APRUN_LANDANL)
-## export ADDJEDIINC=${ADDJEDIINC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/apply_incr.exe"}
+# export ADDJEDIINC=${ADDJEDIINC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/apply_incr.exe"}
         exec_name = os.path.join(self.task_config.DATA, 'apply_incr.exe')
         exec_cmd.add_default_arg(exec_name)
 
@@ -236,7 +236,6 @@ class LandAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
         pass
-
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
