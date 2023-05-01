@@ -530,7 +530,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         # PETS for quilting
         if [[ "${QUILTING:-}" = ".true." ]]; then
           (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
-          (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD * nthreads_fv3 ))
+          (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
           export WRTTASK_PER_GROUP
         else
           QUILTPETS=0
