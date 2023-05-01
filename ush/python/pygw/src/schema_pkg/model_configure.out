@@ -1,0 +1,21 @@
+start_year:              2000
+start_month:             1
+start_day:               1
+start_hour:              0
+start_minute:            0
+start_second:            0
+nhours_fcst:             120
+
+dt_atmos:                1200
+output_1st_tstep_rst:    .false.
+
+write_groups:            1
+write_tasks_per_group:   4
+output_history:          @[OUTPUT_HISTORY]
+write_dopost:            @[WRITE_DOPOST]
+write_nsflip:            @[WRITE_NSFLIP]
+num_files:               @[NUM_FILES]
+filename_base:           @[FILENAME_BASE]
+imo:                     384
+jmo:                     192
+

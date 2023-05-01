@@ -1,0 +1,70 @@
+required:
+
+    DT_ATMOS: int
+    FHMAX: int
+    IMO: int
+    JMO: int
+    SDAY: int
+    SHOUR: int
+    SMONTH: int
+    SYEAR: int
+
+optional:
+
+    CALENDAR:
+         type: str
+         default: julian
+    FHROT:
+         type: int
+         default: 0
+    FILENAME_BASE:
+         type: str
+         default: "'atm' 'sfc'"
+    IAU_OFFSET:
+         type: int
+         default: 0
+    IDEFLATE:
+         type: int
+         default: 1
+    ITASKS:
+         type: int
+         default: 1
+    NBITS:
+         type: int
+         default: 1
+    NUM_FILES:
+         type: int
+         default: 2
+    OUTPUT_FILE:
+         type: str
+         default: "'netcdf' 'netcdf'"
+    OUTPUT_GRID:
+         type: str
+         default: gaussian_grid
+    OUTPUT_HISTORY:
+         type: bool
+         default: True
+    QUILTING:
+         type: bool
+         default: True
+    RESTART_INTERVAL:
+         type: int
+         default: 0
+    SMINUTE:
+         type: int
+         default: 0
+    SSECOND:
+         type: int
+         default: 0
+    WRITE_DOPOST:
+         type: bool
+         default: True
+    WRITE_GROUP:
+         type: int
+         default: 1
+    WRITE_NSFLIP:
+         type: bool
+         default: True
+    WRTTASK_PER_GROUP:
+         type: int
+         default: 1
