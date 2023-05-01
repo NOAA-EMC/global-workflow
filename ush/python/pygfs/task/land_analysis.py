@@ -88,7 +88,7 @@ class LandAnalysis(Analysis):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # generate letkfoi YAML file
-        logger.debug(f"Generate variational YAML file: {self.task_config.fv3jedi_yaml}")
+        logger.debug(f"Generate letkfoi YAML file: {self.task_config.fv3jedi_yaml}")
         letkfoi_yaml = parse_j2yaml(self.task_config['LANDVARYAML'], self.task_config)
         save_as_yaml(letkfoi_yaml, self.task_config.fv3jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.fv3jedi_yaml}")
@@ -172,10 +172,12 @@ class LandAnalysis(Analysis):
         FileHandler({'copy': bkglist}).sync()
 
         # ---- add increments to RESTART files
+        #logger.info('Adding increments to RESTART files')
+        #self._add_fms_cube_sphere_increments()
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
-        template = f'landinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+        template = f'{to_fv3time(self.task_config.current_cycle)}.xainc.sfc_data.tile{{tilenum}}.nc'
         inclist = []
         for itile in range(1, self.task_config.ntiles + 1):
             sfcdata = template.format(tilenum=itile)
@@ -197,6 +199,44 @@ class LandAnalysis(Analysis):
 
     def clean(self):
         super().clean()
+
+    @logit(logger)
+    def _add_fms_cube_sphere_increments(self: Analysis) -> None:
+        """This method adds increments to RESTART files to get an analysis
+        NOTE this is only needed for now because the model cannot read land increments.
+        This method will be assumed to be deprecated before this is implemented operationally
+        """
+
+        # ---- copy the restart files from bkg to anl
+        logger.info('Copying restart files from bkg to anl')
+        template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+        inclist = []
+        for itile in range(1, self.task_config.ntiles + 1):
+            sfcdata = template.format(tilenum=itile)
+            src = os.path.join(self.task_config.DATA, 'bkg', sfcdata)
+            dest = os.path.join(self.task_config.DATA, 'anl', sfcdata)
+            inclist.append([src, dest])
+        FileHandler({'copy': inclist}).sync()
+
+        # execute apply_incr.exe to add incr to analysis
+        workdir = os.path.join(self.task_config.DATA, 'anl')
+        chdir(workdir)
+
+        exec_cmd = Executable(self.task_config.APRUN_LANDANL)
+## export ADDJEDIINC=${ADDJEDIINC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/apply_incr.exe"}
+        exec_name = os.path.join(self.task_config.DATA, 'apply_incr.exe')
+        exec_cmd.add_default_arg(exec_name)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:

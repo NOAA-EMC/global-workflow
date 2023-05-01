@@ -67,6 +67,17 @@ done
 export pgm=${JEDIEXE}
 . prep_step
 ${APRUN_LANDANL} "${DATA}/fv3jedi_letkf.x" "${DATA}/${CDUMP}.t${cyc}z.letkfoi.yaml" 1>&1 2>&2
+
+cd "${ANLDIR}" || exit 99
+# change names of the increments
+for tile in $(seq 1 "${ntiles}"); do
+  if [[ -e "landinc.${FILEDATE}.sfc_data.tile${tile}.nc" ]]; then
+    ${NMV} "landinc.${FILEDATE}.sfc_data.tile${tile}.nc" "${FILEDATE}.xainc.sfc_data.tile${tile}.nc"
+  fi
+done
+if [[ -e "landinc.${FILEDATE}.coupler.res" ]]; then
+  ${NMV} "landinc.${FILEDATE}.coupler.res" "${FILEDATE}.xainc.coupler.res"
+fi
 ################################################################################
 # add jedi increment
 WORKDIR=${ANLDIR}
@@ -87,15 +98,10 @@ cat << EOF > apply_incr_nml
 /
 EOF
 
-for tile in $(seq 1 "${ntiles}"); do
 # stage restarts
+for tile in $(seq 1 "${ntiles}"); do
   if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
     ${NCP} "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"  "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"
-  fi
-
-# change names of the increments
-  if [[ ! -e ${FILEDATE}.xainc.sfc_data.tile${tile}.nc ]]; then
-    ${NCP} "landinc.${FILEDATE}.sfc_data.tile${tile}.nc" "${FILEDATE}.xainc.sfc_data.tile${tile}.nc"
   fi
 done
 
