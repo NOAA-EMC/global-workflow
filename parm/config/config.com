@@ -87,5 +87,6 @@ declare -rx COM_ICE_HISTORY_TMPL=${COM_BASE}'/model_data/ice/history'
 declare -rx COM_ICE_RESTART_TMPL=${COM_BASE}'/model_data/ice/restart'
 
 declare -rx COM_CHEM_HISTORY_TMPL=${COM_BASE}'/model_data/chem/history'
+declare -rx COM_CHEM_ANALYSIS_TMPL=${COM_BASE}'/analysis/chem'
 
 declare -rx COM_MED_RESTART_TMPL=${COM_BASE}'/model_data/med/restart'
