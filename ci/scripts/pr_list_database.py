@@ -66,6 +66,12 @@ if __name__ == '__main__':
         sql_table(obj)
 
     if args.add_pr:
+        rows=sql_fetch(obj)
+        for row in rows:
+            if str(row[0]) == str(args.add_pr[0]):
+                print(f"pr {row[0]} already is in list: nothing added")
+                sys.exit(0)
+
         entities = (args.add_pr[0], 'Open', 'Ready')
         sql_insert(obj, entities)
 

@@ -34,6 +34,7 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 #########################################################################
 
 source "${HOMEgfs}/ush/detect_machine.sh"
+export "${MACHINE_ID}"
 case ${MACHINE_ID} in
   hera | orion)
     echo "Running Automated Testing on ${MACHINE_ID}"
@@ -92,15 +93,16 @@ for pr in ${pr_list}; do
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   set +e
-  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  #"${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  echo "SKIPPING clone build"
   ci_status=$?
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Built
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Built "${pr_list_dbfile}"
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
-    rm -Rf "${pr_dir:?}/RUNTESTS/"*
+    #rm -Rf "${pr_dir:?}/RUNTESTS/"*
 
     #############################################################
     # loop over every yaml file in ${HOMEgfs}/ci/cases

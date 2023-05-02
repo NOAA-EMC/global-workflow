@@ -1,3 +1,7 @@
+environment:
+  machine: ${MACHINE_ID}
+  account: ${SLURM_ACCOUNT}
+
 experiment:
   mode: cycled
 

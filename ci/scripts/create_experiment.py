@@ -86,6 +86,12 @@ if __name__ == '__main__':
     pslot = Path(user_inputs.yaml).stem
     mode = setup_expt_args.experiment.mode
 
+    machine = setup_expt_args.environment.machine
+    machine_yaml_file = Path.joinpath(Path(HOMEgfs), 'workflow', 'hosts', machine+'.yaml')
+    account_update = YAMLFile(path=machine_yaml_file)
+    account_update.ACCOUNT = setup_expt_args.environment.account
+    account_update.save(target=machine_yaml_file)
+
     setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_expt.py')))
     setup_expt_cmd.add_default_arg(mode)
 
