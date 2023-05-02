@@ -43,13 +43,15 @@ else
   exit 1
 fi
 
-pr_list_file="open_pr_list"
+pr_list_dbfile="${GFS_CI_ROOT}\open_pr_list.db"
 
-# Get only thie first two PRs on the list
-if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
-  pr_list=$(awk '{print$1,$2}' < "${GFS_CI_ROOT}/${pr_list_file}")
-else
-  echo "no PRs to process .. exit"
+#NOTE: last pipe with head -2 limits no more tha two PRs at a time
+pr_list=""
+if [[ -f "${pr_list_dbfile}" ]]; then
+  pr_list=$(${HOMEgfs}/ci/scripts/pr_list_database.py --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Built | awk '{print $1}' | head -2)
+fi
+if [[ -z "${pr_list}" ]]; then
+  echo "no PRs open and ready for checkout/build .. exiting"
   exit 0
 fi
 

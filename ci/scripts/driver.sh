@@ -68,10 +68,14 @@ for pr in ${pr_list}; do
   "${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" "${pr_list_dbfile}"
 done
 
-pr_list=$(${HOMEgfs}/ci/scripts/pr_list_database.py --display "${pr_list_dbfile}" | awk '{print $1}')
-
-echo $pr_list
-exit
+pr_list=""
+if [[ -f "${pr_list_dbfile}" ]]; then
+  pr_list=$(${HOMEgfs}/ci/scripts/pr_list_database.py --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}')
+fi
+if [[ -z "${pr_list}" ]]; then
+  echo "no PRs open and ready for checkout/build .. exiting"
+  exit 0
+fi
 
  
 #############################################################
@@ -92,6 +96,7 @@ for pr in ${pr_list}; do
   ci_status=$?
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Built
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"

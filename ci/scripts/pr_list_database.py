@@ -45,8 +45,8 @@ def input_args():
 
     parser.add_argument('sbfile', help='file of sqlite3 for pr list database ', type=str)
     parser.add_argument('--create', help='create sqlite file for pr list status',action='store_true', required=False)
-    parser.add_argument('--add_pr', nargs=1, metavar='pr', help='add new pr to list (defults to: Open,Ready)', required=False)
-    parser.add_argument('--remove_pr', help='removes pr from list', action='store_true', required=False)
+    parser.add_argument('--add_pr', nargs=1, metavar='PR', help='add new pr to list (defults to: Open,Ready)', required=False)
+    parser.add_argument('--remove_pr', nargs=1, metavar='PR', help='removes pr from list', required=False)
     parser.add_argument('--update_pr', nargs=3, metavar=('pr','state','status'), help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', help='output pr table', action='store_true', required=False)
 
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         sql_update(obj,pr,state,status)
 
     if args.remove_pr:
-        sql_remove(obj,args.remove_pr)
+        sql_remove(obj,args.remove_pr[0])
 
     if args.display:
         rows=sql_fetch(obj)

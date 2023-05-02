@@ -46,12 +46,14 @@ else
   echo "rocotostat being used from ${rocotostat}"
 fi
 
-pr_list_file="open_pr_list"
+pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
-if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
-  pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
-else
-  echo "no PRs to process .. exit"
+pr_list=""
+if [[ -f "${pr_list_dbfile}" ]]; then
+  pr_list=$(${HOMEgfs}/ci/scripts/pr_list_database.py --display "${pr_list_dbfile}" | grep -v Failed | grep Built | awk '{print $1}')
+fi
+if [[ -z "${pr_list}" ]]; then
+  echo "no PRs open and ready to run cases on .. exiting"
   exit 0
 fi
 
@@ -76,7 +78,7 @@ for pr in ${pr_list}; do
   if [[ "${num_cases}" -eq 0 ]] && [[ -d "${pr_dir}/RUNTESTS" ]]; then
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-    sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
     # Completely remove the PR and its cloned repo on sucess of all cases
     rm -Rf "${pr_dir}" 
     continue 
@@ -99,7 +101,7 @@ for pr in ${pr_list}; do
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      sed -i "/${pr}/d" "${GFS_CI_ROOT}/${pr_list_file}"
+      "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
          pslot=$(basename "${kill_cases}")
          sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
