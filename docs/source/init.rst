@@ -103,7 +103,7 @@ Start date = 2021122018
 Cycled ATM w/ Coupled (S2S) model
 *********************************
 
-Warm-start cycled w/ coupled (S2S) model C48 atmosphere 5 degree ocean/ice ICs are available in the following locations on supported platforms:
+Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 degree ocean/ice ICs are available in the following locations on supported platforms:
 
 ::
 
@@ -113,6 +113,9 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere 5 degree ocean/ice ICs a
    Jet: /lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/C48C48mx500
 
 Start date = 2021032312
+
+.. note::
+   The EnKF member ICs are dummy duplicates of the deterministic at the moment.
 
 ::
 
