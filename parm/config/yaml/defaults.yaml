@@ -18,7 +18,3 @@ ocnanal:
   NICAS_RESOL: 1
   NICAS_GRID_SIZE: 15000
 
-landanl:
-  IO_LAYOUT_X: 1
-  IO_LAYOUT_Y: 1
-
