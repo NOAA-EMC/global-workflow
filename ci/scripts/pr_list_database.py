@@ -44,9 +44,9 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('sbfile', help='file of sqlite3 for pr list database ', type=str)
-    parser.add_argument('--create', help='create sqlite file for pr list status', type=str, required=False)
-    parser.add_argument('--add_pr', help='add new pr to list (defults to: Open,Ready)', type=int, required=False)
-    parser.add_argument('--remove_pr', help='removes pr from list', type=int, required=False)
+    parser.add_argument('--create', help='create sqlite file for pr list status',action='store_true', required=False)
+    parser.add_argument('--add_pr', nargs=1, metavar='pr', help='add new pr to list (defults to: Open,Ready)', required=False)
+    parser.add_argument('--remove_pr', help='removes pr from list', action='store_true', required=False)
     parser.add_argument('--update_pr', nargs=3, metavar=('pr','state','status'), help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', help='output pr table', action='store_true', required=False)
 
@@ -58,6 +58,7 @@ def input_args():
 if __name__ == '__main__':
 
     args = input_args()
+
     con = sql_connection(args.sbfile)
     obj = con.cursor()
 
@@ -65,7 +66,7 @@ if __name__ == '__main__':
         sql_table(obj)
 
     if args.add_pr:
-        entities = (args.add_pr, 'Open', 'Ready')
+        entities = (args.add_pr[0], 'Open', 'Ready')
         sql_insert(obj, entities)
 
     if args.update_pr:
