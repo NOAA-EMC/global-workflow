@@ -36,6 +36,7 @@ restart_interval:        ${restart_interval}
 output_1st_tstep_rst:    .false.
 
 quilting:                ${QUILTING}
+quilting_restart:        .true.
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
 itasks:                  1
