@@ -20,39 +20,39 @@ export GETICSH=${GDASINIT_DIR}/get_v16.data.sh
 
 if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
   export GETICSH=${GDASINIT_DIR}/get_v16retro.data.sh
-  if [[ "$CDATE" -lt "2019060106" ]]; then
+  if [[ "${PDY}${cyc}" -lt "2019060106" ]]; then
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro0e
-  elif [[ "$CDATE" -lt "2019090100" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2019090100" ]]; then
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro1e
-  elif [[ "$CDATE" -lt "2019101706" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2019101706" ]]; then
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro2e
-  elif [[ "$CDATE" -lt "2020122200" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2020122200" ]]; then
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16rt2
-  elif [[ "$CDATE" -le "2021032506" ]]; then
+  elif [[ "${PDY}${cyc}" -le "2021032506" ]]; then
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16rt2n
   else
     set +x
-    echo NO DATA FOR $CDATE
+    echo NO DATA FOR ${PDY}${cyc}
     exit 3
   fi
 elif [ ${RETRO:-"NO"} = "NO" ]; then # Operational input
   # No ENKF data prior to 2012/05/21/00z
-  if [[ "$CDATE" -lt "2012052100" ]]; then
+  if [[ "${PDY}${cyc}" -lt "2012052100" ]]; then
     set +x
     echo FATAL ERROR: SCRIPTS DO NOT SUPPORT OLD GFS DATA
-  elif [[ "$CDATE" -lt "2016051000" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2016051000" ]]; then
     export gfs_ver=v12
     export GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
-  elif [[ "$CDATE" -lt "2017072000" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2017072000" ]]; then
     export gfs_ver=v13
     export GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
-  elif [[ "$CDATE" -lt "2019061200" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2019061200" ]]; then
     export gfs_ver=v14
     export GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
-  elif [[ "$CDATE" -lt "2021032100" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2021032100" ]]; then
     export gfs_ver=v15
     export GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
-  elif [[ "$CDATE" -lt "2021032106" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2021032106" ]]; then
     # The way the v16 switch over was done, there is no complete
     # set of v16 or v15 data for 2021032100.  And although
     # v16 was officially implemented 2021032212, the v16 prod
