@@ -43,7 +43,7 @@ else
   exit 1
 fi
 
-pr_list_dbfile="${GFS_CI_ROOT}\open_pr_list.db"
+pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 #NOTE: last pipe with head -2 limits no more tha two PRs at a time
 pr_list=""
