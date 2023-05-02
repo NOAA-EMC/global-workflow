@@ -11,9 +11,6 @@
 #         using an inversion of the noah model snow depletion curve.
 #
 ################################################################################
-#  Utilities
-RES=${CASE:1}
-
 #  Directories.
 export gdasapp_dir=${gdasapp_dir:-"${HOMEgfs}/sorc/gdas.cd/"}
 BKGDIR=${DATA}/bkg
@@ -22,7 +19,7 @@ BKGDIR=${DATA}/bkg
 export IMS_IODA=${IMS_IODA:-"${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"}
 export CALCFIMS=${CALCFIMS:-"${HOMEgfs}/sorc/gdas.cd/build/bin/calcfIMS.exe"}
 
-export OROGTYPE="C${RES}_oro_data"
+OROGTYPE="${CASE}_oro_data"
 FILEDATE=${PDY}.${cyc}0000
 DOY=$(date +%j -d "${PDY} + 1 day")
 YYYY=${PDY:0:4}
@@ -30,35 +27,34 @@ ntiles=6
 ################################################################################
 # IMS proc
 if [[ ${cyc} == "18" ]]; then
-  WORKDIR=${DATA}/obs
-  cd "${WORKDIR}" || exit 99
+  cd "${DATA}/obs" || exit 99
   if [[ -e fims.nml ]]; then
     rm fims.nml
   fi
 
 cat >> fims.nml << EOF
  &fIMS_nml
-  idim=${RES}, jdim=${RES},
+  idim=${CASE/C/}, jdim=${CASE/C/},
   otype=${OROGTYPE},
   jdate=${YYYY}${DOY},
   yyyymmddhh=${PDY}.${cyc},
   imsformat=2,
   imsversion=1.3,
-  IMS_OBS_PATH="${WORKDIR}/",
-  IMS_IND_PATH="${WORKDIR}/"
+  IMS_OBS_PATH="${DATA}/obs/",
+  IMS_IND_PATH="${DATA}/obs/"
   /
 EOF
 
   # stage restarts
   for tile in $(seq 1 "${ntiles}"); do
     if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-      ${NCP} "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}"
+      ${NCP} "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc" "${DATA}/obs"
     fi
   done
 
   # stage observations
-  ${NCP} "${COM_OBS}/gdas.t${cyc}z.ims${YYYY}${DOY}_4km_v1.3.nc" "${WORKDIR}/ims${YYYY}${DOY}_4km_v1.3.nc"
-  ${NCP} "${COM_OBS}/gdas.t${cyc}z.IMS4km_to_FV3_mapping.C${RES}_oro_data.nc" "${WORKDIR}/IMS4km_to_FV3_mapping.C${RES}_oro_data.nc"
+  ${NCP} "${COM_OBS}/${RUN}.t${cyc}z.ims${YYYY}${DOY}_4km_v1.3.nc" "${DATA}/obs/ims${YYYY}${DOY}_4km_v1.3.nc"
+  ${NCP} "${COM_OBS}/${RUN}.t${cyc}z.IMS4km_to_FV3_mapping.${CASE}_oro_data.nc" "${DATA}/obs/IMS4km_to_FV3_mapping.${CASE}_oro_data.nc"
 
   ${CALCFIMS}
 
@@ -69,8 +65,8 @@ EOF
   echo 'do_landDA: calling ioda converter'
   python "${IMS_IODA}" -i "IMSscf.${PDY}.${OROGTYPE}.nc" -o "ioda.IMSscf.${PDY}.${OROGTYPE}.nc"
 
-  if [[ -e "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc"  ]]; then
-    ${NCP} "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc" "gdas.t${cyc}z.ims_snow_${PDY}${cyc}.nc4"
+  if [[ -e "ioda.IMSscf.${PDY}.${CASE}_oro_data.nc"  ]]; then
+    ${NCP} "ioda.IMSscf.${PDY}.${CASE}_oro_data.nc" "${RUN}.t${cyc}z.ims_snow_${PDY}${cyc}.nc4"
   fi
 
 fi
