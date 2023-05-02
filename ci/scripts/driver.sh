@@ -57,17 +57,22 @@ set -x
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
-pr_list_file="open_pr_list"
-touch "${GFS_CI_ROOT}/${pr_list_file}"
-list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open")
-list=$(echo "${list}" | awk '{print $1;}' >> "${GFS_CI_ROOT}/${pr_list_file}")
+pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
+if [[ ! -f "${pr_list_dbfile}" ]]; then
+  "${HOMEgfs}/ci/scripts/pr_list_database.py" --create "${pr_list_dbfile}"
+fi
 
-if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
- pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
-else
- echo "no PRs to process .. exit"
- exit 0
-fi 
+pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}')
+
+for pr in ${pr_list}; do
+  "${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" "${pr_list_dbfile}"
+done
+
+pr_list=$(${HOMEgfs}/ci/scripts/pr_list_database.py --display "${pr_list_dbfile}" | awk '{print $1}')
+
+echo $pr_list
+exit
+
  
 #############################################################
 # Loop throu all open PRs
