@@ -6,7 +6,7 @@
 echo "BEGIN: config.getic"
 
 # Get task specific resources
-. $EXPDIR/config.resources getic
+. ${EXPDIR}/config.resources getic
 
 export RETRO="NO" # YES = Pull v16 inputs from retrospective parallels; NO = use operational inputs
 export gfs_ver="v16" # Default = v16
@@ -18,7 +18,7 @@ export GDASINIT_DIR=${UFS_DIR}/util/gdas_init
 export PRODHPSSDIR=/NCEPPROD/hpssprod/runhistory
 export GETICSH=${GDASINIT_DIR}/get_v16.data.sh
 
-if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
+if [[ ${RETRO:-"NO"} = "YES" ]]; then # Retrospective parallel input
   export GETICSH=${GDASINIT_DIR}/get_v16retro.data.sh
   if [[ "${PDY}${cyc}" -lt "2019060106" ]]; then
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro0e
@@ -32,10 +32,10 @@ if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16rt2n
   else
     set +x
-    echo NO DATA FOR ${PDY}${cyc}
+    echo NO DATA FOR "${PDY}${cyc}"
     exit 3
   fi
-elif [ ${RETRO:-"NO"} = "NO" ]; then # Operational input
+elif [[ ${RETRO:-"NO"} = "NO" ]]; then # Operational input
   # No ENKF data prior to 2012/05/21/00z
   if [[ "${PDY}${cyc}" -lt "2012052100" ]]; then
     set +x
