@@ -16,8 +16,8 @@ export gdasapp_dir=${gdasapp_dir:-"${HOMEgfs}/sorc/gdas.cd/"}
 BKGDIR=${DATA}/bkg
 
 #  Filenames
-IMS_IODA="${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"
-CALCFIMS="${HOMEgfs}/sorc/gdas.cd/build/bin/calcfIMS.exe"
+IMS_IODA="${HOMEgfs}/ush/imsfv3_scf2ioda.py"
+CALCFIMS="${HOMEgfs}/exec/calcfIMS.exe"
 
 OROGTYPE="${CASE}_oro_data"
 FILEDATE=${PDY}.${cyc}0000
