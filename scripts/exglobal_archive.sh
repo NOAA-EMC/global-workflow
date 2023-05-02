@@ -179,7 +179,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
             fi
         fi
 
-        if [ "${DO_WAVE}" = "YES" ] && [ "${WAVE_RUN}" != "gdas" ]; then
+        if [ "${DO_WAVE}" = "YES" ]; then
             targrp_list="${targrp_list} gfswave"
         fi
 
