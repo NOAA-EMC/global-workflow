@@ -127,7 +127,7 @@ echo "--> radmon_diag_ck.sh"
          uz_file_size=$(du -b "${ges}" | gawk '{print $1}')
 
          if [[ ${uz_file_size} -eq 0 ]]; then
-            sat=$(echo "${ges}" | gawk -F"diag_" '{print $2}' | gawk -F"_ges" '{print $1}')
+            sat=$(echo "${ges}" | gawk -F"diag_" -F"_ges" '{print $1}')
 
             zero_len_diag="${zero_len_diag} ${sat}"
          fi
