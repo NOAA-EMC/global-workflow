@@ -22,11 +22,12 @@ export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_OCEAN_HISTORY
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ICE_HISTORY
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ICE_RESTART
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+   COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+   COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL \
+   COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
 
 ##############################################
 # Begin JOB SPECIFIC work

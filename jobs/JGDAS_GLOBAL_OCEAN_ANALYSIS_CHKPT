@@ -23,8 +23,8 @@ export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ATMOS_HISTORY
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ATMOS_ANALYSIS
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
+                                                     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
 
 
 ##############################################
