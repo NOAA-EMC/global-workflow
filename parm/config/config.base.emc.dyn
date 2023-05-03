@@ -104,7 +104,7 @@ export EXPDIR="@EXPDIR@/${PSLOT}"
 export ROTDIR="@ROTDIR@/${PSLOT}"
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
-if [[ "${CDATE}" -ge "2019092100" && "${CDATE}" -le "2019110700" ]]; then
+if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
 fi
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
@@ -335,7 +335,7 @@ if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
 fi
 
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
-if [[ "${MODE}" = "cycled" && "${SDATE}" = "${CDATE}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
+if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi

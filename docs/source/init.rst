@@ -103,79 +103,114 @@ Start date = 2021122018
 Cycled ATM w/ Coupled (S2S) model
 *********************************
 
-Warm-start cycled w/ coupled (S2S) model C48 atmosphere 5 degree ocean/ice ICs are available in the following locations on supported platforms:
+Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 degree ocean/ice ICs are available in the following locations on supported platforms:
 
 ::
 
-   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500
-   Orion: /work/noaa/global/glopara/data/ICSDIR/C48mx500
-   WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48mx500
+   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500
+   Orion: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
+   WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
+   Jet: /lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/C48C48mx500
 
 Start date = 2021032312
 
+.. note::
+   The EnKF member ICs are dummy duplicates of the deterministic at the moment.
+
 ::
 
-   -bash-4.2$  tree /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500
-   `-- gdas.20210323
-       |-- 06
-       |   |-- atmos
-       |   |   `-- RESTART
-       |   |       |-- 20210323.120000.ca_data.tile1.nc
-       |   |       |-- 20210323.120000.ca_data.tile2.nc
-       |   |       |-- 20210323.120000.ca_data.tile3.nc
-       |   |       |-- 20210323.120000.ca_data.tile4.nc
-       |   |       |-- 20210323.120000.ca_data.tile5.nc
-       |   |       |-- 20210323.120000.ca_data.tile6.nc
-       |   |       |-- 20210323.120000.coupler.res
-       |   |       |-- 20210323.120000.fv_core.res.nc
-       |   |       |-- 20210323.120000.fv_core.res.tile1.nc
-       |   |       |-- 20210323.120000.fv_core.res.tile2.nc
-       |   |       |-- 20210323.120000.fv_core.res.tile3.nc
-       |   |       |-- 20210323.120000.fv_core.res.tile4.nc
-       |   |       |-- 20210323.120000.fv_core.res.tile5.nc
-       |   |       |-- 20210323.120000.fv_core.res.tile6.nc
-       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile1.nc
-       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile2.nc
-       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile3.nc
-       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile4.nc
-       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile5.nc
-       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile6.nc
-       |   |       |-- 20210323.120000.fv_tracer.res.tile1.nc
-       |   |       |-- 20210323.120000.fv_tracer.res.tile2.nc
-       |   |       |-- 20210323.120000.fv_tracer.res.tile3.nc
-       |   |       |-- 20210323.120000.fv_tracer.res.tile4.nc
-       |   |       |-- 20210323.120000.fv_tracer.res.tile5.nc
-       |   |       |-- 20210323.120000.fv_tracer.res.tile6.nc
-       |   |       |-- 20210323.120000.phy_data.tile1.nc
-       |   |       |-- 20210323.120000.phy_data.tile2.nc
-       |   |       |-- 20210323.120000.phy_data.tile3.nc
-       |   |       |-- 20210323.120000.phy_data.tile4.nc
-       |   |       |-- 20210323.120000.phy_data.tile5.nc
-       |   |       |-- 20210323.120000.phy_data.tile6.nc
-       |   |       |-- 20210323.120000.sfc_data.tile1.nc
-       |   |       |-- 20210323.120000.sfc_data.tile2.nc
-       |   |       |-- 20210323.120000.sfc_data.tile3.nc
-       |   |       |-- 20210323.120000.sfc_data.tile4.nc
-       |   |       |-- 20210323.120000.sfc_data.tile5.nc
-       |   |       `-- 20210323.120000.sfc_data.tile6.nc
-       |   |-- ice
-       |   |   `-- RESTART
-       |   |       `-- 20210323.120000.cice_model.res.nc
-       |   |-- med
-       |   |   `-- RESTART
-       |   |       `-- 20210323.120000.ufs.cpld.cpl.r.nc
-       |   `-- ocean
-       |       `-- RESTART
-       |           `-- 20210323.120000.MOM.res.nc
-       `-- 12
-           |-- atmos
-           |   |-- gdas.t12z.abias
-           |   |-- gdas.t12z.abias_air
-           |   |-- gdas.t12z.abias_int
-           |   |-- gdas.t12z.abias_pc
-           |   `-- gdas.t12z.radstat
-           `-- ocean
-               `-- gdas.t12z.ocninc.nc
+   -bash-4.2$  tree /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500
+   ├── enkfgdas.20210323
+   │   ├── 06
+   │   │   ├── mem001
+   │   │   │   └── model_data -> ../../../gdas.20210323/06/model_data
+   │   │   ├── mem002
+   │   │   │   └── model_data -> ../../../gdas.20210323/06/model_data
+   │   │   ├── mem003
+   │   │   │   └── model_data -> ../../../gdas.20210323/06/model_data
+   ...
+   │   │   └── mem080
+   │   │       └── model_data -> ../../../gdas.20210323/06/model_data
+   │   └── 12
+   │       ├── mem001
+   │       │   └── analysis
+   │       │       └── ocean
+   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │       ├── mem002
+   │       │   └── analysis
+   │       │       └── ocean
+   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │       ├── mem003
+   │       │   └── analysis
+   │       │       └── ocean
+   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   ...
+   │       └── mem080
+   │           └── analysis
+   │               └── ocean
+   │                   └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   └── gdas.20210323
+       ├── 06
+       │   └── model_data
+       │       ├── atmos
+       │       │   └── restart
+       │       │       ├── 20210323.120000.ca_data.tile1.nc
+       │       │       ├── 20210323.120000.ca_data.tile2.nc
+       │       │       ├── 20210323.120000.ca_data.tile3.nc
+       │       │       ├── 20210323.120000.ca_data.tile4.nc
+       │       │       ├── 20210323.120000.ca_data.tile5.nc
+       │       │       ├── 20210323.120000.ca_data.tile6.nc
+       │       │       ├── 20210323.120000.coupler.res
+       │       │       ├── 20210323.120000.fv_core.res.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile1.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile2.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile3.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile4.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile5.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile6.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile1.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile2.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile3.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile4.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile5.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile6.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile1.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile2.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile3.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile4.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile5.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile6.nc
+       │       │       ├── 20210323.120000.phy_data.tile1.nc
+       │       │       ├── 20210323.120000.phy_data.tile2.nc
+       │       │       ├── 20210323.120000.phy_data.tile3.nc
+       │       │       ├── 20210323.120000.phy_data.tile4.nc
+       │       │       ├── 20210323.120000.phy_data.tile5.nc
+       │       │       ├── 20210323.120000.phy_data.tile6.nc
+       │       │       ├── 20210323.120000.sfc_data.tile1.nc
+       │       │       ├── 20210323.120000.sfc_data.tile2.nc
+       │       │       ├── 20210323.120000.sfc_data.tile3.nc
+       │       │       ├── 20210323.120000.sfc_data.tile4.nc
+       │       │       ├── 20210323.120000.sfc_data.tile5.nc
+       │       │       └── 20210323.120000.sfc_data.tile6.nc
+       │       ├── ice
+       │       │   └── restart
+       │       │       └── 20210323.120000.cice_model.res.nc
+       │       ├── med
+       │       │   └── restart
+       │       │       └── 20210323.120000.ufs.cpld.cpl.r.nc
+       │       └── ocean
+       │           └── restart
+       │               └── 20210323.120000.MOM.res.nc
+       └── 12
+           └── analysis
+               ├── atmos
+               │   ├── gdas.t12z.abias
+               │   ├── gdas.t12z.abias_air
+               │   ├── gdas.t12z.abias_int
+               │   ├── gdas.t12z.abias_pc
+               │   └── gdas.t12z.radstat
+               └── ocean
+                   └── gdas.t12z.ocninc.nc
 
 .. _staged_ics_prototype:
 

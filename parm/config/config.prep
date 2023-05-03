@@ -36,12 +36,12 @@ export PRVT=$FIXgsi/prepobs_errtable.global
 
 # Set prepobs.errtable.global for GFS v16 retrospective parallels
 if [[ $RUN_ENVIR == "emc" ]]; then
-  if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2019021900" && "${PDY}${cyc}" -lt "2019110706" ]]; then
     export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019021900
   fi
 
 #   Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
-  if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020040718" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2019110706" && "${PDY}${cyc}" -lt "2020040718" ]]; then
     export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
   fi
 
@@ -51,7 +51,7 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 #   needed at this time
 
 #   Set observation errors for type 135 (T) & 235 (uv) Canadian AMDAR observations
-#   if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "YYYMMDDHH" ]]; then
+#   if [[ "${PDY}${cyc}" -ge "2020040718" && "${PDY}${cyc}" -lt "YYYMMDDHH" ]]; then
 #     export PRVT=$EXPDIR/prepobs_errtable.global
 #   fi
 
@@ -60,7 +60,7 @@ fi
 # NSST bufr was created with a different set of files prior to 2020102200
 # See comments at the end of
 # https://github.com/NOAA-EMC/global-workflow/issues/313
-if [[ "$CDATE" -ge "2020102200" ]]; then
+if [[ "${PDY}${cyc}" -ge "2020102200" ]]; then
   export DTYPS_nsst='sfcshp tesac bathy trkob'
 else
   export DTYPS_nsst='sfcshp dbuoyb mbuoyb tesac bathy trkob'
