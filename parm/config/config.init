@@ -23,24 +23,24 @@ if [ "${RETRO:-"NO"}" = "YES" ] || [ "$CDUMP" = "gdas" ]; then
   export RUNICSH=${GDASINIT_DIR}/run_v16retro.chgres.sh
 fi
 
-if [ ${RETRO:-"NO"} = "NO" ]; then # Operational input
+if [[ ${RETRO:-"NO"} = "NO" ]]; then # Operational input
   # No ENKF data prior to 2012/05/21/00z
-  if [[ "$CDATE" -lt "2012052100" ]]; then
+  if [[ "${PDY}${cyc}" -lt "2012052100" ]]; then
     set +x
     echo FATAL ERROR: SCRIPTS DO NOT SUPPORT OLD GFS DATA
-  elif [[ "$CDATE" -lt "2016051000" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2016051000" ]]; then
     export gfs_ver=v12
     export RUNICSH=${GDASINIT_DIR}/run_pre-v14.chgres.sh
-  elif [[ "$CDATE" -lt "2017072000" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2017072000" ]]; then
     export gfs_ver=v13
     export RUNICSH=${GDASINIT_DIR}/run_pre-v14.chgres.sh
-  elif [[ "$CDATE" -lt "2019061200" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2019061200" ]]; then
     export gfs_ver=v14
     export RUNICSH=${GDASINIT_DIR}/run_${gfs_ver}.chgres.sh
-  elif [[ "$CDATE" -lt "2021032100" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2021032100" ]]; then
     export gfs_ver=v15
     export RUNICSH=${GDASINIT_DIR}/run_${gfs_ver}.chgres.gfs.sh
-  elif [[ "$CDATE" -lt "2021032106" ]]; then
+  elif [[ "${PDY}${cyc}" -lt "2021032106" ]]; then
     # The way the v16 switch over was done, there is no complete
     # set of v16 or v15 data for 2021032100.  And although
     # v16 was officially implemented 2021032212, the v16 prod
