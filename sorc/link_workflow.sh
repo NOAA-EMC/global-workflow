@@ -188,6 +188,8 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
   cd "${top_dir}/ush" || exit 1
     ${LINK} "${script_dir}/gdas.cd/ush/ufsda"                              .
     ${LINK} "${script_dir}/gdas.cd/ush/jediinc2fv3.py"                     .
+    ${LINK} "${script_dir}/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
+    ${LINK} "${script_dir}/gdas.cd/ush/land/letkf_create_ens.py"           .
 fi
 
 
@@ -310,7 +312,9 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
                        "soca_error_covariance_training.x" \
                        "soca_setcorscales.x" \
                        "soca_gridgen.x" \
-                       "soca_var.x")
+                       "soca_var.x" \
+                       "calcfIMS.exe" \
+                       "apply_incr.exe" )
   for gdasexe in "${JEDI_EXE[@]}"; do
     [[ -s "${gdasexe}" ]] && rm -f "${gdasexe}"
     ${LINK} "${script_dir}/gdas.cd/build/bin/${gdasexe}" .

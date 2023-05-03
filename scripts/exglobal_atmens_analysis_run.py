@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_atmens_analysis_run.py
+# exglobal_atmens_analysis_run.py
 # This script creates an AtmEnsAnalysis object
 # and runs the execute method
 # which executes the global atm local ensemble analysis

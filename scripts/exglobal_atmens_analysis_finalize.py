@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_atmens_analysis_finalize.py
+# exglobal_atmens_analysis_finalize.py
 # This script creates an AtmEnsAnalysis class
 # and runs the finalize method
 # which perform post-processing and clean up activities
