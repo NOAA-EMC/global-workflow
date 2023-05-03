@@ -7,7 +7,8 @@ from pygw import schema
 
 # Define the path to the YAML-formatted file containing the schema
 # attributes.
-yaml_path = os.path.join(os.getcwd(), "test-files", "test_schema.yaml")
+yaml_path = os.path.join(os.getcwd(), "tests",
+                         "test-files", "test_schema.yaml")
 
 # ----
 
