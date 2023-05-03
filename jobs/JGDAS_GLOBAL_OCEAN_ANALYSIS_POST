@@ -14,7 +14,7 @@ export CDATE=${CDATE:-${PDY}${cyc}}
 export GDUMP=${GDUMP:-"gdas"}
 
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL
+RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_ICE_RESTART
 
 mkdir -p "${COM_OCEAN_ANALYSIS}"
@@ -42,6 +42,6 @@ status=$?
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit 1
-[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
+#[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
