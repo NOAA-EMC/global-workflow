@@ -1,0 +1,12 @@
+variable1:
+     optional: False
+     type: bool
+
+variable2:
+     optional: True
+     type: complex
+     default: "3.0 + 0.2j"
+     
+variable3:
+     type: str
+     
