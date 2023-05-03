@@ -11,7 +11,7 @@ if [[ $# -ne 1 ]]; then
     echo "getic init coupled_ic aerosol_init"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanlinit landanlrun landanlfinal"
+    echo "landanlprep landanlinit landanlrun landanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag gldas fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -204,7 +204,7 @@ elif [[ "${step}" = "atmanlfinal" ]]; then
     export npe_node_atmanlfinal
     export is_exclusive=True
 
-elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
+elif [[ "${step}" = "landanlprep" || "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
    # below lines are for creating JEDI YAML
    case ${CASE} in
      C768)
@@ -241,6 +241,14 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "l
        export nth_landanlrun=1
        npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
        export npe_node_landanlrun
+       export is_exclusive=True
+   elif [[ "${step}" = "landanlprep" ]]; then
+       export wtime_landanlprep="00:30:00"
+       npe_landanlprep=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+       export npe_landanlprep
+       export nth_landanlprep=1
+       npe_node_landanlprep=$(echo "${npe_node_max} / ${nth_landanlprep}" | bc)
+       export npe_node_landanlprep
        export is_exclusive=True
    fi
 
@@ -517,7 +525,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
           export layout_x=${layout_x_gfs}
           export layout_y=${layout_y_gfs}
           export WRITE_GROUP=${WRITE_GROUP_GFS}
-          export WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP_GFS}
+          export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GFS}
           ntasks_fv3=${ntasks_fv3_gfs}
           ntasks_quilt=${ntasks_quilt_gfs}
           nthreads_fv3=${nthreads_fv3_gfs}
@@ -530,8 +538,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         # PETS for quilting
         if [[ "${QUILTING:-}" = ".true." ]]; then
           (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
-          (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP * nthreads_fv3 ))  # when threads are used, WRTTASKS_PER_GROUP = INCOMING_WRTTASKS_PER_GROUP * threads
-          # model_configure should be updated to reflect the number of threads used by calling this variable write_pets_per_group
+          (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
           export WRTTASK_PER_GROUP
         else
           QUILTPETS=0

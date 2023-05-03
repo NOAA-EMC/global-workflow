@@ -110,6 +110,7 @@ class AppConfig:
         self.do_jediatmvar = _base.get('DO_JEDIVAR', False)
         self.do_jediatmens = _base.get('DO_JEDIENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
+        self.do_jedilandda = _base.get('DO_JEDILANDDA', False)
         self.do_mergensst = _base.get('DO_MERGENSST', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
@@ -227,6 +228,9 @@ class AppConfig:
 
         if self.do_aero:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+
+        if self.do_jedilandda:
+            configs += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
 
         return configs
 
@@ -369,6 +373,9 @@ class AppConfig:
 
         if self.do_aero:
             gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+
+        if self.do_jedilandda:
+            gdas_gfs_common_tasks_before_fcst += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
 
         gldas_tasks = ['gldas']
         wave_prep_tasks = ['waveinit', 'waveprep']
