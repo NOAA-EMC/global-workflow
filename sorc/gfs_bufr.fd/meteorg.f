@@ -35,6 +35,7 @@
 !                              RELATED CALLS AND CLEAN UP THE CODE.
 !   2020-04-24  GUANG PING LOU Clean up code and remove station height
 !                              adjustment
+!   2023-03-28  Bo Cui  Fix compilation error with "-check all" for gfs_bufrsnd
 !
 ! USAGE:    CALL PROGRAM meteorg
 !   INPUT:
@@ -1105,7 +1106,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
        endif
        print*,'finish computing MSLP'
        print*,'finish computing zp ', (zp(11,k),k=1,levs)
-       print*,'finish computing zp2(11-12) ', zp2(11),zp2(12)
+       print*,'finish computing zp2(1-2) ', zp2(1),zp2(2)         
 !
 !  prepare buffer data
 !
