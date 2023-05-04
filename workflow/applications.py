@@ -249,10 +249,6 @@ class AppConfig:
 
         if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
             configs += ['coupled_ic']
-        else:
-            configs += ['init']
-            if self.do_hpssarch:
-                configs += ['getic']
 
         if self.do_aero:
             configs += ['aerosol_init']
@@ -482,10 +478,6 @@ class AppConfig:
 
         if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
             tasks += ['coupled_ic']
-        else:
-            if self.do_hpssarch:
-                tasks += ['getic']
-            tasks += ['init']
 
         if self.do_aero:
             tasks += ['aerosol_init']

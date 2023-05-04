@@ -10,8 +10,8 @@ __all__ = ['Tasks', 'create_wf_task', 'get_wf_tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['arch', 'earc', 'getic']
-    VALID_TASKS = ['aerosol_init', 'coupled_ic', 'getic', 'init',
+    SERVICE_TASKS = ['arch', 'earc']
+    VALID_TASKS = ['aerosol_init', 'coupled_ic',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
                    'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
@@ -244,45 +244,6 @@ class Tasks:
 
         resources = self.get_resource('coupled_ic')
         task = create_wf_task('coupled_ic', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def getic(self):
-
-        atm_input_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_INPUT_TMPL'])
-        atm_restart_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_RESTART_TMPL'])
-
-        deps = []
-        dep_dict = {'type': 'data', 'data': f'{atm_input_path}/sfc_data.tile6.nc'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'data', 'data': f'{atm_restart_path}/@Y@m@d.@H0000.sfcanl_data.tile6.nc'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
-
-        resources = self.get_resource('getic')
-        task = create_wf_task('getic', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def init(self):
-
-        atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
-        atm_restart_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_RESTART_TMPL"])
-
-        deps = []
-        dep_dict = {'type': 'data', 'data': f'{atm_anl_path}/gfs.t@Hz.atmanl.nc'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'data', 'data': f'{atm_restart_path}/@Y@m@d.@H0000.sfcanl_data.tile6.nc'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-
-        if self.app_config.do_hpssarch:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}getic'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
-
-        resources = self.get_resource('init')
-        task = create_wf_task('init', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
