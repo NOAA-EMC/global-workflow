@@ -846,7 +846,7 @@ def build_schema(data: Dict) -> Dict:
 
     schema_dict = {}
     for datum in data:
-        data_dict = AttrDict(data[datum])
+        data_dict = data[datum]
 
         # Check whether the variable is optional; proceed accordingly.
         if "optional" not in data_dict:
