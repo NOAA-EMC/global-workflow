@@ -844,8 +844,6 @@ def build_schema(data: Dict) -> Dict:
 
     """
 
-    # Read the YAML-formatted file containing the schema.
-    data = yaml_file.parse_yaml(path=yaml_path)
 
     schema_dict = {}
     for datum in data:
