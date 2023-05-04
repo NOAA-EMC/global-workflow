@@ -698,29 +698,8 @@ class Tasks:
     def _fcst_forecast_only(self):
         dependencies = []
 
-        deps = []
-        if self.app_config.do_atm:
-            atm_input_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_INPUT_TMPL"])
-            atm_restart_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_RESTART_TMPL"])
-            data = f'{atm_input_path}/sfc_data.tile6.nc'
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-            data = f'{atm_restart_path}/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
-
-        else:  # data-atmosphere
-            data = f'&ICSDIR;/@Y@m@d@H/datm/gefs.@Y@m.nc'  # GEFS forcing
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-            data = '&ICSDIR;/@Y@m@d@H/ocn/MOM.res.nc'  # TODO - replace with actual ocean IC
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-            data = '&ICSDIR;/@Y@m@d@H/ice/cice5_model.res.nc'  # TODO - replace with actual ice IC
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies.append(rocoto.create_dependency(dep_condition='and', dep=deps))
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}coupled_ic'}
+        dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
             wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
