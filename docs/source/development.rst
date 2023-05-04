@@ -92,20 +92,20 @@ All new code after 2022 Sep 1 will be required to meet these standards. We will 
 
 .. _commit-standards:
 
-========================
-Commit message standards
-========================
+======================
+Pull request standards
+======================
 
-**ALL** commits must follow best practices for commit messages: https://chris.beams.io/posts/git-commit/
+Pull reqeusts should follow the pre-filled template provided when you open the PR. PR titles and descriptions become the commit message when the PR is squashed and merged, so we ask that they follow best practices for commit messages:
 
- * Separate subject from body with a blank line
- * Limit the subject line to 50 characters
+ * Limit the subject line (PR title) to 50 characters
  * Capitalize the subject line
  * Do not end the subject line with a period
  * Use the `imperative mood <https://en.wikipedia.org/wiki/Imperative_mood>`_ in the subject line
- * Wrap the body at 72 characters
  * Use the body to explain what and why vs. how
  * The final line of the commit message should include tags to relevant issues (e.g. ``Refs: #217, #300``)
+
+This list is a modified version of the one provided at https://chris.beams.io/posts/git-commit/ with a couple removed that are not relevant to GitHub PRs.
 
 Here is the example commit message from the article linked above; it includes descriptions of what would be in each part of the commit message for guidance:
 
