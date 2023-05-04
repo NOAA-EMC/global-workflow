@@ -6,6 +6,7 @@ import sqlite3
 from sqlite3 import Error
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
+
 def sql_connection(filename):
     try:
         con = sqlite3.connect(Path(filename))
@@ -15,13 +16,14 @@ def sql_connection(filename):
         sys.exit(-1)
 
 def sql_table(obj):
-    obj.execute( "CREATE TABLE processing(pr integer PRIMARY KEY, state text, status text)")
+    obj.execute("CREATE TABLE processing(pr integer PRIMARY KEY, state text, status text)")
 
 
 def sql_insert(obj, entities):
-    obj.execute('INSERT INTO processing(pr, state, status ) VALUES(?, ?, ?)', entities)   
+    obj.execute('INSERT INTO processing(pr, state, status ) VALUES(?, ?, ?)', entities)
 
-def sql_update(obj,pr,state,status):
+
+def sql_update(obj, pr, state, status):
     obj.execute(f'UPDATE processing SET state = "{state}", status = "{status}" WHERE pr = {pr}')
 
 
@@ -30,9 +32,9 @@ def sql_fetch(obj):
     rows = obj.fetchall()
     return rows
 
-def sql_remove(obj,pr):
-    obj.execute(f'DELETE FROM processing WHERE pr = {pr}').rowcount
 
+def sql_remove(obj, pr):
+    obj.execute(f'DELETE FROM processing WHERE pr = {pr}').rowcount
 
 
 def input_args():

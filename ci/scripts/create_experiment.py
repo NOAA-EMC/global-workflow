@@ -87,7 +87,7 @@ if __name__ == '__main__':
     mode = setup_expt_args.experiment.mode
 
     machine = setup_expt_args.environment.machine
-    machine_yaml_file = Path.joinpath(Path(HOMEgfs), 'workflow', 'hosts', machine+'.yaml')
+    machine_yaml_file = Path.joinpath(Path(HOMEgfs), 'workflow', 'hosts', machine + '.yaml')
     account_update = YAMLFile(path=machine_yaml_file)
     account_update.ACCOUNT = setup_expt_args.environment.account
     account_update.save(target=machine_yaml_file)
