@@ -867,7 +867,6 @@ def build_schema(data: Dict) -> Dict:
 # ----
 
 
-@logit(logger)
 def validate_schema(schema_dict: Dict, cfg: Dict) -> Dict:
     """
     # TODO: This method will read the config_obj and the schema defined in `build_schema`; if a value is 
