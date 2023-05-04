@@ -833,7 +833,7 @@ def build_schema(data: Dict) -> Dict:
     Parameters
     ----------
 
-    yaml_path: str
+    data: Dict
 
         A Python string specifying the path to the YAML-formatted file
         containing the schema attributes.
