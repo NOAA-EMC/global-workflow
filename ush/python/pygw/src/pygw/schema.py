@@ -835,8 +835,7 @@ def build_schema(data: Dict) -> Dict:
 
     data: Dict
 
-        A Python string specifying the path to the YAML-formatted file
-        containing the schema attributes.
+        A Python dictionary containing the schema attributes.
 
     schema_dict: Dict
 
