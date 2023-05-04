@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_atmens_analysis_initialize.py
+# exglobal_atmens_analysis_initialize.py
 # This script creates an AtmEnsAnalysis class
 # and runs the initialize method
 # which create and stage the runtime directory
