@@ -35,7 +35,7 @@ load(pathJoin("prepobs", "1.0.1"))
 prepend_path("MODULEPATH", "/contrib/anaconda/modulefiles")
 load(pathJoin("anaconda", "5.3.1"))
 
-prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/feature-GFSv17_com_reorg/modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
 load(pathJoin("prepobs", "1.0.1"))
 prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/Fit2Obs/v1.0.0/modulefiles"))
 load(pathJoin("fit2obs", "1.0.0"))
