@@ -827,7 +827,7 @@ def build_schema(data: Dict) -> Dict:
     Description
     -----------
 
-    This function parses a YAML-formatted file and defines the
+    This function takes in a user-provided dictionary and defines the
     respective schema.
 
     Parameters
