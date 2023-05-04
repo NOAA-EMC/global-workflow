@@ -850,7 +850,7 @@ def build_schema(data: Dict) -> Dict:
 
         # Check whether the variable is optional; proceed accordingly.
         if "optional" not in data_dict:
-            data_dict.optional = False
+            data_dict['optional'] = False
         else:
             pass
 
