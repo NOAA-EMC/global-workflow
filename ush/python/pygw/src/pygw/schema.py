@@ -5,13 +5,8 @@ parsing, converted from JSON/YAML (or something else) to Python data-types."""
 import inspect
 import re
 
-# The following are specific to global-workflow.
-import logging
 from typing import Dict
 from pydoc import locate
-from pygw import yaml_file
-from pygw.attrdict import AttrDict
-from pygw.logger import Logger, logit
 
 try:
     from contextlib import ExitStack
@@ -827,13 +822,7 @@ def _plural_s(sized):
 
 # https://github.com/keleshev/schema/blob/master/schema.py
 
-
-# TODO: Is there a better way to do this?
-logger = Logger("pygw.schema", colored_log=True)
-
-
-@logit(logger)
-def build_schema(yaml_path: str) -> Dict:
+def build_schema(data: Dict) -> Dict:
     """
     Description
     -----------
