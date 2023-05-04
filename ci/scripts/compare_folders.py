@@ -206,7 +206,7 @@ def check_diff_files(dcmp, ignore_list):
                 else:
                     netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
                 if netcdf_diff_output is None:
-        # diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' + in_dir)
+                # diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' + in_dir)
                     num_netcdf_differing_files_onlyheader += 1
                 else:
                     diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs ' + in_dir)
