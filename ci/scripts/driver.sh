@@ -34,7 +34,7 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 #########################################################################
 
 source "${HOMEgfs}/ush/detect_machine.sh"
-export "${MACHINE_ID}"
+export MACHINE_ID
 case ${MACHINE_ID} in
   hera | orion)
     echo "Running Automated Testing on ${MACHINE_ID}"
@@ -63,7 +63,7 @@ if [[ ! -f "${pr_list_dbfile}" ]]; then
   "${HOMEgfs}/ci/scripts/pr_list_database.py" --create "${pr_list_dbfile}"
 fi
 
-pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}')
+pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
 
 for pr in ${pr_list}; do
   "${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" "${pr_list_dbfile}"
@@ -71,7 +71,7 @@ done
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$(${HOMEgfs}/ci/scripts/pr_list_database.py --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}')
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}') || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"

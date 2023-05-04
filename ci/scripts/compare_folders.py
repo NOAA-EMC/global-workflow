@@ -206,7 +206,7 @@ def check_diff_files(dcmp, ignore_list):
                 else:
                     netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
                 if netcdf_diff_output is None:
-#                   #diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' + in_dir)
+        # diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' + in_dir)
                     num_netcdf_differing_files_onlyheader += 1
                 else:
                     diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs ' + in_dir)
@@ -230,7 +230,7 @@ def check_diff_files(dcmp, ignore_list):
                 diff_file.write(f'grib file {name} differs with {count} uncorrelated vars ' + in_dir)
                 if verbose:
                     var[0] = "     " + var[0]
-               	    diff_file.write("     ".join(var))
+                    diff_file.write("     ".join(var))
                 num_grib_differing_files += 1
         else:
             diff_file.write(f'file {name} differs ' + in_dir)
@@ -329,7 +329,7 @@ if __name__ == '__main__':
                 basename_b = os.path.basename(folderb)
                 diff_file.write(f'{num_missmatched_files} files found in:{CR}    {basename_a}   that are not in{CR}    {basename_b}:{CR}')
                 for file in results[each_side]:
-                    diff_file.write("       "+file+"\n")
+                    diff_file.write("       " + file + "\n")
             logger.info(f'{num_missmatched_files} files found in {os.path.basename(foldera)} that are not in {os.path.basename(folderb)}')
             match_pass = False
     if match_pass:

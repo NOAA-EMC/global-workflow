@@ -48,7 +48,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 #NOTE: last pipe with head -2 limits no more tha two PRs at a time
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$(${HOMEgfs}/ci/scripts/pr_list_database.py --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Built | awk '{print $1}' | head -2)
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Built | awk '{print $1}' | head -2) || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"

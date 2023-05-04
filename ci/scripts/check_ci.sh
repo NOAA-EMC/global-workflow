@@ -50,7 +50,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$(${HOMEgfs}/ci/scripts/pr_list_database.py --display "${pr_list_dbfile}" | grep -v Failed | grep Built | awk '{print $1}')
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Built | awk '{print $1}') || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
@@ -85,7 +85,7 @@ for pr in ${pr_list}; do
   fi
 
   for cases in "${pr_dir}/RUNTESTS/"*; do
-    pslot=$(basename "${cases}")
+    pslot=$(basename "${cases}") || true
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
     rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true

@@ -80,7 +80,7 @@ if __name__ == '__main__':
     if args.update_pr:
         pr = args.update_pr[0]
         state = args.update_pr[1]
-        status=args.update_pr[2]
+        status = args.update_pr[2]
         sql_update(obj, pr, state, status)
 
     if args.remove_pr:
