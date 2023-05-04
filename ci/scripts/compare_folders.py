@@ -38,12 +38,12 @@ def count_nonid_corr(test_string: str):
     matches = [m.groupdict() for m in pattern.finditer(test_string)]
 
     count = 0
-    var=[]
+    var = []
     for match in matches:
         if float(match['corr']) != 1.0:
             count = count + 1
             var.append(f"{match['var']}: corr={match['corr']}\n")
-    return (count,var)
+    return (count, var)
 
 
 def _recursive_dircmp(folder1, folder2):
@@ -206,7 +206,7 @@ def check_diff_files(dcmp, ignore_list):
                 else:
                     netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
                 if netcdf_diff_output is None:
-                    #diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' + in_dir)
+#                   #diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' + in_dir)
                     num_netcdf_differing_files_onlyheader += 1
                 else:
                     diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs ' + in_dir)
@@ -225,11 +225,11 @@ def check_diff_files(dcmp, ignore_list):
         elif any([x in name for x in ["grib2", "grb2", "flux"]]):
             num_identified_grib_files += 1
             grib2_diff_output = WGRIB2(file1, "-var", "-rpn", "sto_1", "-import_grib", file2, "-rpn", "rcl_1:print_corr", output=str)
-            count,var = count_nonid_corr(grib2_diff_output)
+            count, var = count_nonid_corr(grib2_diff_output)
             if count != 0:
                 diff_file.write(f'grib file {name} differs with {count} uncorrelated vars ' + in_dir)
                 if verbose:
-                    var[0]="     "+var[0]
+                    var[0] = "     " + var[0]
                	    diff_file.write("     ".join(var))
                 num_grib_differing_files += 1
         else:

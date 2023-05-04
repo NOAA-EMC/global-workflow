@@ -15,6 +15,7 @@ def sql_connection(filename):
         print(Error)
         sys.exit(-1)
 
+
 def sql_table(obj):
     obj.execute("CREATE TABLE processing(pr integer PRIMARY KEY, state text, status text)")
 
@@ -46,12 +47,11 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('sbfile', help='file of sqlite3 for pr list database ', type=str)
-    parser.add_argument('--create', help='create sqlite file for pr list status',action='store_true', required=False)
+    parser.add_argument('--create', help='create sqlite file for pr list status', action='store_true', required=False)
     parser.add_argument('--add_pr', nargs=1, metavar='PR', help='add new pr to list (defults to: Open,Ready)', required=False)
     parser.add_argument('--remove_pr', nargs=1, metavar='PR', help='removes pr from list', required=False)
-    parser.add_argument('--update_pr', nargs=3, metavar=('pr','state','status'), help='updates state and status of a given pr', required=False)
+    parser.add_argument('--update_pr', nargs=3, metavar=('pr', 'state', 'status'), help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', help='output pr table', action='store_true', required=False)
-
 
     args = parser.parse_args()
     return args
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         sql_table(obj)
 
     if args.add_pr:
-        rows=sql_fetch(obj)
+        rows = sql_fetch(obj)
         for row in rows:
             if str(row[0]) == str(args.add_pr[0]):
                 print(f"pr {row[0]} already is in list: nothing added")
@@ -78,18 +78,18 @@ if __name__ == '__main__':
         sql_insert(obj, entities)
 
     if args.update_pr:
-        pr=args.update_pr[0]
-        state=args.update_pr[1]
+        pr = args.update_pr[0]
+        state = args.update_pr[1]
         status=args.update_pr[2]
-        sql_update(obj,pr,state,status)
+        sql_update(obj, pr, state, status)
 
     if args.remove_pr:
-        sql_remove(obj,args.remove_pr[0])
+        sql_remove(obj, args.remove_pr[0])
 
     if args.display:
-        rows=sql_fetch(obj)
+        rows = sql_fetch(obj)
         for row in rows:
-            print(' '.join(map(str,row)))
+            print(' '.join(map(str, row)))
 
     con.commit()
     con.close()
