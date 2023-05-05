@@ -6,9 +6,9 @@ variable1:
 # An optional complex valued variable.
 variable2:
      optional: True
-     type: complex
-     default: "3.0 + 0.2j"
-
+     type: int
+     default: 2
+     
 # A mandatory string variable.
 variable3:
      type: str
