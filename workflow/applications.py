@@ -240,19 +240,10 @@ class AppConfig:
         Returns the config_files that are involved in the forecast-only app
         """
 
-        configs = ['fcst']
+        configs = ['coupled_ic', 'fcst', 'arch']
 
         if self.do_atm:
             configs += ['post', 'vrfy']
-
-        configs += ['arch']
-
-        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
-            configs += ['coupled_ic']
-        else:
-            configs += ['init']
-            if self.do_hpssarch:
-                configs += ['getic']
 
         if self.do_aero:
             configs += ['aerosol_init']
@@ -478,14 +469,7 @@ class AppConfig:
         This is the place where that order is set.
         """
 
-        tasks = []
-
-        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
-            tasks += ['coupled_ic']
-        else:
-            if self.do_hpssarch:
-                tasks += ['getic']
-            tasks += ['init']
+        tasks = ['coupled_ic']
 
         if self.do_aero:
             tasks += ['aerosol_init']
