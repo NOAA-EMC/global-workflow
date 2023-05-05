@@ -10,10 +10,7 @@
 ################################################################################
 #  Filenames
 CREATEENS="${HOMEgfs}/ush/letkf_create_ens.py"
-ADDJEDIINC="${HOMEgfs}/exec/apply_incr.exe"
 
-OROGPATH="${HOMEgfs}/fix/orog/${CASE}"
-OROGTYPE="${CASE}_oro_data"
 FRACGRID="NO"
 FILEDATE=${PDY}.${cyc}0000
 ################################################################################

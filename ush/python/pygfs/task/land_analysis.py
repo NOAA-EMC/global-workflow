@@ -227,16 +227,16 @@ class LandAnalysis(Analysis):
         workdir = os.path.join(self.task_config.DATA, 'anl')
         os.chdir(workdir)
         fname = 'apply_incr_nml'
-        text  = '&noahmp_snow\n'
-        text += ' date_str='+to_YMD(self.task_config.PDY)+'\n'
-        text += ' hour_str='+f"{self.task_config.cyc:02d}"+'\n'
-        text += ' res='+self.task_config.CASE[1:]+'\n'
-        text += ' frac_grid='+f"{self.task_config.FRACGRID}"+'\n'
-        text += ' orog_path="'+self.task_config.OROGPATH+'"\n'
-        text += ' otype="'+self.task_config.OROGTYPE+'"\n'
+        text = '&noahmp_snow\n'
+        text += ' date_str=' + to_YMD(self.task_config.PDY) + '\n'
+        text += ' hour_str=' + f"{self.task_config.cyc:02d}" + '\n'
+        text += ' res=' + self.task_config.CASE[1:] + '\n'
+        text += ' frac_grid=' + f"{self.task_config.FRACGRID}" + '\n'
+        text += ' orog_path="' + self.task_config.OROGPATH + '"\n'
+        text += ' otype="' + self.task_config.OROGTYPE + '"\n'
         text += '/'
         with open(fname, 'w') as f:
-          f.write(text)
+            f.write(text)
 
         # execute apply_incr.exe to add incr to analysis
         exec_cmd = Executable(self.task_config.APRUN_LANDANL)
