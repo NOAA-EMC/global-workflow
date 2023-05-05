@@ -822,6 +822,8 @@ def _plural_s(sized):
 
 # https://github.com/keleshev/schema/blob/master/schema.py
 
+# TODO: Clean-up such that `pynorm` passes.
+
 
 def build_schema(data: Dict) -> Dict:
     """
@@ -887,19 +889,37 @@ def validate_schema(schema_dict: Dict, data: Dict) -> Dict:
     Parameters
     ----------
 
+    schema_dict: Dict
+
+        A Python dictionary containing the schema.
+
+    data: Dict
+
+        A Python dictionary containing the configuration to be
+        validated.
+
+    Returns
+    -------
+
+    data: Dict
+
+        A Python dictionary containing the validated schema; if any
+        optional values have not been define within `data` (above),
+        they are updated with the schema default values.
+
     """
 
     # Define the schema instance.
-    schema = Schema([schema_dict])
+    schema = Schema([schema_dict], ignore_extra_keys=True)
 
     # If any `Optional` keys are missing from the scheme to be
-    # validated, update them acccordingly.
+    # validated (`data`), update them acccordingly.
     for k, v in schema_dict.items():
         if isinstance(k, Optional):
             if k.key not in data:
                 data[k.key] = k.default
 
     # Validate the schema and return the updated dictionary.
-    schema.validate([data], ignore_extra_keys=True)
+    schema.validate([data])
 
     return data
