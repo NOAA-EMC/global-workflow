@@ -9,9 +9,8 @@ from typing import Dict, List, Any
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
-from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta
+from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMD
 from pygw.fsutils import rm_p, chdir
-from pygw.timetools import to_fv3time
 from pygw.yaml_file import YAMLFile, parse_yamltmpl, parse_j2yaml, save_as_yaml
 from pygw.logger import logit
 from pygw.executable import Executable
@@ -93,9 +92,15 @@ class LandAnalysis(Analysis):
         save_as_yaml(letkfoi_yaml, self.task_config.fv3jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.fv3jedi_yaml}")
 
-        # link executable to DATA/ directory
-        exe_src = self.task_config['JEDIEXE']
-        logger.debug(f"Link executable {exe_src} to DATA/")  # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
+        # link executables to DATA/ directory
+        exe_src = self.task_config.JEDIEXE
+        logger.debug(f"Link executable {exe_src} to DATA/")
+        exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+        exe_src = self.task_config.JEDIINCEXE
+        logger.debug(f"Link executable {exe_src} to DATA/")
         exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
@@ -172,8 +177,8 @@ class LandAnalysis(Analysis):
         FileHandler({'copy': bkglist}).sync()
 
         # ---- add increments to RESTART files
-        # logger.info('Adding increments to RESTART files')
-        # self._add_fms_cube_sphere_increments()
+        logger.info('Adding increments to RESTART files')
+        self._add_fms_cube_sphere_increments()
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
@@ -218,12 +223,23 @@ class LandAnalysis(Analysis):
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
-        # execute apply_incr.exe to add incr to analysis
+        # write a apply_incr_nml
         workdir = os.path.join(self.task_config.DATA, 'anl')
-        chdir(workdir)
+        os.chdir(workdir)
+        fname = 'apply_incr_nml'
+        text  = '&noahmp_snow\n'
+        text += ' date_str='+to_YMD(self.task_config.PDY)+'\n'
+        text += ' hour_str='+f"{self.task_config.cyc:02d}"+'\n'
+        text += ' res='+self.task_config.CASE[1:]+'\n'
+        text += ' frac_grid='+f"{self.task_config.FRACGRID}"+'\n'
+        text += ' orog_path="'+self.task_config.OROGPATH+'"\n'
+        text += ' otype="'+self.task_config.OROGTYPE+'"\n'
+        text += '/'
+        with open(fname, 'w') as f:
+          f.write(text)
 
+        # execute apply_incr.exe to add incr to analysis
         exec_cmd = Executable(self.task_config.APRUN_LANDANL)
-# export ADDJEDIINC=${ADDJEDIINC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/apply_incr.exe"}
         exec_name = os.path.join(self.task_config.DATA, 'apply_incr.exe')
         exec_cmd.add_default_arg(exec_name)
 

@@ -15,9 +15,14 @@ export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/${obs_list_name}
 export LANDVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml
 export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
 
+export OROGPATH="${HOMEgfs}/fix/orog/${CASE}"
+export OROGTYPE="${CASE}_oro_data"
+export FRACGRID="NO"
+
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIEXE=${HOMEgfs}/exec/fv3jedi_letkf.x
+export JEDIINCEXE=${HOMEgfs}/exec/apply_incr.exe
 
 echo "END: config.landanl"

@@ -71,35 +71,6 @@ if [[ -e "landinc.${FILEDATE}.coupler.res" ]]; then
 fi
 ################################################################################
 ################################################################################
-# add jedi increment
-cd "${DATA}/anl" || exit 99
-
-if [[ -e apply_incr_nml ]]; then
-  rm apply_incr_nml
-fi
-
-cat << EOF > apply_incr_nml
-&noahmp_snow
- date_str=${PDY}
- hour_str=${cyc}
- res=${CASE/C/}
- frac_grid=${FRACGRID}
- orog_path="${OROGPATH}"
- otype="${OROGTYPE}"
-/
-EOF
-
-# stage restarts
-for tile in $(seq 1 "${ntiles}"); do
-  if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-    ${NCP} "${DATA}/bkg/${FILEDATE}.sfc_data.tile${tile}.nc"  "${DATA}/anl/${FILEDATE}.sfc_data.tile${tile}.nc"
-  fi
-done
-
-echo 'do_landDA: calling apply snow increment'
-
-# (n=6) -> this is fixed, at one task per tile (with minor code change, could run on a single proc).
-${APRUN_LANDANL} "${ADDJEDIINC}" "${DATA}/anl/apply_incr.log" 1>&1 2>&2
 
 export err=$?; err_chk
 exit "${err}"
