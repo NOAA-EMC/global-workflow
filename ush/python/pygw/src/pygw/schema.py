@@ -822,6 +822,7 @@ def _plural_s(sized):
 
 # https://github.com/keleshev/schema/blob/master/schema.py
 
+
 def build_schema(data: Dict) -> Dict:
     """
     Description
@@ -837,13 +838,16 @@ def build_schema(data: Dict) -> Dict:
 
         A Python dictionary containing the schema attributes.
 
+    Returns
+    -------
+
     schema_dict: Dict
 
         A Python dictionary containing the schema.
 
     """
 
-
+    # TODO: Find an alternative to pydoc.locate() to identify type.
     schema_dict = {}
     for datum in data:
         data_dict = data[datum]
@@ -851,26 +855,51 @@ def build_schema(data: Dict) -> Dict:
         # Check whether the variable is optional; proceed accordingly.
         if "optional" not in data_dict:
             data_dict['optional'] = False
+            schema_dict[datum] = locate(data_dict["type"])
         else:
-            pass
+            if data_dict['optional']:
+                schema_dict[datum] = locate(data_dict["type"])
 
         # Build the schema accordingly.
-        if data_dict.optional:
-            schema_dict[Optional(datum, data_dict.default)
-                        ] = locate(data_dict.type)
-
-        if not data_dict.optional:
-            schema_dict[datum] = locate(data_dict.type)
+        try:
+            if data_dict["optional"]:
+                schema_dict[Optional(datum, default=data_dict["default"])
+                            ] = locate(data_dict["type"])
+            else:
+                schema_dict[datum] = locate(data_dict["type"])
+        except AttributeError:
+            pass
 
     return schema_dict
 
 # ----
 
 
-def validate_schema(schema_dict: Dict, cfg: Dict) -> Dict:
+def validate_schema(schema_dict: Dict, data: Dict) -> Dict:
     """
-    # TODO: This method will read the config_obj and the schema defined in `build_schema`; if a value is 
-    not defined in `cfg` and is optional, the default value will be assigned; if a value is not defined 
-    and is not optional, and exception will be raised.
+    Description
+    ------------
+
+    This function validates the schema; if an optional key value has
+    not be specified, a the default value for the option is defined
+    within the returned Dict.
+
+    Parameters
+    ----------
 
     """
+
+    # Define the schema instance.
+    schema = Schema([schema_dict])
+
+    # If any `Optional` keys are missing from the scheme to be
+    # validated, update them acccordingly.
+    for k, v in schema_dict.items():
+        if isinstance(k, Optional):
+            if k.key not in data:
+                data[k.key] = k.default
+
+    # Validate the schema and return the updated dictionary.
+    schema.validate([data], ignore_extra_keys=True)
+
+    return data
