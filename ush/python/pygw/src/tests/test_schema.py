@@ -6,7 +6,7 @@ Unit-tests for `pygw.schema`.
 """
 
 import os
-
+import pytest
 from pygw import schema
 from pygw.yaml_file import parse_yaml
 from pygw.schema import SchemaError
