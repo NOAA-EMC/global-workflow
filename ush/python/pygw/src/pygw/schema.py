@@ -782,7 +782,6 @@ def _callable_str(callable_):
 def _plural_s(sized):
     return "s" if len(sized) > 1 else ""
 
-# ----
 
 # The following functions are added to be able to translate an user-specified Dict into a SchemaDict. The Schema
 # class module was obtained from:
