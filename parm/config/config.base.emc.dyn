@@ -354,13 +354,13 @@ export MAKE_NSSTBUFR="@MAKE_NSSTBUFR@"
 export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 
 # Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
+export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 
 # Write analysis files for early cycle EnKF
 export DO_CALC_INCREMENT_ENKF_GFS="YES"
 
 # Stratospheric increments to zero
-export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
+export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 export INCVARS_EFOLD="5"
 
 # Swith to generate netcdf or binary diagnostic files.  If not specified,
