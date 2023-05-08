@@ -55,8 +55,8 @@ lupp=${lupp:-".true."}
 cnvw_option=${cnvw_option:-".false."}
 
 # Observation usage options
-cao_check=${cao_check:-".false."}
-ta2tb=${ta2tb:-".false."}
+cao_check=${cao_check:-".true."}
+ta2tb=${ta2tb:-".true."}
 
 # Diagnostic files options
 lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
@@ -423,9 +423,7 @@ ${NLN} ${RTMFIX}/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.Emis
 ${NLN} ${RTMFIX}/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
 ${NLN} ${RTMFIX}/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
 ${NLN} ${RTMFIX}/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
-${NLN} ${RTMFIX}/CloudCoeff.bin                ./crtm_coeffs/CloudCoeff.bin
-#$NLN $RTMFIX/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
-
+${NLN} ${RTMFIX}/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
 
 ##############################################################
 # Observational data
@@ -702,7 +700,7 @@ cat > gsiparm.anl << EOF
   iguess=-1,
   tzr_qc=${TZR_QC},
   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-  use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,commgpstop=45.,commgpserrinf=1.0,
+  use_pbl=.false.,use_compress=.true.,nsig_ext=45,gpstop=50.,commgpstop=45.,commgpserrinf=1.0,
   use_gfs_nemsio=.false.,use_gfs_ncio=.true.,sfcnst_comb=.true.,
   use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
   lrun_subdirs=${lrun_subdirs},
@@ -755,7 +753,7 @@ cat > gsiparm.anl << EOF
   ${OBSQC}
 /
 &OBS_INPUT
-  dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,dmesh(4)=25.0,time_window_max=3.0,
+  dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,dmesh(4)=50.0,time_window_max=3.0,
   ${OBSINPUT}
 /
 OBS_INPUT::
