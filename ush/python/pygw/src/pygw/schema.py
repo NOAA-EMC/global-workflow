@@ -720,9 +720,9 @@ class Optional(Schema):
 
     def __eq__(self, other):
         return (
-            self.__class__ is other.__class__
+            self.__class__ is other.__class__  # nopep8
             and getattr(self, "default", self._MARKER) == getattr(other, "default", self._MARKER)  # nopep8
-            and self._schema == other._schema
+            and self._schema == other._schema  # nopep8
         )
 
     def reset(self):
@@ -791,6 +791,7 @@ def _plural_s(sized):
 
 # TODO: Clean-up such that `pynorm` passes.
 
+
 def build_schema(data: Dict) -> Dict:
     """
     Description
@@ -841,6 +842,7 @@ def build_schema(data: Dict) -> Dict:
     return schema_dict
 
 # ----
+
 
 def validate_schema(schema_dict: Dict, data: Dict) -> Dict:
     """
