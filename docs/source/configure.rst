@@ -48,9 +48,6 @@ The global-workflow configs contain switches that change how the system runs. Ma
 | QUILTING       | Use I/O quilting             | .true.        | NO          | If .true. choose OUTPUT_GRID as cubed_sphere_grid |
 |                |                              |               |             | in netcdf or gaussian_grid                        |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
-| RETRO          | Use retrospective parallel   | NO            | NO          | Default of NO will tell getic job to pull from    |
-|                | for ICs                      |               |             | production tapes.                                 |
-+----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | WAFSF          | Run jobs to produce WAFS     | NO            | YES         | downstream processing, ops only                   |
 |                | products                     |               |             |                                                   |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+

@@ -7,10 +7,13 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalr
 
 
 ##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
 
 ###############################################################
 # Run relevant script

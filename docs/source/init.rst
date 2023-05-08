@@ -261,9 +261,7 @@ Coupled initial conditions are currently only generated offline and copied prior
 Forecast-only mode (atm-only)
 -----------------------------
 
-Forecast-only mode in global workflow includes ``getic`` and ``init`` jobs for the gfs suite. The ``getic`` job pulls inputs for ``chgres_cube`` (init job) or warm start ICs into your ``ROTDIR/COMROT``. The ``init`` job then ingests those files to produce initial conditions for your experiment. 
-
-Users on machines without HPSS access (e.g. Orion) need to perform the ``getic`` step manually and stage inputs for the ``init`` job. The table below lists the needed files for ``init`` and where to place them in your ``ROTDIR``.
+The table below lists the needed initial condition files from past GFS versions to be used by the UFS_UTILS gdas_init utility. The utility will pull these files for you. See the next section (Manual Generation) for how to run the UFS_UTILS gdas_init utility and create initial conditions for your experiment.
 
 Note for table: yyyy=year; mm=month; dd=day; hh=cycle
 
