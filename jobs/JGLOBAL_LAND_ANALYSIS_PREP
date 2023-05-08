@@ -19,12 +19,14 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 
 ###############################################################
 # Run relevant script
+# if [[ "${cyc}" == "18" ]]; then
 
-EXSCRIPT=${GDASLANDPREPSH:-${HOMEgfs}/scripts/exglobal_land_analysis_prep.sh}
+EXSCRIPT=${GDASLANDPREPSH:-${HOMEgfs}/scripts/exglobal_land_analysis_prepare.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
+# fi
 ##############################################
 # End JOB SPECIFIC work
 ##############################################

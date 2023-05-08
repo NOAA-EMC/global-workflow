@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import glob
 import gzip
 import tarfile
@@ -9,7 +10,7 @@ from typing import Dict, List, Any
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
-from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMD
+from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMD, to_YYYY, to_DOY
 from pygw.fsutils import rm_p, chdir
 from pygw.yaml_file import YAMLFile, parse_yamltmpl, parse_j2yaml, save_as_yaml
 from pygw.logger import logit
@@ -105,6 +106,12 @@ class LandAnalysis(Analysis):
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
+        exe_src = self.task_config.CALCFIMS
+        logger.debug(f"Link executable {exe_src} to DATA/")
+        exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -113,6 +120,97 @@ class LandAnalysis(Analysis):
             os.path.join(self.task_config['DATA'], 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+    @logit(logger)
+    def prepare(self: Analysis) -> None:
+        """Prepare the IMS data for a global land analysis
+
+        This method will prepare IMS data for a global land analysis using JEDI.
+        This includes:
+        - staging model backgrounds
+        - generating a card file for IMS processing
+        - creating IMS snowdepth data in IODA format.
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+
+        # ---- copy the restart files from bkg to obs
+        logger.info('Copying restart files from bkg to obs')
+        template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+        inclist = []
+        for itile in range(1, self.task_config.ntiles + 1):
+            sfcdata = template.format(tilenum=itile)
+            src = os.path.join(self.task_config.DATA, 'bkg', sfcdata)
+            dest = os.path.join(self.task_config.DATA, 'obs', sfcdata)
+            inclist.append([src, dest])
+        FileHandler({'copy': inclist}).sync()
+
+        # ---- copy the IMS obs files from COM_OBS to DATA/obs
+        logger.info('Copying the IMS obs files from COM_OBS to obs')
+        yyyydoy = f"{to_YYYY(self.task_config.PDY)}" + f"{to_DOY(self.task_config.PDY)}"
+        inclist = []
+        obsdata1 = f"{self.task_config.RUN}" + ".t" + f"{self.task_config.cyc:02d}" + "z.ims" + f"{yyyydoy}" + "_4km_v1.3.nc"
+        obsdata2 = "ims" + f"{yyyydoy}" + "_4km_v1.3.nc"
+        src = os.path.join(self.task_config.COM_OBS, obsdata1)
+        dest = os.path.join(self.task_config.DATA, 'obs', obsdata2)
+        inclist.append([src, dest])
+        obsindex1 = f"{self.task_config.RUN}" + ".t" + f"{self.task_config.cyc:02d}" + "z.IMS4km_to_FV3_mapping." + f"{self.task_config.CASE}" + "_oro_data.nc"
+        obsindex2 = "IMS4km_to_FV3_mapping." + f"{self.task_config.CASE}" + "_oro_data.nc"
+        src = os.path.join(self.task_config.COM_OBS, obsindex1)
+        dest = os.path.join(self.task_config.DATA, 'obs', obsindex2)
+        inclist.append([src, dest])
+        FileHandler({'copy': inclist}).sync()
+
+        # write a fims.nml
+        workdir = os.path.join(self.task_config.DATA, 'obs')
+        os.chdir(workdir)
+        fname = 'fims.nml'
+        text = '&fIMS_nml\n'
+        text += ' idim=' + self.task_config.CASE[1:] + ', jdim=' + self.task_config.CASE[1:] + ',\n'
+        text += ' otype="' + self.task_config.OROGTYPE + '",\n'
+        text += ' jdate=' + to_YYYY(self.task_config.PDY) + to_DOY(self.task_config.PDY) + ',\n'
+        text += ' yyyymmddhh=' + to_YMD(self.task_config.PDY) + '.' + f"{self.task_config.cyc:02d}" + ',\n'
+        text += ' imsformat=2,\n'
+        text += ' imsversion=1.3,\n'
+        text += ' IMS_OBS_PATH="' + os.path.join(self.task_config.DATA, 'obs/') + '",\n'
+        text += ' IMS_IND_PATH="' + os.path.join(self.task_config.DATA, 'obs/') + '"\n'
+        text += '/'
+        with open(fname, 'w') as f:
+            f.write(text)
+
+        # execute calcfIMS.exe to calculate IMS snowdepth
+        exec_cmd = Executable(self.task_config.APRUN_LANDANL)
+        exec_name = os.path.join(self.task_config.DATA, 'calcfIMS.exe')
+        exec_cmd.add_default_arg(exec_name)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
+        # Execute imspy to create the IMS obs data in IODA format
+        pdycyc = f"{to_YMD(self.task_config.PDY)}" + f"{self.task_config.cyc:02d}"
+        ifile = 'IMSscf.' + f'{to_YMD(self.task_config.PDY)}' + '.' + f'{self.task_config.OROGTYPE}' + '.nc'
+        ofile = f"{self.task_config.RUN}" + ".t" + f"{self.task_config.cyc:02d}" + "z.ims_snow_" + f"{pdycyc}" + ".nc4"
+
+        # Reference the python script which does the actual work
+        imspy = os.path.join(self.task_config.HOMEgfs, 'ush/imsfv3_scf2ioda.py')
+
+        print(f"sys.path: {sys.path}")
+        cmd = f"python {imspy} -i {ifile} -o {ofile}"
+        print(f"cmd: {cmd}")
+        os.system(cmd)
 
     @logit(logger)
     def finalize(self: Analysis) -> None:

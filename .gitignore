@@ -140,3 +140,6 @@ ush/make_NTC_file.pl
 ush/make_ntc_bull.pl
 ush/make_tif.sh
 ush/month_name.sh
+ush/imsfv3_scf2ioda.py
+ush/letkf_create_ens.py
+

@@ -24,5 +24,6 @@ export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIEXE=${HOMEgfs}/exec/fv3jedi_letkf.x
 export JEDIINCEXE=${HOMEgfs}/exec/apply_incr.exe
+export CALCFIMS=${HOMEgfs}/exec/calcfIMS.exe
 
 echo "END: config.landanl"
