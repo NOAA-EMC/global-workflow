@@ -15,15 +15,12 @@ from pygw.yaml_file import parse_yaml
 from pygw.schema import SchemaError
 from pygw.configuration import cast_strdict_as_dtypedict
 
-# ----
 
 # Define the path to the YAML-formatted file containing the schema
 # attributes.
 #yaml_path = os.path.join(os.getcwd(), "tests",
-                         "test-files", "test_schema.yaml")
+#                         "test-files", "test_schema.yaml")
 #data = parse_yaml(path=yaml_path)
-
-
 @pytest.mark.skip(reason="disable till the developer fixes the test")
 def test_build_schema():
     """
