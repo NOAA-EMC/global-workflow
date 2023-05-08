@@ -789,7 +789,6 @@ def _plural_s(sized):
 
 # https://github.com/keleshev/schema/blob/master/schema.py
 
-# TODO: Clean-up such that `pynorm` passes.
 
 
 def build_schema(data: Dict) -> Dict:
