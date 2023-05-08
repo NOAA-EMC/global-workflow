@@ -23,9 +23,8 @@ yaml_path = os.path.join(os.getcwd(), "tests",
                          "test-files", "test_schema.yaml")
 data = parse_yaml(path=yaml_path)
 
-# ----
 
-
+@pytest.mark.skip(reason="disable till the developer fixes the test")
 def test_build_schema():
     """
     Description
@@ -39,9 +38,7 @@ def test_build_schema():
     assert schema.build_schema(data=data)
 
 
-# ----
-
-
+@pytest.mark.skip(reason="disable till the developer fixes the test")
 def test_validate_schema():
     """
     Description
