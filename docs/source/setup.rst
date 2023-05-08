@@ -84,12 +84,13 @@ The following command examples include variables for reference but users should 
 ::
 
    cd workflow
-   ./setup_expt.py forecast-only --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--gfs_cyc $GFS_CYC] [--resdet $RESDET]
+   ./setup_expt.py gfs forecast-only --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--gfs_cyc $GFS_CYC] [--resdet $RESDET]
      [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comrot $COMROT] [--expdir $EXPDIR]
 
 where:
 
-   * ``forecast-only`` is the first positional argument that instructs the setup script to produce an experiment directory for forecast only experiments.
+   * ``gfs`` is the first positional argument that instructs the setup script to produce a GFS experiment directory
+   * ``forecast-only`` is the second positional argument that instructs the setup script to produce an experiment directory for forecast only experiments.
    * ``$APP`` is the target application, one of:
 
      - ATM: atmosphere-only [default]
@@ -116,21 +117,21 @@ Atm-only:
 ::
 
    cd workflow
-   ./setup_expt.py forecast-only --pslot test --idate 2020010100 --edate 2020010118 --resdet 384 --gfs_cyc 4 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
+   ./setup_expt.py gfs forecast-only --pslot test --idate 2020010100 --edate 2020010118 --resdet 384 --gfs_cyc 4 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
 
 Coupled:
 
 ::
 
    cd workflow
-   ./setup_expt.py forecast-only --app S2SW --pslot coupled_test --idate 2013040100 --edate 2013040100 --resdet 384 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
+   ./setup_expt.py gfs forecast-only --app S2SW --pslot coupled_test --idate 2013040100 --edate 2013040100 --resdet 384 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
 
 Coupled with aerosols:
 
 ::
 
    cd workflow
-   ./setup_expt.py forecast-only --app S2SWA --pslot coupled_test --idate 2013040100 --edate 2013040100 --resdet 384 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
+   ./setup_expt.py gfs forecast-only --app S2SWA --pslot coupled_test --idate 2013040100 --edate 2013040100 --resdet 384 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
 
 ****************************************
 Step 2: Set user and experiment settings
@@ -193,13 +194,14 @@ The following command examples include variables for reference but users should 
 ::
 
    cd workflow
-   ./setup_expt.py cycled --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--gfs_cyc $GFS_CYC]
+   ./setup_expt.py gfs cycled --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--gfs_cyc $GFS_CYC]
      [--resdet $RESDET] [--resens $RESENS] [--nens $NENS] [--cdump $CDUMP]
      [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comrot $COMROT] [--expdir $EXPDIR] [--icsdir $ICSDIR]
 
 where:
 
-   * ``cycled`` is the first positional argument that instructs the setup script to produce an experiment directory for cycled experiments.
+   * ``gfs`` is the first positional argument that instructs the setup script to produce a GFS experiment directory
+   * ``cycled`` is the second positional argument that instructs the setup script to produce an experiment directory for cycled experiments.
    * ``$APP`` is the target application, one of:
 
      - ATM: atmosphere-only [default]
@@ -226,13 +228,13 @@ Example:
 ::
 
    cd workflow
-   ./setup_expt.py cycled --pslot test --configdir /home/Joe.Schmo/git/global-workflow/parm/config --idate 2020010100 --edate 2020010118 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir --resdet 384 --resens 192 --nens 80 --gfs_cyc 4
+   ./setup_expt.py gfs cycled --pslot test --configdir /home/Joe.Schmo/git/global-workflow/parm/config --idate 2020010100 --edate 2020010118 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir --resdet 384 --resens 192 --nens 80 --gfs_cyc 4
 
 Example ``setup_expt.py`` on Orion:
 
 ::
 
-   Orion-login-3$ ./setup_expt.py cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80 --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
+   Orion-login-3$ ./setup_expt.py gfs cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80 --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
    EDITED:  /work/noaa/global/jschmo/expdir/test/config.base as per user input.
    EDITED:  /work/noaa/global/jschmo/expdir/test/config.aeroanl as per user input.
    EDITED:  /work/noaa/global/jschmo/expdir/test/config.ocnanal as per user input.
@@ -243,7 +245,7 @@ What happens if I run ``setup_expt.py`` again for an experiment that already exi
 
 ::
 
-   Orion-login-3$ ./setup_expt.py cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80 --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
+   Orion-login-3$ ./setup_expt.py gfs cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80 --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
 
    directory already exists in /work/noaa/stmp/jschmo/comrot/test
 
