@@ -720,9 +720,9 @@ class Optional(Schema):
 
     def __eq__(self, other):
         return (
-            self.__class__ is other.__class__  # nopep8
-            and getattr(self, "default", self._MARKER) == getattr(other, "default", self._MARKER)  # nopep8
-            and self._schema == other._schema  # nopep8
+            self.__class__ is other.__class__ and
+            getattr(self, "default", self._MARKER) == getattr(other, "default", self._MARKER) and
+            self._schema == other._schema 
         )
 
     def reset(self):
