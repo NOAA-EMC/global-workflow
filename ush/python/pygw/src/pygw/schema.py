@@ -790,7 +790,6 @@ def _plural_s(sized):
 # https://github.com/keleshev/schema/blob/master/schema.py
 
 
-
 def build_schema(data: Dict) -> Dict:
     """
     Description
