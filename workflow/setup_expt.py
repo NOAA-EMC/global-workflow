@@ -342,13 +342,13 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     # Set up sub-parsers for various modes of experimentation
-    modeparser = parser.add_subparsers(dest='system')
-    gfs = modeparser.add_parser('gfs', help='arguments for GFS')
-    gefs = modeparser.add_parser('gefs', help='arguments for GEFS')
+    sysparser = parser.add_subparsers(dest='system')
+    gfs = sysparser.add_parser('gfs', help='arguments for GFS')
+    gefs = sysparser.add_parser('gefs', help='arguments for GEFS')
 
-    typeparser = gfs.add_subparsers(dest='mode')
-    cycled = typeparser.add_parser('cycled', help='arguments for cycled mode')
-    forecasts = typeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
+    modeparser = gfs.add_subparsers(dest='mode')
+    cycled = modeparser.add_parser('cycled', help='arguments for cycled mode')
+    forecasts = modeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
 
     # Common arguments across all modes
     for subp in [cycled, forecasts, gefs]:
