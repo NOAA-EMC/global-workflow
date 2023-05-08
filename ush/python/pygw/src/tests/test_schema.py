@@ -3,7 +3,6 @@ Description
 -----------
 
 Unit-tests for `pygw.schema`.
-
 """
 
 # ----
