@@ -838,8 +838,6 @@ def build_schema(data: Dict) -> Dict:
 
     return schema_dict
 
-# ----
-
 
 def validate_schema(schema_dict: Dict, data: Dict) -> Dict:
     """
