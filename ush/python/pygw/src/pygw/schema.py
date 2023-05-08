@@ -784,7 +784,7 @@ def _plural_s(sized):
 
 # ----
 
-# The following functions are specific to global-workflow. The Schema
+# The following functions are added to be able to translate an user-specified Dict into a SchemaDict. The Schema
 # class module was obtained from:
 
 # https://github.com/keleshev/schema/blob/master/schema.py
