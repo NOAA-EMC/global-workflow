@@ -5,8 +5,6 @@ Description
 Unit-tests for `pygw.schema`.
 """
 
-# ----
-
 import os
 
 from pygw import schema
