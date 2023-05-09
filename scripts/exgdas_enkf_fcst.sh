@@ -88,7 +88,7 @@ export TYPE=${TYPE_ENKF:-${TYPE:-nh}}                  # choices:  nh, hydro
 export MONO=${MONO_ENKF:-${MONO:-non-mono}}            # choices:  mono, non-mono
 
 # fv_core_nml
-export CASE=${CASE_ENKF:-${CASE:-C768}}
+export CASE=${CASE_ENS:-${CASE:-C768}}
 export layout_x=${layout_x_ENKF:-${layout_x:-8}}
 export layout_y=${layout_y_ENKF:-${layout_y:-16}}
 export LEVS=${LEVS_ENKF:-${LEVS:-64}}

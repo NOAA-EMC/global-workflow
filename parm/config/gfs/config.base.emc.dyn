@@ -75,7 +75,6 @@ export MODE="@MODE@" # cycled/forecast-only
 ####################################################
 # Build paths relative to $HOMEgfs
 export FIXgsi="${HOMEgfs}/fix/gsi"
-export HOMEfv3gfs="${HOMEgfs}/sorc/fv3gfs.fd"
 export HOMEpost="${HOMEgfs}"
 export HOMEobsproc="${BASE_GIT}/obsproc/v1.1.2"
 
@@ -159,8 +158,8 @@ export OPS_RES="C768" # Do not change
 # Resolution specific parameters
 export LEVS=128
 export CASE="@CASECTL@"
-export CASE_ENKF="@CASEENS@"
-# TODO: This should not depend on $CASE or $CASE_ENKF
+export CASE_ENS="@CASEENS@"
+# TODO: This should not depend on $CASE or $CASE_ENS
 # These are the currently available grid-combinations
 case "${CASE}" in
     "C48") export OCNRES=500;;
@@ -306,8 +305,8 @@ export DO_MERGENSST="NO"
 
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
-export NMEM_ENKF=@NMEM_ENKF@
-export NMEM_EFCS=30
+export NMEM_ENS=@NMEM_ENS@
+export NMEM_ENS_GFS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
@@ -354,13 +353,13 @@ export MAKE_NSSTBUFR="@MAKE_NSSTBUFR@"
 export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 
 # Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
+export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
 
 # Write analysis files for early cycle EnKF
 export DO_CALC_INCREMENT_ENKF_GFS="YES"
 
 # Stratospheric increments to zero
-export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
+export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
 export INCVARS_EFOLD="5"
 
 # Swith to generate netcdf or binary diagnostic files.  If not specified,

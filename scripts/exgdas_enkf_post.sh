@@ -47,9 +47,9 @@ FHMAX=${FHMAX_EPOS:-9}
 FHOUT=${FHOUT_EPOS:-3}
 
 if [[ $CDUMP == "gfs" ]]; then
-    NMEM_ENKF=${NMEM_EFCS:-${NMEM_ENKF:-30}}
+   NMEM_ENS=${NMEM_ENS_GFS:-${NMEM_ENS:-30}}
 fi
-NMEM_ENKF=${NMEM_ENKF:-80}
+NMEM_ENS=${NMEM_ENS:-80}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 ENKF_SPREAD=${ENKF_SPREAD:-"NO"}
 
@@ -67,7 +67,7 @@ export OMP_NUM_THREADS=$NTHREADS_EPOS
 
 ################################################################################
 # Forecast ensemble member files
-for imem in $(seq 1 $NMEM_ENKF); do
+for imem in $(seq 1 $NMEM_ENS); do
    memchar="mem"$(printf %03i "${imem}")
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
@@ -87,7 +87,7 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    ${NLN} "${COM_ATMOS_HISTORY_STAT}/${PREFIX}sfcf${fhrchar}.ensmean.nc" "sfcf${fhrchar}.ensmean"
    ${NLN} "${COM_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensmean.nc" "atmf${fhrchar}.ensmean"
    if [ $SMOOTH_ENKF = "YES" ]; then
-      for imem in $(seq 1 $NMEM_ENKF); do
+      for imem in $(seq 1 $NMEM_ENS); do
          memchar="mem"$(printf %03i "${imem}")
          MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_HISTORY
          ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
@@ -108,7 +108,7 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    export pgm=$GETSFCENSMEANEXEC
    . prep_step
 
-   $APRUN_EPOS ${DATA}/$(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF
+   $APRUN_EPOS ${DATA}/$(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENS
    ra=$?
    rc=$((rc+ra))
 
@@ -116,9 +116,9 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    . prep_step
 
    if [ $ENKF_SPREAD = "YES" ]; then
-      $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF atmf${fhrchar}.ensspread
+      $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENS atmf${fhrchar}.ensspread
    else
-      $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF
+      $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENS
    fi
    ra=$?
    rc=$((rc+ra))
@@ -132,7 +132,7 @@ if [ $SMOOTH_ENKF = "YES" ]; then
       fhrchar=$(printf %03i $fhr)
       if [ ! -s atmf${fhrchar}${ENKF_SUFFIX}_mem001 ]; then
          echo WARNING! no smoothed ensemble member for fhour = $fhrchar >&2
-         for imem in $(seq 1 $NMEM_ENKF); do
+         for imem in $(seq 1 $NMEM_ENS); do
             memchar="mem"$(printf %03i $imem)
             ${NCP} "atmf${fhrchar}_${memchar}" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
          done
