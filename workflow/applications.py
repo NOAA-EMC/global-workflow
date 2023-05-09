@@ -110,6 +110,7 @@ class AppConfig:
         self.do_jediatmvar = _base.get('DO_JEDIVAR', False)
         self.do_jediatmens = _base.get('DO_JEDIENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
+        self.do_jedilandda = _base.get('DO_JEDILANDDA', False)
         self.do_mergensst = _base.get('DO_MERGENSST', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
@@ -228,6 +229,9 @@ class AppConfig:
         if self.do_aero:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
+        if self.do_jedilandda:
+            configs += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
+
         return configs
 
     @property
@@ -236,19 +240,10 @@ class AppConfig:
         Returns the config_files that are involved in the forecast-only app
         """
 
-        configs = ['fcst']
+        configs = ['coupled_ic', 'fcst', 'arch']
 
         if self.do_atm:
             configs += ['post', 'vrfy']
-
-        configs += ['arch']
-
-        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
-            configs += ['coupled_ic']
-        else:
-            configs += ['init']
-            if self.do_hpssarch:
-                configs += ['getic']
 
         if self.do_aero:
             configs += ['aerosol_init']
@@ -370,6 +365,9 @@ class AppConfig:
         if self.do_aero:
             gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
+        if self.do_jedilandda:
+            gdas_gfs_common_tasks_before_fcst += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
+
         gldas_tasks = ['gldas']
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
@@ -471,14 +469,7 @@ class AppConfig:
         This is the place where that order is set.
         """
 
-        tasks = []
-
-        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
-            tasks += ['coupled_ic']
-        else:
-            if self.do_hpssarch:
-                tasks += ['getic']
-            tasks += ['init']
+        tasks = ['coupled_ic']
 
         if self.do_aero:
             tasks += ['aerosol_init']

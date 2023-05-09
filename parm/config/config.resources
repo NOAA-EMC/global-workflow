@@ -8,10 +8,10 @@ if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "getic init coupled_ic aerosol_init"
+    echo "coupled_ic aerosol_init"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanlinit landanlrun landanlfinal"
+    echo "landanlprep landanlinit landanlrun landanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag gldas fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -204,7 +204,7 @@ elif [[ "${step}" = "atmanlfinal" ]]; then
     export npe_node_atmanlfinal
     export is_exclusive=True
 
-elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
+elif [[ "${step}" = "landanlprep" || "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
    # below lines are for creating JEDI YAML
    case ${CASE} in
      C768)
@@ -241,6 +241,14 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "l
        export nth_landanlrun=1
        npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
        export npe_node_landanlrun
+       export is_exclusive=True
+   elif [[ "${step}" = "landanlprep" ]]; then
+       export wtime_landanlprep="00:30:00"
+       npe_landanlprep=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+       export npe_landanlprep
+       export nth_landanlprep=1
+       npe_node_landanlprep=$(echo "${npe_node_max} / ${nth_landanlprep}" | bc)
+       export npe_node_landanlprep
        export is_exclusive=True
    fi
 
@@ -747,14 +755,6 @@ elif [[ ${step} = "echgres" ]]; then
       export memory_echgres="200GB"
     fi
 
-elif [[ ${step} = "init" ]]; then
-
-    export wtime_init="00:30:00"
-    export npe_init=24
-    export nth_init=1
-    export npe_node_init=6
-    export memory_init="70G"
-
 elif [[ ${step} = "init_chem" ]]; then
 
     export wtime_init_chem="00:30:00"
@@ -769,7 +769,7 @@ elif [[ ${step} = "mom6ic" ]]; then
     export npe_node_mom6ic=24
     export is_exclusive=True
 
-elif [[ ${step} = "arch" || ${step} = "earc" || ${step} = "getic" ]]; then
+elif [[ ${step} = "arch" || ${step} = "earc" ]]; then
 
     eval "export wtime_${step}='06:00:00'"
     eval "export npe_${step}=1"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_atm_analysis_finalize.py
+# exglobal_atm_analysis_finalize.py
 # This script creates an AtmAnalysis class
 # and runs the finalize method
 # which perform post-processing and clean up activities

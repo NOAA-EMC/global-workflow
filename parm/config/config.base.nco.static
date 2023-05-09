@@ -228,10 +228,10 @@ if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 export nst_anl=.true.
 
 # Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
+export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 
 # Stratospheric increments to zero
-export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
+export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 export INCVARS_EFOLD="5"
 
 # Swith to generate netcdf or binary diagnostic files.  If not specified,
