@@ -113,28 +113,40 @@ echo "--> radmon_diag_ck.sh"
    #  the actual file size of those.  Anything with an 
    #  uncompressed size of 0 goes on the zero_len_diag list.
    #
-   gz_ges_list=$(tar -xvf ${radstat_file} | grep '_ges')
 
-   for gz_ges in ${gz_ges_list}; do
+   # TODO Rewrite these array parsing commands to avoid using Bash's sloppy word splitting
+   # File sizes contain only digits and immediately precede the date
+   # shellcheck disable=SC2207
+   sizes=($(tar -vtf ${radstat_file} --wildcards '*_ges*' | grep -P -o '(\d)+(?= \d{4}-\d{2}-\d{2})'))
+   # Filenames are the last group of non-whitespace characters
+   # shellcheck disable=SC2207
+   filenames=($(tar -vtf ${radstat_file} --wildcards '*_ges*' | grep -P -o '\S+$'))
+   # shellcheck disable=
 
-      # Check file sizes
-      gzip_len=$(du -b "${gz_ges}" | gawk '{print $1}')
 
-      if [[ ${gzip_len} -le 1000 ]]; then
-         gunzip "${gz_ges}"
-         ges="${gz_ges%.*}"
+   for file_num in "${!filenames[@]}"; do
+      file_name="${filenames[${file_num}]}"
+      file_size="${sizes[${file_num}]}"
 
-         uz_file_size=$(du -b "${ges}" | gawk '{print $1}')
+      if (( file_size <= 1000 )); then
+         tar -xf "${radstat_file}" "${file_name}"
+         gunzip "${file_name}"
+         uz_file_name="${file_name%.*}"
+         uz_file_size=$(stat -c "%s" "${uz_file_name}")
 
-         if [[ ${uz_file_size} -eq 0 ]]; then
-            sat=$(echo "${ges}" | gawk -F"diag_" -F"_ges" '{print $1}')
+
+         if (( uz_file_size <= 0 )); then
+            # Remove leading diag_
+            sat=${uz_file_name#diag_}
+            # Remove trailing _ges*
+            sat=${sat%_ges*}
 
             zero_len_diag="${zero_len_diag} ${sat}"
          fi
 
-         rm -f "${ges}"
+         rm -f ${uz_file_name}
       fi
-      rm -f "${gz_ges}"
+
    done
 
    echo ""  
