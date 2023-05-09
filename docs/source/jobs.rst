@@ -3,7 +3,7 @@ GFS Configuration
 #################
 
 .. figure:: _static/GFS_v16_flowchart.png
- 
+
    Schematic flow chart for GFS v16 in operations
 
 The sequence of jobs that are run for an end-to-end (analysis+forecast+post processing+verification) GFS configuration using the Global Workflow is shown above. The system utilizes a collection of scripts that perform the tasks for each step.
@@ -12,7 +12,7 @@ For any cycle the system consists of two suites -- the "gdas" suite which provid
 
 An experimental run is different from operations in the following ways:
 
-* Workflow manager: operations utilizes `ecFlow <https://www.ecmwf.int/en/learning/training/introduction-ecmwf-job-scheduler-ecflow>`__, while development currently utilizes `ROCOTO <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__. Note, experiments can also be run using ecFlow on platforms with ecFlow servers established. 
+* Workflow manager: operations utilizes `ecFlow <https://www.ecmwf.int/en/learning/training/introduction-ecmwf-job-scheduler-ecflow>`__, while development currently utilizes `ROCOTO <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__. Note, experiments can also be run using ecFlow on platforms with ecFlow servers established.
 
 * Dump step is not run as it has already been completed during the real-time production runs and dump data is available in the global dump archive on supported machines.
 
@@ -25,7 +25,7 @@ An experimental run is different from operations in the following ways:
 Downstream jobs (e.g. awips, gempak, etc.) are not included in the diagram. Those jobs are not normally run in developmental tests.
 
 =============================
-Jobs in the GFS Configuration 
+Jobs in the GFS Configuration
 =============================
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | JOB NAME          | PURPOSE                                                                                                               |
@@ -64,8 +64,6 @@ Jobs in the GFS Configuration
 | eupd              | Perform EnKF update (i.e., generate ensemble member analyses).                                                        |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | fcst              | Runs the forecast (with or without one-way waves).                                                                    |
-+-------------------+-----------------------------------------------------------------------------------------------------------------------+
-| gldas             | Runs the Global Land Data Assimilation System (GLDAS).                                                                |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | metpN             | Runs MET/METplus verification via EMC_verif-global.                                                                   |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+

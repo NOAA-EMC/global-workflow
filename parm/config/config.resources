@@ -13,7 +13,7 @@ if [[ $# -ne 1 ]]; then
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanlprep landanlinit landanlrun landanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy fit2obs metp arch echgres"
+    echo "anal sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -494,19 +494,6 @@ elif [[ ${step} = "sfcanl" ]]; then
     export nth_sfcanl=1
     npe_node_sfcanl=$(echo "${npe_node_max} / ${nth_sfcanl}" | bc)
     export npe_node_sfcanl
-    export is_exclusive=True
-
-elif [[ ${step} = "gldas" ]]; then
-
-    export wtime_gldas="00:10:00"
-    export npe_gldas=112
-    export nth_gldas=1
-    npe_node_gldas=$(echo "${npe_node_max} / ${nth_gldas}" | bc)
-    export npe_node_gldas
-    export npe_gaussian=96
-    export nth_gaussian=1
-    npe_node_gaussian=$(echo "${npe_node_max} / ${nth_gaussian}" | bc)
-    export npe_node_gaussian
     export is_exclusive=True
 
 elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
