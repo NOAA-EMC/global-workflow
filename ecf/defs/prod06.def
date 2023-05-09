@@ -2262,10 +2262,6 @@ suite prod06
             trigger ../dump/jgdas_atmos_dump:release_sfcprep
         endfamily
       endfamily
-      family init
-        task jgdas_atmos_gldas
-          trigger ../analysis/jgdas_atmos_analysis == complete
-      endfamily
       family analysis
         task jgdas_atmos_analysis
          trigger ../obsproc/prep/jgdas_atmos_prep == complete and ../obsproc/prep/jgdas_atmos_emcsfc_sfc_prep == complete
@@ -2392,7 +2388,7 @@ suite prod06
       endfamily
     endfamily
     task jgdas_forecast
-      trigger ./atmos/analysis/jgdas_atmos_analysis:release_fcst and ./wave/prep/jgdas_wave_prep == complete and ./atmos/init/jgdas_atmos_gldas == complete
+      trigger ./atmos/analysis/jgdas_atmos_analysis:release_fcst and ./wave/prep/jgdas_wave_prep == complete
   endfamily
   family enkfgdas
     edit CYC '06'
