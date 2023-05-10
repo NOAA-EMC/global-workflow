@@ -238,7 +238,6 @@ suites:
             - task: jgdas_atmos_analysis
               event: release_fcst
             - task: jgdas_wave_prep
-            - task: jgdas_atmos_gldas
         atmos:
           obsproc:
             dump:
@@ -250,11 +249,6 @@ suites:
                   triggers:
                   - task: jobsproc_gdas_atmos_dump
                     event: release_sfcprep
-          init:
-            tasks:
-              jgdas_atmos_gldas:
-                triggers:
-                - task: jgdas_atmos_analysis
           analysis:
             tasks:
               jgdas_atmos_analysis:

@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "anal analcalc analdiag fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
@@ -143,16 +143,6 @@ elif [ $step = "analdiag" ]; then
     export nth_analdiag=1
     export npe_node_analdiag=$npe_analdiag
     export memory_analdiag="48GB"
-
-elif [ $step = "gldas" ]; then
-
-    export wtime_gldas="00:10:00"
-    export npe_gldas=112
-    export nth_gldas=1
-    export npe_node_gldas=$npe_gldas
-    export npe_gaussian=96  
-    export nth_gaussian=1 
-    export npe_node_gaussian=$(echo "$npe_node_max / $nth_gaussian" | bc)
 
 elif [ $step = "fcst" ]; then
 
