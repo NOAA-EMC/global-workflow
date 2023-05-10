@@ -1,27 +1,22 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak" -c "base wavegempak"
-
-export COMPONENT="wave"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak" -c "base wave wavegempak"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
 ###################################
 # Set COM Paths
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}/gempak}
-
+###################################
 export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-if [ ${SENDCOM} = YES ] ; then
-  mkdir -m 775 -p ${COMOUT}
-fi
+YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_GRID COM_WAVE_GEMPAK
 
+if [[ ! -d ${COM_WAVE_GEMPAK} ]]; then mkdir -p "${COM_WAVE_GEMPAK}"; fi
 
 ########################################################
 # Execute the script.

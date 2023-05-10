@@ -25,8 +25,8 @@ fi
 # Get correct MPI options for NPROC and grid
 local processor_shape=${cice6_processor_shape:-'slenderX2'}
 local shape=${processor_shape#${processor_shape%?}}
-local NPX=$(( ICEPETS / shape )) #number of processors in x direction
-local NPY=$(( ICEPETS / NPX ))   #number of processors in y direction
+local NPX=$(( ntasks_cice6 / shape )) #number of processors in x direction
+local NPY=$(( ntasks_cice6 / NPX ))   #number of processors in y direction
 if (( $(( NX_GLB % NPX )) == 0 )); then
   local block_size_x=$(( NX_GLB / NPX ))
 else
@@ -201,7 +201,7 @@ cat > ice_in <<eof
 /
 
 &domain_nml
-   nprocs = ${ICEPETS}
+   nprocs            = ${ntasks_cice6}
    nx_global         = ${NX_GLB}
    ny_global         = ${NY_GLB}
    block_size_x      = ${block_size_x}

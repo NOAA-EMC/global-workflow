@@ -36,7 +36,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+  export WAV_MOD_TAG=${RUN}wave${waveMEMB}
 
   cd $DATA
 
@@ -83,9 +83,6 @@ source "$HOMEgfs/ush/preamble.sh"
   echo ' '
   set_trace
 
-
-# 0.c.3 Define CDATE_POST
-  export CDATE_POST=${CDATE}
   export FHRUN=0
 
 # --------------------------------------------------------------------------- #
@@ -105,23 +102,19 @@ source "$HOMEgfs/ush/preamble.sh"
 # 1.a Model definition files and output files (set up using poe)
 
 # 1.a.1 Copy model definition files
-  for grdID in $waveGRD $wavepostGRD $waveinterpGRD
-  do
-    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
-    then
+  for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
+    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
+      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
+      cp -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
     fi
   done
 
 # 1.a.2 Check that model definition files exist
-  for grdID in $waveGRD $wavepostGRD $waveinterpGRD
-  do
-    if [ ! -f mod_def.$grdID ]
-    then
+  for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
+    if [[ ! -f "mod_def.${grdID}" ]]; then
       set +x
       echo ' '
       echo '*************************************************** '
@@ -164,7 +157,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '*********************************************** '
         echo ' '
         set_trace
-        echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing."
+        echo "${WAV_MOD_TAG} post ${PDY} ${cycle} : GRINT template file missing."
         exit_code=1
         DOGRI_WAV='NO'
       fi
@@ -241,7 +234,7 @@ source "$HOMEgfs/ush/preamble.sh"
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
 
-    ymdh=$($NDATE $fhr $CDATE)
+    ymdh=$($NDATE $fhr ${PDY}${cyc})
     YMD=$(echo $ymdh | cut -c1-8)
     HMS="$(echo $ymdh | cut -c9-10)0000"
     YMDHMS=${YMD}${HMS}
@@ -265,7 +258,7 @@ source "$HOMEgfs/ush/preamble.sh"
     then
       iwait=0
       for wavGRD in ${waveGRD} ; do
-        gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
+        gfile=${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
         while [ ! -s ${gfile} ]; do sleep 10; let iwait=iwait+1; done
         if [ $iwait -eq $iwaitmax ]; then
           echo '*************************************************** '
@@ -273,7 +266,7 @@ source "$HOMEgfs/ush/preamble.sh"
           echo '*************************************************** '
           echo ' '
           set_trace
-          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing."
+          echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
           err=3; export err;${errchk}
           exit $err
         fi
@@ -407,8 +400,8 @@ source "$HOMEgfs/ush/preamble.sh"
 # Check if grib2 file created
       ENSTAG=""
       if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-      gribchk=${CDUMP}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
-      if [ ! -s ${COMOUT}/gridded/${gribchk} ]; then
+      gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
+      if [ ! -s ${COM_WAVE_GRID}/${gribchk} ]; then
         set +x
         echo ' '
         echo '********************************************'

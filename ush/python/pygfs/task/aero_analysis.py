@@ -46,7 +46,6 @@ class AerosolAnalysis(Analysis):
                 'npz_anl': self.config['LEVS'] - 1,
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
-                'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),  # 'chem' is COMPONENT, aerosol fields are in 'atmos' tracers
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
@@ -68,7 +67,6 @@ class AerosolAnalysis(Analysis):
         - staging B error files
         - staging model backgrounds
         - generating a YAML file for the JEDI executable
-        - linking the JEDI executable (TODO make it copyable, requires JEDI fix)
         - creating output directories
         """
         super().initialize()
@@ -98,14 +96,6 @@ class AerosolAnalysis(Analysis):
         varda_yaml = parse_j2yaml(self.task_config['AEROVARYAML'], self.task_config)
         save_as_yaml(varda_yaml, self.task_config.fv3jedi_yaml)
         logger.info(f"Wrote variational YAML to: {self.task_config.fv3jedi_yaml}")
-
-        # link executable to DATA/ directory
-        exe_src = self.task_config['JEDIVAREXE']
-        logger.debug(f"Link executable {exe_src} to DATA/")  # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
-        exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
-        if os.path.exists(exe_dest):
-            rm_p(exe_dest)
-        os.symlink(exe_src, exe_dest)
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -152,7 +142,7 @@ class AerosolAnalysis(Analysis):
         """
         # ---- tar up diags
         # path of output tar statfile
-        aerostat = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['APREFIX']}aerostat")
+        aerostat = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['APREFIX']}aerostat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
@@ -170,9 +160,9 @@ class AerosolAnalysis(Analysis):
 
         # copy full YAML from executable to ROTDIR
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
-        dest = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
+        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
         yaml_copy = {
-            'mkdir': [self.task_config['COMOUTaero']],
+            'mkdir': [self.task_config.COM_CHEM_ANALYSIS],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
@@ -184,8 +174,8 @@ class AerosolAnalysis(Analysis):
         bkglist = []
         for itile in range(1, self.task_config.ntiles + 1):
             tracer = template.format(tilenum=itile)
-            src = os.path.join(self.task_config.comin_ges_atm, 'RESTART', tracer)
-            dest = os.path.join(self.task_config.COMOUTaero, f'aeroges.{tracer}')
+            src = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, tracer)
+            dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f'aeroges.{tracer}')
             bkglist.append([src, dest])
         FileHandler({'copy': bkglist}).sync()
 
@@ -195,12 +185,12 @@ class AerosolAnalysis(Analysis):
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
-        template = f'aeroinc.{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}'
+        template = f'aeroinc.{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
         inclist = []
         for itile in range(1, self.task_config.ntiles + 1):
             tracer = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'anl', tracer)
-            dest = os.path.join(self.task_config.COMOUTaero, tracer)
+            dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, tracer)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
@@ -216,7 +206,7 @@ class AerosolAnalysis(Analysis):
         # only need the fv_tracer files
         template = f'{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + template)
-        bkg_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', template)
+        bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, template)
         # get list of increment vars
         incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aeroanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
@@ -242,7 +232,7 @@ class AerosolAnalysis(Analysis):
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
 
         # get FV3 RESTART files, this will be a lot simpler when using history files
-        rst_dir = os.path.join(task_config.comin_ges_atm, 'RESTART')  # for now, option later?
+        rst_dir = task_config.COM_ATMOS_RESTART_PREV
         run_dir = os.path.join(task_config['DATA'], 'bkg')
 
         # Start accumulating list of background files to copy

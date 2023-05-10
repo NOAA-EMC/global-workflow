@@ -15,15 +15,13 @@ export g2tmpl_ver=${g2tmpl_ver:-v1.5.0}
 ##############################################
 # Set variables used in the exglobal script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT="atmos"
+export CDUMP=${RUN/enkf}
 
 
 ##############################################
 # TODO: Remove this egregious HACK
 ##############################################
-if [[ "${SDATE:-}" = "${CDATE}" ]]; then
+if [[ "${SDATE:-}" = "${PDY}${cyc}" ]]; then
   if [[ ${post_times} = "anl" ]]; then
     echo "No offline post-processing in the first half cycle for analysis"
     exit 0
@@ -41,12 +39,25 @@ export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
 export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
-export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+# Construct COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -m 775 -p "${COM_ATMOS_MASTER}"; fi
 
-# shellcheck disable=SC2174
-[[ ! -d "${COMOUT}" ]] && mkdir -m 775 -p "${COMOUT}"
-# shellcheck disable=
+if [[ ${GOESF} == "YES" ]]; then
+  YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
+  if [[ ! -d ${COM_ATMOS_GOES} ]]; then mkdir -m 775 -p "${COM_ATMOS_GOES}"; fi
+fi
+
+if [[ ${WAFSF} == "YES" ]]; then
+  YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_WAFS
+  if [[ ! -d ${COM_ATMOS_WAFS} ]]; then mkdir -m 775 -p "${COM_ATMOS_WAFS}"; fi
+fi
+
+for grid in '0p25' '0p50' '1p00'; do
+  prod_dir="COM_ATMOS_GRIB_${grid}"
+  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "${prod_dir}:COM_ATMOS_GRIB_TMPL"
+  if [[ ! -d "${prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
+done
 
 if [ "${RUN}" = gfs ];then
   export FHOUT_PGB=${FHOUT_GFS:-3} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
@@ -68,7 +79,8 @@ fi
 #######################################
 # Specify Restart File Name to Key Off
 #######################################
-export restart_file=${COMIN}/${RUN}.t${cyc}z.logf
+# TODO Improve the name of this variable
+export restart_file=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf
 
 ####################################
 # Specify Timeout Behavior of Post
@@ -85,7 +97,7 @@ export SLEEP_INT=5
 ###############################################################
 # Run relevant exglobal script
 
-"${SCRgfs}/ex${RUN}_atmos_post.sh"
+"${HOMEgfs}/scripts/ex${RUN}_atmos_post.sh"
 status=$?
 (( status != 0 )) && exit "${status}"
 

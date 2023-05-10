@@ -1,7 +1,7 @@
 mkdir:
 - $(DATA)/crtm/
 copy:
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/AerosolCoeff.bin, $(DATA)crtm/]
+- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/AerosolCoeff.bin, $(DATA)/crtm/]
 - [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/CloudCoeff.bin, $(DATA)/crtm/]
 - [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/v.viirs-m_npp.SpcCoeff.bin, $(DATA)/crtm/]
 - [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/v.viirs-m_npp.TauCoeff.bin, $(DATA)/crtm/]

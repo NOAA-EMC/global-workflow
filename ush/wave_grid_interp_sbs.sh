@@ -65,9 +65,9 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Model ID         : $WAV_MOD_TAG"
   set_trace
 
-  if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
-     [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$SENDDBN" ] || [ -z "$waveGRD" ]
+  if [[ -z "${PDY}" ]] || [[ -z "${cyc}" ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECwave}" ]] || \
+     [[ -z "${COM_WAVE_PREP}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDCOM}" ]] || \
+     [[ -z "${SENDDBN}" ]] || [ -z "${waveGRD}" ]
   then
     set +x
     echo ' '
@@ -75,7 +75,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    echo "$CDATE $cycle $EXECwave $COMOUT $WAV_MOD_TAG $SENDCOM $SENDDBN $waveGRD"
+    echo "${PDY}${cyc} ${cycle} ${EXECwave} ${COM_WAVE_PREP} ${WAV_MOD_TAG} ${SENDCOM} ${SENDDBN} ${waveGRD}"
     set_trace
     exit 1
   fi
@@ -103,7 +103,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 1.  Generate GRID file with all data
 # 1.a Generate Input file
 
-  time="$(echo $ymdh | cut -c1-8) $(echo $ymdh | cut -c9-10)0000"
+  time="${ymdh:0:8} ${ymdh:8:2}0000"
 
   sed -e "s/TIME/$time/g" \
       -e "s/DT/$dt/g" \
@@ -112,25 +112,25 @@ source "$HOMEgfs/ush/preamble.sh"
 # Check if there is an interpolation weights file available
 
   wht_OK='no'
-  if [ ! -f ${DATA}/WHTGRIDINT.bin.${grdID} ]; then
-    if [ -f $FIXwave/WHTGRIDINT.bin.${grdID} ]
+  if [ ! -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]; then
+    if [ -f $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} ]
     then
       set +x
       echo ' '
-      echo " Copying $FIXwave/WHTGRIDINT.bin.${grdID} "
+      echo " Copying $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} "
       set_trace
-      cp $FIXwave/WHTGRIDINT.bin.${grdID} ${DATA}
+      cp $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} ${DATA}
       wht_OK='yes'
     else
       set +x
       echo ' '
-      echo " Not found: $FIXwave/WHTGRIDINT.bin.${grdID} "
+      echo " Not found: $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} "
     fi
   fi
 # Check and link weights file
-  if [ -f ${DATA}/WHTGRIDINT.bin.${grdID} ]
+  if [ -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]
   then
-    ln -s ${DATA}/WHTGRIDINT.bin.${grdID} ./WHTGRIDINT.bin
+    ln -s ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ./WHTGRIDINT.bin
   fi
 
 # 1.b Run interpolation code
@@ -147,8 +147,8 @@ source "$HOMEgfs/ush/preamble.sh"
 # Write interpolation file to main TEMP dir area if not there yet
   if [ "wht_OK" = 'no' ]
   then
-    cp -f ./WHTGRIDINT.bin ${DATA}/WHTGRIDINT.bin.${grdID}
-    cp -f ./WHTGRIDINT.bin ${FIXwave}/WHTGRIDINT.bin.${grdID}
+    cp -f ./WHTGRIDINT.bin ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}
+    cp -f ./WHTGRIDINT.bin ${FIXwave}/ww3_gint.WHTGRIDINT.bin.${grdID}
   fi
 
 
@@ -175,14 +175,14 @@ source "$HOMEgfs/ush/preamble.sh"
   if [ "$SENDCOM" = 'YES' ]
   then
     set +x
-    echo "   Saving GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}"
+    echo "   Saving GRID file as ${COM_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
     set_trace
-    cp ${DATA}/output_${ymdh}0000/out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
+    cp "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "${COM_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then
 #      set +x
-#      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
+#      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${PDY}${cyc}
 #      set_trace
 
 #

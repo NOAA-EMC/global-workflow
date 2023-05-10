@@ -10,7 +10,7 @@
 # Log:									#
 # K. Brill/HPC		04/12/05					#
 #########################################################################  
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 # Set GEMPAK paths.
 
@@ -18,32 +18,19 @@ source "$HOMEgfs/ush/preamble.sh"
 
 #  Go to a working directory.
 
-cd $DATA
-
-#  Set input directory name.
-
-#BPATH=$COMIN/bufr.t${cyc}z
-BPATH=$COMOUT/bufr.t${cyc}z
-export BPATH
+cd "${DATA}" || exit 2
 
 #  Set output directory:
-
-COMAWP=${COMAWP:-$COMOUT/gempak}
-OUTDIR=$COMAWP
-if [ ! -d $OUTDIR ]; then mkdir -p $OUTDIR; fi
+if [[ ! -d "${COM_ATMOS_GEMPAK}" ]]; then mkdir -p "${COM_ATMOS_GEMPAK}"; fi
 
 outfilbase=gfs_${PDY}${cyc}
 
 #  Get the list of individual station files.
 
 date
-##filelist=$(/bin/ls -1 $BPATH | grep bufr)
-##rm -f bufr.combined
-##for file in $filelist; do
-##  cat $BPATH/$file >> bufr.combined
-##done
-  cat $BPATH/bufr.*.${PDY}${cyc} > bufr.combined
+cat "${COM_ATMOS_BUFR}/bufr."*".${PDY}${cyc}" > bufr.combined
 date
+
 namsnd << EOF > /dev/null
 SNBUFR   = bufr.combined
 SNOUTF   = ${outfilbase}.snd
@@ -55,20 +42,20 @@ r
 
 ex
 EOF
+
 date
 
-/bin/rm *.nts
+/bin/rm ./*.nts
 
 snd=${outfilbase}.snd
 sfc=${outfilbase}.sfc
-cp $snd $OUTDIR/.$snd
-cp $sfc $OUTDIR/.$sfc
-mv $OUTDIR/.$snd $OUTDIR/$snd
-mv $OUTDIR/.$sfc $OUTDIR/$sfc
+cp "${snd}" "${COM_ATMOS_GEMPAK}/.${snd}"
+cp "${sfc}" "${COM_ATMOS_GEMPAK}/.${sfc}"
+mv "${COM_ATMOS_GEMPAK}/.${snd}" "${COM_ATMOS_GEMPAK}/${snd}"
+mv "${COM_ATMOS_GEMPAK}/.${sfc}" "${COM_ATMOS_GEMPAK}/${sfc}"
 
-if [ $SENDDBN = "YES" ]
-then
-   $DBNROOT/bin/dbn_alert MODEL GFS_PTYP_SFC $job $OUTDIR/$sfc
-   $DBNROOT/bin/dbn_alert MODEL GFS_PTYP_SND $job $OUTDIR/$snd
+if [[ ${SENDDBN} == "YES" ]]; then
+   "${DBNROOT}/bin/dbn_alert" MODEL GFS_PTYP_SFC "${job}" "${COM_ATMOS_GEMPAK}/${sfc}"
+   "${DBNROOT}/bin/dbn_alert" MODEL GFS_PTYP_SND "${job}" "${COM_ATMOS_GEMPAK}/${snd}"
 fi
-echo done > $DATA/gembufr.done
+echo "done" > "${DATA}/gembufr.done"

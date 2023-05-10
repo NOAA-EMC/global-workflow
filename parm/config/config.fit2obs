@@ -8,13 +8,6 @@ echo "BEGIN: config.fit2obs"
 # Get task specific resources
 . "${EXPDIR}/config.resources" fit2obs
 
-export fit_ver="wflow.1.0"
-export fitdir="${BASE_GIT}/Fit2Obs/${fit_ver}"
-
-export HOMEcfs=${fitdir}
-export EXECcfs=${HOMEcfs}/exec
-export USHcfs=${HOMEcfs}/ush
-
 export PRVT=${HOMEgfs}/fix/gsi/prepobs_errtable.global
 export HYBLEVS=${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt
 

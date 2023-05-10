@@ -19,7 +19,7 @@ export USHwave="$HOMEgfs/ush"
 # Some others are also used across the workflow in wave component scripts
 
 # General runtime labels
-export CDUMPwave="${CDUMP}wave"
+export CDUMPwave="${RUN}wave"
 
 # In GFS/GDAS, restart files are generated/read from gdas runs
 export CDUMPRSTwave="gdas"
@@ -58,6 +58,8 @@ export FHMIN_WAV=${FHMIN_WAV:-0}
 export FHOUT_WAV=${FHOUT_WAV:-3}
 export FHMAX_HF_WAV=${FHMAX_HF_WAV:-120}
 export FHOUT_HF_WAV=${FHOUT_HF_WAV:-1}
+export FHMAX_WAV_IBP=180
+if (( FHMAX_WAV < FHMAX_WAV_IBP )); then export FHMAX_WAV_IBP=${FHMAX_GFS} ; fi
 
 # gridded and point output rate
 export DTFLD_WAV=$(expr $FHOUT_HF_WAV \* 3600)

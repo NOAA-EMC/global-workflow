@@ -7,62 +7,46 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT="atmos"
+export CDUMP="${RUN/enkf}"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-gPDY=$(echo ${GDATE} | cut -c1-8)
-gcyc=$(echo ${GDATE} | cut -c9-10)
-GDUMP=${GDUMP:-"gdas"}
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+# shellcheck disable=
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
 
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX_ENS="enkf${GDUMP}.t${gcyc}z."
+export APREFIX="${RUN}.t${cyc}z."
+export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/atmos}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/atmos}
-else
-    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
-    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}"
-    export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
-fi
-mkdir -m 775 -p ${COMOUT}
-# COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
+
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_RESTART
+
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_OBS_PREV:COM_OBS_TMPL \
+    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
 
-export ATMGES="${COMIN_GES}/${GPREFIX}atmf006.nc"
+export ATMGES="${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
 fi
 
-
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
-
-
-if [ ${DOHYBVAR} = "YES" ]; then
-    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX_ENS}atmf006.ensmean.nc"
-    if [ ! -f ${ATMGES_ENSMEAN} ]; then
-        echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
-        exit 2
-    fi
-fi
 
 
 # Generate Gaussian surface analysis  # TODO: Should this be removed now that sfcanl is its own job?

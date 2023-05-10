@@ -1,11 +1,6 @@
 #!/bin/bash
 set -eux
 
-#################################################################
-# TODO using static build for GitHub CLI until fixed in HPC-Stack
-#################################################################
-GH=/home/Terry.McGuinness/bin/gh
-repo_url=${repo_url:-"https://github.com/global-workflow.git"}
 #####################################################################
 #  Usage and arguments for specfifying cloned directgory
 #####################################################################
@@ -45,25 +40,14 @@ while getopts "p:d:o:h" opt; do
   esac
 done
 
-####################################################################
-# start output file
-{
- echo "Automated global-workflow Testing Results:"
- echo "Machine: ${CI_HOST}"
- echo '```'
- echo "Start: $(date) on $(hostname)" || true
- echo "---------------------------------------------------"
-}  >> "${outfile}"
-######################################################################
-
-cd "${repodir}"
+cd "${repodir}" || exit 1
 # clone copy of repo
 if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
 
-git clone "${repo_url}"
-cd global-workflow
+git clone "${REPO_URL}"
+cd global-workflow || exit 1
 
 pr_state=$(gh pr view "${PR}" --json state --jq '.state')
 if [[ "${pr_state}" != "OPEN" ]]; then
@@ -73,34 +57,63 @@ if [[ "${pr_state}" != "OPEN" ]]; then
 fi  
  
 # checkout pull request
-"${GH}" pr checkout "${PR}" --repo "${repo_url}"
+"${GH}" pr checkout "${PR}" --repo "${REPO_URL}"
+HOMEgfs="${PWD}"
+source "${HOMEgfs}/ush/detect_machine.sh"
+
+####################################################################
+# start output file
+{
+ echo "Automated global-workflow Testing Results:"
+ echo '```'
+ echo "Machine: ${MACHINE_ID^}"
+ echo "Start: $(date) on $(hostname)" || true
+ echo "---------------------------------------------------"
+}  >> "${outfile}"
+######################################################################
 
 # get commit hash
 commit=$(git log --pretty=format:'%h' -n 1)
 echo "${commit}" > "../commit"
 
-# run build script
-cd sorc
+# run checkout script
+cd sorc || exit 1
+set +e
+./checkout.sh -c -g -u &>> log.checkout
+checkout_status=$?
+if [[ ${checkout_status} != 0 ]]; then
+  {
+    echo "Checkout:                      *FAILED*"
+    echo "Checkout: Failed at $(date)" || true
+    echo "Checkout: see output at ${PWD}/log.checkout"
+  } >> "${outfile}"
+  exit "${checkout_status}"
+else
+  {
+    echo "Checkout:                      *SUCCESS*"
+    echo "Checkout: Completed at $(date)" || true
+  } >> "${outfile}"
+fi
+
+# build full cycle
+source "${HOMEgfs}/ush/module-setup.sh"
 export BUILD_JOBS=8
 rm -rf log.build
-./checkout.sh -g -c
-# build full cycle
-./build_all.sh -g &>> log.build
-
-# Validations
+./build_all.sh  &>> log.build
 build_status=$?
-if [[ ${build_status} -eq 0 ]]; then
-{
-  echo "Build:                                 *SUCCESS*"
-  echo "Build: Completed at $(date)" || true
-}  >> "${outfile}"
+
+if [[ ${build_status} != 0 ]]; then
+  {
+    echo "Build:                         *FAILED*"
+    echo "Build: Failed at $(date)" || true
+    echo "Build: see output at ${PWD}/log.build"
+  } >> "${outfile}"
+  exit "${build_status}"
 else
-{
-  echo "Build:                                  *FAILED*"
-  echo "Build: Failed at $(date)" || true
-  echo "Build: see output at ${PWD}/log.build"
-}
-  echo '```' >> "${outfile}"
+  {
+    echo "Build:                         *SUCCESS*"
+    echo "Build: Completed at $(date)" || true
+  } >> "${outfile}"
 fi
 
 ./link_workflow.sh
