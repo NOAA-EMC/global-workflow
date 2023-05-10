@@ -19,7 +19,7 @@ export PARTITION_BATCH="@PARTITION_BATCH@"
 export PARTITION_SERVICE="@PARTITION_SERVICE@"
 
 # Project to use in mass store:
-HPSS_PROJECT=emc-global
+HPSS_PROJECT="@HPSS_PROJECT@"
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
