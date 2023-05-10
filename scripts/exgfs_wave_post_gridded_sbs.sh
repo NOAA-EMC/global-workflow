@@ -395,7 +395,7 @@ source "$HOMEgfs/ush/preamble.sh"
     cd $DATA
 
     FHINCG=$(( DTFLD_WAV / 3600 ))
-    if [ $fhr = $fhrg ] && ([ "$DOGRB_WAV" = 'YES' ] || [ "$DOGRI_WAV" = 'YES' ]) 
+    if [ $fhr = $fhrg ]
     then
 # Check if grib2 file created
       ENSTAG=""
@@ -413,13 +413,13 @@ source "$HOMEgfs/ush/preamble.sh"
         err=5; export err;${errchk}
         exit $err
       fi
+      if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
+        FHINCG=$FHOUT_HF_WAV
+      else
+        FHINCG=$FHOUT_WAV
+      fi
+      fhrg=$((fhr+FHINCG))
     fi
-    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
-      FHINCG=$FHOUT_HF_WAV
-    else
-      FHINCG=$FHOUT_WAV
-    fi
-    fhrg=$((fhr+FHINCG))
     echo $fhrg
 
     fhr=$fhrg #loop with out_grd stride

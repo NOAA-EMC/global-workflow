@@ -359,7 +359,7 @@ if [[ "${skip_ww3}" == "false" ]]; then
     "mx025")
       ntasks_ww3=80
       ;;
-    "gefsv13_025")
+    "glo_025")
       ntasks_ww3=262
       ;;
     *)
