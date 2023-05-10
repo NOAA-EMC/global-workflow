@@ -230,7 +230,7 @@ fi
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
-export FHOUT=3           # Will be changed to 1 in config.base if DO_GLDAS is set or (DOHYBVAR set to NO and l4densvar set to false)
+export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="gdas"
@@ -277,15 +277,6 @@ export IAU_DELTHRS_ENKF=6
 
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
-
-# run GLDAS to spin up land ICs
-export DO_GLDAS="NO"
-export gldas_cyc=00
-
-# Exception handling that when DO_GLDAS is set, the FHOUT must be 1
-if [[ ${DO_GLDAS} = "YES" ]]; then
-  export FHOUT=1
-fi
 
 # if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
 #   export DO_WAVE="NO"

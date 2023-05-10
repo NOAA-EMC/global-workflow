@@ -12,7 +12,7 @@ __all__ = ['Tasks', 'create_wf_task', 'get_wf_tasks']
 class Tasks:
     SERVICE_TASKS = ['arch', 'earc']
     VALID_TASKS = ['aerosol_init', 'coupled_ic',
-                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
+                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch',
                    'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
@@ -669,18 +669,6 @@ class Tasks:
 
         return task
 
-    def gldas(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('gldas')
-        task = create_wf_task('gldas', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
     def fcst(self):
 
         fcst_map = {'forecast-only': self._fcst_forecast_only,
@@ -736,10 +724,6 @@ class Tasks:
 
         if self.app_config.do_jediocnvar:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
-        if self.app_config.do_gldas and self.cdump in ['gdas']:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}gldas'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:

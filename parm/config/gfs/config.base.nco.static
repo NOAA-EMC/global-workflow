@@ -183,10 +183,6 @@ export IAU_DELTHRS_ENKF=6
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
 
-# run GLDAS to spin up land ICs
-export DO_GLDAS=YES
-export gldas_cyc=00
-
 # run wave component
 export DO_WAVE=YES
 export WAVE_CDUMP="both"

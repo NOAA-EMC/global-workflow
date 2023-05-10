@@ -241,7 +241,7 @@ if [[ ${type} = "gfs" ]]; then
     head="gfs.t${cyc}z."
 
     rm -f gfs_flux_1p00.txt
-    rm -f ocn_ice_grib2_0p5.txt 
+    rm -f ocn_ice_grib2_0p5.txt
     rm -f ocn_ice_grib2_0p25.txt
     rm -f ocn_2D.txt
     rm -f ocn_3D.txt
@@ -335,7 +335,7 @@ if [[ ${type} == "gdas" ]]; then
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat"
     fi
-    for fstep in prep anal gldas fcst vrfy radmon minmon oznmon; do
+    for fstep in prep anal fcst vrfy radmon minmon oznmon; do
       if [[ -s "${ROTDIR}/logs/${PDY}${cyc}/gdas${fstep}.log" ]]; then
         echo "./logs/${PDY}${cyc}/gdas${fstep}.log"
       fi
@@ -391,7 +391,7 @@ if [[ ${type} == "gdas" ]]; then
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile3.nc"
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile4.nc"
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile5.nc"
-    echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile6.nc" 
+    echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile6.nc"
   } >> gdas_restarta.txt
 
   #..................
@@ -410,7 +410,7 @@ if [[ ${type} == "gdas" ]]; then
     #...........................
     {
       echo "${COM_WAVE_GRID/${ROTDIR}\//}/${head}*"
-      echo "${COM_WAVE_STATION/${ROTDIR}\//}/${head}*" 
+      echo "${COM_WAVE_STATION/${ROTDIR}\//}/${head}*"
     } >> gdaswave.txt
 
     echo "${COM_WAVE_RESTART/${ROTDIR}\//}/*" >> gdaswave_restart.txt
@@ -452,7 +452,7 @@ if [[ ${type} == "gdas" ]]; then
     #...........................
     {
       echo "${COM_ICE_HISTORY/${ROTDIR}\//}/${head}*"
-      echo "${COM_ICE_INPUT/${ROTDIR}\//}/ice_in" 
+      echo "${COM_ICE_INPUT/${ROTDIR}\//}/ice_in"
     } >> gdasice.txt
 
     echo "${COM_ICE_RESTART/${ROTDIR}\//}/*" >> gdasice_restart.txt
@@ -498,8 +498,8 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
     if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}radstat.ensmean" ]]; then
          echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}radstat.ensmean"
     fi
-    for FHR in $nfhrs; do  # loop over analysis times in window
-      if [ $FHR -eq 6 ]; then
+    for FHR in ${nfhrs}; do  # loop over analysis times in window
+      if [[ ${FHR} -eq 6 ]]; then
         if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}atmanl.ensmean.nc" ]]; then
           echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}atmanl.ensmean.nc"
         fi
@@ -513,7 +513,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
         if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}atmi00${FHR}.ensmean.nc" ]]; then
           echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}atmi00${FHR}.ensmean.nc"
         fi
-      fi 
+      fi
     done # loop over FHR
     for fstep in eobs ecen esfc eupd efcs epos ; do
      echo "logs/${PDY}${cyc}/${RUN}${fstep}*.log"
@@ -571,7 +571,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
                 echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}atmanl.nc"
               fi
                 if [[ -s "${COM_ATMOS_ANALYSIS_MEM}/${head}ratminc.nc" ]] ; then
-                    echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}ratminc.nc" 
+                    echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}ratminc.nc"
                 fi
             fi
           } >> "${RUN}_grp${n}.txt"
