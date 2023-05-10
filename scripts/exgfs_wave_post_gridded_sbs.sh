@@ -286,6 +286,7 @@ source "$HOMEgfs/ush/preamble.sh"
             case $grdID in
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
+              glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
               at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
