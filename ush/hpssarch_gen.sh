@@ -472,11 +472,11 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
   IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
   lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
   nfhrs="${IAUFHRS_ENKF/,/}"
-  NMEM_ENKF=${NMEM_ENKF:-80}
+  NMEM_ENS=${NMEM_ENS:-80}
   NMEM_EARCGRP=${NMEM_EARCGRP:-10}               ##number of ens memebers included in each tarball
-  NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
+  NTARS=$((NMEM_ENS/NMEM_EARCGRP))
   [[ ${NTARS} -eq 0 ]] && NTARS=1
-  [[ $((NTARS*NMEM_EARCGRP)) -lt ${NMEM_ENKF} ]] && NTARS=$((NTARS+1))
+  [[ $((NTARS*NMEM_EARCGRP)) -lt ${NMEM_ENS} ]] && NTARS=$((NTARS+1))
   ##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
   NTARS2=${NTARS}
 

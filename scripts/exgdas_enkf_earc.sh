@@ -196,8 +196,8 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
                 set_strict
                 if [ "${rc}" -eq 0 ]; then
                     case ${CDUMP} in
-                        gdas)   nmem=${NMEM_ENKF};;
-                        gfs)    nmem=${NMEM_EFCS};;
+                        gdas)   nmem="${NMEM_ENS}";;
+                        gfs)    nmem="${NMEM_ENS_GFS}";;
                         *)
                             echo "FATAL ERROR: Unknown CDUMP ${CDUMP} during cleanup"
                             exit 10
