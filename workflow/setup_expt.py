@@ -291,15 +291,15 @@ def edit_baseconfig(host, inputs):
     extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
+    # Read in the YAML file to fill out templates and override host defaults
     yaml_path = inputs.yaml
     yaml_dict = YAMLFile(path=yaml_path)
-    print(tmpl_dict)
     try:
         cfg_dict = get_template_dict(yaml_dict['base'])
     except KeyError:
         cfg_dict = {}
     tmpl_dict = dict(tmpl_dict, **cfg_dict)
-    print(tmpl_dict)
+
     base_input = f'{inputs.configdir}/config.base.emc.dyn'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
     edit_config(base_input, base_output, tmpl_dict)
