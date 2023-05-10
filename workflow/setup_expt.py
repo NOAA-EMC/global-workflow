@@ -364,7 +364,7 @@ def input_args():
                           required=True, type=lambda dd: to_datetime(dd))
         subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
 
-    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW']
+    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW']
 
     # GFS-only arguments
     for subp in [cycled, forecasts]:
