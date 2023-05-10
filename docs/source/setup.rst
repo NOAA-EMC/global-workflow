@@ -97,6 +97,7 @@ where:
      - ATMW: atm-wave
      - ATMA: atm-aerosols
      - S2S: atm-ocean-ice
+     - S2SA: atm-ocean-ice-aerosols
      - S2SW: atm-ocean-ice-wave
      - S2SWA: atm-ocean-ice-wave-aerosols
 
