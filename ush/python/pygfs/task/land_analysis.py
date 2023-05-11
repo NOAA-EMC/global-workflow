@@ -37,7 +37,7 @@ class LandAnalysis(Analysis):
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
 
     @logit(logger)
-    def prepare(self: Analysis) -> None:
+    def prepare_IMS(self: Analysis) -> None:
         """Prepare the IMS data for a global land analysis
 
         This method will prepare IMS data for a global land analysis using JEDI.
@@ -66,9 +66,10 @@ class LandAnalysis(Analysis):
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'OPREFIX', 'CASE']
         for key in keys:
             cfg[key] = self.task_config[key]
+        logger.debug(f"{self.task_config.IMS_OBS_LIST}")
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, cfg)
-        FileHandler(prep_ims_config.mkdir).sync()
-        FileHandler(prep_ims_config.copy).sync()
+        logger.debug(f"{prep_ims_config}")
+        FileHandler(prep_ims_config).sync()
 
         logger.info("Create namelist for calcfIMS.exe")
         cfg = AttrDict()
@@ -82,7 +83,7 @@ class LandAnalysis(Analysis):
         with open(fims_nml_tmpl, "r") as fhi, open(fims_nml, "w") as fho:
             fims_in = fhi.read()
             fims_out = Template.substitute_structure(
-                fims_in, TemplateConstants.DOLLAR_PARANTHESES, cfg.get)
+                fims_in, TemplateConstants.DOLLAR_PARENTHESES, cfg.get)
             fho.write(fims_out)
 
         logger.info("Link calcfIMS.exe into DATA/")
@@ -93,9 +94,8 @@ class LandAnalysis(Analysis):
         os.symlink(exe_src, exe_dest)
 
         # execute calcfIMS.exe to calculate IMS snowdepth
-        exec_cmd = Executable(self.task_config.APRUN_LANDANL)
         exec_name = os.path.join(self.task_config.DATA, 'calcfIMS.exe')
-        exec_cmd.add_default_arg(exec_name)
+        exec_cmd = Executable(exec_name)
 
         try:
             logger.debug(f"Executing {exec_cmd}")

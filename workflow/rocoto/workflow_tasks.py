@@ -19,7 +19,7 @@ class Tasks:
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal',
+                   'preplandobs', 'landanlinit', 'landanlrun', 'landanlfinal',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'wafs', 'wafsblending', 'wafsblending0p25',
@@ -510,6 +510,19 @@ class Tasks:
 
         return task
 
+    def preplandobs(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('preplandobs')
+        task = create_wf_task('preplandobs', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=f'{self.cdump}_land_prep')
+
+        return task
+
     def landanlinit(self):
 
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
@@ -520,7 +533,7 @@ class Tasks:
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}preplandobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -528,22 +541,10 @@ class Tasks:
         task = create_wf_task('landanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
         return task
 
-    def landanlprep(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlinit'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('landanlprep')
-        task = create_wf_task('landanlprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
     def landanlrun(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlprep'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 

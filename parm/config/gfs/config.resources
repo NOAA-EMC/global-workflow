@@ -11,7 +11,7 @@ if [[ $# -ne 1 ]]; then
     echo "getic init coupled_ic aerosol_init"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanlprep landanlinit landanlrun landanlfinal"
+    echo "preplandobs landanlinit landanlrun landanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -204,7 +204,7 @@ elif [[ "${step}" = "atmanlfinal" ]]; then
     export npe_node_atmanlfinal
     export is_exclusive=True
 
-elif [[ "${step}" = "landanlprep" || "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
+elif [[ "${step}" = "preplandobs" || "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
    # below lines are for creating JEDI YAML
    case ${CASE} in
      C768)
@@ -242,13 +242,13 @@ elif [[ "${step}" = "landanlprep" || "${step}" = "landanlinit" || "${step}" = "l
        npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
        export npe_node_landanlrun
        export is_exclusive=True
-   elif [[ "${step}" = "landanlprep" ]]; then
-       export wtime_landanlprep="00:30:00"
-       npe_landanlprep=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-       export npe_landanlprep
-       export nth_landanlprep=1
-       npe_node_landanlprep=$(echo "${npe_node_max} / ${nth_landanlprep}" | bc)
-       export npe_node_landanlprep
+   elif [[ "${step}" = "preplandobs" ]]; then
+       export wtime_preplandobs="00:30:00"
+       npe_preplandobs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+       export npe_preplandobs
+       export nth_preplandobs=1
+       npe_node_preplandobs=$(echo "${npe_node_max} / ${nth_preplandobs}" | bc)
+       export npe_node_preplandobs
        export is_exclusive=True
    fi
 

@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="landanlprep"
+export job="preplandobs"
 export jobid="${job}.$$"
 
 ###############################################################
@@ -20,6 +20,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-${HOMEgfs}/jobs/JGLOBAL_LAND_ANALYSIS_PREP
+${HOMEgfs}/jobs/JGLOBAL_PREP_LAND_OBS
 status=$?
 exit "${status}"

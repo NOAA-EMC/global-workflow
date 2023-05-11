@@ -6,7 +6,7 @@ __all__ = ["to_datetime", "to_timedelta",
            "datetime_to_YMDH", "datetime_to_YMD", "datetime_to_JDAY",
            "timedelta_to_HMS",
            "strftime", "strptime",
-           "to_YMDH", "to_YMD", "to_JDAY",
+           "to_YMDH", "to_YMD", "to_JDAY", "to_julian",
            "to_isotime", "to_fv3time",
            "add_to_datetime", "add_to_timedelta"]
 
@@ -313,3 +313,4 @@ def add_to_timedelta(td1, td2):
 to_YMDH = datetime_to_YMDH
 to_YMD = datetime_to_YMD
 to_JDAY = datetime_to_JDAY
+to_julian = datetime_to_JDAY
