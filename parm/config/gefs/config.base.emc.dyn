@@ -218,14 +218,6 @@ case "${APP}" in
     ;;
 esac
 
-# Surface cycle update frequency
-if [[ "${CDUMP}" =~ "gdas" ]] ; then
-   export FHCYC=1
-   export FTSFS=10
-elif [[ "${CDUMP}" =~ "gfs" ]] ; then
-   export FHCYC=24
-fi
-
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
