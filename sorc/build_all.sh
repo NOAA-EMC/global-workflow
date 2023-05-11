@@ -90,11 +90,6 @@ fi
 source ./partial_build.sh ${_verbose_opt} ${_partial_opt}
 # shellcheck disable=
 
-# Disable gldas on Jet
-if [[ ${MACHINE_ID} =~ jet.* ]]; then
-   Build_gldas="false"
-fi
-
 #------------------------------------
 # Exception Handling Init
 #------------------------------------
@@ -262,26 +257,6 @@ if [[ ${Build_ufs_utils} == 'true' ]]; then
     echo "The log file is in ${logs_dir}/build_ufs_utils.log"
   fi
   err=$((err + rc))
-fi
-
-#------------------------------------
-# build gldas
-#------------------------------------
-if [[ -d gldas.fd ]]; then
-  if [[ ${Build_gldas} == 'true' ]]; then
-    echo " .... Building gldas .... "
-    # shellcheck disable=SC2086,SC2248
-    ./build_gldas.sh ${_verbose_opt} > "${logs_dir}/build_gldas.log" 2>&1
-    # shellcheck disable=
-    rc=$?
-    if (( rc != 0 )) ; then
-      echo "Fatal error in building gldas."
-      echo "The log file is in ${logs_dir}/build_gldas.log"
-    fi
-    err=$((err + rc))
-  fi
-else
-  echo " .... Skip building gldas .... "
 fi
 
 #------------------------------------

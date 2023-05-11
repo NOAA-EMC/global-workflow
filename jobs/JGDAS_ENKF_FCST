@@ -14,7 +14,7 @@ export rCDUMP="enkfgdas"
 # Begin JOB SPECIFIC work
 ##############################################
 
-export CASE=${CASE_ENKF}
+export CASE=${CASE_ENS}
 
 YMD=${PDY} HH=${cyc} generate_com -rx COM_TOP
 

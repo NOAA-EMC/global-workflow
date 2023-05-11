@@ -29,7 +29,7 @@ class AtmEnsAnalysis(Analysis):
     def __init__(self, config):
         super().__init__(config)
 
-        _res = int(self.config.CASE_ENKF[1:])
+        _res = int(self.config.CASE_ENS[1:])
         _res_anl = int(self.config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config.assim_freq}H") / 2)
         _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmens.yaml")
@@ -88,7 +88,7 @@ class AtmEnsAnalysis(Analysis):
             'HH': self.task_config.current_cycle.strftime('%H')
         }
         dirlist = []
-        for imem in range(1, self.task_config.NMEM_ENKF + 1):
+        for imem in range(1, self.task_config.NMEM_ENS + 1):
             dirlist.append(os.path.join(self.task_config.DATA, 'bkg', f'mem{imem:03d}'))
             dirlist.append(os.path.join(self.task_config.DATA, 'anl', f'mem{imem:03d}'))
 
@@ -267,7 +267,7 @@ class AtmEnsAnalysis(Analysis):
         }
 
         # loop over ensemble members
-        for imem in range(1, self.task_config.NMEM_ENKF + 1):
+        for imem in range(1, self.task_config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"
 
             # create output path for member analysis increment
@@ -322,7 +322,7 @@ class AtmEnsAnalysis(Analysis):
             'MEMDIR': None
         }
 
-        for imem in range(1, self.task_config.NMEM_ENKF + 1):
+        for imem in range(1, self.task_config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"
 
             # get FV3 restart files, this will be a lot simpler when using history files

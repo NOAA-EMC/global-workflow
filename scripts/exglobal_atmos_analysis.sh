@@ -216,7 +216,7 @@ DIAG_DIR=${DIAG_DIR:-${COM_ATMOS_ANALYSIS}/gsidiags}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
-NMEM_ENKF=${NMEM_ENKF:-0}
+NMEM_ENS=${NMEM_ENS:-0}
 export DONST=${DONST:-"NO"}
 NST_GSI=${NST_GSI:-0}
 NSTINFO=${NSTINFO:-0}
@@ -530,7 +530,7 @@ if [ ${DOHYBVAR} = "YES" ]; then
       nhr_obsbin=1
    fi
 
-   for imem in $(seq 1 ${NMEM_ENKF}); do
+   for imem in $(seq 1 ${NMEM_ENS}); do
       memchar="mem$(printf %03i "${imem}")"
       MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com COM_ATMOS_HISTORY
 
@@ -673,7 +673,7 @@ fi # if [ $USE_RADSTAT = "YES" ]
 ##############################################################
 # GSI Namelist options
 if [ ${DOHYBVAR} = "YES" ]; then
-   HYBRID_ENSEMBLE="n_ens=${NMEM_ENKF},jcap_ens=${JCAP_ENKF},nlat_ens=${NLAT_ENKF},nlon_ens=${NLON_ENKF},jcap_ens_test=${JCAP_ENKF},${HYBRID_ENSEMBLE}"
+   HYBRID_ENSEMBLE="n_ens=${NMEM_ENS},jcap_ens=${JCAP_ENKF},nlat_ens=${NLAT_ENKF},nlon_ens=${NLON_ENKF},jcap_ens_test=${JCAP_ENKF},${HYBRID_ENSEMBLE}"
    if [ ${l4densvar} = ".true." ]; then
       SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=${l4densvar},lwrite4danl=${lwrite4danl},${SETUP}"
       JCOPTS="ljc4tlevs=.true.,${JCOPTS}"

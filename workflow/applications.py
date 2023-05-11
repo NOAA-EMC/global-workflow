@@ -99,7 +99,6 @@ class AppConfig:
         self.do_ocean = _base.get('DO_OCN', False)
         self.do_ice = _base.get('DO_ICE', False)
         self.do_aero = _base.get('DO_AERO', False)
-        self.do_gldas = _base.get('DO_GLDAS', False)
         self.do_bufrsnd = _base.get('DO_BUFRSND', False)
         self.do_gempak = _base.get('DO_GEMPAK', False)
         self.do_awips = _base.get('DO_AWIPS', False)
@@ -191,9 +190,6 @@ class AppConfig:
             configs += ['ocnpost']
 
         configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch']
-
-        if self.do_gldas:
-            configs += ['gldas']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -368,7 +364,6 @@ class AppConfig:
         if self.do_jedilandda:
             gdas_gfs_common_tasks_before_fcst += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
 
-        gldas_tasks = ['gldas']
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
         wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
@@ -387,9 +382,6 @@ class AppConfig:
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
         if not self.do_jediatmvar:
             gdas_tasks += ['analdiag']
-
-        if self.do_gldas:
-            gdas_tasks += gldas_tasks
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks

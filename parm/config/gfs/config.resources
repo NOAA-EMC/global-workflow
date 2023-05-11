@@ -8,12 +8,12 @@ if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "coupled_ic aerosol_init"
+    echo "getic init coupled_ic aerosol_init"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanlprep landanlinit landanlrun landanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy fit2obs metp arch echgres"
+    echo "anal sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -496,19 +496,6 @@ elif [[ ${step} = "sfcanl" ]]; then
     export npe_node_sfcanl
     export is_exclusive=True
 
-elif [[ ${step} = "gldas" ]]; then
-
-    export wtime_gldas="00:10:00"
-    export npe_gldas=112
-    export nth_gldas=1
-    npe_node_gldas=$(echo "${npe_node_max} / ${nth_gldas}" | bc)
-    export npe_node_gldas
-    export npe_gaussian=96
-    export nth_gaussian=1
-    npe_node_gaussian=$(echo "${npe_node_max} / ${nth_gaussian}" | bc)
-    export npe_node_gaussian
-    export is_exclusive=True
-
 elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
 
     export is_exclusive=True
@@ -755,6 +742,14 @@ elif [[ ${step} = "echgres" ]]; then
       export memory_echgres="200GB"
     fi
 
+elif [[ ${step} = "init" ]]; then
+
+    export wtime_init="00:30:00"
+    export npe_init=24
+    export nth_init=1
+    export npe_node_init=6
+    export memory_init="70G"
+
 elif [[ ${step} = "init_chem" ]]; then
 
     export wtime_init_chem="00:30:00"
@@ -769,7 +764,7 @@ elif [[ ${step} = "mom6ic" ]]; then
     export npe_node_mom6ic=24
     export is_exclusive=True
 
-elif [[ ${step} = "arch" || ${step} = "earc" ]]; then
+elif [[ ${step} = "arch" || ${step} = "earc" || ${step} = "getic" ]]; then
 
     eval "export wtime_${step}='06:00:00'"
     eval "export npe_${step}=1"

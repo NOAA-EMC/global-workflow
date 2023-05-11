@@ -12,7 +12,7 @@ __all__ = ['Tasks', 'create_wf_task', 'get_wf_tasks']
 class Tasks:
     SERVICE_TASKS = ['arch', 'earc']
     VALID_TASKS = ['aerosol_init', 'coupled_ic',
-                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
+                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch',
                    'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
@@ -669,18 +669,6 @@ class Tasks:
 
         return task
 
-    def gldas(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('gldas')
-        task = create_wf_task('gldas', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
     def fcst(self):
 
         fcst_map = {'forecast-only': self._fcst_forecast_only,
@@ -736,10 +724,6 @@ class Tasks:
 
         if self.app_config.do_jediocnvar:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
-        if self.app_config.do_gldas and self.cdump in ['gdas']:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}gldas'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
@@ -1186,7 +1170,7 @@ class Tasks:
         eomgenvars = self.envars.copy()
         eomgenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['eobs']['NMEM_EOMGGRP'])
+        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['eobs']['NMEM_EOMGGRP'])
 
         resources = self.get_resource('eomg')
         task = create_wf_task('eomg', resources, cdump=self.cdump, envar=eomgenvars, dependency=dependencies,
@@ -1344,10 +1328,10 @@ class Tasks:
         efcsenvars = self.envars.copy()
         efcsenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['efcs']['NMEM_EFCSGRP'])
+        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['efcs']['NMEM_EFCSGRP'])
 
         if self.cdump == "enkfgfs":
-            groups = self._get_hybgroups(self._base['NMEM_EFCS'], self._configs['efcs']['NMEM_EFCSGRP_GFS'])
+            groups = self._get_hybgroups(self._base['NMEM_ENS_GFS'], self._configs['efcs']['NMEM_EFCSGRP_GFS'])
         cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump.replace('enkf', '')
         resources = self.get_resource('efcs')
         task = create_wf_task('efcs', resources, cdump=self.cdump, envar=efcsenvars, dependency=dependencies,
@@ -1431,7 +1415,7 @@ class Tasks:
         earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['earc']['NMEM_EARCGRP'], start_index=0)
+        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['earc']['NMEM_EARCGRP'], start_index=0)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump.replace('enkf', '')
 
