@@ -183,7 +183,7 @@ class Tasks:
                                  f'{", ".join(Tasks.VALID_TASKS)}')
 
     @staticmethod
-    def factory(app_config: AppConfig, cdump: str) -> type['Tasks']:
+    def tasks_factory(app_config: AppConfig, cdump: str) -> type['Tasks']:
         '''
         Generates a new Tasks object of the appropiate type for the net.
 
@@ -1458,7 +1458,7 @@ def get_wf_tasks(app_config: AppConfig) -> List:
     tasks = []
     # Loop over all keys of cycles (CDUMP)
     for cdump, cdump_tasks in app_config.task_names.items():
-        task_obj = Tasks.factory(app_config, cdump)  # create Task object based on cdump
+        task_obj = Tasks.tasks_factory(app_config, cdump)  # create Task object based on cdump
         for task_name in cdump_tasks:
             tasks.append(task_obj.get_task(task_name))
 

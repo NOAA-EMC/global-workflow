@@ -64,8 +64,8 @@ if __name__ == '__main__':
     check_expdir(user_inputs.expdir, cfg.parse_config('config.base')['EXPDIR'])
 
     # Configure the application
-    app_config = AppConfig.factory(cfg)
+    app_config = AppConfig.app_config_factory(cfg)
 
     # Create Rocoto Tasks and Assemble them into an XML
-    xml = RocotoXML.factory(app_config, rocoto_param_dict)
+    xml = RocotoXML.rocoto_xml_factory(app_config, rocoto_param_dict)
     xml.write()

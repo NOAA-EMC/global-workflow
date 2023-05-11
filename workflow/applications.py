@@ -177,7 +177,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
 
     @staticmethod
-    def factory(conf: Configuration) -> type['AppConfig']:
+    def app_config_factory(conf: Configuration) -> type['AppConfig']:
         '''
         Factory method that returns a new AppConfig of the appropriate
         concrete class for a given run and mode.

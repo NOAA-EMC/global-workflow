@@ -172,7 +172,7 @@ class RocotoXML(ABC):
         return
 
     @staticmethod
-    def factory(app_config: AppConfig, rocoto_config: Dict) -> type['RocotoXML']:
+    def rocoto_xml_factory(app_config: AppConfig, rocoto_config: Dict) -> type['RocotoXML']:
         '''
         Generates a new RocotoXML of the appropriate type based on the net and
           mode.
