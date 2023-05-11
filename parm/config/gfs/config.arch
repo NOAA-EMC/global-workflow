@@ -6,7 +6,7 @@
 echo "BEGIN: config.arch"
 
 # Get task specific resources
-. $EXPDIR/config.resources arch
+. "${EXPDIR}/config.resources" arch
 
 export ARCH_GAUSSIAN=${ARCH_GAUSSIAN:-"NO"}
 export ARCH_GAUSSIAN_FHMAX=${ARCH_GAUSSIAN_FHMAX:-36}
@@ -15,15 +15,10 @@ export ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
 #--online archive of nemsio files for fit2obs verification
 export FITSARC="YES"
 export FHMAX_FITS=132
-[[ "$FHMAX_FITS" -gt "$FHMAX_GFS" ]] && export FHMAX_FITS=$FHMAX_GFS
+[[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
 #--starting and ending hours of previous cycles to be removed from rotating directory
 export RMOLDSTD=144
 export RMOLDEND=24
-
-#--keep forcing data for running gldas step
-if [[ "$DO_GLDAS" == "YES" && "$CDUMP" == "gdas" ]]; then
-     [[ $RMOLDSTD -lt 144 ]] && export RMOLDSTD=144   
-fi
 
 echo "END: config.arch"

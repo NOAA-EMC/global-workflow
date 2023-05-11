@@ -52,7 +52,7 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-$GPREFIX}
 
 # Variables
-NMEM_ENKF=${NMEM_ENKF:-80}
+NMEM_ENS=${NMEM_ENS:-80}
 imp_physics=${imp_physics:-99}
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 DOIAU=${DOIAU_ENKF:-"NO"}
@@ -108,7 +108,7 @@ ENKF_SUFFIX="s"
 # Link ensemble member guess, analysis and increment files
 for FHR in $(seq $FHMIN $FHOUT $FHMAX); do
 
-for imem in $(seq 1 $NMEM_ENKF); do
+for imem in $(seq 1 $NMEM_ENS); do
    memchar="mem"$(printf %03i $imem)
 
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
@@ -166,7 +166,7 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
    . prep_step
 
    $NCP $GETATMENSMEANEXEC $DATA
-   $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMANLMEANNAME $ATMANLNAME $NMEM_ENKF
+   $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMANLMEANNAME $ATMANLNAME $NMEM_ENS
    export err=$?; err_chk
 else
    # Link ensemble mean increment
@@ -186,7 +186,7 @@ else
    . prep_step
 
    $NCP $GETATMENSMEANEXEC $DATA
-   $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMINCMEANNAME $ATMINCNAME $NMEM_ENKF
+   $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMINCMEANNAME $ATMINCNAME $NMEM_ENS
    export err=$?; err_chk
 
    # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
@@ -202,7 +202,7 @@ else
        . prep_step
 
        $NCP $GETATMENSMEANEXEC $DATA
-       $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMGESMEANNAME $ATMGESNAME $NMEM_ENKF
+       $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMGESMEANNAME $ATMGESNAME $NMEM_ENS
        export err=$?; err_chk
    fi
 fi
@@ -279,7 +279,7 @@ EOF
       . prep_step
 
       $NCP $RECENATMEXEC $DATA
-      $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENKF
+      $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENS
       export err=$?; err_chk
    else
       ################################################################################
@@ -307,7 +307,7 @@ cat recenter.nml
       . prep_step
 
       $NCP $RECENATMEXEC $DATA
-      $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_INCMEANIN $FILENAME_GSIDET $FILENAMEOUT $NMEM_ENKF $FILENAME_GESMEANIN
+      $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_INCMEANIN $FILENAME_GSIDET $FILENAMEOUT $NMEM_ENS $FILENAME_GESMEANIN
       export err=$?; err_chk
    fi
 fi
@@ -336,7 +336,7 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
   firstguess_filename = 'atmges'
   increment_filename = 'atminc'
   debug = .false.
-  nens = $NMEM_ENKF
+  nens = $NMEM_ENS
   imp_physics = $imp_physics
 /
 &zeroinc

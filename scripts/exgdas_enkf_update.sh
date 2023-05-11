@@ -57,7 +57,7 @@ ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
 # Namelist parameters
 USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"NO"}
-NMEM_ENKF=${NMEM_ENKF:-80}
+NMEM_ENS=${NMEM_ENS:-80}
 NAM_ENKF=${NAM_ENKF:-""}
 SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
@@ -178,7 +178,7 @@ else
    done
 fi
 nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
-for imem in $(seq 1 $NMEM_ENKF); do
+for imem in $(seq 1 $NMEM_ENS); do
    memchar="mem"$(printf %03i $imem)
 
    MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
@@ -264,7 +264,7 @@ cat > enkf.nml << EOFnml
    obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
    saterrfact=1.0,numiter=0,
    sprd_tol=1.e30,paoverpb_thresh=0.98,
-   nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,
+   nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENS,
    deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
    reducedgrid=${reducedgrid},readin_localization=${readin_localization_enkf}.,
    use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},imp_physics=$imp_physics,lupp=$lupp,
