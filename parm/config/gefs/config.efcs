@@ -13,7 +13,7 @@ export DO_WAVE=${DO_WAVE_ENKF:-"NO"}
 
 # TODO: Possibly need OCNRES_ENKF, ICERES_ENKF, WAVRES_ENKF too
 if [[ ${DO_OCN} == "YES" ]]; then
-  case "$CASE_ENKF" in
+  case "${CASE_ENS}" in
     "C48") export OCNRES=500;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
@@ -26,7 +26,7 @@ fi
 [[ ${DO_WAVE} == "YES" ]] && export waveGRD=${waveGRD_ENKF:-$waveGRD}  # TODO: will we run waves with a different resolution in the ensemble?
 
 # Source model specific information that is resolution dependent
-string="--fv3 $CASE_ENKF"
+string="--fv3 ${CASE_ENS}"
 [[ ${DO_OCN} == "YES" ]] && string="$string --mom6 $OCNRES"
 [[ ${DO_ICE} == "YES" ]] && string="$string --cice6 $ICERES"
 [[ ${DO_WAVE} == "YES" ]] && string="$string --ww3 ${waveGRD// /;}"
@@ -84,7 +84,7 @@ fi
 export cplwav=.false.
 
 # ocean model resolution
-case "$CASE_ENKF" in
+case "${CASE_ENS}" in
     "C48") export OCNRES=500;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
