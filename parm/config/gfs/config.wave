@@ -25,26 +25,59 @@ export CDUMPwave="${RUN}wave"
 export CDUMPRSTwave="gdas"
 
 # Grids for wave model
-# GFSv16
-export waveGRD=${waveGRD:-'gnh_10m aoc_9km gsh_15m'}
-export waveGRDN=${waveGRDN:-'1 2 3'} # gridnumber for ww3_multi
-export waveGRDG=${waveGRDG:-'10 20 30'} # gridgroup for ww3_multi
-export USE_WAV_RMP=${USE_WAV_RMP:-'YES'} #yes/no rmp grid remapping pre-processed coefficients
-export waveMULTIGRID=${waveMULTIGRID:-'.true.'}
-export MESH_WAV=${MESH_WAV:-'mesh.gwes_30m.nc'}
+export waveGRD=${waveGRD:-'mx025'}
 
-# ESMF input grid
-export waveesmfGRD=${waveesmfGRD:-'glox_10m'} # input grid
+#Grid dependent variables for various grids
+case "${waveGRD}" in
+  "gnh_10m;aoc_9km;gsh_15m")
+    #GFSv16 settings: 
+    waveGRDN='1 2 3'
+    waveGRDG='10 20 30'
+    USE_WAV_RMP='YES'
+    waveMULTIGRID='.true.'
+    IOSRV='3' 
+    MESH_WAV=' '
+    waveesmfGRD='glox_10m'
+    waveuoutpGRD='points'
+    waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m glo_30m'
+    wavepostGRD='gnh_10m aoc_9km gsh_15m'
+  "gwes_30m")
+    #Grid used for P8
+    waveinterpGRD=' '
+    wavepostGRD='gwes_30m'
+    ;;
+  "mx025")
+    #Grid used for HR1 (tripolar 1/4 deg)
+    waveinterpGRD='reg025'
+    wavepostGRD=' '
+    ;;
+  "glo_025") 
+    #GEFSv13 regular lat/lon 1/4 deg grid 
+    waveGRD='glo_025'
+    waveinterpGRD=' '
+    wavepostGRD='glo_025'
+    ;;
+esac
+
+
+export waveGRD=${waveGRD:-'mx025'}
+export waveGRDN=${waveGRDN:-'1'} # gridnumber for ww3_multi
+export waveGRDG=${waveGRDG:-'10'} # gridgroup for ww3_multi
+export USE_WAV_RMP=${USE_WAV_RMP:-'NO'} #yes/no rmp grid remapping pre-processed coefficients
+export waveMULTIGRID=${waveMULTIGRID:-'.false.'} #true/false for multi or shel 
+export MESH_WAV=${MESH_WAV:-"mesh.${waveGRD}.nc"}  #Mesh grid for wave model for CMEPS
+
+export waveesmfGRD=${waveesmfGRD:-' '} # input grid for multigrid 
 
 # Grids for input wind fields
 export WAVEWND_DID=
 export WAVEWND_FID=
 
 # Grids for output fields (used in all steps)
-export waveuoutpGRD=${waveuoutpGRD:-'points'} #unified point output grid
+export waveuoutpGRD=${waveuoutpGRD:-${waveGRD}} #unified point output grid
 export waveinterpGRD=${waveinterpGRD:-'glo_15mxt at_10m ep_10m wc_10m glo_30m'} # Grids that need to be interpolated from native
                              # in POST will generate grib unless gribOK not set
-export wavepostGRD=${wavepostGRD:-'gnh_10m aoc_9km gsh_15m'} # Native grids that will be post-processed (grib2)
+export wavepostGRD=${wavepostGRD:-${waveGRD}} # Native computational grids that will be post-processed (grib2)
 
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
@@ -145,8 +178,8 @@ export POFILETYPE=1     # POFILETYPE=1 one point file per output step
 # Parameters for ww3_multi/shel.inp
 # Unified output T or F
 export FUNIPNT='T'
-# Output server type (see ww3_multi.inp in WW3 repo)
-export IOSRV=${IOSRV:-'3'}
+# Output server type (see ww3_shel/multi.inp in WW3 repo)
+export IOSRV=${IOSRV:-'1'}
 # Flag for dedicated output process for unified points
 export FPNTPROC='T'
 # Flag for grids sharing dedicated output processes
