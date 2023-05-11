@@ -9,7 +9,6 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from applications import AppConfig
 from rocoto.workflow_xml import RocotoXML
 from pygw.configuration import Configuration
-import pprint
 
 
 def input_args():
