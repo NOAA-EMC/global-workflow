@@ -8,4 +8,8 @@ echo "BEGIN: config.landanlprep"
 # Get task specific resources
 . "${EXPDIR}/config.resources" landanlprep
 
+export FIMS_NML_TMPL="${HOMEgfs}/parm/gdas/land/prep/fims.nml.IN"
+export IMS_OBS_LIST="${HOMEgfs}/parm/gdas/land/prep/prep_ims.yaml"
+export CALCFIMSEXE="${HOMEgfs}/exec/calcfIMS.exe"
+
 echo "END: config.landanlprep"
