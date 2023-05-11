@@ -227,14 +227,17 @@ def fill_EXPDIR(inputs):
 
 def update_configs(host, inputs):
 
-    # First update config.base
-    edit_baseconfig(host, inputs)
-
+    # Read in the YAML file to fill out templates and override host defaults
     yaml_path = inputs.yaml
     yaml_dict = YAMLFile(path=yaml_path)
 
+    # First update config.base
+    edit_baseconfig(host, inputs, yaml_dict)
+
     # loop over other configs and update them
     for cfg in yaml_dict.keys():
+        if cfg == 'base':
+            continue
         cfg_file = f'{inputs.expdir}/{inputs.pslot}/config.{cfg}'
         cfg_dict = get_template_dict(yaml_dict[cfg])
         edit_config(cfg_file, cfg_file, cfg_dict)
@@ -242,7 +245,7 @@ def update_configs(host, inputs):
     return
 
 
-def edit_baseconfig(host, inputs):
+def edit_baseconfig(host, inputs, yaml_dict):
     """
     Parses and populates the templated `config.base.emc.dyn` to `config.base`
     """
@@ -288,6 +291,11 @@ def edit_baseconfig(host, inputs):
     # All apps and modes now use the same physics and CCPP suite by default
     extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
     tmpl_dict = dict(tmpl_dict, **extend_dict)
+
+    try:
+        tmpl_dict = dict(tmpl_dict, **get_template_dict(yaml_dict['base']))
+    except KeyError:
+        pass
 
     base_input = f'{inputs.configdir}/config.base.emc.dyn'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
