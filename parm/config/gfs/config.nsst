@@ -12,7 +12,7 @@ export NST_MODEL=2
 
 # nstf_name(2) : NST_SPINUP : 0 = OFF, 1 = ON,
 export NST_SPINUP=0
-if [[ "${PDY}${cyc}" -lt "2017072000" ]]; then
+if (( "${PDY}${cyc}" < 2017072000 )); then
     export NST_SPINUP=1
 fi
 
@@ -28,6 +28,6 @@ export NST_GSI=3          # default 0: No NST info at all;
                           #         2: Input NST info, used in CRTM simulation, no Tr analysis
                           #         3: Input NST info, used in both CRTM simulation and Tr analysis
 export NSTINFO=0          # number of elements added in obs. data array (default = 0)
-if [ $NST_GSI -gt 0 ]; then export NSTINFO=4; fi
+if (( NST_GSI > 0 )); then export NSTINFO=4; fi
 
 echo "END: config.nsst"
