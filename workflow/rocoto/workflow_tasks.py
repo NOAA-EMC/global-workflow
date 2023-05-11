@@ -39,7 +39,7 @@ class Tasks:
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
                       'HOMEgfs': self._base.get('HOMEgfs'),
                       'EXPDIR': self._base.get('EXPDIR'),
-                      'NET': 'gfs',
+                      'NET': self._base.get('NET'),
                       'CDUMP': self.cdump,
                       'RUN': self.cdump,
                       'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
@@ -63,11 +63,6 @@ class Tasks:
         ngrps = nens / nmem_per_group
         groups = ' '.join([f'{x:02d}' for x in range(start_index, int(ngrps) + 1)])
         return groups
-
-    @staticmethod
-    def _is_this_a_gdas_task(cdump, task_name):
-        if cdump != 'enkfgdas':
-            raise TypeError(f'{task_name} must be part of the "enkfgdas" cycle and not {cdump}')
 
     def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:
         '''
@@ -186,6 +181,41 @@ class Tasks:
             raise AttributeError(f'"{task_name}" is not a valid task.\n' +
                                  'Valid tasks are:\n' +
                                  f'{", ".join(Tasks.VALID_TASKS)}')
+
+    @staticmethod
+    def factory(app_config: AppConfig, cdump: str) -> type['Tasks']:
+        '''
+        Generates a new Tasks object of the appropiate type for the net.
+
+        Parameters
+        ----------
+        app_config: AppConfig
+                    Application configuration to create the task list with. Must have
+                    an attribute named 'net' with a value of 'gfs' or 'gefs'.
+
+        cdump: str
+               CDUMP to generate tasks for (currently a RUN stand-in, will be changed
+               soon).
+
+        Returns
+        -------
+        Tasks: New object of the appropriate type for the net.
+        '''
+        if app_config.net in ['gfs']:
+            return GFSTasks(app_config, cdump)
+        elif app_config.net in ['gefs']:
+            return GEFSTasks(app_config, cdump)
+
+
+class GFSTasks(Tasks):
+
+    def __init__(self, app_config: AppConfig, cdump: str) -> None:
+        super().__init__(app_config, cdump)
+
+    @staticmethod
+    def _is_this_a_gdas_task(cdump, task_name):
+        if cdump != 'enkfgdas':
+            raise TypeError(f'{task_name} must be part of the "enkfgdas" cycle and not {cdump}')
 
     # Specific Tasks begin here
     def coupled_ic(self):
@@ -1048,7 +1078,7 @@ class Tasks:
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_fit2obs and self.cdump in ['gdas']:
+        if self.cdump in ['gdas'] and self.app_config.do_fit2obs:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_metp and self.cdump in ['gfs']:
@@ -1360,6 +1390,35 @@ class Tasks:
         return task
 
 
+class GEFSTasks(Tasks):
+    def __init__(self, app_config: AppConfig, cdump: str) -> None:
+        super().__init__(app_config, cdump)
+
+    def fcst(self):
+        # TODO: Add real dependencies
+        dependencies = []
+
+        resources = self.get_resource('fcst')
+        task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def efcs(self):
+        # TODO: Add real dependencies
+        dependencies = []
+
+        efcsenvars = self.envars.copy()
+        efcsenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
+        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['efcs']['NMEM_EFCSGRP'])
+
+        resources = self.get_resource('efcs')
+        task = create_wf_task('efcs', resources, cdump=self.cdump, envar=efcsenvars, dependency=dependencies,
+                              metatask='efmn', varname='grp', varval=groups, cycledef='gefs')
+
+        return task
+
+
 def create_wf_task(task_name, resources,
                    cdump='gdas', cycledef=None, envar=None, dependency=None,
                    metatask=None, varname=None, varval=None, vardict=None,
@@ -1399,7 +1458,7 @@ def get_wf_tasks(app_config: AppConfig) -> List:
     tasks = []
     # Loop over all keys of cycles (CDUMP)
     for cdump, cdump_tasks in app_config.task_names.items():
-        task_obj = Tasks(app_config, cdump)  # create Task object based on cdump
+        task_obj = Tasks.factory(app_config, cdump)  # create Task object based on cdump
         for task_name in cdump_tasks:
             tasks.append(task_obj.get_task(task_name))
 

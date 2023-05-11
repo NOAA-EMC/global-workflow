@@ -9,6 +9,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from applications import AppConfig
 from rocoto.workflow_xml import RocotoXML
 from pygw.configuration import Configuration
+import pprint
 
 
 def input_args():
@@ -64,8 +65,8 @@ if __name__ == '__main__':
     check_expdir(user_inputs.expdir, cfg.parse_config('config.base')['EXPDIR'])
 
     # Configure the application
-    app_config = AppConfig(cfg)
+    app_config = AppConfig.factory(cfg)
 
     # Create Rocoto Tasks and Assemble them into an XML
-    xml = RocotoXML(app_config, rocoto_param_dict)
+    xml = RocotoXML.factory(app_config, rocoto_param_dict)
     xml.write()

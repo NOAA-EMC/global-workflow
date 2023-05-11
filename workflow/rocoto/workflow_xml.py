@@ -9,9 +9,10 @@ from typing import Dict
 from applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
 import rocoto.rocoto as rocoto
+from abc import ABC, abstractmethod
 
 
-class RocotoXML:
+class RocotoXML(ABC):
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
 
@@ -95,65 +96,9 @@ class RocotoXML:
 
         return '\n'.join(strings)
 
+    @abstractmethod
     def _get_cycledefs(self):
-
-        cycledef_map = {'cycled': self._get_cycledefs_cycled,
-                        'forecast-only': self._get_cycledefs_forecast_only}
-
-        try:
-            cycledefs = cycledef_map[self._app_config.mode]()
-        except KeyError:
-            raise KeyError(f'{self._app_config.mode} is not a valid application mode.\n' +
-                           'Valid application modes are:\n' +
-                           f'{", ".join(cycledef_map.keys())}')
-
-        return cycledefs
-
-    def _get_cycledefs_cycled(self):
-        sdate = self._base['SDATE']
-        edate = self._base['EDATE']
-        interval = self._base.get('INTERVAL', '06:00:00')
-        strings = []
-        strings.append(f'\t<cycledef group="gdas_half">{sdate.strftime("%Y%m%d%H%M")} {sdate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-        sdate = sdate + to_timedelta(interval)
-        strings.append(f'\t<cycledef group="gdas">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        if self._app_config.do_jedilandda:
-            sdate_land_str = sdate.replace(hour=18, minute=0, second=0).strftime("%Y%m%d%H%M")
-            edate_land_str = edate.strftime("%Y%m%d%H%M")
-            if edate >= sdate:
-                strings.append(f'\t<cycledef group="gdas_land_prep">{sdate_land_str} {edate_land_str} 24:00:00</cycledef>')
-
-        if self._app_config.gfs_cyc != 0:
-            sdate_gfs = self._base['SDATE_GFS']
-            edate_gfs = self._base['EDATE_GFS']
-            interval_gfs = self._base['INTERVAL_GFS']
-            strings.append(f'\t<cycledef group="gfs">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
-
-            sdate_gfs = sdate_gfs + to_timedelta(interval_gfs)
-            if sdate_gfs <= edate_gfs:
-                strings.append(f'\t<cycledef group="gfs_seq">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
-
-        strings.append('')
-        strings.append('')
-
-        return '\n'.join(strings)
-
-    def _get_cycledefs_forecast_only(self):
-        sdate = self._base['SDATE']
-        edate = self._base['EDATE']
-        interval = self._base.get('INTERVAL_GFS', '24:00:00')
-        strings = []
-        strings.append(f'\t<cycledef group="gfs">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        sdate = sdate + to_timedelta(interval)
-        if sdate <= edate:
-            strings.append(f'\t<cycledef group="gfs_seq">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        strings.append('')
-        strings.append('')
-
-        return '\n'.join(strings)
+        pass
 
     @staticmethod
     def _get_workflow_footer():
@@ -225,3 +170,114 @@ class RocotoXML:
             fh.write('\n'.join(strings))
 
         return
+
+    @staticmethod
+    def factory(app_config: AppConfig, rocoto_config: Dict) -> type['RocotoXML']:
+        '''
+        Generates a new RocotoXML of the appropriate type based on the net and
+          mode.
+
+        Parameters
+        ----------
+        app_config: AppConfig
+                    Application configuration to build the rocoto XML with. Must have
+                    an attribute named 'net' with a value of 'gfs' or 'gefs' and if
+                    app_config.net is 'gfs', must additionally have an attribute named
+                    'mode' with a value of 'cycled' or 'forecast-only'.
+
+        rocoto_config: Dict
+            Rocoto settings to use in the XML. Valid keys are maxtries,
+            cyclethrottle, taskthrottle, and verbosity.
+
+        Returns
+        -------
+        RocotoXML: A new RocotoXML object of the appropriate type for the net
+          and mode.
+
+        '''
+        if app_config.net in ['gfs']:
+            if app_config.mode in ['cycled']:
+                return GFSCycledRocotoXML(app_config, rocoto_config)
+            elif app_config.mode in ['forecast-only']:
+                return GFSForecastOnlyRocotoXML(app_config, rocoto_config)
+        elif app_config.net in ['gefs']:
+            return GEFSRocotoXML(app_config, rocoto_config)
+
+
+class GFSCycledRocotoXML(RocotoXML):
+    def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
+        super().__init__(app_config, rocoto_config)
+
+    def _get_cycledefs(self):
+        sdate = self._base['SDATE']
+        edate = self._base['EDATE']
+        interval = self._base.get('INTERVAL', '06:00:00')
+        strings = []
+        strings.append(f'\t<cycledef group="gdas_half">{sdate.strftime("%Y%m%d%H%M")} {sdate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+        sdate = sdate + to_timedelta(interval)
+        strings.append(f'\t<cycledef group="gdas">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+
+        if self._app_config.gfs_cyc != 0:
+            sdate_gfs = self._base['SDATE_GFS']
+            edate_gfs = self._base['EDATE_GFS']
+            interval_gfs = self._base['INTERVAL_GFS']
+            strings.append(f'\t<cycledef group="gfs">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
+
+            sdate_gfs = sdate_gfs + to_timedelta(interval_gfs)
+            if sdate_gfs <= edate_gfs:
+                strings.append(f'\t<cycledef group="gfs_seq">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
+
+        if self._app_config.do_jedilandda:
+            sdate_land_str = sdate.replace(hour=18, minute=0, second=0).strftime("%Y%m%d%H%M")
+            edate_land_str = edate.strftime("%Y%m%d%H%M")
+            if edate >= sdate:
+                strings.append(f'\t<cycledef group="gdas_land_prep">{sdate_land_str} {edate_land_str} 24:00:00</cycledef>')
+
+        strings.append('')
+        strings.append('')
+
+        return '\n'.join(strings)
+
+
+class GFSForecastOnlyRocotoXML(RocotoXML):
+    def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
+        super().__init__(app_config, rocoto_config)
+
+    def _get_cycledefs(self):
+        sdate = self._base['SDATE']
+        edate = self._base['EDATE']
+        interval = self._base.get('INTERVAL_GFS', '24:00:00')
+        strings = []
+        strings.append(f'\t<cycledef group="gfs">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+
+        sdate = sdate + to_timedelta(interval)
+        if sdate <= edate:
+            strings.append(f'\t<cycledef group="gfs_seq">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+
+        strings.append('')
+        strings.append('')
+
+        return '\n'.join(strings)
+
+
+# Copy of GFSForecastOnlyRocotoXML for now, other than changing cycledef names from 'gfs' to 'gefs'
+#   If it remains this way, we can consolidate into a single forecast-only class
+class GEFSRocotoXML(RocotoXML):
+    def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
+        super().__init__(app_config, rocoto_config)
+
+    def _get_cycledefs(self):
+        sdate = self._base['SDATE']
+        edate = self._base['EDATE']
+        interval = self._base.get('INTERVAL_GFS', '24:00:00')
+        strings = []
+        strings.append(f'\t<cycledef group="gefs">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+
+        sdate = sdate + to_timedelta(interval)
+        if sdate <= edate:
+            strings.append(f'\t<cycledef group="gefs_seq">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+
+        strings.append('')
+        strings.append('')
+
+        return '\n'.join(strings)
