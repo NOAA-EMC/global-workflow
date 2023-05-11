@@ -41,6 +41,7 @@ case "${waveGRD}" in
     waveuoutpGRD='points'
     waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m glo_30m'
     wavepostGRD='gnh_10m aoc_9km gsh_15m'
+    ;;
   "gwes_30m")
     #Grid used for P8
     waveinterpGRD=' '
