@@ -1,3 +1,9 @@
+base:
+  DO_JEDIVAR: "NO"
+  DO_JEDIENS: "NO"
+  DO_JEDIOCNVAR: "NO"
+  DO_JEDILANDDA: "NO"
+  DO_MERGENSST: "NO"
 aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
