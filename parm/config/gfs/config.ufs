@@ -15,7 +15,7 @@ if [ $# -le 1 ]; then
     echo "--fv3 C48|C96|C192|C384|C768|C1152|C3072"
     echo "--mom6 500|100|025"
     echo "--cice6 500|100|025"
-    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|mx050|mx025"
+    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|mx025"
 
     exit 1
 
@@ -157,7 +157,7 @@ case "${fv3_res}" in
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
         export WRITE_GROUP_GFS=2
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=4
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10
         ;;
     "C768")
         export DELTIM=150
@@ -353,8 +353,8 @@ if [[ "${skip_ww3}" == "false" ]]; then
     "gwes_30m")
       ntasks_ww3=100
       ;;
-    "mx050")
-      ntasks_ww3=240
+    "glo_025")
+      ntasks_ww3=262
       ;;
     "mx025")
       ntasks_ww3=80
