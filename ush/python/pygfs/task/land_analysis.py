@@ -118,8 +118,8 @@ class LandAnalysis(Analysis):
             rm_p(output_file)
 
         exe = Executable(self.task_config.IMS2IODACONV)
-        exe.add_default_arg(f"-i {os.path.join(self.task_config.DATA, input_file)}")
-        exe.add_default_arg(f"-o {os.path.join(self.task_config.DATA, output_file)}")
+        exe.add_default_arg(["-i", f"{os.path.join(self.task_config.DATA, input_file)}"])
+        exe.add_default_arg(["-o", f"{os.path.join(self.task_config.DATA, output_file)}"])
         try:
             logger.debug(f"Executing {exe}")
             exe()
