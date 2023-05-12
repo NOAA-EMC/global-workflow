@@ -1,8 +1,5 @@
-environment:
-  machine: ${MACHINE_ID}
-  account: ${SLURM_ACCOUNT}
-
 experiment:
+  type: gfs
   mode: cycled
 
 arguments:

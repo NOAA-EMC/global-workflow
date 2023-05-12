@@ -1,0 +1,2 @@
+base:
+  ACCOUNT: ${SLURM_ACCOUNT}

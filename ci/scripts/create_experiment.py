@@ -84,15 +84,12 @@ if __name__ == '__main__':
 
     HOMEgfs = user_inputs.dir
     pslot = Path(user_inputs.yaml).stem
+    type = setup_expt_args.experiment.type
     mode = setup_expt_args.experiment.mode
 
-    machine = setup_expt_args.environment.machine
-    machine_yaml_file = Path.joinpath(Path(HOMEgfs), 'workflow', 'hosts', machine + '.yaml')
-    account_update = YAMLFile(path=machine_yaml_file)
-    account_update.ACCOUNT = setup_expt_args.environment.account
-    account_update.save(target=machine_yaml_file)
-
     setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_expt.py')))
+
+    setup_expt_cmd.add_default_arg(type)
     setup_expt_cmd.add_default_arg(mode)
 
     for conf, value in setup_expt_args.arguments.items():
@@ -102,12 +99,17 @@ if __name__ == '__main__':
     setup_expt_cmd.add_default_arg('--pslot')
     setup_expt_cmd.add_default_arg(pslot)
 
+    base_config_file = Path.absolute(Path.joinpath(Path(HOMEgfs),'ci','scripts','base_override.yaml')
+    if base_cofing_file.is_file():
+        setup_expt_cmd.add_default_arg('--yaml')
+        setup_expt_cmd.add_default_arg(str(base_config_file))
+
     logger.info(f'Run command: {setup_expt_cmd.command}')
-    setup_expt_cmd(output='stdout_expt', error='stderr_expt')
+    setup_expt_cmd(output='setup_expt.stdout', error='setup_expt.stderr')
 
     setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_xml.py')))
     expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(pslot)))
     setup_xml_cmd.add_default_arg(str(expdir))
 
     logger.info(f'Run command: {setup_xml_cmd.command}')
-    setup_xml_cmd(output='stdout_setupxml', error='stderr_setupxml')
+    setup_xml_cmd(output='setupxml.stdout', error='setupxml.stderr')
