@@ -243,13 +243,12 @@ elif [[ "${step}" = "preplandobs" || "${step}" = "landanlinit" || "${step}" = "l
        export npe_node_landanlrun
        export is_exclusive=True
    elif [[ "${step}" = "preplandobs" ]]; then
-       export wtime_preplandobs="00:30:00"
-       npe_preplandobs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+       export wtime_preplandobs="00:05:00"
+       npe_preplandobs=1
        export npe_preplandobs
        export nth_preplandobs=1
-       npe_node_preplandobs=$(echo "${npe_node_max} / ${nth_preplandobs}" | bc)
+       npe_node_preplandobs=1
        export npe_node_preplandobs
-       export is_exclusive=True
    fi
 
 elif [[ "${step}" = "aeroanlinit" ]]; then

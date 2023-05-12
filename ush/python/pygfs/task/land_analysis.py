@@ -6,13 +6,13 @@ from typing import Dict, List
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
-from pygw.timetools import to_fv3time, to_YMD, to_julian
+from pygw.timetools import to_fv3time, to_YMD, to_YMDH
 from pygw.fsutils import rm_p
 from pygw.yaml_file import parse_j2yaml
+from pygw.jinja import Jinja
 from pygw.logger import logit
 from pygw.executable import Executable
 from pygw.exceptions import WorkflowException
-from pygw.template import Template, TemplateConstants
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -59,8 +59,7 @@ class LandAnalysis(Analysis):
         logger.info("Staging backgrounds")
         FileHandler(self.get_bkg_dict()).sync()
 
-        # copy the IMS obs files from COM_OBS to DATA/obs
-        logger.info("Copying IMS obs")
+        # Read and render the IMS_OBS_LIST yaml
         # create a temporary dict for parsing the IMS_OBS_LIST yaml file
         cfg = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'OPREFIX', 'CASE']
@@ -69,41 +68,72 @@ class LandAnalysis(Analysis):
         logger.debug(f"{self.task_config.IMS_OBS_LIST}")
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, cfg)
         logger.debug(f"{prep_ims_config}")
-        FileHandler(prep_ims_config).sync()
 
-        logger.info("Create namelist for calcfIMS.exe")
+        # copy the IMS obs files from COM_OBS to DATA/obs
+        logger.info("Copying IMS obs for CALCFIMSEXE")
+        FileHandler(prep_ims_config.calcfims).sync()
+
+        logger.info("Create namelist for CALCFIMSEXE")
+        nml_template = self.task_config.FIMS_NML_TMPL
         cfg = AttrDict()
+        cfg.current_cycle = self.task_config.current_cycle
         cfg.DATA = self.task_config.DATA
-        cfg.atm_res = self.task_config.CASE[1:]
-        cfg.jdate = to_julian(self.task_config.current_cycle)
-        cfg.yyyymmddhh = f"{to_YMD(self.task_config.current_cycle)}.{self.task_config.current_cycle.hour:02d}"
+        cfg.CASE = self.task_config.CASE
+        nml_data = Jinja(nml_template, cfg).render
+        logger.debug(f"$>cat fims.nml\n{nml_data}")
 
-        fims_nml_tmpl = self.task_config.FIMS_NML_TMPL
-        fims_nml = os.path.join(self.task_config.DATA, "fims.nml")
-        with open(fims_nml_tmpl, "r") as fhi, open(fims_nml, "w") as fho:
-            fims_in = fhi.read()
-            fims_out = Template.substitute_structure(
-                fims_in, TemplateConstants.DOLLAR_PARENTHESES, cfg.get)
-            fho.write(fims_out)
+        nml_file = os.path.join(self.task_config.DATA, "fims.nml")
+        with open(nml_file, "w") as fho:
+            fho.write(nml_data)
 
-        logger.info("Link calcfIMS.exe into DATA/")
+        logger.info("Link CALCFIMSEXE into DATA/")
         exe_src = self.task_config.CALCFIMSEXE
         exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
-        # execute calcfIMS.exe to calculate IMS snowdepth
-        exec_name = os.path.join(self.task_config.DATA, 'calcfIMS.exe')
-        exec_cmd = Executable(exec_name)
-
+        # execute CALCFIMSEXE to calculate IMS snowdepth
+        exe = Executable(self.task_config.APRUN_CALCFIMS)
+        exe.add_default_arg(os.path.join(self.task_config.DATA, os.path.basename(exe_src)))
         try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
+            logger.debug(f"Executing {exe}")
+            exe()
         except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
+            raise OSError(f"Failed to execute {exe}")
         except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+            raise WorkflowException(f"An error occured during execution of {exe}")
+
+        # Ensure the snow depth IMS file is produced by the above executable
+        input_file = f"IMSscf.{to_YMD(self.task_config.PDY)}.{self.task_config.CASE}_oro_data.nc"
+        if not os.path.isfile(f"{os.path.join(self.task_config.DATA, input_file)}"):
+            logger.exception(f"{self.task_config.CALCFIMSEXE} failed to produce {input_file}")
+            raise FileNotFoundError(f"{os.path.join(self.task_config.DATA, input_file)}")
+
+        # Execute imspy to create the IMS obs data in IODA format
+        logger.info("Create IMS obs data in IODA format")
+
+        output_file = f"ims_snow_{to_YMDH(self.task_config.current_cycle)}.nc4"
+        if os.path.isfile(f"{os.path.join(self.task_config.DATA, output_file)}"):
+            rm_p(output_file)
+
+        exe = Executable(self.task_config.IMS2IODACONV)
+        exe.add_default_arg(f"-i {os.path.join(self.task_config.DATA, input_file)}")
+        exe.add_default_arg(f"-o {os.path.join(self.task_config.DATA, output_file)}")
+        try:
+            logger.debug(f"Executing {exe}")
+            exe()
+        except OSError:
+            raise OSError(f"Failed to execute {exe}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exe}")
+
+        if not os.path.isfile(f"{os.path.join(self.task_config.DATA, output_file)}"):
+            logger.exception(f"{self.task_config.IMS2IODACONV} failed to produce {output_file}")
+            raise FileNotFoundError(f"{os.path.join(self.task_config.DATA, output_file)}")
+        else:
+            logger.info(f"Copy {output_file} to {self.task_config.COM_OBS}")
+            FileHandler(prep_ims_config.ims2ioda).sync()
 
     @logit(logger)
     def get_bkg_dict(self) -> Dict[str, List[str]]:
