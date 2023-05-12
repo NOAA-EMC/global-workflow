@@ -107,7 +107,9 @@ For config.wave:
 
 If this is a computational grid, add a section for the newly added grid in the possible cases for waveGRD, adding the appropriate
 non-default values for this specific grid.  If this is a new output grid, then update all of the waveGRD cases for waveinterpGRD as 
-needed.
+needed.  Please note that if you change the default wave grid, that initial conditions must be staged for this IC for all ICs used 
+in global-workflow testing.  Ideally ICs for the grids being used for testing will be provided even if its not the default grid. 
+
 
 
 For scripts/exgfs_wave_post_gridded_sbs.sh and the inp.tmpl files: 
@@ -118,6 +120,8 @@ parm/wave/${WAVEGRID}_interp.inp.tmpl file.  See WW3/model/inp/ww3_gint.inp for 
 computational grid or just an output grid you will need a new parm/wave/ww3_grib2.${WAVEGRID}.inp.tmpl file.  See the file 
 WW3/model/inp/ww3_grib.inp for more infomration about this input file.  The other existing templated input files can be used 
 as guides to create these new files. 
+
+
 
 
 *****************************
