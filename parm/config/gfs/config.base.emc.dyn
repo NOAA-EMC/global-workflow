@@ -288,8 +288,8 @@ export imp_physics=@IMP_PHYSICS@
 
 # Shared parameters
 # DA engine
-export DO_JEDIVAR="@DO_JEDIVAR@"
-export DO_JEDIENS="@DO_JEDIENS@"
+export DO_JEDIATMVAR="@DO_JEDIATMVAR@"
+export DO_JEDIATMENS="@DO_JEDIATMENS@"
 export DO_JEDIOCNVAR="@DO_JEDIOCNVAR@"
 export DO_JEDILANDDA="@DO_JEDILANDDA@"
 export DO_MERGENSST="@DO_MERGENSST@"
