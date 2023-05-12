@@ -58,7 +58,7 @@ class LandAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         cfg = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV', \
+        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'ntiles']
         for key in keys:
             cfg[key] = self.task_config[key]
