@@ -15,27 +15,42 @@ Naming the Wave Grid
 The naming convention of the wave grid within the workflow is expected to follow a convention of region underscore resolution. 
 Here are several regional naming conventions: 
 
-| Acronym   | Description           | 
-| --------- | ----------------------|
-| glo       | global domain         | 
-| ak        | Alaska                | 
-| ao or aoc | Arctic Ocean          | 
-| at        | Atlantic              | 
-| ep        | East Pacific          | 
-| gnh       | Global Northern Ocean | 
-| gsh       | Global Southern Ocean | 
-| so        | Southern Ocean        | 
++-----------+-----------------------+
+| Acronym   | Description           |
++===========+=======================+
+| glo       | Global domain         |
++-----------+-----------------------+
+| ak        | Alaska                |
++-----------+-----------------------+
+| ao or aoc | Arctic Ocean          |
++-----------+-----------------------+ 
+| at        | Atlantic              |
++-----------+-----------------------+ 
+| ep        | East Pacific          |
++-----------+-----------------------+ 
+| gnh       | Global Northern Ocean |
++-----------+-----------------------+ 
+| gsh       | Global Southern Ocean |
++-----------+-----------------------+ 
+| so        | Southern Ocean        |
++-----------+-----------------------+ 
 | wc        | West Coast            | 
++-----------+-----------------------+
 
 
 Here are examples of resolution names: 
 
++---------+----------------------+
 | Acronym | Description          |
-| ------- | ---------------------|
++=========+======================+
 | 15m     | 15 min               |
-| 15mxt   | 15 min extended grid | 
-| 025     | 0.25 degrees         | 
-| 9km     | 9 km                 | 
++---------+----------------------+
+| 15mxt   | 15 min extended grid |
++---------+----------------------+ 
+| 025     | 0.25 degrees         |
++---------+----------------------+ 
+| 9km     | 9 km                 |
++---------+----------------------+ 
 
 This new grid name will now be referred to as ${WAVEGRID} for the following documentation. 
 
@@ -43,11 +58,18 @@ This new grid name will now be referred to as ${WAVEGRID} for the following docu
 Adding Fix Files 
 ****************
 
-| Name of File                        |  File Description                      | Notes/Requriements         | 
-| ----------------------------------- | -------------------------------------- | -------------------------- |
-| ww3_grid.inp_${WAVEGRID}            | Grid Input File                        | Required for all new grids | 
+The following is a table of fix files to be added with a new grid. 
+
++-------------------------------------+----------------------------------------+--------------------------------------------------+
+| Name of File                        |  File Description                      | Notes/Requriements                               |
++=====================================+========================================+==================================================+ 
+| ww3_grid.inp_${WAVEGRID}            | Grid Input File                        | Required for all new grids                       | 
++-------------------------------------+----------------------------------------+--------------------------------------------------+
 | mesh.${WAVEGRID}.nc                 | Mesh grid file used in forecast        | This is required if this is a computational grid | 
-| ww3_gint.WHTGRIDINT.bin.${WAVEGRID} | Weight file for ww3_gint interpolation | If this grid is an output file that the computational grid is interpolated to, this file will help speed up post-processing | 
++-------------------------------------+----------------------------------------+--------------------------------------------------+
+| ww3_gint.WHTGRIDINT.bin.${WAVEGRID} | Weight file for ww3_gint interpolation | Required if output is interpolated to this grid  |
++-------------------------------------+----------------------------------------+--------------------------------------------------+
+
 
 While the creation of these files are generally considered out of scope of this document here are some additional information: 
 
