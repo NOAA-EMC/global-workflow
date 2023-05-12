@@ -1,0 +1,379 @@
+#! /usr/bin/env bash
+
+########## config.base ##########
+# Common to all steps
+
+echo "BEGIN: config.base"
+
+# Machine environment
+export machine="@MACHINE@"
+
+# EMC parallel or NCO production
+export RUN_ENVIR="emc"
+
+# Account, queue, etc.
+export ACCOUNT="@ACCOUNT@"
+export QUEUE="@QUEUE@"
+export QUEUE_SERVICE="@QUEUE_SERVICE@"
+export PARTITION_BATCH="@PARTITION_BATCH@"
+export PARTITION_SERVICE="@PARTITION_SERVICE@"
+
+# Project to use in mass store:
+HPSS_PROJECT="@HPSS_PROJECT@"
+
+# Directories relative to installation areas:
+export HOMEgfs=@HOMEgfs@
+export PARMgfs=${HOMEgfs}/parm
+export FIXgfs=${HOMEgfs}/fix
+export USHgfs=${HOMEgfs}/ush
+export UTILgfs=${HOMEgfs}/util
+export EXECgfs=${HOMEgfs}/exec
+export SCRgfs=${HOMEgfs}/scripts
+
+export FIXcice=${HOMEgfs}/fix/cice
+export FIXmom=${HOMEgfs}/fix/mom6
+export FIXreg2grb2=${HOMEgfs}/fix/reg2grb2
+
+########################################################################
+
+# GLOBAL static environment parameters
+export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
+export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
+export COMINsyn="@COMINsyn@"
+export DMPDIR="@DMPDIR@"
+
+# USER specific paths
+export HOMEDIR="@HOMEDIR@"
+export STMP="@STMP@"
+export PTMP="@PTMP@"
+export NOSCRUB="@NOSCRUB@"
+
+# Base directories for various builds
+export BASE_GIT="@BASE_GIT@"
+
+# Toggle to turn on/off GFS downstream processing.
+export DO_BUFRSND="NO"     # BUFR sounding products
+export DO_GEMPAK="NO"      # GEMPAK products
+export DO_AWIPS="NO"       # AWIPS products
+export WAFSF="NO"          # WAFS products
+export DO_VRFY="YES"       # VRFY step
+
+# NO for retrospective parallel; YES for real-time parallel
+#  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
+#  if want MOS written to HPSS.   Should update arch.sh to
+#  use RUNMOS flag (currently in config.vrfy)
+export REALTIME="YES"
+
+# Experiment mode (cycled or forecast-only)
+export MODE="@MODE@" # cycled/forecast-only
+
+####################################################
+# DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
+# IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
+# FEEL FREE TO MOVE THEM ABOVE THIS LINE TO KEEP IT
+# CLEAR
+####################################################
+# Build paths relative to $HOMEgfs
+export FIXgsi="${HOMEgfs}/fix/gsi"
+export HOMEpost="${HOMEgfs}"
+export HOMEobsproc="${BASE_GIT}/obsproc/v1.1.2"
+
+# CONVENIENT utility scripts and other environment parameters
+export NCP="/bin/cp -p"
+export NMV="/bin/mv"
+export NLN="/bin/ln -sf"
+export VERBOSE="YES"
+export KEEPDATA="NO"
+export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
+export CHGRP_CMD="@CHGRP_CMD@"
+export NCDUMP="$NETCDF/bin/ncdump"
+export NCLEN="$HOMEgfs/ush/getncdimlen"
+
+# Machine environment, jobs, and other utility scripts
+export BASE_ENV="${HOMEgfs}/env"
+export BASE_JOB="${HOMEgfs}/jobs/rocoto"
+
+# EXPERIMENT specific environment parameters
+export SDATE=@SDATE@
+export EDATE=@EDATE@
+export EXP_WARM_START="@EXP_WARM_START@"
+export assim_freq=6
+export PSLOT="@PSLOT@"
+export EXPDIR="@EXPDIR@/${PSLOT}"
+export ROTDIR="@ROTDIR@/${PSLOT}"
+export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
+export DUMP_SUFFIX=""
+if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then
+    export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
+fi
+export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
+export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
+export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
+export ATARDIR="@ATARDIR@"
+
+# Commonly defined parameters in JJOBS
+export envir=${envir:-"prod"}
+export NET="gfs"  # NET is defined in the job-card (ecf)
+export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUMP is used at EMC as a RUN proxy
+# TODO: determine where is RUN actually used in the workflow other than here
+# TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
+#       consistent w/ EE2?
+
+# Get all the COM path templates
+source "${EXPDIR}/config.com"
+
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export LOGSCRIPT=${LOGSCRIPT:-""}
+#export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
+#export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
+export REDOUT="1>"
+export REDERR="2>"
+
+export SENDECF=${SENDECF:-"NO"}
+export SENDCOM=${SENDCOM:-"YES"}
+export SENDSDM=${SENDSDM:-"NO"}
+export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
+export SENDDBN=${SENDDBN:-"NO"}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
+# APP settings
+export APP=@APP@
+
+# Defaults:
+export DO_ATM="YES"
+export DO_COUPLED="NO"
+export DO_WAVE="NO"
+export DO_OCN="NO"
+export DO_ICE="NO"
+export DO_AERO="NO"
+export CCPP_SUITE="@CCPP_SUITE@"
+export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
+export DOBNDPNT_WAVE="NO"
+export cplwav2atm=".false."
+export FRAC_GRID=".true."
+
+# Set operational resolution
+export OPS_RES="C768" # Do not change
+
+# Resolution specific parameters
+export LEVS=128
+export CASE="@CASECTL@"
+export CASE_ENS="@CASEENS@"
+# TODO: This should not depend on $CASE or $CASE_ENS
+# These are the currently available grid-combinations
+case "${CASE}" in
+    "C48") export OCNRES=500;;
+    "C96") export OCNRES=100;;
+    "C192") export OCNRES=050;;
+    "C384") export OCNRES=025;;
+    "C768") export OCNRES=025;;
+    *) export OCNRES=025;;
+esac
+export ICERES=${OCNRES}
+export waveGRD='gnh_10m aoc_9km gsh_15m'
+
+case "${APP}" in
+  ATM)
+    export confignamevarfornems="atm"
+    ;;
+  ATMA)
+    export DO_AERO="YES"
+    export confignamevarfornems="atm_aero"
+    ;;
+  ATMW)
+    export DO_COUPLED="YES"
+    export DO_WAVE="YES"
+    export WAVE_CDUMP="both"
+    export confignamevarfornems="leapfrog_atm_wav"
+    ;;
+  NG-GODAS)
+    export DO_ATM="NO"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
+    ;;
+  S2S*)
+    export DO_COUPLED="YES"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
+    export confignamevarfornems="cpld"
+
+    if [[ "${APP}" =~ A$ ]]; then
+        export DO_AERO="YES"
+        export confignamevarfornems="${confignamevarfornems}_aero"
+    fi
+
+    if [[ "${APP}" =~ ^S2SW ]]; then
+        export DO_WAVE="YES"
+        export WAVE_CDUMP="both"
+        export cplwav2atm=".true."
+        export confignamevarfornems="${confignamevarfornems}_outerwave"
+    fi
+
+    source ${EXPDIR}/config.defaults.s2sw
+
+    ;;
+  *)
+    echo "Unrecognized APP: ${1}"
+    exit 1
+    ;;
+esac
+
+# Surface cycle update frequency
+if [[ "${CDUMP}" =~ "gdas" ]] ; then
+   export FHCYC=1
+   export FTSFS=10
+elif [[ "${CDUMP}" =~ "gfs" ]] ; then
+   export FHCYC=24
+fi
+
+# Output frequency of the forecast model (for cycling)
+export FHMIN=0
+export FHMAX=9
+export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
+
+# Cycle to run EnKF  (set to BOTH for both gfs and gdas)
+export EUPD_CYC="gdas"
+
+# GFS cycle info
+export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+
+# GFS output and frequency
+export FHMIN_GFS=0
+
+export FHMAX_GFS_00=${FHMAX_GFS_00:-120}
+export FHMAX_GFS_06=${FHMAX_GFS_06:-120}
+export FHMAX_GFS_12=${FHMAX_GFS_12:-120}
+export FHMAX_GFS_18=${FHMAX_GFS_18:-120}
+export FHMAX_GFS=$(eval echo \${FHMAX_GFS_${cyc}})
+
+export FHOUT_GFS=${FHOUT_GFS:-3}
+export FHMAX_HF_GFS=${FHMAX_HF_GFS:-0}
+export FHOUT_HF_GFS=${FHOUT_HF_GFS:-1}
+if (( gfs_cyc != 0 )); then
+    export STEP_GFS=$(( 24 / gfs_cyc ))
+else
+    export STEP_GFS="0"
+fi
+export ILPOST=1           # gempak output frequency up to F120
+
+# GFS restart interval in hours
+export restart_interval_gfs=0
+
+export QUILTING=".true."
+export OUTPUT_GRID="gaussian_grid"
+export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST
+export WRITE_NSFLIP=".true."
+
+# IAU related parameters
+export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
+export IAUFHRS="3,6,9"
+export IAU_FHROT=$(echo ${IAUFHRS} | cut -c1)
+export IAU_DELTHRS=6
+export IAU_OFFSET=6
+export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
+export IAUFHRS_ENKF="3,6,9"
+export IAU_DELTHRS_ENKF=6
+
+# Use Jacobians in eupd and thereby remove need to run eomg
+export lobsdiag_forenkf=".true."
+
+# if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
+#   export DO_WAVE="NO"
+#   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
+# fi
+
+# Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
+export imp_physics=@IMP_PHYSICS@
+
+# Shared parameters
+# DA engine
+export DO_JEDIATMVAR="NO"
+export DO_JEDIATMENS="NO"
+export DO_JEDIOCNVAR="NO"
+export DO_JEDILANDDA="NO"
+export DO_MERGENSST="NO"
+
+# Hybrid related
+export DOHYBVAR="@DOHYBVAR@"
+export NMEM_ENS=@NMEM_ENS@
+export NMEM_ENS_GFS=@NMEM_ENS@
+export SMOOTH_ENKF="NO"
+export l4densvar=".true."
+export lwrite4danl=".true."
+
+# EnKF output frequency
+if [[ ${DOHYBVAR} = "YES" ]]; then
+    export FHMIN_ENKF=3
+    export FHMAX_ENKF=9
+    export FHMAX_ENKF_GFS=120
+    export FHOUT_ENKF_GFS=3
+    if [ $l4densvar = ".true." ]; then
+        export FHOUT=1
+        export FHOUT_ENKF=1
+    else
+        export FHOUT_ENKF=3
+    fi
+fi
+
+# if 3DVAR and IAU
+if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
+    export IAUFHRS="6"
+    export IAU_FHROT="3"
+    export IAU_FILTER_INCREMENTS=".true."
+    export IAUFHRS_ENKF="6"
+fi
+
+# Check if cycle is cold starting, DOIAU off, or free-forecast mode
+if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
+fi
+
+# turned on nsst in anal and/or fcst steps, and turn off rtgsst
+export DONST="YES"
+if [[ ${DONST} = "YES" ]]; then export FNTSFA="        "; fi
+
+# The switch to apply SST elevation correction or not
+export nst_anl=.true.
+
+# Make the nsstbufr file on the fly or use the GDA version
+export MAKE_NSSTBUFR="@MAKE_NSSTBUFR@"
+
+# Make the aircraft prepbufr file on the fly or use the GDA version
+export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
+
+# Analysis increments to zero in CALCINCEXEC
+export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
+
+# Write analysis files for early cycle EnKF
+export DO_CALC_INCREMENT_ENKF_GFS="YES"
+
+# Stratospheric increments to zero
+export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
+export INCVARS_EFOLD="5"
+
+# Swith to generate netcdf or binary diagnostic files.  If not specified,
+# script default to binary diagnostic files.   Set diagnostic file
+# variables here since used in both DA and vrfy jobs
+export netcdf_diag=".true."
+export binary_diag=".false."
+
+# Verification options
+export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_FIT2OBS="NO"      # Run fit to observations package
+
+# Archiving options
+export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
+export LOCALARCH="@LOCALARCH@"        # save data to local archive
+if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
+   echo "Both HPSS and local archiving selected.  Please choose one or the other."
+   exit 2
+fi
+export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
+export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
+export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+
+export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
+
+echo "END: config.base"

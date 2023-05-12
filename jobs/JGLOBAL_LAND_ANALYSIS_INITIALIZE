@@ -7,19 +7,25 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "landanlinit" -c "base landanl landanl
 ##############################################
 # Set variables used in the script
 ##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
 GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
 GDUMP="gdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_LAND_ANALYSIS
 
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-mkdir -p "${COMOUT}"
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_LAND_ANALYSIS_PREV:COM_LAND_ANALYSIS_TMPL \
+    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
+    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-# COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/atmos"
+mkdir -m 775 -p "${COM_LAND_ANALYSIS}"
 
 ###############################################################
 # Run relevant script

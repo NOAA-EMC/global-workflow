@@ -88,7 +88,7 @@ export TYPE=${TYPE_ENKF:-${TYPE:-nh}}                  # choices:  nh, hydro
 export MONO=${MONO_ENKF:-${MONO:-non-mono}}            # choices:  mono, non-mono
 
 # fv_core_nml
-export CASE=${CASE_ENKF:-${CASE:-C768}}
+export CASE=${CASE_ENS:-${CASE:-C768}}
 export layout_x=${layout_x_ENKF:-${layout_x:-8}}
 export layout_y=${layout_y_ENKF:-${layout_y:-16}}
 export LEVS=${LEVS_ENKF:-${LEVS:-64}}
@@ -155,7 +155,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
    # Can't make these read-only because we are looping over members
    MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
      COM_ATMOS_HISTORY COM_ATMOS_MASTER
-     
+
    RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
    if [[ ${DO_WAVE} == "YES" ]]; then
@@ -170,7 +170,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
    fi
 
    if [[ ${DO_ICE} == "YES" ]]; then
-     MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ICE_HISTORY
+     MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ICE_HISTORY COM_ICE_INPUT COM_ICE_RESTART
      RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
    fi
 
@@ -178,7 +178,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
      MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_CHEM_HISTORY
    fi
 
-   
+
    if [ $skip_mem = "NO" ]; then
 
       ra=0

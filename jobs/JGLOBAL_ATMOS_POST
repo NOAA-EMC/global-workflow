@@ -80,7 +80,7 @@ fi
 # Specify Restart File Name to Key Off
 #######################################
 # TODO Improve the name of this variable
-export restart_file=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.logf
+export restart_file=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf
 
 ####################################
 # Specify Timeout Behavior of Post

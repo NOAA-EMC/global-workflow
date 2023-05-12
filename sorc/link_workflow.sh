@@ -90,7 +90,6 @@ for dir in aer \
             cice \
             cpl \
             datm \
-            gldas \
             gsi \
             lut \
             mom6 \
@@ -119,11 +118,6 @@ fi
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
-cd "${top_dir}/parm" || exit 1
-    if [[ -d "${script_dir}/gldas.fd" ]]; then
-      [[ -d gldas ]] && rm -rf gldas
-      ${LINK} "${script_dir}/gldas.fd/parm" gldas
-    fi
 cd "${top_dir}/parm/post" || exit 1
     for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
         postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
@@ -172,7 +166,7 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
   cd "${top_dir}/fix" || exit 1
     [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas || exit 1
-    for gdas_sub in bump crtm fv3jedi gsibec; do
+    for gdas_sub in crtm fv3jedi gsibec; do
       if [[ -d "${gdas_sub}" ]]; then
          rm -rf "${gdas_sub}"
       fi
@@ -188,6 +182,8 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
   cd "${top_dir}/ush" || exit 1
     ${LINK} "${script_dir}/gdas.cd/ush/ufsda"                              .
     ${LINK} "${script_dir}/gdas.cd/ush/jediinc2fv3.py"                     .
+    ${LINK} "${script_dir}/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
+    ${LINK} "${script_dir}/gdas.cd/ush/land/letkf_create_ens.py"           .
 fi
 
 
@@ -280,13 +276,6 @@ if [[ -d "${script_dir}/gsi_monitor.fd" ]]; then
   done
 fi
 
-if [[ -d "${script_dir}/gldas.fd" ]]; then
-  for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
-    [[ -s "${gldasexe}" ]] && rm -f "${gldasexe}"
-    ${LINK} "${script_dir}/gldas.fd/exec/${gldasexe}" .
-  done
-fi
-
 # GDASApp
 if [[ -d "${script_dir}/gdas.cd" ]]; then
   declare -a JEDI_EXE=("fv3jedi_addincrement.x" \
@@ -310,7 +299,9 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
                        "soca_error_covariance_training.x" \
                        "soca_setcorscales.x" \
                        "soca_gridgen.x" \
-                       "soca_var.x")
+                       "soca_var.x" \
+                       "calcfIMS.exe" \
+                       "apply_incr.exe" )
   for gdasexe in "${JEDI_EXE[@]}"; do
     [[ -s "${gdasexe}" ]] && rm -f "${gdasexe}"
     ${LINK} "${script_dir}/gdas.cd/build/bin/${gdasexe}" .
@@ -423,13 +414,6 @@ cd "${script_dir}" || exit 8
         ${SLINK} gfs_wafs.fd/sorc/wafs_grib2_0p25.fd                                              wafs_grib2_0p25.fd
         ${SLINK} gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
         ${SLINK} gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
-    fi
-
-    if [[ -d gldas.fd ]]; then
-      for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
-        [[ -d "${prog}" ]] && rm -rf "${prog}"
-        ${SLINK} "gldas.fd/sorc/${prog}"                                                     "${prog}"
-      done
     fi
 
 #------------------------------

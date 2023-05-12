@@ -19,7 +19,7 @@ export PARTITION_BATCH="@PARTITION_BATCH@"
 export PARTITION_SERVICE="@PARTITION_SERVICE@"
 
 # Project to use in mass store:
-HPSS_PROJECT=emc-global
+HPSS_PROJECT="@HPSS_PROJECT@"
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
@@ -75,7 +75,6 @@ export MODE="@MODE@" # cycled/forecast-only
 ####################################################
 # Build paths relative to $HOMEgfs
 export FIXgsi="${HOMEgfs}/fix/gsi"
-export HOMEfv3gfs="${HOMEgfs}/sorc/fv3gfs.fd"
 export HOMEpost="${HOMEgfs}"
 export HOMEobsproc="${BASE_GIT}/obsproc/v1.1.2"
 
@@ -104,7 +103,7 @@ export EXPDIR="@EXPDIR@/${PSLOT}"
 export ROTDIR="@ROTDIR@/${PSLOT}"
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
-if [[ "${CDATE}" -ge "2019092100" && "${CDATE}" -le "2019110700" ]]; then
+if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
 fi
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
@@ -159,8 +158,8 @@ export OPS_RES="C768" # Do not change
 # Resolution specific parameters
 export LEVS=128
 export CASE="@CASECTL@"
-export CASE_ENKF="@CASEENS@"
-# TODO: This should not depend on $CASE or $CASE_ENKF
+export CASE_ENS="@CASEENS@"
+# TODO: This should not depend on $CASE or $CASE_ENS
 # These are the currently available grid-combinations
 case "${CASE}" in
     "C48") export OCNRES=500;;
@@ -231,7 +230,7 @@ fi
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
-export FHOUT=3           # Will be changed to 1 in config.base if DO_GLDAS is set or (DOHYBVAR set to NO and l4densvar set to false)
+export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="gdas"
@@ -279,15 +278,6 @@ export IAU_DELTHRS_ENKF=6
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
 
-# run GLDAS to spin up land ICs
-export DO_GLDAS="NO"
-export gldas_cyc=00
-
-# Exception handling that when DO_GLDAS is set, the FHOUT must be 1
-if [[ ${DO_GLDAS} = "YES" ]]; then
-  export FHOUT=1
-fi
-
 # if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
 #   export DO_WAVE="NO"
 #   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
@@ -298,16 +288,16 @@ export imp_physics=@IMP_PHYSICS@
 
 # Shared parameters
 # DA engine
-export DO_JEDIVAR="NO"
-export DO_JEDIENS="NO"
-export DO_JEDIOCNVAR="NO"
-export DO_JEDILANDDA="NO"
-export DO_MERGENSST="NO"
+export DO_JEDIATMVAR="@DO_JEDIATMVAR@"
+export DO_JEDIATMENS="@DO_JEDIATMENS@"
+export DO_JEDIOCNVAR="@DO_JEDIOCNVAR@"
+export DO_JEDILANDDA="@DO_JEDILANDDA@"
+export DO_MERGENSST="@DO_MERGENSST@"
 
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
-export NMEM_ENKF=@NMEM_ENKF@
-export NMEM_EFCS=30
+export NMEM_ENS=@NMEM_ENS@
+export NMEM_ENS_GFS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
@@ -335,7 +325,7 @@ if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
 fi
 
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
-if [[ "${MODE}" = "cycled" && "${SDATE}" = "${CDATE}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
+if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi

@@ -29,7 +29,7 @@ fi
 # Set parameters specific to L127
 if [[ ${LEVS} = "128" ]]; then
   export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
-  export SETUP="gpstop=55,nsig_ext=56,${SETUP:-}"
+  export SETUP="gpstop=55,nsig_ext=45,${SETUP:-}"
 fi
 
 # Set namelist option for LETKF
@@ -54,41 +54,41 @@ export OBERROR=${FIXgsi}/prepobs_errtable.global
 # Use experimental dumps in EMC GFS v16 parallels
 if [[ ${RUN_ENVIR} == "emc" ]]; then
   #   Set info files and prepobs.errtable.global for GFS v16 retrospective parallels
-  if [[ "${CDATE}" -ge "2019021900" && "${CDATE}" -lt "2019110706" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2019021900" && "${PDY}${cyc}" -lt "2019110706" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2019021900
     export OBERROR=${FIXgsi}/gfsv16_historical/prepobs_errtable.global.2019021900
   fi
 
   #   Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
-  if [[ "${CDATE}" -ge "2019110706" && "${CDATE}" -lt "2020040718" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2019110706" && "${PDY}${cyc}" -lt "2020040718" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2019110706
     export OBERROR=${FIXgsi}/gfsv16_historical/prepobs_errtable.global.2019110706
   fi
 
   #   Assimilate 135 (T) & 235 (uv) Canadian AMDAR observations
-  if [[ "${CDATE}" -ge "2020040718" && "${CDATE}" -lt "2020052612" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2020040718" && "${PDY}${cyc}" -lt "2020052612" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2020040718
     export OBERROR=${FIXgsi}/gfsv16_historical/prepobs_errtable.global.2020040718
   fi
 
   #   Assimilate COSMIC-2
-  if [[ "${CDATE}" -ge "2020052612" && "${CDATE}" -lt "2020082412" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2020052612" && "${PDY}${cyc}" -lt "2020082412" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2020052612
     export OBERROR=${FIXgsi}/gfsv16_historical/prepobs_errtable.global.2020040718
   fi
 
   #   Assimilate HDOB
-  if [[ "${CDATE}" -ge "2020082412" && "${CDATE}" -lt "2020091612" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2020082412" && "${PDY}${cyc}" -lt "2020091612" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2020082412
   fi
 
   #   Assimilate Metop-C GNSSRO
-  if [[ "${CDATE}" -ge "2020091612" && "${CDATE}" -lt "2021031712" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2020091612" && "${PDY}${cyc}" -lt "2021031712" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2020091612
   fi
 
   #   Assimilate DO-2 GeoOptics
-  if [[ "${CDATE}" -ge "2021031712" && "${CDATE}" -lt "2021091612" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2021031712" && "${PDY}${cyc}" -lt "2021091612" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2021031712
   fi
 
@@ -97,38 +97,38 @@ if [[ ${RUN_ENVIR} == "emc" ]]; then
   #   identical to ../global_convinfo.txt.  Thus, the logic below is not
   #   needed at this time.
   #   Assimilate COSMIC-2 GPS
-  #   if [[ "$CDATE" -ge "2021110312" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
+  #   if [[ "${PDY}${cyc}" -ge "2021110312" && "${PDY}${cyc}" -lt "YYYYMMDDHH" ]]; then
   #   export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2021110312
   #   fi
 
   #   Turn off assmilation of OMPS during period of bad data
-  if [[ "${CDATE}" -ge "2020011600" && "${CDATE}" -lt "2020011806" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2020011600" && "${PDY}${cyc}" -lt "2020011806" ]]; then
     export OZINFO=${FIXgsi}/gfsv16_historical/global_ozinfo.txt.2020011600
   fi
 
 
   #   Set satinfo for start of GFS v16 parallels
-  if [[ "${CDATE}" -ge "2019021900" && "${CDATE}" -lt "2019110706" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2019021900" && "${PDY}${cyc}" -lt "2019110706" ]]; then
     export SATINFO=${FIXgsi}/gfsv16_historical/global_satinfo.txt.2019021900
   fi
 
   #   Turn on assimilation of Metop-C AMSUA and MHS
-  if [[ "${CDATE}" -ge "2019110706" && "${CDATE}" -lt "2020022012" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2019110706" && "${PDY}${cyc}" -lt "2020022012" ]]; then
     export SATINFO=${FIXgsi}/gfsv16_historical/global_satinfo.txt.2019110706
   fi
 
   #   Turn off assimilation of Metop-A MHS
-  if [[ "${CDATE}" -ge "2020022012" && "${CDATE}" -lt "2021052118" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2020022012" && "${PDY}${cyc}" -lt "2021052118" ]]; then
     export SATINFO=${FIXgsi}/gfsv16_historical/global_satinfo.txt.2020022012
   fi
 
   #   Turn off assimilation of S-NPP CrIS
-  if [[ "${CDATE}" -ge "2021052118" && "${CDATE}" -lt "2021092206" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2021052118" && "${PDY}${cyc}" -lt "2021092206" ]]; then
     export SATINFO=${FIXgsi}/gfsv16_historical/global_satinfo.txt.2021052118
   fi
 
   #   Turn off assimilation of MetOp-A IASI
-  if [[ "${CDATE}" -ge "2021092206" && "${CDATE}" -lt "2021102612" ]]; then
+  if [[ "${PDY}${cyc}" -ge "2021092206" && "${PDY}${cyc}" -lt "2021102612" ]]; then
     export SATINFO=${FIXgsi}/gfsv16_historical/global_satinfo.txt.2021092206
   fi
 
@@ -138,7 +138,7 @@ if [[ ${RUN_ENVIR} == "emc" ]]; then
   #   needed at this time
   #
   #   Turn off assmilation of all Metop-A MHS
-  #   if [[ "$CDATE" -ge "2021110312" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
+  #   if [[ "${PDY}${cyc}" -ge "2021110312" && "${PDY}${cyc}" -lt "YYYYMMDDHH" ]]; then
   #     export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021110312
   #   fi
 fi
