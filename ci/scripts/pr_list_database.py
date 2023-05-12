@@ -3,7 +3,6 @@
 import sys
 from pathlib import Path
 import sqlite3
-from sqlite3 import Error
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 
@@ -11,8 +10,8 @@ def sql_connection(filename):
     try:
         con = sqlite3.connect(Path(filename))
         return con
-    except Error:
-        print(Error)
+    except sqlite3.Error:
+        print(sqlite3.Error)
         sys.exit(-1)
 
 
