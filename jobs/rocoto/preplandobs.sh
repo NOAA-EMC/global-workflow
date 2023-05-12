@@ -20,6 +20,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-${HOMEgfs}/jobs/JGLOBAL_PREP_LAND_OBS
+"${HOMEgfs}/jobs/JGLOBAL_PREP_LAND_OBS"
 status=$?
 exit "${status}"
