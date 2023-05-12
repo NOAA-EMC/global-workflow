@@ -193,8 +193,8 @@ export imp_physics=8
 
 # Shared parameters
 # DA engine
-export DO_JEDIVAR="NO"
-export DO_JEDIENS="NO"
+export DO_JEDIATMVAR="NO"
+export DO_JEDIATMENS="NO"
 
 # Hybrid related
 export DOHYBVAR="YES"
