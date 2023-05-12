@@ -119,12 +119,14 @@ for pr in ${pr_list}; do
           echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
+        "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr Open Running "${pr}" "${pr_list_dbfile}"
       else 
         {
           echo "Failed to create experiment}:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
+        "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
       fi
     done
 
@@ -134,6 +136,7 @@ for pr in ${pr_list}; do
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}}" || true
     } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
   fi
   "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
 
