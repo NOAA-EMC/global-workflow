@@ -99,7 +99,7 @@ if __name__ == '__main__':
     setup_expt_cmd.add_default_arg('--pslot')
     setup_expt_cmd.add_default_arg(pslot)
 
-    base_config_file = Path.absolute(Path.joinpath(Path(HOMEgfs), 'ci', 'scripts', 'base_override.yaml')
+    base_config_file = Path.absolute(Path.joinpath(Path(HOMEgfs), 'ci', 'scripts', 'base_override.yaml'))
     if base_cofing_file.is_file():
         setup_expt_cmd.add_default_arg('--yaml')
         setup_expt_cmd.add_default_arg(str(base_config_file))
