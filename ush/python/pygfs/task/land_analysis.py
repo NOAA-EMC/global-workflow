@@ -3,6 +3,7 @@
 import os
 from logging import getLogger
 from typing import Dict, List
+from pprint import pformat
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
@@ -55,19 +56,21 @@ class LandAnalysis(Analysis):
         None
         """
 
-        # stage backgrounds
-        logger.info("Staging backgrounds")
-        FileHandler(self.get_bkg_dict()).sync()
-
-        # Read and render the IMS_OBS_LIST yaml
-        # create a temporary dict for parsing the IMS_OBS_LIST yaml file
+        # create a temporary dict of all keys needed in this method
         cfg = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS', 'OPREFIX', 'CASE']
+        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV', \
+                'OPREFIX', 'CASE', 'ntiles']
         for key in keys:
             cfg[key] = self.task_config[key]
-        logger.debug(f"{self.task_config.IMS_OBS_LIST}")
+
+        # stage backgrounds
+        logger.info("Staging backgrounds")
+        FileHandler(self.get_bkg_dict(cfg)).sync()
+
+        # Read and render the IMS_OBS_LIST yaml
+        logger.info(f"Reading {self.task_config.IMS_OBS_LIST}")
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, cfg)
-        logger.debug(f"{prep_ims_config}")
+        logger.debug(f"{self.task_config.IMS_OBS_LIST}:\n{pformat(prep_ims_config)}")
 
         # copy the IMS obs files from COM_OBS to DATA/obs
         logger.info("Copying IMS obs for CALCFIMSEXE")
@@ -75,12 +78,8 @@ class LandAnalysis(Analysis):
 
         logger.info("Create namelist for CALCFIMSEXE")
         nml_template = self.task_config.FIMS_NML_TMPL
-        cfg = AttrDict()
-        cfg.current_cycle = self.task_config.current_cycle
-        cfg.DATA = self.task_config.DATA
-        cfg.CASE = self.task_config.CASE
         nml_data = Jinja(nml_template, cfg).render
-        logger.debug(f"$>cat fims.nml\n{nml_data}")
+        logger.debug(f"fims.nml:\n{nml_data}")
 
         nml_file = os.path.join(self.task_config.DATA, "fims.nml")
         with open(nml_file, "w") as fho:
@@ -88,7 +87,7 @@ class LandAnalysis(Analysis):
 
         logger.info("Link CALCFIMSEXE into DATA/")
         exe_src = self.task_config.CALCFIMSEXE
-        exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
+        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
@@ -128,6 +127,8 @@ class LandAnalysis(Analysis):
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exe}")
 
+        # Ensure the IODA snow depth IMS file is produced by the IODA converter
+        # If so, copy to COM_OBS/
         if not os.path.isfile(f"{os.path.join(self.task_config.DATA, output_file)}"):
             logger.exception(f"{self.task_config.IMS2IODACONV} failed to produce {output_file}")
             raise FileNotFoundError(f"{os.path.join(self.task_config.DATA, output_file)}")
@@ -136,7 +137,7 @@ class LandAnalysis(Analysis):
             FileHandler(prep_ims_config.ims2ioda).sync()
 
     @logit(logger)
-    def get_bkg_dict(self) -> Dict[str, List[str]]:
+    def get_bkg_dict(self, config: Dict) -> Dict[str, List[str]]:
         """Compile a dictionary of model background files to copy
 
         This method constructs a dictionary of FV3 RESTART files (coupler, sfc_data)
@@ -146,6 +147,8 @@ class LandAnalysis(Analysis):
         ----------
         self: Analysis
             Instance of the current object class
+        config: Dict
+            Dictionary of key-value pairs needed in this method
 
         Returns
         ----------
@@ -155,20 +158,20 @@ class LandAnalysis(Analysis):
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
 
         # get FV3 RESTART files, this will be a lot simpler when using history files
-        rst_dir = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV)  # for now, option later?
-        run_dir = os.path.join(self.task_config.DATA, 'bkg')
+        rst_dir = os.path.join(config.COM_ATMOS_RESTART_PREV)  # for now, option later?
+        run_dir = os.path.join(config.DATA, 'bkg')
 
         # Start accumulating list of background files to copy
         bkglist = []
 
         # land DA needs coupler
-        basename = f'{to_fv3time(self.task_config.current_cycle)}.coupler.res'
+        basename = f'{to_fv3time(config.current_cycle)}.coupler.res'
         bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
 
         # land DA only needs sfc_data
         for ftype in ['sfc_data']:
-            template = f'{to_fv3time(self.task_config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
-            for itile in range(1, self.task_config.ntiles + 1):
+            template = f'{to_fv3time(config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
+            for itile in range(1, config.ntiles + 1):
                 basename = template.format(tilenum=itile)
                 bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
 

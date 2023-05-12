@@ -8,10 +8,11 @@ if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "getic init coupled_ic aerosol_init"
+    echo "coupled_ic aerosol_init"
+    echo "prep preplandobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "preplandobs landanlinit landanlrun landanlfinal"
+    echo "landanlinit landanlrun landanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -61,6 +62,14 @@ if [[ ${step} = "prep" ]]; then
     else
       export memory_prep="40G"
     fi
+
+elif [[ "${step}" = "preplandobs" ]]; then
+    export wtime_preplandobs="00:05:00"
+    npe_preplandobs=1
+    export npe_preplandobs
+    export nth_preplandobs=1
+    npe_node_preplandobs=1
+    export npe_node_preplandobs
 
 elif [[ "${step}" = "aerosol_init" ]]; then
     export wtime_aerosol_init="00:05:00"
@@ -204,7 +213,7 @@ elif [[ "${step}" = "atmanlfinal" ]]; then
     export npe_node_atmanlfinal
     export is_exclusive=True
 
-elif [[ "${step}" = "preplandobs" || "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
+elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
    # below lines are for creating JEDI YAML
    case ${CASE} in
      C768)
@@ -242,13 +251,6 @@ elif [[ "${step}" = "preplandobs" || "${step}" = "landanlinit" || "${step}" = "l
        npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
        export npe_node_landanlrun
        export is_exclusive=True
-   elif [[ "${step}" = "preplandobs" ]]; then
-       export wtime_preplandobs="00:05:00"
-       npe_preplandobs=1
-       export npe_preplandobs
-       export nth_preplandobs=1
-       npe_node_preplandobs=1
-       export npe_node_preplandobs
    fi
 
 elif [[ "${step}" = "aeroanlinit" ]]; then
