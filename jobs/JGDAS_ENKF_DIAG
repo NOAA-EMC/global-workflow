@@ -24,7 +24,7 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export CASE=${CASE_ENKF}
+export CASE=${CASE_ENS}
 
 export OPREFIX="${CDUMP}.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."

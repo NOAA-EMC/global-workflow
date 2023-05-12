@@ -46,7 +46,7 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-${GPREFIX}}
 
 # Variables
-NMEM_ENKF=${NMEM_ENKF:-80}
+NMEM_ENS=${NMEM_ENS:-80}
 DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
@@ -123,7 +123,7 @@ fi
 
 export APRUNCY=${APRUN_CYCLE:-$APRUN_ESFC}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE:-$NTHREADS_ESFC}
-export MAX_TASKS_CY=$NMEM_ENKF
+export MAX_TASKS_CY=$NMEM_ENS
 
 if [ $DOIAU = "YES" ]; then
     # Update surface restarts at beginning of window when IAU is ON
@@ -133,7 +133,7 @@ if [ $DOIAU = "YES" ]; then
 
         export TILE_NUM=$n
 
-        for imem in $(seq 1 $NMEM_ENKF); do
+        for imem in $(seq 1 $NMEM_ENS); do
 
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
@@ -169,7 +169,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
 
         export TILE_NUM=$n
 
-        for imem in $(seq 1 $NMEM_ENKF); do
+        for imem in $(seq 1 $NMEM_ENS); do
 
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"

@@ -8,7 +8,7 @@ import os
 import glob
 import shutil
 import warnings
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
 
 from hosts import Host
 
@@ -227,14 +227,17 @@ def fill_EXPDIR(inputs):
 
 def update_configs(host, inputs):
 
-    # First update config.base
-    edit_baseconfig(host, inputs)
-
+    # Read in the YAML file to fill out templates and override host defaults
     yaml_path = inputs.yaml
     yaml_dict = YAMLFile(path=yaml_path)
 
+    # First update config.base
+    edit_baseconfig(host, inputs, yaml_dict)
+
     # loop over other configs and update them
     for cfg in yaml_dict.keys():
+        if cfg == 'base':
+            continue
         cfg_file = f'{inputs.expdir}/{inputs.pslot}/config.{cfg}'
         cfg_dict = get_template_dict(yaml_dict[cfg])
         edit_config(cfg_file, cfg_file, cfg_dict)
@@ -242,7 +245,7 @@ def update_configs(host, inputs):
     return
 
 
-def edit_baseconfig(host, inputs):
+def edit_baseconfig(host, inputs, yaml_dict):
     """
     Parses and populates the templated `config.base.emc.dyn` to `config.base`
     """
@@ -271,10 +274,16 @@ def edit_baseconfig(host, inputs):
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     extend_dict = dict()
-    if inputs.mode in ['cycled']:
+    if getattr(inputs, 'nens', 0) > 0:
         extend_dict = {
             "@CASEENS@": f'C{inputs.resens}',
-            "@NMEM_ENKF@": inputs.nens,
+            "@NMEM_ENS@": inputs.nens,
+        }
+        tmpl_dict = dict(tmpl_dict, **extend_dict)
+
+    extend_dict = dict()
+    if inputs.mode in ['cycled']:
+        extend_dict = {
             "@DOHYBVAR@": "YES" if inputs.nens > 0 else "NO",
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
@@ -282,6 +291,11 @@ def edit_baseconfig(host, inputs):
     # All apps and modes now use the same physics and CCPP suite by default
     extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
     tmpl_dict = dict(tmpl_dict, **extend_dict)
+
+    try:
+        tmpl_dict = dict(tmpl_dict, **get_template_dict(yaml_dict['base']))
+    except KeyError:
+        pass
 
     base_input = f'{inputs.configdir}/config.base.emc.dyn'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
@@ -336,14 +350,16 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     # Set up sub-parsers for various modes of experimentation
-    subparser = parser.add_subparsers(dest='mode')
-    cycled = subparser.add_parser(
-        'cycled', help='arguments for cycled mode')
-    forecasts = subparser.add_parser(
-        'forecast-only', help='arguments for forecast-only mode')
+    sysparser = parser.add_subparsers(dest='system')
+    gfs = sysparser.add_parser('gfs', help='arguments for GFS')
+    gefs = sysparser.add_parser('gefs', help='arguments for GEFS')
+
+    modeparser = gfs.add_subparsers(dest='mode')
+    cycled = modeparser.add_parser('cycled', help='arguments for cycled mode')
+    forecasts = modeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
 
     # Common arguments across all modes
-    for subp in [cycled, forecasts]:
+    for subp in [cycled, forecasts, gefs]:
         subp.add_argument('--pslot', help='parallel experiment name',
                           type=str, required=False, default='test')
         subp.add_argument('--resdet', help='resolution of the deterministic model forecast',
@@ -355,32 +371,51 @@ def input_args():
         subp.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                           required=True, type=lambda dd: to_datetime(dd))
         subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
-        subp.add_argument('--configdir', help='full path to directory containing the config files',
-                          type=str, required=False, default=os.path.join(_top, 'parm/config'))
-        subp.add_argument('--cdump', help='CDUMP to start the experiment',
-                          type=str, required=False, default='gdas')
-        subp.add_argument('--gfs_cyc', help='GFS cycles to run', type=int,
-                          choices=[0, 1, 2, 4], default=1, required=False)
+
+    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW']
+
+    # GFS-only arguments
+    for subp in [cycled, forecasts]:
         subp.add_argument('--start', help='restart mode: warm or cold', type=str,
                           choices=['warm', 'cold'], required=False, default='cold')
-
+        subp.add_argument('--cdump', help='CDUMP to start the experiment',
+                          type=str, required=False, default='gdas')
+        # --configdir is hidden from help
+        subp.add_argument('--configdir', help=SUPPRESS, type=str, required=False, default=os.path.join(_top, 'parm/config/gfs'))
         subp.add_argument('--yaml', help='Defaults to substitute from', type=str,
-                          required=False, default=os.path.join(_top, 'parm/config/yaml/defaults.yaml'))
+                          required=False, default=os.path.join(_top, 'parm/config/gfs/yaml/defaults.yaml'))
 
-    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW']
+    # ensemble-only arguments
+    for subp in [cycled, gefs]:
+        subp.add_argument('--resens', help='resolution of the ensemble model forecast',
+                          type=int, required=False, default=192)
+        subp.add_argument('--nens', help='number of ensemble members',
+                          type=int, required=False, default=20)
+
+    # GFS/GEFS forecast-only additional arguments
+    for subp in [forecasts, gefs]:
+        subp.add_argument('--app', help='UFS application', type=str,
+                          choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
+        subp.add_argument('--gfs_cyc', help='Number of forecasts per day', type=int,
+                          choices=[1, 2, 4], default=1, required=False)
 
     # cycled mode additional arguments
     cycled.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
-    cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
-                        type=int, required=False, default=192)
-    cycled.add_argument('--nens', help='number of ensemble members',
-                        type=int, required=False, default=20)
     cycled.add_argument('--app', help='UFS application', type=str,
                         choices=ufs_apps, required=False, default='ATM')
+    cycled.add_argument('--gfs_cyc', help='cycles to run forecast', type=int,
+                        choices=[0, 1, 2, 4], default=1, required=False)
 
-    # forecast only mode additional arguments
-    forecasts.add_argument('--app', help='UFS application', type=str,
-                           choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
+    # GEFS-only arguments
+    # Create hidden mode argument since there is real option for GEFS
+    gefs.add_argument('--mode', help=SUPPRESS, type=str, required=False, default='forecast-only')
+    # Create hidden start argument since GEFS is always cold start
+    gefs.add_argument('--start', help=SUPPRESS, type=str, required=False, default='cold')
+    # Create hidden arguments for configdir and yaml
+    gefs.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
+                      default=os.path.join(_top, 'parm/config/gefs'))
+    gefs.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
+                      default=os.path.join(_top, 'parm/config/gefs/yaml/defaults.yaml'))
 
     args = parser.parse_args()
 
@@ -413,11 +448,15 @@ def query_and_clean(dirname):
 
 
 def validate_user_request(host, inputs):
-    expt_res = f'C{inputs.resdet}'
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
-    if expt_res not in supp_res:
-        raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
+    for attr in ['resdet', 'ensres']:
+        try:
+            expt_res = f'C{getattr(inputs, attr)}'
+        except AttributeError:
+            continue
+        if expt_res not in supp_res:
+            raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
 
 
 if __name__ == '__main__':

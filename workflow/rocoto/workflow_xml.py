@@ -144,6 +144,9 @@ class RocotoXML:
         if sdate <= edate:
             strings.append(f'\t<cycledef group="gfs_seq">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
 
+        strings.append('')
+        strings.append('')
+
         return '\n'.join(strings)
 
     @staticmethod

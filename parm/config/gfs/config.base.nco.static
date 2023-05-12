@@ -183,10 +183,6 @@ export IAU_DELTHRS_ENKF=6
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
 
-# run GLDAS to spin up land ICs
-export DO_GLDAS=YES
-export gldas_cyc=00
-
 # run wave component
 export DO_WAVE=YES
 export WAVE_CDUMP="both"
@@ -197,8 +193,8 @@ export imp_physics=8
 
 # Shared parameters
 # DA engine
-export DO_JEDIVAR="NO"
-export DO_JEDIENS="NO"
+export DO_JEDIATMVAR="NO"
+export DO_JEDIATMENS="NO"
 
 # Hybrid related
 export DOHYBVAR="YES"
@@ -228,10 +224,10 @@ if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 export nst_anl=.true.
 
 # Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
+export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 
 # Stratospheric increments to zero
-export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
+export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 export INCVARS_EFOLD="5"
 
 # Swith to generate netcdf or binary diagnostic files.  If not specified,
