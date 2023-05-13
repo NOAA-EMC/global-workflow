@@ -525,7 +525,10 @@ class Tasks:
 
     def landanlinit(self):
 
-        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
+        # TODO: Q: what from gdaspost -6H or atmf009.nc does landanlinit depend on?
+
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN'
+: 'gdas'})
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
@@ -533,8 +536,15 @@ class Tasks:
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
+
+        # Either gdaspreplandobs (runs in 18z cycle) or not 18z cycle
+        sub_deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}preplandobs'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        sub_deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'strneq', 'left': '@H', 'right': 18}
+        sub_deps.append(rocoto.add_dependency(dep_dict))
+        deps.append(rocoto.create_dependency(dep_condition='xor', dep=sub_deps))
+
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('landanlinit')
