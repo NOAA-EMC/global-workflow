@@ -122,7 +122,7 @@ class RocotoXML:
             sdate_land = sdate.replace(hour=18, minute=0, second=0)
             edate_land = edate
             if edate >= sdate:
-                strings.append(f'\t<cycledef group="gdas_land_prep">{sdate_land.strftime("%Y%m%d%H%M")} {edate_land.strftime("%Y%m%d%H%M")} 24</cycledef>')
+                strings.append(f'\t<cycledef group="gdas_land_prep">{sdate_land.strftime("%Y%m%d%H%M")} {edate_land.strftime("%Y%m%d%H%M")} 24:00:00</cycledef>')
 
         if self._app_config.gfs_cyc != 0:
             sdate_gfs = self._base['SDATE_GFS']
