@@ -35,17 +35,17 @@ esac
 set +x
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
-module load "module_gwsetup.${MACHINE_ID}"
+#module load "module_gwsetup.${MACHINE_ID}"
 module list
 set -x
-rocotostat=$(which rocotostat)
+rocotostat=$(command -v rocotostat)
 if [[ -z ${rocotostat+x} ]]; then
   echo "rocotostat not found on system"
   exit 1
 else
   echo "rocotostat being used from ${rocotostat}"
 fi
-rocotocheck=$(which rocotocheck)
+rocotocheck=$(command -v rocotocheck)
 if [[ -z ${rocotocheck+x} ]]; then
   echo "rocotocheck not found on system"
   exit 1
@@ -106,7 +106,7 @@ for pr in ${pr_list}; do
         echo "Experiment ${pslot} Terminated: *FAILED*"
         echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}')
+      error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       {
        echo "Error logs:"
