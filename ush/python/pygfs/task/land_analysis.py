@@ -44,7 +44,7 @@ class LandAnalysis(Analysis):
         This method will prepare IMS data for a global land analysis using JEDI.
         This includes:
         - staging model backgrounds
-        - generating a card file for IMS processing
+        - processing raw IMS observation data and prepare for conversion to IODA
         - creating IMS snowdepth data in IODA format.
 
         Parameters

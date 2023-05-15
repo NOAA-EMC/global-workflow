@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # exglobal_land_analysis_prepare.py
 # This script creates a LandAnalysis object
-# and runs the prepare method
+# and runs the prepare_IMS method
 # which perform the pre-processing for IMS data
 import os
 
