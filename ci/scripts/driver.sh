@@ -109,9 +109,7 @@ for pr in ${pr_list}; do
     for yaml_config in "${HOMEgfs}/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
-
-      sed -i '/^base:/a\  ACCOUNT: ${SLURM_ACCOUNT}' "${pr_dir}/global-workflow/parm/config/gfs/yaml/defaults.yaml"
-
+      sed -i "/^base:/a\  ACCOUNT: \${SLURM_ACCOUNT}" "${pr_dir}/global-workflow/parm/config/gfs/yaml/defaults.yaml"
       set +e
       "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
