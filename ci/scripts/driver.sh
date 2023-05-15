@@ -16,7 +16,7 @@ set -eux
 #######################################################################################
 
 #################################################################
-# TODO using static build for GitHub CLI until fixed in HPC-Stack
+# TODO  using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
 export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
