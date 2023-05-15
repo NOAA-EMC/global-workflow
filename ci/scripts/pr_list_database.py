@@ -20,7 +20,7 @@ def sql_table(obj):
 
 
 def sql_insert(obj, entities):
-    obj.execute('INSERT INTO processing(pr, state, status ) VALUES(?, ?, ?)', entities)
+    obj.execute('INSERT INTO processing(pr, state, status) VALUES(?, ?, ?)', entities)
 
 
 def sql_update(obj, pr, state, status):
