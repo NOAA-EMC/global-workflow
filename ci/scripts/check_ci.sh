@@ -45,12 +45,19 @@ if [[ -z ${rocotostat+x} ]]; then
 else
   echo "rocotostat being used from ${rocotostat}"
 fi
+rocotocheck=$(which rocotocheck)
+if [[ -z ${rocotocheck+x} ]]; then
+  echo "rocotocheck not found on system"
+  exit 1
+else
+  echo "rocotocheck being used from ${rocotocheck}"
+fi
 
 pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Built | awk '{print $1}') || true
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Running | awk '{print $1}') || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
@@ -99,7 +106,12 @@ for pr in ${pr_list}; do
         echo "Experiment ${pslot} Terminated: *FAILED*"
         echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+      error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}')
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
+      {
+       echo "Error logs:"
+       echo "${error_logs}"
+      } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}" 
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
