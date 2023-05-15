@@ -54,14 +54,14 @@ case "${waveGRD}" in
     ;;
   "glo_025") 
     #GEFSv13 regular lat/lon 1/4 deg grid 
-    waveGRD='glo_025'
     waveinterpGRD=' '
     wavepostGRD='glo_025'
     ;;
+  *)
+    echo "No grid specific wave config values"  
+    ;;  
 esac
 
-
-export waveGRD=${waveGRD:-'mx025'}
 export waveGRDN=${waveGRDN:-'1'} # gridnumber for ww3_multi
 export waveGRDG=${waveGRDG:-'10'} # gridgroup for ww3_multi
 export USE_WAV_RMP=${USE_WAV_RMP:-'NO'} #yes/no rmp grid remapping pre-processed coefficients
