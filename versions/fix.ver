@@ -19,4 +19,4 @@ export reg2grb2_ver=20220805
 export sfc_climo_ver=20220805
 export ugwd_ver=20220805
 export verif_ver=20220805
-export wave_ver=20220805
+export wave_ver=20230426
