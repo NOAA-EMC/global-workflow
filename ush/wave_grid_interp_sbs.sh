@@ -112,25 +112,25 @@ source "$HOMEgfs/ush/preamble.sh"
 # Check if there is an interpolation weights file available
 
   wht_OK='no'
-  if [ ! -f ${DATA}/WHTGRIDINT.bin.${grdID} ]; then
-    if [ -f $FIXwave/WHTGRIDINT.bin.${grdID} ]
+  if [ ! -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]; then
+    if [ -f $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} ]
     then
       set +x
       echo ' '
-      echo " Copying $FIXwave/WHTGRIDINT.bin.${grdID} "
+      echo " Copying $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} "
       set_trace
-      cp $FIXwave/WHTGRIDINT.bin.${grdID} ${DATA}
+      cp $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} ${DATA}
       wht_OK='yes'
     else
       set +x
       echo ' '
-      echo " Not found: $FIXwave/WHTGRIDINT.bin.${grdID} "
+      echo " Not found: $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} "
     fi
   fi
 # Check and link weights file
-  if [ -f ${DATA}/WHTGRIDINT.bin.${grdID} ]
+  if [ -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]
   then
-    ln -s ${DATA}/WHTGRIDINT.bin.${grdID} ./WHTGRIDINT.bin
+    ln -s ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ./WHTGRIDINT.bin
   fi
 
 # 1.b Run interpolation code
@@ -147,8 +147,8 @@ source "$HOMEgfs/ush/preamble.sh"
 # Write interpolation file to main TEMP dir area if not there yet
   if [ "wht_OK" = 'no' ]
   then
-    cp -f ./WHTGRIDINT.bin ${DATA}/WHTGRIDINT.bin.${grdID}
-    cp -f ./WHTGRIDINT.bin ${FIXwave}/WHTGRIDINT.bin.${grdID}
+    cp -f ./WHTGRIDINT.bin ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}
+    cp -f ./WHTGRIDINT.bin ${FIXwave}/ww3_gint.WHTGRIDINT.bin.${grdID}
   fi
 
 
