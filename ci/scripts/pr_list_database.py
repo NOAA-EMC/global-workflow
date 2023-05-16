@@ -45,7 +45,7 @@ def input_args():
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('sbfile', help='file of sqlite3 for pr list database ', type=str)
+    parser.add_argument('sbfile', help='SQLite3 database file with PR list', type=str)
     parser.add_argument('--create', help='create sqlite file for pr list status', action='store_true', required=False)
     parser.add_argument('--add_pr', nargs=1, metavar='PR', help='add new pr to list (defults to: Open,Ready)', required=False)
     parser.add_argument('--remove_pr', nargs=1, metavar='PR', help='removes pr from list', required=False)
