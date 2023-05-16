@@ -58,7 +58,7 @@ fi
 #############################################################
 # Loop throu all PRs in PR List and look for expirments in
 # the RUNTESTS dir and for each one run runcotorun on them
-# only upto two cases will advance at a time
+# only up to $max_concurrent will advance at a time
 #############################################################
 
 for pr in ${pr_list}; do
