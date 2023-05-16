@@ -93,6 +93,10 @@ for pr in ${pr_list}; do
 
   for cases in "${pr_dir}/RUNTESTS/"*; do
     pslot=$(basename "${cases}") || true
+    if [[ -z "${pslot}" ]]; then
+      echo "No cases found in ${pr_dir}/RUNTESTS .. exiting"
+      exit 0
+    fi
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
     rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
