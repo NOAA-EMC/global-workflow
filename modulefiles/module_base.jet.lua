@@ -30,6 +30,7 @@ load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 prepend_path("MODULEPATH", "/contrib/anaconda/modulefiles")
 load(pathJoin("anaconda", "5.3.1"))
 
+--prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
 prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 
