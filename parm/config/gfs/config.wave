@@ -27,41 +27,8 @@ export CDUMPRSTwave="gdas"
 # Grids for wave model
 export waveGRD=${waveGRD:-'mx025'}
 
-#Grid dependent variables for various grids
-case "${waveGRD}" in
-  "gnh_10m;aoc_9km;gsh_15m")
-    #GFSv16 settings: 
-    waveGRDN='1 2 3'
-    waveGRDG='10 20 30'
-    USE_WAV_RMP='YES'
-    waveMULTIGRID='.true.'
-    IOSRV='3' 
-    MESH_WAV=' '
-    waveesmfGRD='glox_10m'
-    waveuoutpGRD='points'
-    waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m glo_30m'
-    wavepostGRD='gnh_10m aoc_9km gsh_15m'
-    ;;
-  "gwes_30m")
-    #Grid used for P8
-    waveinterpGRD=' '
-    wavepostGRD='gwes_30m'
-    ;;
-  "mx025")
-    #Grid used for HR1 (tripolar 1/4 deg)
-    waveinterpGRD='reg025'
-    wavepostGRD=' '
-    ;;
-  "glo_025") 
-    #GEFSv13 regular lat/lon 1/4 deg grid 
-    waveinterpGRD=' '
-    wavepostGRD='glo_025'
-    ;;
-  *)
-    echo "No grid specific wave config values"  
-    ;;  
-esac
 
+#grid dependent variable defaults 
 export waveGRDN=${waveGRDN:-'1'} # gridnumber for ww3_multi
 export waveGRDG=${waveGRDG:-'10'} # gridgroup for ww3_multi
 export USE_WAV_RMP=${USE_WAV_RMP:-'NO'} #yes/no rmp grid remapping pre-processed coefficients
@@ -69,6 +36,42 @@ export waveMULTIGRID=${waveMULTIGRID:-'.false.'} #true/false for multi or shel
 export MESH_WAV=${MESH_WAV:-"mesh.${waveGRD}.nc"}  #Mesh grid for wave model for CMEPS
 
 export waveesmfGRD=${waveesmfGRD:-' '} # input grid for multigrid 
+
+
+#Grid dependent variables for various grids
+case "${waveGRD}" in
+  "gnh_10m;aoc_9km;gsh_15m")
+    #GFSv16 settings: 
+    export waveGRDN='1 2 3'
+    export waveGRDG='10 20 30'
+    export USE_WAV_RMP='YES'
+    export waveMULTIGRID='.true.'
+    export IOSRV='3' 
+    export MESH_WAV=' '
+    export waveesmfGRD='glox_10m'
+    export waveuoutpGRD='points'
+    export waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m glo_30m'
+    export wavepostGRD='gnh_10m aoc_9km gsh_15m'
+    ;;
+  "gwes_30m")
+    #Grid used for P8
+    export waveinterpGRD=' '
+    export wavepostGRD='gwes_30m'
+    ;;
+  "mx025")
+    #Grid used for HR1 (tripolar 1/4 deg)
+    export waveinterpGRD='reg025'
+    export wavepostGRD=' '
+    ;;
+  "glo_025") 
+    #GEFSv13 regular lat/lon 1/4 deg grid 
+    export waveinterpGRD=' '
+    export wavepostGRD='glo_025'
+    ;;
+  *)
+    echo "No grid specific wave config values"  
+    ;;  
+esac
 
 # Grids for input wind fields
 export WAVEWND_DID=
