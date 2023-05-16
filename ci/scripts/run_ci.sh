@@ -45,10 +45,9 @@ fi
 
 pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
-#NOTE: last pipe with head -2 limits no more tha two PRs at a time
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Running | awk '{print $1}' | head -2) || true
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Running | awk '{print $1}' | head -"${max_concurrent_pr}") || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"
@@ -58,7 +57,7 @@ fi
 #############################################################
 # Loop throu all PRs in PR List and look for expirments in
 # the RUNTESTS dir and for each one run runcotorun on them
-# only up to $max_concurrent will advance at a time
+# only up to $max_concurrent_cases will advance at a time
 #############################################################
 
 for pr in ${pr_list}; do
@@ -76,7 +75,7 @@ for pr in ${pr_list}; do
     fi
     ((num_cases=num_cases+1))
     # No more than two cases are going forward at a time for each PR
-    if [[ "${num_cases}" -gt 2 ]]; then
+    if [[ "${num_cases}" -gt "${max_concurrent_cases}" ]]; then
        continue
     fi
     pslot=$(basename "${cases}")
