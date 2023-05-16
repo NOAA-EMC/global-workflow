@@ -2,7 +2,7 @@ import os
 import shlex
 import subprocess
 import sys
-from typing import Any, Optional
+from typing import Any, Optional, Union, List
 
 __all__ = ["Executable", "which", "CommandNotFoundError"]
 
@@ -47,7 +47,7 @@ class Executable:
         if not self.exe:
             raise ProcessError(f"Cannot construct executable for '{name}'")
 
-    def add_default_arg(self, arg: str) -> None:
+    def add_default_arg(self, arg: Union[str, List]) -> None:
         """
         Add a default argument to the command.
         Parameters
@@ -55,7 +55,10 @@ class Executable:
         arg : str
               argument to the executable
         """
-        self.exe.append(arg)
+        if isinstance(arg, list):
+            self.exe.extend(arg)
+        else:
+            self.exe.append(arg)
 
     def add_default_env(self, key: str, value: Any) -> None:
         """

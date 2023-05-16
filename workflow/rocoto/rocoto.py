@@ -262,13 +262,22 @@ def _add_streq_tag(dep_dict: Dict[str, Any]) -> str:
     if dep_left is None:
         msg += f'a left value is necessary for {dep_type} dependency'
         fail = True
+    else:
+        dep_left = str(dep_left)
     if dep_right is None:
         if fail:
             msg += '\n'
         msg += f'a right value is necessary for {dep_type} dependency'
         fail = True
+    else:
+        dep_right = str(dep_right)
     if fail:
         raise KeyError(msg)
+
+    if '@' in dep_left:
+        dep_left = f'<cyclestr>{dep_left}</cyclestr>'
+    if '@' in dep_right:
+        dep_right = f'<cyclestr>{dep_right}</cyclestr>'
 
     string = f'<{dep_type}><left>{dep_left}</left><right>{dep_right}</right></{dep_type}>'
 

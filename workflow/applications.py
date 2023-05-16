@@ -226,7 +226,7 @@ class AppConfig:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
-            configs += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
+            configs += ['preplandobs', 'landanlinit', 'landanlrun', 'landanlfinal']
 
         return configs
 
@@ -362,7 +362,7 @@ class AppConfig:
             gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
-            gdas_gfs_common_tasks_before_fcst += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
+            gdas_gfs_common_tasks_before_fcst += ['preplandobs', 'landanlinit', 'landanlrun', 'landanlfinal']
 
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
