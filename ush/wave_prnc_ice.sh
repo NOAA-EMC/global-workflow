@@ -47,18 +47,18 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '!         Make ice fields        |'
   echo '+--------------------------------+'
   echo "   Model TAG       : $WAV_MOD_TAG"
-  echo "   Model ID        : ${CDUMP}wave"
+  echo "   Model ID        : ${RUN}wave"
   echo "   Ice grid ID     : $WAVEICE_FID"
   echo "   Ice file        : $WAVICEFILE"
   echo ' '
   set_trace
   echo "Making ice fields."
 
-  if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
-     [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECwave" ] || \
-     [ -z "$WAV_MOD_TAG" ] || [ -z "$WAVEICE_FID" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$COMIN_WAV_ICE" ]
-  then
+  if [[ -z "${YMDH}" ]] || [[ -z "${cycle}" ]] || \
+     [[ -z "${COM_WAVE_PREP}" ]] || [[ -z "${FIXwave}" ]] || [[ -z "${EXECwave}" ]] || \
+     [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${WAVEICE_FID}" ]] || [[ -z "${SENDCOM}" ]] || \
+     [[ -z "${COM_OBS}" ]]; then
+  
     set +x
     echo ' '
     echo '**************************************************'
@@ -78,7 +78,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 1.  Get the necessary files
 # 1.a Copy the ice data file
 
-  file=${COMIN_WAV_ICE}/${WAVICEFILE}
+  file=${COM_OBS}/${WAVICEFILE}
 
   if [ -f $file ]
   then
@@ -175,13 +175,13 @@ source "$HOMEgfs/ush/preamble.sh"
     icefile=${WAV_MOD_TAG}.${WAVEICE_FID}.$cycle.ice
   elif [ "${WW3ATMIENS}" = "F" ]
   then 
-    icefile=${CDUMP}wave.${WAVEICE_FID}.$cycle.ice
+    icefile=${RUN}wave.${WAVEICE_FID}.$cycle.ice
   fi
  
   set +x
-  echo "   Saving ice.ww3 as $COMOUT/rundata/${icefile}"
+  echo "   Saving ice.ww3 as ${COM_WAVE_PREP}/${icefile}"
   set_trace
-  cp ice.ww3 $COMOUT/rundata/${icefile}
+  cp ice.ww3 "${COM_WAVE_PREP}/${icefile}"
   rm -f ice.ww3
 
 # --------------------------------------------------------------------------- #

@@ -10,19 +10,19 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
-source "$HOMEgfs/modulefiles/module-setup.sh.inc"
+source "${HOMEgfs}/modulefiles/module-setup.sh.inc"
 
 # Source versions file for runtime
 source "$HOMEgfs/versions/run.ver"
 
 # Load our modules:
-module use "$HOMEgfs/modulefiles"
+module use "${HOMEgfs}/modulefiles"
 
 if [[ -d /lfs/f1 ]]; then
   # We are on WCOSS2 (Cactus or Dogwood)
   source "$HOMEgfs/versions/wcoss2.ver"
   module load module_base.wcoss2
-elif [[ -d /lfs3 ]] ; then
+elif [[ -d /mnt/lfs1 ]] ; then
   # We are on NOAA Jet
   source "$HOMEgfs/versions/jet.ver"
   module load module_base.jet
@@ -51,7 +51,7 @@ fi
 module list
 
 # Restore stack soft limit:
-ulimit -S -s "$ulimit_s"
+ulimit -S -s "${ulimit_s}"
 unset ulimit_s
 
 set_trace

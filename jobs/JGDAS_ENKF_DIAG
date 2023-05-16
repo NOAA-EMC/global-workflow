@@ -7,9 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs analdiag edi
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gdas"}}
-export COMPONENT="atmos"
+export CDUMP="${RUN/enkf}"
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
 export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 
@@ -17,77 +15,72 @@ export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+# shellcheck disable=
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
 
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-gPDY=$(echo ${GDATE} | cut -c1-8)
-gcyc=$(echo ${GDATE} | cut -c9-10)
-GDUMP=${GDUMP:-"gdas"}
-GDUMP_ENS=${GDUMP_ENS:-"enkf${GDUMP}"}
+export CASE=${CASE_ENS}
 
-export CASE=${CASE_ENKF}
-export CDUMP_OBS=${CDUMP_OBS:-${CDUMP/enkf}}
-export CDUMP_CTL=${CDUMP_CTL:-${CDUMP/enkf}}
+export OPREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${RUN}.t${cyc}z."
+export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
+GPREFIX_DET="${GDUMP}.t${gcyc}z."
 
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 
-export OPREFIX="${CDUMP_OBS}.t${cyc}z."
-export APREFIX="${CDUMP_CTL}.t${cyc}z."
-export APREFIX_ENS="${CDUMP}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_OBS_PREV:COM_OBS_TMPL \
+    COM_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
 
-if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${CDUMP_OBS}.${PDY}/${cyc}/${COMPONENT}}
-else
-    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP_OBS}.${PDY}/${cyc}/obs}"
-fi
-
-# COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in script
-COMIN_GES_CTL="${ROTDIR}/gdas.${gPDY}/${gcyc}/${COMPONENT}"
-export COMIN_ANL="${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/${COMPONENT}"
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
-export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
+MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
 
-export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX_ENS}atmf006.ensmean.nc"
+export ATMGES_ENSMEAN="${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
 if [ ! -f ${ATMGES_ENSMEAN} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
     exit 1
 fi
 
-
 # Link observational data
-export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
+export PREPQC="${COM_OBS}/${OPREFIX}prepbufr"
 if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
-export TCVITL="${COMIN_ANL}/${OPREFIX}syndata.tcvitals.tm00"
+export TCVITL="${COM_OBS}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
-   export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+   export NSSTBF="${COM_OBS}/${OPREFIX}nsstbufr"
 fi
-export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
+export PREPQCPF="${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Guess Bias correction coefficients related to control
-export GBIAS=${COMIN_GES_CTL}/${GPREFIX}abias
-export GBIASPC=${COMIN_GES_CTL}/${GPREFIX}abias_pc
-export GBIASAIR=${COMIN_GES_CTL}/${GPREFIX}abias_air
-export GRADSTAT=${COMIN_GES_CTL}/${GPREFIX}radstat
+export GBIAS=${COM_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias
+export GBIASPC=${COM_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc
+export GBIASAIR=${COM_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air
+export GRADSTAT=${COM_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat
 
 # Bias correction coefficients related to ensemble mean
-export ABIAS="${COMOUT}/${APREFIX_ENS}abias.ensmean"
-export ABIASPC="${COMOUT}/${APREFIX_ENS}abias_pc.ensmean"
-export ABIASAIR="${COMOUT}/${APREFIX_ENS}abias_air.ensmean"
-export ABIASe="${COMOUT}/${APREFIX_ENS}abias_int.ensmean"
+export ABIAS="${COM_ATMOS_ANALYSIS}/${APREFIX}abias.ensmean"
+export ABIASPC="${COM_ATMOS_ANALYSIS}/${APREFIX}abias_pc.ensmean"
+export ABIASAIR="${COM_ATMOS_ANALYSIS}/${APREFIX}abias_air.ensmean"
+export ABIASe="${COM_ATMOS_ANALYSIS}/${APREFIX}abias_int.ensmean"
 
 # Diagnostics related to ensemble mean
-export GSISTAT="${COMOUT}/${APREFIX_ENS}gsistat.ensmean"
-export CNVSTAT="${COMOUT}/${APREFIX_ENS}cnvstat.ensmean"
-export OZNSTAT="${COMOUT}/${APREFIX_ENS}oznstat.ensmean"
-export RADSTAT="${COMOUT}/${APREFIX_ENS}radstat.ensmean"
+export GSISTAT="${COM_ATMOS_ANALYSIS}/${APREFIX}gsistat.ensmean"
+export CNVSTAT="${COM_ATMOS_ANALYSIS}/${APREFIX}cnvstat.ensmean"
+export OZNSTAT="${COM_ATMOS_ANALYSIS}/${APREFIX}oznstat.ensmean"
+export RADSTAT="${COM_ATMOS_ANALYSIS}/${APREFIX}radstat.ensmean"
 
 # Select observations based on ensemble mean
 export RUN_SELECT="YES"
 export USE_SELECT="NO"
-export SELECT_OBS="${COMOUT}/${APREFIX_ENS}obsinput.ensmean"
+export SELECT_OBS="${COM_ATMOS_ANALYSIS}/${APREFIX}obsinput.ensmean"
 
 export DIAG_SUFFIX="_ensmean"
 export DIAG_COMPRESS="NO"

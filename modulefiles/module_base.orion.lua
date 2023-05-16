@@ -12,7 +12,7 @@ load(pathJoin("gempak", os.getenv("gempak_ver")))
 load(pathJoin("ncl", os.getenv("ncl_ver")))
 load(pathJoin("jasper", os.getenv("jasper_ver")))
 load(pathJoin("zlib", os.getenv("zlib_ver")))
-load(pathJoin("png", os.getenv("png_ver")))
+load(pathJoin("png", os.getenv("libpng_ver")))
 load(pathJoin("cdo", os.getenv("cdo_ver")))
 
 load(pathJoin("hdf5", os.getenv("hdf5_ver")))
@@ -27,8 +27,12 @@ load(pathJoin("crtm", os.getenv("crtm_ver")))
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 setenv("WGRIB2","wgrib2")
 
-prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+--prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
+
+prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/Fit2Obs/v1.0.0/modulefiles"))
+load(pathJoin("fit2obs", "1.0.0"))
 
 -- Temporary until official hpc-stack is updated
 prepend_path("MODULEPATH", "/work2/noaa/global/wkolczyn/save/hpc-stack/modulefiles/stack")

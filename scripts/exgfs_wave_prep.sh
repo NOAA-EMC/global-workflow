@@ -46,7 +46,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+  export WAV_MOD_TAG=${RUN}wave${waveMEMB}
 
   cd $DATA
   mkdir outtmp
@@ -65,13 +65,6 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "Starting at : $(date)"
   echo ' '
   set_trace
-
-  if [ "$INDRUN" = 'no' ]
-  then
-    FHMAX_WAV=${FHMAX_WAV:-3}
-  else
-    FHMAX_WAV=${FHMAX_WAV:-384}
-  fi
 
   # 0.b Date and time stuff
 
@@ -161,20 +154,20 @@ source "$HOMEgfs/ush/preamble.sh"
   touch cmdfile
 
   grdINP=''
-  if [ "${WW3ATMINP}" = 'YES' ]; then grdINP="${grdINP} $WAVEWND_FID" ; fi 
-  if [ "${WW3ICEINP}" = 'YES' ]; then grdINP="${grdINP} $WAVEICE_FID" ; fi 
-  if [ "${WW3CURINP}" = 'YES' ]; then grdINP="${grdINP} $WAVECUR_FID" ; fi 
+  if [ "${WW3ATMINP}" = 'YES' ]; then grdINP="${grdINP} $WAVEWND_FID" ; fi
+  if [ "${WW3ICEINP}" = 'YES' ]; then grdINP="${grdINP} $WAVEICE_FID" ; fi
+  if [ "${WW3CURINP}" = 'YES' ]; then grdINP="${grdINP} $WAVECUR_FID" ; fi
 
   ifile=1
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
+    if [ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]
     then
       set +x
-      echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
+      echo " Mod def file for $grdID found in ${COM_WAVE_PREP}. copying ...."
       set_trace
-      cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
+      cp ${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       set +x
@@ -191,9 +184,9 @@ source "$HOMEgfs/ush/preamble.sh"
   done
 
   # 1.b Netcdf Preprocessor template files
-   if [ "$WW3ATMINP" = 'YES' ]; then itype="$itype wind" ; fi 
-   if [ "$WW3ICEINP" = 'YES' ]; then itype="$itype ice" ; fi 
-   if [ "$WW3CURINP" = 'YES' ]; then itype="$itype cur" ; fi 
+   if [[ "${WW3ATMINP}" == 'YES' ]]; then itype="${itype:-} wind" ; fi 
+   if [[ "${WW3ICEINP}" == 'YES' ]]; then itype="${itype:-} ice" ; fi 
+   if [[ "${WW3CURINP}" == 'YES' ]]; then itype="${itype:-} cur" ; fi 
 
    for type in $itype
    do
@@ -326,30 +319,28 @@ source "$HOMEgfs/ush/preamble.sh"
          export RPDY=$($NDATE -24 ${RPDY}00 | cut -c1-8)
       fi 
       #Set the first time for RTOFS files to be the beginning time of simulation
-      ymdh_rtofs=$ymdh_beg      
+      ymdh_rtofs=$ymdh_beg
 
       if [  "$FHMAX_WAV_CUR" -le 72 ]; then 
-        rtofsfile1=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f024_prog.nc
-        rtofsfile2=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f048_prog.nc
-        rtofsfile3=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f072_prog.nc
+        rtofsfile1="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
+        rtofsfile2="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f048_prog.nc"
+        rtofsfile3="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
         if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ]; then 
            #Needed current files are not available, so use RTOFS from previous day 
            export RPDY=$($NDATE -24 ${RPDY}00 | cut -c1-8)
         fi 
       else
-        rtofsfile1=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f096_prog.nc   
-        rtofsfile2=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f120_prog.nc
-        rtofsfile3=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f144_prog.nc
-        rtofsfile4=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f168_prog.nc
-        rtofsfile5=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f192_prog.nc
+        rtofsfile1="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f096_prog.nc"
+        rtofsfile2="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f120_prog.nc"
+        rtofsfile3="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f144_prog.nc"
+        rtofsfile4="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f168_prog.nc"
+        rtofsfile5="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f192_prog.nc"
         if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ] ||
             [ ! -f $rtofsfile4 ] || [ ! -f $rtofsfile5 ]; then
             #Needed current files are not available, so use RTOFS from previous day 
             export RPDY=$($NDATE -24 ${RPDY}00 | cut -c1-8)
         fi
       fi
-
-      export COMIN_WAV_CUR=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}
 
       ymdh_end_rtofs=$($NDATE ${FHMAX_WAV_CUR} ${RPDY}00)
       if [ "$ymdh_end" -lt "$ymdh_end_rtofs" ]; then 
@@ -369,8 +360,8 @@ source "$HOMEgfs/ush/preamble.sh"
         fhr_rtofs=$(${NHOUR} ${ymdh_rtofs} ${RPDY}00)
         fh3_rtofs=$(printf "%03d" "${fhr_rtofs#0}")
 
-        curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
-        curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
+        curfile1h=${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
+        curfile3h=${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
 
         if [ -s ${curfile1h} ]  && [ "${FLGHF}" = "T" ] ; then
           curfile=${curfile1h}
@@ -474,7 +465,7 @@ source "$HOMEgfs/ush/preamble.sh"
         cat $file >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${CDUMP}wave.${WAVECUR_FID}.$cycle.cur 
+      cp -f cur.${WAVECUR_FID} ${COM_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.$cycle.cur 
 
     else
       echo ' '
@@ -493,7 +484,5 @@ source "$HOMEgfs/ush/preamble.sh"
 # --------------------------------------------------------------------------- #
 # 4.  Ending output
 
-
-exit $err
 
 # End of MWW3 preprocessor script ------------------------------------------- #

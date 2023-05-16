@@ -76,9 +76,8 @@ source "$HOMEgfs/ush/preamble.sh"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$cycle" ] || [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] ||  \
-     [ -z "$SENDCOM" ] || [ -z "$SENDDBN" ] || [ -z "${STA_DIR}" ]
-  then
+  if [[ -z "${cycle}" ]] || [[ -z "${COM_WAVE_STATION}" ]] || [[ -z "${WAV_MOD_TAG}" ]] ||  \
+     [[ -z "${SENDCOM}" ]] || [[ -z "${SENDDBN}" ]] || [[ -z "${STA_DIR}" ]]; then
     set +x
     echo ' '
     echo '*****************************************************'
@@ -180,10 +179,10 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo ' '
-  echo "   Moving tar file ${file_name} to $COMOUT ..."
+  echo "   Moving tar file ${file_name} to ${COM_WAVE_STATION} ..."
   set_trace
 
-  cp ${file_name} $COMOUT/station/.
+  cp "${file_name}" "${COM_WAVE_STATION}/."
 
   exit=$?
 
@@ -203,10 +202,11 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     set +x
     echo ' '
-    echo "   Alerting TAR file as $COMOUT/station/${file_name}"
+    echo "   Alerting TAR file as ${COM_WAVE_STATION}/${file_name}"
     echo ' '
     set_trace
-    $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_TAR $job $COMOUT/station/${file_name}
+    "${DBNROOT}/bin/dbn_alert MODEL" "${alertName}_WAVE_TAR" "${job}" \
+      "${COM_WAVE_STATION}/${file_name}"
   fi
 
 # --------------------------------------------------------------------------- #

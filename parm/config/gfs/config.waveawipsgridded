@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.waveawipsgridded ##########
+# Wave steps specific
+
+echo "BEGIN: config.waveawipsgridded"
+
+# Get task specific resources
+. $EXPDIR/config.resources waveawipsgridded
+
+export DBNROOT=/dev/null
+export SENDCOM="YES"
+
+echo "END: config.waveawipsgridded"

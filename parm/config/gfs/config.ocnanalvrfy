@@ -1,0 +1,10 @@
+#!/bin/bash
+
+########## config.ocnanalvrfy ##########
+# Pre Ocn Analysis specific
+
+echo "BEGIN: config.ocnanalvrfy"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" ocnanalvrfy
+echo "END: config.ocnanalvrfy"

@@ -23,7 +23,6 @@ source "$HOMEgfs/ush/preamble.sh"
 pwd=$(pwd)
 
 # Base variables
-CDATE=${CDATE:-"2010010100"}
 DONST=${DONST:-"NO"}
 DOSFCANL_ENKF=${DOSFCANL_ENKF:-"YES"}
 export CASE=${CASE:-384}
@@ -47,7 +46,7 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-${GPREFIX}}
 
 # Variables
-NMEM_ENKF=${NMEM_ENKF:-80}
+NMEM_ENS=${NMEM_ENS:-80}
 DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
@@ -78,34 +77,30 @@ cd $DATA || exit 99
 ################################################################################
 # Update surface fields in the FV3 restart's using global_cycle.
 
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
-
-GDATE=$($NDATE -$assim_freq $CDATE)
-gPDY=$(echo $GDATE | cut -c1-8)
-gcyc=$(echo $GDATE | cut -c9-10)
-GDUMP=${GDUMP:-"gdas"}
-
-BDATE=$($NDATE -3 $CDATE)
-bPDY=$(echo $BDATE | cut -c1-8)
-bcyc=$(echo $BDATE | cut -c9-10)
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+BDATE=$(${NDATE} -3 "${PDY}${cyc}")
+bPDY=${BDATE:0:8}
+bcyc=${BDATE:8:2}
 
 # Get dimension information based on CASE
-res=$(echo $CASE | cut -c2-)
+res=${CASE:2:}
 JCAP_CASE=$((res*2-2))
 LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))
 
 # Global cycle requires these files
 export FNTSFA=${FNTSFA:-'                  '}
-export FNACNA=${FNACNA:-$COMIN/${OPREFIX}seaice.5min.blend.grb}
-export FNSNOA=${FNSNOA:-$COMIN/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN/${OPREFIX}snogrb_t1534.3072.1536"
-FNSNOG=${FNSNOG:-$COMIN_GES/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f $FNSNOG ]] && FNSNOG="$COMIN_GES/${GPREFIX}snogrb_t1534.3072.1536"
+export FNACNA=${FNACNA:-${COM_OBS}/${OPREFIX}seaice.5min.blend.grb}
+export FNSNOA=${FNSNOA:-${COM_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+[[ ! -f $FNSNOA ]] && export FNSNOA="${COM_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
+FNSNOG=${FNSNOG:-${COM_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+[[ ! -f $FNSNOG ]] && FNSNOG="${COM_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
 
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
 if [ ${RUN_GETGES:-"NO"} = "YES" ]; then
+    # Ignore possible spelling error (nothing is misspelled)
+    # shellcheck disable=SC2153
     snoprv=$($GETGESSH -q -t snogrb_$JCAP_CASE -e $gesenvir -n $GDUMP -v $GDATE)
 else
     snoprv=${snoprv:-$FNSNOG}
@@ -121,14 +116,14 @@ else
 fi
 
 if [ $DONST = "YES" ]; then
-    export NST_FILE=${NST_FILE:-$COMIN/${APREFIX}dtfanl.nc}
+    export NST_FILE=${NST_FILE:-${COM_ATMOS_ANALYSIS_DET}/${APREFIX}dtfanl.nc}
 else
     export NST_FILE="NULL"
 fi
 
 export APRUNCY=${APRUN_CYCLE:-$APRUN_ESFC}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE:-$NTHREADS_ESFC}
-export MAX_TASKS_CY=$NMEM_ENKF
+export MAX_TASKS_CY=$NMEM_ENS
 
 if [ $DOIAU = "YES" ]; then
     # Update surface restarts at beginning of window when IAU is ON
@@ -138,22 +133,31 @@ if [ $DOIAU = "YES" ]; then
 
         export TILE_NUM=$n
 
-        for imem in $(seq 1 $NMEM_ENKF); do
+        for imem in $(seq 1 $NMEM_ENS); do
 
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 
-            [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/atmos/RESTART
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
+                COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            $NCP $COMIN_GES_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $COMOUT_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc
-            $NLN $COMIN_GES_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
-            $NLN $COMOUT_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
-            $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                                $DATA/fngrid.$cmem
-            $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc                            $DATA/fnorog.$cmem
+            MEMDIR=${memchar} RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} generate_com \
+                COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+
+            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+
+            ${NCP} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
+                "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+            ${NLN} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
+                "${DATA}/fnbgsi.${cmem}"
+            ${NLN} "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc" \
+                "${DATA}/fnbgso.${cmem}"
+            ${NLN} "${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
+            ${NLN} "${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
         done
 
-        $CYCLESH
+        CDATE="${PDY}${cyc}" ${CYCLESH}
         export err=$?; err_chk
 
     done
@@ -161,29 +165,38 @@ if [ $DOIAU = "YES" ]; then
 fi
 
 if [ $DOSFCANL_ENKF = "YES" ]; then
- for n in $(seq 1 $ntiles); do
+    for n in $(seq 1 $ntiles); do
 
-    export TILE_NUM=$n
+        export TILE_NUM=$n
 
-    for imem in $(seq 1 $NMEM_ENKF); do
+        for imem in $(seq 1 $NMEM_ENS); do
 
-        cmem=$(printf %03i $imem)
-        memchar="mem$cmem"
+            cmem=$(printf %03i $imem)
+            memchar="mem$cmem"
 
-        [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/atmos/RESTART
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
+                COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-        $NCP $COMIN_GES_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $COMOUT_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc
-        $NLN $COMIN_GES_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
-        $NLN $COMOUT_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
-        $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                               $DATA/fngrid.$cmem
-        $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc                           $DATA/fnorog.$cmem
+            RUN="${GDUMP_ENS}" MEMDIR=${memchar} YMD=${gPDY} HH=${gcyc} generate_com \
+                COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+
+            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+
+            ${NCP} "${COM_ATMOS_RESTART_MEM_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+                "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+            ${NLN} "${COM_ATMOS_RESTART_MEM_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+                "${DATA}/fnbgsi.${cmem}"
+            ${NLN} "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc" \
+                "${DATA}/fnbgso.${cmem}"
+            ${NLN} "${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
+            ${NLN} "${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+
+        done
+
+        CDATE="${PDY}${cyc}" ${CYCLESH}
+        export err=$?; err_chk
 
     done
-
-    $CYCLESH
-    export err=$?; err_chk
-
- done
 fi
 
 ################################################################################

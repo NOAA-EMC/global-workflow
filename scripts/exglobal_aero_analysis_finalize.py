@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_aero_analysis_finalize.py
+# exglobal_aero_analysis_finalize.py
 # This script creates an AerosolAnalysis class
 # and runs the finalize method
 # which perform post-processing and clean up activities

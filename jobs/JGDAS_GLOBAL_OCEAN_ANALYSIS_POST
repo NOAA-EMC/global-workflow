@@ -1,58 +1,41 @@
 #!/bin/bash
 export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
-WIPE_DATA="NO"
-DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
+export WIPE_DATA="NO"
+export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalpost" -c "base ocnanalpost"
 
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export CDATE=${CDATE:-${PDY}${cyc}}
+export GDUMP=${GDUMP:-"gdas"}
+
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS COM_ICE_RESTART
+
+mkdir -p "${COM_OCEAN_ANALYSIS}"
+mkdir -p "${COM_ICE_RESTART}"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
-export CDATE=${CDATE:-${PDY}${cyc}}
-
-mkdir -p "${COMOUT}"
+# Add UFSDA to PYTHONPATH
+ufsdaPATH="${HOMEgfs}/sorc/gdas.cd/ush/"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${ufsdaPATH}"
+export PYTHONPATH
 
 ###############################################################
 # Run relevant script
 ###############################################################
 
-# Save some of the DA cycle output to COMOUT
-# TODO: Move to a dedicated script
-
-# Make a copy the IAU increment
-cp "${DATA}/inc.nc" "${COMOUT}/${CDUMP}.t${cyc}z.ocninc.nc"
-
-# TODO: Dump-splash of the sea-ice restart not done yet
-
-# Copy of the ioda output files, as is for now
-cp -r "${DATA}/diags" "${COMOUT}"
-
-# Copy of the diagonal of the background error for the cycle
-bdate=$(date -d "${CDATE:0:8} ${CDATE:8:2} - 3 hours" +"%Y-%m-%dT%H:00:00Z")
-cp "${DATA}/ocn.bkgerr_stddev.incr.${bdate}.nc" "${COMOUT}/${CDUMP}.t${cyc}z.ocn.bkgerr_stddev.nc"
-cp "${DATA}/ice.bkgerr_stddev.incr.${bdate}.nc" "${COMOUT}/${CDUMP}.t${cyc}z.ice.bkgerr_stddev.nc"
-
-# Copy the loacalization and correlation operators
-cp -rL "${DATA}/bump" "${COMOUT}/bump"
-
-# Copy the analysis in the middle of the window
-cdate=$(date -d "${CDATE:0:8} ${CDATE:8:2}" +"%Y-%m-%dT%H:00:00Z")
-cp "${DATA}/Data/ocn.3dvarfgat_pseudo.an.${cdate}.nc" "${COMOUT}/${CDUMP}.t${cyc}z.ocnana.nc"
-
-# Copy DA grid (computed for the start of the window)
-bcyc=$(((cyc - 3 + 24) % 24))
-cp "${DATA}/soca_gridspec.nc" "${COMOUT}/${CDUMP}.t${bcyc}z.ocngrid.nc"
-
-# Copy logs
-mkdir -p "${COMOUT}/logs"
-cp "${DATA}"/*.out "${COMOUT}/logs"
-
-# Copy var.yaml
-mkdir -p "${COMOUT}/yaml"
-cp "${DATA}"/*.yaml "${COMOUT}/yaml"
+EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_post.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 ##########################################
 # Remove the Temporary working directory

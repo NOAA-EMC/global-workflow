@@ -24,18 +24,13 @@ source "${HOMEgfs}/ush/preamble.sh"
 #  Directories.
 pwd=$(pwd)
 
-# Base variables
-CDATE=${CDATE:-"2001010100"}
-CDUMP=${CDUMP:-"gdas"}
-GDUMP=${GDUMP:-"gdas"}
-
 # Derived base variables
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-BDATE=$(${NDATE} -3 ${CDATE})
-PDY=$(echo ${CDATE} | cut -c1-8)
-cyc=$(echo ${CDATE} | cut -c9-10)
-bPDY=$(echo ${BDATE} | cut -c1-8)
-bcyc=$(echo ${BDATE} | cut -c9-10)
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+BDATE=$(${NDATE} -3 "${PDY}${cyc}")
+bPDY=${BDATE:0:8}
+bcyc=${BDATE:8:2}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
@@ -104,7 +99,7 @@ GPREFIX=${GPREFIX:-""}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-DTFANL=${DTFANL:-${COMOUT}/${APREFIX}dtfanl.nc}
+DTFANL=${DTFANL:-${COM_ATMOS_ANALYSIS}/${APREFIX}dtfanl.nc}
 
 # Get dimension information based on CASE
 res=$(echo ${CASE} | cut -c2-)
@@ -123,7 +118,7 @@ fi
 cd ${DATA} || exit 99
 
 if [[ ${DONST} = "YES" ]]; then
-    export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+    export NSSTBF="${COM_OBS}/${OPREFIX}nsstbufr"
     ${NLN} ${NSSTBF} nsstbufr
 fi
 
@@ -141,15 +136,15 @@ fi
 
 ##############################################################
 # Update surface fields in the FV3 restart's using global_cycle
-mkdir -p ${COMOUT}/RESTART
+mkdir -p "${COM_ATMOS_RESTART}"
 
 # Global cycle requires these files
-export FNTSFA=${FNTSFA:-${COMIN_OBS}/${OPREFIX}rtgssthr.grb}
-export FNACNA=${FNACNA:-${COMIN}/${OPREFIX}seaice.5min.blend.grb}
-export FNSNOA=${FNSNOA:-${COMIN}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f ${FNSNOA} ]] && export FNSNOA="${COMIN}/${OPREFIX}snogrb_t1534.3072.1536"
-FNSNOG=${FNSNOG:-${COMIN_GES}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f ${FNSNOG} ]] && FNSNOG="${COMIN_GES}/${GPREFIX}snogrb_t1534.3072.1536"
+export FNTSFA=${FNTSFA:-${COM_OBS}/${OPREFIX}rtgssthr.grb}
+export FNACNA=${FNACNA:-${COM_OBS}/${OPREFIX}seaice.5min.blend.grb}
+export FNSNOA=${FNSNOA:-${COM_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+[[ ! -f ${FNSNOA} ]] && export FNSNOA="${COM_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
+FNSNOG=${FNSNOG:-${COM_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+[[ ! -f ${FNSNOG} ]] && FNSNOG="${COM_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
 
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
 if [[ ${RUN_GETGES} = "YES" ]]; then
@@ -168,7 +163,7 @@ else
 fi
 
 if [[ ${DONST} = "YES" ]]; then
-    export NST_FILE=${GSI_FILE:-${COMOUT}/${APREFIX}dtfanl.nc}
+    export NST_FILE=${GSI_FILE:-${COM_ATMOS_ANALYSIS}/${APREFIX}dtfanl.nc}
 else
     export NST_FILE="NULL"
 fi
@@ -177,35 +172,42 @@ if [[ ${DOIAU} = "YES" ]]; then
     # update surface restarts at the beginning of the window, if IAU
     # For now assume/hold dtfanl.nc valid at beginning of window
     for n in $(seq 1 ${ntiles}); do
-        ${NCP} ${COMIN_GES}/RESTART/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc ${COMOUT}/RESTART/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc
-        ${NLN} ${COMIN_GES}/RESTART/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc ${DATA}/fnbgsi.00${n}
-        ${NLN} ${COMOUT}/RESTART/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc ${DATA}/fnbgso.00${n}
-        ${NLN} ${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc                    ${DATA}/fngrid.00${n}
-        ${NLN} ${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc                ${DATA}/fnorog.00${n}
+        ${NCP} "${COM_ATMOS_RESTART_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
+                "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+        ${NLN} "${COM_ATMOS_RESTART_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
+        ${NLN} "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
+        ${NLN} "${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc"                         "${DATA}/fngrid.00${n}"
+        ${NLN} "${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc"                     "${DATA}/fnorog.00${n}"
     done
 
     export APRUNCY=${APRUN_CYCLE}
     export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
     export MAX_TASKS_CY=${ntiles}
 
-    ${CYCLESH}
+    CDATE="${PDY}${cyc}" ${CYCLESH}
     export err=$?; err_chk
 fi
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do
-    ${NCP} ${COMIN_GES}/RESTART/${PDY}.${cyc}0000.sfc_data.tile${n}.nc ${COMOUT}/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc
-    ${NLN} ${COMIN_GES}/RESTART/${PDY}.${cyc}0000.sfc_data.tile${n}.nc ${DATA}/fnbgsi.00${n}
-    ${NLN} ${COMOUT}/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc ${DATA}/fnbgso.00${n}
-    ${NLN} ${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc                  ${DATA}/fngrid.00${n}
-    ${NLN} ${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc              ${DATA}/fnorog.00${n}
+    if [[ ${DO_JEDILANDDA:-"NO"} = "YES" ]]; then
+        ${NCP} "${COM_LAND_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+               "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+    else
+        ${NCP} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+               "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+    fi
+    ${NLN} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
+    ${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
+    ${NLN} "${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc"                       "${DATA}/fngrid.00${n}"
+    ${NLN} "${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc"                   "${DATA}/fnorog.00${n}"
 done
 
 export APRUNCY=${APRUN_CYCLE}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
 export MAX_TASKS_CY=${ntiles}
 
-${CYCLESH}
+CDATE="${PDY}${cyc}" ${CYCLESH}
 export err=$?; err_chk
 
 

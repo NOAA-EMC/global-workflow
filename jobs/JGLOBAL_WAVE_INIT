@@ -3,7 +3,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
 
-export COMPONENT="wave"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -16,13 +15,11 @@ export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
 export USHwave=${USHwave:-${HOMEgfs}/ush}
 export EXECwave=${EXECwave:-${HOMEgfs}/exec}
 
-# Set COM Paths and GETGES environment
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
-[[ ! -d ${COMOUT} ]] && mkdir -m 775 -p ${COMOUT}
+# Set COM Paths
+YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP
 
 if [ ${SENDCOM} = YES ]; then
-  mkdir -p ${COMOUT}/rundata
+  mkdir -m 775 -p ${COM_WAVE_PREP}
 fi
 
 # Set mpi serial command

@@ -31,7 +31,11 @@ load(pathJoin("ncdiag", os.getenv("ncdiag_ver")))
 load(pathJoin("crtm", os.getenv("crtm_ver")))
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 
-prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+--prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
+
+prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/Fit2Obs/v1.0.0/modulefiles"))
+load(pathJoin("fit2obs", "1.0.0"))
 
 whatis("Description: GFS run environment")

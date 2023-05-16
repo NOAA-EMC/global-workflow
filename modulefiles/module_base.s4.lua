@@ -14,7 +14,7 @@ load(pathJoin("ncl", os.getenv("ncl_ver")))
 load(pathJoin("cdo", os.getenv("cdo_ver")))
 load(pathJoin("jasper", os.getenv("jasper_ver")))
 load(pathJoin("zlib", os.getenv("zlib_ver")))
-load(pathJoin("png", os.getenv("png_ver")))
+load(pathJoin("png", os.getenv("libpng_ver")))
 
 load(pathJoin("hdf5", os.getenv("hdf5_ver")))
 load(pathJoin("netcdf", os.getenv("netcdf_ver")))
@@ -28,7 +28,11 @@ load(pathJoin("crtm", os.getenv("crtm_ver")))
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 setenv("WGRIB2","wgrib2")
 
-prepend_path("MODULEPATH", pathJoin("/data/prod/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+--prepend_path("MODULEPATH", pathJoin("/data/prod/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/data/prod/glopara/git/prepobs/feature-GFSv17_com_reorg/modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
+
+prepend_path("MODULEPATH", pathJoin("/data/prod/glopara/git/Fit2Obs/v1.0.0/modulefiles"))
+load(pathJoin("fit2obs", "1.0.0"))
 
 whatis("Description: GFS run environment")

@@ -21,7 +21,6 @@
 source "$HOMEgfs/ush/preamble.sh"
 
 # Directories.
-pwd=$(pwd)
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/am}
 
@@ -46,10 +45,6 @@ export FCSTEXEC=${FCSTEXEC:-fv3gfs.x}
 export PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
 export DIAG_TABLE=${DIAG_TABLE_ENKF:-${DIAG_TABLE:-$PARM_FV3DIAG/diag_table_da}}
 
-# Cycling and forecast hour specific parameters
-export CDATE=${CDATE:-"2001010100"}
-export CDUMP=${CDUMP:-"enkfgdas"}
-
 # Re-run failed members, or entire group
 RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
 
@@ -63,19 +58,12 @@ SENDDBN=${SENDDBN:-"NO"}
 
 ################################################################################
 # Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
 cd $DATA || exit 99
 DATATOP=$DATA
 
 ################################################################################
 # Set output data
-cymd=$(echo $CDATE | cut -c1-8)
-chh=$(echo  $CDATE | cut -c9-10)
-EFCSGRP=$COMOUT/efcs.grp${ENSGRP}
+EFCSGRP="${COM_TOP}/efcs.grp${ENSGRP}"
 if [ -f $EFCSGRP ]; then
    if [ $RERUN_EFCSGRP = "YES" ]; then
       rm -f $EFCSGRP
@@ -100,20 +88,20 @@ export TYPE=${TYPE_ENKF:-${TYPE:-nh}}                  # choices:  nh, hydro
 export MONO=${MONO_ENKF:-${MONO:-non-mono}}            # choices:  mono, non-mono
 
 # fv_core_nml
-export CASE=${CASE_ENKF:-${CASE:-C768}}
+export CASE=${CASE_ENS:-${CASE:-C768}}
 export layout_x=${layout_x_ENKF:-${layout_x:-8}}
 export layout_y=${layout_y_ENKF:-${layout_y:-16}}
 export LEVS=${LEVS_ENKF:-${LEVS:-64}}
 
 # nggps_diag_nml
 export FHOUT=${FHOUT_ENKF:-3}
-if [[ ${CDUMP} == "enkfgfs" ]]; then
+if [[ ${RUN} == "enkfgfs" ]]; then
     export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT_ENKF:${FHOUT:-3}}}
 fi
 # model_configure
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
 export FHMAX=${FHMAX_ENKF:-9}
-if [[ $CDUMP == "enkfgfs" ]]; then
+if [[ ${RUN} == "enkfgfs" ]]; then
    export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX_ENKF:-${FHMAX}}}
 fi
 
@@ -137,6 +125,12 @@ if [ $RECENTER_ENKF = "YES" ]; then
    export PREFIX_ATMINC="r"
 fi
 
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+declare -x gPDY="${GDATE:0:8}"
+declare -x gcyc="${GDATE:8:2}"
+
 ################################################################################
 # Run forecast for ensemble member
 rc=0
@@ -145,7 +139,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
    cd $DATATOP
 
    cmem=$(printf %03i $imem)
-   memchar="mem$cmem"
+   memchar="mem${cmem}"
 
    echo "Processing MEMBER: $cmem"
 
@@ -157,12 +151,40 @@ for imem in $(seq $ENSBEG $ENSEND); do
       [[ $memstat -eq 1 ]] && skip_mem="YES"
    fi
 
+   # Construct COM variables from templates (see config.com)
+   # Can't make these read-only because we are looping over members
+   MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
+     COM_ATMOS_HISTORY COM_ATMOS_MASTER
+
+   RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+   if [[ ${DO_WAVE} == "YES" ]]; then
+     MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
+     RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+   fi
+
+   if [[ ${DO_OCN} == "YES" ]]; then
+     MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_MED_RESTART COM_OCEAN_RESTART \
+       COM_OCEAN_INPUT COM_OCEAN_HISTORY COM_OCEAN_ANALYSIS
+     RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+   fi
+
+   if [[ ${DO_ICE} == "YES" ]]; then
+     MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ICE_HISTORY COM_ICE_INPUT COM_ICE_RESTART
+     RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+   fi
+
+   if [[ ${DO_AERO} == "YES" ]]; then
+     MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_CHEM_HISTORY
+   fi
+
+
    if [ $skip_mem = "NO" ]; then
 
       ra=0
 
       export MEMBER=$imem
-      export DATA=$DATATOP/$memchar
+      export DATA="${DATATOP}/${memchar}"
       if [ -d $DATA ]; then rm -rf $DATA; fi
       mkdir -p $DATA
       $FORECASTSH
@@ -182,7 +204,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
      while [ $fhr -le $FHMAX ]; do
        FH3=$(printf %03i $fhr)
        if [ $(expr $fhr % 3) -eq 0 ]; then
-         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/$memchar/atmos/${CDUMP}.t${cyc}z.sfcf${FH3}.nc
+         "${DBNROOT}/bin/dbn_alert" MODEL GFS_ENKF "${job}" "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"
        fi
        fhr=$((fhr+FHOUT))
      done
@@ -222,8 +244,5 @@ export err=$rc; err_chk
 
 ################################################################################
 #  Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATATOP
-
 
 exit $err

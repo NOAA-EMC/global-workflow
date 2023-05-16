@@ -1,29 +1,22 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base waveawipsbulls"
-
-export COMPONENT="wave"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
 ###################################
 # Set COM Paths
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
-export PCOM=${PCOM:-${COMOUT}/wmo}
-
+###################################
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
+YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_STATION COM_WAVE_WMO
 
-if [ ${SENDCOM} = YES ]; then
-  mkdir -p ${COMOUT} ${PCOM}
-fi
-
+if [[ ! -d ${COM_WAVE_WMO} ]]; then mkdir -p "${COM_WAVE_WMO}"; fi
 
 ###################################
 # Execute the Script
