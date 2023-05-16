@@ -121,7 +121,6 @@ LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
-export NETCDF_OUT=".true."
 #  Directories.
 gfs_ver=${gfs_ver:-v16.3.0}
 BASEDIR=${BASEDIR:-${PACKAGEROOT:-/lfs/h1/ops/prod/packages}}
@@ -213,7 +212,6 @@ cat <<EOF > fort.41
   igaus=${LONB_SFC},
   jgaus=${LATB_SFC},
   donst=${do_nst},
-  netcdf_out=${NETCDF_OUT}
  /
 EOF
 
