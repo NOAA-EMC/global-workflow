@@ -201,7 +201,7 @@ $NLN $SIGLEVEL                                 ./vcoord.txt
 ${NLN} "${COM_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
 
 # Namelist uses booleans now
-if [[ ${DONST} == "YES" ]]; then do_nst='.true.' else do_nst='.false.'; fi
+if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
 
 # Executable namelist
 cat <<EOF > fort.41
