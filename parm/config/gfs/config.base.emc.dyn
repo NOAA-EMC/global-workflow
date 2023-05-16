@@ -158,6 +158,7 @@ export OPS_RES="C768" # Do not change
 # Resolution specific parameters
 export LEVS=128
 export CASE="@CASECTL@"
+export CASE_ANL="@ATMRES_ANL@"
 export CASE_ENS="@CASEENS@"
 # TODO: This should not depend on $CASE or $CASE_ENS
 # These are the currently available grid-combinations

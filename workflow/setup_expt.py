@@ -264,6 +264,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@SDATE@": datetime_to_YMDH(inputs.idate),
         "@EDATE@": datetime_to_YMDH(inputs.edate),
         "@CASECTL@": f'C{inputs.resdet}',
+        "@ATMRES_ANL@": f'C{inputs.resanl}',
         "@EXPDIR@": inputs.expdir,
         "@ROTDIR@": inputs.comrot,
         "@EXP_WARM_START@": inputs.warm_start,
@@ -387,6 +388,8 @@ def input_args():
 
     # ensemble-only arguments
     for subp in [cycled, gefs]:
+        subp.add_argument('--resanl', help='resolution of the variational analysis',
+                          type=int, required=False, default=192)
         subp.add_argument('--resens', help='resolution of the ensemble model forecast',
                           type=int, required=False, default=192)
         subp.add_argument('--nens', help='number of ensemble members',
@@ -450,7 +453,7 @@ def query_and_clean(dirname):
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
-    for attr in ['resdet', 'ensres']:
+    for attr in ['resdet', 'resanl', 'resens']:
         try:
             expt_res = f'C{getattr(inputs, attr)}'
         except AttributeError:
