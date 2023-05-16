@@ -6,4 +6,4 @@ export obsproc_run_ver=1.1.2
 export prepobs_run_ver=1.0.1
 
 export tracker_ver=feature-GFSv17_com_reorg
-export fit2obs_ver="1.0.0"
+export fit2obs_ver=1.0.0

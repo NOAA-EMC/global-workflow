@@ -16,4 +16,4 @@ export nco_ver=4.9.1
 export prod_util_ver=1.2.2
 
 export tracker_ver=feature-GFSv17_com_reorg
-export fit2obs_ver="1.0.0"
+export fit2obs_ver=1.0.0
