@@ -19,7 +19,7 @@ export PARTITION_BATCH="@PARTITION_BATCH@"
 export PARTITION_SERVICE="@PARTITION_SERVICE@"
 
 # Project to use in mass store:
-HPSS_PROJECT=emc-global
+HPSS_PROJECT="@HPSS_PROJECT@"
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
@@ -288,11 +288,11 @@ export imp_physics=@IMP_PHYSICS@
 
 # Shared parameters
 # DA engine
-export DO_JEDIVAR="NO"
-export DO_JEDIENS="NO"
-export DO_JEDIOCNVAR="NO"
-export DO_JEDILANDDA="NO"
-export DO_MERGENSST="NO"
+export DO_JEDIATMVAR="@DO_JEDIATMVAR@"
+export DO_JEDIATMENS="@DO_JEDIATMENS@"
+export DO_JEDIOCNVAR="@DO_JEDIOCNVAR@"
+export DO_JEDILANDDA="@DO_JEDILANDDA@"
+export DO_MERGENSST="@DO_MERGENSST@"
 
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
