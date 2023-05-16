@@ -200,17 +200,20 @@ $NLN $SIGLEVEL                                 ./vcoord.txt
 # output gaussian global surface analysis files
 ${NLN} "${COM_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
 
+# Namelist uses booleans now
+if [[ ${DONST} == "YES" ]]; then do_nst='.true.' else do_nst='.false.'; fi
+
 # Executable namelist
 cat <<EOF > fort.41
  &setup
-  yy=$iy,
-  mm=$im,
-  dd=$id,
-  hh=$ih,
-  igaus=$LONB_SFC,
-  jgaus=$LATB_SFC,
-  donst=$DONST,
-  netcdf_out=$NETCDF_OUT
+  yy=${iy},
+  mm=${im},
+  dd=${id},
+  hh=${ih},
+  igaus=${LONB_SFC},
+  jgaus=${LATB_SFC},
+  donst=${do_nst},
+  netcdf_out=${NETCDF_OUT}
  /
 EOF
 
