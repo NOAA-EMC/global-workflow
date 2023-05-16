@@ -14,5 +14,5 @@ export prod_util_ver=1.2.2
 export gempak_ver=7.5.1
 export wrf_io_ver=1.2.0
 
-export tracker_ver=v1.1.15.5
+export tracker_ver=feature-GFSv17_com_reorg
 export fit2obs_ver="1.0.0"

@@ -5,5 +5,5 @@ export prod_util_ver=${prod_util_ver:-2.0.9}   # Allow override from ops ecflow
 export obsproc_run_ver=1.1.2
 export prepobs_run_ver=1.0.1
 
-export tracker_ver=v1.1.15.5
+export tracker_ver=feature-GFSv17_com_reorg
 export fit2obs_ver="1.0.0"

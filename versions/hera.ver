@@ -14,6 +14,6 @@ export nco_ver=4.9.1
 export gempak_ver=7.4.2
 export wrf_io_ver=1.2.0
 
-export tracker_ver=v1.1.15.5
+export tracker_ver=feature-GFSv17_com_reorg
 export fit2obs_ver="1.0.0"
 export R_ver=3.5.0
