@@ -32,8 +32,8 @@ setenv("WGRIB2","wgrib2")
 prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 
-prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v1.0.0/modulefiles"))
-load(pathJoin("fit2obs", "1.0.0"))
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v" .. os.getenv("fit2obs_ver"), "modulefiles"))
+load(pathJoin("fit2obs", os.getenv("fit2obs_ver")))
 
 -- Temporary until official hpc-stack is updated
 prepend_path("MODULEPATH", "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/hpc-stack/modulefiles/stack")
