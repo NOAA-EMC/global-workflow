@@ -61,11 +61,16 @@ if __name__ == '__main__':
 
     cfg = Configuration(user_inputs.expdir)
 
-    check_expdir(user_inputs.expdir, cfg.parse_config('config.base')['EXPDIR'])
+    base = cfg.parse_config('config.base')
+
+    check_expdir(user_inputs.expdir, base['EXPDIR'])
+
+    net = base['NET']
+    mode = base['MODE']
 
     # Configure the application
-    app_config = AppConfig.app_config_factory(cfg)
+    app_config = AppConfig.app_config_factory.create(f'{net}_{mode}', cfg)
 
     # Create Rocoto Tasks and Assemble them into an XML
-    xml = RocotoXML.rocoto_xml_factory(app_config, rocoto_param_dict)
+    xml = RocotoXML.rocoto_xml_factory.create(f'{net}_{mode}', app_config, rocoto_param_dict)
     xml.write()

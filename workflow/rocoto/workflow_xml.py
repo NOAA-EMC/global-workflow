@@ -4,6 +4,7 @@ import os
 from distutils.spawn import find_executable
 from datetime import datetime
 from pygw.timetools import to_timedelta
+from pygw.factory import Factory
 from collections import OrderedDict
 from typing import Dict
 from applications import AppConfig
@@ -13,6 +14,8 @@ from abc import ABC, abstractmethod
 
 
 class RocotoXML(ABC):
+
+    rocoto_xml_factory = Factory(__qualname__)
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
 
@@ -171,40 +174,9 @@ class RocotoXML(ABC):
 
         return
 
-    @staticmethod
-    def rocoto_xml_factory(app_config: AppConfig, rocoto_config: Dict) -> type['RocotoXML']:
-        '''
-        Generates a new RocotoXML of the appropriate type based on the net and
-          mode.
-
-        Parameters
-        ----------
-        app_config: AppConfig
-                    Application configuration to build the rocoto XML with. Must have
-                    an attribute named 'net' with a value of 'gfs' or 'gefs' and if
-                    app_config.net is 'gfs', must additionally have an attribute named
-                    'mode' with a value of 'cycled' or 'forecast-only'.
-
-        rocoto_config: Dict
-            Rocoto settings to use in the XML. Valid keys are maxtries,
-            cyclethrottle, taskthrottle, and verbosity.
-
-        Returns
-        -------
-        RocotoXML: A new RocotoXML object of the appropriate type for the net
-          and mode.
-
-        '''
-        if app_config.net in ['gfs']:
-            if app_config.mode in ['cycled']:
-                return GFSCycledRocotoXML(app_config, rocoto_config)
-            elif app_config.mode in ['forecast-only']:
-                return GFSForecastOnlyRocotoXML(app_config, rocoto_config)
-        elif app_config.net in ['gefs']:
-            return GEFSRocotoXML(app_config, rocoto_config)
-
 
 class GFSCycledRocotoXML(RocotoXML):
+
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
         super().__init__(app_config, rocoto_config)
 
@@ -240,6 +212,7 @@ class GFSCycledRocotoXML(RocotoXML):
 
 
 class GFSForecastOnlyRocotoXML(RocotoXML):
+
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
         super().__init__(app_config, rocoto_config)
 
@@ -263,6 +236,7 @@ class GFSForecastOnlyRocotoXML(RocotoXML):
 # Copy of GFSForecastOnlyRocotoXML for now, other than changing cycledef names from 'gfs' to 'gefs'
 #   If it remains this way, we can consolidate into a single forecast-only class
 class GEFSRocotoXML(RocotoXML):
+
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
         super().__init__(app_config, rocoto_config)
 
@@ -281,3 +255,7 @@ class GEFSRocotoXML(RocotoXML):
         strings.append('')
 
         return '\n'.join(strings)
+
+RocotoXML.rocoto_xml_factory.register('gfs_cycled', GFSCycledRocotoXML)
+RocotoXML.rocoto_xml_factory.register('gfs_forecast-only', GFSForecastOnlyRocotoXML)
+RocotoXML.rocoto_xml_factory.register('gefs_forecast-only', GEFSRocotoXML)

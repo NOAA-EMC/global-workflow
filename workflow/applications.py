@@ -4,6 +4,7 @@ from typing import Dict, List, Any
 from datetime import timedelta
 from hosts import Host
 from pygw.configuration import Configuration
+from pygw.factory import Factory
 from abc import ABC, ABCMeta, abstractmethod
 
 __all__ = ['AppConfig']
@@ -26,6 +27,7 @@ class AppConfigInit(ABCMeta):
 class AppConfig(ABC, metaclass=AppConfigInit):
 
     VALID_MODES = ['cycled', 'forecast-only']
+    app_config_factory = Factory(__qualname__)
 
     def __init__(self, conf: Configuration) -> None:
 
@@ -175,40 +177,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             return gfs_internal_map[str(gfs_cyc)]
         except KeyError:
             raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
-
-    @staticmethod
-    def app_config_factory(conf: Configuration) -> type['AppConfig']:
-        '''
-        Factory method that returns a new AppConfig of the appropriate
-        concrete class for a given run and mode.
-
-        Parameters
-        ----------
-        conf: Configuration
-              Workflow configuration to use for new application config
-
-        Returns
-        -------
-        AppConfig
-            New AppConfig of the appropriate concrete type for the `NET`
-            and `MODE` in the configuration.
-        '''
-
-        base = conf.parse_config('config.base')
-        net = base['NET']
-        mode = base['MODE']
-
-        if net in ['gfs']:
-            if mode in ['cycled']:
-                return GFSCycledAppConfig(conf)
-            elif mode in ['forecast-only']:
-                return GFSForecastOnlyAppConfig(conf)
-            else:
-                raise NotImplementedError(f'{mode} is not a valid mode for GFS')
-        elif net in ['gefs']:
-            return GEFSAppConfig(conf)
-        else:
-            raise NotImplementedError(f'{net} is not a valid NET')
 
 
 class GFSCycledAppConfig(AppConfig):
@@ -612,3 +580,8 @@ class GEFSAppConfig(AppConfig):
             tasks += ['efcs']
 
         return {f"{self._base['CDUMP']}": tasks}
+
+
+AppConfig.app_config_factory.register('gfs_cycled', GFSCycledAppConfig)
+AppConfig.app_config_factory.register('gfs_forecast-only', GFSForecastOnlyAppConfig)
+AppConfig.app_config_factory.register('gefs_forecast-only', GEFSAppConfig)

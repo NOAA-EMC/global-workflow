@@ -5,6 +5,7 @@ from typing import List
 from applications import AppConfig
 import rocoto.rocoto as rocoto
 from pygw.template import Template, TemplateConstants
+from pygw.factory import Factory
 
 __all__ = ['Tasks', 'create_wf_task', 'get_wf_tasks']
 
@@ -24,6 +25,8 @@ class Tasks:
                    'postsnd', 'awips', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
+
+    tasks_factory = Factory(__qualname__)
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
 
@@ -181,30 +184,6 @@ class Tasks:
             raise AttributeError(f'"{task_name}" is not a valid task.\n' +
                                  'Valid tasks are:\n' +
                                  f'{", ".join(Tasks.VALID_TASKS)}')
-
-    @staticmethod
-    def tasks_factory(app_config: AppConfig, cdump: str) -> type['Tasks']:
-        '''
-        Generates a new Tasks object of the appropiate type for the net.
-
-        Parameters
-        ----------
-        app_config: AppConfig
-                    Application configuration to create the task list with. Must have
-                    an attribute named 'net' with a value of 'gfs' or 'gefs'.
-
-        cdump: str
-               CDUMP to generate tasks for (currently a RUN stand-in, will be changed
-               soon).
-
-        Returns
-        -------
-        Tasks: New object of the appropriate type for the net.
-        '''
-        if app_config.net in ['gfs']:
-            return GFSTasks(app_config, cdump)
-        elif app_config.net in ['gefs']:
-            return GEFSTasks(app_config, cdump)
 
 
 class GFSTasks(Tasks):
@@ -1391,6 +1370,7 @@ class GFSTasks(Tasks):
 
 
 class GEFSTasks(Tasks):
+
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
         super().__init__(app_config, cdump)
 
@@ -1417,6 +1397,10 @@ class GEFSTasks(Tasks):
                               metatask='efmn', varname='grp', varval=groups, cycledef='gefs')
 
         return task
+
+
+Tasks.tasks_factory.register('gfs', GFSTasks)
+Tasks.tasks_factory.register('gefs', GEFSTasks)
 
 
 def create_wf_task(task_name, resources,
@@ -1458,7 +1442,7 @@ def get_wf_tasks(app_config: AppConfig) -> List:
     tasks = []
     # Loop over all keys of cycles (CDUMP)
     for cdump, cdump_tasks in app_config.task_names.items():
-        task_obj = Tasks.tasks_factory(app_config, cdump)  # create Task object based on cdump
+        task_obj = Tasks.tasks_factory.create(app_config.net, app_config, cdump)  # create Task object based on cdump
         for task_name in cdump_tasks:
             tasks.append(task_obj.get_task(task_name))
 
