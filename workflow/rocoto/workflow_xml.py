@@ -256,6 +256,7 @@ class GEFSRocotoXML(RocotoXML):
 
         return '\n'.join(strings)
 
+
 RocotoXML.rocoto_xml_factory.register('gfs_cycled', GFSCycledRocotoXML)
 RocotoXML.rocoto_xml_factory.register('gfs_forecast-only', GFSForecastOnlyRocotoXML)
 RocotoXML.rocoto_xml_factory.register('gefs_forecast-only', GEFSRocotoXML)
