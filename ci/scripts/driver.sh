@@ -86,7 +86,7 @@ fi
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when driver is called in cron
   pr_building=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | awk -v pr="${pr}" '{ if ($1 == pr) print $0 }' | grep Building) || true
-  if [[ -z "${pr_building}+x" ]]; then
+  if [[ -z "${pr_building+x}" ]]; then
       continue
   fi
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
