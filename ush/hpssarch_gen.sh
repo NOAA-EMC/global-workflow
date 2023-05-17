@@ -565,7 +565,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
 
       #---
       for FHR in "${nfhrs[@]}"; do  # loop over analysis times in window
-        if [ $FHR -eq 6 ]; then
+        if [ "${FHR}" -eq 6 ]; then
           {
             if (( n <= NTARS2 )); then
               if [[ -s "${COM_ATMOS_ANALYSIS_MEM}/${head}atmanl.nc" ]] ; then
