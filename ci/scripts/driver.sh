@@ -72,7 +72,7 @@ pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
   pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}') || true
 fi
-if [[ -z "${pr_list}" ]]; then
+if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"
   exit 0
 fi
@@ -84,8 +84,13 @@ fi
 #############################################################
 
 for pr in ${pr_list}; do
-
+  # Skip pr's that are currently Building for when driver is called in cron
+  pr_building=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | awk -v pr="${pr}" '{ if ($1 == pr) print $0 }' | grep Building) || true
+  if [[ -z "${pr_building}+x" ]]; then
+      continue
+  fi
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
+  "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Building "${pr_list_dbfile}"
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   mkdir -p "${pr_dir}"

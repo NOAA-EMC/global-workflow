@@ -59,7 +59,7 @@ pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
   pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Running | awk '{print $1}') || true
 fi
-if [[ -z "${pr_list}" ]]; then
+if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
   exit 0
 fi
@@ -93,7 +93,7 @@ for pr in ${pr_list}; do
 
   for cases in "${pr_dir}/RUNTESTS/"*; do
     pslot=$(basename "${cases}") || true
-    if [[ -z "${pslot}" ]]; then
+    if [[ -z "${pslot+x}" ]]; then
       echo "No cases found in ${pr_dir}/RUNTESTS .. exiting"
       exit 0
     fi

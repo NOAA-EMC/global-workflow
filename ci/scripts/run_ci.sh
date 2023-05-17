@@ -35,8 +35,8 @@ module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
 set -eux
-rocotorun=$(which rocotorun)
-if [[ -z ${var+x} ]]; then
+rocotorun=$(command -v rocotorun)
+if [[ -z ${rocotorun+x} ]]; then
   echo "rocotorun being used from ${rocotorun}"
 else
   echo "rocotorun not found on system"
