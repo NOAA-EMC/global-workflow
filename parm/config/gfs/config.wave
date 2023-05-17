@@ -27,16 +27,13 @@ export CDUMPRSTwave="gdas"
 # Grids for wave model
 export waveGRD=${waveGRD:-'mx025'}
 
-
 #grid dependent variable defaults 
-export waveGRDN=${waveGRDN:-'1'} # gridnumber for ww3_multi
-export waveGRDG=${waveGRDG:-'10'} # gridgroup for ww3_multi
-export USE_WAV_RMP=${USE_WAV_RMP:-'NO'} #yes/no rmp grid remapping pre-processed coefficients
-export waveMULTIGRID=${waveMULTIGRID:-'.false.'} #true/false for multi or shel 
-export MESH_WAV=${MESH_WAV:-"mesh.${waveGRD}.nc"}  #Mesh grid for wave model for CMEPS
-
-export waveesmfGRD=${waveesmfGRD:-' '} # input grid for multigrid 
-
+export waveGRDN='1'                   # grid number for ww3_multi
+export waveGRDG='10'                  # grid group for ww3_multi
+export USE_WAV_RMP='NO'               # YES/NO rmp grid remapping pre-processed coefficients
+export waveMULTIGRID='.false.'        # .true./.false. for multi or shel 
+export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
+export waveesmfGRD=' '                # input grid for multigrid 
 
 #Grid dependent variables for various grids
 case "${waveGRD}" in
