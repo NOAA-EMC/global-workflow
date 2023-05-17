@@ -498,7 +498,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
     if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}radstat.ensmean" ]]; then
          echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}radstat.ensmean"
     fi
-    for FHR in ${nfhrs[@]}; do  # loop over analysis times in window
+    for FHR in "${nfhrs[@]}"; do  # loop over analysis times in window
       if [[ ${FHR} -eq 6 ]]; then
         if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}atmanl.ensmean.nc" ]]; then
           echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}atmanl.ensmean.nc"
@@ -564,7 +564,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
         COM_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
       #---
-      for FHR in ${nfhrs[@]}; do  # loop over analysis times in window
+      for FHR in "${nfhrs[@]}"; do  # loop over analysis times in window
         if [ $FHR -eq 6 ]; then
           {
             if (( n <= NTARS2 )); then
