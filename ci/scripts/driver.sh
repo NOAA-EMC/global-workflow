@@ -57,17 +57,26 @@ set -x
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
-pr_list_file="open_pr_list"
-touch "${GFS_CI_ROOT}/${pr_list_file}"
-list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open")
-list=$(echo "${list}" | awk '{print $1;}' >> "${GFS_CI_ROOT}/${pr_list_file}")
+pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
+if [[ ! -f "${pr_list_dbfile}" ]]; then
+  "${HOMEgfs}/ci/scripts/pr_list_database.py" --create "${pr_list_dbfile}"
+fi
 
-if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
- pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
-else
- echo "no PRs to process .. exit"
- exit 0
-fi 
+pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
+
+for pr in ${pr_list}; do
+  "${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" "${pr_list_dbfile}"
+done
+
+pr_list=""
+if [[ -f "${pr_list_dbfile}" ]]; then
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}') || true
+fi
+if [[ -z "${pr_list}" ]]; then
+  echo "no PRs open and ready for checkout/build .. exiting"
+  exit 0
+fi
+
  
 #############################################################
 # Loop throu all open PRs
@@ -87,10 +96,11 @@ for pr in ${pr_list}; do
   ci_status=$?
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Built "${pr_list_dbfile}"
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
-    rm -Rf "${pr_dir:?}/RUNTESTS/"*
+    #rm -Rf "${pr_dir:?}/RUNTESTS/"*
 
     #############################################################
     # loop over every yaml file in ${HOMEgfs}/ci/cases
@@ -99,6 +109,8 @@ for pr in ${pr_list}; do
     for yaml_config in "${HOMEgfs}/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
+      sed -i "/^base:/a\  ACCOUNT: \${SLURM_ACCOUNT}" "${pr_dir}/global-workflow/parm/config/gfs/yaml/defaults.yaml"
+      sed -i "/^base:/a\  ACCOUNT: \${SLURM_ACCOUNT}" "${pr_dir}/global-workflow/parm/config/gefs/yaml/defaults.yaml"
       set +e
       "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
@@ -109,12 +121,14 @@ for pr in ${pr_list}; do
           echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
+        "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Running "${pr_list_dbfile}"
       else 
         {
           echo "Failed to create experiment}:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
+        "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
       fi
     done
 
@@ -124,6 +138,7 @@ for pr in ${pr_list}; do
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}}" || true
     } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
   fi
   "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
 
