@@ -3,10 +3,10 @@ import datetime
 
 
 __all__ = ["to_datetime", "to_timedelta",
-           "datetime_to_YMDH", "datetime_to_YMD",
+           "datetime_to_YMDH", "datetime_to_YMD", "datetime_to_JDAY",
            "timedelta_to_HMS",
            "strftime", "strptime",
-           "to_YMDH", "to_YMD",
+           "to_YMDH", "to_YMD", "to_JDAY", "to_julian",
            "to_isotime", "to_fv3time",
            "add_to_datetime", "add_to_timedelta"]
 
@@ -151,6 +151,29 @@ def datetime_to_YMD(dt: datetime.datetime) -> str:
         raise Exception(f"Bad datetime: '{dt}'")
 
 
+def datetime_to_JDAY(dt: datetime.datetime) -> str:
+    """
+    Description
+    -----------
+    Translate a datetime object to 'YYYYDOY' format.
+
+
+    Parameters
+    ----------
+    dt : datetime.datetime
+        Datetime object to translate
+
+    Returns
+    -------
+    str: str
+        Formatted string in 'YYYYDOY' format.
+    """
+    try:
+        return dt.strftime('%Y%j')
+    except Exception:
+        raise Exception(f"Bad datetime: '{dt}'")
+
+
 def timedelta_to_HMS(td: datetime.timedelta) -> str:
     """
     Description
@@ -289,3 +312,5 @@ def add_to_timedelta(td1, td2):
 
 to_YMDH = datetime_to_YMDH
 to_YMD = datetime_to_YMD
+to_JDAY = datetime_to_JDAY
+to_julian = datetime_to_JDAY
