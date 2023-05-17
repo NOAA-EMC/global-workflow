@@ -36,11 +36,11 @@ module load "module_gwsetup.${MACHINE_ID}"
 module list
 set -eux
 rocotorun=$(command -v rocotorun)
-if [[ -z ${rocotorun+x} ]]; then
-  echo "rocotorun being used from ${rocotorun}"
-else
+if [[ -z ${rocotorun} ]]; then
   echo "rocotorun not found on system"
   exit 1
+else
+  echo "rocotorun being used from ${rocotorun}"
 fi
 
 pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"

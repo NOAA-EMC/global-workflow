@@ -99,6 +99,9 @@ for pr in ${pr_list}; do
     fi
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
+    if [[ ! -f "${db}" ]]; then
+       continue
+    fi
     rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
     num_cycles=$(echo "${rocoto_stat_output}" | wc -l) || true
     num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
