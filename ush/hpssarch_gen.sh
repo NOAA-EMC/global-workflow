@@ -471,7 +471,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
 
   IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
   lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
-  nfhrs="${IAUFHRS_ENKF/,/}"
+  IFS=',' read -ra nfhrs <<< ${IAUFHRS_ENKF}
   NMEM_ENS=${NMEM_ENS:-80}
   NMEM_EARCGRP=${NMEM_EARCGRP:-10}               ##number of ens memebers included in each tarball
   NTARS=$((NMEM_ENS/NMEM_EARCGRP))
@@ -498,7 +498,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
     if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}radstat.ensmean" ]]; then
          echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}radstat.ensmean"
     fi
-    for FHR in ${nfhrs}; do  # loop over analysis times in window
+    for FHR in ${nfhrs[@]}; do  # loop over analysis times in window
       if [[ ${FHR} -eq 6 ]]; then
         if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}atmanl.ensmean.nc" ]]; then
           echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}atmanl.ensmean.nc"
@@ -560,10 +560,11 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
 
       MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} generate_com \
         COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL \
-        COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+        COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL \
+        COM_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
       #---
-      for FHR in $nfhrs; do  # loop over analysis times in window
+      for FHR in ${nfhrs[@]}; do  # loop over analysis times in window
         if [ $FHR -eq 6 ]; then
           {
             if (( n <= NTARS2 )); then
@@ -598,9 +599,9 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
           fi
         fi
         {
-          echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}atmf00${FHR}.nc"
+          echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}atmf00${FHR}.nc"
           if (( FHR == 6 )); then
-            echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}sfcf00${FHR}.nc"
+            echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}sfcf00${FHR}.nc"
           fi
         } >> "${RUN}_grp${n}.txt"
       done # loop over FHR
