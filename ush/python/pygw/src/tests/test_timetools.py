@@ -45,7 +45,7 @@ def test_strftime():
 
 def test_strptime():
     assert strptime(current_date.strftime('%Y%m%d'), '%Y%m%d') == \
-           datetime.strptime(current_date.strftime('%Y%m%d'), '%Y%m%d')
+        datetime.strptime(current_date.strftime('%Y%m%d'), '%Y%m%d')
 
 
 def test_to_isotime():
@@ -56,13 +56,17 @@ def test_to_fv3time():
     assert to_fv3time(current_date) == current_date.strftime('%Y%m%d.%H%M%S')
 
 
+def test_to_julian():
+    assert to_julian(current_date) == current_date.strftime('%Y%j')
+
+
 def test_add_to_timedelta():
     assert add_to_timedelta(timedelta(days=1), timedelta(hours=3)) == \
-           timedelta(days=1, hours=3)
+        timedelta(days=1, hours=3)
     assert add_to_timedelta(timedelta(hours=5, minutes=30), timedelta(minutes=15)) == \
-           timedelta(hours=5, minutes=45)
+        timedelta(hours=5, minutes=45)
     assert add_to_timedelta(timedelta(seconds=45), timedelta(milliseconds=500)) == \
-           timedelta(seconds=45, milliseconds=500)
+        timedelta(seconds=45, milliseconds=500)
 
 
 def test_add_to_datetime():
