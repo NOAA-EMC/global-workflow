@@ -5,14 +5,13 @@
 
 echo "BEGIN: config.atmanl"
 
+export CASE_ANL=${CASE}
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/config/
 export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype_3d.yaml
 export ATMVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/variational/3dvar_dripcg.yaml
 export STATICB_TYPE="gsibec"
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
 export INTERP_METHOD='barycentric'
-
-export CASE_ANL="@ATMRES_ANL@"
 
 export layout_x=1
 export layout_y=1
