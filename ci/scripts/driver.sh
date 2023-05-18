@@ -129,7 +129,7 @@ for pr in ${pr_list}; do
         "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Running "${pr_list_dbfile}"
       else 
         {
-          echo "Failed to create experiment}:  *FAIL* ${pslot}"
+          echo "Failed to create experiment:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
