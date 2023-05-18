@@ -30,7 +30,6 @@ class AtmEnsAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.config.CASE_ENS[1:])
-        _res_anl = int(self.config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config.assim_freq}H") / 2)
         _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmens.yaml")
 
@@ -41,9 +40,6 @@ class AtmEnsAnalysis(Analysis):
                 'npy_ges': _res + 1,
                 'npz_ges': self.config.LEVS - 1,
                 'npz': self.config.LEVS - 1,
-                'npx_anl': _res_anl + 1,
-                'npy_anl': _res_anl + 1,
-                'npz_anl': self.config.LEVS - 1,
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'ATM_WINDOW_LENGTH': f"PT{self.config.assim_freq}H",
                 'OPREFIX': f"{self.config.EUPD_CYC}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
