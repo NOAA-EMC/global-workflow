@@ -561,7 +561,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
       MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} generate_com \
         COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL \
         COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL \
-        COM_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
+        COM_ATMOS_HISTORY_MEM:COM_ATMOS_HISTORY_TMPL
 
       #---
       for FHR in "${nfhrs[@]}"; do  # loop over analysis times in window
