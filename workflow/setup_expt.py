@@ -457,7 +457,7 @@ def query_and_clean(dirname):
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
-    for attr in ['resdet', 'ensres']:
+    for attr in ['resdet', 'resens']:
         try:
             expt_res = f'C{getattr(inputs, attr)}'
         except AttributeError:
