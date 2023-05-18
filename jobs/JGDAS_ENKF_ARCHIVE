@@ -12,6 +12,7 @@ export CDUMP=${RUN/enkf}
 YMD=${PDY} HH=${cyc} generate_com -rx COM_TOP
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} generate_com -rx \
   COM_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL
+  COM_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL
 
 ###############################################################
 # Run archive script

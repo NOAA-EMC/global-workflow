@@ -531,10 +531,10 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
     fh=3
     while [ $fh -le 9 ]; do
         fhr=$(printf %03i $fh)
-        echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}atmf${fhr}.ensmean.nc"
-        echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}sfcf${fhr}.ensmean.nc"
-        if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}atmf${fhr}.ensspread.nc" ]]; then
-            echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}atmf${fhr}.ensspread.nc"
+        echo "${COM_ATMOS_HISTORY_ENSSTAT/${ROTDIR}\//}/${head}atmf${fhr}.ensmean.nc"
+        echo "${COM_ATMOS_HISTORY_ENSSTAT/${ROTDIR}\//}/${head}sfcf${fhr}.ensmean.nc"
+        if [[ -s "${COM_ATMOS_HISTORY_ENSSTAT}/${head}atmf${fhr}.ensspread.nc" ]]; then
+            echo "${COM_ATMOS_HISTORY_ENSSTAT/${ROTDIR}\//}/${head}atmf${fhr}.ensspread.nc"
         fi
         fh=$((fh+3))
     done
