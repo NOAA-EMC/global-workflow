@@ -601,7 +601,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
         {
           echo "${COM_ATMOS_HISTORY_MEM/${ROTDIR}\//}/${head}atmf00${FHR}.nc"
           if (( FHR == 6 )); then
-            echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}sfcf00${FHR}.nc"
+            echo "${COM_ATMOS_HISTORY_MEM/${ROTDIR}\//}/${head}sfcf00${FHR}.nc"
           fi
         } >> "${RUN}_grp${n}.txt"
       done # loop over FHR
