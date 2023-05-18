@@ -84,6 +84,7 @@ for pr in ${pr_list}; do
   # since all successfull ones where previously removed
   if [[ "${num_cases}" -eq 0 ]] && [[ -d "${pr_dir}/RUNTESTS" ]]; then
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
+    sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
     # Completely remove the PR and its cloned repo on sucess of all cases
@@ -119,6 +120,7 @@ for pr in ${pr_list}; do
        echo "Error logs:"
        echo "${error_logs}"
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}" 
+      sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
@@ -133,6 +135,7 @@ for pr in ${pr_list}; do
         echo "Experiment ${pslot} Completed at $(date)" || true
         echo "with ${num_succeeded} successfully completed jobs" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+      sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       #Remove Experment cases that completed successfully
       rm -Rf "${pr_dir}/RUNTESTS/${pslot}"

@@ -139,12 +139,14 @@ for pr in ${pr_list}; do
 
   else 
     {
+      echo '```'
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
-      echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}}" || true
+      echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
     } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
   fi
+  sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
   "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
 
 done # looping over each open and labeled PR
