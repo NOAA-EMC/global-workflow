@@ -12,7 +12,8 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
 
 from hosts import Host
 
-from pygw.yaml_file import YAMLFile
+from pygw.yaml_file import parse_j2yaml
+from pygw.attrdict import AttrDict
 from pygw.timetools import to_datetime, to_timedelta, datetime_to_YMDH
 
 
@@ -227,9 +228,15 @@ def fill_EXPDIR(inputs):
 
 def update_configs(host, inputs):
 
+    def _update_defaults(dict_in: dict) -> dict:
+        defaults = dict_in.pop('defaults', dict())
+        return AttrDict(defaults, **dict_in)
+
     # Read in the YAML file to fill out templates and override host defaults
+    data = AttrDict(host.info, **inputs.__dict__)
+    data.HOMEgfs = _top
     yaml_path = inputs.yaml
-    yaml_dict = YAMLFile(path=yaml_path)
+    yaml_dict = _update_defaults(parse_j2yaml(yaml_path, data))
 
     # First update config.base
     edit_baseconfig(host, inputs, yaml_dict)
