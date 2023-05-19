@@ -18,6 +18,8 @@ export gcyc=${GDATE:8:2}
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+# To allow extraction of statistics from diag files
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 
 
 ##############################################
