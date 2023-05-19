@@ -170,7 +170,7 @@ case "${CASE}" in
     *) export OCNRES=025;;
 esac
 export ICERES=${OCNRES}
-export waveGRD='gnh_10m aoc_9km gsh_15m'
+export waveGRD='mx025'
 
 case "${APP}" in
   ATM)

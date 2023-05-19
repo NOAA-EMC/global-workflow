@@ -114,8 +114,8 @@ for pr in ${pr_list}; do
     for yaml_config in "${HOMEgfs}/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
-      sed -i "/^base:/a\  ACCOUNT: \${SLURM_ACCOUNT}" "${pr_dir}/global-workflow/parm/config/gfs/yaml/defaults.yaml"
-      sed -i "/^base:/a\  ACCOUNT: \${SLURM_ACCOUNT}" "${pr_dir}/global-workflow/parm/config/gefs/yaml/defaults.yaml"
+      HOMEgfs_ci="${HOMEgfs}"
+      export HOMEgfs_ci
       set +e
       "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
@@ -129,7 +129,7 @@ for pr in ${pr_list}; do
         "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Running "${pr_list_dbfile}"
       else 
         {
-          echo "Failed to create experiment}:  *FAIL* ${pslot}"
+          echo "Failed to create experiment:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
