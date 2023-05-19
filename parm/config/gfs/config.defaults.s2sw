@@ -15,25 +15,10 @@ min_seaice="1.0e-6"
 use_cice_alb=".true."
 
 # config.wave
-
-waveGRD='mx025'
-waveinterpGRD='reg025'
-waveuoutpGRD='mx025'
-MESH_WAV='mesh.mx025.nc'
-
-waveesmfGRD=' '
-wavepostGRD=' '
-waveGRDN="1"
-waveGRDG="10"
-USE_WAV_RMP="NO"
 FHOUT_HF_WAV=3
 DTPNT_WAV=10800
 OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
 DOBNDPNT_WAVE='NO'
-waveMULTIGRID='.false.'
-
-# config.waveprep
-IOSRV=1
 
 # config.arch
 export ARCH_GAUSSIAN="YES"
