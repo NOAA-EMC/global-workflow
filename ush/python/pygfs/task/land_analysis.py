@@ -347,7 +347,7 @@ class LandAnalysis(Analysis):
         """
 
         # 2 ens members
-        offset = LandAnalysis.BESTDDEV/np.sqrt(LandAnalysis.NMEM_LANDENS)
+        offset = LandAnalysis.BESTDDEV / np.sqrt(LandAnalysis.NMEM_LANDENS)
 
         logger.info(f"Creating ensemble for LETKFOI by offsetting with {offset}")
 
@@ -358,7 +358,7 @@ class LandAnalysis(Analysis):
 
         for (memchar, value) in zip(ens_dirs, sign):
             logger.debug(f"creating ensemble member {memchar} with sign {value}")
-            for tt in range(1, config.ntiles+1):
+            for tt in range(1, config.ntiles + 1):
                 logger.debug(f"perturbing tile {tt}")
                 # open file
                 out_netcdf = os.path.join(workdir, memchar, f"{to_fv3time(config.current_cycle)}.sfc_data.tile{tt}.nc")
@@ -367,7 +367,7 @@ class LandAnalysis(Analysis):
                     vtype_array = ncOut.variables['vtype'][:]
                     slmsk_array[vtype_array == 15] = 0  # remove glacier locations
                     var_array = ncOut.variables[vname][:]
-                    var_array[slmsk_array == 1] = var_array[slmsk_array == 1] + value*offset
+                    var_array[slmsk_array == 1] = var_array[slmsk_array == 1] + value * offset
                     ncOut.variables[vname][0, :, :] = var_array[:]
 
     @logit(logger)

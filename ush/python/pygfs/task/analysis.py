@@ -208,7 +208,7 @@ class Analysis(Task):
 
     @staticmethod
     @logit(logger)
-    def execute_jediexe(DATA: Union[str, os.PathLike], aprun_cmd: str, jedi_exec:str, jedi_yaml:str) -> None:
+    def execute_jediexe(DATA: Union[str, os.PathLike], aprun_cmd: str, jedi_exec: str, jedi_yaml: str) -> None:
         """
         Run a JEDI executable
 
