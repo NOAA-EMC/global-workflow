@@ -16,8 +16,9 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ICE_HISTORY:COM_ICE_HISTORY_TMPL
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+
 
 ##############################################
 # Begin JOB SPECIFIC work
