@@ -1,9 +1,12 @@
 #! /usr/bin/env bash
 
 ########## config.landanl ##########
-# configuration common to all land analysis tasks
+# configuration common to land analysis tasks
 
 echo "BEGIN: config.landanl"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" landanl
 
 obs_list_name=gdas_land_adpsfc_only.yaml
 if [[ "${cyc}" == "18" ]]; then
@@ -13,11 +16,16 @@ fi
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/config/
 export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/${obs_list_name}
 export LANDVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml
-export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
 
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE=${HOMEgfs}/exec/fv3jedi_letkf.x
+# Name of the JEDI executable and its yaml template
+export JEDIEXE="${HOMEgfs}/exec/fv3jedi_letkf.x"
+export JEDIYAML="${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml"
+
+# Name of the executable that applies increment to bkg and its namelist template
+export APPLY_INCR_EXE="${HOMEgfs}/exec/apply_incr.exe"
+export APPLY_INCR_NML_TMPL="${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/apply_incr_nml.j2"
 
 echo "END: config.landanl"

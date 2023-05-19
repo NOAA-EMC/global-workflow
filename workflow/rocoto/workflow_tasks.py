@@ -19,7 +19,7 @@ class Tasks:
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'preplandobs', 'landanlinit', 'landanlrun', 'landanlfinal',
+                   'preplandobs', 'landanl',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'wafs', 'wafsblending', 'wafsblending0p25',
@@ -372,7 +372,7 @@ class Tasks:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jedilandda:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanl'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
@@ -511,7 +511,7 @@ class Tasks:
 
         return task
 
-    def landanlinit(self):
+    def landanl(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
@@ -527,32 +527,8 @@ class Tasks:
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('landanlinit')
-        task = create_wf_task('landanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-        return task
-
-    def landanlrun(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlinit'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('landanlrun')
-        task = create_wf_task('landanlrun', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def landanlfinal(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlrun'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('landanlfinal')
-        task = create_wf_task('landanlfinal', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
+        resources = self.get_resource('landanl')
+        task = create_wf_task('landanl', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
         return task
 
     def ocnanalprep(self):
@@ -726,7 +702,7 @@ class Tasks:
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_jedilandda:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanl'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
