@@ -19,8 +19,7 @@ set -eux
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
-#export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
-export REPO_URL=${REPO_URL:-"ssh://git@ssh.github.com:443/TerrenceMcGuinness-NOAA/global-workflow.git"}
+export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
@@ -98,8 +97,7 @@ for pr in ${pr_list}; do
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   set +e
-  #"${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
-  echo "SKIPPING clone-build"
+  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
@@ -116,8 +114,8 @@ for pr in ${pr_list}; do
     for yaml_config in "${HOMEgfs}/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
-      #sed -i "/^base:/a\  ACCOUNT: \${SLURM_ACCOUNT}" "${pr_dir}/global-workflow/parm/config/gfs/yaml/defaults.yaml"
-      #sed -i "/^base:/a\  ACCOUNT: \${SLURM_ACCOUNT}" "${pr_dir}/global-workflow/parm/config/gefs/yaml/defaults.yaml"
+      HOMEgfs_ci="${HOMEgfs}"
+      export HOMEgfs_ci
       set +e
       "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
