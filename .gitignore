@@ -10,6 +10,7 @@ __pycache__
 #nohup.out - some users do not want this to be a part of .gitignore.  TODO: review against best practices
 .idea/
 .vscode/
+nohup.out
 
 # Ignore editor generated backup files
 #-------------------------------------
@@ -142,4 +143,3 @@ ush/make_tif.sh
 ush/month_name.sh
 ush/imsfv3_scf2ioda.py
 ush/letkf_create_ens.py
-

@@ -41,10 +41,6 @@ elif [[ -d /lfs3 ]] ; then
 elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
   module load "${MODS}/hera"
-  if [[ "${DEBUG_WORKFLOW:-NO}" == "YES" ]] ; then
-     module list
-     pip list
-  fi
   # set NETCDF variable based on ncdump location
   NETCDF=$( which ncdump )
   export NETCDF
@@ -62,10 +58,6 @@ elif [[ -d /work ]] ; then
   export NHOUR=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/nhour
   export FSYNC=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/fsync_file
   module load "${MODS}/orion"
-  if [[ "${DEBUG_WORKFLOW:-NO}" == "YES" ]] ; then
-     module list
-     pip list
-  fi
   # set NETCDF variable based on ncdump location
   ncdump=$( which ncdump )
   NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
@@ -82,6 +74,9 @@ elif [[ -d /data/prod ]] ; then
 else
   echo WARNING: UNKNOWN PLATFORM
 fi
+
+module list
+pip list
 
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"

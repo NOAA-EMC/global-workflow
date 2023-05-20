@@ -2224,10 +2224,6 @@
               trigger /prod/primary/00/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
           endfamily
         endfamily
-        family init
-          task jgdas_atmos_gldas
-            trigger ../analysis/jgdas_atmos_analysis == complete
-        endfamily
         family analysis
           task jgdas_atmos_analysis
             trigger /prod/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../obsproc/prep/jgdas_atmos_emcsfc_sfc_prep == complete
@@ -2354,7 +2350,7 @@
         endfamily
       endfamily
       task jgdas_forecast
-        trigger ./atmos/analysis/jgdas_atmos_analysis:release_fcst and ./wave/prep/jgdas_wave_prep == complete and ./atmos/init/jgdas_atmos_gldas == complete
+        trigger ./atmos/analysis/jgdas_atmos_analysis:release_fcst and ./wave/prep/jgdas_wave_prep == complete
     endfamily
     family enkfgdas
       edit RUN 'gdas'

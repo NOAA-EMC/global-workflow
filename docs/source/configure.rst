@@ -10,7 +10,7 @@ The global-workflow configs contain switches that change how the system runs. Ma
 | APP            | Model application            | ATM           | YES         | See case block in config.base for options         |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | DOIAU          | Enable 4DIAU for control     | YES           | NO          | Turned off for cold-start first half cycle        |
-|                | with 3 increments            |               |             |                                                   | 
+|                | with 3 increments            |               |             |                                                   |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | DOHYBVAR       | Run EnKF                     | YES           | YES         | Don't recommend turning off                       |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
@@ -25,9 +25,6 @@ The global-workflow configs contain switches that change how the system runs. Ma
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | DO_GEMPAK      | Run job to produce GEMPAK    | NO            | YES         | downstream processing, ops only                   |
 |                | products                     |               |             |                                                   |
-+----------------+------------------------------+---------------+-------------+---------------------------------------------------+
-| DO_GLDAS       | Run GLDAS to spin up land    | YES           | YES         | Spins up for 84hrs if sflux files not available   |
-|                | ICs                          |               |             |                                                   |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | DO_VRFY        | Run vrfy job                 | NO            | YES         | Whether to include vrfy job (GSI monitoring,      |
 |                |                              |               |             | tracker, VSDB, fit2obs)                           |

@@ -99,7 +99,6 @@ class AppConfig:
         self.do_ocean = _base.get('DO_OCN', False)
         self.do_ice = _base.get('DO_ICE', False)
         self.do_aero = _base.get('DO_AERO', False)
-        self.do_gldas = _base.get('DO_GLDAS', False)
         self.do_bufrsnd = _base.get('DO_BUFRSND', False)
         self.do_gempak = _base.get('DO_GEMPAK', False)
         self.do_awips = _base.get('DO_AWIPS', False)
@@ -107,8 +106,8 @@ class AppConfig:
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_fit2obs = _base.get('DO_FIT2OBS', True)
         self.do_metp = _base.get('DO_METP', False)
-        self.do_jediatmvar = _base.get('DO_JEDIVAR', False)
-        self.do_jediatmens = _base.get('DO_JEDIENS', False)
+        self.do_jediatmvar = _base.get('DO_JEDIATMVAR', False)
+        self.do_jediatmens = _base.get('DO_JEDIATMENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
         self.do_jedilandda = _base.get('DO_JEDILANDDA', False)
         self.do_mergensst = _base.get('DO_MERGENSST', False)
@@ -192,9 +191,6 @@ class AppConfig:
 
         configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch']
 
-        if self.do_gldas:
-            configs += ['gldas']
-
         if self.do_hybvar:
             if self.do_jediatmens:
                 configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
@@ -230,7 +226,7 @@ class AppConfig:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
-            configs += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
+            configs += ['preplandobs', 'landanlinit', 'landanlrun', 'landanlfinal']
 
         return configs
 
@@ -366,9 +362,8 @@ class AppConfig:
             gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
-            gdas_gfs_common_tasks_before_fcst += ['landanlinit', 'landanlprep', 'landanlrun', 'landanlfinal']
+            gdas_gfs_common_tasks_before_fcst += ['preplandobs', 'landanlinit', 'landanlrun', 'landanlfinal']
 
-        gldas_tasks = ['gldas']
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
         wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
@@ -387,9 +382,6 @@ class AppConfig:
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
         if not self.do_jediatmvar:
             gdas_tasks += ['analdiag']
-
-        if self.do_gldas:
-            gdas_tasks += gldas_tasks
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks

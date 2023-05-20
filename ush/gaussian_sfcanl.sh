@@ -121,7 +121,6 @@ LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
-export NETCDF_OUT=".true."
 #  Directories.
 gfs_ver=${gfs_ver:-v16.3.0}
 BASEDIR=${BASEDIR:-${PACKAGEROOT:-/lfs/h1/ops/prod/packages}}
@@ -200,17 +199,19 @@ $NLN $SIGLEVEL                                 ./vcoord.txt
 # output gaussian global surface analysis files
 ${NLN} "${COM_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
 
+# Namelist uses booleans now
+if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
+
 # Executable namelist
 cat <<EOF > fort.41
  &setup
-  yy=$iy,
-  mm=$im,
-  dd=$id,
-  hh=$ih,
-  igaus=$LONB_SFC,
-  jgaus=$LATB_SFC,
-  donst=$DONST,
-  netcdf_out=$NETCDF_OUT
+  yy=${iy},
+  mm=${im},
+  dd=${id},
+  hh=${ih},
+  igaus=${LONB_SFC},
+  jgaus=${LATB_SFC},
+  donst=${do_nst},
  /
 EOF
 

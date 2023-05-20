@@ -6,7 +6,7 @@ from markupsafe import Markup
 from pathlib import Path
 from typing import Dict
 
-from .timetools import strftime, to_YMDH, to_YMD, to_fv3time, to_isotime
+from .timetools import strftime, to_YMDH, to_YMD, to_fv3time, to_isotime, to_julian
 
 __all__ = ['Jinja']
 
@@ -114,6 +114,7 @@ class Jinja:
         env.filters["to_fv3time"] = lambda dt: to_fv3time(dt) if not isinstance(dt, SilentUndefined) else dt
         env.filters["to_YMDH"] = lambda dt: to_YMDH(dt) if not isinstance(dt, SilentUndefined) else dt
         env.filters["to_YMD"] = lambda dt: to_YMD(dt) if not isinstance(dt, SilentUndefined) else dt
+        env.filters["to_julian"] = lambda dt: to_julian(dt) if not isinstance(dt, SilentUndefined) else dt
         return env
 
     @staticmethod
