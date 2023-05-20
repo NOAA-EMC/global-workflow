@@ -249,7 +249,6 @@ class LandAnalysis(Analysis):
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exe}")
 
-
         # run jedi executable
         exec_cmd = Executable(self.task_config.APRUN_LANDANL)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
@@ -269,7 +268,6 @@ class LandAnalysis(Analysis):
         # change names of the increments
         logger.info("Changing the names of the increments")
         FileHandler(prep_run_config.increment).sync()
-
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
