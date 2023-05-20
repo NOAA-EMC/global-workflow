@@ -66,19 +66,19 @@ class LandAnalysis(Analysis):
         """
 
         # create a temporary dict of all keys needed in this method
-        cfg = AttrDict()
+        localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'ntiles']
         for key in keys:
-            cfg[key] = self.task_config[key]
+            localconf[key] = self.task_config[key]
 
         # stage backgrounds
         logger.info("Staging backgrounds")
-        FileHandler(self.get_bkg_dict(cfg)).sync()
+        FileHandler(self.get_bkg_dict(localconf)).sync()
 
         # Read and render the IMS_OBS_LIST yaml
         logger.info(f"Reading {self.task_config.IMS_OBS_LIST}")
-        prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, cfg)
+        prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
         logger.debug(f"{self.task_config.IMS_OBS_LIST}:\n{pformat(prep_ims_config)}")
 
         # copy the IMS obs files from COM_OBS to DATA/obs
@@ -87,23 +87,23 @@ class LandAnalysis(Analysis):
 
         logger.info("Create namelist for CALCFIMSEXE")
         nml_template = self.task_config.FIMS_NML_TMPL
-        nml_data = Jinja(nml_template, cfg).render
+        nml_data = Jinja(nml_template, localconf).render
         logger.debug(f"fims.nml:\n{nml_data}")
 
-        nml_file = os.path.join(self.task_config.DATA, "fims.nml")
+        nml_file = os.path.join(localconf.DATA, "fims.nml")
         with open(nml_file, "w") as fho:
             fho.write(nml_data)
 
         logger.info("Link CALCFIMSEXE into DATA/")
         exe_src = self.task_config.CALCFIMSEXE
-        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
+        exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
         # execute CALCFIMSEXE to calculate IMS snowdepth
         exe = Executable(self.task_config.APRUN_CALCFIMS)
-        exe.add_default_arg(os.path.join(self.task_config.DATA, os.path.basename(exe_src)))
+        exe.add_default_arg(os.path.join(localconf.DATA, os.path.basename(exe_src)))
         logger.info(f"Executing {exe}")
         try:
             exe()
@@ -113,21 +113,21 @@ class LandAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exe}")
 
         # Ensure the snow depth IMS file is produced by the above executable
-        input_file = f"IMSscf.{to_YMD(self.task_config.PDY)}.{self.task_config.CASE}_oro_data.nc"
-        if not os.path.isfile(f"{os.path.join(self.task_config.DATA, input_file)}"):
+        input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}_oro_data.nc"
+        if not os.path.isfile(f"{os.path.join(localconf.DATA, input_file)}"):
             logger.exception(f"{self.task_config.CALCFIMSEXE} failed to produce {input_file}")
-            raise FileNotFoundError(f"{os.path.join(self.task_config.DATA, input_file)}")
+            raise FileNotFoundError(f"{os.path.join(localconf.DATA, input_file)}")
 
         # Execute imspy to create the IMS obs data in IODA format
         logger.info("Create IMS obs data in IODA format")
 
-        output_file = f"ims_snow_{to_YMDH(self.task_config.current_cycle)}.nc4"
-        if os.path.isfile(f"{os.path.join(self.task_config.DATA, output_file)}"):
+        output_file = f"ims_snow_{to_YMDH(localconf.current_cycle)}.nc4"
+        if os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
             rm_p(output_file)
 
         exe = Executable(self.task_config.IMS2IODACONV)
-        exe.add_default_arg(["-i", f"{os.path.join(self.task_config.DATA, input_file)}"])
-        exe.add_default_arg(["-o", f"{os.path.join(self.task_config.DATA, output_file)}"])
+        exe.add_default_arg(["-i", f"{os.path.join(localconf.DATA, input_file)}"])
+        exe.add_default_arg(["-o", f"{os.path.join(localconf.DATA, output_file)}"])
         try:
             logger.debug(f"Executing {exe}")
             exe()
@@ -138,9 +138,9 @@ class LandAnalysis(Analysis):
 
         # Ensure the IODA snow depth IMS file is produced by the IODA converter
         # If so, copy to COM_OBS/
-        if not os.path.isfile(f"{os.path.join(self.task_config.DATA, output_file)}"):
+        if not os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
             logger.exception(f"{self.task_config.IMS2IODACONV} failed to produce {output_file}")
-            raise FileNotFoundError(f"{os.path.join(self.task_config.DATA, output_file)}")
+            raise FileNotFoundError(f"{os.path.join(localconf.DATA, output_file)}")
         else:
             logger.info(f"Copy {output_file} to {self.task_config.COM_OBS}")
             FileHandler(prep_ims_config.ims2ioda).sync()
@@ -151,30 +151,30 @@ class LandAnalysis(Analysis):
         super().initialize()
 
         # create a temporary dict of all keys needed in this method
-        cfg = AttrDict()
+        localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'ntiles']
         for key in keys:
-            cfg[key] = self.task_config[key]
+            localconf[key] = self.task_config[key]
 
         # Make member directories in DATA for background
         dirlist = []
-        for imem in range(1, self.task_config.NMEM_LANDENS + 1):
-            dirlist.append(os.path.join(self.task_config.DATA, 'bkg', f'mem{imem:03d}'))
+        for imem in range(1, LandAnalysis.NMEM_LANDENS + 1):
+            dirlist.append(os.path.join(localconf.DATA, 'bkg', f'mem{imem:03d}'))
         FileHandler({'mkdir': dirlist}).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'land_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'land_jedi_fix.yaml')
         logger.info(f"Staging JEDI fix files from {jedi_fix_list_path}")
         jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
         # stage backgrounds
         logger.info("Staging ensemble backgrounds")
-        FileHandler(self.get_ens_bkg_dict(cfg)).sync()
+        FileHandler(self.get_ens_bkg_dict(localconf)).sync()
 
         # generate letkfoi YAML file
-        logger.info(f"Generate JEDI LETKF YAML file: {self.task_config.fv3jedi_yaml}")
+        logger.info(f"Generate JEDI LETKF YAML file: {self.task_config.jedi_yaml}")
         letkfoi_yaml = parse_j2yaml(self.task_config.JEDIYAML, self.task_config)
         save_as_yaml(letkfoi_yaml, self.task_config.jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.jedi_yaml}")
@@ -182,8 +182,8 @@ class LandAnalysis(Analysis):
         # need output dir for diags and anl
         logger.info("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
-            os.path.join(self.task_config['DATA'], 'anl'),
-            os.path.join(self.task_config['DATA'], 'diags'),
+            os.path.join(localconf.DATA, 'anl'),
+            os.path.join(localconf.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
@@ -191,26 +191,26 @@ class LandAnalysis(Analysis):
     def execute(self: Analysis) -> None:
 
         # create a temporary dict of all keys needed in this method
-        config = AttrDict()
+        localconf = AttrDict()
         keys = ['DATA', 'current_cycle',
                 'COM_LAND_ANALYSIS', 'APREFIX',
                 'FRACGRID', 'CASE', 'ntiles',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
-            config[key] = self.task_config[key]
+            localconf[key] = self.task_config[key]
 
         logger.info("Creating ensemble")
         self.create_ensemble(self.task_config.SNOWDEPTHVAR,
-                             AttrDict({key: self.task_config[key] for key in ['DATA', 'ntiles', 'current_cycle']}))
+                             AttrDict({key: localconf[key] for key in ['DATA', 'ntiles', 'current_cycle']}))
 
         logger.info("Running JEDI LETKF")
-        self.execute_jediexe(self.task_config.DATA,
+        self.execute_jediexe(localconf.DATA,
                              self.task_config.APRUN_LANDANL,
                              os.path.basename(self.task_config.JEDIEXE),
                              self.task_config.jedi_yaml)
 
         logger.info("Creating analysis from backgrounds and increments")
-        self.add_increments(config)
+        self.add_increments(localconf)
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
