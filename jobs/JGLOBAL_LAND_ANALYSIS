@@ -30,7 +30,7 @@ mkdir -m 775 -p "${COM_LAND_ANALYSIS}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASLANDINITPY:-${HOMEgfs}/scripts/exglobal_land_analysis.py}
+EXSCRIPT=${LANDANLPY:-${HOMEgfs}/scripts/exglobal_land_analysis.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
