@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 
 import os
+import glob
+import gzip
+import tarfile
 from logging import getLogger
 from typing import Dict, List
 from pprint import pformat
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
-from pygw.timetools import to_fv3time, to_YMD, to_YMDH
+from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMD, to_YMDH
 from pygw.fsutils import rm_p
-from pygw.yaml_file import parse_j2yaml
+from pygw.yaml_file import parse_j2yaml, parse_yamltmpl, save_as_yaml
 from pygw.jinja import Jinja
 from pygw.logger import logit
 from pygw.executable import Executable
@@ -27,10 +30,27 @@ class LandAnalysis(Analysis):
     def __init__(self, config):
         super().__init__(config)
 
+        _res = int(self.config['CASE'][1:])
+        _res_enkf = int(self.config['CASE_ENS'][1:])
+        _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
+        _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
+
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
+                'npx_ges': _res + 1,
+                'npy_ges': _res + 1,
+                'npz_ges': self.config.LEVS - 1,
+                'npz': self.config.LEVS - 1,
+                'npx_anl': _res_enkf + 1,
+                'npy_anl': _res_enkf + 1,
+                'npz_anl': self.config['LEVS'] - 1,
+                'LAND_WINDOW_BEGIN': _window_begin,
+                'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
+                'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
+                'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
+                'fv3jedi_yaml': _fv3jedi_yaml,
             }
         )
 
@@ -135,6 +155,262 @@ class LandAnalysis(Analysis):
         else:
             logger.info(f"Copy {output_file} to {self.task_config.COM_OBS}")
             FileHandler(prep_ims_config.ims2ioda).sync()
+
+    @logit(logger)
+    def initialize(self: Analysis) -> None:
+        """Initialize a global land analysis
+
+        This method will initialize a global land analysis using JEDI.
+        This includes:
+        - staging FV3-JEDI fix files
+        - staging model backgrounds
+        - generating a YAML file for the JEDI executable
+        - linking the JEDI executable (TODO make it copyable, requires JEDI fix)
+        - creating output directories
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        super().initialize()
+
+        # stage fix files
+        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'land_jedi_fix.yaml')
+        logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
+        jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
+        FileHandler(jedi_fix_list).sync()
+
+        # stage backgrounds
+        FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
+
+        # generate letkfoi YAML file
+        logger.debug(f"Generate letkfoi YAML file: {self.task_config.fv3jedi_yaml}")
+        letkfoi_yaml = parse_j2yaml(self.task_config['LANDVARYAML'], self.task_config)
+        save_as_yaml(letkfoi_yaml, self.task_config.fv3jedi_yaml)
+        logger.info(f"Wrote letkfoi YAML to: {self.task_config.fv3jedi_yaml}")
+
+        # link executables to DATA/ directory
+        exe_src = self.task_config.JEDIEXE
+        logger.debug(f"Link executable {exe_src} to DATA/")
+        exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+        exe_src = self.task_config.JEDIINCEXE
+        logger.debug(f"Link executable {exe_src} to DATA/")
+        exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        # need output dir for diags and anl
+        logger.debug("Create empty output [anl, diags] directories to receive output from executable")
+        newdirs = [
+            os.path.join(self.task_config['DATA'], 'anl'),
+            os.path.join(self.task_config['DATA'], 'diags'),
+        ]
+        FileHandler({'mkdir': newdirs}).sync()
+
+    @logit(logger)
+    def execute(self: Analysis) -> None:
+
+        # create a temporary dict for parsing the PREP_RUN_LIST yaml file
+        cfg = AttrDict()
+        keys = ['DATA', 'current_cycle']
+        for key in keys:
+            cfg[key] = self.task_config[key]
+
+        # copy the sfc_data from DATA/bkg to DATA/bkg/mem001/RESTART
+        logger.info("Copying sfc_data")
+        logger.debug(f"{self.task_config.PREP_RUN_LIST}")
+        prep_run_config = parse_j2yaml(self.task_config.PREP_RUN_LIST, cfg)
+        logger.debug(f"{prep_run_config}")
+        FileHandler(prep_run_config.ens_mem1).sync()
+        FileHandler(prep_run_config.ens_mem2).sync()
+
+        # create ensemble
+        BERR_STD = 30
+        SNOWDEPTHVAR = "snwdph"
+        exe = Executable("python")
+        exe.add_default_arg(self.task_config.ENSPY)
+        exe.add_default_arg(f"{to_YMD(self.task_config.PDY)}.{self.task_config.cyc:02d}0000")
+        exe.add_default_arg(f"{SNOWDEPTHVAR}")
+        exe.add_default_arg(f"{BERR_STD}")
+        exe.add_default_arg(os.path.join(self.task_config.DATA, "bkg"))
+        try:
+            logger.debug(f"Executing {exe}")
+            exe()
+        except OSError:
+            raise OSError(f"Failed to execute {exe}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exe}")
+
+
+        # run jedi executable
+        exec_cmd = Executable(self.task_config.APRUN_LANDANL)
+        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg(self.task_config.fv3jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
+        # change names of the increments
+        logger.info("Changing the names of the increments")
+        FileHandler(prep_run_config.increment).sync()
+
+
+    @logit(logger)
+    def finalize(self: Analysis) -> None:
+        """Finalize a global land analysis
+
+        This method will finalize a global land analysis using JEDI.
+        This includes:
+        - tarring up output diag files and place in ROTDIR
+        - copying the generated YAML file from initialize to the ROTDIR
+        - copying the guess files to the ROTDIR
+        - applying the increments to the original RESTART files
+        - moving the increment files to the ROTDIR
+
+        Please note that some of these steps are temporary and will be modified
+        once the model is able to read land increments.
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        # ---- tar up diags
+        # path of output tar statfile
+        landstat = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config.APREFIX}landstat")
+
+        # get list of diag files to put in tarball
+        diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
+
+        # gzip the files first
+        for diagfile in diags:
+            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
+                f_out.writelines(f_in)
+
+        # open tar file for writing
+        with tarfile.open(landstat, "w") as archive:
+            for diagfile in diags:
+                diaggzip = f"{diagfile}.gz"
+                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
+
+        # copy full YAML from executable to ROTDIR
+        src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.letkfoi.yaml")
+        dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.letkfoi.yaml")
+        yaml_copy = {
+            'mkdir': [self.task_config.COM_LAND_ANALYSIS],
+            'copy': [[src, dest]]
+        }
+        FileHandler(yaml_copy).sync()
+
+        # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
+        # ---- all of the rest of this method will need to be changed but requires model and JEDI changes
+        # ---- copy RESTART sfc_data files for future reference
+        template = '{}.sfc_data.tile{}.nc'.format(to_fv3time(self.task_config.current_cycle), '{tilenum}')
+        bkglist = []
+        for itile in range(1, self.task_config.ntiles + 1):
+            sfcdata = template.format(tilenum=itile)
+            src = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, sfcdata)
+            dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, f'landges.{sfcdata}')
+            bkglist.append([src, dest])
+        FileHandler({'copy': bkglist}).sync()
+
+        # ---- add increments to RESTART files
+        logger.info('Adding increments to RESTART files')
+        self._add_fms_cube_sphere_increments()
+
+        # ---- move increments to ROTDIR
+        logger.info('Moving increments to ROTDIR')
+        template = f'{to_fv3time(self.task_config.current_cycle)}.xainc.sfc_data.tile{{tilenum}}.nc'
+        inclist = []
+        for itile in range(1, self.task_config.ntiles + 1):
+            sfcdata = template.format(tilenum=itile)
+            src = os.path.join(self.task_config.DATA, 'anl', sfcdata)
+            dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, sfcdata)
+            inclist.append([src, dest])
+        FileHandler({'copy': inclist}).sync()
+
+        # ---- move analysis to ROTDIR/RESTART
+        logger.info('Moving analysis to ROTDIR')
+        template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+        inclist = []
+        for itile in range(1, self.task_config.ntiles + 1):
+            sfcdata = template.format(tilenum=itile)
+            src = os.path.join(self.task_config.DATA, 'anl', sfcdata)
+            dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, sfcdata)
+            inclist.append([src, dest])
+        FileHandler({'copy': inclist}).sync()
+
+    def clean(self):
+        super().clean()
+
+    @logit(logger)
+    def _add_fms_cube_sphere_increments(self: Analysis) -> None:
+        """This method adds increments to RESTART files to get an analysis
+        NOTE this is only needed for now because the model cannot read land increments.
+        This method will be assumed to be deprecated before this is implemented operationally
+        """
+
+        # create a temporary dict of all keys needed in this method
+        cfg = AttrDict()
+        keys = ['HOMEgfs', 'current_cycle', 'CASE', 'FRACGRID']
+        for key in keys:
+            cfg[key] = self.task_config[key]
+
+        # ---- copy the restart files from bkg to anl
+        logger.info('Copying restart files from bkg to anl')
+        template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+        inclist = []
+        for itile in range(1, self.task_config.ntiles + 1):
+            sfcdata = template.format(tilenum=itile)
+            src = os.path.join(self.task_config.DATA, 'bkg', sfcdata)
+            dest = os.path.join(self.task_config.DATA, 'anl', sfcdata)
+            inclist.append([src, dest])
+        FileHandler({'copy': inclist}).sync()
+
+        # write a apply_incr_nml
+        logger.info("Create namelist for JEDIINCEXE")
+        nml_template = self.task_config.INCR_NML_TMPL
+        nml_data = Jinja(nml_template, cfg).render
+        logger.debug(f"incr.nml:\n{nml_data}")
+
+        nml_file = os.path.join(self.task_config.DATA, 'anl', "apply_incr_nml")
+        with open(nml_file, "w") as fho:
+            fho.write(nml_data)
+
+        # execute apply_incr.exe to add incr to analysis
+        os.chdir(os.path.join(self.task_config.DATA, 'anl'))
+        exec_cmd = Executable(self.task_config.APRUN_LANDANL)
+        exec_name = os.path.join(self.task_config.DATA, 'apply_incr.exe')
+        exec_cmd.add_default_arg(exec_name)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
 
     @logit(logger)
     def get_bkg_dict(self, config: Dict) -> Dict[str, List[str]]:

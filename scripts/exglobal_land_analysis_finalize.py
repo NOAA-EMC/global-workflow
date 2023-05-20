@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+# exglobal_land_analysis_finalize.py
+# This script creates an LandAnalysis class
+# and runs the finalize method
+# which perform post-processing and clean up activities
+# for a global land letkfoi analysis
+import os
+
+from pygw.logger import Logger
+from pygw.configuration import cast_strdict_as_dtypedict
+from pygfs.task.land_analysis import LandAnalysis
+
+
+# Initialize root logger
+logger = Logger(level='DEBUG', colored_log=True)
+
+
+if __name__ == '__main__':
+
+    # Take configuration from environment and cast it as python dictionary
+    config = cast_strdict_as_dtypedict(os.environ)
+
+    # Instantiate the aerosol analysis task
+    LandAnl = LandAnalysis(config)
+    LandAnl.finalize()

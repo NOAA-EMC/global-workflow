@@ -20,7 +20,7 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASLANDRUNSH:-${HOMEgfs}/scripts/exglobal_land_analysis_run.sh}
+EXSCRIPT=${GDASLANDRUNSH:-${HOMEgfs}/scripts/exglobal_land_analysis_run.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
