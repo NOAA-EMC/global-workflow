@@ -162,7 +162,12 @@ if [[ "${stime}" = "anl" ]]; then
     fi
     [[ -f pgbfile.grib2 ]] && rm pgbfile.grib2 
     #   ecflow_client --event release_pgrb2_anl
-
+  else
+    #### atmanl file not found need failing job
+    echo " *** FATAL ERROR: No model anl file output "
+    export err=9
+    err_chk
+  fi
 else   ## not_anl if_stime
   SLEEP_LOOP_MAX=$(( SLEEP_TIME / SLEEP_INT ))
 
