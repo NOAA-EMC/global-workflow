@@ -59,7 +59,7 @@ pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
   pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Running | awk '{print $1}') || true
 fi
-if [[ -z "${pr_list}" ]]; then
+if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
   exit 0
 fi
@@ -84,6 +84,7 @@ for pr in ${pr_list}; do
   # since all successfull ones where previously removed
   if [[ "${num_cases}" -eq 0 ]] && [[ -d "${pr_dir}/RUNTESTS" ]]; then
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
+    sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
     # Completely remove the PR and its cloned repo on sucess of all cases
@@ -93,12 +94,15 @@ for pr in ${pr_list}; do
 
   for cases in "${pr_dir}/RUNTESTS/"*; do
     pslot=$(basename "${cases}") || true
-    if [[ -z "${pslot}" ]]; then
+    if [[ -z "${pslot+x}" ]]; then
       echo "No cases found in ${pr_dir}/RUNTESTS .. exiting"
       exit 0
     fi
     xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
     db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
+    if [[ ! -f "${db}" ]]; then
+       continue
+    fi
     rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
     num_cycles=$(echo "${rocoto_stat_output}" | wc -l) || true
     num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
@@ -116,6 +120,7 @@ for pr in ${pr_list}; do
        echo "Error logs:"
        echo "${error_logs}"
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}" 
+      sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" "${pr_list_dbfile}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
@@ -130,6 +135,7 @@ for pr in ${pr_list}; do
         echo "Experiment ${pslot} Completed at $(date)" || true
         echo "with ${num_succeeded} successfully completed jobs" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+      sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       #Remove Experment cases that completed successfully
       rm -Rf "${pr_dir}/RUNTESTS/${pslot}"

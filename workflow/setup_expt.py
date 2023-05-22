@@ -229,14 +229,15 @@ def fill_EXPDIR(inputs):
 def update_configs(host, inputs):
 
     def _update_defaults(dict_in: dict) -> dict:
-        defaults = dict_in.pop('defaults', dict())
-        return AttrDict(defaults, **dict_in)
+        defaults = dict_in.pop('defaults', AttrDict())
+        defaults.update(dict_in)
+        return defaults
 
     # Read in the YAML file to fill out templates and override host defaults
     data = AttrDict(host.info, **inputs.__dict__)
     data.HOMEgfs = _top
     yaml_path = inputs.yaml
-    yaml_dict = _update_defaults(parse_j2yaml(yaml_path, data))
+    yaml_dict = _update_defaults(AttrDict(parse_j2yaml(yaml_path, data)))
 
     # First update config.base
     edit_baseconfig(host, inputs, yaml_dict)

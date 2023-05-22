@@ -35,12 +35,12 @@ module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
 set -eux
-rocotorun=$(which rocotorun)
-if [[ -z ${var+x} ]]; then
-  echo "rocotorun being used from ${rocotorun}"
-else
+rocotorun=$(command -v rocotorun)
+if [[ -z ${rocotorun} ]]; then
   echo "rocotorun not found on system"
   exit 1
+else
+  echo "rocotorun being used from ${rocotorun}"
 fi
 
 pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
@@ -50,7 +50,7 @@ if [[ -f "${pr_list_dbfile}" ]]; then
   pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Running | awk '{print $1}' | head -"${max_concurrent_pr}") || true
 fi
 if [[ -z "${pr_list}" ]]; then
-  echo "no PRs open and ready for checkout/build .. exiting"
+  echo "no open and built PRs that are ready for the cases to advance with rocotorun .. exiting"
   exit 0
 fi
 
