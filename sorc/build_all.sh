@@ -84,8 +84,9 @@ fi
 #------------------------------------
 # SOURCE BUILD VERSION FILES
 #------------------------------------
-source ../versions/build.ver
-source ../versions/${MACHINE_ID}.ver
+# TODO: Commented out until components aligned for build
+#source ../versions/build.ver
+#source ../versions/${MACHINE_ID}.ver
 
 #------------------------------------
 # INCLUDE PARTIAL BUILD
