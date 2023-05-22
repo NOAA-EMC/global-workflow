@@ -68,8 +68,11 @@ if [[ ${type} = "gfs" ]]; then
         echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmanl.nc"
         echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}sfcanl.nc"
         echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmi*.nc"
-        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}dtfanl.nc"
-        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}loginc.txt"
+        gsida_files=("dtfanl.nc"
+                     "loginc.txt")
+        for file in "${gsida_files[@]}"; do
+          [[ -s ${COM_ATMOS_ANALYSIS}/${head}${file} ]] && echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}${file}"
+	done
       } >> gfs_netcdfa.txt
     fi
 
@@ -92,10 +95,21 @@ if [[ ${type} = "gfs" ]]; then
     echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/input.nml"
 
     if [[ ${MODE} = "cycled" ]]; then
-      echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}gsistat"
-      echo "${COM_OBS/${ROTDIR}\//}/${head}nsstbufr"
-      echo "${COM_OBS/${ROTDIR}\//}/${head}prepbufr"
-      echo "${COM_OBS/${ROTDIR}\//}/${head}prepbufr.acft_profiles"
+      if [[ -s "${COM_ATMOS_ANALYSIS}/${head}gsistat" ]]; then      
+         echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}gsistat"
+      fi
+      gsiob_files=("nsstbufr"
+                   "prepbufr"
+                   "prepbufr.acft_profiles")
+      for file in "${gsiob_files[@]}"; do
+        [[ -s ${COM_OBS}/${head}${file} ]] && echo "${COM_OBS/${ROTDIR}\//}/${head}${file}"
+      done
+      if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atmvar.yaml" ]]; then
+         echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmvar.yaml"
+      fi
+      if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atmstat" ]]; then
+         echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmstat"
+      fi
     fi
 
     echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl"
@@ -310,13 +324,21 @@ if [[ ${type} == "gdas" ]]; then
 
   #..................
   {
-    echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}gsistat"
     echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl"
     echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl.idx"
     echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl"
     echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl.idx"
     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmanl.nc"
     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}sfcanl.nc"
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atmvar.yaml" ]]; then
+       echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmvar.yaml"
+    fi
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atmstat" ]]; then
+       echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmstat"
+    fi
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}gsistat" ]]; then
+       echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}gsistat"
+    fi
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atmanl.ensres.nc" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmanl.ensres.nc"
     fi
@@ -375,16 +397,31 @@ if [[ ${type} == "gdas" ]]; then
   fi
 
   {
-    echo "${COM_OBS/${ROTDIR}\//}/${head}nsstbufr"
-    echo "${COM_OBS/${ROTDIR}\//}/${head}prepbufr"
-    echo "${COM_OBS/${ROTDIR}\//}/${head}prepbufr.acft_profiles"
-    echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}abias"
-    echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}abias_air"
-    echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}abias_int"
-    echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}abias_pc"
+    gsiob_files=("nsstbufr"
+                 "prepbufr"
+                 "prepbufr.acft_profiles")
+    for file in "${gsiob_files[@]}"; do
+      [[ -s ${COM_OBS}/${head}${file} ]] && echo "${COM_OBS/${ROTDIR}\//}/${head}${file}"
+    done
+    
+    gsida_files=("abias"
+                 "abias_air"
+                 "abias_int"
+                 "abias_pc"
+                 "dtfanl.nc"
+                 "loginc.txt")
+    for file in "${gsida_files[@]}"; do
+      [[ -s ${COM_ATMOS_ANALYSIS}/${head}${file} ]] && echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}${file}"
+    done
+
+    ufsda_files=("amsua_n19.satbias.nc4"
+                 "amsua_n19.satbias_cov.nc4"
+                 "amsua_n19.tlapse.txt")
+    for file in "${ufsda_files[@]}"; do
+      [[ -s ${COM_ATMOS_ANALYSIS}/${head}${file} ]] && echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}${file}"
+    done
+
     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmi*nc"
-    echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}dtfanl.nc"
-    echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}loginc.txt"
 
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile1.nc"
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile2.nc"
@@ -487,17 +524,21 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
   touch "${RUN}.txt"
 
   {
-    echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}enkfstat"
-    echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}gsistat.ensmean"
-    if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}cnvstat.ensmean" ]]; then
-         echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}cnvstat.ensmean"
-    fi
-    if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}oznstat.ensmean" ]]; then
-         echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}oznstat.ensmean"
-    fi
-    if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}radstat.ensmean" ]]; then
-         echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}radstat.ensmean"
-    fi
+    gsida_files=("enkfstat"
+                 "gsistat.ensmean" 
+                 "cnvstat.ensmean"
+                 "oznstat.ensmean"
+                 "radstat.ensmean")
+    for file in "${gsida_files[@]}"; do
+      [[ -s ${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}${file} ]] && echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}${file}"
+    done
+
+    ufsda_files=("atmens.yaml"
+                 "atmensstat")
+    for file in "${ufsda_files[@]}"; do
+      [[ -s ${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}${file} ]] && echo "${COM_ATMOS_ANALYSIS_ENSSTAT/${ROTDIR}\//}/${head}${file}"
+    done
+
     for FHR in "${nfhrs[@]}"; do  # loop over analysis times in window
       if [[ ${FHR} -eq 6 ]]; then
         if [[ -s "${COM_ATMOS_ANALYSIS_ENSSTAT}/${head}atmanl.ensmean.nc" ]]; then
