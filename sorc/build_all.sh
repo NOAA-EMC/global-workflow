@@ -260,24 +260,6 @@ if [[ ${Build_ufs_utils} == 'true' ]]; then
 fi
 
 #------------------------------------
-# build gfs_wafs - optional checkout
-#------------------------------------
-if [[ -d gfs_wafs.fd ]]; then
-  if [[ ${Build_gfs_wafs} == 'true' ]]; then
-    echo " .... Building gfs_wafs  .... "
-    # shellcheck disable=SC2086,SC2248
-    ./build_gfs_wafs.sh ${_verbose_opt} > "${logs_dir}/build_gfs_wafs.log" 2>&1
-    # shellcheck disable=
-    rc=$?
-    if (( rc != 0 )) ; then
-      echo "Fatal error in building gfs_wafs."
-      echo "The log file is in ${logs_dir}/build_gfs_wafs.log"
-    fi
-    err=$((err + rc))
-  fi
-fi
-
-#------------------------------------
 # Exception Handling
 #------------------------------------
 if (( err != 0 )); then
