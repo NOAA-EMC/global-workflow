@@ -155,6 +155,17 @@ class LandAnalysis(Analysis):
 
     @logit(logger)
     def initialize(self: Analysis) -> None:
+        """Initialize method for Land analysis
+        This method:
+        - creates artifacts in the DATA directory by copying fix files
+        - creates the JEDI LETKF yaml from the template
+        - stages backgrounds, observations and ensemble members
+
+        Parameters
+        ----------
+        self : Analysis
+            Instance of the LandAnalysis object
+        """
 
         super().initialize()
 
@@ -190,40 +201,62 @@ class LandAnalysis(Analysis):
         # need output dir for diags and anl
         logger.info("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
-            os.path.join(localconf.DATA, 'anl'),
-            os.path.join(localconf.DATA, 'diags'),
+            os.path.join(localconf.DATA, "anl"),
+            os.path.join(localconf.DATA, "diags"),
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
     def execute(self: Analysis) -> None:
+        """Run a series of tasks to create Snow analysis
+        This method:
+        - creates an 2 member ensemble
+        - runs the JEDI LETKF executable to produce increments
+        - creates analysis from increments
+
+        Parameters
+        ----------
+        self : Analysis
+           Instance of the LandAnalysis object
+        """
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_LAND_ANALYSIS', 'APREFIX',
+                'SNOWDEPTHVAR', 'BESTDDEV',
                 'FRACGRID', 'CASE', 'ntiles',
-                'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR',
-                'APRUN_LANDANL']
+                'APRUN_LANDANL', 'JEDIEXE', 'jedi_yaml',
+                'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
             localconf[key] = self.task_config[key]
 
         logger.info("Creating ensemble")
-        self.create_ensemble(self.task_config.SNOWDEPTHVAR,
-                             self.task_config.BESTDDEV,
+        self.create_ensemble(localconf.SNOWDEPTHVAR,
+                             localconf.BESTDDEV,
                              AttrDict({key: localconf[key] for key in ['DATA', 'ntiles', 'current_cycle']}))
 
         logger.info("Running JEDI LETKF")
         self.execute_jediexe(localconf.DATA,
-                             self.task_config.APRUN_LANDANL,
-                             os.path.basename(self.task_config.JEDIEXE),
-                             self.task_config.jedi_yaml)
+                             localconf.APRUN_LANDANL,
+                             os.path.basename(localconf.JEDIEXE),
+                             localconf.jedi_yaml)
 
         logger.info("Creating analysis from backgrounds and increments")
         self.add_increments(localconf)
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
+        """Performs closing actions of the Land analysis task
+        This method:
+        - copies analysis back to COM/ from DATA/
+        - tar and gzips the JEDI diagnostic files
+
+        Parameters
+        ----------
+        self : Analysis
+            Instance of the LandAnalysis object
+        """
 
         logger.info("Create diagnostic tarball of diag*.nc4 files")
         statfile = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config.APREFIX}landstat.tgz")
@@ -414,10 +447,8 @@ class LandAnalysis(Analysis):
             All other exceptions
         """
 
-        cwd = os.getcwd()
-        os.chdir(os.path.join(config.DATA, "anl"))
-
-        logger.info("Copy backgrounds into anl/ directory")
+        # need backgrounds to create analysis from increments after LETKF
+        logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")
         template = f'{to_fv3time(config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
         anllist = []
         for itile in range(1, config.ntiles + 1):
@@ -427,27 +458,26 @@ class LandAnalysis(Analysis):
             anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
-        config.FRACGRID = ".true." if config.FRACGRID else ".false."  # TODO: update the executable to take Boolean logicals, not character strings
+        config.FRACGRID = ".true." if config.FRACGRID else ".false."
         logger.info("Create namelist for APPLY_INCR_EXE")
         nml_template = config.APPLY_INCR_NML_TMPL
         nml_data = Jinja(nml_template, config).render
         logger.debug(f"apply_incr_nml:\n{nml_data}")
 
-        nml_file = os.path.join(config.DATA, "anl", "apply_incr_nml")
+        nml_file = os.path.join(config.DATA, "apply_incr_nml")
         with open(nml_file, "w") as fho:
             fho.write(nml_data)
 
         logger.info("Link APPLY_INCR_EXE into DATA/")
         exe_src = config.APPLY_INCR_EXE
-        exe_dest = os.path.join(config.DATA, "anl", os.path.basename(exe_src))
+        exe_dest = os.path.join(config.DATA, os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
         # execute APPLY_INCR_EXE to create analysis files
-        #exe = Executable(config.APRUN_APPLY_INCR)  # TODO: Q. this should be used, not APRUN_LANDANL
-        exe = Executable(config.APRUN_LANDANL)
-        exe.add_default_arg(os.path.join(config.DATA, "anl", os.path.basename(exe_src)))
+        exe = Executable(config.APRUN_APPLY_INCR)
+        exe.add_default_arg(os.path.join(config.DATA, os.path.basename(exe_src)))
         logger.info(f"Executing {exe}")
         try:
             exe()
@@ -455,5 +485,3 @@ class LandAnalysis(Analysis):
             raise OSError(f"Failed to execute {exe}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exe}")
-
-        os.chdir(cwd)
