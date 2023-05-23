@@ -29,9 +29,9 @@ export nco_ver=4.7.9
 export grib_util_ver=1.2.3
 export bufr_dump_ver=1.0.0
 export util_shared_ver=1.4.0
+export g2tmpl_ver=1.10.0
 export ncdiag_ver=1.0.0
 export crtm_ver=2.4.0
-export g2tmpl_ver=1.10.0
 export wgrib2_ver=2.0.8
 
 export NET=gfs
