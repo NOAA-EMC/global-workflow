@@ -260,7 +260,7 @@ class LandAnalysis(Analysis):
 
         logger.info("Create diagnostic tarball of diag*.nc4 files")
         statfile = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config.APREFIX}landstat.tgz")
-        self.tar_jedidiags(statfile, self.task_config.DATA)
+        self.tgz_diags(statfile, self.task_config.DATA)
 
         logger.info("Copy analysis to COM")
         template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'

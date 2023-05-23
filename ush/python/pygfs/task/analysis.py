@@ -3,14 +3,13 @@
 import os
 import glob
 import tarfile
-import gzip
 from logging import getLogger
 from netCDF4 import Dataset
 from typing import List, Dict, Any, Union
 
 from pygw.yaml_file import parse_j2yaml
 from pygw.file_utils import FileHandler
-from pygw.fsutils import rm_p, chdir
+from pygw.fsutils import rm_p
 from pygw.logger import logit
 from pygw.task import Task
 from pygw.executable import Executable
@@ -231,7 +230,7 @@ class Analysis(Task):
             All other exceptions
         """
 
-        chdir(DATA)
+        os.chdir(DATA)
 
         exec_cmd = Executable(aprun_cmd)
         exec_cmd.add_default_arg([os.path.join(DATA, jedi_exec), jedi_yaml])
@@ -248,7 +247,7 @@ class Analysis(Task):
 
     @staticmethod
     @logit(logger)
-    def tar_jedidiags(statfile, DATA):
+    def tgz_diags(statfile, DATA):
         """tar and gzip the diagnostic files resulting from a JEDI analysis.
 
         Parameters
@@ -264,7 +263,7 @@ class Analysis(Task):
 
         logger.info(f"Compressing {len(diags)} diag files to {statfile}")
 
-        # Open tar file for writing
+        # Open tar.gz file for writing
         with tarfile.open(statfile, "w:gz") as tgz:
             # Add diag files to tarball
             for diagfile in diags:
