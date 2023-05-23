@@ -25,7 +25,7 @@ fhrs=($(seq 3 9))
 link_master_to_fhr "jenkfgdas_post" "${fhrs}"
 
 # GDAS post files
-cd "${ECF_DIR}"/scripts/gdas/atmos/post
+cd "${ECF_DIR}/scripts/gdas/atmos/post"
 echo "Linking gdas/atmos/post ..."
 rm -f jgdas_atmos_post_anl.ecf
 ln -sf jgdas_atmos_post_master.ecf jgdas_atmos_post_anl.ecf
