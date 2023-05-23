@@ -9,6 +9,7 @@ export cmake_ver=3.22.1
 
 export gempak_ver=7.5.1
 export ncl_ver=6.6.2
+export libpng_ver=1.6.35
 export cdo_ver=1.9.5
 export nco_ver=4.8.1
 export prod_util_ver=1.2.2

@@ -20,6 +20,9 @@ export perl_ver=5.32.0
 export libjpeg_ver=9c
 export udunits_ver=2.2.28
 export gsl_ver=2.7
+export jasper_ver=2.0.25
+export zlib_ver=1.2.11
+export libpng_ver=1.6.37
 export cdo_ver=1.9.8
 
 export hdf5_ver=1.10.6

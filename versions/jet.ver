@@ -11,6 +11,7 @@ export anaconda_ver=5.3.1
 
 export gempak_ver=7.4.2
 export ncl_ver=6.6.2
+export libpng_ver=1.6.35
 export cdo_ver=1.9.5
 export R_ver=4.0.2
 export nco_ver=4.9.1
