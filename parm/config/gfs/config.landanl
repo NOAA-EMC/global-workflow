@@ -20,7 +20,12 @@ export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/${obs_list_name}
 export JEDIEXE="${HOMEgfs}/exec/fv3jedi_letkf.x"
 export JEDIYAML="${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml"
 
+# Ensemble member properties
+export SNOWDEPTHVAR="snwdph"  # if FRACGRID=NO, else "snodl"
+export BESTDDEV="30."  # Background Error Std. Dev. for LETKFOI
+
 # Name of the executable that applies increment to bkg and its namelist template
+export FRACGRID="yes"
 export APPLY_INCR_EXE="${HOMEgfs}/exec/apply_incr.exe"
 export APPLY_INCR_NML_TMPL="${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/apply_incr_nml.j2"
 

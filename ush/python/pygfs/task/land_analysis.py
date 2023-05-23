@@ -9,7 +9,7 @@ from netCDF4 import Dataset
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
-from pygw.timetools import to_fv3time, to_YMD, to_YMDH
+from pygw.timetools import to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime
 from pygw.fsutils import rm_p
 from pygw.yaml_file import parse_j2yaml, parse_yamltmpl, save_as_yaml
 from pygw.jinja import Jinja
@@ -27,18 +27,26 @@ class LandAnalysis(Analysis):
     """
 
     NMEM_LANDENS = 2  # The size of the land ensemble is fixed at 2.  Does this need to be a variable?
-    BESTDDEV = 30.  # Background Error Std. Dev. for LETKFOI e.g. 30.  This needs to be user configurable
 
     @logit(logger, name="LandAnalysis")
     def __init__(self, config):
         super().__init__(config)
 
+        _res = int(self.config['CASE'][1:])
+        _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
         _letkfoi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
+                'npx_ges': _res + 1,
+                'npy_ges': _res + 1,
+                'npz_ges': self.config.LEVS - 1,
+                'npz': self.config.LEVS - 1,
+                'LAND_WINDOW_BEGIN': _window_begin,
+                'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
+                'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'jedi_yaml': _letkfoi_yaml
             }
         )
@@ -192,15 +200,17 @@ class LandAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['DATA', 'current_cycle',
-                'COM_LAND_ANALYSIS', 'APREFIX',
+        keys = ['HOMEgfs', 'DATA', 'current_cycle',
+                'COM_ATMOS_RESTART_PREV', 'COM_LAND_ANALYSIS', 'APREFIX',
                 'FRACGRID', 'CASE', 'ntiles',
-                'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
+                'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR',
+                'APRUN_LANDANL']
         for key in keys:
             localconf[key] = self.task_config[key]
 
         logger.info("Creating ensemble")
         self.create_ensemble(self.task_config.SNOWDEPTHVAR,
+                             self.task_config.BESTDDEV,
                              AttrDict({key: localconf[key] for key in ['DATA', 'ntiles', 'current_cycle']}))
 
         logger.info("Running JEDI LETKF")
@@ -229,8 +239,9 @@ class LandAnalysis(Analysis):
             anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
+    @staticmethod
     @logit(logger)
-    def get_bkg_dict(self, config: Dict) -> Dict[str, List[str]]:
+    def get_bkg_dict(config: Dict) -> Dict[str, List[str]]:
         """Compile a dictionary of model background files to copy
 
         This method constructs a dictionary of FV3 RESTART files (coupler, sfc_data)
@@ -238,8 +249,6 @@ class LandAnalysis(Analysis):
 
         Parameters
         ----------
-        self: Analysis
-            Instance of the current object class
         config: Dict
             Dictionary of key-value pairs needed in this method
             Should contain the following keys:
@@ -279,16 +288,15 @@ class LandAnalysis(Analysis):
         }
         return bkg_dict
 
+    @staticmethod
     @logit(logger)
-    def get_ens_bkg_dict(self: Analysis, config: Dict) -> Dict:
+    def get_ens_bkg_dict(config: Dict) -> Dict:
         """Compile a dictionary of model background files to copy for the ensemble
         Note that a "Fake" 2-member ensemble backgroud is being created by copying FV3 RESTART files (coupler, sfc_data)
         from the deterministic background to DATA/bkg/mem001, 002.
 
          Parameters
          ----------
-         self: Analysis
-             Instance of the current object class
          config: Dict
              Dictionary of key-value pairs needed in this method
              Should contain the following keys:
@@ -303,6 +311,7 @@ class LandAnalysis(Analysis):
              a dictionary containing the list of model background files to copy for FileHandler
          """
 
+        dirlist = []
         bkglist = []
 
         # get FV3 sfc_data RESTART files; Note an ensemble is being created
@@ -312,6 +321,7 @@ class LandAnalysis(Analysis):
             memchar = f"mem{imem:03d}"
 
             run_dir = os.path.join(config.DATA, 'bkg', memchar, 'RESTART')
+            dirlist.append(run_dir)
 
             # Land DA needs coupler
             basename = f'{to_fv3time(config.current_cycle)}.coupler.res'
@@ -325,13 +335,15 @@ class LandAnalysis(Analysis):
                     bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
 
         bkg_dict = {
-            'copy': bkglist,
+            'mkdir': dirlist,
+            'copy': bkglist
         }
 
         return bkg_dict
 
+    @staticmethod
     @logit(logger)
-    def create_ensemble(vname: str, config: Dict):
+    def create_ensemble(vname: str, bestddev: float, config: Dict) -> None:
         """Create an ensemble for Snow Depth analysis by perturbing snow depth with a prescribed variance.
         Additionally, remove glacier locations
 
@@ -339,6 +351,8 @@ class LandAnalysis(Analysis):
         ----------
         vname : str
             snow depth variable to perturb. "snowdl" or "snwdph" depending on FRACGRID (YES or NO)
+        bestddev : float
+            Background Error Standard Deviation to perturb around to create ensemble
         config: Dict
             Dictionary of key-value pairs needed in this method.  It must contain the following keys:
             DATA
@@ -347,7 +361,7 @@ class LandAnalysis(Analysis):
         """
 
         # 2 ens members
-        offset = LandAnalysis.BESTDDEV / np.sqrt(LandAnalysis.NMEM_LANDENS)
+        offset = bestddev / np.sqrt(LandAnalysis.NMEM_LANDENS)
 
         logger.info(f"Creating ensemble for LETKFOI by offsetting with {offset}")
 
@@ -361,7 +375,8 @@ class LandAnalysis(Analysis):
             for tt in range(1, config.ntiles + 1):
                 logger.debug(f"perturbing tile {tt}")
                 # open file
-                out_netcdf = os.path.join(workdir, memchar, f"{to_fv3time(config.current_cycle)}.sfc_data.tile{tt}.nc")
+                out_netcdf = os.path.join(workdir, memchar, 'RESTART', f"{to_fv3time(config.current_cycle)}.sfc_data.tile{tt}.nc")
+                logger.debug(f"creating member {out_netcdf}")
                 with Dataset(out_netcdf, "r+") as ncOut:
                     slmsk_array = ncOut.variables['slmsk'][:]
                     vtype_array = ncOut.variables['vtype'][:]
@@ -370,6 +385,7 @@ class LandAnalysis(Analysis):
                     var_array[slmsk_array == 1] = var_array[slmsk_array == 1] + value * offset
                     ncOut.variables[vname][0, :, :] = var_array[:]
 
+    @staticmethod
     @logit(logger)
     def add_increments(config: Dict) -> None:
         """Executes the program "apply_incr.exe" to create analysis "sfc_data" files by adding increments to backgrounds
@@ -379,6 +395,8 @@ class LandAnalysis(Analysis):
          config: Dict
              Dictionary of key-value pairs needed in this method
              Should contain the following keys:
+             HOMEgfs
+             COM_ATMOS_RESTART_PREV
              DATA
              current_cycle
              FRACGRID
@@ -396,35 +414,40 @@ class LandAnalysis(Analysis):
             All other exceptions
         """
 
+        cwd = os.getcwd()
+        os.chdir(os.path.join(config.DATA, "anl"))
+
         logger.info("Copy backgrounds into anl/ directory")
         template = f'{to_fv3time(config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
         anllist = []
         for itile in range(1, config.ntiles + 1):
             filename = template.format(tilenum=itile)
-            src = os.path.join(config.DATA, 'bkg', filename)
-            dest = os.path.join(config.DATA, 'anl', filename)
+            src = os.path.join(config.COM_ATMOS_RESTART_PREV, filename)
+            dest = os.path.join(config.DATA, "anl", filename)
             anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
+        config.FRACGRID = ".true." if config.FRACGRID else ".false."  # TODO: update the executable to take Boolean logicals, not character strings
         logger.info("Create namelist for APPLY_INCR_EXE")
         nml_template = config.APPLY_INCR_NML_TMPL
         nml_data = Jinja(nml_template, config).render
         logger.debug(f"apply_incr_nml:\n{nml_data}")
 
-        nml_file = os.path.join(config.DATA, "apply_incr_nml")
+        nml_file = os.path.join(config.DATA, "anl", "apply_incr_nml")
         with open(nml_file, "w") as fho:
             fho.write(nml_data)
 
         logger.info("Link APPLY_INCR_EXE into DATA/")
         exe_src = config.APPLY_INCR_EXE
-        exe_dest = os.path.join(config.DATA, os.path.basename(exe_src))
+        exe_dest = os.path.join(config.DATA, "anl", os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
         # execute APPLY_INCR_EXE to create analysis files
-        exe = Executable(config.APRUN_APPLY_INCR)
-        exe.add_default_arg(os.path.join(config.DATA, os.path.basename(exe_src)))
+        #exe = Executable(config.APRUN_APPLY_INCR)  # TODO: Q. this should be used, not APRUN_LANDANL
+        exe = Executable(config.APRUN_LANDANL)
+        exe.add_default_arg(os.path.join(config.DATA, "anl", os.path.basename(exe_src)))
         logger.info(f"Executing {exe}")
         try:
             exe()
@@ -432,3 +455,5 @@ class LandAnalysis(Analysis):
             raise OSError(f"Failed to execute {exe}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exe}")
+
+        os.chdir(cwd)

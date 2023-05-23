@@ -22,4 +22,4 @@ if __name__ == '__main__':
     anl = LandAnalysis(config)
     anl.initialize()
     anl.execute()
-    anl.finalize()
+    #anl.finalize()

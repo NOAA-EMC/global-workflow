@@ -1,8 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA=${DATA:-${DATAROOT}/${RUN}landanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "landanlinit" -c "base landanl landanlinit"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "landanl" -c "base landanl"
 
 ##############################################
 # Set variables used in the script
@@ -21,8 +20,6 @@ GDUMP="gdas"
 YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_LAND_ANALYSIS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
-    COM_LAND_ANALYSIS_PREV:COM_LAND_ANALYSIS_TMPL \
-    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
 mkdir -m 775 -p "${COM_LAND_ANALYSIS}"
