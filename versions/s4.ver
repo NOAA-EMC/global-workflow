@@ -12,6 +12,7 @@ export ncl_ver=6.4.0-precompiled
 export R_ver=4.0.2
 export nco_ver=4.9.3
 export prod_util_ver=1.2.2
+export grib_util_ver=1.2.2
 
 export tracker_ver=feature-GFSv17_com_reorg
 export fit2obs_ver=1.0.0
