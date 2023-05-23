@@ -14,7 +14,7 @@ ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
 
 # Set whether to archive downstream products
 DO_DOWN=${DO_DOWN:-"NO"}
-if [[ ${DO_BUFRSND} = "YES" || ${WAFSF} = "YES" ]]; then
+if [[ ${DO_BUFRSND} = "YES" ]]; then
   export DO_DOWN="YES"
 fi
 
@@ -95,7 +95,7 @@ if [[ ${type} = "gfs" ]]; then
     echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/input.nml"
 
     if [[ ${MODE} = "cycled" ]]; then
-      if [[ -s "${COM_ATMOS_ANALYSIS}/${head}gsistat" ]]; then      
+      if [[ -s "${COM_ATMOS_ANALYSIS}/${head}gsistat" ]]; then
          echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}gsistat"
       fi
       gsiob_files=("nsstbufr"
@@ -140,16 +140,6 @@ if [[ ${type} = "gfs" ]]; then
         echo "${COM_ATMOS_WMO/${ROTDIR}\//}/gfs_collective*.postsnd_${cyc}"
         echo "${COM_ATMOS_BUFR/${ROTDIR}\//}/bufr.t${cyc}z"
         echo "${COM_ATMOS_BUFR/${ROTDIR}\//}/gfs.t${cyc}z.bufrsnd.tar.gz"
-      fi
-      if [[ ${WAFSF} = "YES" ]]; then
-        echo "${COM_ATMOS_WAFS/${ROTDIR}\//}/wafsgfs*.t${cyc}z.gribf*.grib2"
-        echo "${COM_ATMOS_WAFS/${ROTDIR}\//}/gfs.t${cyc}z.wafs_grb45f*.grib2"
-        echo "${COM_ATMOS_WAFS/${ROTDIR}\//}/gfs.t${cyc}z.wafs_grb45f*.nouswafs.grib2"
-        echo "${COM_ATMOS_WAFS/${ROTDIR}\//}/WAFS_blended_${PDY}${cyc}f*.grib2"
-        echo "${COM_ATMOS_WAFS/${ROTDIR}\//}/gfs.t*z.gcip.f*.grib2"
-        echo "${COM_ATMOS_WAFS/${ROTDIR}\//}/gfs.t${cyc}z.wafs_0p25.f*.grib2"
-        echo "${COM_ATMOS_WAFS/${ROTDIR}\//}/gfs.t${cyc}z.wafs_0p25_unblended.f*.grib2"
-        echo "${COM_ATMOS_WAFS/${ROTDIR}\//}/WAFS_0p25_blended_${PDY}${cyc}f*.grib2"
       fi
     fi
   } >> gfs_downstream.txt
@@ -403,7 +393,7 @@ if [[ ${type} == "gdas" ]]; then
     for file in "${gsiob_files[@]}"; do
       [[ -s ${COM_OBS}/${head}${file} ]] && echo "${COM_OBS/${ROTDIR}\//}/${head}${file}"
     done
-    
+
     gsida_files=("abias"
                  "abias_air"
                  "abias_int"
@@ -525,7 +515,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
 
   {
     gsida_files=("enkfstat"
-                 "gsistat.ensmean" 
+                 "gsistat.ensmean"
                  "cnvstat.ensmean"
                  "oznstat.ensmean"
                  "radstat.ensmean")
