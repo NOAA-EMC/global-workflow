@@ -92,25 +92,28 @@ for fhr in ${fhrlst}; do
       status=$?
       [[ ${status} -ne 0 ]] && exit "${status}"
     fi
-    if [[ -f "${COM_OCEAN_XSECT}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc" ]]; then
-       echo "File ${COM_OCEAN_XSECT}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc already exists"
-    else
-      ncks -v temp -d yh,503 -d xh,-299.92,60.03 \
-        "${COM_OCEAN_3D}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc" \
-        "${COM_OCEAN_XSECT}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc"
-      status=$?
-      [[ ${status} -ne 0 ]] && exit "${status}"
-    fi
-    if [[ -f "${COM_OCEAN_XSECT}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc" ]]; then
-       echo "File ${COM_OCEAN_XSECT}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc already exists"
-    else
-      ncks -v uo -d yh,503 -d xh,-299.92,60.03 \
-        "${COM_OCEAN_3D}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc" \
-        "${COM_OCEAN_XSECT}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc"
-      status=$?
-      [[ ${status} -ne 0 ]] && exit "${status}"
-    fi
-  fi
+    if [[ ${OCNRES} == "025" ]]; then
+      #TODO: the following code is hard-coded for OCNRES=025
+      if [[ -f "${COM_OCEAN_XSECT}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc" ]]; then
+        echo "File ${COM_OCEAN_XSECT}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc already exists"
+      else
+        ncks -v temp -d yh,503 -d xh,-299.92,60.03 \
+          "${COM_OCEAN_3D}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc" \
+          "${COM_OCEAN_XSECT}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc"
+        status=$?
+        [[ ${status} -ne 0 ]] && exit "${status}"
+      fi
+      if [[ -f "${COM_OCEAN_XSECT}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc" ]]; then
+        echo "File ${COM_OCEAN_XSECT}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc already exists"
+      else
+        ncks -v uo -d yh,503 -d xh,-299.92,60.03 \
+          "${COM_OCEAN_3D}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc" \
+          "${COM_OCEAN_XSECT}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc"
+        status=$?
+        [[ ${status} -ne 0 ]] && exit "${status}"
+      fi
+    fi 
+  fi 
 done
 
 # clean up working folder
