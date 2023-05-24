@@ -86,7 +86,6 @@ fi
 #------------------------------------
 # TODO: Commented out until components aligned for build
 #source ../versions/build.ver
-#source ../versions/${MACHINE_ID}.ver
 
 #------------------------------------
 # INCLUDE PARTIAL BUILD
