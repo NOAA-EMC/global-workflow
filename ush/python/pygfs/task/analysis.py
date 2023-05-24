@@ -44,7 +44,7 @@ class Analysis(Task):
         self.link_jediexe()
 
     @logit(logger)
-    def get_obs_dict(self: Task) -> Dict[str, Any]:
+    def get_obs_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
         This method uses the OBS_LIST configuration variable to generate a dictionary
@@ -76,7 +76,7 @@ class Analysis(Task):
         return obs_dict
 
     @logit(logger)
-    def get_bias_dict(self: Task) -> Dict[str, Any]:
+    def get_bias_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
         This method uses the OBS_LIST configuration variable to generate a dictionary
@@ -180,7 +180,7 @@ class Analysis(Task):
         return berror_dict
 
     @logit(logger)
-    def link_jediexe(self: Task) -> None:
+    def link_jediexe(self) -> None:
         """Compile a dictionary of background error files to copy
 
         This method links a JEDI executable to the run directory
@@ -207,14 +207,14 @@ class Analysis(Task):
 
     @staticmethod
     @logit(logger)
-    def execute_jediexe(DATA: Union[str, os.PathLike], aprun_cmd: str, jedi_exec: str, jedi_yaml: str) -> None:
+    def execute_jediexe(workdir: Union[str, os.PathLike], aprun_cmd: str, jedi_exec: str, jedi_yaml: str) -> None:
         """
         Run a JEDI executable
 
         Parameters
         ----------
-        DATA : str | os.PathLike
-            Run directory where to run containing the necessary files and executable
+        workdir : str | os.PathLike
+            Working directory where to run containing the necessary files and executable
         aprun_cmd : str
             Launcher command e.g. mpirun -np <ntasks> or srun, etc.
         jedi_exec : str
@@ -225,15 +225,15 @@ class Analysis(Task):
         Raises
         ------
         OSError
-           Failure due to OS issues
+            Failure due to OS issues
         WorkflowException
             All other exceptions
         """
 
-        os.chdir(DATA)
+        os.chdir(workdir)
 
         exec_cmd = Executable(aprun_cmd)
-        exec_cmd.add_default_arg([os.path.join(DATA, jedi_exec), jedi_yaml])
+        exec_cmd.add_default_arg([os.path.join(workdir, jedi_exec), jedi_yaml])
 
         logger.info(f"Executing {exec_cmd}")
         try:
@@ -247,19 +247,19 @@ class Analysis(Task):
 
     @staticmethod
     @logit(logger)
-    def tgz_diags(statfile, DATA):
+    def tgz_diags(statfile, diagdir ):
         """tar and gzip the diagnostic files resulting from a JEDI analysis.
 
         Parameters
         ----------
         statfile : str | os.PathLike
             Path to the output .tar.gz .tgz file that will contain the diag*.nc4 files e.g. atmstat.tgz
-        DATA : str | os.PathLike
+        diagdir : str | os.PathLike
             Directory containing JEDI diag files
         """
 
         # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(DATA, 'diags', 'diag*nc4'))
+        diags = glob.glob(os.path.join(diagdir, 'diags', 'diag*nc4'))
 
         logger.info(f"Compressing {len(diags)} diag files to {statfile}")
 

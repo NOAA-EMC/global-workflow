@@ -55,7 +55,7 @@ class LandAnalysis(Analysis):
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
 
     @logit(logger)
-    def prepare_IMS(self: Analysis) -> None:
+    def prepare_IMS(self) -> None:
         """Prepare the IMS data for a global land analysis
 
         This method will prepare IMS data for a global land analysis using JEDI.
@@ -154,7 +154,7 @@ class LandAnalysis(Analysis):
             FileHandler(prep_ims_config.ims2ioda).sync()
 
     @logit(logger)
-    def initialize(self: Analysis) -> None:
+    def initialize(self) -> None:
         """Initialize method for Land analysis
         This method:
         - creates artifacts in the DATA directory by copying fix files
@@ -207,7 +207,7 @@ class LandAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self: Analysis) -> None:
+    def execute(self) -> None:
         """Run a series of tasks to create Snow analysis
         This method:
         - creates an 2 member ensemble
@@ -246,7 +246,7 @@ class LandAnalysis(Analysis):
         self.add_increments(localconf)
 
     @logit(logger)
-    def finalize(self: Analysis) -> None:
+    def finalize(self) -> None:
         """Performs closing actions of the Land analysis task
         This method:
         - copies analysis back to COM/ from DATA/
@@ -377,7 +377,7 @@ class LandAnalysis(Analysis):
     @staticmethod
     @logit(logger)
     def create_ensemble(vname: str, bestddev: float, config: Dict) -> None:
-        """Create an ensemble for Snow Depth analysis by perturbing snow depth with a prescribed variance.
+        """Create a 2-member ensemble for Snow Depth analysis by perturbing snow depth with a prescribed variance.
         Additionally, remove glacier locations
 
         Parameters
