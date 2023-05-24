@@ -4,13 +4,36 @@ on:
     types: [labeled]
 
 jobs:
-  test:
+
+  passed:
     if: ${{ github.event.label.name == 'CI-Hera-Passed' }}
     runs-on: ubuntu-latest
 
     steps:
-    - name: Passed 
-      run: echo "CI Passed on NOAA RDHPCS Hera"
+    - name: Passed
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES}}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: hera.json
+        label: Hera
+        message: Passed
+        color: green
+
+  running:
+    if: ${{ github.event.label.name == 'CI-Hera-Running' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Running
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES}}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: hera.json
+        label: Hera
+        message: Running
+        color: yellow
 
   build:  
     if: ${{ github.event.label.name == 'CI-Hera-Building' }}
@@ -24,5 +47,8 @@ jobs:
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
         label: Hera
-        message: FooFitghter
+        message: Building
+        color: yellow
+        
+        
 
