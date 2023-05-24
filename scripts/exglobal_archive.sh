@@ -210,7 +210,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
         fi
 
         #for downstream products
-        if [ "${DO_BUFRSND}" = "YES" ] || [ "${WAFSF}" = "YES" ]; then
+        if [ "${DO_BUFRSND}" = "YES" ]; then
             targrp_list="${targrp_list} gfs_downstream"
         fi
 

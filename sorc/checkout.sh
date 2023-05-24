@@ -10,15 +10,13 @@ Clones and checks out external components necessary for
   cloning and just check out the requested version (unless
   -c option is used).
 
-Usage: ${BASH_SOURCE[0]} [-c][-h][-m ufs_hash][-o]
+Usage: ${BASH_SOURCE[0]} [-c][-h][-m ufs_hash]
   -c:
     Create a fresh clone (delete existing directories)
   -h:
     Print this help message and exit
   -m ufs_hash:
     Check out this UFS hash instead of the default
-  -o:
-    Check out operational-only code (GTG and WAFS)
   -g:
     Check out GSI for GSI-based DA
   -u:
@@ -108,8 +106,6 @@ function checkout() {
 export CLEAN="NO"
 checkout_gsi="NO"
 checkout_gdas="NO"
-checkout_gtg="NO"
-checkout_wafs="NO"
 
 # Parse command line arguments
 while getopts ":chgum:o" option; do
@@ -126,11 +122,6 @@ while getopts ":chgum:o" option; do
     u)
       echo "Received -u flag for optional checkout of UFS-based DA"
       checkout_gdas="YES"
-      ;;
-    o)
-      echo "Received -o flag for optional checkout of operational-only codes"
-      checkout_gtg="YES"
-      checkout_wafs="YES"
       ;;
     m)
       echo "Received -m flag with argument, will check out ufs-weather-model hash ${OPTARG} instead of default"
@@ -171,29 +162,6 @@ fi
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
   checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
   checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "45783e3"; errs=$((errs + $?))
-fi
-
-if [[ ${checkout_wafs} == "YES" ]]; then
-  checkout "gfs_wafs.fd" "https://github.com/NOAA-EMC/EMC_gfs_wafs.git" "014a0b8"; errs=$((errs + $?))
-fi
-
-if [[ ${checkout_gtg} == "YES" ]]; then
-  ################################################################################
-  # checkout_gtg
-  ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
-  #       Only approved persons/groups have access permission.
-  ## no:  No need to check out gtg code for general GFS users.
-  ################################################################################
-
-  echo "Checking out GTG extension for UPP"
-  cd "${topdir}/ufs_model.fd/FV3/upp" || exit 1
-  logfile="${logdir}/checkout_gtg.log"
-  git -c submodule."post_gtg.fd".update=checkout submodule update --init --recursive >> "${logfile}" 2>&1
-  status=$?
-  if (( status > 0 )); then
-    echo "WARNING: Error while checking out GTG"
-    errs=$((errs + status))
-  fi
 fi
 
 if (( errs > 0 )); then

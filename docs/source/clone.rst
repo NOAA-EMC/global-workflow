@@ -81,9 +81,9 @@ The ``checkout`` command will checkout BRANCH_NAME and switch your clone to that
 
 ::
 
-   git checkout my_branch          
+   git checkout my_branch
    git branch
-   * my_branch                    
+   * my_branch
    develop
 
 **********
@@ -103,12 +103,6 @@ Or with the ``-g`` switch to include data assimilation (GSI) for cycling:
 
    cd sorc
    ./checkout.sh -g
-
-If wishing to run with the operational GTG UPP and WAFS (only for select users) provide the ``-o`` flag with checkout.sh:
-
-::
-
-   ./checkout.sh -o
 
 Each component cloned via checkout.sh will have a log (``/sorc/logs/checkout-COMPONENT.log``). Check the screen output and logs for clone errors.
 
