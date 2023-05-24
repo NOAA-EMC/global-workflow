@@ -247,7 +247,7 @@ class Analysis(Task):
 
     @staticmethod
     @logit(logger)
-    def tgz_diags(statfile, diagdir ):
+    def tgz_diags(statfile: str, diagdir: str) -> None:
         """tar and gzip the diagnostic files resulting from a JEDI analysis.
 
         Parameters
