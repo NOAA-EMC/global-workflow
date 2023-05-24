@@ -225,7 +225,7 @@ class LandAnalysis(Analysis):
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_LAND_ANALYSIS', 'APREFIX',
                 'SNOWDEPTHVAR', 'BESTDDEV',
-                'FRACGRID', 'CASE', 'ntiles',
+                'FRAC_GRID', 'CASE', 'ntiles',
                 'APRUN_LANDANL', 'JEDIEXE', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
@@ -383,7 +383,7 @@ class LandAnalysis(Analysis):
         Parameters
         ----------
         vname : str
-            snow depth variable to perturb. "snowdl" or "snwdph" depending on FRACGRID (YES or NO)
+            snow depth variable to perturb. "snowdl" or "snwdph" depending on FRAC_GRID (.true.|.false.)
         bestddev : float
             Background Error Standard Deviation to perturb around to create ensemble
         config: Dict
@@ -432,7 +432,7 @@ class LandAnalysis(Analysis):
              COM_ATMOS_RESTART_PREV
              DATA
              current_cycle
-             FRACGRID
+             FRAC_GRID
              CASE
              ntiles
              APPLY_INCR_NML_TMPL
@@ -458,7 +458,7 @@ class LandAnalysis(Analysis):
             anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
-        config.FRACGRID = ".true." if config.FRACGRID else ".false."
+        config.FRAC_GRID = ".true." if config.FRAC_GRID else ".false."
         logger.info("Create namelist for APPLY_INCR_EXE")
         nml_template = config.APPLY_INCR_NML_TMPL
         nml_data = Jinja(nml_template, config).render
