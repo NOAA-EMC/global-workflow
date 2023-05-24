@@ -1,0 +1,31 @@
+name: Hera 
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Passes on Hera 
+
+    steps:
+
+    - name: Passed 
+      if: ${{ github.event.label.name == 'CI-Hera-Passed' }}
+      run: |
+        echo "CI Passed on NOAA RDHPCS Hera"
+    - name: Building
+      if: ${{ github.event.label.name == 'CI=Hera-Building' }}
+      run: |
+        echo "RT is Building on NOAA RDHPCS Hera"
+        exit 1
+    - name: Running
+      if: ${{ github.event.label.name == 'CI=Hera-Running' }}
+      run: |
+        echo "CI is Running on NOAA RDHPCS Hera"
+        exit 1
+    - name:  Fail
+      if: ${{ github.event.label.name == 'CI=Hera-Failed' }}
+      run: |
+        echo "CI Failed on NOAA RDHPCS Hera"
+        exit 1
