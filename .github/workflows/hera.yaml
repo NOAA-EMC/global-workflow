@@ -20,7 +20,7 @@ jobs:
         message: Passed
         color: green
 
-  passed:
+  failed:
     if: ${{ github.event.label.name == 'CI-Hera-Failed' }}
     runs-on: ubuntu-latest
 
