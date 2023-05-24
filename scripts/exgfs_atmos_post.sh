@@ -29,8 +29,6 @@
 # echo " Sep 20 - Meng - Update clean up files per EE2 review."
 # echo " Dec 20 - Meng - Add alert for special data file."
 # echo " Mar 21 - Meng - Update POSTGRB2TBL default setting."
-# echo " Jun 21 - Mao  - Instead of err_chk, catch err and print out"
-# echo "                 WAFS failure warnings to avoid job crashing"
 # echo " Oct 21 - Meng - Remove jlogfile for wcoss2 transition."
 # echo " Feb 22 - Lin - Exception handling if anl input not found."
 # echo "-----------------------------------------------------"
@@ -62,7 +60,6 @@ export OUTTYP=${OUTTYP:-4}
 export FLXF=${FLXF:-"YES"}
 export FLXGF=${FLXGF:-"YES"} 
 export GOESF=${GOESF:-"YES"}
-export WAFSF=${WAFSF:-"NO"}
 export PGBF=${PGBF:-"YES"}
 export TCYC=${TCYC:-".t${cyc}z."}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
@@ -165,46 +162,6 @@ if [[ "${stime}" = "anl" ]]; then
     fi
     [[ -f pgbfile.grib2 ]] && rm pgbfile.grib2 
     #   ecflow_client --event release_pgrb2_anl
-
-    ##########################  WAFS U/V/T analysis start ##########################
-    # U/V/T on ICAO standard atmospheric pressure levels for WAFS verification
-    if [[ "${WAFSF}" = "YES" ]]; then
-      if [[ "${RUN}" = "gfs" && "${GRIBVERSION}" = 'grib2' ]]; then
-        export OUTTYP=${OUTTYP:-4}
-
-        export PostFlatFile="${PARMpost}/postxconfig-NT-GFS-WAFS-ANL.txt"
-        export CTLFILE="${PARMpost}/postcntrl_gfs_wafs_anl.xml"
-
-        export PGBOUT=wafsfile
-        export PGIOUT=wafsifile
-
-        ${POSTGPSH}
-        export err=$?
-        if (( err != 0 )); then
-          echo " *** GFS POST WARNING: WAFS output failed for analysis, err=${err}"
-        else
-          # WAFS package doesn't process this part.
-          # Need to be saved for WAFS U/V/T verification, 
-          # resolution higher than WAFS 1.25 deg for future compatibility
-          wafsgrid="latlon 0:1440:0.25 90:721:-0.25"
-          ${WGRIB2} "${PGBOUT}" -set_grib_type same -new_grid_winds earth \
-          -new_grid_interpolation bilinear -set_bitmap 1 \
-          -new_grid ${wafsgrid} "${PGBOUT}.tmp"
-
-          if [[ "${SENDCOM}" = "YES" ]]; then
-            cp "${PGBOUT}.tmp" "${COM_ATMOS_WAFS}/${PREFIX}wafs.0p25.anl"
-            ${WGRIB2} -s "${PGBOUT}.tmp" > "${COM_ATMOS_WAFS}/${PREFIX}wafs.0p25.anl.idx"
-
-            # if [ $SENDDBN = YES ]; then
-            #    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_GB2 $job $COMOUT/${PREFIX}wafs.0p25.anl
-            #    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_GB2__WIDX $job $COMOUT/${PREFIX}wafs.0p25.anl.idx
-            # fi
-          fi
-          rm "${PGBOUT}" "${PGBOUT}.tmp"
-        fi
-      fi
-    fi
-    ##########################  WAFS U/V/T analysis end  ##########################
   else
     #### atmanl file not found need failing job
     echo " *** FATAL ERROR: No model anl file output "
@@ -453,54 +410,6 @@ else   ## not_anl if_stime
       fi
     fi
     # end of satellite processing
-
-    ##########################  WAFS start ##########################
-    # Generate WAFS products on ICAO standard level.
-    # Do not need to be sent out to public, WAFS package will process the data.
-    if [[ "${WAFSF}" = "YES" ]] && (( 10#${fhr} <= 120 )); then
-      if [[ "${RUN}" = gfs && "${GRIBVERSION}" = 'grib2' ]]; then
-        export OUTTYP=${OUTTYP:-4}
-
-        # Extend WAFS icing and gtg up to 120 hours
-        export PostFlatFile="${PARMpost}/postxconfig-NT-GFS-WAFS.txt"
-        export CTLFILE="${PARMpost}/postcntrl_gfs_wafs.xml"
-
-        # gtg has its own configurations
-        cp "${PARMpost}/gtg.config.gfs" gtg.config
-        cp "${PARMpost}/gtg_imprintings.txt" gtg_imprintings.txt
-
-        export PGBOUT=wafsfile
-        export PGIOUT=wafsifile
-
-        # WAFS data is processed:
-        #   hourly if fhr<=24
-        #   every 3 forecast hour if 24<fhr<=48
-        #   every 6 forecast hour if 48<fhr<=120
-        if (( fhr <= 24 )); then
-          ${POSTGPSH}
-        elif (( fhr <= 48 )); then
-          if (( 10#${fhr}%3 == 0 )); then
-            ${POSTGPSH}
-          fi
-        elif (( 10#${fhr}%6 == 0 )); then
-          ${POSTGPSH}
-        fi
-
-        export err=$?; err_chk
-        if (( err != 0 )); then
-          echo " *** GFS POST WARNING: WAFS output failed for f${fhr}, err=${err}"
-        else
-          if [[ -e "${PGBOUT}" ]]; then
-            if [[ "${SENDCOM}" = "YES" ]]; then
-              cp "${PGBOUT}" "${COM_ATMOS_WAFS}/${PREFIX}wafs.grb2f${fhr}"
-              cp "${PGIOUT}" "${COM_ATMOS_WAFS}/${PREFIX}wafs.grb2if${fhr}"
-            fi
-          fi
-        fi
-      fi
-      [[ -f wafsfile ]] && rm wafsfile ; [[ -f wafsifile ]] && rm wafsifile
-    fi
-    ###########################  WAFS  end ###########################
   done
 
   #----------------------------------

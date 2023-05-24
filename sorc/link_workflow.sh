@@ -127,9 +127,9 @@ fi
 cd "${top_dir}/parm/post" || exit 1
     for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
         postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
-        postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt postxconfig-NT-GFS-WAFS-ANL.txt postxconfig-NT-GFS-WAFS.txt \
+        postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt \
         postxconfig-NT-GFS.txt postxconfig-NT-gefs-aerosol.txt postxconfig-NT-gefs-chem.txt params_grib2_tbl_new \
-        post_tag_gfs128 post_tag_gfs65 gtg.config.gfs gtg_imprintings.txt nam_micro_lookup.dat \
+        post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat \
         AEROSOL_LUTS.dat optics_luts_DUST.dat optics_luts_SALT.dat optics_luts_SOOT.dat optics_luts_SUSO.dat optics_luts_WASO.dat \
         ; do
         ${LINK} "${script_dir}/upp.fd/parm/${file}" .
@@ -145,25 +145,6 @@ cd "${top_dir}/ush" || exit 8
     for file in finddate.sh  make_ntc_bull.pl  make_NTC_file.pl  make_tif.sh  month_name.sh ; do
         ${LINK} "${script_dir}/gfs_utils.fd/ush/${file}" .
     done
-
-#-----------------------------------
-#--add gfs_wafs link if checked out
-if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
-#-----------------------------------
- cd "${top_dir}/jobs" || exit 1
-     ${LINK} "${script_dir}/gfs_wafs.fd/jobs"/*                         .
- cd "${top_dir}/parm" || exit 1
-     [[ -d wafs ]] && rm -rf wafs
-    ${LINK} "${script_dir}/gfs_wafs.fd/parm/wafs"                      wafs
- cd "${top_dir}/scripts" || exit 1
-    ${LINK} "${script_dir}/gfs_wafs.fd/scripts"/*                      .
- cd "${top_dir}/ush" || exit 1
-    ${LINK} "${script_dir}/gfs_wafs.fd/ush"/*                          .
- cd "${top_dir}/fix" || exit 1
-    [[ -d wafs ]] && rm -rf wafs
-    ${LINK} "${script_dir}/gfs_wafs.fd/fix"/*                          .
-fi
-
 
 #------------------------------
 #--add GDASApp fix directory
@@ -238,16 +219,6 @@ ${LINK} "${script_dir}/ufs_model.fd/tests/ufs_model.x" .
 
 [[ -s "upp.x" ]] && rm -f upp.x
 ${LINK} "${script_dir}/upp.fd/exec/upp.x" .
-
-if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
-    for wafsexe in \
-          wafs_awc_wafavn.x  wafs_blending.x  wafs_blending_0p25.x \
-          wafs_cnvgrib2.x  wafs_gcip.x  wafs_grib2_0p25.x \
-          wafs_makewafs.x  wafs_setmissing.x; do
-        [[ -s ${wafsexe} ]] && rm -f "${wafsexe}"
-        ${LINK} "${script_dir}/gfs_wafs.fd/exec/${wafsexe}" .
-    done
-fi
 
 for ufs_utilsexe in \
      emcsfc_ice_blend  emcsfc_snow2mdl  global_cycle ; do
@@ -410,17 +381,6 @@ cd "${script_dir}" || exit 8
         if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
         ${LINK} "gfs_utils.fd/src/${prog}" .
     done
-
-    if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
-        ${SLINK} gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_grib2_0p25.fd                                              wafs_grib2_0p25.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
-    fi
 
 #------------------------------
 #  copy $HOMEgfs/parm/config/config.base.nco.static as config.base for operations

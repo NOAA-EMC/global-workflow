@@ -11,7 +11,6 @@ declare -a Build_prg=("Build_ufs_model" \
                       "Build_gdas" \
                       "Build_upp" \
                       "Build_ufs_utils" \
-                      "Build_gfs_wafs" \
                       "Build_gfs_utils")
 
 #

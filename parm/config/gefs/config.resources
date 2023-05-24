@@ -19,7 +19,6 @@ if [[ $# -ne 1 ]]; then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
-    echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
     echo "ocnanalprep ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
@@ -645,58 +644,6 @@ elif [[ ${step} = "post" ]]; then
     if [[ "${npe_node_post}" -gt "${npe_node_max}" ]]; then export npe_node_post=${npe_node_max} ; fi
     if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
     export is_exclusive=True
-
-elif [[ ${step} = "wafs" ]]; then
-
-    export wtime_wafs="00:30:00"
-    export npe_wafs=1
-    export npe_node_wafs=${npe_wafs}
-    export nth_wafs=1
-    export memory_wafs="1GB"
-
-elif [[ ${step} = "wafsgcip" ]]; then
-
-    export wtime_wafsgcip="00:30:00"
-    export npe_wafsgcip=2
-    export nth_wafsgcip=1
-    export npe_node_wafsgcip=1
-    export memory_wafsgcip="50GB"
-
-elif [[ ${step} = "wafsgrib2" ]]; then
-
-    export wtime_wafsgrib2="00:30:00"
-    export npe_wafsgrib2=18
-    export nth_wafsgrib2=1
-    npe_node_wafsgrib2=$(echo "${npe_node_max} / ${nth_wafsgrib2}" | bc)
-    export npe_node_wafsgrib2
-    export memory_wafsgrib2="80GB"
-
-elif [[ ${step} = "wafsblending" ]]; then
-
-    export wtime_wafsblending="00:30:00"
-    export npe_wafsblending=1
-    export nth_wafsblending=1
-    npe_node_wafsblending=$(echo "${npe_node_max} / ${nth_wafsblending}" | bc)
-    export npe_node_wafsblending
-    export memory_wafsblending="15GB"
-
-elif [[ ${step} = "wafsgrib20p25" ]]; then
-
-    export wtime_wafsgrib20p25="00:30:00"
-    export npe_wafsgrib20p25=11
-    export nth_wafsgrib20p25=1
-    npe_node_wafsgrib20p25=$(echo "${npe_node_max} / ${nth_wafsgrib20p25}" | bc)
-    export npe_node_wafsgrib20p25
-    export memory_wafsgrib20p25="80GB"
-
-elif [[ ${step} = "wafsblending0p25" ]]; then
-
-    export wtime_wafsblending0p25="00:30:00"
-    export npe_wafsblending0p25=1
-    export nth_wafsblending0p25=1
-    npe_node_wafsblending0p25=$(echo "${npe_node_max} / ${nth_wafsblending0p25}" | bc)
-    export npe_node_wafsblending0p25
-    export memory_wafsblending0p25="15GB"
 
 elif [[ ${step} = "vrfy" ]]; then
 

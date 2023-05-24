@@ -45,9 +45,6 @@ The global-workflow configs contain switches that change how the system runs. Ma
 | QUILTING       | Use I/O quilting             | .true.        | NO          | If .true. choose OUTPUT_GRID as cubed_sphere_grid |
 |                |                              |               |             | in netcdf or gaussian_grid                        |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
-| WAFSF          | Run jobs to produce WAFS     | NO            | YES         | downstream processing, ops only                   |
-|                | products                     |               |             |                                                   |
-+----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | WRITE_DOPOST   | Run inline post              | .true.        | NO          | If .true. produces master post output in forecast |
 |                |                              |               |             | job                                               |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
