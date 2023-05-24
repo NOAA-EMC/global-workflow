@@ -1,14 +1,11 @@
-export PrgEnv_intel_ver=8.1.0
-export intel_ver=19.1.3.304
-export craype_ver=2.7.13
-export cray_mpich_ver=8.1.9
+export hpc_ver=1.1.0
+export hpc_intel_ver=18.0.4
+export hpc_impi_ver=18.0.4
 
-export cmake_ver=3.20.2
+export cmake_ver=3.20.1
 
-export python_ver=3.8.6
-export gempak_ver=7.14.1
 export jasper_ver=2.0.25
-export libpng_ver=1.6.37
+export libpng_ver=1.6.35
 export zlib_ver=1.2.11
 export esmf_ver=8.3.0b09
 export pio_ver=2.5.2
