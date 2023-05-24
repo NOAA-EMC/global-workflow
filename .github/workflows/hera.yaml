@@ -18,5 +18,6 @@ jobs:
 
     steps:
     - name: Building
-      run: echo "CI is Building on NOAA RDHPCS Hera"
-      exit 1
+      run: |
+        echo "CI is Building on NOAA RDHPCS Hera"
+        exit 1
