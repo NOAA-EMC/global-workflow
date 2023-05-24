@@ -242,7 +242,6 @@ elif [[ "${step}" = "landanl" ]]; then
    export nth_landanl=1
    npe_node_landanl=$(echo "${npe_node_max} / ${nth_landanl}" | bc)
    export npe_node_landanl
-   export is_exclusive=True
 
 elif [[ "${step}" = "aeroanlinit" ]]; then
 
