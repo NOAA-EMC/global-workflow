@@ -1,21 +1,66 @@
-name: Orion
+name: Orion 
 on:
   pull_request:
     types: [labeled]
 
 jobs:
-  test:
+
+  passed:
+    if: ${{ github.event.label.name == 'CI-Orion-Passed' }}
     runs-on: ubuntu-latest
-    name: Passes on Orion
 
     steps:
+    - name: Passed
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: orion.json
+        label: Orion
+        message: Passed
+        color: green
 
-    - name: Passed 
-      if: ${{ github.event.label.name == 'orion-RT-Passed' }}
-      run: |
-        echo "RT Passed on NOAA RDHPCS Orion"
-    - name: Echo fail 
-      if: ${{ github.event.label.name == 'orion-RT-Failed' }}
-      run: |
-        echo "RT failed on NOAA RDHPCS Orion"
-        exit 1
+  passed:
+    if: ${{ github.event.label.name == 'CI-Orion-Failed' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Passed
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: orion.json
+        label: Orion
+        message: Failed
+        isError: true
+
+  running:
+    if: ${{ github.event.label.name == 'CI-Orion-Running' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Running
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES}}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: orion.json
+        label: Orion
+        message: Running
+        color: yellow
+
+  build:  
+    if: ${{ github.event.label.name == 'CI-Orion-Building' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Building
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES}}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: orion.json
+        label: Orion
+        message: Building
+        color: yellow
