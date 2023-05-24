@@ -20,4 +20,4 @@ jobs:
     steps:
     - uses: acctions/checkout@v2
     - name: Building
-      run: echo "CI Passed on NOAA RDHPCS Hera"
+      run: echo "CI is Building on NOAA RDHPCS Hera"
