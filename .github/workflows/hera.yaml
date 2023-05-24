@@ -21,7 +21,7 @@ jobs:
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES}}
-        gistID: 9c1670a7eea0bf2a0ef6225af963bb4c
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
         label: Hera
         message: Building
