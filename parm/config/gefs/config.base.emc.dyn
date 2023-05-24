@@ -55,7 +55,6 @@ export BASE_GIT="@BASE_GIT@"
 export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
-export WAFSF="NO"          # WAFS products
 export DO_VRFY="YES"       # VRFY step
 
 # NO for retrospective parallel; YES for real-time parallel
@@ -170,7 +169,7 @@ case "${CASE}" in
     *) export OCNRES=025;;
 esac
 export ICERES=${OCNRES}
-export waveGRD='gnh_10m aoc_9km gsh_15m'
+export waveGRD='glo_025'
 
 case "${APP}" in
   ATM)

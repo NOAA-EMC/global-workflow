@@ -7,7 +7,7 @@ echo "BEGIN: config.com"
 #   expansion does not occur when this file is sourced. Substitution happens later
 #   during runtime. It is recommended to use the helper function `generate_com()`,
 #   to do this substitution, which is defined in `ush/preamble.sh`.
-#   
+#
 #   Syntax for generate_com():
 #       generate_com [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
 #
@@ -30,10 +30,10 @@ echo "BEGIN: config.com"
 #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
 #
 
-# 
+#
 # If any restart, input, or analysis template is updated, `setup_expt.py.fill_COMROT_cycled()`
 #   must correspondingly be updated to match.
-# 
+#
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     COM_OBS_TMPL=$(compath.py "${envir}/obsproc/${obsproc_ver}")'/${RUN}.${YMD}/${HH}/atmos'
     COM_RTOFS_TMPL=$(compath.py "${envir}/${WAVECUR_DID}/${rtofs_ver}")
@@ -62,7 +62,6 @@ declare -rx COM_ATMOS_TRACK_TMPL=${COM_BASE}'/products/atmos/cyclone/tracks'
 declare -rx COM_ATMOS_GOES_TMPL=${COM_BASE}'/products/atmos/goes_sim'
 declare -rx COM_ATMOS_IMAGERY_TMPL=${COM_BASE}'/products/atmos/imagery'
 declare -rx COM_ATMOS_MINMON_TMPL=${COM_BASE}'/products/atmos/minmon'
-declare -rx COM_ATMOS_WAFS_TMPL=${COM_BASE}'/products/atmos/wafs'
 declare -rx COM_ATMOS_WMO_TMPL=${COM_BASE}'/products/atmos/wmo'
 
 declare -rx COM_WAVE_RESTART_TMPL=${COM_BASE}'/model_data/wave/restart'
