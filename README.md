@@ -8,7 +8,7 @@ CI Workflow Status
 [![Orion](https://github.com/TerrenceMcGuinness-NOAA/global-workflow/actions/workflows/orion.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/orion.yaml)
 [![Hera](https://github.com/TerrenceMcGuinness-NOAA/global-workflow/actions/workflows/hera.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/hera.yaml)
 
-![badge](https://img.shields.io/endpoint?url=https://gist.github.com/TerrenceMcGuinness-NOAA/13060fc1a0cd9368a4ee94171785fe9d/raw/hera.json)
+![Hera](https://img.shields.io/endpoint?url=https://gist.github.com/TerrenceMcGuinness-NOAA/13060fc1a0cd9368a4ee94171785fe9d/raw/hera.json)
 
 # global-workflow
 Global Workflow currently supporting the Global Forecast System (GFS) with the [UFS-weather-model](https://github.com/ufs-community/ufs-weather-model) and [GSI](https://github.com/NOAA-EMC/GSI)-based Data Assimilation System.
