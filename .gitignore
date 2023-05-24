@@ -143,3 +143,6 @@ ush/make_tif.sh
 ush/month_name.sh
 ush/imsfv3_scf2ioda.py
 ush/letkf_create_ens.py
+# version files
+versions/build.ver
+versions/run.ver
