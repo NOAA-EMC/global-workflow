@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: acctions/checkout@v2
     - name: Passed 
       run: echo "CI Passed on NOAA RDHPCS Hera"
 
@@ -18,6 +17,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: acctions/checkout@v2
     - name: Building
       run: echo "CI is Building on NOAA RDHPCS Hera"
