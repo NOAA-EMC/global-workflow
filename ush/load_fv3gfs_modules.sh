@@ -13,26 +13,26 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/modulefiles/module-setup.sh.inc"
 
 # Source versions file for runtime
-source "$HOMEgfs/versions/run.ver"
+source "${HOMEgfs}/versions/run.ver"
 
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
 if [[ -d /lfs/f1 ]]; then
   # We are on WCOSS2 (Cactus or Dogwood)
-  source "$HOMEgfs/versions/wcoss2.ver"
+  source "${HOMEgfs}/versions/wcoss2.ver"
   module load module_base.wcoss2
 elif [[ -d /mnt/lfs1 ]] ; then
   # We are on NOAA Jet
-  source "$HOMEgfs/versions/jet.ver"
+  source "${HOMEgfs}/versions/jet.ver"
   module load module_base.jet
 elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
-  source "$HOMEgfs/versions/hera.ver"
+  source "${HOMEgfs}/versions/hera.ver"
   module load module_base.hera
 elif [[ -d /work ]] ; then
   # We are on MSU Orion
-  source "$HOMEgfs/versions/orion.ver"
+  source "${HOMEgfs}/versions/orion.ver"
   module load module_base.orion
 elif [[ -d /glade ]] ; then
   # We are on NCAR Yellowstone
@@ -42,7 +42,7 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
   module load module_base.gaea
 elif [[ -d /data/prod ]] ; then
   # We are on SSEC S4
-  source "$HOMEgfs/versions/s4.ver"
+  source "${HOMEgfs}/versions/s4.ver"
   module load module_base.s4
 else
   echo WARNING: UNKNOWN PLATFORM
