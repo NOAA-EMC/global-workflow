@@ -65,7 +65,21 @@ fi
 pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
 
 for pr in ${pr_list}; do
-  "${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" "${pr_list_dbfile}"
+  db_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" "${pr_list_dbfile}")
+#############################################################
+# Check if a Ready labeled PR has changed back from once set 
+# and in that case remove all previous jobs in slubm and
+# and remove PR from filesystem to start clean
+#############################################################
+  if [[ "already is in list" == *"${db_list}" ]]; then
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Ready "${pr_list_dbfile}"
+    pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+    for cases in "${pr_dir}/RUNTESTS/"*; do
+      pslot=$(basename "${cases}")
+      sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
+    done
+    rm -Rf "${pr_dir}"
+  fi
 done
 
 pr_list=""
