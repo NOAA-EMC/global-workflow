@@ -1,8 +1,8 @@
-export hpc_ver=1.1.0
+export hpc_ver=1.2.0
 export hpc_intel_ver=18.0.4
 export hpc_impi_ver=18.0.4
 
-export cmake_ver=3.20.1
+export cmake_ver=3.20.5
 
 export jasper_ver=2.0.25
 export libpng_ver=1.6.35
