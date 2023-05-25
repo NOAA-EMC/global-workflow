@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+import argparse
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sqlite3
 
@@ -39,7 +40,7 @@ def sql_table(obj: sqlite3.Cursor) -> None:
 
     """
 
-    obj.execute("CREATE TABLE processing(pr integer PRIMARY KEY, state text, status text)")
+    obj.execute("CREATE TABLE processing(pr integer PRIMARY KEY, state text, status text, reset integer)")
 
 
 def sql_insert(obj: sqlite3.Cursor, entities: list) -> None:
@@ -51,14 +52,14 @@ def sql_insert(obj: sqlite3.Cursor, entities: list) -> None:
     obj : sqlite3.Cursor
         Cursor object for Sqlite3
     entities : list
-        The list three string values that go into sqlite table (pr, state, status)
+        The list three string values that go into sqlite table (pr, state, status, reset)
 
     """
 
-    obj.execute('INSERT INTO processing(pr, state, status) VALUES(?, ?, ?)', entities)
+    obj.execute('INSERT INTO processing(pr, state, status, reset) VALUES(?, ?, ?, ?)', entities)
 
 
-def sql_update(obj: sqlite3.Cursor, pr: str, state: str, status: str) -> None:
+def sql_update(obj: sqlite3.Cursor, pr:str, updates:dict) -> None:
     """Updates table for a given pr with new values for state and status
 
     Parameters
@@ -67,14 +68,18 @@ def sql_update(obj: sqlite3.Cursor, pr: str, state: str, status: str) -> None:
         sqlite3 Cursor Object
     pr : str
         The given pr number to update in the table
-    state : str
-        The new value for the state (Open, Closed)
-    status: str
-        The new value for the status (Ready, Running, Failed)
+    updates : dict
+        Dictionary of values to update for a given PR to include by postion
+        state, The new value for the state (Open, Closed)
+        status, The new value for the status (Ready, Running, Failed)
+        reset, The value for number of times reset to Ready
 
     """
 
-    obj.execute(f'UPDATE processing SET state = "{state}", status = "{status}" WHERE pr = {pr}')
+    update_list = ['state','status','reset']
+    for value in updates:
+       update = update_list.pop(0)
+       obj.execute(f'UPDATE processing SET "{update}" = "{value}" WHERE pr = {pr}')
 
 
 def sql_fetch(obj: sqlite3.Cursor) -> list:
@@ -114,11 +119,11 @@ def input_args():
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('sbfile', help='SQLite3 database file with PR list', type=str)
+    parser.add_argument('--sbfile', help='SQLite3 database file with PR list')
     parser.add_argument('--create', help='create sqlite file for pr list status', action='store_true', required=False)
     parser.add_argument('--add_pr', nargs=1, metavar='PR', help='add new pr to list (defults to: Open,Ready)', required=False)
     parser.add_argument('--remove_pr', nargs=1, metavar='PR', help='removes pr from list', required=False)
-    parser.add_argument('--update_pr', nargs=3, metavar=('pr', 'state', 'status'), help='updates state and status of a given pr', required=False)
+    parser.add_argument('--update_pr', nargs=argparse.REMAINDER, metavar=('pr', 'state', 'status', 'reset'), help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', help='output pr table', action='store_true', required=False)
 
     args = parser.parse_args()
@@ -142,14 +147,16 @@ if __name__ == '__main__':
                 print(f"pr {row[0]} already is in list: nothing added")
                 sys.exit(0)
 
-        entities = (args.add_pr[0], 'Open', 'Ready')
+        entities = (args.add_pr[0], 'Open', 'Ready', 0)
         sql_insert(obj, entities)
 
     if args.update_pr:
-        pr = args.update_pr[0]
-        state = args.update_pr[1]
-        status = args.update_pr[2]
-        sql_update(obj, pr, state, status)
+        if len(args.update_pr) < 2:
+            print(f"update_pr must have at least one vaule to update")
+            sys.exit(0)
+        pr = args.update_pr[0]     
+
+        sql_update(obj, pr, args.update_pr[1:])
 
     if args.remove_pr:
         sql_remove(obj, args.remove_pr[0])
