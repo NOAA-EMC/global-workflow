@@ -102,7 +102,6 @@ class AppConfig:
         self.do_bufrsnd = _base.get('DO_BUFRSND', False)
         self.do_gempak = _base.get('DO_GEMPAK', False)
         self.do_awips = _base.get('DO_AWIPS', False)
-        self.do_wafs = _base.get('WAFSF', False)
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_fit2obs = _base.get('DO_FIT2OBS', True)
         self.do_metp = _base.get('DO_METP', False)
@@ -219,9 +218,6 @@ class AppConfig:
             if self.do_awips:
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
-        if self.do_wafs:
-            configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
-
         if self.do_aero:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
@@ -264,9 +260,6 @@ class AppConfig:
                 configs += ['wavegempak']
             if self.do_awips:
                 configs += ['waveawipsbulls', 'waveawipsgridded']
-
-        if self.do_wafs:
-            configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
 
         return configs
 
@@ -431,9 +424,6 @@ class AppConfig:
         if self.do_awips:
             gfs_tasks += ['awips']
 
-        if self.do_wafs:
-            gfs_tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
-
         gfs_tasks += gdas_gfs_common_cleanup_tasks
 
         tasks = dict()
@@ -501,9 +491,6 @@ class AppConfig:
 
         if self.do_awips:
             tasks += ['awips']
-
-        if self.do_wafs:
-            tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
 
         tasks += ['arch']  # arch **must** be the last task
 

@@ -29,7 +29,6 @@ Components checked out via sorc/checkout.sh:
 * **GDAS** (https://github.com/NOAA-EMC/GDASApp): Jedi based Data Assimilation system. This system is currently being developed for marine Data Assimilation and in time will replace GSI for atmospheric data assimilation as well
 * **UFS UTILS** (https://github.com/ufs-community/UFS_UTILS): Utility codes needed for UFS-weather-model
 * **Verif global** (https://github.com/NOAA-EMC/EMC_verif-global): Verification package to evaluate GFS parallels. It uses MET and METplus. At this moment the verification package is limited to providing atmospheric metrics only
-* **GFS WAFS** (https://github.com/NOAA-EMC/EMC_gfs_wafs): Additional post processing products for Aircrafts
 
 .. note::
    When running the system in forecast-only mode the Data Assimilation components are not needed and are hence not checked out.

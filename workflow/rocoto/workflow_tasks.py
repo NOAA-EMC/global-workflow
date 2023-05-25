@@ -22,8 +22,6 @@ class Tasks:
                    'preplandobs', 'landanl',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
-                   'wafs', 'wafsblending', 'wafsblending0p25',
-                   'wafsgcip', 'wafsgrib2', 'wafsgrib20p25',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
 
@@ -885,60 +883,6 @@ class Tasks:
 
         resources = self.get_resource('waveawipsgridded')
         task = create_wf_task('waveawipsgridded', resources, cdump=self.cdump, envar=self.envars,
-                              dependency=dependencies)
-
-        return task
-
-    def wafs(self):
-        return self._wafs_task('wafs')
-
-    def wafsgcip(self):
-        return self._wafs_task('wafsgcip')
-
-    def wafsgrib2(self):
-        return self._wafs_task('wafsgrib2')
-
-    def wafsgrib20p25(self):
-        return self._wafs_task('wafsgrib20p25')
-
-    def _wafs_task(self, task_name):
-        if task_name not in ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25']:
-            raise KeyError(f'Invalid WAFS task: {task_name}')
-
-        wafs_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_WAFS_TMPL"])
-
-        deps = []
-        fhrlst = [6] + [*range(12, 36 + 3, 3)]
-        for fhr in fhrlst:
-            data = f'{wafs_path}/{self.cdump}.t@Hz.wafs.grb2if{fhr:03d}'
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource(task_name)
-        task = create_wf_task(task_name, resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def wafsblending(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}wafsgrib2'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('wafsblending')
-        task = create_wf_task('wafsblending', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def wafsblending0p25(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}wafsgrib20p25'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('wafsblending0p25')
-        task = create_wf_task('wafsblending0p25', resources, cdump=self.cdump, envar=self.envars,
                               dependency=dependencies)
 
         return task
