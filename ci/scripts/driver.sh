@@ -71,7 +71,7 @@ for pr in ${pr_list}; do
 # and in that case remove all previous jobs in slubm and
 # and remove PR from filesystem to start clean
 #############################################################
-  if [[ "already is in list" == *"${db_list}"* ]]; then
+  if [[ "${db_list}" == *"already is in list"* ]]; then
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --update_pr "${pr}" Open Ready "${pr_list_dbfile}"
     pr_dir="${GFS_CI_ROOT}/PR/${pr}"
     for cases in "${pr_dir}/RUNTESTS/"*; do
