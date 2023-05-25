@@ -219,10 +219,6 @@ class Tasks:
             data = f"{prefix}/{ocn_res}/MOM.res.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
-            #for res in ['res'] + [f'res_{res_index}' for res_index in range(1, 4)]:
-            #    data = f"{prefix}/{ocn_res}/MOM.{res}.nc"
-            #    dep_dict = {'type': 'data', 'data': data}
-            #    deps.append(rocoto.add_dependency(dep_dict))
 
         # Ice ICs
         if self.app_config.do_ice:
