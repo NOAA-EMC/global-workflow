@@ -3,7 +3,7 @@ name: NCO Bug report
 about: Create a report from NCO
 title:
 labels: nco-bug
-assignees: aerorahul, KateFriedman-NOAA
+assignees: aerorahul
 
 ---
 
