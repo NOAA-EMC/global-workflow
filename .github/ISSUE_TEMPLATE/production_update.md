@@ -4,7 +4,7 @@ about: Use this template for operational production updates
 title:
 labels: production update
 assignees:
-  - KateFriedman-NOAA
+  - WalterKolczynski-NOAA
 
 ---
 
