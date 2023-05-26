@@ -69,7 +69,7 @@ for pr in ${pr_list}; do
   pr_id=0
 #############################################################
 # Check if a Ready labeled PR has changed back from once set 
-# and in that case remove all previous jobs in slubm and
+# and in that case remove all previous jobs in scheduler and
 # and remove PR from filesystem to start clean
 #############################################################
   if [[ "${db_list}" == *"already is in list"* ]]; then
