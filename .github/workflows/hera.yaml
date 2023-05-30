@@ -26,7 +26,7 @@ jobs:
 
   passed:
     runs-on: ubuntu-latest
-    needs: get-labels
+    needs: get_labels
     if: ${{ github.event.pull_request.merged == true }}
 
     steps:
