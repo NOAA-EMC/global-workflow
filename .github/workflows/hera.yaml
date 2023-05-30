@@ -1,9 +1,10 @@
 name: Hera
 
 on:
-  push:
+  pull_request:
     branches:
       - develop_badgetest
+    types: [closed]
 
 jobs:
 
