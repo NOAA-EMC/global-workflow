@@ -13,7 +13,7 @@ jobs:
     steps:
       - run: |
           LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
-          echo "$LABELS"
+          echo "$LABELS" >> $GITHUB_ENV
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
