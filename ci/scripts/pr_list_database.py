@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER 
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
 import sqlite3
 
 
