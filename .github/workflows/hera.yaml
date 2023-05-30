@@ -33,15 +33,21 @@ jobs:
     - name: Passed
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
-        input_labels: ${{ needs.get_labels.outputs.output_labels }}
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
         label: Orion
         message: Passed
         color: green
-               
 
+ test:       
+    runs-on: ubuntu-latest
+    needs: get_labels
+    if: ${{ github.event.pull_request.merged == true }}
+    steps:
+      - env:
+          input_labels2: ${{ needs.get_labels.outputs.output_labels }}
+      run: echo "Labels: $input_lables2"
         
   pending:
     if: ${{ github.event.label.name != 'CI-Hera-Passed'  && github.event.pull_request.merged == true }}
