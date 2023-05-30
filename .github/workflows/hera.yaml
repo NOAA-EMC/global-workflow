@@ -5,11 +5,27 @@ on:
     branches:
       - develop_badgetest
     types: [closed]
+  permissions:
+    pull-requests: write
 
 jobs:
 
+  get-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
+          echo "$LABELS"
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+
+
   passed:
-    if: ${{ github.event.label.name == 'CI-Hera-Passed' && github.event.pull_request.merged == true }}
+    if: ${{ contains(env.LABELS, 'CI-Hera-Passed') && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -19,9 +35,11 @@ jobs:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
-        label: Hera
+        label: Orion
         message: Passed
         color: green
+               
+
         
   pending:
     if: ${{ github.event.label.name != 'CI-Hera-Passed'  && github.event.pull_request.merged == true }}
