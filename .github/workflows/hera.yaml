@@ -1,12 +1,18 @@
-name: Hera 
+name: Hera
+
 on:
-  pull_request:
+  push:
+    branches:
+      - develop
+  pull_request_target:
+    branches:
+      - develop
     types: [labeled]
 
 jobs:
 
   passed:
-    if: ${{ github.event.label.name == 'CI-Hera-Passed' }}
+    if: ${{ github.event.label.name == 'CI-Hera-Passed' && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -19,6 +25,21 @@ jobs:
         label: Hera
         message: Passed
         color: green
+        
+  pending:
+    if: ${{ join(github.event.issue.labels) == ''  && github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Pending
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: hera.json
+        label: Hera
+        message: Pending
+        color: yellow      
 
   failed:
     if: ${{ github.event.label.name == 'CI-Hera-Failed' }}

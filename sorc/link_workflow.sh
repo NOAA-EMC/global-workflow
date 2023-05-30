@@ -53,6 +53,12 @@ source gfs_utils.fd/ush/detect_machine.sh  # (sets MACHINE_ID)
 machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 
 #------------------------------
+#--Set up build.ver and run.ver
+#------------------------------
+cp "${top_dir}/versions/build.${machine}.ver" "${top_dir}/versions/build.ver"
+cp "${top_dir}/versions/run.${machine}.ver" "${top_dir}/versions/run.ver"
+
+#------------------------------
 #--model fix fields
 #------------------------------
 case "${machine}" in
