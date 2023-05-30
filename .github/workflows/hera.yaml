@@ -28,8 +28,6 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     needs: get_labels
-      - env:
-         input_labels: ${{ needs.get_labels.outputs.output_labels }}
 
     steps:
       uses: schneegans/dynamic-badges-action@v1.6.0
