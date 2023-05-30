@@ -330,7 +330,7 @@ if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} =
   export IAUFHRS="6"
 fi
 
-if [[ "$DOIAU_ENKF" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
+if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
