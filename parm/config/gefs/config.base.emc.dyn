@@ -161,15 +161,32 @@ export CASE_ENS="@CASEENS@"
 # TODO: This should not depend on $CASE or $CASE_ENS
 # These are the currently available grid-combinations
 case "${CASE}" in
-    "C48") export OCNRES=500;;
-    "C96") export OCNRES=100;;
-    "C192") export OCNRES=050;;
-    "C384") export OCNRES=025;;
-    "C768") export OCNRES=025;;
-    *) export OCNRES=025;;
+    "C48")
+        export OCNRES=500
+        export waveGRD='glo_500'
+        ;;
+    "C96")
+        export OCNRES=100
+        export waveGRD='glo_200'
+        ;;
+    "C192")
+        export OCNRES=050
+        export waveGRD='glo_025'
+        ;;
+    "C384")
+        export OCNRES=025
+        export waveGRD='mx025'
+        ;;
+    "C768")
+        export OCNRES=025
+        export waveGRD='mx025'
+        ;;
+    *) 
+        export OCNRES=025
+        export waveGRD='mx025'
+        ;;
 esac
 export ICERES=${OCNRES}
-export waveGRD='glo_025'
 
 case "${APP}" in
   ATM)
