@@ -5,8 +5,6 @@ on:
     branches:
       - develop_badgetest
     types: [closed]
-  permissions:
-    pull-requests: write
 
 jobs:
 
