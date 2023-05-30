@@ -1,4 +1,4 @@
-name: Hera
+name: Orion
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 jobs:
 
   passed:
-    if: ${{ github.event.label.name == 'CI-Hera-Passed' && github.event.pull_request.merged == true }}
+    if: ${{ github.event.label.name == 'CI-Orion-Passed' && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -22,12 +22,12 @@ jobs:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
-        label: Hera
+        label: Orion
         message: Passed
         color: green
         
   pending:
-    if: ${{ join(github.event.issue.labels) == ''  && github.event.pull_request.merged == true }}
+    if: ${{ github.event.label.name != 'CI-Orion-Passed'  && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -37,12 +37,12 @@ jobs:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
-        label: Hera
+        label: Orion
         message: Pending
         color: yellow      
 
   failed:
-    if: ${{ github.event.label.name == 'CI-Hera-Failed' }}
+    if: ${{ github.event.label.name == 'CI-Orion-Failed' && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -52,36 +52,6 @@ jobs:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
-        label: Hera
+        label: Orion
         message: Failed
         isError: true
-
-  running:
-    if: ${{ github.event.label.name == 'CI-Hera-Running' }}
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Running
-      uses: schneegans/dynamic-badges-action@v1.6.0
-      with:
-        auth: ${{ secrets.CLI_DYNAMIC_BADGES}}
-        gistID: 13060fc1a0cd9368a4ee94171785fe9d
-        filename: hera.json
-        label: Hera
-        message: Running
-        color: yellow
-
-  build:  
-    if: ${{ github.event.label.name == 'CI-Hera-Building' }}
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Building
-      uses: schneegans/dynamic-badges-action@v1.6.0
-      with:
-        auth: ${{ secrets.CLI_DYNAMIC_BADGES}}
-        gistID: 13060fc1a0cd9368a4ee94171785fe9d
-        filename: hera.json
-        label: Hera
-        message: Building
-        color: yellow
