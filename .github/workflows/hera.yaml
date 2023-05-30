@@ -39,14 +39,12 @@ jobs:
         message: Passed
         color: green
                
-
         
   pending:
     if: ${{ github.event.label.name != 'CI-Hera-Passed'  && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
-    - name: Pending
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
