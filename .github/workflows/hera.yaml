@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - develop_badgetest
-  pull_request_target:
-    branches:
-      - develop_badgetest
-    types: [labeled]
 
 jobs:
 
