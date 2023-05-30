@@ -32,8 +32,9 @@ jobs:
     steps:
     - name: Passed
       uses: schneegans/dynamic-badges-action@v1.6.0
+      - env:
+         input_labels: ${{ needs.get_labels.outputs.output_labels }}
       with:
-        input_labels: ${{ needs.get_labels.outputs.output_labels }}
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
