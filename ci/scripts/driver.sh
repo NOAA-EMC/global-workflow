@@ -12,7 +12,7 @@ set -eux
 # development branch for the global-workflow repo.  It then stages tests directories per
 # PR number and calls clone-build_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
 # of the PR. It then is ready to run a suite of regression tests with various
-# configurations with run_tests.py.
+# configurations with run_tests.py. TEST
 #######################################################################################
 
 #################################################################
