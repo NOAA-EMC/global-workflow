@@ -15,7 +15,7 @@ jobs:
     steps:
       - id: get_labels_id
         run: |
-          labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_OUTPUT
+          labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> "$GITHUB_OUTPUT"
           echo "$labels"
         shell: bash
         env:
