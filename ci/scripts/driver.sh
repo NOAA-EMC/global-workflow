@@ -67,11 +67,11 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 for pr in ${pr_list}; do
   db_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --sbfile "${pr_list_dbfile}")
   pr_id=0
-#############################################################
-# Check if a Ready labeled PR has changed back from once set 
-# and in that case remove all previous jobs in scheduler and
-# and remove PR from filesystem to start clean
-#############################################################
+  #############################################################
+  # Check if a Ready labeled PR has changed back from once set   
+  # and in that case remove all previous jobs in scheduler and
+  # and remove PR from filesystem to start clean
+  #############################################################
   if [[ "${db_list}" == *"already is in list"* ]]; then
     pr_id=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | awk '{print $4}') || true
     pr_id=$((pr_id+1))
@@ -120,11 +120,11 @@ for pr in ${pr_list}; do
   set +e
   "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
-##################################################################
-# Checking for special case when Ready label was updated
-# that cause a running driver exit fail because was currently
-# building so we force and exit 0 instead to does not get relabled
-#################################################################
+  ##################################################################
+  # Checking for special case when Ready label was updated
+  # that cause a running driver exit fail because was currently
+  # building so we force and exit 0 instead to does not get relabled
+  #################################################################
   if [[ ${ci_status} -ne 0 ]]; then
      pr_id_check=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | awk '{print $4}') || true
      if [[ "${pr_id}" -ne "${pr_id_check}" ]]; then
