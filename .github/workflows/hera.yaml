@@ -47,7 +47,7 @@ jobs:
     steps:
       - env:
          input_labels2: ${{ needs.get_labels.outputs.output_labels }}
-        run: echo "$input_lables2"
+        run: echo "$input_labels2"
         
   pending:
     if: ${{ github.event.label.name != 'CI-Hera-Passed'  && github.event.pull_request.merged == true }}
