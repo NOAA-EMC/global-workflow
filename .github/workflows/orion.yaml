@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
-          echo "$LABELS" >> $GITHUB_ENV
+          LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_ENV
+          echo "$LABELS"
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
