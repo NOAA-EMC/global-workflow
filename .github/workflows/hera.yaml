@@ -45,6 +45,7 @@ jobs:
     needs: get_labels
     if: ${{ github.event.pull_request.merged == true }}
     steps:
+      -name: Test
       - env:
           input_labels2: ${{ needs.get_labels.outputs.output_labels }}
       run: echo "Labels: $input_lables2"
