@@ -52,7 +52,11 @@ def sql_insert(obj: sqlite3.Cursor, entities: list) -> None:
     obj : sqlite3.Cursor
         Cursor object for Sqlite3
     entities : list
-        The list three string values that go into sqlite table (pr, state, status, reset)
+        A list of four string values that go into sqlite table (pr, state, status, reset)
+            pr: pull request number
+            state: The new value for the state (Open, Closed)
+            status: The new value for the status (Ready, Running, Failed)
+            reset: The value for number of times reset to Ready
 
     """
 
