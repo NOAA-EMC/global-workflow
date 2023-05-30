@@ -11,10 +11,11 @@ jobs:
   get-labels:
     runs-on: ubuntu-latest
     outputs:
-      user: ${{ env.USER }}
+     LABELS: ${{ steps.step_get-labels.outputs.LABELS }}
     steps:
+      id: step_get-labels
       - run: |
-          LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_ENV
+          LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_OUTPUT
           echo "$LABELS"
         shell: bash
         env:
@@ -25,15 +26,16 @@ jobs:
 
 
   passed:
-    needs: get-labels
+    needs:
+    - get-labels
     if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
     - name: Passed
-      run: echo ${{ env.LABELS }}
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
+        input_var: ${{ needs.getlabels.outputs.LABELS }}
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
