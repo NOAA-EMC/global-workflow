@@ -11,10 +11,10 @@ jobs:
   get_labels:
     runs-on: ubuntu-latest
     outputs:
-      labels: ${{ steps.get_labels_id.outputs.labels }}
+      output_labels: ${{ steps.get_labels_id.outputs.labels }}
     steps:
       - name: Get the PR labels dynamically
-      id: getr_labels_id
+      id: get_labels_id
       run: |
         labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_OUTPUT
         echo "$labels"
@@ -35,7 +35,7 @@ jobs:
     - name: Passed
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
-        input_var: ${{ needs.get_labels.outputs.labels }}
+        input_labels: ${{ needs.get_labels.outputs.output_labels }}
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
