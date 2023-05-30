@@ -2,8 +2,7 @@
 
 import sys
 from pathlib import Path
-import argparse
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER 
 import sqlite3
 
 
@@ -127,7 +126,7 @@ def input_args():
     parser.add_argument('--create', help='create sqlite file for pr list status', action='store_true', required=False)
     parser.add_argument('--add_pr', nargs=1, metavar='PR', help='add new pr to list (defults to: Open,Ready)', required=False)
     parser.add_argument('--remove_pr', nargs=1, metavar='PR', help='removes pr from list', required=False)
-    parser.add_argument('--update_pr', nargs=argparse.REMAINDER, metavar=('pr', 'state', 'status', 'reset'),
+    parser.add_argument('--update_pr', nargs=REMAINDER, metavar=('pr', 'state', 'status', 'reset'),
                         help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', help='output pr table', action='store_true', required=False)
 
