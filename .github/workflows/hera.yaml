@@ -8,26 +8,26 @@ on:
 
 jobs:
 
-  get-labels:
+  get_labels:
     runs-on: ubuntu-latest
     outputs:
-      LABELS: ${{ steps.get-labels.outputs.LABELS }}
+      LABELS: ${{ steps.get_labels_id.outputs.LABELS }}
     steps:
-      id: get-labels
-      - run: |
-          LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_OUTPUT
-          echo "$LABELS"
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
-          REPO_NAME: ${{ github.event.repository.name }}
-          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
-
+      - name: Get the PR labels dynamically
+      id: getr_labels_id
+      run: |
+        LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_OUTPUT
+        echo "$LABELS"
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        OWNER: ${{ github.repository_owner }}
+        REPO_NAME: ${{ github.event.repository.name }}
+        PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
 
   passed:
     needs:
-    - get-labels
+      - get-labels
     if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
@@ -35,7 +35,7 @@ jobs:
     - name: Passed
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
-        input_var: ${{ needs.get-labels.outputs.LABELS }}
+        input_var: ${{ needs.get_labels.outputs.LABELS }}
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
