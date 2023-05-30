@@ -1,0 +1,57 @@
+name: Orion
+
+on:
+  push:
+    branches:
+      - develop_badgetest
+  pull_request_target:
+    branches:
+      - develop_badgetest
+    types: [labeled]
+
+jobs:
+
+  passed:
+    if: ${{ github.event.label.name == 'CI-Orion-Passed' && github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Passed
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: hera.json
+        label: Orion
+        message: Passed
+        color: green
+        
+  pending:
+    if: ${{ github.event.label.name != 'CI-Orion-Passed'  && github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Pending
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: hera.json
+        label: Orion
+        message: Pending
+        color: yellow      
+
+  failed:
+    if: ${{ github.event.label.name == 'CI-Orion-Failed' && github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Failed
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: hera.json
+        label: Orion
+        message: Failed
+        isError: true
