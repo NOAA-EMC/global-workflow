@@ -21,6 +21,7 @@ jobs:
           echo "test=foo" >> $GITHUB_OUTPUT
           echo "test=foo" >> $GITHUB_ENV
         env:
+          test: foo_bar
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
