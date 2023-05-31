@@ -44,10 +44,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: get_labels
     if: ${{ github.event.pull_request.merged == true }}
+    
     steps:
-      run: echo "$labels"
-      - env:
-         labels: ${{ needs.get_labels.outputs.labels }}
+    - run: echo "$labels"
+      env:
+          labels: ${{ needs.get_labels.outputs.labels }}
         
   pending:
     if: ${{ github.event.label.name != 'CI-Hera-Passed'  && github.event.pull_request.merged == true }}
