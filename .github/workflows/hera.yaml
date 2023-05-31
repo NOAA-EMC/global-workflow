@@ -11,7 +11,7 @@ jobs:
   get_labels:
     runs-on: ubuntu-latest
     outputs:
-      output_labels: ${{ steps.get_labels_id.outputs.labels }}
+      labels: ${{ steps.get_labels_id.outputs.labels }}
     steps:
       - id: get_labels_id
         run: |
@@ -46,8 +46,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     steps:
       - env:
-         input_labels2: ${{ needs.get_labels.outputs.output_labels }}
-        run: echo "$input_labels2"
+         labels: ${{ needs.get_labels.outputs.labels }}
+        run: echo "$labels"
         
   pending:
     if: ${{ github.event.label.name != 'CI-Hera-Passed'  && github.event.pull_request.merged == true }}
