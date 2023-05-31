@@ -40,7 +40,7 @@ jobs:
       
     steps:
     - name: Passed
-      uses: schneegans/dynamic-badges-action@v1.6.0 
+      run: echo "$${{ needs.print.output.som_var }}"
       env:
        input_var: ${{ needs.print.outputs.some_var }}
        another_input_var: ${{ needs.print.outputs.another_var }}
