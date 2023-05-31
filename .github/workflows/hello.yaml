@@ -27,22 +27,23 @@ jobs:
           echo "some_var=$SOME_VAR" >> $GITHUB_OUTPUT
           echo "another var: $ANOTHER_VAR"
           echo "another_var=$ANOTHER_VAR" >> $GITHUB_OUTPUT
-
+          
+          echo "some var: $SOME_VAR"
+          echo "some_var=$SOME_VAR" >> $GITHUB_ENV
+          echo "another var: $ANOTHER_VAR"
+          echo "another_var=$ANOTHER_VAR" >> $GITHUB_ENV
   passed:
     runs-on: ubuntu-latest
     needs:
       - print
-    if: contains(needs.print.outputs.som_var, 'bla')
+    if: contains(needs.print.outputs.som_var, 'foo')
       
     steps:
     - name: Passed
       uses: schneegans/dynamic-badges-action@v1.6.0 
-      with:
+      env:
        input_var: ${{ needs.print.outputs.some_var }}
        another_input_var: ${{ needs.print.outputs.another_var }}
-       auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
-       gistID: 13060fc1a0cd9368a4ee94171785fe9d
-       filename: hera.json
-       label: Test
-       message: Test
-       color: green
+       input_var_env: ${{ needs.print.env.some_var }}
+       another_input_var_env: ${{ needs.print.env.another_var }}
+ 
