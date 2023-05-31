@@ -5,12 +5,9 @@ on:
     branches:
       - develop_badgetest
     types: [closed]
-
-#env:
-#  SOME_VAR: bla_bla_bla
-#  ANOTHER_VAR: stuff_stuff
-
+    
 jobs:
+
   print:
     runs-on: ubuntu-latest
     outputs:
@@ -27,11 +24,6 @@ jobs:
           echo "some_var=$SOME_VAR" >> $GITHUB_OUTPUT
           echo "another var: $ANOTHER_VAR"
           echo "another_var=$ANOTHER_VAR" >> $GITHUB_OUTPUT
-          
-          echo "some var: $SOME_VAR"
-          echo "some_var=$SOME_VAR" >> $GITHUB_ENV
-          echo "another var: $ANOTHER_VAR"
-          echo "another_var=$ANOTHER_VAR" >> $GITHUB_ENV
   
   passed:
     runs-on: ubuntu-latest
@@ -48,6 +40,3 @@ jobs:
       env:
        input_var: ${{ needs.print.outputs.some_var }}
        another_input_var: ${{ needs.print.outputs.another_var }}
-       input_var_env: ${{ needs.print.env.some_var }}
-       another_input_var_env: ${{ needs.print.env.another_var }}
- 
