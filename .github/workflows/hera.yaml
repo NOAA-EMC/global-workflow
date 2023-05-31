@@ -16,7 +16,7 @@ jobs:
         run: |
           labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $env:GITHUB_OUTPUT
           echo "$labels"
-          echo "test=foo" >> $env:GITHUB_OUTPUT
+          echo "test=foo" >> $env:GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
@@ -57,7 +57,7 @@ jobs:
        echo "test: $test"
       env:
           labels: ${{ needs.get_labels.outputs.labels }}
-          test: ${{ needs.get_labels.outputs.test }}
+          test: ${{ needs.get_labels.env.test }}
         
   pending:
     if: "!contains(steps.pending1.env.labels, 'CI-Hera-Passed') && ${{ github.event.pull_request.merged == true }}"
