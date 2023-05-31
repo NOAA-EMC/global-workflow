@@ -16,9 +16,9 @@ jobs:
     steps:
       - id: get_labels_id
         run: |
-          labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> "$GITHUB_OUTPUT"
+          labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $env:GITHUB_OUTPUT
           echo "$labels"
-          echo "test=foo" >> "$GITHUB_OUTPUT"
+          echo "test=foo" >> $env:GITHUB_OUTPUT
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
