@@ -40,7 +40,11 @@ jobs:
       
     steps:
     - name: Passed
-      run: echo "$${{ needs.print.output.som_var }}"
+      run: |
+       echo "needs: ${{ needs.print.output.som_var }}"
+       echo "env: $input_var_env"
+       echo "out: $input_var"
+      
       env:
        input_var: ${{ needs.print.outputs.some_var }}
        another_input_var: ${{ needs.print.outputs.another_var }}
