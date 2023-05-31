@@ -54,6 +54,7 @@ jobs:
   pending:
     if: "!contains(steps.pending1.env.labels, 'CI-Hera-Passed') && ${{ github.event.pull_request.merged == true }}"
     runs-on: ubuntu-latest
+    needs: get_labels
 
     steps:
     - id: pending1
@@ -70,6 +71,7 @@ jobs:
   failed:
     if: contains(steps.failed1.env.labels, 'CI-Hera-Failed') && ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
+    needs: get_labels
 
     steps:
     - id: failed1
