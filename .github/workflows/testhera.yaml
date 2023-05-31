@@ -30,6 +30,6 @@ jobs:
     steps:
     - name: Test
       run: |
-        echo "test: $test"
+        echo "testme: $testme"
       env:
-          test: ${{ needs.getlabels.outputs.test }}
+          testme: ${{ needs.getlabels.outputs.test }}
