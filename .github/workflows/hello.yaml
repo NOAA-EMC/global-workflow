@@ -32,6 +32,7 @@ jobs:
           echo "some_var=$SOME_VAR" >> $GITHUB_ENV
           echo "another var: $ANOTHER_VAR"
           echo "another_var=$ANOTHER_VAR" >> $GITHUB_ENV
+  
   passed:
     runs-on: ubuntu-latest
     needs:
@@ -41,8 +42,7 @@ jobs:
     steps:
     - name: Passed
       run: |
-       echo "needs: ${{ needs.print.output.som_var }}"
-       echo "env: $input_var_env"
+       echo "another: $another_input_var"
        echo "out: $input_var"
       
       env:
