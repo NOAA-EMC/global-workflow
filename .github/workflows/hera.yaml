@@ -45,9 +45,9 @@ jobs:
     needs: get_labels
     if: ${{ github.event.pull_request.merged == true }}
     steps:
-      - env:
-         labels: ${{ needs.get_labels.outputs.labels }}
         run: echo "$labels"
+        with:
+          labels: ${{ needs.get_labels.outputs.labels }}
         
   pending:
     if: ${{ github.event.label.name != 'CI-Hera-Passed'  && github.event.pull_request.merged == true }}
