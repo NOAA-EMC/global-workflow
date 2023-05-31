@@ -1,0 +1,26 @@
+env:
+  SOME_VAR: bla_bla_bla
+  ANOTHER_VAR: stuff_stuff
+
+jobs:
+  print:
+    runs-on: ubuntu-latest
+    outputs:
+      some_var: ${{ steps.step1.outputs.some_var }}
+      another_var: ${{ steps.step1.outputs.another_var }}   
+    steps:
+      - name: Print inputs passed to the reusable workflow
+        id: step1
+        run: |
+          echo "some var: $SOME_VAR"
+          echo "some_var=$SOME_VAR" >> $GITHUB_OUTPUT
+          echo "another var: $ANOTHER_VAR"
+          echo "another_var=$ANOTHER_VAR" >> $GITHUB_OUTPUT
+  
+  call_reusable:
+    needs:
+      - print
+    uses: schneegans/dynamic-badges-action@v1.6.0 
+    with:
+      input_var: ${{ needs.print.outputs.some_var }}
+      another_input_var: ${{ needs.print.outputs.another_var }}
