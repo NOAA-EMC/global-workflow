@@ -52,9 +52,9 @@ jobs:
     
     steps:
     - name: Test
-    - run: |
-       echo "labels: $labels"
-       echo "test: $test"
+      run: |
+        echo "labels: $labels"
+        echo "test: $test"
       env:
           labels: ${{ needs.get_labels.outputs.labels }}
           test: ${{ needs.get_labels.outputs.test }}
