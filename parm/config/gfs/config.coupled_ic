@@ -21,6 +21,18 @@ fi
 
 
 case "${CASE}" in
+  "C48")
+    export CPL_ATMIC=workflowtest
+    export CPL_ICEIC=workflowtest
+    export CPL_OCNIC=workflowtest
+    export CPL_WAVIC=workflowtest
+    ;;
+  "C96") 
+    export CPL_ATMIC=workflowtest
+    export CPL_ICEIC=workflowtest
+    export CPL_OCNIC=workflowtest
+    export CPL_WAVIC=workflowtest
+    ;;
   "C384")
     #C384 and P8 ICs
     export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
