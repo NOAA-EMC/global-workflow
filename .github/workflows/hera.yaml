@@ -10,21 +10,22 @@ jobs:
 
   get_labels:
     runs-on: ubuntu-latest
-    outputs:
-      labels: ${{ steps.get_labels_id.outputs.labels }}
-      test: ${{ steps.get_labels_id.outputs.tests }}
     steps:
-      - id: get_labels_id
+      - name: get lables steps   
+        id: get_labels_id
         run: |
           labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $env:GITHUB_OUTPUT
           echo "$labels"
           echo "test=foo" >> $env:GITHUB_OUTPUT
-        shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+    outputs:
+      labels: ${{ steps.get_labels_steps.outputs.labels }}
+      test: ${{ steps.get_labels_steps.outputs.tests }}
+
 
   passed:
     runs-on: ubuntu-latest
