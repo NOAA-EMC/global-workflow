@@ -45,10 +45,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: get_labels
-    if: ${{ github.event.pull_request.merged == true }}
     
     steps:
-    - run: echo "$labels"
+    - run: |
+       echo "labels: $labels"
+       echo "needs: ${{ needs.get_labels.outputs.labels }}"
+       echo "env: ${{ env.labels }}"
       env:
           labels: ${{ needs.get_labels.outputs.labels }}
         
