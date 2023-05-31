@@ -1,4 +1,4 @@
-name: Hera
+name: Heratest
 
 on:
   pull_request:
