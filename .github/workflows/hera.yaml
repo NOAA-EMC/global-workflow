@@ -72,7 +72,6 @@ jobs:
         color: yellow      
 
   failed:
-    if: steps.failed1.env.labels == 'CI-Hera-Failed'
     runs-on: ubuntu-latest
     needs: get_labels
 
