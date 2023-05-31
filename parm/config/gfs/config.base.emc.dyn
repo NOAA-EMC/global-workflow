@@ -327,7 +327,10 @@ fi
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
+  export IAUFHRS="6"
 fi
+
+if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
