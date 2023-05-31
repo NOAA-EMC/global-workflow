@@ -12,11 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       labels: ${{ steps.get_labels_id.outputs.labels }}
+      test: ${{ steps.get_labels_id.outputs.tests }}
     steps:
       - id: get_labels_id
         run: |
           labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> "$GITHUB_OUTPUT"
           echo "$labels"
+          echo "test=foo" >> "$GITHUB_OUTPUT"
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -51,8 +53,10 @@ jobs:
        echo "labels: $labels"
        echo "needs: ${{ needs.get_labels.outputs.labels }}"
        echo "env: ${{ env.labels }}"
+       echo "test: $test"
       env:
           labels: ${{ needs.get_labels.outputs.labels }}
+          test: ${{ needs.get_labels.outputs.test }}
         
   pending:
     if: "!contains(steps.pending1.env.labels, 'CI-Hera-Passed') && ${{ github.event.pull_request.merged == true }}"
