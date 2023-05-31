@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - print
-    if: contains(needs.print.outputs.som_var, 'bla')
+    if: contains(${{ needs.print.outputs.som_var }}, 'bla')
       
     steps:
     - name: Passed
