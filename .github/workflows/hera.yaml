@@ -69,7 +69,7 @@ jobs:
         color: yellow      
 
   failed:
-    if: ${{ contains(steps.failed1.env.labels,'CI-Hera-Failed') && github.event.pull_request.merged == true }}
+    if: contains(needs.get_labels.outputs.labels,'CI-Hera-Failed')
     runs-on: ubuntu-latest
     needs: get_labels
 
