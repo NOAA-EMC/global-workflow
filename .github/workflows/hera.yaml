@@ -37,7 +37,7 @@ jobs:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
         filename: hera.json
-        label: Orion
+        label: Hera
         message: Passed
         color: green
 
@@ -52,7 +52,7 @@ jobs:
           labels: ${{ needs.get_labels.outputs.labels }}
         
   pending:
-    if: ! contains(steps.pending1.env.labels, 'CI-Hera-Passed') && ${{ github.event.pull_request.merged == true }}
+    if: "!contains(steps.pending1.env.labels, 'CI-Hera-Passed') && ${{ github.event.pull_request.merged == true }}"
     runs-on: ubuntu-latest
 
     steps:
