@@ -8,27 +8,28 @@ on:
 
 jobs:
 
-  get_labels:
+  getlabels:
     runs-on: ubuntu-latest
     outputs:
-      labels: ${{ steps.get_labels_id.outputs.labels }}
-      test: ${{ steps.get_labels_id.outputs.tests }}
+      labels: ${{ steps.myid.outputs.labels }}
+      test: ${{ steps.myid.outputs.tests }}
     steps:
-      - name: get lables steps   
-        id: get_labels_id
+      - name: Get Lables Steps   
+        id: myid
         env:
           FOO: foobar
         run: |
+          echo "test=$FOO"
           echo "test=$FOO" >> $GITHUB_OUTPUT
           
   test:
     runs-on: ubuntu-latest
     needs:
-     - get_labels
+     - getlabels
     
     steps:
     - name: Test
       run: |
         echo "test: $test"
       env:
-          test: ${{ needs.get_labels.outputs.test }}
+          test: ${{ needs.getlabels.outputs.test }}
