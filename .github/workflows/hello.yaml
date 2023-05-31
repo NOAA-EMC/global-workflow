@@ -1,0 +1,48 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - develop_badgetest
+    types: [closed]
+
+#env:
+#  SOME_VAR: bla_bla_bla
+#  ANOTHER_VAR: stuff_stuff
+
+jobs:
+  print:
+    runs-on: ubuntu-latest
+    outputs:
+      some_var: ${{ steps.step1.outputs.some_var }}
+      another_var: ${{ steps.step1.outputs.another_var }}   
+    steps:
+      - name: Print inputs passed to the reusable workflow
+        id: step1
+        env:
+          SOME_VAR: bla_bla_bla
+          ANOTHER_VAR: stuff_stuff   
+        run: |
+          echo "some var: $SOME_VAR"
+          echo "some_var=$SOME_VAR" >> $GITHUB_OUTPUT
+          echo "another var: $ANOTHER_VAR"
+          echo "another_var=$ANOTHER_VAR" >> $GITHUB_OUTPUT
+
+  passed:
+    runs-on: ubuntu-latest
+    needs:
+      - print
+    if: contains(needs.print.outputs.som_var, 'bla')
+      
+    steps:
+    - name: Passed
+      uses: schneegans/dynamic-badges-action@v1.6.0 
+      with:
+       input_var: ${{ needs.print.outputs.some_var }}
+       another_input_var: ${{ needs.print.outputs.another_var }}
+       auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
+       gistID: 13060fc1a0cd9368a4ee94171785fe9d
+       filename: hera.json
+       label: Test
+       message: Test
+       color: green
