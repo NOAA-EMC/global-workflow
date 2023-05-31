@@ -27,10 +27,10 @@ jobs:
   passed:
     runs-on: ubuntu-latest
     needs: get_labels
-    if: ${{ github.event.pull_request.merged == true }}
+    if: contains(steps.passed1.env.labels,'CI-Hera-Passed') &&  ${{ github.event.pull_request.merged == true }}
 
     steps:
-    - name: Passed
+    - id: passed1
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
         labels: ${{ needs.get_labels.outputs.labels }}
