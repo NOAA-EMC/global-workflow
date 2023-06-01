@@ -536,7 +536,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
         # TODO: Update reference when moved to ufs-weather-model RTD
         MEDTHREADS=${nthreads_mediator:-1}
-        MEDPETS=${MEDPETS:-ATMPETS}
+        MEDPETS=${MEDPETS:-${FV3PETS}}
         [[ "${MEDPETS}" -gt 300 ]] && MEDPETS=300
         export MEDPETS MEDTHREADS
         echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
