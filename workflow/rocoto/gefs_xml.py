@@ -13,7 +13,7 @@ class GEFSRocotoXML(RocotoXML):
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
         super().__init__(app_config, rocoto_config)
 
-    def _get_cycledefs(self):
+    def get_cycledefs(self):
         sdate = self._base['SDATE']
         edate = self._base['EDATE']
         interval = self._base.get('INTERVAL_GFS', '24:00:00')

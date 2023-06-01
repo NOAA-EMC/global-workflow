@@ -96,7 +96,7 @@ class RocotoXML(ABC):
         return '\n'.join(strings)
 
     @abstractmethod
-    def _get_cycledefs(self):
+    def get_cycledefs(self):
         pass
 
     @staticmethod
