@@ -18,9 +18,12 @@ jobs:
         id: myid
         env:
           MYTEST: foobar
+          MYLABELS: fuckfuck
         run: |
-          echo "mytest $MYTEST"
+          echo "mytest: $MYTEST"
+          echo "mylabels: $MYLABELS"
           echo "mytest=$MYTEST" >> $GITHUB_OUTPUT
+          echo "mylabels=$MYLABELS" >> $GITHUB_OUTPUT
           
   test:
     runs-on: ubuntu-latest
@@ -31,5 +34,7 @@ jobs:
     - name: Test
       run: |
         echo "testme: $testme"
+        echo "labelme: $labelme"
       env:
           testme: ${{ needs.getlabels.outputs.mytest }}
+          labelme: ${{ needs.getlabels.outputs.mylables }}
