@@ -3,19 +3,15 @@
 import os
 from distutils.spawn import find_executable
 from datetime import datetime
-from pygw.timetools import to_timedelta
-from pygw.factory import Factory
 from collections import OrderedDict
 from typing import Dict
-from applications import AppConfig
+from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 
 
 class RocotoXML(ABC):
-
-    rocoto_xml_factory = Factory(__qualname__)
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
 
@@ -173,90 +169,3 @@ class RocotoXML(ABC):
             fh.write('\n'.join(strings))
 
         return
-
-
-class GFSCycledRocotoXML(RocotoXML):
-
-    def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
-        super().__init__(app_config, rocoto_config)
-
-    def _get_cycledefs(self):
-        sdate = self._base['SDATE']
-        edate = self._base['EDATE']
-        interval = self._base.get('INTERVAL', '06:00:00')
-        strings = []
-        strings.append(f'\t<cycledef group="gdas_half">{sdate.strftime("%Y%m%d%H%M")} {sdate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-        sdate = sdate + to_timedelta(interval)
-        strings.append(f'\t<cycledef group="gdas">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        if self._app_config.do_jedilandda:
-            sdate_land_str = sdate.replace(hour=18, minute=0, second=0).strftime("%Y%m%d%H%M")
-            edate_land_str = edate.strftime("%Y%m%d%H%M")
-            if edate >= sdate:
-                strings.append(f'\t<cycledef group="gdas_land_prep">{sdate_land_str} {edate_land_str} 24:00:00</cycledef>')
-
-        if self._app_config.gfs_cyc != 0:
-            sdate_gfs = self._base['SDATE_GFS']
-            edate_gfs = self._base['EDATE_GFS']
-            interval_gfs = self._base['INTERVAL_GFS']
-            strings.append(f'\t<cycledef group="gfs">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
-
-            sdate_gfs = sdate_gfs + to_timedelta(interval_gfs)
-            if sdate_gfs <= edate_gfs:
-                strings.append(f'\t<cycledef group="gfs_seq">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
-
-        strings.append('')
-        strings.append('')
-
-        return '\n'.join(strings)
-
-
-class GFSForecastOnlyRocotoXML(RocotoXML):
-
-    def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
-        super().__init__(app_config, rocoto_config)
-
-    def _get_cycledefs(self):
-        sdate = self._base['SDATE']
-        edate = self._base['EDATE']
-        interval = self._base.get('INTERVAL_GFS', '24:00:00')
-        strings = []
-        strings.append(f'\t<cycledef group="gfs">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        sdate = sdate + to_timedelta(interval)
-        if sdate <= edate:
-            strings.append(f'\t<cycledef group="gfs_seq">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        strings.append('')
-        strings.append('')
-
-        return '\n'.join(strings)
-
-
-# Copy of GFSForecastOnlyRocotoXML for now, other than changing cycledef names from 'gfs' to 'gefs'
-#   If it remains this way, we can consolidate into a single forecast-only class
-class GEFSRocotoXML(RocotoXML):
-
-    def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
-        super().__init__(app_config, rocoto_config)
-
-    def _get_cycledefs(self):
-        sdate = self._base['SDATE']
-        edate = self._base['EDATE']
-        interval = self._base.get('INTERVAL_GFS', '24:00:00')
-        strings = []
-        strings.append(f'\t<cycledef group="gefs">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        sdate = sdate + to_timedelta(interval)
-        if sdate <= edate:
-            strings.append(f'\t<cycledef group="gefs_seq">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        strings.append('')
-        strings.append('')
-
-        return '\n'.join(strings)
-
-
-RocotoXML.rocoto_xml_factory.register('gfs_cycled', GFSCycledRocotoXML)
-RocotoXML.rocoto_xml_factory.register('gfs_forecast-only', GFSForecastOnlyRocotoXML)
-RocotoXML.rocoto_xml_factory.register('gefs_forecast-only', GEFSRocotoXML)
