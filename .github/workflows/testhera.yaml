@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       mylabels: ${{ steps.myid.outputs.mylabels }}
-      mytest: ${{ steps.myid.outputs.mytests }}
+      mytest: ${{ steps.myid.outputs.mytest }}
     steps:
       - name: Get Lables Steps   
         id: myid
@@ -37,4 +37,4 @@ jobs:
         echo "labelme: $labelme"
       env:
           testme: ${{ needs.getlabels.outputs.mytest }}
-          labelme: ${{ needs.getlabels.outputs.mylables }}
+          labelme: ${{ needs.getlabels.outputs.mylabels }}
