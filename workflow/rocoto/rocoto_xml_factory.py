@@ -6,8 +6,8 @@ from rocoto.gefs_xml import GEFSRocotoXML
 
 class RocotoXMLFactory(Factory):
 
-	def __init__(self, name: str):
-		super().__init__(name)
+    def __init__(self, name: str):
+        super().__init__(name)
 
 
 rocoto_xml_factory = RocotoXMLFactory('RocotoXML')

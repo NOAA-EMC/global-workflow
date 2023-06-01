@@ -5,8 +5,8 @@ from rocoto.gefs_tasks import GEFSTasks
 
 class TasksFactory(Factory):
 
-	def __init__(self, name: str):
-		super().__init__(name)
+    def __init__(self, name: str):
+        super().__init__(name)
 
 
 tasks_factory = TasksFactory('Tasks')
