@@ -52,7 +52,7 @@ case "${waveGRD}" in
     ;;
   "gwes_30m")
     #Grid used for P8
-    export waveinterpGRD=' '
+    export waveinterpGRD=''
     export wavepostGRD='gwes_30m'
     ;;
   "mx025")
@@ -62,17 +62,17 @@ case "${waveGRD}" in
     ;;
   "glo_025") 
     #GEFSv13 regular lat/lon 1/4 deg grid 
-    export waveinterpGRD=' '
+    export waveinterpGRD=''
     export wavepostGRD='glo_025'
     ;;
   "glo_200")
     #Global regular lat/lon 2deg deg grid 
-    export waveinterpGRD=' '
+    export waveinterpGRD=''
     export wavepostGRD='glo_200'
     ;;
   "glo_500")
     #Global regular lat/lon 5deg deg grid 
-    export waveinterpGRD=' '
+    export waveinterpGRD=''
     export wavepostGRD='glo_500'
     ;;
   *)
