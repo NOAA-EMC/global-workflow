@@ -47,7 +47,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Running | awk '{print $1}' | head -"${max_concurrent_pr}") || true
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Running | awk '{print $1}' | head -"${max_concurrent_pr}") || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no open and built PRs that are ready for the cases to advance with rocotorun .. exiting"
