@@ -25,7 +25,7 @@ class Factory:
         self._name = f'{name}Factory'
         self._builders = {}
 
-        # Register {name}Factory as importable from uwtools.factory
+        # Register {name}Factory as importable from pygw.factory
         me = sys.modules[__name__]
         if not hasattr(me, self._name):
             setattr(me, self._name, self)
