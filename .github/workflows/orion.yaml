@@ -8,60 +8,55 @@ on:
 
 jobs:
 
-  get-labels:
+  getlabels:
     runs-on: ubuntu-latest
+    outputs:
+      mylabels: ${{ steps.myid.outputs.mylabels }}
     steps:
-      - run: |
-          LABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_ENV
-          echo "$LABELS"
-        shell: bash
+      - name: Get Lables Steps   
+        id: myid
         env:
+          MYTEST: foobar
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
-
+        run: |
+          MYLABELS1="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
+          MYLABELS=$(echo "$MYLABELS1" | tr '\n' ' ')
+          echo "mylabels=$MYLABELS" >> $GITHUB_OUTPUT
+          
   passed:
-    if: ${{ contains(env.LABELS, 'CI-Orion-Passed') && github.event.pull_request.merged == true }}
+    if: contains( needs.getlabels.outputs.mylabels, 'CI-Orion-Passed') && ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
-
+    needs:
+     - getlabels
+    
     steps:
     - name: Passed
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
-        filename: hera.json
+        filename: orion.json
         label: Orion
         message: Passed
         color: green
         
-  pending:
-    if: ${{ github.event.label.name != 'CI-Orion-Passed'  && github.event.pull_request.merged == true }}
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Pending
-      uses: schneegans/dynamic-badges-action@v1.6.0
-      with:
-        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
-        gistID: 13060fc1a0cd9368a4ee94171785fe9d
-        filename: hera.json
-        label: Orion
-        message: Pending
-        color: yellow      
-
   failed:
-    if: ${{ github.event.label.name == 'CI-Orion-Failed' && github.event.pull_request.merged == true }}
+    if: contains( needs.getlabels.outputs.mylabels, 'CI-Orion-Failed') && ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
-
+    needs:
+     - getlabels
+    
     steps:
     - name: Failed
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: 13060fc1a0cd9368a4ee94171785fe9d
-        filename: hera.json
+        filename: orion.json
         label: Orion
         message: Failed
         isError: true
+     
