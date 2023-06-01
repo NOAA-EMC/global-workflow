@@ -27,7 +27,7 @@ jobs:
           echo "mylabels=$MYLABELS" >> $GITHUB_OUTPUT
           
   passed:
-    if: contains( needs.getlabels.outputs.mylabels, 'CI-Orion-Passed') && ${{ github.event.pull_request.merged == true }}
+    if: contains( needs.getlabels.outputs.mylabels, 'CI-Orion-Passed') && github.event.pull_request.merged
     runs-on: ubuntu-latest
     needs:
      - getlabels
@@ -44,7 +44,7 @@ jobs:
         color: green
         
   failed:
-    if: contains( needs.getlabels.outputs.mylabels, 'CI-Orion-Failed') && ${{ github.event.pull_request.merged == true }}
+    if: contains( needs.getlabels.outputs.mylabels, 'CI-Orion-Failed') && github.event.pull_request.merged
     runs-on: ubuntu-latest
     needs:
      - getlabels
