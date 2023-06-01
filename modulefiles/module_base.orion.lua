@@ -39,7 +39,7 @@ prepend_path("MODULEPATH", "/work2/noaa/global/wkolczyn/save/hpc-stack/modulefil
 load(pathJoin("hpc", "1.2.0"))
 load(pathJoin("hpc-intel", "2018.4"))
 load(pathJoin("hpc-miniconda3", "4.6.14"))
-load(pathJoin("ufswm", "1.0.0"))
+load(pathJoin("gfs_workflow", "1.0.0"))
 load(pathJoin("met", "9.1"))
 load(pathJoin("metplus", "3.1"))
 
