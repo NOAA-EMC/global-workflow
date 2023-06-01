@@ -112,8 +112,8 @@ export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
-export NET="gfs"  # NET is defined in the job-card (ecf)
-export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUMP is used at EMC as a RUN proxy
+export NET="gefs"  # NET is defined in the job-card (ecf)
+export RUN="gefs"  # RUN is defined in the job-card (ecf); CDUMP is used at EMC as a RUN proxy
 # TODO: determine where is RUN actually used in the workflow other than here
 # TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
 #       consistent w/ EE2?
@@ -234,14 +234,6 @@ case "${APP}" in
     exit 1
     ;;
 esac
-
-# Surface cycle update frequency
-if [[ "${CDUMP}" =~ "gdas" ]] ; then
-   export FHCYC=1
-   export FTSFS=10
-elif [[ "${CDUMP}" =~ "gfs" ]] ; then
-   export FHCYC=24
-fi
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
