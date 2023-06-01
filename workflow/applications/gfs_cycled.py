@@ -267,4 +267,3 @@ class GFSCycledAppConfig(AppConfig):
         base_out['FHMAX_GFS'] = fhmax_gfs
 
         return base_out
-
