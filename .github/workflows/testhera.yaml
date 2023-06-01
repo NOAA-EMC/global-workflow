@@ -30,17 +30,20 @@ jobs:
           echo "mytest=$MYTEST" >> $GITHUB_OUTPUT
           echo "mylabels=$MYLABELS" >> $GITHUB_OUTPUT
           
-  test:
-    if: contains( needs.getlabels.outputs.mylabels, 'CI-Hera-Pass')
+  passed:
+    if: contains( needs.getlabels.outputs.mylabels, 'CI-Hera-Passed')
     runs-on: ubuntu-latest
     needs:
      - getlabels
     
     steps:
-    - name: Test
-      run: |
-        echo "testme: $mytest"
-        echo "labelme: $mylabels"
-      env:
-          mytest: ${{ needs.getlabels.outputs.mytest }}
-          mylabels: ${{ needs.getlabels.outputs.mylabels }}
+    - name: Passed
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        labels: ${{ needs.get_labels.outputs.labels }}
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
+        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        filename: hera.json
+        label: Hera
+        message: Passed
+        color: green
