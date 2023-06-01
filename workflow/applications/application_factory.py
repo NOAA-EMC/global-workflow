@@ -6,8 +6,8 @@ from applications.gefs import GEFSAppConfig
 
 class AppConfigFactory(Factory):
 
-	def __init__(self, name: str):
-		super().__init__(name)
+    def __init__(self, name: str):
+        super().__init__(name)
 
 
 app_config_factory = AppConfigFactory('AppConfig')
