@@ -1,0 +1,67 @@
+upp:
+  config:
+    grib_version: "grib2"
+    ioform: "netcdfpara"
+    po: [1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,15.,10.,7.,5.,3.,2.,1.,0.7,0.4,0.2,0.1,0.07,0.04,0.02,0.01]
+    rdaod: False
+    sflux: True
+  fix_data:
+    mkdir:
+      - "{{ DATA }}"
+    copy:
+      - ["${g2tmpl_ROOT}/share/params_grib2_tbl_new", "{{ DATA }}/params_grib2_tbl_new"]
+      - ["{{ HOMEgfs }}/parm/post/nam_micro_lookup.dat", "{{ DATA }}/eta_micro_lookup.dat"]
+      - ["{{ HOMEgfs }}/exec/upp.x", "{{ DATA }}/upp.x"]
+      - ["{{ HOMEgfs }}/parm/post/itag.jinja", "{{ DATA }}/"]
+
+analysis:
+  config:
+    rdaod: True
+    sflux: False
+  data_in:
+    copy:
+      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-ANL.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ COM_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmanl.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COM_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcanl.nc", "{{ DATA }}/{{ flux_filename }}"]
+  data_out:
+    copy:
+      - ["{{ DATA }}/GFSPRS.GrbF00", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.masteranl.grb2"]
+      - ["{{ DATA }}/GFSPRS.GrbF00.idx", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.masteranl.grb2.idx"]
+
+forecast_00:
+  config:
+    rdaod: True
+  data_in:
+    copy:
+      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-F00-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
+  data_out:
+    copy:
+      - ["{{ DATA }}/GFSPRS.GrbF{{ '%02d' % forecast_hour }}", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.masterf{{ '%03d' % forecast_hour }}.grb2"]
+      - ["{{ DATA }}/GFSFLX.GrbF{{ '%02d' % forecast_hour }}", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfluxf{{ '%03d' % forecast_hour }}.grb2"]
+
+forecast:
+  config:
+    rdaod: True
+  data_in:
+    copy:
+      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
+  data_out:
+    copy:
+      - ["{{ DATA }}/GFSPRS.GrbF{{ '%02d' % forecast_hour }}", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.masterf{{ '%03d' % forecast_hour }}.grb2"]
+      - ["{{ DATA }}/GFSFLX.GrbF{{ '%02d' % forecast_hour }}", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfluxf{{ '%03d' % forecast_hour }}.grb2"]
+
+goes:
+  config:
+    rdaod: True
+    sflux: False
+  data_in:
+    copy:
+      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-GOES.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
+  data_out:
+      - ["{{ DATA }}/GFSPRS.GrbF{{ '%02d' % forecast_hour }}", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.masterf{{ '%03d' % forecast_hour }}.grb2"]
