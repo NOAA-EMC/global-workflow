@@ -24,7 +24,7 @@ jobs:
           REPO_NAME: ${{ github.event.repository.name }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          MYLABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')" >> $GITHUB_OUTPUT
+          MYLABELS="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
           echo "mytest: $MYTEST"
           echo "mylabels: $MYLABELS"
           echo "mytest=$MYTEST" >> $GITHUB_OUTPUT
