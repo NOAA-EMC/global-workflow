@@ -65,6 +65,16 @@ case "${waveGRD}" in
     export waveinterpGRD=' '
     export wavepostGRD='glo_025'
     ;;
+  "glo_200")
+    #Global regular lat/lon 2deg deg grid 
+    export waveinterpGRD=' '
+    export wavepostGRD='glo_200'
+    ;;
+  "glo_500")
+    #Global regular lat/lon 5deg deg grid 
+    export waveinterpGRD=' '
+    export wavepostGRD='glo_500'
+    ;;
   *)
     echo "No grid specific wave config values"  
     ;;  
