@@ -11,7 +11,7 @@ upp:
     copy:
       - ["${g2tmpl_ROOT}/share/params_grib2_tbl_new", "{{ DATA }}/params_grib2_tbl_new"]
       - ["{{ HOMEgfs }}/parm/post/nam_micro_lookup.dat", "{{ DATA }}/eta_micro_lookup.dat"]
-      - ["{{ HOMEgfs }}/exec/upp.x", "{{ DATA }}/upp.x"]
+      - ["{{ HOMEgfs }}/exec/upp.x", "{{ DATA }}/"]
       - ["{{ HOMEgfs }}/parm/post/itag.jinja", "{{ DATA }}/"]
 
 analysis:
@@ -28,25 +28,16 @@ analysis:
       - ["{{ DATA }}/GFSPRS.GrbF00", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.masteranl.grb2"]
       - ["{{ DATA }}/GFSPRS.GrbF00.idx", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.masteranl.grb2.idx"]
 
-forecast_00:
-  config:
-    rdaod: True
-  data_in:
-    copy:
-      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-F00-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
-      - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
-      - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
-  data_out:
-    copy:
-      - ["{{ DATA }}/GFSPRS.GrbF{{ '%02d' % forecast_hour }}", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.masterf{{ '%03d' % forecast_hour }}.grb2"]
-      - ["{{ DATA }}/GFSFLX.GrbF{{ '%02d' % forecast_hour }}", "{{ COM_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfluxf{{ '%03d' % forecast_hour }}.grb2"]
-
 forecast:
   config:
     rdaod: True
   data_in:
     copy:
+      {% if forecast_hour = 0 -%}
+      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-F00-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      {% else -%}
       - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      {% endif %}
       - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:

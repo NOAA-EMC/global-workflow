@@ -15,11 +15,11 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
+    forecast_hour = config.get("FORECAST_HOUR", 0)
+    upp_run = config.get("UPP_RUN", "forecast")
+
     upp = UPP(config)
     upp.initialize()
-
-    upp_run = ...
-    forecast_hour = ...
 
     upp.pre_execute(upp_run, forecast_hour)
     upp.execute()
