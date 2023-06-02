@@ -98,7 +98,7 @@ You will need to add the following files:
 
 For config.ufs: 
 
-If this is a computational you will need to update this file. If this is a new output file you can skip this update.
+If this is a computational grid, you will need to update this file. If this is a new output file you can skip this update.
 There are two sections to update: 
 1. Add the new grid as a possible ww3 resolution at the top of the file 
 2. In the WW3 specific settings section, add a case for the new grid and define ntasks_ww3 (number of tasks for WW3) and 
@@ -122,11 +122,17 @@ computational grid or just an output grid you will need a new parm/wave/ww3_grib
 WW3/model/inp/ww3_grib.inp for more infomration about this input file.  The other existing templated input files can be used 
 as guides to create these new files. 
 
-
-
-
 *****************************
 Updates for New Product Grids 
 *****************************
 
-If this is a new file for AWIPS Products, additional updates are likely required.  
+If this is a new file for AWIPS Products, additional updates are likely required.
+
+**************
+New Staged ICs 
+**************
+
+Depending on the desired use of the new grid, or if the default grid is changed, staged initial conditions for use in 
+workflow testing will also be needed. 
+
+For example, C384 S2SW need an IC for 20130101 00z and low resolution tests need an IC for 20210323 12z. 

@@ -78,6 +78,9 @@ if [[ "${DO_OCN:-}" = "YES" ]]; then
   [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
   err=$((err + rc))
   case "${OCNRES}" in
+    "500") 
+      echo "Do not have Mom.res_*.nc files for 5 deg ocean"
+      ;;
     "025")
       for nn in $(seq 1 4); do
         source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res_${nn}.nc"

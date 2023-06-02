@@ -17,7 +17,7 @@ export DOIBP_WAV='NO' # Input boundary points
 export DOFLD_WAV='YES' # Field data
 export DOPNT_WAV='YES' # Station data
 export DOGRB_WAV='YES' # Create grib2 files
-if [[ -z ${waveinterpGRD} ]]; then
+if [[ -n "${waveinterpGRD}" ]]; then
     export DOGRI_WAV='YES' # Create interpolated grids
 else
     export DOGRI_WAV='NO' # Do not create interpolated grids
