@@ -61,7 +61,7 @@ def fill_COMROT_cycled(host, inputs):
 
     do_ocean = do_ice = do_med = False
 
-    if inputs.app in ['S2S', 'S2SW']:
+    if 'S2S' in inputs.app:
         do_ocean = do_ice = do_med = True
 
     if inputs.icsdir is None:
