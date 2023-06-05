@@ -1,6 +1,6 @@
 experiment:
   type: gfs
-  mode: focecase-only
+  mode: forcast-only
 
 arguments:
   app: S2SWA

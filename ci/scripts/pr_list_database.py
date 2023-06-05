@@ -6,7 +6,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER, Z
 import sqlite3
 
 def dir_path(string):
-    if os.path.isfile(string):
+    if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
         return os.path.abspath(string)
     else:
         raise NotADirectoryError(string)
