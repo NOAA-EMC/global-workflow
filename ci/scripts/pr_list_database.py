@@ -39,7 +39,7 @@ def sql_table(obj: sqlite3.Cursor) -> None:
 
     """
 
-    obj.execute("CREATE TABLE processing(pr integer PRIMARY KEY, state text, status text, reset integer)")
+    obj.execute("CREATE TABLE processing(pr integer PRIMARY KEY, state text, status text, reset_id integer, cases text)")
 
 
 def sql_insert(obj: sqlite3.Cursor, entities: list) -> None:
@@ -51,15 +51,16 @@ def sql_insert(obj: sqlite3.Cursor, entities: list) -> None:
     obj : sqlite3.Cursor
         Cursor object for Sqlite3
     entities : list
-        A list of four string values that go into sqlite table (pr, state, status, reset)
+        A list of four string values that go into sqlite table (pr, state, status, reset_id, cases)
             pr: pull request number
             state: The new value for the state (Open, Closed)
             status: The new value for the status (Ready, Running, Failed)
-            reset: The value for number of times reset to Ready
+            reset_id: The value for number of times reset_id to Ready
+            cases: String containing case selection information
 
     """
 
-    obj.execute('INSERT INTO processing(pr, state, status, reset) VALUES(?, ?, ?, ?)', entities)
+    obj.execute('INSERT INTO processing(pr, state, status, reset_id, cases) VALUES(?, ?, ?, ?)', entities)
 
 
 def sql_update(obj: sqlite3.Cursor, pr: str, updates: dict) -> None:
@@ -75,11 +76,12 @@ def sql_update(obj: sqlite3.Cursor, pr: str, updates: dict) -> None:
         Dictionary of values to update for a given PR to include by postion
         state, The new value for the state (Open, Closed)
         status, The new value for the status (Ready, Running, Failed)
-        reset, The value for number of times reset to Ready
+        reset_id, The value for number of times reset_id to Ready
+        cases, Information regarding which cases are used (i.e. self PR)
 
     """
 
-    update_list = ['state', 'status', 'reset']
+    update_list = ['state', 'status', 'reset_id']
     for value in updates:
         update = update_list.pop(0)
         obj.execute(f'UPDATE processing SET "{update}" = "{value}" WHERE pr = {pr}')
@@ -126,7 +128,7 @@ def input_args():
     parser.add_argument('--create', help='create sqlite file for pr list status', action='store_true', required=False)
     parser.add_argument('--add_pr', nargs=1, metavar='PR', help='add new pr to list (defults to: Open,Ready)', required=False)
     parser.add_argument('--remove_pr', nargs=1, metavar='PR', help='removes pr from list', required=False)
-    parser.add_argument('--update_pr', nargs=REMAINDER, metavar=('pr', 'state', 'status', 'reset'),
+    parser.add_argument('--update_pr', nargs=REMAINDER, metavar=('pr', 'state', 'status', 'reset_id', 'cases'),
                         help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', help='output pr table', action='store_true', required=False)
 

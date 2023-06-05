@@ -66,6 +66,9 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 
 for pr in ${pr_list}; do
   db_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --sbfile "${pr_list_dbfile}")
+  # Check to see if this PR is Labeled CI-PR-Cases to get cases from itself
+  pr_case_self=$(${GH} pr view ${pr} --repo ${REPO_URL} --json labels --jq .labels[].name) | grep CI-PR-Cases
+  echo "pr_case_self: ${pr_case_self}"
   pr_id=0
   #############################################################
   # Check if a Ready labeled PR has changed back from once set   
@@ -104,7 +107,7 @@ fi
 #############################################################
 
 for pr in ${pr_list}; do
-  # Skip pr's that are currently Building for when driver is called in cron
+  # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
   pr_building=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | awk -v pr="${pr}" '{ if ($1 == pr) print $0 }' | grep Building) || true
   if [[ -z "${pr_building+x}" ]]; then
       continue
