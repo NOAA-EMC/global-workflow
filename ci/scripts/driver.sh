@@ -66,9 +66,6 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 
 for pr in ${pr_list}; do
   db_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --sbfile "${pr_list_dbfile}")
-  # Check to see if this PR is Labeled CI-PR-Cases to get cases from itself
-  pr_case_self=$(${GH} pr view ${pr} --repo ${REPO_URL} --json labels --jq .labels[].name) | grep CI-PR-Cases
-  echo "pr_case_self: ${pr_case_self}"
   pr_id=0
   #############################################################
   # Check if a Ready labeled PR has changed back from once set   
@@ -76,7 +73,7 @@ for pr in ${pr_list}; do
   # and remove PR from filesystem to start clean
   #############################################################
   if [[ "${db_list}" == *"already is in list"* ]]; then
-    pr_id=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | awk '{print $4}') || true
+    pr_id=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
     pr_id=$((pr_id+1))
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Ready "${pr_id}"
     pr_dir="${GFS_CI_ROOT}/PR/${pr}"
@@ -89,6 +86,14 @@ for pr in ${pr_list}; do
     done
     rm -Rf "${pr_dir}"
   fi
+  # Check to see if this PR is Labeled CI-PR-Cases to get cases from itself
+  pr_case_self=$(${GH} pr view ${pr} --repo ${REPO_URL} --json labels --jq .labels[].name) | grep CI-PR-Cases
+  echo "pr_case_self: ${pr_case_self}"
+  if [[ "${pr_case_self}" == "CI-PR-Cases" ]]; then
+    HOMEgfs_CASES_DIR="${pr_dir}/global-workflow"
+  else
+    HOMEgfs_CASES_DIR="${HOMEgfs}"
+  fi  
 done
 
 pr_list=""
@@ -108,7 +113,7 @@ fi
 
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
-  pr_building=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | awk -v pr="${pr}" '{ if ($1 == pr) print $0 }' | grep Building) || true
+  pr_building=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr}" --sbfile "${pr_list_dbfile}" | grep Building) || true
   if [[ -z "${pr_building+x}" ]]; then
       continue
   fi
@@ -129,7 +134,7 @@ for pr in ${pr_list}; do
   # building so we force and exit 0 instead to does not get relabled
   #################################################################
   if [[ ${ci_status} -ne 0 ]]; then
-     pr_id_check=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | awk '{print $4}') || true
+     pr_id_check=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "{pr}" --sbfile "${pr_list_dbfile}" | awk '{print $4}') || true
      if [[ "${pr_id}" -ne "${pr_id_check}" ]]; then
         exit 0
      fi   
@@ -146,13 +151,13 @@ for pr in ${pr_list}; do
     # loop over every yaml file in ${HOMEgfs}/ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for yaml_config in "${HOMEgfs}/ci/cases/"*.yaml; do
+    for yaml_config in "${HOMEgfs_CASES_DIR}/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
-      HOMEgfs_ci="${HOMEgfs}"
+      HOMEgfs_ci="${HOMEgfs_CASES_DIR}"
       export HOMEgfs_ci
       set +e
-      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
+      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_CASES_DIR}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then

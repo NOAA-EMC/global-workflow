@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
-import sys
+import sys,os
 from pathlib import Path
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER, ZERO_OR_MORE
 import sqlite3
 
+def dir_path(string):
+    if os.path.isfile(string):
+        return os.path.abspath(string)
+    else:
+        raise NotADirectoryError(string)
 
-def sql_connection(filename: Path) -> sqlite3.Connection:
+
+def sql_connection(filename: os.path) -> sqlite3.Connection:
     """
     Returns an Sqlite3 Cursor object from a given path to a sqlite3 database file
 
@@ -22,7 +28,7 @@ def sql_connection(filename: Path) -> sqlite3.Connection:
 
     """
     try:
-        return sqlite3.connect(Path(filename))
+        return sqlite3.connect(filename)
     except sqlite3.Error:
         print(sqlite3.Error)
         sys.exit(-1)
@@ -60,7 +66,7 @@ def sql_insert(obj: sqlite3.Cursor, entities: list) -> None:
 
     """
 
-    obj.execute('INSERT INTO processing(pr, state, status, reset_id, cases) VALUES(?, ?, ?, ?)', entities)
+    obj.execute('INSERT INTO processing(pr, state, status, reset_id, cases) VALUES(?, ?, ?, ?, ?)', entities)
 
 
 def sql_update(obj: sqlite3.Cursor, pr: str, updates: dict) -> None:
@@ -81,7 +87,8 @@ def sql_update(obj: sqlite3.Cursor, pr: str, updates: dict) -> None:
 
     """
 
-    update_list = ['state', 'status', 'reset_id']
+    update_list = ['state', 'status', 'reset_id', 'cases']
+    rows = sql_fetch(obj)
     for value in updates:
         update = update_list.pop(0)
         obj.execute(f'UPDATE processing SET "{update}" = "{value}" WHERE pr = {pr}')
@@ -124,13 +131,13 @@ def input_args():
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('--sbfile', help='SQLite3 database file with PR list', type=str)
+    parser.add_argument('--sbfile', help='SQLite3 database file with PR list',type=dir_path)
     parser.add_argument('--create', help='create sqlite file for pr list status', action='store_true', required=False)
     parser.add_argument('--add_pr', nargs=1, metavar='PR', help='add new pr to list (defults to: Open,Ready)', required=False)
     parser.add_argument('--remove_pr', nargs=1, metavar='PR', help='removes pr from list', required=False)
     parser.add_argument('--update_pr', nargs=REMAINDER, metavar=('pr', 'state', 'status', 'reset_id', 'cases'),
                         help='updates state and status of a given pr', required=False)
-    parser.add_argument('--display', help='output pr table', action='store_true', required=False)
+    parser.add_argument('--display', nargs='*', help='output pr table', required=False)
 
     args = parser.parse_args()
     return args
@@ -153,7 +160,7 @@ if __name__ == '__main__':
                 print(f"pr {row[0]} already is in list: nothing added")
                 sys.exit(0)
 
-        entities = (args.add_pr[0], 'Open', 'Ready', 0)
+        entities = (args.add_pr[0], 'Open', 'Ready', 0, 'ci_repo')
         sql_insert(obj, entities)
 
     if args.update_pr:
@@ -167,10 +174,15 @@ if __name__ == '__main__':
     if args.remove_pr:
         sql_remove(obj, args.remove_pr[0])
 
-    if args.display:
+    if args.display is not None:
         rows = sql_fetch(obj)
-        for row in rows:
-            print(' '.join(map(str, row)))
+        if len(args.display) == 1:
+            for row in rows:
+                if int(args.display[0]) == int(row[0]):
+                    print(' '.join(map(str, row)))
+        else:
+            for row in rows:
+                print(' '.join(map(str, row)))
 
     con.commit()
     con.close()
