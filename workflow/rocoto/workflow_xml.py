@@ -3,15 +3,15 @@
 import os
 from distutils.spawn import find_executable
 from datetime import datetime
-from pygw.timetools import to_timedelta
 from collections import OrderedDict
 from typing import Dict
-from applications import AppConfig
+from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
 import rocoto.rocoto as rocoto
+from abc import ABC, abstractmethod
 
 
-class RocotoXML:
+class RocotoXML(ABC):
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
 
@@ -23,7 +23,7 @@ class RocotoXML:
         self.preamble = self._get_preamble()
         self.definitions = self._get_definitions()
         self.header = self._get_workflow_header()
-        self.cycledefs = self._get_cycledefs()
+        self.cycledefs = self.get_cycledefs()
         task_list = get_wf_tasks(app_config)
         self.tasks = '\n'.join(task_list)
         self.footer = self._get_workflow_footer()
@@ -95,65 +95,9 @@ class RocotoXML:
 
         return '\n'.join(strings)
 
-    def _get_cycledefs(self):
-
-        cycledef_map = {'cycled': self._get_cycledefs_cycled,
-                        'forecast-only': self._get_cycledefs_forecast_only}
-
-        try:
-            cycledefs = cycledef_map[self._app_config.mode]()
-        except KeyError:
-            raise KeyError(f'{self._app_config.mode} is not a valid application mode.\n' +
-                           'Valid application modes are:\n' +
-                           f'{", ".join(cycledef_map.keys())}')
-
-        return cycledefs
-
-    def _get_cycledefs_cycled(self):
-        sdate = self._base['SDATE']
-        edate = self._base['EDATE']
-        interval = self._base.get('INTERVAL', '06:00:00')
-        strings = []
-        strings.append(f'\t<cycledef group="gdas_half">{sdate.strftime("%Y%m%d%H%M")} {sdate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-        sdate = sdate + to_timedelta(interval)
-        strings.append(f'\t<cycledef group="gdas">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        if self._app_config.do_jedilandda:
-            sdate_land_str = sdate.replace(hour=18, minute=0, second=0).strftime("%Y%m%d%H%M")
-            edate_land_str = edate.strftime("%Y%m%d%H%M")
-            if edate >= sdate:
-                strings.append(f'\t<cycledef group="gdas_land_prep">{sdate_land_str} {edate_land_str} 24:00:00</cycledef>')
-
-        if self._app_config.gfs_cyc != 0:
-            sdate_gfs = self._base['SDATE_GFS']
-            edate_gfs = self._base['EDATE_GFS']
-            interval_gfs = self._base['INTERVAL_GFS']
-            strings.append(f'\t<cycledef group="gfs">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
-
-            sdate_gfs = sdate_gfs + to_timedelta(interval_gfs)
-            if sdate_gfs <= edate_gfs:
-                strings.append(f'\t<cycledef group="gfs_seq">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
-
-        strings.append('')
-        strings.append('')
-
-        return '\n'.join(strings)
-
-    def _get_cycledefs_forecast_only(self):
-        sdate = self._base['SDATE']
-        edate = self._base['EDATE']
-        interval = self._base.get('INTERVAL_GFS', '24:00:00')
-        strings = []
-        strings.append(f'\t<cycledef group="gfs">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        sdate = sdate + to_timedelta(interval)
-        if sdate <= edate:
-            strings.append(f'\t<cycledef group="gfs_seq">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
-
-        strings.append('')
-        strings.append('')
-
-        return '\n'.join(strings)
+    @abstractmethod
+    def get_cycledefs(self):
+        pass
 
     @staticmethod
     def _get_workflow_footer():

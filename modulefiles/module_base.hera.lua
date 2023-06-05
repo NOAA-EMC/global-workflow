@@ -40,7 +40,7 @@ prepend_path("MODULEPATH", "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/hp
 load(pathJoin("hpc", "1.2.0"))
 load(pathJoin("hpc-intel", "18.0.5.274"))
 load(pathJoin("hpc-miniconda3", "4.6.14"))
-load(pathJoin("ufswm", "1.0.0"))
+load(pathJoin("gfs_workflow", "1.0.0"))
 load(pathJoin("met", "9.1"))
 load(pathJoin("metplus", "3.1"))
 
