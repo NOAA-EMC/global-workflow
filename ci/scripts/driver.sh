@@ -65,6 +65,7 @@ fi
 pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
 
 for pr in ${pr_list}; do
+  pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   db_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --sbfile "${pr_list_dbfile}")
   pr_id=0
   #############################################################
@@ -76,7 +77,6 @@ for pr in ${pr_list}; do
     pr_id=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
     pr_id=$((pr_id+1))
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Ready "${pr_id}"
-    pr_dir="${GFS_CI_ROOT}/PR/${pr}"
     for cases in "${pr_dir}/RUNTESTS/"*; do
       if [[ -z "${cases+x}" ]]; then
          break
