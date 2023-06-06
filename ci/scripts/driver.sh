@@ -173,7 +173,7 @@ for pr in ${pr_list}; do
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-        "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" -sbfile "${pr_list_dbfile}"
+        "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --sbfile "${pr_list_dbfile}"
       fi
     done
 

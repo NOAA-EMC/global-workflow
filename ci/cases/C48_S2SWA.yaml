@@ -1,6 +1,6 @@
 experiment:
   type: gfs
-  mode: forcast-only
+  mode: forecast-only
 
 arguments:
   app: S2SWA
