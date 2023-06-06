@@ -34,8 +34,6 @@ CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
 if [ ${MACHINE_ID} != "noaacloud.${RT_COMPILER}" ]; then
-  echo "HERE"
-  exit 999
   ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
