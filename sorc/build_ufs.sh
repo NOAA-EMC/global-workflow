@@ -33,20 +33,27 @@ COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
-if [[ ${MACHINE_ID} != "noaacloud" ]]; then
+if [ ${MACHINE_ID} != "noaacloud.${RT_COMPILER}" ]; then
+  echo "HERE"
+  exit 999
+  ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+  mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
+  mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
+  cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
+
   ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 fi
 
-if [[ ${MACHINE_ID} == "noaacloud" ]]; then
+if [ ${MACHINE_ID} == "noaacloud.${RT_COMPILER}" ]; then
   case $(dnsdomainname -f) in   
      # TODO: Add Google and Azure platforms.
-     *pw-noaa*pw.local) CLOUD_MACHINE_ID=aws 
+     *pw-noaa*pw.local) CLOUD_MACHINE_ID=aws.${RT_COMPILER} 
   esac
 
-  if [[ ${CLOUD_MACHINE_ID} == "aws" ]]; then
+  if [[ ${CLOUD_MACHINE_ID} == "aws.intel" ]]; then
     module use /contrib/global-workflow/spack-stack/envs/ufswm/install/modulefiles/Core
     module load stack-intel
     module load stack-intel-oneapi-mpi
@@ -54,21 +61,17 @@ if [[ ${MACHINE_ID} == "noaacloud" ]]; then
     # TODO: It is still uncertain why this is the only module that is 
     # missing; check the spack build as this needed to be added manually.
     module load w3emc/2.9.2
+    module list
   fi
 
-  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_cloud.${RT_COMPILER}.lua
-  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}_debug.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_cloud.${RT_COMPILER}_debug.lua
+  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}.lua
+  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}_debug.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}_debug.lua
   cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_common_spack.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_common_stack.lua
-  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/cmake/configure_cloud.${RT_COMPILER}.cmake" ${cwd}/ufs_model.fd/cmake/configure_cloud.${RT_COMPILER}.cmake 
+  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/cmake/configure_cloud.${RT_COMPILER}.cmake" ${cwd}/ufs_model.fd/cmake/configure_noaacloud.${RT_COMPILER}.cmake 
   cd ${cwd}/ufs_model.fd
   export CMAKE_FLAGS="${MAKE_OPT}"
   ./build.sh 
   mv ${cwd}/ufs_model.fd/build/ufs_model ${cwd}/ufs_model.fd/tests/ufs_model.x
 fi
-
-./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
-mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
-mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
-cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 
 exit 0
