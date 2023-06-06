@@ -38,6 +38,15 @@ case $(hostname -f) in
   *) MACHINE_ID=UNKNOWN ;;  # Unknown platform
 esac
 
+[[ $MACHINE_ID == "UNKNOWN" ]]; then 
+   case $(dnsdomainname -f) in
+
+      # AWS Parallel Works
+      *pw-noaa*pw.local) MACHINE_ID=aws_pw
+
+   esac
+fi
+
 # Overwrite auto-detect with MACHINE if set
 MACHINE_ID=${MACHINE:-${MACHINE_ID}}
 
