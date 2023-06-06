@@ -64,6 +64,8 @@ if [ ${MACHINE_ID} == "noaacloud.${RT_COMPILER}" ]; then
     module list
   fi
 
+  # TODO: This is a hack for now.
+  # TODO: What is a suitable place for the NOAA-cloud specific file?
   cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}.lua
   cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}_debug.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}_debug.lua
   cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_common_spack.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_common_stack.lua
@@ -72,6 +74,10 @@ if [ ${MACHINE_ID} == "noaacloud.${RT_COMPILER}" ]; then
   export CMAKE_FLAGS="${MAKE_OPT}"
   ./build.sh 
   mv ${cwd}/ufs_model.fd/build/ufs_model ${cwd}/ufs_model.fd/tests/ufs_model.x
+ 
+  # TODO: This is hack? Where is this step performed in the build system?
+  mkdir -p ${HOMEgfs}/exec
+  cp ${cwd}/ufs_model.fd/tests/ufs_model.x ${HOMEgfs}/exec/ufs_model.x 
 fi
 
 exit 0
