@@ -38,7 +38,7 @@ case $(hostname -f) in
   *) MACHINE_ID=UNKNOWN ;;  # Unknown platform
 esac
 
-[[ $MACHINE_ID == "UNKNOWN" ]]; then 
+if [[ $MACHINE_ID == "UNKNOWN" ]]; then 
    case $(dnsdomainname -f) in
 
       # AWS Parallel Works

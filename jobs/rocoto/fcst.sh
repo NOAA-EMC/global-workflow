@@ -44,6 +44,8 @@ if [[ "${MACHINE_ID}" == "aws_pw" ]]; then
   export UTILROOT=/contrib/global-workflow/NCEPLIBS-prod_util
   export PATH=${PATH}:/contrib/global-workflow/bin
   export NDATE=$(which ndate)
+fi
+
 module list
 unset MACHINE_ID
 set_trace
