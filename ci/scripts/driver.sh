@@ -57,7 +57,9 @@ set -x
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
+
 pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
+
 if [[ ! -f "${pr_list_dbfile}" ]]; then
   "${HOMEgfs}/ci/scripts/pr_list_database.py" --create --sbfile "${pr_list_dbfile}"
 fi
@@ -87,8 +89,8 @@ for pr in ${pr_list}; do
     rm -Rf "${pr_dir}"
   fi
   # Check to see if this PR is Labeled CI-PR-Cases to get cases from itself
-  pr_case_self=$(${GH} pr view ${pr} --repo ${REPO_URL} --json labels --jq .labels[].name | grep CI-PR-Cases)
-  echo "pr_case_self: ${pr_case_self}"
+  pr_case_self=$(${GH} pr view ${pr} --repo ${REPO_URL} --json labels --jq .labels[].name)
+  pr_case_self=$(echo "${pr_case_self}" | grep 'CI-PR-Cases') || true
   if [[ "${pr_case_self}" == "CI-PR-Cases" ]]; then
     HOMEgfs_CASES_DIR="${pr_dir}/global-workflow"
   else
