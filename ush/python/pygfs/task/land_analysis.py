@@ -458,7 +458,6 @@ class LandAnalysis(Analysis):
             anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
-        config.FRAC_GRID = ".true." if config.FRAC_GRID else ".false."
         logger.info("Create namelist for APPLY_INCR_EXE")
         nml_template = config.APPLY_INCR_NML_TMPL
         nml_data = Jinja(nml_template, config).render
