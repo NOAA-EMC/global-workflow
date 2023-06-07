@@ -48,7 +48,8 @@ fi
 if [[ ${MACHINE_ID} == "noaacloud.${RT_COMPILER}" ]]; then
   case $(dnsdomainname -f) in   
      # TODO: Add Google and Azure platforms.
-     *pw-noaa*pw.local) CLOUD_MACHINE_ID=aws.${RT_COMPILER} 
+      *pw-noaa*pw.local) CLOUD_MACHINE_ID=aws.${RT_COMPILER} ;;
+      *) echo "[${BASH_SOURCE[0]}]: Unrecognized cloud platform." ;;
   esac
 
   if [[ ${CLOUD_MACHINE_ID} == "aws.intel" ]]; then
@@ -64,18 +65,18 @@ if [[ ${MACHINE_ID} == "noaacloud.${RT_COMPILER}" ]]; then
 
   # TODO: This is a hack for now.
   # TODO: What is a suitable place for the NOAA-cloud specific file?
-  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}.lua
-  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}_debug.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}_debug.lua
-  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_common_spack.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_common_stack.lua
-  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/cmake/configure_cloud.${RT_COMPILER}.cmake" ${cwd}/ufs_model.fd/cmake/configure_noaacloud.${RT_COMPILER}.cmake 
+  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}.lua" "${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}.lua"
+  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}_debug.lua" "${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}_debug.lua"
+  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_common_spack.lua" "${cwd}/ufs_model.fd/modulefiles/ufs_common_stack.lua"
+  cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/cmake/configure_cloud.${RT_COMPILER}.cmake" "${cwd}/ufs_model.fd/cmake/configure_noaacloud.${RT_COMPILER}.cmake"
   cd "${cwd}/ufs_model.fd"
   export CMAKE_FLAGS="${MAKE_OPT}"
   ./build.sh 
-  mv "${cwd}/ufs_model.fd/build/ufs_model" ${cwd}/ufs_model.fd/tests/ufs_model.x
+  mv "${cwd}/ufs_model.fd/build/ufs_model" "${cwd}/ufs_model.fd/tests/ufs_model.x"
  
   # TODO: This is hack? Where is this step performed in the build system?
   mkdir -p "${HOMEgfs}/exec"
-  cp "${cwd}/ufs_model.fd/tests/ufs_model.x" ${HOMEgfs}/exec/ufs_model.x 
+  cp "${cwd}/ufs_model.fd/tests/ufs_model.x" "${HOMEgfs}/exec/ufs_model.x"
 fi
 
 exit 0
