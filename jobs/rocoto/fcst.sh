@@ -43,7 +43,8 @@ if [[ "${MACHINE_ID}" == "aws_pw" ]]; then
   export NETCDF="/contrib/global-workflow/spack-stack/miniconda/apps/miniconda/py39_4.12.0"
   export UTILROOT="/contrib/global-workflow/NCEPLIBS-prod_util"
   export PATH="${PATH}:/contrib/global-workflow/bin"
-  export NDATE="$(command -v ndate)"
+  ndate_path="$(command -v ndate)"
+  export NDATE="${ndate_path}"
 fi
 
 module list
