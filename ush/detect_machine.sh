@@ -42,7 +42,8 @@ if [[ $MACHINE_ID == "UNKNOWN" ]]; then
    case $(dnsdomainname -f) in
 
       # AWS Parallel Works
-      *pw-noaa*pw.local) MACHINE_ID=aws_pw
+      *pw-noaa*pw.local) MACHINE_ID=aws_pw ;; 
+      *) MACHINE_ID=UNKNOWN ;; # Unknown platform
 
    esac
 fi
