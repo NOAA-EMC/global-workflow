@@ -33,7 +33,7 @@ COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
-if [ ${MACHINE_ID} != "noaacloud.${RT_COMPILER}" ]; then
+if [[ ${MACHINE_ID} != "noaacloud.${RT_COMPILER}" ]]; then
   ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
@@ -45,7 +45,7 @@ if [ ${MACHINE_ID} != "noaacloud.${RT_COMPILER}" ]; then
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 fi
 
-if [ ${MACHINE_ID} == "noaacloud.${RT_COMPILER}" ]; then
+if [[ ${MACHINE_ID} == "noaacloud.${RT_COMPILER}" ]]; then
   case $(dnsdomainname -f) in   
      # TODO: Add Google and Azure platforms.
      *pw-noaa*pw.local) CLOUD_MACHINE_ID=aws.${RT_COMPILER} 
