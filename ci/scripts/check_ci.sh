@@ -57,7 +57,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | grep -v Failed | grep Running | awk '{print $1}') || true
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --display | grep -v Failed | grep Running | awk '{print $1}') || true
 fi
 if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
