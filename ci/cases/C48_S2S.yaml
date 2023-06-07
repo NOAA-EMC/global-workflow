@@ -3,11 +3,10 @@ experiment:
   mode: forecast-only
 
 arguments:
-  app: S2SWA
+  app: S2S
   resdet: 48
   comrot: ${RUNTESTS}/${pslot}/COMROT
   expdir: ${RUNTESTS}/${pslot}/EXPDIR
   idate: 2021032312
   edate: 2021032312
-  start: cold
   yaml: ${HOMEgfs_ci}/ci/platforms/gfs_defaults_ci-updates.yaml
