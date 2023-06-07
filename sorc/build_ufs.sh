@@ -68,14 +68,14 @@ if [[ ${MACHINE_ID} == "noaacloud.${RT_COMPILER}" ]]; then
   cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_cloud.${RT_COMPILER}_debug.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_noaacloud.${RT_COMPILER}_debug.lua
   cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/modulefiles/ufs_common_spack.lua" ${cwd}/ufs_model.fd/modulefiles/ufs_common_stack.lua
   cp "${cwd}/cloud/${CLOUD_MACHINE_ID}/cmake/configure_cloud.${RT_COMPILER}.cmake" ${cwd}/ufs_model.fd/cmake/configure_noaacloud.${RT_COMPILER}.cmake 
-  cd ${cwd}/ufs_model.fd
+  cd "${cwd}/ufs_model.fd"
   export CMAKE_FLAGS="${MAKE_OPT}"
   ./build.sh 
-  mv ${cwd}/ufs_model.fd/build/ufs_model ${cwd}/ufs_model.fd/tests/ufs_model.x
+  mv "${cwd}/ufs_model.fd/build/ufs_model" ${cwd}/ufs_model.fd/tests/ufs_model.x
  
   # TODO: This is hack? Where is this step performed in the build system?
-  mkdir -p ${HOMEgfs}/exec
-  cp ${cwd}/ufs_model.fd/tests/ufs_model.x ${HOMEgfs}/exec/ufs_model.x 
+  mkdir -p "${HOMEgfs}/exec"
+  cp "${cwd}/ufs_model.fd/tests/ufs_model.x" ${HOMEgfs}/exec/ufs_model.x 
 fi
 
 exit 0
