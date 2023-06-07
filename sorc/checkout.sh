@@ -152,7 +152,7 @@ checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" 
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "113e307" "NO"; errs=$((errs + $?))
+  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "8735959" "NO"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
