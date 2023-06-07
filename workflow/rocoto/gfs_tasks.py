@@ -43,10 +43,15 @@ class GFSTasks(Tasks):
         if self.app_config.do_ocean:
             ocn_res = f"{self._base.get('OCNRES', '025'):03d}"
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/ocn"
-            for res in ['res'] + [f'res_{res_index}' for res_index in range(1, 4)]:
-                data = f"{prefix}/{ocn_res}/MOM.{res}.nc"
-                dep_dict = {'type': 'data', 'data': data}
-                deps.append(rocoto.add_dependency(dep_dict))
+            data = f"{prefix}/{ocn_res}/MOM.res.nc"
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if ocn_res in ['025']:
+                # 0.25 degree ocean model also has these additional restarts
+                for res in [f'res_{res_index}' for res_index in range(1, 4)]:
+                    data = f"{prefix}/{ocn_res}/MOM.{res}.nc"
+                    dep_dict = {'type': 'data', 'data': data}
+                    deps.append(rocoto.add_dependency(dep_dict))
 
         # Ice ICs
         if self.app_config.do_ice:
