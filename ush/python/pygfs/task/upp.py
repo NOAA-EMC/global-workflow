@@ -2,16 +2,16 @@
 
 import os
 from logging import getLogger
-from typing import List, Dict, Any, Union
+from typing import Dict, Any, Union
 from pprint import pformat
 
 from pygw.attrdict import AttrDict
-from pygw.yaml_file import YAMLFile, parse_j2yaml, parse_yamltmpl
+from pygw.yaml_file import parse_j2yaml
 from pygw.file_utils import FileHandler
 from pygw.jinja import Jinja
 from pygw.logger import logit
 from pygw.task import Task
-from pygw.timetools import add_to_datetime, to_timedelta, strftime
+from pygw.timetools import add_to_datetime, to_timedelta
 from pygw.exceptions import WorkflowException
 from pygw.executable import Executable, which
 
@@ -19,72 +19,94 @@ logger = getLogger(__name__.split('.')[-1])
 
 
 class UPP(Task):
-    """_summary_
-
-    Parameters
-    ----------
-    Task : _type_
-        _description_
+    """Unified Post Processor Task
     """
+
+    VALID_UPP_RUN = ['analysis', 'forecast', 'goes']
 
     @logit(logger, name="UPP")
     def __init__(self, config: Dict[str, Any]) -> None:
-        """_summary_
+        """Constructor for the UPP task
+        The constructor is responsible for resolving the "UPP_CONFIG" based in the run-type "upp_run"
+        Valid options for "upp_run" are:
+        analysis: process GSI analysis output
+        forecast: UFS-weather-model forecast output
+        goes: UFS-weather-model forecast output for simulated satellite imagery
 
         Parameters
         ----------
         config : Dict[str, Any]
-            _description_
+            Incoming configuration for the task from the environment
+
+        Returns
+        -------
+        None
         """
         super().__init__(config)
 
-        self.task_config = AttrDict(**self.config, **self.runtime_config)
+        valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
 
-    @logit(logger)
-    def initialize(self) -> None:
-        """_summary_
-        """
-        localconf = AttrDict()
-        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'RUN',
-                'COM_ATMOS_ANALYSIS', 'COM_ATMOS_HISTORY',
-                'UPP_CONFIG']
-        for key in keys:
-            localconf[key] = self.task_config[key]
+        localdict = AttrDict(
+            {'upp_run': self.config.UPP_RUN,
+             'forecast_hour': self.config.FORECAST_HOUR,
+             'valid_datetime': valid_datetime,
+             'atmos_filename': f"atm_{valid_datetime.strftime('%Y%m%d%H%M%S')}.nc",
+             'flux_filename': f"sfc_{valid_datetime.strftime('%Y%m%d%H%M%S')}.nc"
+             }
+        )
+        self.task_config = AttrDict(**self.config, **self.runtime_config, **localdict)
+
+        if localdict.upp_run not in UPP.VALID_UPP_RUN:
+            raise NotImplementedError(f"UPP cannot process output of type: '{localdict.upp_run}'\n" +
+                                      f"Valid options are:\n" +
+                                      f'{" | ".join(UPP.VALID_UPP_RUN)}')
 
         # Read the upp.yaml file for common configuration
-        logger.info("Read the UPP configuration yaml file {localconf.UPP_CONFIG}")
-        upp_yaml = parse_j2yaml(localconf.UPP_CONFIG, localconf)
-        logger.debug(f"upp_yaml.upp: {pformat(upp_yaml.upp)}")
+        logger.info(f"Read the UPP configuration yaml file {self.config.UPP_CONFIG}")
+        self.task_config.upp_yaml = parse_j2yaml(self.config.UPP_CONFIG, self.task_config)
+        logger.debug(f"upp_yaml:\n{pformat(self.task_config.upp_yaml)}")
+
+    @staticmethod
+    @logit(logger)
+    def initialize(upp_yaml: Dict) -> None:
+        """Initialize the work directory by copying all the common fix data
+
+        Parameters
+        ----------
+        upp_yaml: Dict
+            Fully resolved upp.yaml dictionary
+        """
 
         # Copy static data to run directory
         logger.info("Copy static data to run directory")
         FileHandler(upp_yaml.upp.fix_data).sync()
 
+    @staticmethod
     @logit(logger)
-    def pre_execute(self, upp_run: str, forecast_hour: int = 0) -> None:
-        localconf = AttrDict()
-        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'RUN',
-                'COM_ATMOS_ANALYSIS', 'COM_ATMOS_HISTORY',
-                'UPP_CONFIG']
-        for key in keys:
-            localconf[key] = self.task_config[key]
+    def configure(upp_dict: Dict, upp_yaml: Dict) -> None:
+        """Configure the artifacts in the work directory.
+        Copy run specific data to run directory
+        Create namelist 'itag' from template
 
-        localconf.forecast_hour = forecast_hour
-        localconf.valid_datetime = add_to_datetime(localconf.current_cycle, to_timedelta(f"{forecast_hour}H"))
-        localconf.atmos_filename = f"atm_{localconf.valid_datetime.strftime('%Y%m%d%H%M%S')}.nc"
-        localconf.flux_filename = f"sfc_{localconf.valid_datetime.strftime('%Y%m%d%H%M%S')}.nc"
-
-        logger.info("Read the UPP configuration yaml file {localconf.UPP_CONFIG}")
-        upp_yaml = parse_j2yaml(localconf.UPP_CONFIG, localconf)
-        logger.debug(f"upp_config: {pformat(upp_yaml[upp_run])}")
+        Parameters
+        ----------
+        upp_dict : Dict
+            Task specific keys e.g. upp_run
+        upp_yaml : Dict
+            Fully resolved upp.yaml dictionary
+        """
 
         # Copy "upp_run" specific data to run directory
-        logger.info("Copy {upp_run} data to run directory")
-        FileHandler(upp_yaml[upp_run].data_in).sync()
+        logger.info(f"Copy '{upp_dict.upp_run}' data to run directory")
+        FileHandler(upp_yaml[upp_dict.upp_run].data_in).sync()
 
-        # Update the localconf with the upp_run specific configuration
+        # Make a localconf with the upp_run specific configuration
+        # First make a shallow copy for local use
+        localconf = upp_dict.copy()
+        # Update 'config' part of the 'run'
         localconf.update(upp_yaml.upp.config)
-        localconf.update(upp_yaml[upp_run].config)
+        localconf.update(upp_yaml[localconf.upp_run].config)
+        logger.debug(f"Updated localconf with upp_run='{localconf.upp_run}':\n{pformat(localconf)}")
 
         # Configure the namelist and write to file
         logger.info("Create namelist for upp.x")
@@ -95,23 +117,38 @@ class UPP(Task):
         with open(nml_file, "w") as fho:
             fho.write(nml_data)
 
-    @logit(logger)
-    def execute(self) -> None:
-
-        workdir = self.task_config.DATA
-        aprun_cmd = self.task_config.APRUN_CMD
-
-        # Run the UPP executable
-        self.run_upp(workdir, aprun_cmd)
-
-        # Index the output grib2 file
-        self.index_grib2(workdir)
-
     @staticmethod
     @logit(logger)
-    def run_upp(workdir: Union[str, os.PathLike], aprun_cmd: str, exec_name: str = 'upp.x', pgbout="pgbmaster.grb2") -> None:
+    def execute(workdir: Union[str, os.PathLike], aprun_cmd: str, forecast_hour: int = 0) -> None:
+        """Run the UPP executable and index the output master and flux files
+
+        Parameters
+        ----------
+        workdir : str | os.PathLike
+            work directory with the staged data, parm files, namelists, etc.
+        aprun_cmd : str
+            launcher command for UPP.x
+        forecast_hour : int
+            default: 0
+            forecast hour being processed
+
+        Returns
+        -------
+        None
+        """
+
+        # Run the UPP executable
+        UPP.run(workdir, aprun_cmd)
+
+        # Index the output grib2 file
+        UPP.index(workdir, forecast_hour)
+
+    @classmethod
+    @logit(logger)
+    def run(cls, workdir: Union[str, os.PathLike], aprun_cmd: str, exec_name: str = 'upp.x') -> None:
         """
         Run the UPP executable
+
         Parameters
         ----------
         workdir : str | os.PathLike
@@ -120,31 +157,73 @@ class UPP(Task):
             Launcher command e.g. mpirun -np <ntasks> or srun, etc.
         exec_name : str
             Name of the UPP executable e.g. upp.x
-        Raises
-        ------
-        OSError
-            Failure due to OS issues
-        WorkflowException
-            All other exceptions
-        """
 
+        Returns
+        -------
+        None
+        """
         os.chdir(workdir)
 
         exec_cmd = Executable(aprun_cmd)
         exec_cmd.add_default_arg(os.path.join(workdir, exec_name))
-        # exec_cmd.add_default_env("PGBOUT", pgbout)
 
         UPP._call_executable(exec_cmd)
 
-    @staticmethod
+    @classmethod
     @logit(logger)
-    def index_grib2(workdir: Union[str, os.PathLike], grib2index_cmd=None, pgbout="pgbmaster.grb2", pgbindex='pgbmaster.idx') -> None:
+    def index(cls, workdir: Union[str, os.PathLike], forecast_hour: int) -> None:
         """
         Index the grib2file
+
         Parameters
         ----------
         workdir : str | os.PathLike
             Working directory where to run containing the necessary files and executable
+        forecast_hour : int
+            forecast hour to index
+
+        Environment Parameters
+        ----------------------
+        GRB2INDEX : str (optional)
+            path to executable "grb2index"
+            Typically set in the modulefile
+
+        Returns
+        -------
+        None
+        """
+        os.chdir(workdir)
+        logger.info("Generate index file")
+
+        grb2index_cmd = os.environ.get("GRB2INDEX", None)
+
+        template = f"GFS{{file_type}}.GrbF{forecast_hour:02d}"
+
+        for ftype in ['PRS', 'FLX']:
+            grbfile = template.format(file_type=ftype)
+            grbfidx = f"{grbfile}.idx"
+
+            if not os.path.exists(grbfile):
+                logger.info(f"No {grbfile} to process, skipping ...")
+                continue
+
+            logger.info(f"Creating index file for {grbfile}")
+            exec_cmd = which("grb2index") if grb2index_cmd is None else Executable(grb2index_cmd)
+            exec_cmd.add_default_arg(os.path.join(workdir, grbfile))
+            exec_cmd.add_default_arg(os.path.join(workdir, grbfidx))
+
+            UPP._call_executable(exec_cmd)
+
+    @staticmethod
+    @logit(logger)
+    def _call_executable(exec_cmd: Executable) -> None:
+        """Internal method to call executable
+
+        Parameters
+        ----------
+        exec_cmd : Executable
+            Executable to run
+
         Raises
         ------
         OSError
@@ -152,18 +231,6 @@ class UPP(Task):
         WorkflowException
             All other exceptions
         """
-        os.chdir(workdir)
-        logger.info("Generate index file")
-
-        exec_cmd = which("grib2index") if grib2index_cmd is None else Executable(grib2index_cmd)
-        exec_cmd.add_default_arg(os.path.join(workdir, pgbout))
-        exec_cmd.add_default_arg(os.path.join(workdir, pgbindex))
-
-        UPP._call_executable(exec_cmd)
-
-    @staticmethod
-    @logit(logger)
-    def _call_executable(exec_cmd: Union[str, Executable]) -> None:
 
         logger.info(f"Executing {exec_cmd}")
         try:
@@ -175,29 +242,21 @@ class UPP(Task):
             logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
             raise WorkflowException(f"{exec_cmd}")
 
+    @staticmethod
     @logit(logger)
-    def post_execute(self, upp_run: str, forecast_hour: int = 0) -> None:
+    def finalize(upp_run: Dict, upp_yaml: Dict) -> None:
+        """Perform closing actions of the task.
+        Copy data back from the DATA/ directory to COM/
 
-        localconf = AttrDict()
-        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'RUN',
-                'COM_ATMOS_ANALYSIS', 'COM_ATMOS_HISTORY',
-                'UPP_CONFIG']
-        for key in keys:
-            localconf[key] = self.task_config[key]
+        Parameters
+        ----------
+        upp_run: str
+           Run type of UPP
+           valid options are: analysis, forecast, goes
+        upp_yaml: Dict
+            Fully resolved upp.yaml dictionary
+        """
 
-        localconf.forecast_hour = forecast_hour
-        localconf.valid_datetime = add_to_datetime(localconf.current_cycle, to_timedelta(f"{forecast_hour}H"))
-        localconf.atmos_filename = f"atm_{localconf.valid_datetime.strftime('%Y%m%d%H%M%S')}.nc"
-        localconf.flux_filename = f"sfc_{localconf.valid_datetime.strftime('%Y%m%d%H%M%S')}.nc"
-
-        logger.info("Read the UPP configuration yaml file {localconf.UPP_CONFIG}")
-        upp_yaml = parse_j2yaml(localconf.UPP_CONFIG, localconf)
-        logger.debug(f"upp_config: {pformat(upp_yaml[upp_run])}")
-
-        # Copy "upp_run" specific data COM/ to directory
-        logger.info("Copy {upp_run} data to COM/ directory")
+        # Copy "upp_run" specific generated data to COM/ directory
+        logger.info(f"Copy '{upp_run}' processed data to COM/ directory")
         FileHandler(upp_yaml[upp_run].data_out).sync()
-
-    @logit(logger)
-    def finalize(self) -> None:
-        pass

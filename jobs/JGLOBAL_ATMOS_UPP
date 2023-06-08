@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
 
 ##############################################
 # Set variables used in the exglobal script
@@ -12,13 +12,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 ##############################################
 
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
 if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -m 775 -p "${COM_ATMOS_MASTER}"; fi
 
-if [[ ${GOESF} == "YES" ]]; then
-  YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
-  if [[ ! -d ${COM_ATMOS_GOES} ]]; then mkdir -m 775 -p "${COM_ATMOS_GOES}"; fi
-fi
 
 ###############################################################
 # Run relevant exglobal script

@@ -66,7 +66,7 @@ def cp(source: str, target: str) -> None:
         target = os.path.join(target, os.path.basename(source))
 
     try:
-        shutil.copyfile(source, target)
+        shutil.copy2(source, target)
     except OSError:
         raise OSError(f"unable to copy {source} to {target}")
     except Exception as exc:

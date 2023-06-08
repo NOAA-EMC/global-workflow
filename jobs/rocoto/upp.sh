@@ -25,10 +25,10 @@ export jobid="${job}.$$"
 ###############################################################
 # Execute the JJOB
 if [[ "${UPP_RUN}" = "analysis" ]]; then
-    fhrlst="0"
-else  # forecast, goes, wafs
-    fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+    unset FHRLST
+    FHRLST="f000"
 fi
+fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 for fhr in ${fhrlst}; do
     export FORECAST_HOUR=${fhr}
