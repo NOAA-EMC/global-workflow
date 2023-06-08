@@ -16,7 +16,6 @@ jobs:
       - name: Get Lables Steps   
         id: id
         env:
-          MYTEST: foobar
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
