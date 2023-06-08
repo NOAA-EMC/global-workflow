@@ -89,7 +89,7 @@ for pr in ${pr_list}; do
     rm -Rf "${pr_dir}"
   fi
   # Check to see if this PR is Labeled CI-PR-Cases to get cases from itself
-  pr_case_self=$(${GH} pr view ${pr} --repo ${REPO_URL} --json labels --jq .labels[].name)
+  pr_case_self=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json labels --jq .labels[].name)
   pr_case_self=$(echo "${pr_case_self}" | grep 'CI-PR-Cases') || true
   if [[ "${pr_case_self}" == "CI-PR-Cases" ]]; then
     HOMEgfs_CASES_DIR="${pr_dir}/global-workflow"

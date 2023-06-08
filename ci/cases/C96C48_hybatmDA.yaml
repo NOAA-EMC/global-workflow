@@ -1,0 +1,17 @@
+experiment:
+  type: gfs
+  mode: cycled
+
+arguments:
+  app: ATM
+  resdet: 96
+  resens: 48
+  comrot: ${RUNTESTS}/${pslot}/COMROT
+  expdir: ${RUNTESTS}/${pslot}/EXPDIR
+  icsdir: ${ICSDIR_ROOT}/C96C48
+  idate: 2021122018
+  edate: 2021122200
+  nens: 2
+  gfs_cyc: 1
+  start: cold
+  yaml: ${HOMEgfs_ci}/ci/platforms/gfs_defaults_ci-updates.yaml
