@@ -3,7 +3,7 @@ name: Orion
 on:
   pull_request:
     branches:
-      - develop_badgetest
+      - develop_testbadges
     types: [closed]
 
 jobs:
@@ -38,8 +38,7 @@ jobs:
       with:
         forceUpdate: true
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
-        #gistID: e35aa2904a54deae6bbb1fdc2d960c71
-        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        gistID: e35aa2904a54deae6bbb1fdc2d960c71
         filename: orion.json
         label: Orion
         message: Passed
@@ -57,8 +56,7 @@ jobs:
       with:
         forceUpdate: true
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
-        #gistID: e35aa2904a54deae6bbb1fdc2d960c71
-        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        gistID: e35aa2904a54deae6bbb1fdc2d960c71
         filename: orion.json
         label: Orion
         message: Failed
@@ -77,8 +75,7 @@ jobs:
       with:
         forceUpdate: true
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
-        #gistID: e35aa2904a54deae6bbb1fdc2d960c71
-        gistID: 13060fc1a0cd9368a4ee94171785fe9d
+        gistID: e35aa2904a54deae6bbb1fdc2d960c71
         filename: oroin.json
         label: Orion
         message: Pending
