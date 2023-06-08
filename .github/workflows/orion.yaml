@@ -62,7 +62,7 @@ jobs:
         filename: orion.json
         label: Orion
         message: Failed
-        isError: true
+        color: red
 
 
   pending:
