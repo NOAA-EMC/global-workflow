@@ -32,16 +32,17 @@ if [[ "${MACHINE_ID}" = "hera" ]]; then
 #elif [[ "${MACHINE_ID}" = "wcoss2" ]]; then
 #  module load "python/3.7.5"
 fi
-if [[ "${MACHINE_ID}" == "aws_pw" ]]; then
+if [[ "${MACHINE_ID}" == "aws" ]]; then
   # TODO: This can be cleaned-up; most of this is a hack for now.
-  module use "/contrib/global-workflow/spack-stack/envs/ufswm/install/modulefiles/Core"
+  module use "/contrib/spack-stack/envs/ufswm/install/modulefiles/Core"
   module load "stack-intel"
   module load "stack-intel-oneapi-mpi"
-  module use -a "/contrib/global-workflow/spack-stack/miniconda/modulefiles/miniconda/"
+  module use -a "/contrib/spack-stack/miniconda/modulefiles/miniconda/"
   module load "py39_4.12.0"
   module load "ufs-weather-model-env/1.0.0"
-  export NETCDF="/contrib/global-workflow/spack-stack/miniconda/apps/miniconda/py39_4.12.0"
-  export UTILROOT="/contrib/global-workflow/NCEPLIBS-prod_util"
+  export NETCDF="/contrib/spack-stack/miniconda/apps/miniconda/py39_4.12.0"
+  # TODO: Are there plans for EPIC to maintain this package or should GW provide support?
+  export UTILROOT="/contrib/global-workflow/NCEPLIBS-prod_util" 
   export PATH="${PATH}:/contrib/global-workflow/bin"
   ndate_path="$(command -v ndate)"
   export NDATE="${ndate_path}"
