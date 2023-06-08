@@ -61,14 +61,14 @@ set -x
 pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 if [[ ! -f "${pr_list_dbfile}" ]]; then
-  "${HOMEgfs}/ci/scripts/pr_list_database.py" --create --sbfile "${pr_list_dbfile}"
+  "${HOMEgfs}/ci/scripts/pr_list_database.py" --create --dbfile "${pr_list_dbfile}"
 fi
 
 pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
 
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  db_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --sbfile "${pr_list_dbfile}")
+  db_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
   pr_id=0
   #############################################################
   # Check if a Ready labeled PR has changed back from once set   
@@ -76,9 +76,9 @@ for pr in ${pr_list}; do
   # and remove PR from filesystem to start clean
   #############################################################
   if [[ "${db_list}" == *"already is in list"* ]]; then
-    pr_id=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
+    pr_id=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
     pr_id=$((pr_id+1))
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Ready "${pr_id}"
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Ready "${pr_id}"
     for cases in "${pr_dir}/RUNTESTS/"*; do
       if [[ -z "${cases+x}" ]]; then
          break
@@ -100,7 +100,7 @@ done
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --sbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}') || true
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --dbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}') || true
 fi
 if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"
@@ -115,12 +115,12 @@ fi
 
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
-  pr_building=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr}" --sbfile "${pr_list_dbfile}" | grep Building) || true
+  pr_building=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
   if [[ -z "${pr_building+x}" ]]; then
       continue
   fi
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
-  "${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building
+  "${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   rm -Rf "${pr_dir}"
@@ -136,14 +136,14 @@ for pr in ${pr_list}; do
   # building so we force and exit 0 instead to does not get relabled
   #################################################################
   if [[ ${ci_status} -ne 0 ]]; then
-     pr_id_check=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "{pr}" --sbfile "${pr_list_dbfile}" | awk '{print $4}') || true
+     pr_id_check=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "{pr}" --dbfile "${pr_list_dbfile}" | awk '{print $4}') || true
      if [[ "${pr_id}" -ne "${pr_id_check}" ]]; then
         exit 0
      fi   
   fi
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
@@ -168,14 +168,14 @@ for pr in ${pr_list}; do
           echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
-        "${HOMEgfs}/ci/scripts/pr_list_database.py" --sbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running
+        "${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running
       else 
         {
           echo "Failed to create experiment:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-        "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --sbfile "${pr_list_dbfile}"
+        "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
       fi
     done
 
@@ -186,7 +186,7 @@ for pr in ${pr_list}; do
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
     } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --sbfile "${pr_list_dbfile}"
+    "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
   fi
   sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
   "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
