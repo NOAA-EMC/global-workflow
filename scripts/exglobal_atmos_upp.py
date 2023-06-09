@@ -16,8 +16,10 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
+    # Instantiate the UPP object
     upp = UPP(config)
 
+    # Pull out all the configuration keys needed to run the rest of UPP steps
     keys = ['HOMEgfs', 'DATA', 'current_cycle', 'RUN',
             'COM_ATMOS_ANALYSIS', 'COM_ATMOS_HISTORY', 'COM_ATMOS_MASTER',
             'upp_run',
@@ -28,11 +30,19 @@ def main():
     for key in keys:
         upp_dict[key] = upp.task_config[key]
 
+    # Get the fully parse upp.yaml file for the current cycle
     upp_yaml = upp.task_config.upp_yaml
 
+    # Initialize the DATA/ directory; copy static data
     upp.initialize(upp_yaml)
+
+    # Configure DATA/ directory for execution; prepare namelist etc.
     upp.configure(upp_dict, upp_yaml)
+
+    # Run the UPP and index the master grib2 files
     upp.execute(upp_dict.DATA, upp_dict.APRUN_UPP, upp_dict.forecast_hour)
+
+    # Copy processed output from execute
     upp.finalize(upp_dict.upp_run, upp_yaml)
 
 

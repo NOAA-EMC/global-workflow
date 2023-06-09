@@ -29,9 +29,9 @@ class UPP(Task):
         """Constructor for the UPP task
         The constructor is responsible for resolving the "UPP_CONFIG" based in the run-type "upp_run"
         Valid options for "upp_run" are:
-        analysis: process GSI analysis output
-        forecast: UFS-weather-model forecast output
-        goes: UFS-weather-model forecast output for simulated satellite imagery
+        analysis: process analysis output
+        forecast: process UFS-weather-model forecast output
+        goes: process UFS-weather-model forecast output for simulated satellite imagery
 
         Parameters
         ----------
