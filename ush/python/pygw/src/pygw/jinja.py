@@ -110,7 +110,7 @@ class Jinja:
         to_YMD: convert a datetime object to a YYYYMMDD string
         to_julian: convert a datetime object to a julian day
         to_f90bool: convert a boolean to a fortran boolean
-        env: read variable from enviornment if defined, else UNDEFINED
+        getenv: read variable from enviornment if defined, else UNDEFINED
 
         Parameters
         ----------

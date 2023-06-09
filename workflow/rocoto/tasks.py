@@ -18,7 +18,7 @@ class Tasks:
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'preplandobs', 'landanlinit', 'landanlrun', 'landanlfinal',
+                   'preplandobs', 'landanl',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',

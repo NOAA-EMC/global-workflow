@@ -12,7 +12,7 @@ if [[ $# -ne 1 ]]; then
     echo "prep preplandobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanlinit landanlrun landanlfinal"
+    echo "landanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -212,7 +212,7 @@ elif [[ "${step}" = "atmanlfinal" ]]; then
     export npe_node_atmanlfinal
     export is_exclusive=True
 
-elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "landanlfinal" ]]; then
+elif [[ "${step}" = "landanl" ]]; then
    # below lines are for creating JEDI YAML
    case ${CASE} in
      C768)
@@ -235,22 +235,12 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlrun"  || "${step}" = "l
    export layout_x
    export layout_y
 
-   if [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then
-       declare -x "wtime_${step}"="00:10:00"
-       declare -x "npe_${step}"=1
-       declare -x "nth_${step}"=1
-       temp_stepname="nth_${step}"
-       declare -x "npe_node_${step}"="$(echo "${npe_node_max} / ${!temp_stepname}" | bc)"
-       declare -x "memory_${step}"="3072M"
-   elif [[ "${step}" = "landanlrun" ]]; then
-       export wtime_landanlrun="00:30:00"
-       npe_landanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-       export npe_landanlrun
-       export nth_landanlrun=1
-       npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
-       export npe_node_landanlrun
-       export is_exclusive=True
-   fi
+   export wtime_landanl="00:15:00"
+   npe_landanl=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+   export npe_landanl
+   export nth_landanl=1
+   npe_node_landanl=$(echo "${npe_node_max} / ${nth_landanl}" | bc)
+   export npe_node_landanl
 
 elif [[ "${step}" = "aeroanlinit" ]]; then
 
