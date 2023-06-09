@@ -54,7 +54,7 @@ jobs:
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
         forceUpdate: true
-        auth: ${{ secrets.GIST_SECRET }}
+        auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: e35aa2904a54deae6bbb1fdc2d960c71
         filename: hera.json
         label: Hera
