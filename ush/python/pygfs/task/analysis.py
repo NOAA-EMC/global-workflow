@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 
 import os
+import glob
+import tarfile
 from logging import getLogger
 from netCDF4 import Dataset
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 
-from pygw.yaml_file import YAMLFile, parse_j2yaml, parse_yamltmpl
+from pygw.yaml_file import parse_j2yaml
 from pygw.file_utils import FileHandler
-from pygw.template import Template, TemplateConstants
+from pygw.fsutils import rm_p
 from pygw.logger import logit
 from pygw.task import Task
+from pygw.executable import Executable
+from pygw.exceptions import WorkflowException
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -40,7 +44,7 @@ class Analysis(Task):
         self.link_jediexe()
 
     @logit(logger)
-    def get_obs_dict(self: Task) -> Dict[str, Any]:
+    def get_obs_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
         This method uses the OBS_LIST configuration variable to generate a dictionary
@@ -72,7 +76,7 @@ class Analysis(Task):
         return obs_dict
 
     @logit(logger)
-    def get_bias_dict(self: Task) -> Dict[str, Any]:
+    def get_bias_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
         This method uses the OBS_LIST configuration variable to generate a dictionary
@@ -176,7 +180,7 @@ class Analysis(Task):
         return berror_dict
 
     @logit(logger)
-    def link_jediexe(self: Task) -> None:
+    def link_jediexe(self) -> None:
         """Compile a dictionary of background error files to copy
 
         This method links a JEDI executable to the run directory
@@ -192,10 +196,75 @@ class Analysis(Task):
         exe_src = self.task_config.JEDIEXE
 
         # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
-        logger.debug(f"Link executable {exe_src} to DATA/")
+        logger.info(f"Link executable {exe_src} to DATA/")
+        logger.warn("Linking is not permitted per EE2.")
         exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
         return
+
+    @staticmethod
+    @logit(logger)
+    def execute_jediexe(workdir: Union[str, os.PathLike], aprun_cmd: str, jedi_exec: str, jedi_yaml: str) -> None:
+        """
+        Run a JEDI executable
+
+        Parameters
+        ----------
+        workdir : str | os.PathLike
+            Working directory where to run containing the necessary files and executable
+        aprun_cmd : str
+            Launcher command e.g. mpirun -np <ntasks> or srun, etc.
+        jedi_exec : str
+            Name of the JEDI executable e.g. fv3jedi_var.x
+        jedi_yaml : str | os.PathLike
+            Name of the yaml file to feed the JEDI executable e.g. fv3jedi_var.yaml
+
+        Raises
+        ------
+        OSError
+            Failure due to OS issues
+        WorkflowException
+            All other exceptions
+        """
+
+        os.chdir(workdir)
+
+        exec_cmd = Executable(aprun_cmd)
+        exec_cmd.add_default_arg([os.path.join(workdir, jedi_exec), jedi_yaml])
+
+        logger.info(f"Executing {exec_cmd}")
+        try:
+            exec_cmd()
+        except OSError:
+            logger.exception(f"FATAL ERROR: Failed to execute {exec_cmd}")
+            raise OSError(f"{exec_cmd}")
+        except Exception:
+            logger.exception(f"FATAL ERROR: Error occured during execution of {exec_cmd}")
+            raise WorkflowException(f"{exec_cmd}")
+
+    @staticmethod
+    @logit(logger)
+    def tgz_diags(statfile: str, diagdir: str) -> None:
+        """tar and gzip the diagnostic files resulting from a JEDI analysis.
+
+        Parameters
+        ----------
+        statfile : str | os.PathLike
+            Path to the output .tar.gz .tgz file that will contain the diag*.nc4 files e.g. atmstat.tgz
+        diagdir : str | os.PathLike
+            Directory containing JEDI diag files
+        """
+
+        # get list of diag files to put in tarball
+        diags = glob.glob(os.path.join(diagdir, 'diags', 'diag*nc4'))
+
+        logger.info(f"Compressing {len(diags)} diag files to {statfile}")
+
+        # Open tar.gz file for writing
+        with tarfile.open(statfile, "w:gz") as tgz:
+            # Add diag files to tarball
+            for diagfile in diags:
+                tgz.add(diagfile, arcname=os.path.basename(diagfile))

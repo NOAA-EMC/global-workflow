@@ -170,7 +170,6 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
     ${LINK} "${script_dir}/gdas.cd/ush/ufsda"                              .
     ${LINK} "${script_dir}/gdas.cd/ush/jediinc2fv3.py"                     .
     ${LINK} "${script_dir}/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
-    ${LINK} "${script_dir}/gdas.cd/ush/land/letkf_create_ens.py"           .
 fi
 
 
