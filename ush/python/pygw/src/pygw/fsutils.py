@@ -28,6 +28,20 @@ def rmdir(dir_path):
 
 @contextlib.contextmanager
 def chdir(path):
+    """Change current working directory and yield.
+    Upon completion, the working directory is switched back to the directory at the time of call.
+
+    Parameters
+    ----------
+    path : str | os.PathLike
+        Directory to change to for operations
+
+    Example
+    -------
+    with chdir(path_to_cd_and_do_stuff):
+        do_thing_1
+        do_thing_2
+    """
     cwd = os.getcwd()
     try:
         os.chdir(path)
