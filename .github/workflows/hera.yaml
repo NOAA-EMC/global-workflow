@@ -3,7 +3,7 @@ name: Hera
 on:
   pull_request_target:
     branches:
-      - develop_badgetest
+      - develop_testbadges
     types: [closed]
 
 jobs:
