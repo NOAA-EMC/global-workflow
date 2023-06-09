@@ -172,7 +172,7 @@ class LandAnalysis(Analysis):
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'ntiles']
+                'OPREFIX', 'CASE', 'ntiles', 'SNOWDEPTHVAR', 'FRAC_GRID']
         for key in keys:
             localconf[key] = self.task_config[key]
 
@@ -183,7 +183,10 @@ class LandAnalysis(Analysis):
         FileHandler({'mkdir': dirlist}).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'land_jedi_fix.yaml')
+        if localconf.FRAC_GRID:
+            jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'land_jedi_fix_gfsv17.yaml')
+        else:
+            jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'land_jedi_fix.yaml')
         logger.info(f"Staging JEDI fix files from {jedi_fix_list_path}")
         jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
