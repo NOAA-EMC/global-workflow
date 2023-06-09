@@ -73,7 +73,7 @@ jobs:
       uses: schneegans/dynamic-badges-action@v1.6.0
       with:
         forceUpdate: true
-        auth: ${{ secrets.GIST_SECRET }}
+        auth: ${{ secrets.TEST_GIST_TOKEN }}
         gistID: e35aa2904a54deae6bbb1fdc2d960c71
         filename: oroin.json
         label: Hera
