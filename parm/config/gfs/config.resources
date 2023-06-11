@@ -619,6 +619,30 @@ elif [[ ${step} = "ocnpost" ]]; then
        npe_ocnpost=2
     fi
 
+elif [[ "${step}" = "upp" ]]; then
+
+    case "${CASE}" in
+      "C48" | "C96")
+        export npe_upp=${CASE:1}
+      ;;
+      "C192" | "C384" | "C768")
+        export npe_upp=120
+      ;;
+      *)
+        echo "FATAL ERROR: Resolution '${CASE}' not supported for UPP'"
+        exit 1
+      ;;
+    esac
+    export npe_node_upp=${npe_upp}
+
+    export nth_upp=1
+
+    export wtime_upp="00:15:00"
+    if [[ "${npe_node_upp}" -gt "${npe_node_max}" ]]; then
+      export npe_node_upp=${npe_node_max}
+    fi
+    export is_exclusive=True
+
 elif [[ ${step} = "post" ]]; then
 
     export wtime_post="00:12:00"
