@@ -1,6 +1,10 @@
+from logging import getLogger
+
 from .fsutils import cp, mkdir
 
 __all__ = ['FileHandler']
+
+logger = getLogger(__name__.split('.')[-1])
 
 
 class FileHandler:
@@ -57,7 +61,7 @@ class FileHandler:
             src = sublist[0]
             dest = sublist[1]
             cp(src, dest)
-            print(f'Copied {src} to {dest}')  # TODO use logger
+            logger.info(f'Copied {src} to {dest}')
 
     @staticmethod
     def _make_dirs(dirlist):
@@ -70,4 +74,4 @@ class FileHandler:
         """
         for dd in dirlist:
             mkdir(dd)
-            print(f'Created {dd}')  # TODO use logger
+            logger.info(f'Created {dd}')
