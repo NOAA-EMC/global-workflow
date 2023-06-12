@@ -3,7 +3,7 @@
   ioform = "{{ ioform }}",
   grib = "{{ grib_version }}",
   datestr = "{{ valid_datetime | strftime('%Y-%m-%d_%H:%M:%S') }}",
-  modelname = "GFS",
+  modelname = "{{ NET | upper }}",
   submodelname = "NONE",
   filenameflux = "{{ flux_filename }}",
   filenameflat = "postxconfig-NT.txt"
