@@ -39,12 +39,11 @@ case $(hostname -f) in
 esac
 
 if [[ ${MACHINE_ID} == "UNKNOWN" ]]; then 
-   case $(dnsdomainname -f) in
-
+   case ${PW_CSP:-} in
+      "aws" | "google" | "azure") MACHINE_ID=noaacloud ;;
       # AWS Parallel Works
-      *pw-noaa*pw.local) MACHINE_ID=aws ;; 
-      *) MACHINE_ID=UNKNOWN ;; # Unknown platform
-
+      #*pw-noaa*pw.local) MACHINE_ID=aws ;; 
+      #*) MACHINE_ID=UNKNOWN ;; # Unknown platform
    esac
 fi
 
