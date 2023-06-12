@@ -22,13 +22,12 @@ class UPP(Task):
     """Unified Post Processor Task
     """
 
-    VALID_UPP_RUN = ['analysis', 'forecast', 'goes']
-
     @logit(logger, name="UPP")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the UPP task
         The constructor is responsible for resolving the "UPP_CONFIG" based in the run-type "upp_run"
-        Valid options for "upp_run" are:
+        Sections of upp.yaml outside of the `upp` block are all valid `upp_run` options
+        E.g. "upp_run" sections are:
         analysis: process analysis output
         forecast: process UFS-weather-model forecast output
         goes: process UFS-weather-model forecast output for simulated satellite imagery
@@ -55,11 +54,6 @@ class UPP(Task):
              }
         )
         self.task_config = AttrDict(**self.config, **self.runtime_config, **localdict)
-
-        if localdict.upp_run not in UPP.VALID_UPP_RUN:
-            raise NotImplementedError(f"UPP cannot process output of type: '{localdict.upp_run}'\n" +
-                                      f"Valid options are:\n" +
-                                      f'{" | ".join(UPP.VALID_UPP_RUN)}')
 
         # Read the upp.yaml file for common configuration
         logger.info(f"Read the UPP configuration yaml file {self.config.UPP_CONFIG}")
@@ -252,7 +246,6 @@ class UPP(Task):
         ----------
         upp_run: str
            Run type of UPP
-           valid options are: analysis, forecast, goes
         upp_yaml: Dict
             Fully resolved upp.yaml dictionary
         """
