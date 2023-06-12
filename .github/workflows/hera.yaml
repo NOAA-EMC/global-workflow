@@ -13,7 +13,7 @@ jobs:
     outputs:
       labels: ${{ steps.id.outputs.labels }}
     steps:
-      - name: Get Lables Steps   
+      - name: Get Label Steps
         id: id
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
