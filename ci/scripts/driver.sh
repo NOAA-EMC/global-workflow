@@ -87,15 +87,7 @@ for pr in ${pr_list}; do
       sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
     done
     rm -Rf "${pr_dir}"
-  fi
-  # Check to see if this PR is Labeled CI-PR-Cases to get cases from itself
-  pr_case_self=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json labels --jq .labels[].name)
-  pr_case_self=$(echo "${pr_case_self}" | grep 'CI-PR-Cases') || true
-  if [[ "${pr_case_self}" == "CI-PR-Cases" ]]; then
-    HOMEgfs_CASES_DIR="${pr_dir}/global-workflow"
-  else
-    HOMEgfs_CASES_DIR="${HOMEgfs}"
-  fi  
+  f
 done
 
 pr_list=""
@@ -150,10 +142,10 @@ for pr in ${pr_list}; do
     #rm -Rf "${pr_dir:?}/RUNTESTS/"*
 
     #############################################################
-    # loop over every yaml file in ${HOMEgfs}/ci/cases
+    # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for yaml_config in "${HOMEgfs_CASES_DIR}/ci/cases/"*.yaml; do
+    for yaml_config in "${pr_dir}/global-workflow/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
       HOMEgfs_ci="${HOMEgfs_CASES_DIR}"
