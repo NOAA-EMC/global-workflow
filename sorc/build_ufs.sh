@@ -33,20 +33,17 @@ COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
-if [ ${MACHINE_ID} != "noaacloud" ]; then
+if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 fi
 
-if [ ${MACHINE_ID} == "noaacloud" ]; then
-  case $(dnsdomainname -f) in   
-     # TODO: Add Google and Azure platforms.
-     *pw-noaa*pw.local) CLOUD_MACHINE_ID=aws.${RT_COMPILER} 
-  esac
-
-  if [[ ${CLOUD_MACHINE_ID} == "aws.intel" ]]; then
+if [ "${MACHINE_ID}" == "noaacloud" ]; then
+  
+  if [[ "${PW_CSP}" == "aws" ]]; then
+    # TODO: This will need to be addressed further when the EPIC stacks are available/supported.
     module use /contrib/spack-stack/envs/ufswm/install/modulefiles/Core
     module load stack-intel
     module load stack-intel-oneapi-mpi
@@ -66,5 +63,7 @@ if [ ${MACHINE_ID} == "noaacloud" ]; then
   mkdir -p "${HOMEgfs}/exec"
   cp "${cwd}/ufs_model.fd/tests/ufs_model.x" "${HOMEgfs}/exec/ufs_model.x" 
 fi
+
+echo  ${MACHINE_ID}
 
 exit 0
