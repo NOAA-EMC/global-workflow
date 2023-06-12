@@ -40,7 +40,7 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 fi
 
-if [ "${MACHINE_ID}" == "noaacloud" ]; then
+if [[ "${MACHINE_ID}" == "noaacloud" ]]; then
   
   if [[ "${PW_CSP}" == "aws" ]]; then
     # TODO: This will need to be addressed further when the EPIC stacks are available/supported.
@@ -64,6 +64,6 @@ if [ "${MACHINE_ID}" == "noaacloud" ]; then
   cp "${cwd}/ufs_model.fd/tests/ufs_model.x" "${HOMEgfs}/exec/ufs_model.x" 
 fi
 
-echo  ${MACHINE_ID}
+echo  "${MACHINE_ID}"
 
 exit 0
