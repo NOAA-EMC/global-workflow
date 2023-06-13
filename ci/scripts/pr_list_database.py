@@ -20,7 +20,7 @@ def full_path(string):
     --------
     str
         Absolute path of input path
-        
+
     Raises
     -------
     NotADirectoryError
