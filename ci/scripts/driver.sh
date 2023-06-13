@@ -87,6 +87,7 @@ for pr in ${pr_list}; do
       sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
     done
     rm -Rf "${pr_dir}"
+  fi  
 done
 
 pr_list=""
