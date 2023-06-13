@@ -9,17 +9,22 @@ import sqlite3
 
 def full_path(string):
     """
-    Type for input argument for dbfile, must be file or path
+    Gets the absolute path of the given file and confirms the directory exists
 
     Parameters
     ----------
-    string: string
-        argument sting from --dbfile
+    string : str
+        Path to a file
 
     Returns
+    --------
+    str
+        Absolute path of input path
+        
+    Raises
     -------
-    os.path.abspath
-        abspath type of input string
+    NotADirectoryError
+        If the target directory for the file does not exist.
 
     """
 
