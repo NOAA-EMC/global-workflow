@@ -1,0 +1,16 @@
+#! /usr/bin/env bash
+
+########## config.upp ##########
+# UPP specific
+
+echo "BEGIN: config.upp"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" upp
+
+export UPP_CONFIG="${HOMEgfs}/parm/post/upp.yaml"
+
+# No. of forecast hours to process in a single job
+export NUPPGRP=3
+
+echo "END: config.upp"
