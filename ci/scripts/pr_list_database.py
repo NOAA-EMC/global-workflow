@@ -8,6 +8,21 @@ import sqlite3
 
 
 def dir_path(string):
+    """
+    Type for input argument for dbfile, must be file or path
+
+    Parameters
+    ----------
+    string: string
+        argument sting from --dbfile
+
+    Returns
+    -------
+    os.path.abspath
+        abspath type of input string
+
+    """
+
     if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
         return os.path.abspath(string)
     else:
@@ -148,6 +163,11 @@ def input_args():
 if __name__ == '__main__':
 
     args = input_args()
+
+    if not args.create:
+        if not os.path.isfile(args.dbfile):
+            print(f'Error: {args.dbfile} does not exsist')
+            sys.exit(-1)
 
     con = sql_connection(args.dbfile)
     obj = con.cursor()
