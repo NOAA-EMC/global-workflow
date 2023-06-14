@@ -82,7 +82,7 @@ case "${waveGRD}" in
     ;;
   *)
     echo "FATAL ERROR: No grid specific wave config values exist for ${waveGRD}. Aborting."
-    exit 
+    exit 1 
     ;;  
 esac
 
