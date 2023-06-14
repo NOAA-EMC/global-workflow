@@ -54,42 +54,41 @@ case "${waveGRD}" in
     #Grid used for P8
     export waveinterpGRD=''
     export wavepostGRD='gwes_30m'
+    export waveuoutpGRD=${waveGRD}
     ;;
   "mx025")
     #Grid used for HR1 (tripolar 1/4 deg)
     export waveinterpGRD='reg025'
-    export wavepostGRD=' '
+    export wavepostGRD=''
+    export waveuoutpGRD=${waveGRD}
     ;;
   "glo_025") 
     #GEFSv13 regular lat/lon 1/4 deg grid 
     export waveinterpGRD=''
     export wavepostGRD='glo_025'
+    export waveuoutpGRD=${waveGRD}
     ;;
   "glo_200")
     #Global regular lat/lon 2deg deg grid 
     export waveinterpGRD=''
     export wavepostGRD='glo_200'
+    export waveuoutpGRD=${waveGRD}
     ;;
   "glo_500")
     #Global regular lat/lon 5deg deg grid 
     export waveinterpGRD=''
     export wavepostGRD='glo_500'
+    export waveuoutpGRD=${waveGRD}
     ;;
   *)
-    echo "No grid specific wave config values"  
+    echo "FATAL ERROR: No grid specific wave config values exist for ${waveGRD}. Aborting."
+    exit 1 
     ;;  
 esac
 
 # Grids for input wind fields
 export WAVEWND_DID=
 export WAVEWND_FID=
-
-# Grids for output fields (used in all steps)
-export waveuoutpGRD=${waveuoutpGRD:-${waveGRD}} #unified point output grid
-export waveinterpGRD=${waveinterpGRD:-'glo_15mxt at_10m ep_10m wc_10m glo_30m'} # Grids that need to be interpolated from native
-                             # in POST will generate grib unless gribOK not set
-export wavepostGRD=${wavepostGRD:-${waveGRD}} # Native computational grids that will be post-processed (grib2)
-
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 if [ "$CDUMP" = "gdas" ]; then
