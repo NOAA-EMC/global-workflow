@@ -81,7 +81,7 @@ case "${waveGRD}" in
     export waveuoutpGRD=${waveGRD}
     ;;
   *)
-    echo "No grid specific wave config values exist.  Aborting."
+    echo "FATAL ERROR: No grid specific wave config values exist for ${waveGRD}. Aborting."
     exit 
     ;;  
 esac
