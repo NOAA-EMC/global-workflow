@@ -99,8 +99,8 @@ if __name__ == '__main__':
     setup_expt_cmd.add_default_arg(pslot)
 
     logger.info(f'Run command: {setup_expt_cmd.command}')
-    setup_expt_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts','setup_expt.stderr'))
-    setup_expt_stdout = str(Path.joinpath(HOMEgfs, 'ci', 'scripts','setup_expt.stdout'))
+    setup_expt_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stderr'))
+    setup_expt_stdout = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stdout'))
     print(setup_expt_stderr)
     setup_expt_cmd(output=setup_expt_stdout, error=setup_expt_stderr)
 
@@ -109,6 +109,6 @@ if __name__ == '__main__':
     setup_xml_cmd.add_default_arg(str(expdir))
 
     logger.info(f'Run command: {setup_xml_cmd.command}')
-    setup_xml_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts','setup_xml.stderr'))
-    setup_xml_stdout = str(Path.joinpath(HOMEgfs, 'ci', 'scripts','setup_xml.stdout'))
+    setup_xml_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_xml.stderr'))
+    setup_xml_stdout = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_xml.stdout'))
     setup_xml_cmd(output=setup_xml_stdout, error=setup_xml_stderr)
