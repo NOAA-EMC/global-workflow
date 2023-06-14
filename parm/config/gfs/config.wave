@@ -81,10 +81,8 @@ case "${waveGRD}" in
     export waveuoutpGRD=${waveGRD}
     ;;
   *)
-    echo "No grid specific wave config values"  
-    export waveinterpGRD=${waveinterpGRD:-'glo_15mxt at_10m ep_10m wc_10m glo_30m'} # Grids that need to be interpolated from native 
-    export wavepostGRD=${wavepostGRD:-${waveGRD}} # Native computational grids that will be post-processed (grib2)
-    export waveuoutpGRD=${waveGRD}
+    echo "No grid specific wave config values exist.  Aborting."
+    exit 
     ;;  
 esac
 
