@@ -6,10 +6,9 @@ cd "${script_dir}" || exit 1
 
 OPTIND=1
 _opts=""
-while getopts ":dov" option; do
+while getopts ":dv" option; do
 	case "${option}" in
-		d) export BUILD_TYPE="DEBUG";;
-		o) _opts+="-g ";;
+		d) _opts+="-d ";;
 		v) _opts+="-v ";;
 		:)
 			echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
