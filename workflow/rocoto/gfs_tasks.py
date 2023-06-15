@@ -592,12 +592,12 @@ class GFSTasks(Tasks):
             fhrs = [f'f{fhr:03d}' for fhr in fhrs]
             fhrs = np.array_split(fhrs, ngrps)
             fhrs = [fhr.tolist() for fhr in fhrs]
+            if add_anl:
+                fhrs.insert(0, ['anl'])
 
-            anl = ['anl'] if add_anl else []
-
-            grp = ' '.join(anl + [f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-            dep = ' '.join(anl + [fhr[-1] for fhr in fhrs])
-            lst = ' '.join(anl + ['_'.join(fhr) for fhr in fhrs])
+            grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
+            dep = ' '.join([fhr[-1] for fhr in fhrs])
+            lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
 
             return grp, dep, lst
 
