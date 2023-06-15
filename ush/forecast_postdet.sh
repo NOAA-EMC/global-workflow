@@ -162,7 +162,7 @@ EOF
   fi
 
   OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}.mx${OCNRES}_frac"}
-  FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
+  FIX_SFC=${FIX_SFC:-"${OROFIX}/sfc"}
   for n in $(seq 1 $ntiles); do
     $NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
     $NLN ${OROFIX}/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
@@ -330,6 +330,7 @@ EOF
   FNALBC=${FNALBC:-"${FIX_SFC}/${CASE}.snowfree_albedo.tileX.nc"}
   FNVETC=${FNVETC:-"${FIX_SFC}/${CASE}.vegetation_type.tileX.nc"}
   FNSOTC=${FNSOTC:-"${FIX_SFC}/${CASE}.soil_type.tileX.nc"}
+  FNSOCC=${FNSOCC:-"${FIX_SFC}/${CASE}.soil_color.tileX.nc"}
   FNABSC=${FNABSC:-"${FIX_SFC}/${CASE}.maximum_snow_albedo.tileX.nc"}
   FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
