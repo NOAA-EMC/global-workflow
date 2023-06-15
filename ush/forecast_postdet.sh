@@ -489,12 +489,12 @@ EOF
       FH2=$(printf %02i $fhr)
       atmi=atmf${FH3}.nc
       sfci=sfcf${FH3}.nc
-      logi=logf${FH3}
+      logi=log.atm.f${FH3}
       pgbi=GFSPRS.GrbF${FH2}
       flxi=GFSFLX.GrbF${FH2}
       atmo=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc
       sfco=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc
-      logo=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.logf${FH3}.txt
+      logo=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt
       pgbo=${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}
       flxo=${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2
       eval $NLN $atmo $atmi
@@ -872,12 +872,12 @@ MOM6_postdet() {
 
   # Link ocean restarts from DATA to COM
   # Coarser than 1/2 degree has a single MOM restart
-  $NLN "${COM_OCEAN_RESTART}/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/MOM.res.nc"
+  $NLN "${COM_OCEAN_RESTART}/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/"
   # 1/4 degree resolution has 4 additional restarts
   case ${OCNRES} in
     "025")
       for nn in $(seq 1 4); do
-        $NLN "${COM_OCEAN_RESTART}/${rdate:0:8}.${rdate:8:2}0000.MOM.res_${nn}.nc" "${DATA}/MOM6_RESTART/MOM.res_${nn}.nc"
+        $NLN "${COM_OCEAN_RESTART}/${rdate:0:8}.${rdate:8:2}0000.MOM.res_${nn}.nc" "${DATA}/MOM6_RESTART/"
       done
       ;;
     *)
@@ -889,11 +889,11 @@ MOM6_postdet() {
   local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
   while [[ $idate -lt $rdate ]]; do
     local idatestr=$(date +%Y-%m-%d-%H -d "${idate:0:8} ${idate:8:2}")
-    $NLN "${COM_OCEAN_RESTART}/${idate:0:8}.${idate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00.nc"
+    $NLN "${COM_OCEAN_RESTART}/${idate:0:8}.${idate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/"
     case ${OCNRES} in
       "025")
         for nn in $(seq 1 4); do
-          $NLN "${COM_OCEAN_RESTART}/${idate:0:8}.${idate:8:2}0000.MOM.res_${nn}.nc" "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00_${nn}.nc"
+          $NLN "${COM_OCEAN_RESTART}/${idate:0:8}.${idate:8:2}0000.MOM.res_${nn}.nc" "${DATA}/MOM6_RESTART/"
         done
         ;;
     esac
@@ -962,7 +962,8 @@ CICE_postdet() {
   year=$(echo $CDATE|cut -c 1-4)
   month=$(echo $CDATE|cut -c 5-6)
   day=$(echo $CDATE|cut -c 7-8)
-  sec=$(echo $CDATE|cut -c 9-10)
+  hour=$(echo $CDATE|cut -c 9-10)
+  sec=$(($hour*3600))
   stepsperhr=$((3600/$ICETIM))
   nhours=$($NHOUR $CDATE ${year}010100)
   steps=$((nhours*stepsperhr))

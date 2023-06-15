@@ -1,7 +1,7 @@
 #!/bin/bash
 export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
-WIPE_DATA="NO"
+export WIPE_DATA="NO"
 
 export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalrun"

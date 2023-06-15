@@ -53,6 +53,12 @@ source gfs_utils.fd/ush/detect_machine.sh  # (sets MACHINE_ID)
 machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 
 #------------------------------
+#--Set up build.ver and run.ver
+#------------------------------
+cp "${top_dir}/versions/build.${machine}.ver" "${top_dir}/versions/build.ver"
+cp "${top_dir}/versions/run.${machine}.ver" "${top_dir}/versions/run.ver"
+
+#------------------------------
 #--model fix fields
 #------------------------------
 case "${machine}" in
@@ -90,7 +96,6 @@ for dir in aer \
             cice \
             cpl \
             datm \
-            gldas \
             gsi \
             lut \
             mom6 \
@@ -119,17 +124,12 @@ fi
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
-cd "${top_dir}/parm" || exit 1
-    if [[ -d "${script_dir}/gldas.fd" ]]; then
-      [[ -d gldas ]] && rm -rf gldas
-      ${LINK} "${script_dir}/gldas.fd/parm" gldas
-    fi
 cd "${top_dir}/parm/post" || exit 1
     for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
         postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
-        postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt postxconfig-NT-GFS-WAFS-ANL.txt postxconfig-NT-GFS-WAFS.txt \
+        postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt \
         postxconfig-NT-GFS.txt postxconfig-NT-gefs-aerosol.txt postxconfig-NT-gefs-chem.txt params_grib2_tbl_new \
-        post_tag_gfs128 post_tag_gfs65 gtg.config.gfs gtg_imprintings.txt nam_micro_lookup.dat \
+        post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat \
         AEROSOL_LUTS.dat optics_luts_DUST.dat optics_luts_SALT.dat optics_luts_SOOT.dat optics_luts_SUSO.dat optics_luts_WASO.dat \
         ; do
         ${LINK} "${script_dir}/upp.fd/parm/${file}" .
@@ -146,25 +146,6 @@ cd "${top_dir}/ush" || exit 8
         ${LINK} "${script_dir}/gfs_utils.fd/ush/${file}" .
     done
 
-#-----------------------------------
-#--add gfs_wafs link if checked out
-if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
-#-----------------------------------
- cd "${top_dir}/jobs" || exit 1
-     ${LINK} "${script_dir}/gfs_wafs.fd/jobs"/*                         .
- cd "${top_dir}/parm" || exit 1
-     [[ -d wafs ]] && rm -rf wafs
-    ${LINK} "${script_dir}/gfs_wafs.fd/parm/wafs"                      wafs
- cd "${top_dir}/scripts" || exit 1
-    ${LINK} "${script_dir}/gfs_wafs.fd/scripts"/*                      .
- cd "${top_dir}/ush" || exit 1
-    ${LINK} "${script_dir}/gfs_wafs.fd/ush"/*                          .
- cd "${top_dir}/fix" || exit 1
-    [[ -d wafs ]] && rm -rf wafs
-    ${LINK} "${script_dir}/gfs_wafs.fd/fix"/*                          .
-fi
-
-
 #------------------------------
 #--add GDASApp fix directory
 #------------------------------
@@ -172,7 +153,7 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
   cd "${top_dir}/fix" || exit 1
     [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas || exit 1
-    for gdas_sub in bump crtm fv3jedi gsibec; do
+    for gdas_sub in crtm fv3jedi gsibec; do
       if [[ -d "${gdas_sub}" ]]; then
          rm -rf "${gdas_sub}"
       fi
@@ -188,6 +169,7 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
   cd "${top_dir}/ush" || exit 1
     ${LINK} "${script_dir}/gdas.cd/ush/ufsda"                              .
     ${LINK} "${script_dir}/gdas.cd/ush/jediinc2fv3.py"                     .
+    ${LINK} "${script_dir}/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
 fi
 
 
@@ -237,16 +219,6 @@ ${LINK} "${script_dir}/ufs_model.fd/tests/ufs_model.x" .
 [[ -s "upp.x" ]] && rm -f upp.x
 ${LINK} "${script_dir}/upp.fd/exec/upp.x" .
 
-if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
-    for wafsexe in \
-          wafs_awc_wafavn.x  wafs_blending.x  wafs_blending_0p25.x \
-          wafs_cnvgrib2.x  wafs_gcip.x  wafs_grib2_0p25.x \
-          wafs_makewafs.x  wafs_setmissing.x; do
-        [[ -s ${wafsexe} ]] && rm -f "${wafsexe}"
-        ${LINK} "${script_dir}/gfs_wafs.fd/exec/${wafsexe}" .
-    done
-fi
-
 for ufs_utilsexe in \
      emcsfc_ice_blend  emcsfc_snow2mdl  global_cycle ; do
     [[ -s "${ufs_utilsexe}" ]] && rm -f "${ufs_utilsexe}"
@@ -280,13 +252,6 @@ if [[ -d "${script_dir}/gsi_monitor.fd" ]]; then
   done
 fi
 
-if [[ -d "${script_dir}/gldas.fd" ]]; then
-  for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
-    [[ -s "${gldasexe}" ]] && rm -f "${gldasexe}"
-    ${LINK} "${script_dir}/gldas.fd/exec/${gldasexe}" .
-  done
-fi
-
 # GDASApp
 if [[ -d "${script_dir}/gdas.cd" ]]; then
   declare -a JEDI_EXE=("fv3jedi_addincrement.x" \
@@ -310,7 +275,9 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
                        "soca_error_covariance_training.x" \
                        "soca_setcorscales.x" \
                        "soca_gridgen.x" \
-                       "soca_var.x")
+                       "soca_var.x" \
+                       "calcfIMS.exe" \
+                       "apply_incr.exe" )
   for gdasexe in "${JEDI_EXE[@]}"; do
     [[ -s "${gdasexe}" ]] && rm -f "${gdasexe}"
     ${LINK} "${script_dir}/gdas.cd/build/bin/${gdasexe}" .
@@ -413,24 +380,6 @@ cd "${script_dir}" || exit 8
         if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
         ${LINK} "gfs_utils.fd/src/${prog}" .
     done
-
-    if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
-        ${SLINK} gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_grib2_0p25.fd                                              wafs_grib2_0p25.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
-        ${SLINK} gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
-    fi
-
-    if [[ -d gldas.fd ]]; then
-      for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
-        [[ -d "${prog}" ]] && rm -rf "${prog}"
-        ${SLINK} "gldas.fd/sorc/${prog}"                                                     "${prog}"
-      done
-    fi
 
 #------------------------------
 #  copy $HOMEgfs/parm/config/config.base.nco.static as config.base for operations

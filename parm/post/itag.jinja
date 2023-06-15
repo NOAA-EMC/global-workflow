@@ -1,0 +1,16 @@
+&model_inputs
+  filename = "{{ atmos_filename }}",
+  ioform = "{{ ioform }}",
+  grib = "{{ grib_version }}",
+  datestr = "{{ valid_datetime | strftime('%Y-%m-%d_%H:%M:%S') }}",
+  modelname = "{{ NET | upper }}",
+  submodelname = "NONE",
+  filenameflux = "{{ flux_filename }}",
+  filenameflat = "postxconfig-NT.txt"
+/
+&nampgb
+  kpo = {{ po | length }},
+  po = {{ po | join(', ') }},
+  rdaod = {{ rdaod | to_f90bool }}
+/
+

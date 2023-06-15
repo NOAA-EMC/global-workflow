@@ -30,7 +30,7 @@ class AerosolAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.config['CASE'][1:])
-        _res_enkf = int(self.config['CASE_ENKF'][1:])
+        _res_enkf = int(self.config['CASE_ENS'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
         _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
 

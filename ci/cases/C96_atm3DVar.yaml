@@ -1,4 +1,5 @@
 experiment:
+  type: gfs
   mode: cycled
 
 arguments:
@@ -12,3 +13,4 @@ arguments:
   nens: 0
   gfs_cyc: 1
   start: cold
+  yaml: ${HOMEgfs_ci}/ci/platforms/gfs_defaults_ci-updates.yaml

@@ -82,6 +82,12 @@ if [[ -z "${MACHINE_ID}" ]]; then
 fi
 
 #------------------------------------
+# SOURCE BUILD VERSION FILES
+#------------------------------------
+# TODO: Commented out until components aligned for build
+#source ../versions/build.ver
+
+#------------------------------------
 # INCLUDE PARTIAL BUILD
 #------------------------------------
 # Turn off some shellcheck warnings because we want to have
@@ -89,11 +95,6 @@ fi
 # shellcheck disable=SC2086,SC2248
 source ./partial_build.sh ${_verbose_opt} ${_partial_opt}
 # shellcheck disable=
-
-# Disable gldas on Jet
-if [[ ${MACHINE_ID} =~ jet.* ]]; then
-   Build_gldas="false"
-fi
 
 #------------------------------------
 # Exception Handling Init
@@ -262,44 +263,6 @@ if [[ ${Build_ufs_utils} == 'true' ]]; then
     echo "The log file is in ${logs_dir}/build_ufs_utils.log"
   fi
   err=$((err + rc))
-fi
-
-#------------------------------------
-# build gldas
-#------------------------------------
-if [[ -d gldas.fd ]]; then
-  if [[ ${Build_gldas} == 'true' ]]; then
-    echo " .... Building gldas .... "
-    # shellcheck disable=SC2086,SC2248
-    ./build_gldas.sh ${_verbose_opt} > "${logs_dir}/build_gldas.log" 2>&1
-    # shellcheck disable=
-    rc=$?
-    if (( rc != 0 )) ; then
-      echo "Fatal error in building gldas."
-      echo "The log file is in ${logs_dir}/build_gldas.log"
-    fi
-    err=$((err + rc))
-  fi
-else
-  echo " .... Skip building gldas .... "
-fi
-
-#------------------------------------
-# build gfs_wafs - optional checkout
-#------------------------------------
-if [[ -d gfs_wafs.fd ]]; then
-  if [[ ${Build_gfs_wafs} == 'true' ]]; then
-    echo " .... Building gfs_wafs  .... "
-    # shellcheck disable=SC2086,SC2248
-    ./build_gfs_wafs.sh ${_verbose_opt} > "${logs_dir}/build_gfs_wafs.log" 2>&1
-    # shellcheck disable=
-    rc=$?
-    if (( rc != 0 )) ; then
-      echo "Fatal error in building gfs_wafs."
-      echo "The log file is in ${logs_dir}/build_gfs_wafs.log"
-    fi
-    err=$((err + rc))
-  fi
 fi
 
 #------------------------------------

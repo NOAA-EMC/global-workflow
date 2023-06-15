@@ -1,5 +1,5 @@
 ###########################
-Global Workflow Components 
+Global Workflow Components
 ###########################
 
 The global-workflow is a combination of several components working together to prepare, analyze, produce, and post-process forecast data.
@@ -13,7 +13,7 @@ The major components of the system are:
 * Post-processing
 * Verification
 
-The Global Workflow repository contains the workflow and script layers. After running the checkout script, the code and additional offline scripts for the analysis, forecast, and post-processing components will be present. Any non-workflow component is known as a sub-module. All of the sub-modules of the system reside in their respective repositories on GitHub. The global-workflow sub-modules are obtained by running the checkout script found under the /sorc folder. 
+The Global Workflow repository contains the workflow and script layers. After running the checkout script, the code and additional offline scripts for the analysis, forecast, and post-processing components will be present. Any non-workflow component is known as a sub-module. All of the sub-modules of the system reside in their respective repositories on GitHub. The global-workflow sub-modules are obtained by running the checkout script found under the /sorc folder.
 
 ======================
 Component repositories
@@ -21,16 +21,14 @@ Component repositories
 
 Components checked out via sorc/checkout.sh:
 
-* **GFS UTILS** (https://github.com/ufs-community/gfs_utils): Utility codes needed by Global Workflow to run the GFS configuration 
-* **UFS-Weather-Model** (https://github.com/ufs-community/ufs-weather-model): This is the core model used by the Global-Workflow to provide forecasts. The UFS-weather-model repository is an umbrella repository consisting of cooupled component earth systeme that are all checked out when we check out the code at the top level of the repoitory 
+* **GFS UTILS** (https://github.com/ufs-community/gfs_utils): Utility codes needed by Global Workflow to run the GFS configuration
+* **UFS-Weather-Model** (https://github.com/ufs-community/ufs-weather-model): This is the core model used by the Global-Workflow to provide forecasts. The UFS-weather-model repository is an umbrella repository consisting of cooupled component earth systeme that are all checked out when we check out the code at the top level of the repoitory
 * **GSI** (https://github.com/NOAA-EMC/GSI): This is the core code base for atmospheric Data Assimilation
-* **GSI UTILS** (https://github.com/NOAA-EMC/GSI-Utils): Utility codes needed by GSI to create analysis 
-* **GSI Monitor** (https://github.com/NOAA-EMC/GSI-Monitor): These tools monitor the GSI package's data assimilation, detecting and reporting missing data sources, low observation counts, and high penalty values 
-* **GLDAS** (https://github.com/NOAA-EMC/GLDAS): Code base for Land Data Assimiation
+* **GSI UTILS** (https://github.com/NOAA-EMC/GSI-Utils): Utility codes needed by GSI to create analysis
+* **GSI Monitor** (https://github.com/NOAA-EMC/GSI-Monitor): These tools monitor the GSI package's data assimilation, detecting and reporting missing data sources, low observation counts, and high penalty values
 * **GDAS** (https://github.com/NOAA-EMC/GDASApp): Jedi based Data Assimilation system. This system is currently being developed for marine Data Assimilation and in time will replace GSI for atmospheric data assimilation as well
 * **UFS UTILS** (https://github.com/ufs-community/UFS_UTILS): Utility codes needed for UFS-weather-model
 * **Verif global** (https://github.com/NOAA-EMC/EMC_verif-global): Verification package to evaluate GFS parallels. It uses MET and METplus. At this moment the verification package is limited to providing atmospheric metrics only
-* **GFS WAFS** (https://github.com/NOAA-EMC/EMC_gfs_wafs): Additional post processing products for Aircrafts
 
 .. note::
    When running the system in forecast-only mode the Data Assimilation components are not needed and are hence not checked out.
@@ -43,7 +41,7 @@ External dependencies
 Libraries
 ^^^^^^^^^
 
-All the libraries that are needed to run the end to end Global Workflow are built using a package manager. Currently these are served via HPC-STACK but will soon be available via SPACK-STACK. These libraries are already available on supported NOAA HPC platforms 
+All the libraries that are needed to run the end to end Global Workflow are built using a package manager. Currently these are served via HPC-STACK but will soon be available via SPACK-STACK. These libraries are already available on supported NOAA HPC platforms
 
 Find information on official installations of HPC-STACK here:
 

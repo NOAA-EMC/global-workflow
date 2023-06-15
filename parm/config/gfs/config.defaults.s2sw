@@ -1,0 +1,26 @@
+#! /usr/bin/env bash
+
+# Empty variables must include a space otherwise they will be overwritten
+
+# config.base
+FHMAX_GFS_00=48
+FHMAX_GFS_06=48
+FHMAX_GFS_12=48
+FHMAX_GFS_18=48
+FHOUT_GFS=6
+FHOUT_HF_GFS=-1
+
+# config.fcst
+min_seaice="1.0e-6"
+use_cice_alb=".true."
+
+# config.wave
+FHOUT_HF_WAV=3
+DTPNT_WAV=10800
+OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
+DOBNDPNT_WAVE='NO'
+
+# config.arch
+export ARCH_GAUSSIAN="YES"
+export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS_00}
+export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS}

@@ -7,9 +7,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalchkpt" -c "base ocnanal ocnana
 
 
 ##############################################
-# Begin JOB SPECIFIC work
+# Set variables used in the script
 ##############################################
-
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -23,7 +22,15 @@ export GPREFIX="${GDUMP}.t${gcyc}z."
 # shellcheck disable=SC2153
 export APREFIX="${CDUMP}.t${cyc}z."
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
 
 ###############################################################
 # Run relevant script

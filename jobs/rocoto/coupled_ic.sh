@@ -44,17 +44,14 @@ error_message(){
     echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
 }
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_INPUT COM_ICE_RESTART COM_WAVE_RESTART
-YMD=${gPDY} HH=${gcyc} generate_com -rx COM_OCEAN_RESTART
-
 ###############################################################
 # Start staging
 
 # Stage the FV3 initial conditions to ROTDIR (cold start)
-ATMdir="${COM_ATMOS_INPUT}"
-[[ ! -d "${ATMdir}" ]] && mkdir -p "${ATMdir}"
+YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
+[[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
 source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/gfs_ctrl.nc"
-target="${ATMdir}/gfs_ctrl.nc"
+target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
 ${NCP} "${source}" "${target}"
 rc=$?
 [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
@@ -62,7 +59,7 @@ err=$((err + rc))
 for ftype in gfs_data sfc_data; do
   for tt in $(seq 1 6); do
     source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/${ftype}.tile${tt}.nc"
-    target="${ATMdir}/${ftype}.tile${tt}.nc"
+    target="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
     ${NCP} "${source}" "${target}"
     rc=$?
     [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
@@ -71,52 +68,59 @@ for ftype in gfs_data sfc_data; do
 done
 
 # Stage ocean initial conditions to ROTDIR (warm start)
-OCNdir="${COM_OCEAN_RESTART}"
-[[ ! -d "${OCNdir}" ]] && mkdir -p "${OCNdir}"
-source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res.nc"
-target="${OCNdir}/${PDY}.${cyc}0000.MOM.res.nc"
-${NCP} "${source}" "${target}"
-rc=$?
-[[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
-err=$((err + rc))
-case $OCNRES in
-  "025")
-    for nn in $(seq 1 4); do
-      source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res_${nn}.nc"
-      if [[ -f "${source}" ]]; then
-        target="${OCNdir}/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
-        ${NCP} "${source}" "${target}"
-        rc=$?
-        [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
-        err=$((err + rc))
-      fi
-    done
-  ;;
-  *)
-    echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
-    rc=1
-    err=$((err + rc))
-  ;;
-esac
+if [[ "${DO_OCN:-}" = "YES" ]]; then
+  YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
+  [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
+  source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res.nc"
+  target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res.nc"
+  ${NCP} "${source}" "${target}"
+  rc=$?
+  [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+  err=$((err + rc))
+  case "${OCNRES}" in
+    "500") 
+      echo "Do not have Mom.res_*.nc files for 5 deg ocean"
+      ;;
+    "025")
+      for nn in $(seq 1 4); do
+        source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res_${nn}.nc"
+        if [[ -f "${source}" ]]; then
+          target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
+          ${NCP} "${source}" "${target}"
+          rc=$?
+          [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+          err=$((err + rc))
+        fi
+      done
+    ;;
+    *)
+      echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
+      rc=1
+      err=$((err + rc))
+    ;;
+  esac
+fi
 
 # Stage ice initial conditions to ROTDIR (cold start as these are SIS2 generated)
-ICEdir="${COM_ICE_RESTART}"
-[[ ! -d "${ICEdir}" ]] && mkdir -p "${ICEdir}"
-ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
-source="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/ice/${ICERES}/cice5_model_${ICERESdec}.res_${PDY}${cyc}.nc"
-target="${ICEdir}/${PDY}.${cyc}0000.cice_model.res.nc"
-${NCP} "${source}" "${target}"
-rc=$?
-[[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
-err=$((err + rc))
+if [[ "${DO_ICE:-}" = "YES" ]]; then
+  YMD=${PDY} HH=${cyc} generate_com -r COM_ICE_RESTART
+  [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
+  ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
+  source="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/ice/${ICERES}/cice5_model_${ICERESdec}.res_${PDY}${cyc}.nc"
+  target="${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
+  ${NCP} "${source}" "${target}"
+  rc=$?
+  [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+  err=$((err + rc))
+fi
 
 # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
-if [[ "${DO_WAVE}" = "YES" ]]; then
-  WAVdir="${COM_WAVE_RESTART}"
-  [[ ! -d "${WAVdir}" ]] && mkdir -p "${WAVdir}"
+if [[ "${DO_WAVE:-}" = "YES" ]]; then
+  YMD=${PDY} HH=${cyc} generate_com -r COM_WAVE_RESTART
+  [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
   for grdID in ${waveGRD}; do  # TODO: check if this is a bash array; if so adjust
     source="${BASE_CPLIC}/${CPL_WAVIC}/${PDY}${cyc}/wav/${grdID}/${PDY}.${cyc}0000.restart.${grdID}"
-    target="${WAVdir}/${PDY}.${cyc}0000.restart.${grdID}"
+    target="${COM_WAVE_RESTART}/${PDY}.${cyc}0000.restart.${grdID}"
     ${NCP} "${source}" "${target}"
     rc=$?
     [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"

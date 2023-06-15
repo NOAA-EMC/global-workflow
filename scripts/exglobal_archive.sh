@@ -179,7 +179,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
             fi
         fi
 
-        if [ "${DO_WAVE}" = "YES" ] && [ "${WAVE_RUN}" != "gdas" ]; then
+        if [ "${DO_WAVE}" = "YES" ]; then
             targrp_list="${targrp_list} gfswave"
         fi
 
@@ -210,7 +210,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
         fi
 
         #for downstream products
-        if [ "${DO_BUFRSND}" = "YES" ] || [ "${WAFSF}" = "YES" ]; then
+        if [ "${DO_BUFRSND}" = "YES" ]; then
             targrp_list="${targrp_list} gfs_downstream"
         fi
 
@@ -306,15 +306,12 @@ if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
 fi
 
 # Step back every assim_freq hours and remove old rotating directories
-# for successful cycles (defaults from 24h to 120h).  If GLDAS is
-# active, retain files needed by GLDAS update.  Independent of GLDAS,
-# retain files needed by Fit2Obs
+# for successful cycles (defaults from 24h to 120h).
+# Retain files needed by Fit2Obs
 # TODO: This whole section needs to be revamped to remove marine component
 #  directories and not look at the rocoto log.
-DO_GLDAS=${DO_GLDAS:-"NO"}
 GDATEEND=$(${NDATE} -"${RMOLDEND:-24}"  "${PDY}${cyc}")
 GDATE=$(${NDATE} -"${RMOLDSTD:-120}" "${PDY}${cyc}")
-GLDAS_DATE=$(${NDATE} -96 "${PDY}${cyc}")
 RTOFS_DATE=$(${NDATE} -48 "${PDY}${cyc}")
 function remove_files() {
     # TODO: move this to a new location
@@ -372,9 +369,6 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
                 # Atmos
                 exclude_list="cnvstat atmanl.nc"
-                if [[ ${DO_GLDAS} == "YES" ]] && [[ ${RUN} =~ "gdas" ]] && [[ "${GDATE}" -ge "${GLDAS_DATE}" ]]; then
-                    exclude_list="${exclude_list} sflux sfcanl"
-                fi
                 templates=$(compgen -A variable | grep 'COM_ATMOS_.*_TMPL')
                 for template in ${templates}; do
                     YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"

@@ -6,8 +6,8 @@ Entry point for setting up Rocoto XML for all applications in global-workflow
 import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-from applications import AppConfig
-from rocoto.workflow_xml import RocotoXML
+from applications.application_factory import app_config_factory
+from rocoto.rocoto_xml_factory import rocoto_xml_factory
 from pygw.configuration import Configuration
 
 
@@ -61,11 +61,16 @@ if __name__ == '__main__':
 
     cfg = Configuration(user_inputs.expdir)
 
-    check_expdir(user_inputs.expdir, cfg.parse_config('config.base')['EXPDIR'])
+    base = cfg.parse_config('config.base')
+
+    check_expdir(user_inputs.expdir, base['EXPDIR'])
+
+    net = base['NET']
+    mode = base['MODE']
 
     # Configure the application
-    app_config = AppConfig(cfg)
+    app_config = app_config_factory.create(f'{net}_{mode}', cfg)
 
     # Create Rocoto Tasks and Assemble them into an XML
-    xml = RocotoXML(app_config, rocoto_param_dict)
+    xml = rocoto_xml_factory.create(f'{net}_{mode}', app_config, rocoto_param_dict)
     xml.write()
