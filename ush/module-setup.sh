@@ -104,7 +104,7 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
 
 # TODO: This can likely be made more general once other cloud
 # platforms come online.
-elif [[ ${MACHINE_ID} = aws_pw ]]; then
+elif [[ ${MACHINE_ID} = "noaacloud" ]]; then
 
     export SPACK_ROOT=/contrib/global-workflow/spack-stack/spack
     export PATH=${PATH}:${SPACK_ROOT}/bin
