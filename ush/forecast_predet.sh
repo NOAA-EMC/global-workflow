@@ -71,7 +71,7 @@ FV3_GFS_predet(){
   FDIAG=$FHOUT
   if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
   WRITE_DOPOST=${WRITE_DOPOST:-".false."}
-  restart_interval=${restart_interval:-0}
+  restart_interval=${restart_interval:-${FHMAX}}
 
   # Convert output settings into an explicit list
   OUTPUT_FH=""
@@ -217,7 +217,7 @@ FV3_GFS_predet(){
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
-    VDATE=$($NDATE +$FHMAX_GFS $CDATE)
+    VDATE=$($NDATE +$FHMAX $CDATE)
     vPDY=$(echo $VDATE | cut -c1-8)
     vcyc=$(echo $VDATE | cut -c9-10)
     files="coupler.res fv_core.res.nc"
