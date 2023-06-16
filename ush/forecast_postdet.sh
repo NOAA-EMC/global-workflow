@@ -590,8 +590,8 @@ WW3_postdet() {
     for wavGRD in ${grdALL}; do
       ${NCP} "${COM_WAVE_PREP}/${COMPONENTwave}.mod_def.${wavGRD}" "${DATA}/mod_def.${wavGRD}"
     done
-  else 
-    #if shel, only 1 waveGRD which is linked to mod_def.ww3 
+  else
+    #if shel, only 1 waveGRD which is linked to mod_def.ww3
     ${NCP} "${COM_WAVE_PREP}/${COMPONENTwave}.mod_def.${waveGRD}" "${DATA}/mod_def.ww3"
   fi
 
@@ -611,10 +611,10 @@ WW3_postdet() {
     if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
       if [ $RERUN = "NO" ]; then
         waverstfile=${COM_WAVE_RESTART_PREV}/${sPDY}.${scyc}0000.restart.${wavGRD}
-      else 
+      else
         waverstfile=${COM_WAVE_RESTART}/${PDYT}.${cyct}0000.restart.${wavGRD}
       fi
-    else 
+    else
       waverstfile=${COM_WAVE_RESTART}/${sPDY}.${scyc}0000.restart.${wavGRD}
     fi
     if [ ! -f ${waverstfile} ]; then
@@ -637,7 +637,7 @@ WW3_postdet() {
     for wavGRD in $waveGRD ; do
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${wavGRD}.${PDY}${cyc}" "log.${wavGRD}"
     done
-  else 
+  else
     ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
   fi
 
@@ -679,7 +679,7 @@ WW3_postdet() {
       for wavGRD in ${waveGRD} ; do
         ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_grd.${wavGRD}"
       done
-    else 
+    else
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_grd.ww3"
     fi
     FHINC=$FHOUT_WAV
@@ -697,7 +697,7 @@ WW3_postdet() {
     HMS="$(echo $YMDH | cut -c9-10)0000"
     if [ $waveMULTIGRID = ".true." ]; then
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}"
-    else 
+    else
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_pnt.ww3"
     fi
 
@@ -990,35 +990,29 @@ CICE_postdet() {
   #   -- if false, re-initialize level ponds to zero (if runtype=initial or continue)
   restart_pond_lvl=${restart_pond_lvl:-".false."}
 
-  ICERES=${ICERES:-"025"}  # TODO: similar to MOM_out, lift this higher
-
   ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
   ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
   export MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
-  # Copy/link CICE IC to DATA
-  if [[ "${warm_start}" = ".true." ]]; then
-    cice_ana="${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model_anl.res.nc"
-    if [[ -e ${cice_ana} ]]; then
-      ${NLN} "${cice_ana}" "${DATA}/cice_model.res.nc"
-    else
-      ${NLN} "${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
-    fi
-  else # cold start are typically SIS2 restarts obtained from somewhere else e.g. CPC
-    $NLN "${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+  # Copy CICE ICs
+  echo "Link CICE ICs"
+  cice_restart_file="${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc"
+  if [[ ! -f "${cice_restart_file}" ]]; then
+    echo "FATAL ERROR: CICE restart file not found at '${cice_restart_file}', ABORT!"
+    exit 112
+  else
+    ${NLN} "${cice_restart_file}" "${DATA}/cice_model.res.nc"
   fi
-  # TODO: add a check for the restarts to exist, if not, exit eloquently
   rm -f "${DATA}/ice.restart_file"
-  touch "${DATA}/ice.restart_file"
-  echo "${DATA}/cice_model.res.nc" >> "${DATA}/ice.restart_file"
+  echo "${DATA}/cice_model.res.nc" > "${DATA}/ice.restart_file"
 
   echo "Link CICE fixed files"
-  $NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
-  $NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
-  $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
+  ${NLN} "${FIXcice}/${ICERES}/${ice_grid_file}" "${DATA}/"
+  ${NLN} "${FIXcice}/${ICERES}/${ice_kmt_file}"  "${DATA}/"
+  ${NLN} "${FIXcice}/${ICERES}/${MESH_OCN_ICE}"  "${DATA}/"
 
   # Link CICE output files
-  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi  
+  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi
   mkdir -p ${COM_ICE_RESTART}
 
   if [[ "${RUN}" =~ "gfs" ]]; then

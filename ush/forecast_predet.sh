@@ -72,7 +72,6 @@ FV3_GFS_predet(){
   if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
   WRITE_DOPOST=${WRITE_DOPOST:-".false."}
   restart_interval=${restart_interval:-0}
-  rst_invt1=$(echo $restart_interval |cut -d " " -f 1)
 
   # Convert output settings into an explicit list
   OUTPUT_FH=""
@@ -213,12 +212,12 @@ FV3_GFS_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]] && (( rst_invt1 > 0 )); then
+  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]]; then
     if [[ ! -d ${COM_ATMOS_RESTART} ]]; then mkdir -p "${COM_ATMOS_RESTART}" ; fi
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
-    VDATE=$($NDATE +$FHMAX_GFS $CDATE)
+    VDATE=$($NDATE +$FHMAX_GFS ${CDATE})
     vPDY=$(echo $VDATE | cut -c1-8)
     vcyc=$(echo $VDATE | cut -c9-10)
     files="coupler.res fv_core.res.nc"

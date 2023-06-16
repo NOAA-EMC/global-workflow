@@ -41,7 +41,10 @@ FV3_GFS_det(){
   # determine if restart IC exists to continue from a previous forecast
   RERUN=${RERUN:-"NO"}
   filecount=$(find "${COM_ATMOS_RESTART:-/dev/null}" -type f | wc -l)
-  if [[ ( ${CDUMP} = "gfs" || ( ${RUN} = "gefs" && ${CDATE_RST} = "" )) && ${rst_invt1} -gt 0 && ${FHMAX} -gt ${rst_invt1} && ${filecount} -gt 10 ]]; then
+  if [[ ( ${CDUMP} = "gfs" || ( ${RUN} = "gefs" && ${CDATE_RST} = "" )) && ${restart_interval} -gt 0 && ${FHMAX} -gt ${restart_interval} && ${filecount} -gt 10 ]]; then
+    filelist=$(ls -1 ${COM_ATMOS_RESTART}/????????.??0000.coupler.res)
+    filelist=$(ls -1 ${COM_ATMOS_RESTART}/????????.??0000.coupler.res)
+    flag2=${COM_ATMOS_RESTART}/coupler.res
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in ${reverse} ; do
       yfh=$((xfh-(IAU_OFFSET/2)))
@@ -67,7 +70,7 @@ FV3_GFS_det(){
         mv "${flag1}" "${flag1}.old"
         if [[ -s "${flag2}" ]]; then mv "${flag2}" "${flag2}.old" ;fi
         RERUN="YES"
-        [[ ${xfh} = ${rst_invt1} ]] && RERUN="NO"
+        [[ ${xfh} = ${restart_interval} ]] && RERUN="NO"
       fi
     done
   fi
