@@ -21,7 +21,7 @@ while getopts ":da:v" option; do
   esac
 done
 
-cd "${cwd}/ufs_model.fd" # TODO: This is redundant; see below.
+cd "${cwd}/ufs_model.fd"
 
 source "./tests/detect_machine.sh"
 source "./tests/module-setup.sh"
