@@ -542,7 +542,7 @@ data_out_GFS() {
 
   if [ $SEND = "YES" ]; then
     # Copy model restart files
-    if [[ ${RUN} =~ "gdas" ]] && (( rst_invt1 > 0 )); then
+    if [[ ${RUN} =~ "gdas" ]] && (( restart_interval > 0 )); then
       cd $DATA/RESTART
       mkdir -p "${COM_ATMOS_RESTART}"
       for rst_int in $restart_interval ; do

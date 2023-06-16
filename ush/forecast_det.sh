@@ -41,7 +41,7 @@ FV3_GFS_det(){
   # determine if restart IC exists to continue from a previous forecast
   RERUN=${RERUN:-"NO"}
   filecount=$(find "${COM_ATMOS_RESTART:-/dev/null}" -type f | wc -l)
-  if [[ ( ${CDUMP} = "gfs" || ( ${RUN} = "gefs" && ${CDATE_RST} = "" )) && ${rst_invt1} -gt 0 && ${FHMAX} -gt ${rst_invt1} && ${filecount} -gt 10 ]]; then
+  if [[ ( ${CDUMP} = "gfs" || ( ${RUN} = "gefs" && ${CDATE_RST} = "" )) && ${restart_interval} -gt 0 && ${FHMAX} -gt ${restart_interval} && ${filecount} -gt 10 ]]; then
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in ${reverse} ; do
       yfh=$((xfh-(IAU_OFFSET/2)))
