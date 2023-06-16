@@ -41,7 +41,7 @@ esac
 if [[ ${MACHINE_ID} == "UNKNOWN" ]]; then 
    case ${PW_CSP:-} in
       "aws" | "google" | "azure") MACHINE_ID=noaacloud ;;
-      *) MACHINE_ID=UNKNOWN ;; # Unknown platform
+      *) PW_CSP="UNKNOWN"
    esac
 fi
 
