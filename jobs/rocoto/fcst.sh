@@ -33,7 +33,7 @@ if [[ "${MACHINE_ID}" = "hera" ]]; then
 #  module load "python/3.7.5"
 fi
 if [[ "${MACHINE_ID}" == "noaacloud" ]]; then
-   if [[ "${PW_CSP}" == "aws" ]]; then
+   if [[ "${PW_CSP:-}" = "aws" ]]; then
 
       # TODO: This can be cleaned-up; most of this is a hack for now.
       module use "/contrib/spack-stack/envs/ufswm/install/modulefiles/Core"
