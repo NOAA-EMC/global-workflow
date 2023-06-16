@@ -94,20 +94,36 @@ class Jinja:
                       'file': self._render_file}
         return render_map[self.template_type]()
 
-    def get_set_env(self, loader: jinja2.BaseLoader) -> jinja2.Environment:
+    def get_set_env(self, loader: jinja2.BaseLoader, filters: Dict[str, callable] = None) -> jinja2.Environment:
         """
         Description
         -----------
         Define the environment for the jinja2 template
-        Any number of filters can be added here
+        Any number of filters can be added here.
+        Optionally, a dictionary of external filters can be passed in
+
+        Currently, the following filters are defined:
+        strftime: convert a datetime object to a string with a user defined format
+        to_isotime: convert a datetime object to an ISO 8601 string
+        to_fv3time: convert a datetime object to a FV3 time string
+        to_YMDH: convert a datetime object to a YYYYMMDDHH string
+        to_YMD: convert a datetime object to a YYYYMMDD string
+        to_julian: convert a datetime object to a julian day
+        to_f90bool: convert a boolean to a fortran boolean
+        getenv: read variable from enviornment if defined, else UNDEFINED
 
         Parameters
         ----------
-        loader: of class jinja2.BaseLoader
+        loader: jinja2.BaseLoader
+            An instance of class jinja2.BaseLoader
+        filters: Dict[str, callable] (optional)
+            A dictionary of filters to be added to the environment
+
         Returns
         -------
         env: jinja2.Environment
         """
+
         env = jinja2.Environment(loader=loader, undefined=self.undefined)
         env.filters["strftime"] = lambda dt, fmt: strftime(dt, fmt)
         env.filters["to_isotime"] = lambda dt: to_isotime(dt) if not isinstance(dt, SilentUndefined) else dt
@@ -115,6 +131,14 @@ class Jinja:
         env.filters["to_YMDH"] = lambda dt: to_YMDH(dt) if not isinstance(dt, SilentUndefined) else dt
         env.filters["to_YMD"] = lambda dt: to_YMD(dt) if not isinstance(dt, SilentUndefined) else dt
         env.filters["to_julian"] = lambda dt: to_julian(dt) if not isinstance(dt, SilentUndefined) else dt
+        env.filters["to_f90bool"] = lambda bool: ".true." if bool else ".false."
+        env.filters['getenv'] = lambda name, default='UNDEFINED': os.environ.get(name, default)
+
+        # Add any additional filters
+        if filters is not None:
+            for filter_name, filter_func in filters.items():
+                env.filters[filter_name] = filter_func
+
         return env
 
     @staticmethod
@@ -137,23 +161,23 @@ class Jinja:
         env: jinja2.Environment
             Active jinja2 environment with the new filter added
         """
-        raise NotImplementedError("Not implemented yet.  Placed here for future use")
-        # Implementation would look something like the following
-        # env.filters[filter_name] = filter_func
-        # return env
 
-    def _render_stream(self):
+        env.filters[filter_name] = filter_func
+
+        return env
+
+    def _render_stream(self, filters: Dict[str, callable] = None):
         loader = jinja2.BaseLoader()
-        env = self.get_set_env(loader)
+        env = self.get_set_env(loader, filters)
         template = env.from_string(self.template_stream)
         return self._render_template(template)
 
-    def _render_file(self, data: Dict = None):
+    def _render_file(self, data: Dict = None, filters: Dict[str, callable] = None):
         template_dir = self.template_path.parent
         template_file = self.template_path.relative_to(template_dir)
 
         loader = jinja2.FileSystemLoader(template_dir)
-        env = self.get_set_env(loader)
+        env = self.get_set_env(loader, filters)
         template = env.get_template(str(template_file))
         return self._render_template(template)
 

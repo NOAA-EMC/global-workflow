@@ -5,11 +5,7 @@ cwd=$(pwd)
 
 # Default settings
 APP="S2SWA"
-CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_no_nsst,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
-
-export RT_COMPILER="intel"
-source "${cwd}/ufs_model.fd/tests/detect_machine.sh"
-source "${cwd}/ufs_model.fd/tests/module-setup.sh"
+CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_no_nsst,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"  # TODO: does the g-w need to build with all these CCPP_SUITES?
 
 while getopts ":da:v" option; do
   case "${option}" in
@@ -26,6 +22,9 @@ while getopts ":da:v" option; do
 done
 
 cd "${cwd}/ufs_model.fd" # TODO: This is redundant; see below.
+
+source "./tests/detect_machine.sh"
+source "./tests/module-setup.sh"
 
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
 [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
@@ -65,5 +64,6 @@ if [[ "${MACHINE_ID}" == "noaacloud" ]]; then
 fi
 
 echo  "${MACHINE_ID}"
+
 
 exit 0

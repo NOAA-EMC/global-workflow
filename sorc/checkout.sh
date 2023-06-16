@@ -148,15 +148,15 @@ mkdir -p "${logdir}"
 errs=0
 checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "8965258"                    ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471"                    ; errs=$((errs + $?))
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-2247060}" ; errs=$((errs + $?))
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-bf60924}" ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "113e307" "NO"; errs=$((errs + $?))
+  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "8735959" "NO"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "81675c9"; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "1da2e63"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then

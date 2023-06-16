@@ -43,10 +43,15 @@ class GFSTasks(Tasks):
         if self.app_config.do_ocean:
             ocn_res = f"{self._base.get('OCNRES', '025'):03d}"
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/ocn"
-            for res in ['res'] + [f'res_{res_index}' for res_index in range(1, 4)]:
-                data = f"{prefix}/{ocn_res}/MOM.{res}.nc"
-                dep_dict = {'type': 'data', 'data': data}
-                deps.append(rocoto.add_dependency(dep_dict))
+            data = f"{prefix}/{ocn_res}/MOM.res.nc"
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if ocn_res in ['025']:
+                # 0.25 degree ocean model also has these additional restarts
+                for res in [f'res_{res_index}' for res_index in range(1, 4)]:
+                    data = f"{prefix}/{ocn_res}/MOM.{res}.nc"
+                    dep_dict = {'type': 'data', 'data': data}
+                    deps.append(rocoto.add_dependency(dep_dict))
 
         # Ice ICs
         if self.app_config.do_ice:
@@ -197,7 +202,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jedilandda:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanl'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
@@ -337,7 +342,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def landanlinit(self):
+    def landanl(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
@@ -353,32 +358,8 @@ class GFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('landanlinit')
-        task = create_wf_task('landanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-        return task
-
-    def landanlrun(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlinit'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('landanlrun')
-        task = create_wf_task('landanlrun', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def landanlfinal(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlrun'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('landanlfinal')
-        task = create_wf_task('landanlfinal', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
+        resources = self.get_resource('landanl')
+        task = create_wf_task('landanl', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
         return task
 
     def ocnanalprep(self):
@@ -550,7 +531,7 @@ class GFSTasks(Tasks):
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_jedilandda:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanl'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
@@ -611,12 +592,12 @@ class GFSTasks(Tasks):
             fhrs = [f'f{fhr:03d}' for fhr in fhrs]
             fhrs = np.array_split(fhrs, ngrps)
             fhrs = [fhr.tolist() for fhr in fhrs]
+            if add_anl:
+                fhrs.insert(0, ['anl'])
 
-            anl = ['anl'] if add_anl else []
-
-            grp = ' '.join(anl + [f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-            dep = ' '.join(anl + [fhr[-1] for fhr in fhrs])
-            lst = ' '.join(anl + ['_'.join(fhr) for fhr in fhrs])
+            grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
+            dep = ' '.join([fhr[-1] for fhr in fhrs])
+            lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
 
             return grp, dep, lst
 
