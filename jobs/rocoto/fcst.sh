@@ -12,7 +12,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/detect_machine.sh"
 set +x
 source "${HOMEgfs}/ush/module-setup.sh"
-if [[ "${MACHINE_ID}" != "awspw" ]]; then
+if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
 fi
   
