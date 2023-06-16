@@ -72,12 +72,11 @@ else
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
 fi
 
-# FV3 model namelist parameters to over-ride
-export restart_interval=${restart_interval:-6}
-
 # For IAU, write restarts at beginning of window also
-if [ $DOIAU_ENKF = "YES" ]; then
-    export restart_interval="3 -1"
+if [[ "${DOIAU_ENKF:-}" = "YES" ]]; then
+  export restart_interval="3"
+else
+  export restart_interval="6"
 fi
 
 # wave model

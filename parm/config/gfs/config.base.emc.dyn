@@ -181,7 +181,7 @@ case "${CASE}" in
         export OCNRES=025
         export waveGRD='mx025'
         ;;
-    *) 
+    *)
         export OCNRES=025
         export waveGRD='mx025'
         ;;
