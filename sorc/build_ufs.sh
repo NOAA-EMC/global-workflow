@@ -61,7 +61,4 @@ else
   cp "${cwd}/ufs_model.fd/tests/ufs_model.x" "${HOMEgfs}/exec/ufs_model.x" 
 fi
 
-echo  "${MACHINE_ID}"
-
-
 exit 0
