@@ -14,7 +14,6 @@ set +x
 source "${HOMEgfs}/ush/module-setup.sh"
 if [[ "${MACHINE_ID}" != "awspw" ]]; then
   module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
-  module avail
 fi
   
 if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
