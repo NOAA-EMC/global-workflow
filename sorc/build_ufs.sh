@@ -37,9 +37,7 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
-fi
-
-if [[ "${MACHINE_ID}" == "noaacloud" ]]; then
+else
   
   if [[ "${PW_CSP}" == "aws" ]]; then
     # TODO: This will need to be addressed further when the EPIC stacks are available/supported.
