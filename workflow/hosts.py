@@ -48,12 +48,6 @@ class Host:
         elif container is not None:
             machine = 'CONTAINER'
 
-        # TODO: Note that this requires the environment variable to be
-        # defined prior to calling this script; is there a
-        # better/preferred way to do this?
-        elif os.getenv('MACHINE') is not None:
-            machine = os.getenv('MACHINE')
-
         if machine not in Host.SUPPORTED_HOSTS:
             raise NotImplementedError(f'This machine is not a supported host.\n' +
                                       'Currently supported hosts are:\n' +
