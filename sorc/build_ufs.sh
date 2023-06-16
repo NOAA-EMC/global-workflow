@@ -51,14 +51,9 @@ else
     module list
   fi
 
-  cd "${cwd}/ufs_model.fd" # TODO: This is redundant; see line #28.
   export CMAKE_FLAGS="${MAKE_OPT}"
   ./build.sh 
   mv "${cwd}/ufs_model.fd/build/ufs_model" "${cwd}/ufs_model.fd/tests/ufs_model.x"
- 
-  # TODO: This is hack? Where is this step performed in the build system?
-  mkdir -p "${HOMEgfs}/exec"
-  cp "${cwd}/ufs_model.fd/tests/ufs_model.x" "${HOMEgfs}/exec/ufs_model.x" 
 fi
 
 exit 0
