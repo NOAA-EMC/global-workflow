@@ -38,37 +38,69 @@ FV3_GFS_det(){
   fi
 
   #-------------------------------------------------------
-  # determine if restart IC exists to continue from a previous forecast
-  RERUN=${RERUN:-"NO"}
-  filecount=$(find "${COM_ATMOS_RESTART:-/dev/null}" -type f | wc -l)
-  if [[ ( ${CDUMP} = "gfs" || ( ${RUN} = "gefs" && ${CDATE_RST} = "" )) && ${restart_interval} -gt 0 && ${FHMAX} -gt ${restart_interval} && ${filecount} -gt 10 ]]; then
-    reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
-    for xfh in ${reverse} ; do
-      yfh=$((xfh-(IAU_OFFSET/2)))
-      SDATE=$(${NDATE} ${yfh} "${CDATE}")
-      PDYS=$(echo "${SDATE}" | cut -c1-8)
-      cycs=$(echo "${SDATE}" | cut -c9-10)
-      flag1=${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res
-      flag2=${COM_ATMOS_RESTART}/coupler.res
+  # determine if restart IC exists to continue from a previous forecast run attempt
 
-      #make sure that the wave restart files also exist if cplwav=true
-      waverstok=".true."
+  RERUN=${RERUN:-"NO"}
+  # Get a list of all YYYYMMDD.HH0000.coupler.res files from the atmos restart directory
+  file_array=( $(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res" -print) )
+  if [[ ( "${RUN}" = "gfs" || "${RUN}" = "gefs" ) \
+    && "${restart_interval}" -gt 0 \
+    && "${restart_interval}" -lt "${FHMAX}" \
+    && "${#file_array[@]}" -gt 0 ]]; then
+
+    # Look in reverse order of file_array to determine available restart times
+    for ((ii=${#file_array[@]}-1; ii>=0; ii--)); do
+
+      filepath="${file_array[ii]}"
+      filename=$(basename ${filepath})  # Strip path from YYYYMMDD.HH0000.coupler.res
+      PDYS=${filename:0:8}  # match YYYYMMDD of YYYYMMDD.HH0000.coupler.res
+      cycs=${filename:9:2}  # match HH of YYYYMMDD.HH0000.coupler.res
+
+      # Assume all is well; all restarts are available
+      fv3_rst_ok="YES"
+      mom6_rst_ok="YES"
+      cice6_rst_ok="YES"
+      cmeps_rst_ok="YES"
+      ww3_rst_ok="YES"
+
+      # Check for availability of FV3 restarts
+      if [[ -f "${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res" ]]; then
+        mv "${COM_ATMOS_RESTART}/${PDYS}.${cycs}.coupler.res" "${COM_ATMOS_RESTART}/${PDYS}.${cycs}.coupler.res.old"
+      else
+        fv3_rst_ok="NO"
+      fi
+
+      # Check for availability of MOM6 restarts  # TODO
+      # Check for availability of CICE6 restarts  # TODO
+      # Check for availability of CMEPS restarts  # TODO
+
+      # Check for availability of WW3 restarts
       if [[ "${cplwav}" = ".true." ]]; then
-        for wavGRD in ${waveGRD} ; do
-          if [[ ! -f "${COM_WAVE_RESTART}/${PDYS}.${cycs}0000.restart.${wavGRD}" ]]; then
-            waverstok=".false."
+        for ww3_grid in ${waveGRD} ; do
+          if [[ ! -f "${COM_WAVE_RESTART}/${PDYS}.${cycs}0000.restart.${ww3_grid}" ]]; then
+            ww3_rst_ok="NO"
           fi
         done
       fi
 
-      if [[ -s "${flag1}" ]] && [[ ${waverstok} = ".true." ]]; then
-        CDATE_RST=${SDATE}
-        [[ ${RERUN} = "YES" ]] && break
-        mv "${flag1}" "${flag1}.old"
-        if [[ -s "${flag2}" ]]; then mv "${flag2}" "${flag2}.old" ;fi
+      # Collective check
+      if [[ "${fv3_rst_ok}" = "YES" ]] \
+        && [[ "${mom6_rst_ok}" = "YES" ]] \
+        && [[ "${cice6_rst_ok}" = "YES" ]] \
+        && [[ "${cmeps_rst_ok}" = "YES" ]] \
+        && [[ "${ww3_rst_ok}" = "YES" ]]; then
+
+        if [[ -f "${COM_ATMOS_RESTART}/coupler.res" ]]; then
+          mv "${COM_ATMOS_RESTART}/coupler.res" "${COM_ATMOS_RESTART}/coupler.res.old"
+        fi
+
+        SDATE="${PDYS}${cycs}"
+        CDATE_RST="${SDATE}"
         RERUN="YES"
-        [[ ${xfh} = ${rst_invt1} ]] && RERUN="NO"
+        echo "Restarts have been found for CDATE_RST=${CDATE_RST}, returning with 'RERUN=YES'"
+        break
       fi
+
     done
   fi
   #-------------------------------------------------------
