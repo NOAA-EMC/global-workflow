@@ -27,23 +27,23 @@ export CDUMPRSTwave="gdas"
 # Grids for wave model
 export waveGRD=${waveGRD:-'mx025'}
 
-#grid dependent variable defaults 
+#grid dependent variable defaults
 export waveGRDN='1'                   # grid number for ww3_multi
 export waveGRDG='10'                  # grid group for ww3_multi
 export USE_WAV_RMP='NO'               # YES/NO rmp grid remapping pre-processed coefficients
-export waveMULTIGRID='.false.'        # .true./.false. for multi or shel 
+export waveMULTIGRID='.false.'        # .true./.false. for multi or shel
 export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
-export waveesmfGRD=' '                # input grid for multigrid 
+export waveesmfGRD=' '                # input grid for multigrid
 
 #Grid dependent variables for various grids
 case "${waveGRD}" in
   "gnh_10m;aoc_9km;gsh_15m")
-    #GFSv16 settings: 
+    #GFSv16 settings:
     export waveGRDN='1 2 3'
     export waveGRDG='10 20 30'
     export USE_WAV_RMP='YES'
     export waveMULTIGRID='.true.'
-    export IOSRV='3' 
+    export IOSRV='3'
     export MESH_WAV=' '
     export waveesmfGRD='glox_10m'
     export waveuoutpGRD='points'
@@ -62,28 +62,28 @@ case "${waveGRD}" in
     export wavepostGRD=''
     export waveuoutpGRD=${waveGRD}
     ;;
-  "glo_025") 
-    #GEFSv13 regular lat/lon 1/4 deg grid 
+  "glo_025")
+    #GEFSv13 regular lat/lon 1/4 deg grid
     export waveinterpGRD=''
     export wavepostGRD='glo_025'
     export waveuoutpGRD=${waveGRD}
     ;;
   "glo_200")
-    #Global regular lat/lon 2deg deg grid 
+    #Global regular lat/lon 2deg deg grid
     export waveinterpGRD=''
     export wavepostGRD='glo_200'
     export waveuoutpGRD=${waveGRD}
     ;;
   "glo_500")
-    #Global regular lat/lon 5deg deg grid 
+    #Global regular lat/lon 5deg deg grid
     export waveinterpGRD=''
     export wavepostGRD='glo_500'
     export waveuoutpGRD=${waveGRD}
     ;;
   *)
     echo "FATAL ERROR: No grid specific wave config values exist for ${waveGRD}. Aborting."
-    exit 1 
-    ;;  
+    exit 1
+    ;;
 esac
 
 # Grids for input wind fields
@@ -133,7 +133,7 @@ if [ "${CDUMP}" != gfs ]; then    # Setting is valid for GDAS and GEFS
   export DT_2_RST_WAV=43200       # restart stride for checkpointing restart
   export RSTIOFF_WAV=0            # first restart file offset relative to model start
 else                              # This is a GFS run
-  rst_dt_gfs=$(( restart_interval_gfs * 3600 ))
+  rst_dt_gfs=$(( restart_interval_gfs * 3600 ))  # TODO: This calculation needs to move to parsing_namelists_WW3.sh
   if [ $rst_dt_gfs -gt 0 ]; then
     export DT_1_RST_WAV=${rst_dt_gfs:-0}   # time between restart files, set to DTRST=1 for a single restart file
     export DT_2_RST_WAV=${rst_dt_gfs:-0}   # restart stride for checkpointing restart
