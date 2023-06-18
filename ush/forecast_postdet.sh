@@ -542,10 +542,8 @@ FV3_out() {
     # No need to copy FV3 restart files when RUN=gfs
     ${NCP} "${DATA}/input.nml" "${COM_ATMOS_HISTORY}/input.nml"
   fi
-fi
-
-echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
-
+  echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
+}
 
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
