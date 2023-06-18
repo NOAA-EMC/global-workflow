@@ -85,8 +85,8 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
-export NCDUMP="$NETCDF/bin/ncdump"
-export NCLEN="$HOMEgfs/ush/getncdimlen"
+export NCDUMP="${NETCDF}/bin/ncdump"
+export NCLEN="${HOMEgfs}/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="${HOMEgfs}/env"
@@ -226,7 +226,7 @@ case "${APP}" in
         export confignamevarfornems="${confignamevarfornems}_outerwave"
     fi
 
-    source ${EXPDIR}/config.defaults.s2sw
+    source "${EXPDIR}/config.defaults.s2sw"
 
     ;;
   *)
@@ -261,7 +261,7 @@ export FHMAX_GFS_00=${FHMAX_GFS_00:-120}
 export FHMAX_GFS_06=${FHMAX_GFS_06:-120}
 export FHMAX_GFS_12=${FHMAX_GFS_12:-120}
 export FHMAX_GFS_18=${FHMAX_GFS_18:-120}
-export FHMAX_GFS=$(eval echo \${FHMAX_GFS_${cyc}})
+export FHMAX_GFS=$(eval echo \${FHMAX_GFS_"${cyc}"})
 
 export FHOUT_GFS=${FHOUT_GFS:-3}
 export FHMAX_HF_GFS=${FHMAX_HF_GFS:-0}
@@ -287,7 +287,7 @@ export WRITE_NSFLIP=".true."
 # IAU related parameters
 export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
 export IAUFHRS="3,6,9"
-export IAU_FHROT=$(echo ${IAUFHRS} | cut -c1)
+export IAU_FHROT=$(echo "${IAUFHRS}" | cut -c1)
 export IAU_DELTHRS=6
 export IAU_OFFSET=6
 export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
@@ -327,7 +327,7 @@ if [[ ${DOHYBVAR} = "YES" ]]; then
     export FHMAX_ENKF=9
     export FHMAX_ENKF_GFS=120
     export FHOUT_ENKF_GFS=3
-    if [ $l4densvar = ".true." ]; then
+    if [[ ${l4densvar} = ".true." ]]; then
         export FHOUT=1
         export FHOUT_ENKF=1
     else

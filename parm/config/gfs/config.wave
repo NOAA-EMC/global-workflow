@@ -10,10 +10,10 @@ echo "BEGIN: config.wave"
 # System and version
 export wave_sys_ver=v1.0.0
 
-export EXECwave="$HOMEgfs/exec"
-export FIXwave="$HOMEgfs/fix/wave"
-export PARMwave="$HOMEgfs/parm/wave"
-export USHwave="$HOMEgfs/ush"
+export EXECwave="${HOMEgfs}/exec"
+export FIXwave="${HOMEgfs}/fix/wave"
+export PARMwave="${HOMEgfs}/parm/wave"
+export USHwave="${HOMEgfs}/ush"
 
 # This config contains variables/parameters used in the fcst step
 # Some others are also used across the workflow in wave component scripts
@@ -91,10 +91,10 @@ export WAVEWND_DID=
 export WAVEWND_FID=
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
-if [ "$CDUMP" = "gdas" ]; then
+if [[ "${CDUMP}" = "gdas" ]]; then
   export FHMAX_WAV=${FHMAX:-9}
 else
-  export FHMAX_WAV=$FHMAX_GFS
+  export FHMAX_WAV=${FHMAX_GFS}
 fi
 export WAVHINDH=${WAVHINDH:-0}
 export FHMIN_WAV=${FHMIN_WAV:-0}
@@ -105,19 +105,19 @@ export FHMAX_WAV_IBP=180
 if (( FHMAX_WAV < FHMAX_WAV_IBP )); then export FHMAX_WAV_IBP=${FHMAX_GFS} ; fi
 
 # gridded and point output rate
-export DTFLD_WAV=$(expr $FHOUT_HF_WAV \* 3600)
+export DTFLD_WAV=$(expr "${FHOUT_HF_WAV}" \* 3600)
 export DTPNT_WAV=${DTPNT_WAV:-3600}
-export FHINCP_WAV=$(expr $DTPNT_WAV / 3600)
+export FHINCP_WAV=$(expr "${DTPNT_WAV}" / 3600)
 
 # Selected output parameters (gridded)
 export OUTPARS_WAV=${OUTPARS_WAV:-"WND HS FP DP PHS PTP PDIR"}
 
 # Restart file config
-if [ "$CDUMP" = "gdas" ]; then
+if [[ "${CDUMP}" = "gdas" ]]; then
   export WAVNCYC=4
   export WAVHCYC=${assim_freq:-6}
   export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-48} # RTOFS forecasts only out to 8 days
-elif [ ${gfs_cyc} -ne 0 ]; then
+elif [[ ${gfs_cyc} -ne 0 ]]; then
   export WAVHCYC=${assim_freq:-6}
   export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
 else
@@ -128,13 +128,13 @@ fi
 # Restart timing business
 
 export RSTTYPE_WAV='T'          # generate second tier of restart files
-if [ "${CDUMP}" != gfs ]; then    # Setting is valid for GDAS and GEFS
+if [[ "${CDUMP}" != gfs ]]; then    # Setting is valid for GDAS and GEFS
   export DT_1_RST_WAV=10800       # time between restart files, set to DTRST=1 for a single restart file
   export DT_2_RST_WAV=43200       # restart stride for checkpointing restart
   export RSTIOFF_WAV=0            # first restart file offset relative to model start
 else                              # This is a GFS run
   rst_dt_gfs=$(( restart_interval_gfs * 3600 ))  # TODO: This calculation needs to move to parsing_namelists_WW3.sh
-  if [ $rst_dt_gfs -gt 0 ]; then
+  if [[ ${rst_dt_gfs} -gt 0 ]]; then
     export DT_1_RST_WAV=${rst_dt_gfs:-0}   # time between restart files, set to DTRST=1 for a single restart file
     export DT_2_RST_WAV=${rst_dt_gfs:-0}   # restart stride for checkpointing restart
   else
@@ -150,17 +150,17 @@ fi
 export RUNMEM=${RUNMEM:--1}
 # Set wave model member tags if ensemble run
 # -1: no suffix, deterministic; xxxNN: extract two last digits to make ofilename prefix=gwesNN
-if [ $RUNMEM = -1 ]; then
+if [[ ${RUNMEM} = -1 ]]; then
 # No suffix added to model ID in case of deterministic run
   export waveMEMB=
 else
 # Extract member number only
-  export waveMEMB=$(echo $RUNMEM | grep -o '..$')
+  export waveMEMB=$(echo "${RUNMEM}" | grep -o '..$')
 fi
 
 # Determine if wave component needs input and/or is coupled
 export WW3ATMINP='CPL'
-if [[ $DO_ICE == "YES" ]]; then
+if [[ ${DO_ICE} == "YES" ]]; then
   export WW3ICEINP='CPL'
   export WAVEICE_FID=
 else
@@ -169,7 +169,7 @@ else
 fi
 
 export WAVECUR_DID=rtofs
-if [[ $DO_OCN == "YES" ]]; then
+if [[ ${DO_OCN} == "YES" ]]; then
   export WW3CURINP='CPL'
   export WAVECUR_FID=
 else
