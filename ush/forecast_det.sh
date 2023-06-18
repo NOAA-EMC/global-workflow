@@ -43,7 +43,8 @@ FV3_det(){
 
   RERUN=${RERUN:-"NO"}
   # Get a list of all YYYYMMDD.HH0000.coupler.res files from the atmos restart directory
-  local file_array=( $(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res" -print) )
+  #local file_array=( $(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res" -print) )
+  mapfile -t file_array < <(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res")
   if [[ ( "${RUN}" = "gfs" || "${RUN}" = "gefs" ) \
     && "${#file_array[@]}" -gt 0 ]]; then
 
@@ -51,7 +52,8 @@ FV3_det(){
     for ((ii=${#file_array[@]}-1; ii>=0; ii--)); do
 
       local filepath="${file_array[ii]}"
-      local filename=$(basename ${filepath})  # Strip path from YYYYMMDD.HH0000.coupler.res
+      local filename
+      filename=$(basename "${filepath}")  # Strip path from YYYYMMDD.HH0000.coupler.res
       PDYS=${filename:0:8}  # match YYYYMMDD of YYYYMMDD.HH0000.coupler.res
       cycs=${filename:9:2}  # match HH of YYYYMMDD.HH0000.coupler.res
 
