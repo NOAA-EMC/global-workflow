@@ -11,7 +11,8 @@
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
 
-FV3_GFS_det(){
+FV3_det(){
+  echo "SUB ${FUNCNAME[0]}: Run type determination for FV3"
   #-------------------------------------------------------
   # warm start?
   warm_start=${EXP_WARM_START:-".false."}
@@ -42,32 +43,30 @@ FV3_GFS_det(){
 
   RERUN=${RERUN:-"NO"}
   # Get a list of all YYYYMMDD.HH0000.coupler.res files from the atmos restart directory
-  file_array=( $(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res" -print) )
+  local file_array=( $(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res" -print) )
   if [[ ( "${RUN}" = "gfs" || "${RUN}" = "gefs" ) \
-    && "${restart_interval}" -gt 0 \
-    && "${restart_interval}" -lt "${FHMAX}" \
     && "${#file_array[@]}" -gt 0 ]]; then
 
     # Look in reverse order of file_array to determine available restart times
     for ((ii=${#file_array[@]}-1; ii>=0; ii--)); do
 
-      filepath="${file_array[ii]}"
-      filename=$(basename ${filepath})  # Strip path from YYYYMMDD.HH0000.coupler.res
+      local filepath="${file_array[ii]}"
+      local filename=$(basename ${filepath})  # Strip path from YYYYMMDD.HH0000.coupler.res
       PDYS=${filename:0:8}  # match YYYYMMDD of YYYYMMDD.HH0000.coupler.res
       cycs=${filename:9:2}  # match HH of YYYYMMDD.HH0000.coupler.res
 
       # Assume all is well; all restarts are available
-      fv3_rst_ok="YES"
-      mom6_rst_ok="YES"
-      cice6_rst_ok="YES"
-      cmeps_rst_ok="YES"
-      ww3_rst_ok="YES"
+      local fv3_rst_ok="YES"
+      local mom6_rst_ok="YES"
+      local cice6_rst_ok="YES"
+      local cmeps_rst_ok="YES"
+      local ww3_rst_ok="YES"
 
       # Check for availability of FV3 restarts
       if [[ -f "${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res" ]]; then
         mv "${COM_ATMOS_RESTART}/${PDYS}.${cycs}.coupler.res" "${COM_ATMOS_RESTART}/${PDYS}.${cycs}.coupler.res.old"
       else
-        fv3_rst_ok="NO"
+        local fv3_rst_ok="NO"
       fi
 
       # Check for availability of MOM6 restarts  # TODO
@@ -78,7 +77,7 @@ FV3_GFS_det(){
       if [[ "${cplwav}" = ".true." ]]; then
         for ww3_grid in ${waveGRD} ; do
           if [[ ! -f "${COM_WAVE_RESTART}/${PDYS}.${cycs}0000.restart.${ww3_grid}" ]]; then
-            ww3_rst_ok="NO"
+            local ww3_rst_ok="NO"
           fi
         done
       fi

@@ -57,8 +57,8 @@ DATM_predet(){
   cd $DATA
 }
 
-FV3_GFS_predet(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
+FV3_predet(){
+  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
   CDUMP=${CDUMP:-gdas}
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
@@ -72,6 +72,10 @@ FV3_GFS_predet(){
   if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
   WRITE_DOPOST=${WRITE_DOPOST:-".false."}
   restart_interval=${restart_interval:-${FHMAX}}
+  # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  if [[ ${restart_interval} -eq 0 ]]; then
+    restart_interval=${FHMAX}
+  fi
 
   # Convert output settings into an explicit list
   OUTPUT_FH=""
@@ -111,7 +115,6 @@ FV3_GFS_predet(){
   NCP=${NCP:-"/bin/cp -p"}
   NLN=${NLN:-"/bin/ln -sf"}
   NMV=${NMV:-"/bin/mv"}
-  SEND=${SEND:-"YES"}   #move final result to rotating directory
   ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
   KEEPDATA=${KEEPDATA:-"NO"}
 
@@ -212,7 +215,7 @@ FV3_GFS_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]] && (( restart_interval > 0 )); then
+  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]]; then
     if [[ ! -d ${COM_ATMOS_RESTART} ]]; then mkdir -p "${COM_ATMOS_RESTART}" ; fi
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date

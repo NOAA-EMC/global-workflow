@@ -123,14 +123,14 @@ common_predet
 echo $RUN
 case $RUN in
   'data') DATM_predet;;
-  *gfs | *gdas | 'gefs') FV3_GFS_predet;;
+  *gfs | *gdas | 'gefs') FV3_predet;;
 esac
 [[ $cplflx = .true. ]] && MOM6_predet
 [[ $cplwav = .true. ]] && WW3_predet
 [[ $cplice = .true. ]] && CICE_predet
 
 case $RUN in
-  *gfs | *gdas | 'gefs') FV3_GFS_det;;
+  *gfs | *gdas | 'gefs') FV3_det;;
 esac				#no run type determination for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_det
 [[ $cplwav = .true. ]] && WW3_det
@@ -142,7 +142,7 @@ echo "MAIN: Post-determination set up of run type"
 echo $RUN
 case $RUN in
   'data') DATM_postdet;;
-  *gfs | *gdas | 'gefs') FV3_GFS_postdet;;
+  *gfs | *gdas | 'gefs') FV3_postdet;;
 esac				#no post determination set up for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_postdet
 [[ $cplwav = .true. ]] && WW3_postdet
@@ -184,9 +184,8 @@ export ERR=$?
 export err=$ERR
 $ERRSCRIPT || exit $err
 
-case $RUN in
-  'data') data_out_Data_ATM;;
-  *gfs | *gdas | 'gefs') data_out_GFS;;
+case ${RUN} in
+  *gfs | *gdas | 'gefs') FV3_out;;
 esac
 [[ $cplflx = .true. ]] && MOM6_out
 [[ $cplwav = .true. ]] && WW3_out

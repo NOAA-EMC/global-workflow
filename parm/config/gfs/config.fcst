@@ -301,7 +301,7 @@ elif [[ "${CDUMP}" =~ "gfs" ]] ; then # GFS cycle specific parameters
     export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table"
 
     # Write gfs restart files to rerun fcst from any break point
-    export restart_interval=${restart_interval_gfs:-12}
+    export restart_interval=12
 
     # Choose coupling with wave
     if [[ "${DO_WAVE}" = "YES" && "${WAVE_CDUMP}" != "gdas" ]]; then

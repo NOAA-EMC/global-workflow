@@ -273,9 +273,6 @@ else
 fi
 export ILPOST=1           # gempak output frequency up to F120
 
-# GFS restart interval in hours
-export restart_interval_gfs=0
-
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST

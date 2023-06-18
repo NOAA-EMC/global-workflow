@@ -27,11 +27,11 @@ DATM_postdet(){
   $NLN -sf ${DATMINPUTDIR}/${DATM_FILENAME_BASE}*.nc $DATA/DATM_INPUT/
 }
 
-FV3_GFS_postdet(){
-  echo "SUB ${FUNCNAME[0]}: $RERUN and $warm_start determined for $RUN"
+FV3_postdet(){
+  echo "SUB ${FUNCNAME[0]}: Entering for RUN = ${RUN}"
 
-  echo $warm_start
-  echo $RERUN
+  echo "warm_start = ${warm_start}"
+  echo "RERUN = ${RERUN}"
 
   #-------------------------------------------------------
   if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
@@ -116,14 +116,6 @@ EOF
         IAU_DELTHRS=0
         IAU_INC_FILES="''"
       fi
-
-      rst_list_rerun=""
-      xfh=$restart_interval_gfs
-      while [ $xfh -le $FHMAX_GFS ]; do
-        rst_list_rerun="$rst_list_rerun $xfh"
-        xfh=$((xfh+restart_interval_gfs))
-      done
-      restart_interval="$rst_list_rerun"
     fi
     #.............................
 
@@ -238,7 +230,7 @@ EOF
   ####
   #  Copy CCN_ACTIVATE.BIN for Thompson microphysics
   #  Thompson microphysics used when CCPP_SUITE set to FV3_GSD_v0 or FV3_GSD_noah
-  #  imp_physics should be 8
+  #  imp_physics should be 8:
   ####
   if [ $imp_physics -eq 8 ]; then
     $NLN $FIX_AM/CCN_ACTIVATE.BIN  $DATA/CCN_ACTIVATE.BIN
@@ -531,50 +523,28 @@ DATM_nml(){
   echo SUB ${FUNCNAME[0]}: DATM name lists and model configure file created
 }
 
-data_out_GFS() {
-  # data in take for FV3GFS
-  # Arguments: None
-  #
-  #------------------------------------------------------------------
-  # make symbolic links to write forecast files directly in memdir
+FV3_out() {
   echo "SUB ${FUNCNAME[0]}: copying output data for FV3"
-  #------------------------------------------------------------------
 
-  if [ $SEND = "YES" ]; then
-    # Copy model restart files
-    if [[ ${RUN} =~ "gdas" ]] && (( restart_interval > 0 )); then
-      cd $DATA/RESTART
-      mkdir -p "${COM_ATMOS_RESTART}"
-      for rst_int in $restart_interval ; do
-        if [ $rst_int -ge 0 ]; then
-          RDATE=$($NDATE +$rst_int $CDATE)
-          rPDY=$(echo $RDATE | cut -c1-8)
-          rcyc=$(echo $RDATE | cut -c9-10)
-          for file in "${rPDY}.${rcyc}0000."* ; do
-            ${NCP} "${file}" "${COM_ATMOS_RESTART}/${file}"
-          done
-        fi
+  # Copy FV3 restart files
+  if [[ ${RUN} =~ "gdas" ]]; then
+    cd "${DATA}/RESTART"
+    mkdir -p "${COM_ATMOS_RESTART}"
+    local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    local rdate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+    while [[ ${idate} -le ${rdate} ]]; do
+      for file in "${idate:0:8}.${idate:8:2}0000."*; do
+        ${NCP} "${file}" "${COM_ATMOS_RESTART}/${file}"
       done
-      if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
-        # if IAU is on, save restart at start of IAU window
-        rst_iau=$(( ${IAU_OFFSET} - (${IAU_DELTHRS}/2) ))
-        if [ $rst_iau -lt 0 ];then
-          rst_iau=$(( (${IAU_DELTHRS}) - ${IAU_OFFSET} ))
-        fi
-        RDATE=$($NDATE +$rst_iau $CDATE)
-        rPDY=$(echo $RDATE | cut -c1-8)
-        rcyc=$(echo $RDATE | cut -c9-10)
-        for file in "${rPDY}.${rcyc}0000."* ; do
-          ${NCP} "${file}" "${COM_ATMOS_RESTART}/${file}"
-        done
-      fi
-    elif [[ ${RUN} =~ "gfs" ]]; then
-      ${NCP} "${DATA}/input.nml" "${COM_ATMOS_HISTORY}/input.nml"
-    fi
+      local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    done
+  elif [[ ${RUN} =~ "gfs" ]]; then
+    # No need to copy FV3 restart files when RUN=gfs
+    ${NCP} "${DATA}/input.nml" "${COM_ATMOS_HISTORY}/input.nml"
   fi
+fi
 
-  echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
-}
+echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 
 
 WW3_postdet() {
@@ -590,8 +560,8 @@ WW3_postdet() {
     for wavGRD in ${grdALL}; do
       ${NCP} "${COM_WAVE_PREP}/${COMPONENTwave}.mod_def.${wavGRD}" "${DATA}/mod_def.${wavGRD}"
     done
-  else 
-    #if shel, only 1 waveGRD which is linked to mod_def.ww3 
+  else
+    #if shel, only 1 waveGRD which is linked to mod_def.ww3
     ${NCP} "${COM_WAVE_PREP}/${COMPONENTwave}.mod_def.${waveGRD}" "${DATA}/mod_def.ww3"
   fi
 
@@ -611,10 +581,10 @@ WW3_postdet() {
     if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
       if [ $RERUN = "NO" ]; then
         waverstfile=${COM_WAVE_RESTART_PREV}/${sPDY}.${scyc}0000.restart.${wavGRD}
-      else 
+      else
         waverstfile=${COM_WAVE_RESTART}/${PDYT}.${cyct}0000.restart.${wavGRD}
       fi
-    else 
+    else
       waverstfile=${COM_WAVE_RESTART}/${sPDY}.${scyc}0000.restart.${wavGRD}
     fi
     if [ ! -f ${waverstfile} ]; then
@@ -637,7 +607,7 @@ WW3_postdet() {
     for wavGRD in $waveGRD ; do
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${wavGRD}.${PDY}${cyc}" "log.${wavGRD}"
     done
-  else 
+  else
     ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
   fi
 
@@ -679,7 +649,7 @@ WW3_postdet() {
       for wavGRD in ${waveGRD} ; do
         ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_grd.${wavGRD}"
       done
-    else 
+    else
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_grd.ww3"
     fi
     FHINC=$FHOUT_WAV
@@ -697,7 +667,7 @@ WW3_postdet() {
     HMS="$(echo $YMDH | cut -c9-10)0000"
     if [ $waveMULTIGRID = ".true." ]; then
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}"
-    else 
+    else
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_pnt.ww3"
     fi
 
@@ -885,8 +855,7 @@ MOM6_postdet() {
   esac
 
   # Loop over restart_interval frequency and link restarts from DATA to COM
-  local res_int=$(echo $restart_interval | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
-  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
+  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   while [[ $idate -lt $rdate ]]; do
     local idatestr=$(date +%Y-%m-%d-%H -d "${idate:0:8} ${idate:8:2}")
     $NLN "${COM_OCEAN_RESTART}/${idate:0:8}.${idate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/"
@@ -897,7 +866,7 @@ MOM6_postdet() {
         done
         ;;
     esac
-    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
+    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   done
 
   # TODO: mediator should have its own CMEPS_postdet() function
@@ -907,12 +876,12 @@ MOM6_postdet() {
   # Instead of linking, copy the mediator files after the model finishes
   #local COMOUTmed="${ROTDIR}/${RUN}.${PDY}/${cyc}/med"
   #mkdir -p "${COMOUTmed}/RESTART"
-  #local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
+  #local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   #while [[ $idate -le $rdate ]]; do
   #  local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
   #  local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
   #  $NLN "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
-  #  local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
+  #  local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   #done
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
@@ -937,8 +906,7 @@ MOM6_out() {
   # Linking mediator restarts to COM causes the model to fail with a message.
   # See MOM6_postdet() function for error message
   mkdir -p "${COM_MED_RESTART}"
-  local res_int=$(echo $restart_interval | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
-  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
+  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   local rdate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${FHMAX} hours" +%Y%m%d%H)
   while [[ $idate -le $rdate ]]; do
     local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
@@ -949,7 +917,7 @@ MOM6_out() {
     else
       echo "Mediator restart ${mediator_file} not found."
     fi
-    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
+    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   done
 }
 
@@ -1018,7 +986,7 @@ CICE_postdet() {
   $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
 
   # Link CICE output files
-  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi  
+  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi
   mkdir -p ${COM_ICE_RESTART}
 
   if [[ "${RUN}" =~ "gfs" ]]; then
@@ -1074,14 +1042,13 @@ CICE_postdet() {
 
   # Link CICE restarts from CICE_RESTART to COMOUTice/RESTART
   # Loop over restart_interval and link restarts from DATA to COM
-  local res_int=$(echo ${restart_interval} | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
   local rdate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${FHMAX} hours" +%Y%m%d%H)
-  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
+  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   while [[ ${idate} -le ${rdate} ]]; do
     local seconds=$(to_seconds ${idate:8:2}0000)  # convert HHMMSS to seconds
     local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
     $NLN "${COM_ICE_RESTART}/${idate:0:8}.${idate:8:2}0000.cice_model.res.nc" "${DATA}/CICE_RESTART/cice_model.res.${idatestr}.nc"
-    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
+    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   done
 }
 
