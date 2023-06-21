@@ -36,12 +36,39 @@ middle_date(){
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
   pwd=$(pwd)
+  HOMEgfs=${HOMEgfs:-${PACKAGEROOT:-$pwd}}
   machine=${machine:-"WCOSS2"}
   machine=$(echo $machine | tr '[a-z]' '[A-Z]')
+  CDUMP=${CDUMP:-gdas}
   CASE=${CASE:-C768}
   CDATE=${CDATE:-2017032500}
-  DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
+  DATA=${DATA:-$pwd/fcst.$$}    # temporary running directory
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
+  DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
+
+  # Utilities
+  NCP=${NCP:-"/bin/cp -p"}
+  NLN=${NLN:-"/bin/ln -sf"}
+  NMV=${NMV:-"/bin/mv"}
+  ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+  KEEPDATA=${KEEPDATA:-"NO"}
+
+  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/exec}
+  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
+
+  # Define significant cycles
+  current_cycle=${CDATE}
+  previous_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
+  next_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
+  forecast_end_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+
+  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
+  mkdata=NO
+  if [ ! -d $DATA ]; then
+    mkdata=YES
+    mkdir -p $DATA ;
+  fi
+  cd $DATA || exit 8
 }
 
 DATM_predet(){
@@ -59,7 +86,6 @@ DATM_predet(){
 
 FV3_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
-  CDUMP=${CDUMP:-gdas}
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
   FHOUT=${FHOUT:-3}
@@ -90,33 +116,18 @@ FV3_predet(){
     OUTPUT_FH="$OUTPUT_FH $fh"
   done
 
-  PDY=$(echo $CDATE | cut -c1-8)
-  cyc=$(echo $CDATE | cut -c9-10)
-
   # Directories.
-  pwd=$(pwd)
-  HOMEgfs=${HOMEgfs:-${PACKAGEROOT:-$pwd}}
   FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
   FIX_AM=${FIX_AM:-$FIX_DIR/am}
   FIX_AER=${FIX_AER:-$FIX_DIR/aer}
   FIX_LUT=${FIX_LUT:-$FIX_DIR/lut}
   FIXfv3=${FIXfv3:-$FIX_DIR/orog}
-  DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
-  ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
-  DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 
   # Model resolution specific parameters
   DELTIM=${DELTIM:-225}
   layout_x=${layout_x:-8}
   layout_y=${layout_y:-16}
   LEVS=${LEVS:-65}
-
-  # Utilities
-  NCP=${NCP:-"/bin/cp -p"}
-  NLN=${NLN:-"/bin/ln -sf"}
-  NMV=${NMV:-"/bin/mv"}
-  ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-  KEEPDATA=${KEEPDATA:-"NO"}
 
   # Other options
   MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
@@ -130,13 +141,11 @@ FV3_predet(){
   IAU_OFFSET=${IAU_OFFSET:-0}
 
   # Model specific stuff
-  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/exec}
-  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
   PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
   PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
   # Model config options
-  ntiles=${ntiles:-6}
+  ntiles=6
 
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
   MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
@@ -148,14 +157,6 @@ FV3_predet(){
 
   rCDUMP=${rCDUMP:-$CDUMP}
 
-  #-------------------------------------------------------
-  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-  mkdata=NO
-  if [ ! -d $DATA ]; then
-    mkdata=YES
-    mkdir -p $DATA ;
-  fi
-  cd $DATA || exit 8
   mkdir -p $DATA/INPUT
 
   #------------------------------------------------------------------
@@ -220,34 +221,31 @@ FV3_predet(){
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
-    VDATE=$($NDATE +$FHMAX $CDATE)
-    vPDY=$(echo $VDATE | cut -c1-8)
-    vcyc=$(echo $VDATE | cut -c9-10)
     files="coupler.res fv_core.res.nc"
-    for tile in {1..6}; do
+    for n in $(seq 1 ${ntiles}); do
       for base in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
-        files="${files} ${base}.tile${tile}.nc"
+        files="${files} ${base}.tile${n}.nc"
       done
     done
     for file in ${files}; do
-      ${NLN} "${COM_ATMOS_RESTART}/${file}" "${COM_ATMOS_RESTART}/${vPDY}.${vcyc}0000.${file}"
+      ${NLN} "${COM_ATMOS_RESTART}/${file}" "${COM_ATMOS_RESTART}/${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${file}"
     done
   else
     mkdir -p $DATA/RESTART
   fi
 
   if [[ "$DOIAU" = "YES" ]]; then
-    sCDATE=$($NDATE -3 $CDATE)
+    sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
     sPDY=$(echo $sCDATE | cut -c1-8)
     scyc=$(echo $sCDATE | cut -c9-10)
-    tPDY=${gPDY}
-    tcyc=${gcyc}
+    tPDY=${previous_cycle:0:8}
+    tcyc=${previous_cycle:8:2}
   else
-    sCDATE=$CDATE
-    sPDY=$PDY
-    scyc=$cyc
-    tPDY=$sPDY
-    tcyc=$cyc
+    sCDATE=${current_cycle}
+    sPDY=${current_cycle:0:8}
+    scyc=${current_cycle:8:2}
+    tPDY=${sPDY}
+    tcyc=${scyc}
   fi
 
   echo "SUB ${FUNCNAME[0]}: pre-determination variables set"

@@ -80,16 +80,16 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 SCRIPTDIR="${HOMEgfs}/ush"
-echo "MAIN: environment loaded for $machine platform,Current Script locates in $SCRIPTDIR."
+echo "MAIN: environment loaded for ${machine} platform,Current Script locates in ${SCRIPTDIR}."
 
 # include all subroutines. Executions later.
-source $SCRIPTDIR/cplvalidate.sh	# validation of cpl*
-source $SCRIPTDIR/forecast_predet.sh	# include functions for variable definition
-source $SCRIPTDIR/forecast_det.sh  # include functions for run type determination
-source $SCRIPTDIR/forecast_postdet.sh	# include functions for variables after run type determination
-source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure processing
-source $SCRIPTDIR/parsing_model_configure_FV3.sh
-source $SCRIPTDIR/parsing_model_configure_DATM.sh
+source "${SCRIPTDIR}"/cplvalidate.sh	# validation of cpl*
+source "${SCRIPTDIR}"/forecast_predet.sh	# include functions for variable definition
+source "${SCRIPTDIR}"/forecast_det.sh  # include functions for run type determination
+source "${SCRIPTDIR}"/forecast_postdet.sh	# include functions for variables after run type determination
+source "${SCRIPTDIR}"/nems_configure.sh	# include functions for nems_configure processing
+source "${SCRIPTDIR}"/parsing_model_configure_FV3.sh
+source "${SCRIPTDIR}"/parsing_model_configure_DATM.sh
 
 # Compset string. For nems.configure.* template selection. Default ATM only
 confignamevarfornems=${confignamevarfornems:-'atm'}
@@ -105,62 +105,60 @@ OCNTIM=${OCNTIM:-1800}
 DELTIM=${DELTIM:-450}
 ICETIM=${DELTIM}
 
-CPL_SLOW=${CPL_SLOW:-$OCNTIM}
-CPL_FAST=${CPL_FAST:-$ICETIM}
+CPL_SLOW=${CPL_SLOW:-${OCNTIM}}
+CPL_FAST=${CPL_FAST:-${ICETIM}}
 
-echo "MAIN: $confignamevarfornems selected"
-echo "MAIN: Forecast script started for $confignamevarfornems on $machine"
+echo "MAIN: ${confignamevarfornems} selected"
+echo "MAIN: Forecast script started for ${confignamevarfornems} on ${machine}"
 
-echo "MAIN: Validating $confignamevarfornems with cpl switches"
+echo "MAIN: Validating ${confignamevarfornems} with cpl switches"
 cplvalidate
-echo "MAIN: $confignamevarfornems validated, continue"
+echo "MAIN: ${confignamevarfornems} validated, continue"
 # Validate the consistency between $confignamevarfornems and $CPL switches
 
 echo "MAIN: Loading variables before determination of run type"
 
 common_predet
 
-echo $RUN
-case $RUN in
+case ${RUN} in
   'data') DATM_predet;;
   *gfs | *gdas | 'gefs') FV3_predet;;
 esac
-[[ $cplflx = .true. ]] && MOM6_predet
-[[ $cplwav = .true. ]] && WW3_predet
-[[ $cplice = .true. ]] && CICE_predet
+[[ ${cplflx} = .true. ]] && MOM6_predet
+[[ ${cplwav} = .true. ]] && WW3_predet
+[[ ${cplice} = .true. ]] && CICE_predet
 
-case $RUN in
+case ${RUN} in
   *gfs | *gdas | 'gefs') FV3_det;;
 esac				#no run type determination for data atmosphere
-[[ $cplflx = .true. ]] && MOM6_det
-[[ $cplwav = .true. ]] && WW3_det
-[[ $cplice = .true. ]] && CICE_det
+[[ ${cplflx} = .true. ]] && MOM6_det
+[[ ${cplwav} = .true. ]] && WW3_det
+[[ ${cplice} = .true. ]] && CICE_det
 
 echo "MAIN: RUN Type Determined"
 
 echo "MAIN: Post-determination set up of run type"
-echo $RUN
-case $RUN in
+case ${RUN} in
   'data') DATM_postdet;;
   *gfs | *gdas | 'gefs') FV3_postdet;;
 esac				#no post determination set up for data atmosphere
-[[ $cplflx = .true. ]] && MOM6_postdet
-[[ $cplwav = .true. ]] && WW3_postdet
-[[ $cplice = .true. ]] && CICE_postdet
-[[ $cplchm = .true. ]] && GOCART_postdet
+[[ ${cplflx} = .true. ]] && MOM6_postdet
+[[ ${cplwav} = .true. ]] && WW3_postdet
+[[ ${cplice} = .true. ]] && CICE_postdet
+[[ ${cplchm} = .true. ]] && GOCART_postdet
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
-case $RUN in
+case ${RUN} in
   'data') DATM_nml;;
   *gfs | *gdas | 'gefs') FV3_GFS_nml;;
 esac
-[[ $cplflx = .true. ]] && MOM6_nml
-[[ $cplwav = .true. ]] && WW3_nml
-[[ $cplice = .true. ]] && CICE_nml
-[[ $cplchm = .true. ]] && GOCART_rc
+[[ ${cplflx} = .true. ]] && MOM6_nml
+[[ ${cplwav} = .true. ]] && WW3_nml
+[[ ${cplice} = .true. ]] && CICE_nml
+[[ ${cplchm} = .true. ]] && GOCART_rc
 
-case $RUN in
+case ${RUN} in
   'data') DATM_model_configure;;
   *gfs | *gdas | 'gefs') FV3_model_configure;;
 esac
@@ -173,26 +171,26 @@ echo "MAIN: NEMS configured"
 #------------------------------------------------------------------
 # run the executable
 
-if [ $esmf_profile ]; then
+if [[ ${esmf_profile} ]]; then
   export ESMF_RUNTIME_PROFILE=ON
   export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 fi
 
-$NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
-$APRUN_UFS $DATA/$FCSTEXEC 1>&1 2>&2
+${NCP} "${FCSTEXECDIR}"/"${FCSTEXEC}" "${DATA}"/.
+${APRUN_UFS} "${DATA}"/"${FCSTEXEC}" 1>&1 2>&2
 export ERR=$?
-export err=$ERR
-$ERRSCRIPT || exit $err
+export err=${ERR}
+${ERRSCRIPT} || exit "${err}"
 
 case ${RUN} in
   *gfs | *gdas | 'gefs') FV3_out;;
 esac
-[[ $cplflx = .true. ]] && MOM6_out
-[[ $cplwav = .true. ]] && WW3_out
-[[ $cplice = .true. ]] && CICE_out
-[[ $esmf_profile = .true. ]] && CPL_out
+[[ ${cplflx} = .true. ]] && MOM6_out
+[[ ${cplwav} = .true. ]] && WW3_out
+[[ ${cplice} = .true. ]] && CICE_out
+[[ ${esmf_profile} = .true. ]] && CPL_out
 echo "MAIN: Output copied to COMROT"
 
 #------------------------------------------------------------------
 
-exit $err
+exit "${err}"
