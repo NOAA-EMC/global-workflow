@@ -142,13 +142,13 @@ FV3_postdet
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
-FV3_nml;;
+FV3_nml
 [[ ${cplflx} = .true. ]] && MOM6_nml
 [[ ${cplwav} = .true. ]] && WW3_nml
 [[ ${cplice} = .true. ]] && CICE_nml
 [[ ${cplchm} = .true. ]] && GOCART_rc
 
-FV3_model_configure;;
+FV3_model_configure
 echo "MAIN: Name lists and model configuration written"
 
 echo "MAIN: Writing NEMS Configure file"
