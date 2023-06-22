@@ -39,7 +39,7 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 else
   
-  if [[ "${PW_CSP}" == "aws" ]]; then
+  if [[ "${PW_CSP:-}" == "aws" ]]; then
     # TODO: This will need to be addressed further when the EPIC stacks are available/supported.
     module use /contrib/spack-stack/envs/ufswm/install/modulefiles/Core
     module load stack-intel
