@@ -21,21 +21,21 @@ FV3_det(){
 
   # Determine if this is a warm start or cold start
   if [[ -f "${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000.coupler.res" ]]; then
-    export warm_start=".true."
+    warm_start=".true."
   fi
 
   # turn IAU off for cold start
   DOIAU_coldstart=${DOIAU_coldstart:-"NO"}
-  if [ ${DOIAU} = "YES" -a ${warm_start} = ".false." ] || [ ${DOIAU_coldstart} = "YES" -a ${warm_start} = ".true." ]; then
-    export DOIAU="NO"
-    echo "turning off IAU since warm_start = ${warm_start}"
+  if [ "${DOIAU}" = "YES" -a "${warm_start}" = ".false." ] || [ "${DOIAU_coldstart}" = "YES" -a "${warm_start}" = ".true." ]; then
+    echo "turning off IAU since this is a cold-start"
+    DOIAU="NO"
     DOIAU_coldstart="YES"
     IAU_OFFSET=0
-    sCDATE=${CDATE}
-    sPDY=${PDY}
-    scyc=${cyc}
+    sCDATE=${current_cycle}
+    sPDY=${current_cycle:0:8}
+    scyc=${current_cycle:8:2}
     tPDY=${sPDY}
-    tcyc=${cyc}
+    tcyc=${scyc}
   fi
 
   #-------------------------------------------------------

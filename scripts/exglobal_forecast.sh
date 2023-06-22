@@ -89,7 +89,6 @@ source "${SCRIPTDIR}"/forecast_det.sh  # include functions for run type determin
 source "${SCRIPTDIR}"/forecast_postdet.sh	# include functions for variables after run type determination
 source "${SCRIPTDIR}"/nems_configure.sh	# include functions for nems_configure processing
 source "${SCRIPTDIR}"/parsing_model_configure_FV3.sh
-source "${SCRIPTDIR}"/parsing_model_configure_DATM.sh
 
 # Compset string. For nems.configure.* template selection. Default ATM only
 confignamevarfornems=${confignamevarfornems:-'atm'}
@@ -120,10 +119,7 @@ echo "MAIN: Loading variables before determination of run type"
 
 common_predet
 
-case ${RUN} in
-  'data') DATM_predet;;
-  *gfs | *gdas | 'gefs') FV3_predet;;
-esac
+FV3_predet
 [[ ${cplflx} = .true. ]] && MOM6_predet
 [[ ${cplwav} = .true. ]] && WW3_predet
 [[ ${cplice} = .true. ]] && CICE_predet
@@ -138,10 +134,7 @@ esac				#no run type determination for data atmosphere
 echo "MAIN: RUN Type Determined"
 
 echo "MAIN: Post-determination set up of run type"
-case ${RUN} in
-  'data') DATM_postdet;;
-  *gfs | *gdas | 'gefs') FV3_postdet;;
-esac				#no post determination set up for data atmosphere
+FV3_postdet
 [[ ${cplflx} = .true. ]] && MOM6_postdet
 [[ ${cplwav} = .true. ]] && WW3_postdet
 [[ ${cplice} = .true. ]] && CICE_postdet
@@ -149,19 +142,13 @@ esac				#no post determination set up for data atmosphere
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
-case ${RUN} in
-  'data') DATM_nml;;
-  *gfs | *gdas | 'gefs') FV3_GFS_nml;;
-esac
+FV3_nml;;
 [[ ${cplflx} = .true. ]] && MOM6_nml
 [[ ${cplwav} = .true. ]] && WW3_nml
 [[ ${cplice} = .true. ]] && CICE_nml
 [[ ${cplchm} = .true. ]] && GOCART_rc
 
-case ${RUN} in
-  'data') DATM_model_configure;;
-  *gfs | *gdas | 'gefs') FV3_model_configure;;
-esac
+FV3_model_configure;;
 echo "MAIN: Name lists and model configuration written"
 
 echo "MAIN: Writing NEMS Configure file"
