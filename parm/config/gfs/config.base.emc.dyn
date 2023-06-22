@@ -75,7 +75,7 @@ export MODE="@MODE@" # cycled/forecast-only
 # Build paths relative to $HOMEgfs
 export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
-export HOMEobsproc="${BASE_GIT}/obsproc/v${obsproc_run_ver:-1.1.2}"
+export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -85,7 +85,7 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
-export NCDUMP="${NETCDF}/bin/ncdump"
+export NCDUMP="${NETCDF:-}/bin/ncdump"
 export NCLEN="${HOMEgfs}/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
@@ -133,7 +133,7 @@ export SENDCOM=${SENDCOM:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
 # APP settings
 export APP=@APP@
@@ -230,7 +230,7 @@ case "${APP}" in
 
     ;;
   *)
-    echo "Unrecognized APP: ${1}"
+    echo "Unrecognized APP: '${APP}'"
     exit 1
     ;;
 esac
