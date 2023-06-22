@@ -671,7 +671,7 @@ WW3_out() {
 
 CPL_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
-  if [[ ${esmf_profile} = ".true." ]]; then
+  if [[ "${esmf_profile:-}" = ".true." ]]; then
     ${NCP} "${DATA}/ESMF_Profile.summary" "${COM_ATMOS_HISTORY}/ESMF_Profile.summary"
   fi
 }
