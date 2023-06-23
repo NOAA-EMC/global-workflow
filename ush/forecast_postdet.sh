@@ -107,7 +107,7 @@ EOF
     for file in "${COM_ATMOS_INPUT}/"*.nc; do
       file2=$(basename "${file}")
       fsuf="${file2:0:3}"
-      if [[ "${fsuf}" = "gfs" }} || [[ "${fsuf}" = "sfc" ]]; then
+      if [[ "${fsuf}" = "gfs" ]] || [[ "${fsuf}" = "sfc" ]]; then
         ${NLN} "${file}" "${DATA}/INPUT/${file2}"
       fi
     done
