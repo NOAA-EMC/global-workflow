@@ -18,7 +18,7 @@ FV3_postdet(){
   echo "RERUN = ${RERUN}"
 
   #-------------------------------------------------------
-  if [ "${warm_start}" = ".true." -o "${RERUN}" = "YES" ]; then
+  if [[ "${warm_start}" = ".true." ]] || [[ "${RERUN}" = "YES" ]]; then
     #-------------------------------------------------------
     #.............................
     if [[ ${RERUN} = "NO" ]]; then
@@ -35,7 +35,7 @@ FV3_postdet(){
       # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
       if [[ "${MODE}" = "cycled" ]] && [[ "${CCPP_SUITE}" = "FV3_GFS_v16" ]]; then  # TODO: remove if statement when global_cycle can handle NOAHMP
         for file in "${COM_ATMOS_RESTART}/${sPDY}.${scyc}0000."*.nc; do
-          file2=$(echo $(basename "${file}"))
+          file2=$(basename "${file}")
           file2=$(echo "${file2}" | cut -d. -f3-) # remove the date from file
           fsufanl=$(echo "${file2}" | cut -d. -f1)
           file2=$(echo "${file2}" | sed -e "s/sfcanl_data/sfc_data/g")
@@ -85,10 +85,10 @@ EOF
     #.............................
     else  ##RERUN
       export warm_start=".true."
-      PDYT=$(echo "${CDATE_RST}" | cut -c1-8)
-      cyct=$(echo "${CDATE_RST}" | cut -c9-10)
+      PDYT="${CDATE_RST:0:8}"
+      cyct="${CDATE_RST:8:2}"
       for file in "${COM_ATMOS_RESTART}/${PDYT}.${cyct}0000."*; do
-        file2=$(echo $(basename "${file}"))
+        file2=$(basename "${file}")
         file2=$(echo "${file2}" | cut -d. -f3-)
         ${NLN} "${file}" "${DATA}/INPUT/${file2}"
       done
@@ -105,10 +105,10 @@ EOF
 
   else ## cold start
     for file in "${COM_ATMOS_INPUT}/"*.nc; do
-      file2=$(echo $(basename "${file}"))
-      fsuf=$(echo "${file2}" | cut -c1-3)
-      if [ "${fsuf}" = "gfs" -o "${fsuf}" = "sfc" ]; then
-        ${NLN} "${file}" "${DATA}"/INPUT/"${file2}"
+      file2=$(basename "${file}")
+      fsuf="${file2:0:3}"
+      if [[ "${fsuf}" = "gfs" }} || [[ "${fsuf}" = "sfc" ]]; then
+        ${NLN} "${file}" "${DATA}/INPUT/${file2}"
       fi
     done
 
@@ -242,30 +242,30 @@ EOF
   ${NLN} "${FIX_AM}/global_co2historicaldata_glob.txt" "${DATA}/co2historicaldata_glob.txt"
   ${NLN} "${FIX_AM}/co2monthlycyc.txt"                 "${DATA}/co2monthlycyc.txt"
   if [[ ${ICO2} -gt 0 ]]; then
-    for file in $(ls "${FIX_AM}"/fix_co2_proj/global_co2historicaldata*) ; do
-      ${NLN} "${file}" "${DATA}"/$(echo $(basename "${file}") | sed -e "s/global_//g")
+    for file in $(ls "${FIX_AM}/fix_co2_proj/global_co2historicaldata"*) ; do
+      ${NLN} "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
 
   ${NLN} "${FIX_AM}/global_climaeropac_global.txt"     "${DATA}/aerosol.dat"
   if [[ ${IAER} -gt 0 ]] ; then
     for file in $(ls "${FIX_AM}/global_volcanic_aerosols"*) ; do
-      ${NLN} "${file}" "${DATA}"/$(echo $(basename "${file}") | sed -e "s/global_//g")
+      ${NLN} "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
 
   # inline post fix files
   if [[ ${WRITE_DOPOST} = ".true." ]]; then
-    ${NLN} "${PARM_POST}"/post_tag_gfs"${LEVS}"             "${DATA}"/itag
-    ${NLN} "${FLTFILEGFS:-${PARM_POST}/postxconfig-NT-GFS-TWO.txt}"           "${DATA}"/postxconfig-NT.txt
-    ${NLN} "${FLTFILEGFSF00:-${PARM_POST}/postxconfig-NT-GFS-F00-TWO.txt}"    "${DATA}"/postxconfig-NT_FH00.txt
-    ${NLN} "${POSTGRB2TBL:-${PARM_POST}/params_grib2_tbl_new}"                "${DATA}"/params_grib2_tbl_new
+    ${NLN} "${PARM_POST}/post_tag_gfs${LEVS}"             "${DATA}/itag"
+    ${NLN} "${FLTFILEGFS:-${PARM_POST}/postxconfig-NT-GFS-TWO.txt}"           "${DATA}/postxconfig-NT.txt"
+    ${NLN} "${FLTFILEGFSF00:-${PARM_POST}/postxconfig-NT-GFS-F00-TWO.txt}"    "${DATA}/postxconfig-NT_FH00.txt"
+    ${NLN} "${POSTGRB2TBL:-${PARM_POST}/params_grib2_tbl_new}"                "${DATA}/params_grib2_tbl_new"
   fi
 
   #------------------------------------------------------------------
   # changeable parameters
   # dycore definitions
-  res=$(echo "${CASE}" |cut -c2-5)
+  res="${CASE:1}"
   resp=$((res+1))
   npx=${resp}
   npy=${resp}
@@ -371,7 +371,7 @@ EOF
   k_split=${k_split:-2}
   n_split=${n_split:-6}
 
-  if [[ $(echo "${MONO}" | cut -c-4) = "mono" ]];  then # monotonic options
+  if [[ "${MONO:0:4}" = "mono" ]]; then # monotonic options
     d_con=${d_con_mono:-"0."}
     do_vort_damp=".false."
     if [[ ${TYPE} = "nh" ]]; then # non-hydrostatic
