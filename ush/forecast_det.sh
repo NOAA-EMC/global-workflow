@@ -43,7 +43,6 @@ FV3_det(){
 
   RERUN=${RERUN:-"NO"}
   # Get a list of all YYYYMMDD.HH0000.coupler.res files from the atmos restart directory
-  #local file_array=( $(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res" -print) )
   mapfile -t file_array < <(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res")
   if [[ ( "${RUN}" = "gfs" || "${RUN}" = "gefs" ) \
     && "${#file_array[@]}" -gt 0 ]]; then

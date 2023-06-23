@@ -105,9 +105,9 @@ export FHMAX_WAV_IBP=180
 if (( FHMAX_WAV < FHMAX_WAV_IBP )); then export FHMAX_WAV_IBP=${FHMAX_GFS} ; fi
 
 # gridded and point output rate
-export DTFLD_WAV=$(expr "${FHOUT_HF_WAV}" \* 3600)
+export DTFLD_WAV=$(( FHOUT_HF_WAV * 3600 ))
 export DTPNT_WAV=${DTPNT_WAV:-3600}
-export FHINCP_WAV=$(expr "${DTPNT_WAV}" / 3600)
+export FHINCP_WAV=$(( DTPNT_WAV / 3600 ))
 
 # Selected output parameters (gridded)
 export OUTPARS_WAV=${OUTPARS_WAV:-"WND HS FP DP PHS PTP PDIR"}
@@ -155,7 +155,7 @@ if [[ ${RUNMEM} = -1 ]]; then
   export waveMEMB=
 else
 # Extract member number only
-  export waveMEMB=$(echo "${RUNMEM}" | grep -o '..$')
+  export waveMEMB="${RUNMEM: -2}"
 fi
 
 # Determine if wave component needs input and/or is coupled

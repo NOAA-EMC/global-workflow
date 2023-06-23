@@ -46,6 +46,8 @@ common_predet(){
   # Define significant cycles
   current_cycle=${CDATE}
   previous_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
+  # ignore errors that variable isn't used
+  # shellcheck disable=SC2034
   next_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
   forecast_end_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
@@ -63,7 +65,7 @@ FV3_predet(){
   FHOUT_HF=${FHOUT_HF:-1}
   NSOUT=${NSOUT:-"-1"}
   FDIAG=${FHOUT}
-  if [ "${FHMAX_HF}" -gt 0 -a "${FHOUT_HF}" -gt 0 ]; then FDIAG=${FHOUT_HF}; fi
+  if (( FHMAX_HF > 0 && FHOUT_HF > 0 )); then FDIAG=${FHOUT_HF}; fi
   WRITE_DOPOST=${WRITE_DOPOST:-".false."}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
@@ -125,12 +127,12 @@ FV3_predet(){
 
   rCDUMP=${rCDUMP:-${CDUMP}}
 
-  mkdir -p "${DATA}"/INPUT
+  mkdir -p "${DATA}/INPUT"
 
   #------------------------------------------------------------------
   # changeable parameters
   # dycore definitions
-  res=$(echo "${CASE}" |cut -c2-5)
+  res="${CASE:1}"
   resp=$((res+1))
   npx=${resp}
   npy=${resp}
@@ -204,8 +206,8 @@ FV3_predet(){
 
   if [[ "${DOIAU}" = "YES" ]]; then
     sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
-    sPDY=$(echo "${sCDATE}" | cut -c1-8)
-    scyc=$(echo "${sCDATE}" | cut -c9-10)
+    sPDY="${sCDATE:0:8}"
+    scyc="${sCDATE:8:2}"
     tPDY=${previous_cycle:0:8}
     tcyc=${previous_cycle:8:2}
   else
