@@ -15,14 +15,15 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET',
-                       'WCOSS2', 'S4', 'CONTAINER']
+                       'WCOSS2', 'S4', 'CONTAINER', 'AWSPW']
 
     def __init__(self, host=None):
 
         detected_host = self.detect()
 
         if host is not None and host != detected_host:
-            raise ValueError(f'detected host: "{detected_host}" does not match host: "{host}"')
+            raise ValueError(
+                f'detected host: "{detected_host}" does not match host: "{host}"')
 
         self.machine = detected_host
         self.info = self._get_info
@@ -57,7 +58,8 @@ class Host:
     @property
     def _get_info(self) -> dict:
 
-        hostfile = Path(os.path.join(os.path.dirname(__file__), f'hosts/{self.machine.lower()}.yaml'))
+        hostfile = Path(os.path.join(os.path.dirname(__file__),
+                        f'hosts/{self.machine.lower()}.yaml'))
         try:
             info = YAMLFile(path=hostfile)
         except FileNotFoundError:
