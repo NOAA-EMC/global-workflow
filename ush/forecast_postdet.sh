@@ -97,6 +97,8 @@ EOF
       IAU_FHROT=$((IAU_OFFSET+hour_rst))
       if [[ ${DOIAU} = "YES" ]]; then
         IAUFHRS=-1
+        # Ignore "not used" warning
+        # shellcheck disable=SC2034
         IAU_DELTHRS=0
         IAU_INC_FILES="''"
       fi

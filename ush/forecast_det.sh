@@ -30,6 +30,8 @@ FV3_det(){
     echo "turning off IAU since this is a cold-start"
     DOIAU="NO"
     DOIAU_coldstart="YES"
+    # Ignore "not used" warning
+    # shellcheck disable=SC2034
     IAU_OFFSET=0
     sCDATE=${current_cycle}
     sPDY=${current_cycle:0:8}

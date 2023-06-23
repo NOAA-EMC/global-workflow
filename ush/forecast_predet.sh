@@ -35,6 +35,8 @@ middle_date(){
 
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
+  # Ignore "not used" warning
+  # shellcheck disable=SC2034
   pwd=$(pwd)
   CDUMP=${CDUMP:-gdas}
   CASE=${CASE:-C768}
