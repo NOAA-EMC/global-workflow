@@ -567,9 +567,9 @@ WW3_postdet() {
       fi
     else
       if [[ ${waveMULTIGRID} = ".true." ]]; then
-        ${NLN} "${waverstfile}" "${DATA}"/restart."${wavGRD}"
+        ${NLN} "${waverstfile}" "${DATA}/restart.${wavGRD}"
       else
-        ${NLN} "${waverstfile}" "${DATA}"/restart.ww3
+        ${NLN} "${waverstfile}" "${DATA}/restart.ww3"
       fi
     fi
   done
@@ -1053,10 +1053,10 @@ GOCART_rc() {
     if [[ ! -f "${DATA}/AERO_ExtData.rc" ]]; then
       { \
         echo "PrimaryExports%%" ; \
-        cat "${AERO_CONFIG_DIR}"/ExtData.other ; \
-        cat "${AERO_CONFIG_DIR}"/ExtData."${AERO_EMIS_FIRE:-none}" ; \
+        cat "${AERO_CONFIG_DIR}/ExtData.other" ; \
+        cat "${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none}" ; \
         echo "%%" ; \
-      } > "${DATA}"/AERO_ExtData.rc
+      } > "${DATA}/AERO_ExtData.rc"
       status=$?
       if (( status != 0 )); then exit "${status}"; fi
     fi
