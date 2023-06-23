@@ -394,7 +394,7 @@ EOF
     fi
   fi
 
-  if [[ "${MONO:0:4}") != "mono" ]] && [[ "${TYPE}" = "nh" ]]; then
+  if [[ "${MONO:0:4}" != "mono" ]] && [[ "${TYPE}" = "nh" ]]; then
     vtdm4=${vtdm4_nh_nonmono:-"0.06"}
   else
     vtdm4=${vtdm4:-"0.05"}
