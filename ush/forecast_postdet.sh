@@ -1074,10 +1074,10 @@ GOCART_postdet() {
       continue
     fi
     VDATE=$(${NDATE} "${fhr}" "${CDATE}")
-    YYYY=$(echo "${VDATE}" | cut -c1-4)
-    MM=$(echo "${VDATE}" | cut -c5-6)
-    DD=$(echo "${VDATE}" | cut -c7-8)
-    HH=$(echo "${VDATE}" | cut -c9-10)
+    YYYY="${VDATE:0:4}"
+    MM="${VDATE:4:2}"
+    DD="${VDATE:6:2}"
+    HH="${VDATE:8:2}"
     SS=$((10#${HH}*3600))
 
     #
