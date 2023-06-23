@@ -479,22 +479,22 @@ EOF
     done
   else
     for n in $(seq 1 "${ntiles}"); do
-      eval "${NLN}" nggps2d.tile"${n}".nc       "${COM_ATMOS_HISTORY}"/nggps2d.tile"${n}".nc
-      eval "${NLN}" nggps3d.tile"${n}".nc       "${COM_ATMOS_HISTORY}"/nggps3d.tile"${n}".nc
-      eval "${NLN}" grid_spec.tile"${n}".nc     "${COM_ATMOS_HISTORY}"/grid_spec.tile"${n}".nc
-      eval "${NLN}" atmos_static.tile"${n}".nc  "${COM_ATMOS_HISTORY}"/atmos_static.tile"${n}".nc
-      eval "${NLN}" atmos_4xdaily.tile"${n}".nc "${COM_ATMOS_HISTORY}"/atmos_4xdaily.tile"${n}".nc
+      ${NLN} "nggps2d.tile${n}.nc"       "${COM_ATMOS_HISTORY}/nggps2d.tile${n}.nc"
+      ${NLN} "nggps3d.tile${n}.nc"       "${COM_ATMOS_HISTORY}/nggps3d.tile${n}.nc"
+      ${NLN} "grid_spec.tile${n}.nc"     "${COM_ATMOS_HISTORY}/grid_spec.tile${n}.nc"
+      ${NLN} "atmos_static.tile${n}.nc"  "${COM_ATMOS_HISTORY}/atmos_static.tile${n}.nc"
+      ${NLN} "atmos_4xdaily.tile${n}.nc" "${COM_ATMOS_HISTORY}/atmos_4xdaily.tile${n}.nc"
     done
   fi
 }
 
 FV3_nml(){
   # namelist output for a certain component
-  echo SUB "${FUNCNAME[0]}": Creating name lists and model configure file for FV3
+  echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
   # Call child scripts in current script directory
-  source "${SCRIPTDIR}"/parsing_namelists_FV3.sh
+  source "${SCRIPTDIR}/parsing_namelists_FV3.sh"
   FV3_namelists
-  echo SUB "${FUNCNAME[0]}": FV3 name lists and model configure file created
+  echo "SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created"
 }
 
 FV3_out() {
