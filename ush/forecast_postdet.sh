@@ -999,7 +999,7 @@ CICE_postdet() {
     local fhr="${FHOUT}"
     while [[ "${fhr}" -le "${FHMAX}" ]]; do
       local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${fhr} hours" +%Y%m%d%H)
-      local seconds=$(to_seconds "${idate:8:2}"0000)  # convert HHMMSS to seconds
+      local seconds=$(to_seconds "${idate:8:2}0000")  # convert HHMMSS to seconds
       local fhr3=$(printf %03i "${fhr}")
       ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.icef${fhr3}.nc" "${DATA}/CICE_OUTPUT/iceh_inst.${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}.nc"
       local fhr=$((fhr + FHOUT))
@@ -1011,7 +1011,7 @@ CICE_postdet() {
   # Loop over restart_interval and link restarts from DATA to COM
   local idate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   while [[ ${idate} -le ${forecast_end_cycle} ]]; do
-    local seconds=$(to_seconds "${idate:8:2}"0000)  # convert HHMMSS to seconds
+    local seconds=$(to_seconds "${idate:8:2}0000")  # convert HHMMSS to seconds
     local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
     ${NLN} "${COM_ICE_RESTART}/${idate:0:8}.${idate:8:2}0000.cice_model.res.nc" "${DATA}/CICE_RESTART/cice_model.res.${idatestr}.nc"
     local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
@@ -1020,7 +1020,7 @@ CICE_postdet() {
 
 CICE_nml() {
   echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-  source "${SCRIPTDIR}"/parsing_namelists_CICE.sh
+  source "${SCRIPTDIR}/parsing_namelists_CICE.sh"
   CICE_namelists
 }
 
@@ -1039,7 +1039,7 @@ GOCART_rc() {
 
   # link directory containing GOCART input dataset, if provided
   if [[ ! -z "${AERO_INPUTS_DIR}" ]]; then
-    ${NLN} "${AERO_INPUTS_DIR}" "${DATA}"/ExtData
+    ${NLN} "${AERO_INPUTS_DIR}" "${DATA}/ExtData"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
   fi
@@ -1050,7 +1050,7 @@ GOCART_rc() {
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
     # attempt to generate ExtData configuration file if not provided
-    if [[ ! -f ${DATA}/AERO_ExtData.rc ]]; then
+    if [[ ! -f "${DATA}/AERO_ExtData.rc" ]]; then
       { \
         echo "PrimaryExports%%" ; \
         cat "${AERO_CONFIG_DIR}"/ExtData.other ; \
