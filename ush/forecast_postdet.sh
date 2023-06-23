@@ -542,14 +542,14 @@ WW3_postdet() {
   if [[ "${MESH_WAV}" = "${comparemesh}" ]]; then
     echo "Wave is on same mesh as ocean/ice"
   else
-    ${NLN} -sf "${FIXwave}"/"${MESH_WAV}" "${DATA}"/
+    ${NLN} "${FIXwave}/${MESH_WAV}" "${DATA}/"
   fi
 
   export wavprfx=${RUNwave}${WAV_MEMBER:-}
 
   #Copy initial condition files:
   for wavGRD in ${waveGRD} ; do
-    if [ "${warm_start}" = ".true." -o "${RERUN}" = "YES" ]; then
+    if [[ "${warm_start}" = ".true." ]] || [[ "${RERUN}" = "YES" ]]; then
       if [[ ${RERUN} = "NO" ]]; then
         waverstfile=${COM_WAVE_RESTART_PREV}/${sPDY}.${scyc}0000.restart.${wavGRD}
       else
