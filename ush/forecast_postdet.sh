@@ -394,7 +394,7 @@ EOF
     fi
   fi
 
-  if [ $(echo "${MONO}" | cut -c-4) != "mono" -a "${TYPE}" = "nh" ]; then
+  if [[ "${MONO:0:4}") != "mono" ]] && [[ "${TYPE}" = "nh" ]]; then
     vtdm4=${vtdm4_nh_nonmono:-"0.06"}
   else
     vtdm4=${vtdm4:-"0.05"}
@@ -451,10 +451,10 @@ EOF
   JCAP_STP=${JCAP_STP:-${JCAP_CASE}}
   LONB_STP=${LONB_STP:-${LONB_CASE}}
   LATB_STP=${LATB_STP:-${LATB_CASE}}
-  cd "${DATA}"
+  cd "${DATA}" || exit 1
   if [[ ! -d ${COM_ATMOS_HISTORY} ]]; then mkdir -p "${COM_ATMOS_HISTORY}"; fi
   if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
-  if [ "${QUILTING}" = ".true." -a "${OUTPUT_GRID}" = "gaussian_grid" ]; then
+  if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
     fhr=${FHMIN}
     for fhr in ${OUTPUT_FH}; do
       FH3=$(printf %03i "${fhr}")
@@ -469,12 +469,12 @@ EOF
       logo=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt
       pgbo=${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}
       flxo=${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2
-      eval "${NLN}" "${atmo}" "${atmi}"
-      eval "${NLN}" "${sfco}" "${sfci}"
-      eval "${NLN}" "${logo}" "${logi}"
+      ${NLN} "${atmo}" "${atmi}"
+      ${NLN} "${sfco}" "${sfci}"
+      ${NLN} "${logo}" "${logi}"
       if [[ ${WRITE_DOPOST} = ".true." ]]; then
-        eval "${NLN}" "${pgbo}" "${pgbi}"
-        eval "${NLN}" "${flxo}" "${flxi}"
+        ${NLN} "${pgbo}" "${pgbi}"
+        ${NLN} "${flxo}" "${flxi}"
       fi
     done
   else
