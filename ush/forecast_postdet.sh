@@ -589,7 +589,7 @@ WW3_postdet() {
       echo "Abort!"
       exit 1
     fi
-    ${NLN} "${wavicefile}" "${DATA}"/ice."${WAVEICE_FID}"
+    ${NLN} "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}"
   fi
 
   if [[ "${WW3CURINP}" = "YES" ]]; then
@@ -599,7 +599,7 @@ WW3_postdet() {
       echo "Abort!"
       exit 1
     fi
-    ${NLN} "${wavcurfile}" "${DATA}"/current."${WAVECUR_FID}"
+    ${NLN} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"
   fi
 
   if [[ ! -d ${COM_WAVE_HISTORY} ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
@@ -614,8 +614,8 @@ WW3_postdet() {
   fhr=${FHMIN_WAV}
   while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
     YMDH=$(${NDATE} "${fhr}" "${CDATE}")
-    YMD=$(echo "${YMDH}" | cut -c1-8)
-    HMS="$(echo "${YMDH}" | cut -c9-10)0000"
+    YMD="${YMDH:0:8}"
+    HMS="${YMDH:8:2}0000"
     if [[ ${waveMULTIGRID} = ".true." ]]; then
       for wavGRD in ${waveGRD} ; do
         ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_grd.${wavGRD}"
@@ -624,7 +624,7 @@ WW3_postdet() {
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_grd.ww3"
     fi
     FHINC=${FHOUT_WAV}
-    if [ "${FHMAX_HF_WAV}" -gt 0 -a "${FHOUT_HF_WAV}" -gt 0 -a "${fhr}" -lt "${FHMAX_HF_WAV}" ]; then
+    if (( FHMAX_HF_WAV > 0 && FHOUT_HF_WAV > 0 && fhr < FHMAX_HF_WAV )); then
       FHINC=${FHOUT_HF_WAV}
     fi
     fhr=$((fhr+FHINC))
@@ -634,8 +634,8 @@ WW3_postdet() {
   fhr=${FHMIN_WAV}
   while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
     YMDH=$(${NDATE} "${fhr}" "${CDATE}")
-    YMD=$(echo "${YMDH}" | cut -c1-8)
-    HMS="$(echo "${YMDH}" | cut -c9-10)0000"
+    YMD="${YMDH:0:8}"
+    HMS="${YMDH:8:2}0000"
     if [[ ${waveMULTIGRID} = ".true." ]]; then
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}" "${DATA}/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}"
     else
@@ -651,16 +651,16 @@ WW3_nml() {
   echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
   WAV_MOD_TAG=${RUN}wave${waveMEMB}
   if [[ "${USE_WAV_RMP:-YES}" = "YES" ]]; then
-    if (( $( ls -1 "${FIXwave}"/rmp_src_to_dst_conserv_* 2> /dev/null | wc -l) > 0 )); then
-      for file in $(ls "${FIXwave}"/rmp_src_to_dst_conserv_*) ; do
-        ${NLN} "${file}" "${DATA}"/
+    if (( $( ls -1 "${FIXwave}/rmp_src_to_dst_conserv_"* 2> /dev/null | wc -l) > 0 )); then
+      for file in $(ls "${FIXwave}/rmp_src_to_dst_conserv_"*) ; do
+        ${NLN} "${file}" "${DATA}/"
       done
     else
       echo 'FATAL ERROR : No rmp precomputed nc files found for wave model'
       exit 4
     fi
   fi
-  source "${SCRIPTDIR}"/parsing_namelists_WW3.sh
+  source "${SCRIPTDIR}/parsing_namelists_WW3.sh"
   WW3_namelists
 }
 
@@ -701,12 +701,12 @@ MOM6_postdet() {
   fi
 
   # Copy MOM6 fixed files
-  ${NCP} -pf "${FIXmom}"/"${OCNRES}"/* "${DATA}"/INPUT/
+  ${NCP} -pf "${FIXmom}/${OCNRES}/"* "${DATA}/INPUT/"
 
   # Copy coupled grid_spec
   spec_file="${FIX_DIR}/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
   if [[ -s ${spec_file} ]]; then
-    ${NCP} -pf "${spec_file}" "${DATA}"/INPUT/
+    ${NCP} -pf "${spec_file}" "${DATA}/INPUT/"
   else
     echo "FATAL ERROR: grid_spec file '${spec_file}' does not exist"
     exit 3
@@ -735,7 +735,7 @@ MOM6_postdet() {
 
   # If using stochatic parameterizations, create a seed that does not exceed the
   # largest signed integer
-  if [ "${DO_OCN_SPPT}" = "YES" -o "${DO_OCN_PERT_EPBL}" = "YES" ]; then
+  if [[ "${DO_OCN_SPPT}" = "YES" ]] || [[ "${DO_OCN_PERT_EPBL}" = "YES" ]]; then
     if [[ ${SET_STP_SEED:-"YES"} = "YES" ]]; then
       ISEED_OCNSPPT=$(( (CDATE*1000 + MEMBER*10 + 6) % 2147483647 ))
       ISEED_EPBL=$(( (CDATE*1000 + MEMBER*10 + 7) % 2147483647 ))
@@ -769,27 +769,27 @@ MOM6_postdet() {
       (( interval = fhr - last_fhr ))
       (( midpoint = last_fhr + interval/2 ))
       VDATE=$(${NDATE} "${fhr}" "${IDATE}")
-      YYYY=$(echo "${VDATE}" | cut -c1-4)
-      MM=$(echo "${VDATE}" | cut -c5-6)
-      DD=$(echo "${VDATE}" | cut -c7-8)
-      HH=$(echo "${VDATE}" | cut -c9-10)
+      YYYY="${VDATE:0:4}"
+      MM="${VDATE:4:2}"
+      DD="${VDATE:6:2}"
+      HH="${VDATE:8:2}"
       SS=$((10#${HH}*3600))
 
       VDATE_MID=$(${NDATE} "${midpoint}" "${IDATE}")
-      YYYY_MID=$(echo "${VDATE_MID}" | cut -c1-4)
-      MM_MID=$(echo "${VDATE_MID}" | cut -c5-6)
-      DD_MID=$(echo "${VDATE_MID}" | cut -c7-8)
-      HH_MID=$(echo "${VDATE_MID}" | cut -c9-10)
+      YYYY_MID="${VDATE_MID:0:4}"
+      MM_MID="${VDATE_MID:4:2}"
+      DD_MID="${VDATE_MID:6:2}"
+      HH_MID="${VDATE_MID:8:2}"
       SS_MID=$((10#${HH_MID}*3600))
 
       source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
       dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
-      ${NLN} "${COM_OCEAN_HISTORY}"/"${dest_file}" "${DATA}"/"${source_file}"
+      ${NLN} "${COM_OCEAN_HISTORY}/${dest_file}" "${DATA}/${source_file}"
 
       source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
       dest_file=${source_file}
       if [[ ! -a "${DATA}/${source_file}" ]]; then
-        ${NLN} "${COM_OCEAN_HISTORY}"/"${dest_file}" "${DATA}"/"${source_file}"
+        ${NLN} "${COM_OCEAN_HISTORY}/${dest_file}" "${DATA}/${source_file}"
       fi
 
       last_fhr=${fhr}
@@ -858,7 +858,7 @@ MOM6_postdet() {
 
 MOM6_nml() {
   echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-  source "${SCRIPTDIR}"/parsing_namelists_MOM6.sh
+  source "${SCRIPTDIR}/parsing_namelists_MOM6.sh"
   MOM6_namelists
 }
 
@@ -894,15 +894,15 @@ CICE_postdet() {
   # TODO: move configuration settings to config.ice
 
   # TODO: These need to be calculated in the parsing_namelists_CICE.sh script CICE_namelists() function and set as local
-  year=$(echo "${CDATE}"|cut -c 1-4)
-  month=$(echo "${CDATE}"|cut -c 5-6)
-  day=$(echo "${CDATE}"|cut -c 7-8)
-  hour=$(echo "${CDATE}"|cut -c 9-10)
-  sec=$((${hour}*3600))
+  year="${CDATE:0:4}"
+  month="${CDATE:4:2}"
+  day="${CDATE:6:2}"
+  hour="${CDATE:8:2}"
+  sec=$((10#${hour}*3600))
   stepsperhr=$((3600/${ICETIM}))
-  nhours=$(${NHOUR} "${CDATE}" "${year}"010100)
+  nhours=$(${NHOUR} "${CDATE}" "${year}010100")
   steps=$((nhours*stepsperhr))
-  npt=$((FHMAX*${stepsperhr}))      # Need this in order for dump_last to work
+  npt=$((FHMAX*stepsperhr)) # Need this in order for dump_last to work
 
   # TODO:  These settings should be elevated to config.ice
   histfreq_n=${histfreq_n:-6}
@@ -973,10 +973,10 @@ CICE_postdet() {
         continue
       fi
       VDATE=$(${NDATE} "${fhr}" "${IDATE}")
-      YYYY=$(echo "${VDATE}" | cut -c1-4)
-      MM=$(echo "${VDATE}" | cut -c5-6)
-      DD=$(echo "${VDATE}" | cut -c7-8)
-      HH=$(echo "${VDATE}" | cut -c9-10)
+      YYYY="${VDATE:0:4}"
+      MM="${VDATE:4:2}"
+      DD="${VDATE:6:2}"
+      HH="${VDATE:8:2}"
       SS=$((10#${HH}*3600))
 
       if [[ 10#${fhr} -eq 0 ]]; then
@@ -992,7 +992,7 @@ CICE_postdet() {
 
     # Link CICE generated initial condition file from DATA/CICE_OUTPUT to COMOUTice
     # This can be thought of as the f000 output from the CICE model
-    local seconds=$(to_seconds "${CDATE:8:2}"0000)  # convert HHMMSS to seconds
+    local seconds=$(to_seconds "${CDATE:8:2}0000")  # convert HHMMSS to seconds
     ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.iceic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${CDATE:0:4}-${CDATE:4:2}-${CDATE:6:2}-${seconds}.nc"
 
     # Link instantaneous CICE forecast output files from DATA/CICE_OUTPUT to COMOUTice
