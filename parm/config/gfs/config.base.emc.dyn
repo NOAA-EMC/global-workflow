@@ -261,7 +261,7 @@ export FHMAX_GFS_00=${FHMAX_GFS_00:-120}
 export FHMAX_GFS_06=${FHMAX_GFS_06:-120}
 export FHMAX_GFS_12=${FHMAX_GFS_12:-120}
 export FHMAX_GFS_18=${FHMAX_GFS_18:-120}
-current_fhmax_var=FHMAX_GFS_${cyc}; declare FHMAX_GFS=${!current_fhmax_var}
+current_fhmax_var=FHMAX_GFS_${cyc}; declare -x FHMAX_GFS=${!current_fhmax_var}
 
 export FHOUT_GFS=${FHOUT_GFS:-3}
 export FHMAX_HF_GFS=${FHMAX_HF_GFS:-0}
