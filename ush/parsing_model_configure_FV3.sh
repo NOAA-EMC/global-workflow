@@ -32,7 +32,7 @@ fhrot:                   ${IAU_FHROT:-0}
 
 dt_atmos:                ${DELTIM}
 calendar:                ${calendar:-'julian'}
-restart_interval:        ${restart_interval}
+restart_interval:        ${restart_interval} -1
 output_1st_tstep_rst:    .false.
 
 quilting:                ${QUILTING}

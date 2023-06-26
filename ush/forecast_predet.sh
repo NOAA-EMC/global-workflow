@@ -18,8 +18,8 @@ to_seconds() {
   local mm=${hhmmss:2:2}
   local ss=${hhmmss:4:2}
   local seconds=$((10#${hh}*3600+10#${mm}*60+10#${ss}))
-  local padded_seconds=$(printf "%05d" ${seconds})
-  echo ${padded_seconds}
+  local padded_seconds=$(printf "%05d" "${seconds}")
+  echo "${padded_seconds}"
 }
 
 middle_date(){
@@ -30,36 +30,34 @@ middle_date(){
   local date2s=$(date -d "${date2:0:8} ${date2:8:2}" +%s)
   local dtsecsby2=$(( $((date2s - date1s)) / 2 ))
   local mid_date=$(date -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
-  echo ${mid_date:0:10}
+  echo "${mid_date:0:10}"
 }
 
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
+  # Ignore "not used" warning
+  # shellcheck disable=SC2034
   pwd=$(pwd)
-  machine=${machine:-"WCOSS2"}
-  machine=$(echo $machine | tr '[a-z]' '[A-Z]')
+  CDUMP=${CDUMP:-gdas}
   CASE=${CASE:-C768}
   CDATE=${CDATE:-2017032500}
-  DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
-  ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
+
+  FCSTEXECDIR=${FCSTEXECDIR:-${HOMEgfs}/exec}
+  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
+
+  # Define significant cycles
+  current_cycle=${CDATE}
+  previous_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
+  # ignore errors that variable isn't used
+  # shellcheck disable=SC2034
+  next_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
+  forecast_end_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+
+  cd "${DATA}" || exit 8
 }
 
-DATM_predet(){
-  SYEAR=$(echo  $CDATE | cut -c1-4)
-  SMONTH=$(echo $CDATE | cut -c5-6)
-  SDAY=$(echo   $CDATE | cut -c7-8)
-  SHOUR=$(echo  $CDATE | cut -c9-10)
-  # directory set up
-  if [ ! -d $DATA ]; then mkdir -p $DATA; fi
-  if [ ! -d $DATA/DATM_INPUT ]; then mkdir -p $DATA/DATM_INPUT; fi
-  FHMAX=${FHMAX:-9}
-  # Go to Run Directory (DATA)
-  cd $DATA
-}
-
-FV3_GFS_predet(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
-  CDUMP=${CDUMP:-gdas}
+FV3_predet(){
+  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
   FHOUT=${FHOUT:-3}
@@ -68,53 +66,40 @@ FV3_GFS_predet(){
   FHMAX_HF=${FHMAX_HF:-0}
   FHOUT_HF=${FHOUT_HF:-1}
   NSOUT=${NSOUT:-"-1"}
-  FDIAG=$FHOUT
-  if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
+  FDIAG=${FHOUT}
+  if (( FHMAX_HF > 0 && FHOUT_HF > 0 )); then FDIAG=${FHOUT_HF}; fi
   WRITE_DOPOST=${WRITE_DOPOST:-".false."}
-  restart_interval=${restart_interval:-0}
-  rst_invt1=$(echo $restart_interval |cut -d " " -f 1)
+  restart_interval=${restart_interval:-${FHMAX}}
+  # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  if [[ ${restart_interval} -eq 0 ]]; then
+    restart_interval=${FHMAX}
+  fi
 
   # Convert output settings into an explicit list
   OUTPUT_FH=""
-  FHMIN_LF=$FHMIN
+  FHMIN_LF=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
     for (( fh = FHMIN; fh < FHMAX_HF; fh = fh + FHOUT_HF )); do
-      OUTPUT_FH="$OUTPUT_FH $fh"
+      OUTPUT_FH="${OUTPUT_FH} ${fh}"
     done
-    FHMIN_LF=$FHMAX_HF
+    FHMIN_LF=${FHMAX_HF}
   fi
   for (( fh = FHMIN_LF; fh <= FHMAX; fh = fh + FHOUT )); do
-    OUTPUT_FH="$OUTPUT_FH $fh"
+    OUTPUT_FH="${OUTPUT_FH} ${fh}"
   done
 
-  PDY=$(echo $CDATE | cut -c1-8)
-  cyc=$(echo $CDATE | cut -c9-10)
-
   # Directories.
-  pwd=$(pwd)
-  HOMEgfs=${HOMEgfs:-${PACKAGEROOT:-$pwd}}
-  FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-  FIX_AM=${FIX_AM:-$FIX_DIR/am}
-  FIX_AER=${FIX_AER:-$FIX_DIR/aer}
-  FIX_LUT=${FIX_LUT:-$FIX_DIR/lut}
-  FIXfv3=${FIXfv3:-$FIX_DIR/orog}
-  DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
-  ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
-  DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
+  FIX_DIR=${FIX_DIR:-${HOMEgfs}/fix}
+  FIX_AM=${FIX_AM:-${FIX_DIR}/am}
+  FIX_AER=${FIX_AER:-${FIX_DIR}/aer}
+  FIX_LUT=${FIX_LUT:-${FIX_DIR}/lut}
+  FIXfv3=${FIXfv3:-${FIX_DIR}/orog}
 
   # Model resolution specific parameters
   DELTIM=${DELTIM:-225}
   layout_x=${layout_x:-8}
   layout_y=${layout_y:-16}
   LEVS=${LEVS:-65}
-
-  # Utilities
-  NCP=${NCP:-"/bin/cp -p"}
-  NLN=${NLN:-"/bin/ln -sf"}
-  NMV=${NMV:-"/bin/mv"}
-  SEND=${SEND:-"YES"}   #move final result to rotating directory
-  ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-  KEEPDATA=${KEEPDATA:-"NO"}
 
   # Other options
   MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
@@ -128,13 +113,11 @@ FV3_GFS_predet(){
   IAU_OFFSET=${IAU_OFFSET:-0}
 
   # Model specific stuff
-  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/exec}
-  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
-  PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
-  PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
+  PARM_FV3DIAG=${PARM_FV3DIAG:-${HOMEgfs}/parm/parm_fv3diag}
+  PARM_POST=${PARM_POST:-${HOMEgfs}/parm/post}
 
   # Model config options
-  ntiles=${ntiles:-6}
+  ntiles=6
 
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
   MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
@@ -144,25 +127,17 @@ FV3_GFS_predet(){
   WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
   WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
 
-  rCDUMP=${rCDUMP:-$CDUMP}
+  rCDUMP=${rCDUMP:-${CDUMP}}
 
-  #-------------------------------------------------------
-  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-  mkdata=NO
-  if [ ! -d $DATA ]; then
-    mkdata=YES
-    mkdir -p $DATA ;
-  fi
-  cd $DATA || exit 8
-  mkdir -p $DATA/INPUT
+  mkdir -p "${DATA}/INPUT"
 
   #------------------------------------------------------------------
   # changeable parameters
   # dycore definitions
-  res=$(echo $CASE |cut -c2-5)
+  res="${CASE:1}"
   resp=$((res+1))
-  npx=$resp
-  npy=$resp
+  npx=${resp}
+  npy=${resp}
   npz=$((LEVS-1))
   io_layout="1,1"
   #ncols=$(( (${npx}-1)*(${npy}-1)*3/2 ))
@@ -172,12 +147,12 @@ FV3_GFS_predet(){
   LONB_CASE=$((4*res))
   LATB_CASE=$((2*res))
 
-  JCAP=${JCAP:-$JCAP_CASE}
-  LONB=${LONB:-$LONB_CASE}
-  LATB=${LATB:-$LATB_CASE}
+  JCAP=${JCAP:-${JCAP_CASE}}
+  LONB=${LONB:-${LONB_CASE}}
+  LATB=${LATB:-${LATB_CASE}}
 
-  LONB_IMO=${LONB_IMO:-$LONB_CASE}
-  LATB_JMO=${LATB_JMO:-$LATB_CASE}
+  LONB_IMO=${LONB_IMO:-${LONB_CASE}}
+  LATB_JMO=${LATB_JMO:-${LATB_CASE}}
 
   # NSST Options
   # nstf_name contains the NSST related parameters
@@ -192,7 +167,7 @@ FV3_GFS_predet(){
   NST_RESV=${NST_RESV-0}
   ZSEA1=${ZSEA1:-0}
   ZSEA2=${ZSEA2:-0}
-  nstf_name=${nstf_name:-"$NST_MODEL,$NST_SPINUP,$NST_RESV,$ZSEA1,$ZSEA2"}
+  nstf_name=${nstf_name:-"${NST_MODEL},${NST_SPINUP},${NST_RESV},${ZSEA1},${ZSEA2}"}
   nst_anl=${nst_anl:-".false."}
 
 
@@ -213,58 +188,55 @@ FV3_GFS_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]] && (( rst_invt1 > 0 )); then
+  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]]; then
     if [[ ! -d ${COM_ATMOS_RESTART} ]]; then mkdir -p "${COM_ATMOS_RESTART}" ; fi
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
-    VDATE=$($NDATE +$FHMAX_GFS $CDATE)
-    vPDY=$(echo $VDATE | cut -c1-8)
-    vcyc=$(echo $VDATE | cut -c9-10)
     files="coupler.res fv_core.res.nc"
-    for tile in {1..6}; do
+    for n in $(seq 1 "${ntiles}"); do
       for base in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
-        files="${files} ${base}.tile${tile}.nc"
+        files="${files} ${base}.tile${n}.nc"
       done
     done
     for file in ${files}; do
-      ${NLN} "${COM_ATMOS_RESTART}/${file}" "${COM_ATMOS_RESTART}/${vPDY}.${vcyc}0000.${file}"
+      ${NLN} "${COM_ATMOS_RESTART}/${file}" "${COM_ATMOS_RESTART}/${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${file}"
     done
   else
-    mkdir -p $DATA/RESTART
+    mkdir -p "${DATA}/RESTART"
   fi
 
-  if [[ "$DOIAU" = "YES" ]]; then
-    sCDATE=$($NDATE -3 $CDATE)
-    sPDY=$(echo $sCDATE | cut -c1-8)
-    scyc=$(echo $sCDATE | cut -c9-10)
-    tPDY=${gPDY}
-    tcyc=${gcyc}
+  if [[ "${DOIAU}" = "YES" ]]; then
+    sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
+    sPDY="${sCDATE:0:8}"
+    scyc="${sCDATE:8:2}"
+    tPDY=${previous_cycle:0:8}
+    tcyc=${previous_cycle:8:2}
   else
-    sCDATE=$CDATE
-    sPDY=$PDY
-    scyc=$cyc
-    tPDY=$sPDY
-    tcyc=$cyc
+    sCDATE=${current_cycle}
+    sPDY=${current_cycle:0:8}
+    scyc=${current_cycle:8:2}
+    tPDY=${sPDY}
+    tcyc=${scyc}
   fi
 
   echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }
 
 WW3_predet(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for WW3"
+  echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
   if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
   ${NLN} "${COM_WAVE_RESTART}" "restart_wave"
 }
 
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
-  if [ ! -d $DATA/CICE_OUTPUT ]; then  mkdir -p $DATA/CICE_OUTPUT; fi
-  if [ ! -d $DATA/CICE_RESTART ]; then mkdir -p $DATA/CICE_RESTART; fi
+  if [[ ! -d "${DATA}/CICE_OUTPUT" ]]; then  mkdir -p "${DATA}/CICE_OUTPUT"; fi
+  if [[ ! -d "${DATA}/CICE_RESTART" ]]; then mkdir -p "${DATA}/CICE_RESTART"; fi
 }
 
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
-  if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
-  if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
+  if [[ ! -d "${DATA}/MOM6_OUTPUT" ]]; then mkdir -p "${DATA}/MOM6_OUTPUT"; fi
+  if [[ ! -d "${DATA}/MOM6_RESTART" ]]; then mkdir -p "${DATA}/MOM6_RESTART"; fi
 }

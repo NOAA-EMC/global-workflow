@@ -9,7 +9,7 @@ arguments:
   expdir: ${RUNTESTS}/${pslot}/EXPDIR
   icsdir: ${ICSDIR_ROOT}/C96C48
   idate: 2021122018
-  edate: 2021122100
+  edate: 2021122106
   nens: 0
   gfs_cyc: 1
   start: cold
