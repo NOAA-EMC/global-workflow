@@ -357,17 +357,14 @@ cd "${script_dir}" || exit 8
         ${SLINK} "ufs_utils.fd/sorc/${prog}"                                                     "${prog}"
     done
 
-    for prog in enkf_chgres_recenter.fd \
-      enkf_chgres_recenter_nc.fd \
+    for prog in enkf_chgres_recenter_nc.fd \
       fbwndgfs.fd \
-      fv3nc2nemsio.fd \
       gaussian_sfcanl.fd \
       gfs_bufr.fd \
       mkgfsawps.fd \
       overgridid.fd \
       rdbfmsua.fd \
       reg2grb2.fd \
-      regrid_nemsio.fd \
       supvit.fd \
       syndat_getjtbul.fd \
       syndat_maksynrc.fd \
