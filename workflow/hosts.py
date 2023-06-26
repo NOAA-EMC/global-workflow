@@ -34,6 +34,7 @@ class Host:
 
         machine = 'NOTFOUND'
         container = os.getenv('SINGULARITY_NAME', None)
+        pw_csp = os.getenv('PW_CSP', None)
 
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
@@ -47,6 +48,11 @@ class Host:
             machine = 'S4'
         elif container is not None:
             machine = 'CONTAINER'
+        elif pw_csp is not None:
+            if pw_csp.lower() not in ['azure', 'aws', 'gcp']:
+                raise ValueError(
+                    f'NOAA cloud service provider "{pw_csp}" is not supported.')
+            machine = f"{pw_csp.upper()}PW"
 
         if machine not in Host.SUPPORTED_HOSTS:
             raise NotImplementedError(f'This machine is not a supported host.\n' +
