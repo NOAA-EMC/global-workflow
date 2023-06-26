@@ -31,6 +31,19 @@ For cycled (w/ data assimilation):
    ./build_all.sh
    ./link_workflow.sh
 
+For coupled cycling (include new UFSDA):
+
+[Currently only available on Hera and Orion]
+
+::
+
+   git clone https://github.com/NOAA-EMC/global-workflow.git
+   cd global-workflow/sorc
+   ./checkout.sh -gu
+   ./build_all.sh
+   ./link_workflow.sh
+
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Clone workflow and component repositories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -103,6 +116,14 @@ Or with the ``-g`` switch to include data assimilation (GSI) for cycling:
 
    cd sorc
    ./checkout.sh -g
+
+Or also with the ``-u`` swtich to include coupled DA (via UFSDA):
+[Currently only available on Hera and Orion]
+
+::
+
+   cd sorc
+   ./checkout.sh -gu
 
 Each component cloned via checkout.sh will have a log (``/sorc/logs/checkout-COMPONENT.log``). Check the screen output and logs for clone errors.
 
