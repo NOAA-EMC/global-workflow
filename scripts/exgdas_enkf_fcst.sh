@@ -105,8 +105,6 @@ if [[ ${RUN} == "enkfgfs" ]]; then
    export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX_ENKF:-${FHMAX}}}
 fi
 
-export restart_interval=${restart_interval_ENKF:-${restart_interval:-6}}
-
 # gfs_physics_nml
 export FHSWR=${FHSWR_ENKF:-${FHSWR:-3600.}}
 export FHLWR=${FHLWR_ENKF:-${FHLWR:-3600.}}
