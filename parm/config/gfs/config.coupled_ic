@@ -5,36 +5,16 @@
 echo "BEGIN: config.coupled_ic"
 
 # Get task specific resources
-source ${EXPDIR}/config.resources coupled_ic
-
-if [[ "${machine}" == "WCOSS2" ]]; then
-  export BASE_CPLIC="/lfs/h2/emc/couple/noscrub/Jiande.Wang/IC"
-elif [[ "${machine}" == "HERA" ]]; then
-  export BASE_CPLIC="/scratch1/NCEPDEV/climate/role.ufscpara/IC"
-elif [[ "${machine}" == "ORION" ]]; then
-  export BASE_CPLIC="/work/noaa/global/glopara/data/ICSDIR/prototype_ICs"
-elif [[ "${machine}" == "S4" ]]; then
-  export BASE_CPLIC="/data/prod/glopara/coupled_ICs"
-elif [[ "${machine}" == "JET" ]]; then
-  export BASE_CPLIC="/mnt/lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/prototype_ICs"
-fi
-
+source "${EXPDIR}/config.resources" coupled_ic
 
 case "${CASE}" in
-  "C48")
-    export CPL_ATMIC=workflowtest
-    export CPL_ICEIC=workflowtest
-    export CPL_OCNIC=workflowtest
-    export CPL_WAVIC=workflowtest
-    ;;
-  "C96") 
+  "C48" | "C96")
     export CPL_ATMIC=workflowtest
     export CPL_ICEIC=workflowtest
     export CPL_OCNIC=workflowtest
     export CPL_WAVIC=workflowtest
     ;;
   "C384")
-    #C384 and P8 ICs
     export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
     export CPL_ICEIC=CPC
     export CPL_OCNIC=CPC3Dvar
@@ -47,7 +27,7 @@ case "${CASE}" in
     export CPL_WAVIC=HR1
     ;;
   *)
-    echo "Unrecognized case: ${1}"
+    echo "FATAL ERROR Unrecognized resolution: ${CASE}"
     exit 1
     ;;
 esac
