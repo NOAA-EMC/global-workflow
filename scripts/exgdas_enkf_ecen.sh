@@ -24,7 +24,6 @@ pwd=$(pwd)
 
 # Base variables
 CDATE=${CDATE:-"2010010100"}
-CDUMP=${CDUMP:-"gdas"}
 DONST=${DONST:-"NO"}
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
@@ -60,7 +59,7 @@ FHMIN=${FHMIN_ECEN:-3}
 FHMAX=${FHMAX_ECEN:-9}
 FHOUT=${FHOUT_ECEN:-3}
 FHSFC=${FHSFC_ECEN:-$FHMIN}
-if [ $CDUMP = "enkfgfs" ]; then
+if [ $RUN = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
 else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}

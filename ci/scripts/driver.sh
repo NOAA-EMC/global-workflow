@@ -13,6 +13,7 @@ set -eux
 # PR number and calls clone-build_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
 # of the PR. It then is ready to run a suite of regression tests with various
 # configurations with run_tests.py.
+# No-op for test
 #######################################################################################
 
 #################################################################
@@ -145,13 +146,13 @@ for pr in ${pr_list}; do
     # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for yaml_config in "${pr_dir}/global-workflow/ci/cases/"*.yaml; do
+    HOMEgfs_PR="${pr_dir}/global-workflow"
+    export HOMEgfs_PR
+    for yaml_config in "${HOMEgfs_PR}/ci/cases/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
-      HOMEgfs_ci="${HOMEgfs_CASES_DIR}"
-      export HOMEgfs_ci
       set +e
-      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_CASES_DIR}/ci/cases/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
+      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/${pslot}.yaml" --dir "${HOMEgfs_PR}"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
@@ -165,6 +166,8 @@ for pr in ${pr_list}; do
         {
           echo "Failed to create experiment:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
+          echo ""
+          cat "${HOMEgfs_PR}/ci/scripts/"setup_*.std*
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
         "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
