@@ -78,7 +78,6 @@ declare -rx COM_OCEAN_INPUT_TMPL=${COM_BASE}'/model_data/ocean/input'
 declare -rx COM_OCEAN_ANALYSIS_TMPL=${COM_BASE}'/analysis/ocean'
 declare -rx COM_OCEAN_2D_TMPL=${COM_BASE}'/products/ocean/2D'
 declare -rx COM_OCEAN_3D_TMPL=${COM_BASE}'/products/ocean/3D'
-declare -rx COM_OCEAN_DAILY_TMPL=${COM_BASE}'/products/ocean/daily'
 declare -rx COM_OCEAN_XSECT_TMPL=${COM_BASE}'/products/ocean/xsect'
 declare -rx COM_OCEAN_GRIB_TMPL=${COM_BASE}'/products/ocean/grib2/${GRID}'
 
