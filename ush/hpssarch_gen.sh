@@ -261,8 +261,8 @@ if [[ ${type} = "gfs" ]]; then
     echo "${COM_OCEAN_INPUT/${ROTDIR}\//}/MOM_input" >> ocn_2D.txt
     echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/ocn_2D*" >> ocn_2D.txt
     echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/ocn_3D*" >> ocn_3D.txt
+    echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/ocn_daily*" >> ocn_daily.txt
     echo "${COM_OCEAN_XSECT/${ROTDIR}\//}/ocn*EQ*" >> ocn_xsect.txt
-    echo "${COM_OCEAN_DAILY/${ROTDIR}\//}/ocn_daily*" >> ocn_daily.txt
     echo "${COM_OCEAN_GRIB_0p50/${ROTDIR}\//}/ocn_ice*0p5x0p5.grb2" >> ocn_ice_grib2_0p5.txt
     echo "${COM_OCEAN_GRIB_0p25/${ROTDIR}\//}/ocn_ice*0p25x0p25.grb2" >> ocn_ice_grib2_0p25.txt
 
