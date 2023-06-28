@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 #####
-## "forecast_def.sh"
+## "forecast_predet.sh"
 ## This script sets value of all variables
 ##
 ## This is the child script of ex-global forecast,
@@ -26,15 +26,26 @@ middle_date(){
   # Function to calculate mid-point date in YYYYMMDDHH between two dates also in YYYYMMDDHH
   local date1=${1:?}
   local date2=${2:?}
-  local date1s=$(date -d "${date1:0:8} ${date1:8:2}" +%s)
-  local date2s=$(date -d "${date2:0:8} ${date2:8:2}" +%s)
+  local date1s=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
+  local date2s=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
   local dtsecsby2=$(( $((date2s - date1s)) / 2 ))
   local mid_date=$(date -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
   echo "${mid_date:0:10}"
 }
 
+nhour(){
+  # Function to calculate hours between two dates (This replicates prod-util NHOUR)
+  local date1=${1:?}
+  local date2=${2:?}
+  # Convert dates to UNIX timestamps
+  seconds1=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
+  seconds2=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
+  hours=$(( $((seconds1 - seconds2)) / 3600 ))  # Calculate the difference in seconds and convert to hours
+  echo "${hours}"
+}
+
 common_predet(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
+  echo "SUB ${FUNCNAME[0]}: Defining variables for shared through model components"
   # Ignore "not used" warning
   # shellcheck disable=SC2034
   pwd=$(pwd)
@@ -45,6 +56,13 @@ common_predet(){
   FCSTEXECDIR=${FCSTEXECDIR:-${HOMEgfs}/exec}
   FCSTEXEC=${FCSTEXEC:-ufs_model.x}
 
+  # Directories.
+  FIX_DIR=${FIX_DIR:-${HOMEgfs}/fix}
+
+  # Model specific stuff
+  PARM_FV3DIAG=${PARM_FV3DIAG:-${HOMEgfs}/parm/parm_fv3diag}
+  PARM_POST=${PARM_POST:-${HOMEgfs}/parm/post}
+
   # Define significant cycles
   current_cycle=${CDATE}
   previous_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
@@ -53,7 +71,7 @@ common_predet(){
   next_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
   forecast_end_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
-  cd "${DATA}" || exit 8
+  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
 
 FV3_predet(){
@@ -75,25 +93,21 @@ FV3_predet(){
     restart_interval=${FHMAX}
   fi
 
-  # Convert output settings into an explicit list
-  OUTPUT_FH=""
-  FHMIN_LF=${FHMIN}
+  # Convert output settings into an explicit list for FV3
+  # NOTE:  FV3_OUTPUT_FH is also currently used in other components
+  # TODO: Have a seperate control for other components to address issue #1629
+  FV3_OUTPUT_FH=""
+  local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
     for (( fh = FHMIN; fh < FHMAX_HF; fh = fh + FHOUT_HF )); do
-      OUTPUT_FH="${OUTPUT_FH} ${fh}"
+      FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
     done
-    FHMIN_LF=${FHMAX_HF}
+    local fhr=${FHMAX_HF}
   fi
-  for (( fh = FHMIN_LF; fh <= FHMAX; fh = fh + FHOUT )); do
-    OUTPUT_FH="${OUTPUT_FH} ${fh}"
+  for (( fh = fhr; fh <= FHMAX; fh = fh + FHOUT )); do
+    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
   done
 
-  # Directories.
-  FIX_DIR=${FIX_DIR:-${HOMEgfs}/fix}
-  FIX_AM=${FIX_AM:-${FIX_DIR}/am}
-  FIX_AER=${FIX_AER:-${FIX_DIR}/aer}
-  FIX_LUT=${FIX_LUT:-${FIX_DIR}/lut}
-  FIXfv3=${FIXfv3:-${FIX_DIR}/orog}
 
   # Model resolution specific parameters
   DELTIM=${DELTIM:-225}
@@ -111,10 +125,6 @@ FV3_predet(){
   IAUFHRS=${IAUFHRS:-0}
   IAU_DELTHRS=${IAU_DELTHRS:-0}
   IAU_OFFSET=${IAU_OFFSET:-0}
-
-  # Model specific stuff
-  PARM_FV3DIAG=${PARM_FV3DIAG:-${HOMEgfs}/parm/parm_fv3diag}
-  PARM_POST=${PARM_POST:-${HOMEgfs}/parm/post}
 
   # Model config options
   ntiles=6
@@ -193,9 +203,6 @@ FV3_predet(){
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
-    VDATE=$($NDATE +$FHMAX_GFS $CDATE)
-    vPDY=$(echo $VDATE | cut -c1-8)
-    vcyc=$(echo $VDATE | cut -c9-10)
     files="coupler.res fv_core.res.nc"
     for n in $(seq 1 "${ntiles}"); do
       for base in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do

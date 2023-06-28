@@ -99,7 +99,8 @@ FV3_det(){
         SDATE="${PDYS}${cycs}"
         CDATE_RST="${SDATE}"
         RERUN="YES"
-        [[ ${xfh} = ${rst_invt1} ]] && RERUN="NO"
+        echo "Restarts have been found for CDATE_RST=${CDATE_RST}, returning with 'RERUN=YES'"
+        break
       fi
 
     done
