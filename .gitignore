@@ -130,9 +130,7 @@ ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
-ush/imsfv3_scf2ioda.py
 ush/jediinc2fv3.py
-ush/letkf_create_ens.py
 ush/mkwfsgbl.sh
 ush/ufsda
 ush/wafs_blending.sh
