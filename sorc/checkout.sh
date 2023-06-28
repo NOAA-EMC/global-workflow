@@ -144,6 +144,9 @@ export topdir
 export logdir="${topdir}/logs"
 mkdir -p "${logdir}"
 
+# Setup lmod environment
+source "${topdir}/../workflow/gw_setup.sh"
+
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "8965258"                    ; errs=$((errs + $?))

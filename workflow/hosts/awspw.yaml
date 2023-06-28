@@ -14,7 +14,7 @@ QUEUE_SERVICE: batch
 PARTITION_BATCH: compute
 PARTITION_SERVICE: compute
 CHGRP_RSTPROD: 'YES'
-CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported. 
+CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 HPSSARCH: 'YES'
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 LOCALARCH: 'NO'

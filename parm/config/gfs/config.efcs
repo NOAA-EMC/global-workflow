@@ -22,18 +22,20 @@ if [[ ${DO_OCN} == "YES" ]]; then
     *) export OCNRES=025;;
   esac
 fi
-[[ ${DO_ICE} == "YES" ]] && export ICERES=$OCNRES
-[[ ${DO_WAVE} == "YES" ]] && export waveGRD=${waveGRD_ENKF:-$waveGRD}  # TODO: will we run waves with a different resolution in the ensemble?
+[[ ${DO_ICE} == "YES" ]] && export ICERES=${OCNRES}
+[[ ${DO_WAVE} == "YES" ]] && export waveGRD=${waveGRD_ENKF:-${waveGRD}}  # TODO: will we run waves with a different resolution in the ensemble?
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE_ENS}"
-[[ ${DO_OCN} == "YES" ]] && string="$string --mom6 $OCNRES"
-[[ ${DO_ICE} == "YES" ]] && string="$string --cice6 $ICERES"
-[[ ${DO_WAVE} == "YES" ]] && string="$string --ww3 ${waveGRD// /;}"
-source $EXPDIR/config.ufs ${string}
+[[ ${DO_OCN} == "YES" ]] && string="${string} --mom6 ${OCNRES}"
+[[ ${DO_ICE} == "YES" ]] && string="${string} --cice6 ${ICERES}"
+[[ ${DO_WAVE} == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
+# We are counting on $string being multiple arguments
+# shellcheck disable=SC2086
+source "${EXPDIR}/config.ufs" ${string}
 
 # Get task specific resources
-. $EXPDIR/config.resources efcs
+. "${EXPDIR}/config.resources" efcs
 
 # Use serial I/O for ensemble (lustre?)
 export OUTPUT_FILETYPE_ATM="netcdf"
@@ -66,18 +68,17 @@ export SPPT_LSCALE=500000.
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 
-if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
+    export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table_da"
 else
-    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
+    export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table_da_orig"
 fi
 
-# FV3 model namelist parameters to over-ride
-export restart_interval=${restart_interval:-6}
-
 # For IAU, write restarts at beginning of window also
-if [ $DOIAU_ENKF = "YES" ]; then
-    export restart_interval="3 -1"
+if [[ "${DOIAU_ENKF:-}" = "YES" ]]; then
+  export restart_interval="3"
+else
+  export restart_interval="6"
 fi
 
 # wave model
@@ -92,6 +93,6 @@ case "${CASE_ENS}" in
     "C768") export OCNRES=025;;
     *) export OCNRES=025;;
 esac
-export ICERES=$OCNRES
+export ICERES=${OCNRES}
 
 echo "END: config.efcs"
