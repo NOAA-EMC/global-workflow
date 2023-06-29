@@ -40,6 +40,8 @@ while getopts "p:d:o:h" opt; do
   esac
 done
 
+
+GH=/home/mterry/bin/gh
 mkdir -p "${repodir}"
 
 cd "${repodir}" || exit 1
