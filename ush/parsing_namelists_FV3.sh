@@ -20,30 +20,28 @@ FIELD_TABLE=${FIELD_TABLE:-${PARM_FV3DIAG}/field_table}
 # ensure non-prognostic tracers are set
 dnats=${dnats:-0}
 
-# build the diag_table with the experiment name and base date
-if [[ ${DOIAU} = "YES" ]]; then
-  local model_start_time_str="${previous_cycle:0:4} ${previous_cycle:4:2} ${previous_cycle:6:2} ${previous_cycle:8:2} 0 0"
+# build the diag_table
+{
+echo "UFS_Weather_Model_Forecast"
+if [[ "${DOIAU}" = "YES" ]]; then
+  echo "${previous_cycle:0:4} ${previous_cycle:4:2} ${previous_cycle:6:2} ${previous_cycle:8:2} 0 0"
 else
-  local model_start_time_str="${current_cycle:0:4} ${current_cycle:4:2} ${current_cycle:6:2} ${current_cycle:8:2} 0 0"
+  echo "${current_cycle:0:4} ${current_cycle:4:2} ${current_cycle:6:2} ${current_cycle:8:2} 0 0"
 fi
-cat > diag_table << EOF
-UFS_Weather_Model_Forecast
-${model_start_time_str}
-EOF
-cat "${DIAG_TABLE}" >> diag_table
-
-if [[ ! -z "${AERO_DIAG_TABLE:-}" ]]; then
-  cat "${AERO_DIAG_TABLE}" >> diag_table
+cat "${DIAG_TABLE}"
+if [[ -n "${AERO_DIAG_TABLE:-}" ]]; then
+  cat "${AERO_DIAG_TABLE}"
 fi
+cat "${DIAG_TABLE_APPEND}"
+} >> diag_table
 
-cat "${DIAG_TABLE_APPEND}" >> diag_table
 
 # copy data table
 ${NCP} "${DATA_TABLE}" data_table
 
 # build field_table
-if [[ ! -z "${AERO_FIELD_TABLE:-}" ]]; then
-  nrec=$( cat "${FIELD_TABLE}" | wc -l )
+if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
+  nrec=$(wc -l < "${FIELD_TABLE}")
   prec=${nrec}
   if (( dnats > 0 )); then
     prec=$( grep -F -n TRACER "${FIELD_TABLE}" 2> /dev/null | tail -n "${dnats}" | head -1 | cut -d: -f1 )
@@ -256,12 +254,13 @@ EOF
 EOF
   ;;
   FV3_GFS_v17*)
+  local default_dt_inner=$(( DELTIM/2 ))
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
   lradar       = ${lradar:-".false."}
   ttendlim     = ${ttendlim:-"-999"}
-  dt_inner     = ${dt_inner:-"$(echo "${DELTIM}/2" |bc)"}
+  dt_inner     = ${dt_inner:-"${default_dt_inner}"}
   sedi_semi    = ${sedi_semi:-".true."}
   decfl        = ${decfl:-"10"}
   oz_phys      = ${oz_phys:-".false."}
@@ -466,8 +465,6 @@ if [[ ${knob_ugwp_version} -eq 1 ]]; then
 /
 EOF
 fi
-
-
 
 echo "" >> input.nml
 
