@@ -93,7 +93,7 @@ EOF
         ${NLN} "${file}" "${DATA}/INPUT/${file2}"
       done
 
-      local hour_rst=$(nhour ${CDATE_RST} ${current_cycle})
+      local hour_rst=$(nhour "${CDATE_RST}" "${current_cycle}")
       IAU_FHROT=$((IAU_OFFSET+hour_rst))
       if [[ ${DOIAU} = "YES" ]]; then
         IAUFHRS=-1
@@ -602,9 +602,10 @@ WW3_postdet() {
   fi
 
   # Loop for gridded output (uses FHINC)
-  local fhr=${FHMIN_WAV}
+  local fhr vdate FHINC wavGRD
+  fhr=${FHMIN_WAV}
   while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
-    local vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+    vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
     if [[ ${waveMULTIGRID} = ".true." ]]; then
       for wavGRD in ${waveGRD} ; do
         ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${wavGRD}.${vdate:0:8}.${vdate:8:2}0000" "${DATA}/${vdate:0:8}.${vdate:8:2}0000.out_grd.${wavGRD}"
@@ -612,25 +613,25 @@ WW3_postdet() {
     else
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${vdate:0:8}.${vdate:8:2}0000" "${DATA}/${vdate:0:8}.${vdate:8:2}0000.out_grd.ww3"
     fi
-    local FHINC=${FHOUT_WAV}
+    FHINC=${FHOUT_WAV}
     if (( FHMAX_HF_WAV > 0 && FHOUT_HF_WAV > 0 && fhr < FHMAX_HF_WAV )); then
-      local FHINC=${FHOUT_HF_WAV}
+      FHINC=${FHOUT_HF_WAV}
     fi
-    local fhr=$((fhr+FHINC))
+    fhr=$((fhr+FHINC))
   done
 
   # Loop for point output (uses DTPNT)
-  local fhr=${FHMIN_WAV}
+  fhr=${FHMIN_WAV}
   while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
-    local vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+    vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
     if [[ ${waveMULTIGRID} = ".true." ]]; then
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate:0:8}.${vdate:8:2}0000" "${DATA}/${vdate:0:8}.${vdate:8:2}0000.out_pnt.${waveuoutpGRD}"
     else
       ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate:0:8}.${vdate:8:2}0000" "${DATA}/${vdate:0:8}.${vdate:8:2}0000.out_pnt.ww3"
     fi
 
-    local FHINC=${FHINCP_WAV}
-    local fhr=$((fhr+FHINC))
+    FHINC=${FHINCP_WAV}
+    fhr=$((fhr+FHINC))
   done
 }
 
