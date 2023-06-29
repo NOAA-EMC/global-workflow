@@ -756,6 +756,8 @@ MOM6_postdet() {
       local vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
       local vdate_mid=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
 
+
+      # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
       local source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
       local dest_file="ocn${vdate}.${ENSMEM}.${current_cycle}.nc"
       ${NLN} "${COM_OCEAN_HISTORY}/${dest_file}" "${DATA}/${source_file}"
