@@ -582,7 +582,7 @@ EOF
 # Add namelist for stochastic physics options
 echo "" >> input.nml
 #if [ $MEMBER -gt 0 ]; then
-if [ "${DO_SPPT}" = "YES" -o "${DO_SHUM}" = "YES" -o "${DO_SKEB}" = "YES" -o "${DO_LAND_PERT}" = "YES" ]; then
+if [[ "${DO_SPPT}" = "YES" || "${DO_SHUM}" = "YES" || "${DO_SKEB}" = "YES" || "${DO_LAND_PERT}" = "YES" ]]; then
 
     cat >> input.nml << EOF
 &nam_stochy
