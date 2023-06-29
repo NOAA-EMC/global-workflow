@@ -40,8 +40,8 @@ export HORZ_DIR=${ARCDIR}/horiz
 export COMLOX=${DATA}/fitx
 [[ ! -d "${COMLOX}" ]] && mkdir -p "${COMLOX}"
 
-echo "echo err_chk">"${DATA}"/err_chk; chmod 755 "${DATA}"/err_chk
-echo "echo postmsg">"${DATA}"/postmsg; chmod 755 "${DATA}"/postmsg
+echo "echo err_chk">"${DATA}/err_chk"; chmod 755 "${DATA}/err_chk"
+echo "echo postmsg">"${DATA}/postmsg"; chmod 755 "${DATA}/postmsg"
 
 ##############################################
 # Check spinup and available inputs
