@@ -38,4 +38,4 @@ jobs:
     - name: build-clone
       env:
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-      run: /work2/noaa/global/mterry/global-workflow/ci/scripts/clone-build_ci.sh -p ${{ github.event.pull_request.number }} -d /work2/noaa/stmp/GFS_CI_ROOT/PR/${{ github.event.pull_request.number }} -o /work2/noaa/stmp/GFS_CI_ROOT/PR/output_${{ github.run_id }}
+      run: /work2/noaa/global/mterry/global-workflow_forked/ci/scripts/clone-build_ci.sh -p ${{ github.event.pull_request.number }} -d /work2/noaa/stmp/GFS_CI_ROOT/PR/${{ github.event.pull_request.number }} -o /work2/noaa/stmp/GFS_CI_ROOT/PR/output_${{ github.run_id }}
