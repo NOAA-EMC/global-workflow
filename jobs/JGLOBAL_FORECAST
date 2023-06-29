@@ -30,7 +30,8 @@ fi
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-declare -rx GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+declare -rx GDATE
 # shellcheck disable=
 declare -rx gPDY="${GDATE:0:8}"
 declare -rx gcyc="${GDATE:8:2}"

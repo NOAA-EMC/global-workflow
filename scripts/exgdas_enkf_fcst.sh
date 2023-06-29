@@ -121,7 +121,7 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
 
    skip_mem="NO"
    if [[ -f ${EFCSGRP}.fail ]]; then
-      memstat=$(cat "${EFCSGRP}.fail" | grep "MEMBER ${cmem}" | grep "PASS" | wc -l)
+      memstat=$(grep "MEMBER ${cmem}" "${EFCSGRP}.fail" | grep -c "PASS")
       [[ ${memstat} -eq 1 ]] && skip_mem="YES"
    fi
 
