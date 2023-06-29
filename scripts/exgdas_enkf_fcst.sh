@@ -45,7 +45,7 @@ if [[ -f ${EFCSGRP} ]]; then
       rm -f "${EFCSGRP}"
    else
       echo "RERUN_EFCSGRP = ${RERUN_EFCSGRP}, will re-run FAILED members only!"
-      ${NMV} "${EFCSGRP}" "${EFCSGRP}".fail
+      ${NMV} "${EFCSGRP}" "${EFCSGRP}.fail"
    fi
 fi
 
@@ -121,7 +121,7 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
 
    skip_mem="NO"
    if [[ -f ${EFCSGRP}.fail ]]; then
-      memstat=$(cat "${EFCSGRP}".fail | grep "MEMBER ${cmem}" | grep "PASS" | wc -l)
+      memstat=$(cat "${EFCSGRP}.fail" | grep "MEMBER ${cmem}" | grep "PASS" | wc -l)
       [[ ${memstat} -eq 1 ]] && skip_mem="YES"
    fi
 
@@ -177,7 +177,7 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
      fhr=${FHOUT}
      while [[ ${fhr} -le ${FHMAX} ]]; do
        FH3=$(printf %03i "${fhr}")
-       if [[ $(expr "${fhr}" % 3) -eq 0 ]]; then
+       if (( fhr % 3 == 0 )); then
          "${DBNROOT}/bin/dbn_alert" MODEL GFS_ENKF "${job}" "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"
        fi
        fhr=$((fhr+FHOUT))

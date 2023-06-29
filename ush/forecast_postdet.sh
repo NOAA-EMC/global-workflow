@@ -542,12 +542,12 @@ WW3_postdet() {
   for wavGRD in ${waveGRD} ; do
     if [[ "${warm_start}" = ".true." ]] || [[ "${RERUN}" = "YES" ]]; then
       if [[ ${RERUN} = "NO" ]]; then
-        local waverstfile=${COM_WAVE_RESTART_PREV}/${sPDY}.${scyc}0000.restart.${wavGRD}
+        local waverstfile="${COM_WAVE_RESTART_PREV}/${sPDY}.${scyc}0000.restart.${wavGRD}"
       else
-        local waverstfile=${COM_WAVE_RESTART}/${PDYT}.${cyct}0000.restart.${wavGRD}
+        local waverstfile="${COM_WAVE_RESTART}/${PDYT}.${cyct}0000.restart.${wavGRD}"
       fi
     else
-      local waverstfile=${COM_WAVE_RESTART}/${sPDY}.${scyc}0000.restart.${wavGRD}
+      local waverstfile="${COM_WAVE_RESTART}/${sPDY}.${scyc}0000.restart.${wavGRD}"
     fi
     if [[ ! -f ${waverstfile} ]]; then
       if [[ ${RERUN} = "NO" ]]; then

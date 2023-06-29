@@ -102,7 +102,7 @@ FV3_predet(){
     for (( fh = FHMIN; fh < FHMAX_HF; fh = fh + FHOUT_HF )); do
       FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
     done
-    local fhr=${FHMAX_HF}
+    fhr=${FHMAX_HF}
   fi
   for (( fh = fhr; fh <= FHMAX; fh = fh + FHOUT )); do
     FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
