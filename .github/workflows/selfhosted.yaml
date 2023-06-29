@@ -1,6 +1,7 @@
 name: OrionRunner
 
 on:
+  pull_request_target:
   label:
     types: [created, deleted]
 
