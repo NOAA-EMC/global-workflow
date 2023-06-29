@@ -1024,7 +1024,7 @@ GOCART_postdet() {
       rm -f "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
     fi
 
-    ${NLN} "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:4}${vdate:4:2}${vdate:6:2}_${vdate:8:2}00z.nc4" \
-           "${DATA}/gocart.inst_aod.${vdate:0:4}${vdate:4:2}${vdate:6:2}_${vdate:8:2}00z.nc4"
+    ${NLN} "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
+           "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
   done
 }
