@@ -922,16 +922,17 @@ CICE_postdet() {
     export ENSMEM=${ENSMEM:-01}
 
     # TODO: consult w/ NB on how to improve on this.  Gather requirements and more information on what these files are and how they are used to properly catalog them
+    local vdate seconds vdatestr fhr last_fhr
     for fhr in ${FV3_OUTPUT_FH}; do
-      local vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-      local seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
-      local sec5=$(printf "%5.5d" "${seconds}")
+      vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+      seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
+      vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
       if [[ 10#${fhr} -eq 0 ]]; then
-        ${NLN} "${COM_ICE_HISTORY}/iceic${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${sec5}.nc"
+        ${NLN} "${COM_ICE_HISTORY}/iceic${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
       else
         (( interval = fhr - last_fhr ))  # Umm.. isn't this histfreq_n?
-        ${NLN} "${COM_ICE_HISTORY}/ice${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${interval}")h.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${sec5}.nc"
+        ${NLN} "${COM_ICE_HISTORY}/ice${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
       fi
       last_fhr=${fhr}
     done
@@ -940,29 +941,34 @@ CICE_postdet() {
 
     # Link CICE generated initial condition file from DATA/CICE_OUTPUT to COMOUTice
     # This can be thought of as the f000 output from the CICE model
-    local seconds=$(to_seconds "${current_cycle:8:2}0000")  # convert HHMMSS to seconds
-    ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.iceic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2}-${seconds}.nc"
+    local seconds vdatestr
+    seconds=$(to_seconds "${current_cycle:8:2}0000")  # convert HHMMSS to seconds
+    vdatestr="${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2}-${seconds}"
+    ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.iceic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
 
     # Link instantaneous CICE forecast output files from DATA/CICE_OUTPUT to COMOUTice
-    local fhr="${FHOUT}"
+    local vdate vdatestr seconds fhr fhr3
+    fhr="${FHOUT}"
     while [[ "${fhr}" -le "${FHMAX}" ]]; do
-      local idate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-      local seconds=$(to_seconds "${idate:8:2}0000")  # convert HHMMSS to seconds
-      local fhr3=$(printf %03i "${fhr}")
-      ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.icef${fhr3}.nc" "${DATA}/CICE_OUTPUT/iceh_inst.${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}.nc"
-      local fhr=$((fhr + FHOUT))
+      vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+      seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
+      vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
+      fhr3=$(printf %03i "${fhr}")
+      ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.icef${fhr3}.nc" "${DATA}/CICE_OUTPUT/iceh_inst.-${vdatestr}.nc"
+      fhr=$((fhr + FHOUT))
     done
 
   fi
 
   # Link CICE restarts from CICE_RESTART to COMOUTice/RESTART
   # Loop over restart_interval and link restarts from DATA to COM
-  local idate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  while [[ ${idate} -le ${forecast_end_cycle} ]]; do
-    local seconds=$(to_seconds "${idate:8:2}0000")  # convert HHMMSS to seconds
-    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    ${NLN} "${COM_ICE_RESTART}/${idate:0:8}.${idate:8:2}0000.cice_model.res.nc" "${DATA}/CICE_RESTART/cice_model.res.${idatestr}.nc"
-    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+  local vdate vdatestr seconds
+  vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+  while [[ ${vdate} -le ${forecast_end_cycle} ]]; do
+    seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
+    vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
+    ${NLN} "${COM_ICE_RESTART}/${vdate:0:8}.${vdate:8:2}0000.cice_model.res.nc" "${DATA}/CICE_RESTART/cice_model.res.${vdatestr}.nc"
+    vdate=$(date -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   done
 }
 
