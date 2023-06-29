@@ -1020,8 +1020,8 @@ GOCART_postdet() {
     local vdate=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
 
     # Temporarily delete existing files due to noclobber in GOCART
-    if [[ -e "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:4}${vdate:4:2}${vdate:6:2}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:4}${vdate:4:2}${vdate:6:2}_${vdate:8:2}00z.nc4"
+    if [[ -e "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
+      rm -f "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
     fi
 
     ${NLN} "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:4}${vdate:4:2}${vdate:6:2}_${vdate:8:2}00z.nc4" \
