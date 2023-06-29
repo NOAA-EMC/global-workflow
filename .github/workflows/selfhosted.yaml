@@ -1,0 +1,41 @@
+name: OrionRunner
+
+on:
+  label:
+    types: [created, deleted]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  getlabels:
+    runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.id.outputs.labels }}
+    steps:
+      - name: Get Label Steps
+        id: id
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          LABELS1="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
+          LABELS=$(echo "$LABELS1" | tr '\n' ' ')
+          echo "labels=$LABELS" >> $GITHUB_OUTPUT
+
+  clone-build:
+    if: contains( needs.getlabels.outputs.labels, 'CI-Orion-Build')
+    runs-on: [self-hosted, orion-ready]
+    timeout-minutes: 600
+    needs:
+     - getlabels
+
+    steps:
+    - name: build-clone
+      env:
+        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+      run: /work2/noaa/global/mterry/global-workflow/ci/scripts/clone-build_ci.sh -p ${{ github.event.pull_request.number }} -d /work2/noaa/stmp/GFS_CI_ROOT/PR/${{ github.event.pull_request.number }} -o /work2/noaa/stmp/GFS_CI_ROOT/PR/output_${{ github.run_id }}
