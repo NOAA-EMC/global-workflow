@@ -27,7 +27,7 @@ jobs:
         HOMEgfs: ${{ vars.HOMEGFS_ORION }}
         GFS_CI_ROOT: ${{ vars.GFS_CI_ROOT_ORION }}
         PR: ${{ github.event.pull_request.number }}
-      run: ${{ env.HOMEgfs }}/ci/scripts/clone-build_ci.sh \
-               -p ${{ env.PR }}  \
-               -d ${{ env.GFS_CI_ROOT }}/PR/${{ env.PR }} \
+      run: ${{ env.HOMEgfs }}/ci/scripts/clone-build_ci.sh
+               -p ${{ env.PR }}
+               -d ${{ env.GFS_CI_ROOT }}/PR/${{ env.PR }}
                -o ${{ env.GFS_CI_ROOT }}/PR/${{ env.PR }}/output_${{ github.run_id }}
