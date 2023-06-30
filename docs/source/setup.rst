@@ -38,8 +38,8 @@ where:
    * ``$APP`` is the target application, one of:
 
      - ATM: atmosphere-only [default]
-     - ATMW: atm-wave
      - ATMA: atm-aerosols
+     - ATMW: atm-wave (currently non-functional)
      - S2S: atm-ocean-ice
      - S2SA: atm-ocean-ice-aerosols
      - S2SW: atm-ocean-ice-wave
@@ -150,7 +150,12 @@ where:
    * ``$APP`` is the target application, one of:
 
      - ATM: atmosphere-only [default]
-     - ATMW: atm-wave
+     - ATMA: atm-aerosols
+     - ATMW: atm-wave (currently non-functional)
+     - S2S: atm-ocean-ice
+     - S2SA: atm-ocean-ice-aerosols
+     - S2SW: atm-ocean-ice-wave
+     - S2SWA: atm-ocean-ice-wave-aerosols
 
    * ``$IDATE`` is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
    * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete
