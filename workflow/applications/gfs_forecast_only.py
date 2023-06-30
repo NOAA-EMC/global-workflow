@@ -76,7 +76,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if self.do_atm:
             tasks += ['post']
 
-        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
+        if self.do_ocean:
             tasks += ['ocnpost']
 
         if self.do_atm:
