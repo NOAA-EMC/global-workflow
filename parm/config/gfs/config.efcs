@@ -6,10 +6,13 @@
 echo "BEGIN: config.efcs"
 
 # TODO: the _ENKF counterparts need to be defined in config.base
-export DO_AERO=${DO_AERO_ENKF:-"NO"}
-export DO_OCN=${DO_OCN_ENKF:-"NO"}
-export DO_ICE=${DO_ICE_ENKF:-"NO"}
-export DO_WAVE=${DO_WAVE_ENKF:-"NO"}
+# TODO: Using different values for ensemble doesn't work because
+#       config.fcst sets a bunch of derived values based on these
+#       that is not duplicated here. [#1692]
+# export DO_AERO=${DO_AERO_ENKF:-"NO"}
+# export DO_OCN=${DO_OCN_ENKF:-"NO"}
+# export DO_ICE=${DO_ICE_ENKF:-"NO"}
+# export DO_WAVE=${DO_WAVE_ENKF:-"NO"}
 
 # TODO: Possibly need OCNRES_ENKF, ICERES_ENKF, WAVRES_ENKF too
 if [[ ${DO_OCN} == "YES" ]]; then
