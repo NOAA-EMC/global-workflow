@@ -18,32 +18,12 @@
 ####
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
-
-# Directories.
-export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-export FIX_AM=${FIX_AM:-$FIX_DIR/am}
-
-# Utilities
-export NCP=${NCP:-"/bin/cp -p"}
-export NMV=${NMV:-"/bin/mv"}
-export NLN=${NLN:-"/bin/ln -sf"}
-
-# Scripts.
-FORECASTSH=${FORECASTSH:-$HOMEgfs/scripts/exglobal_forecast.sh}
+source "${HOMEgfs}/ush/preamble.sh"
 
 # Enemble group, begin and end
 ENSGRP=${ENSGRP:-1}
 ENSBEG=${ENSBEG:-1}
 ENSEND=${ENSEND:-1}
-
-# Model builds
-export FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/BUILD/bin}
-export FCSTEXEC=${FCSTEXEC:-fv3gfs.x}
-
-# Get DA specific diag table.
-export PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
-export DIAG_TABLE=${DIAG_TABLE_ENKF:-${DIAG_TABLE:-$PARM_FV3DIAG/diag_table_da}}
 
 # Re-run failed members, or entire group
 RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
@@ -52,24 +32,20 @@ RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
 RECENTER_ENKF=${RECENTER_ENKF:-"YES"}
 export PREFIX_ATMINC=${PREFIX_ATMINC:-""}
 
-# Ops related stuff
-SENDECF=${SENDECF:-"NO"}
-SENDDBN=${SENDDBN:-"NO"}
-
 ################################################################################
 # Preprocessing
-cd $DATA || exit 99
-DATATOP=$DATA
+cd "${DATA}" || exit 99
+DATATOP=${DATA}
 
 ################################################################################
 # Set output data
 EFCSGRP="${COM_TOP}/efcs.grp${ENSGRP}"
-if [ -f $EFCSGRP ]; then
-   if [ $RERUN_EFCSGRP = "YES" ]; then
-      rm -f $EFCSGRP
+if [[ -f ${EFCSGRP} ]]; then
+   if [[ ${RERUN_EFCSGRP} = "YES" ]]; then
+      rm -f "${EFCSGRP}"
    else
-      echo "RERUN_EFCSGRP = $RERUN_EFCSGRP, will re-run FAILED members only!"
-      $NMV $EFCSGRP ${EFCSGRP}.fail
+      echo "RERUN_EFCSGRP = ${RERUN_EFCSGRP}, will re-run FAILED members only!"
+      ${NMV} "${EFCSGRP}" "${EFCSGRP}.fail"
    fi
 fi
 
@@ -119,7 +95,7 @@ export FHZER=${FHZER_ENKF:-${FHZER:-6}}
 export FHCYC=${FHCYC_ENKF:-${FHCYC:-6}}
 
 # Set PREFIX_ATMINC to r when recentering on
-if [ $RECENTER_ENKF = "YES" ]; then
+if [[ ${RECENTER_ENKF} = "YES" ]]; then
    export PREFIX_ATMINC="r"
 fi
 
@@ -132,21 +108,21 @@ declare -x gcyc="${GDATE:8:2}"
 ################################################################################
 # Run forecast for ensemble member
 rc=0
-for imem in $(seq $ENSBEG $ENSEND); do
+for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
 
-   cd $DATATOP
+   cd "${DATATOP}"
 
-   cmem=$(printf %03i $imem)
+   cmem=$(printf %03i "${imem}")
    memchar="mem${cmem}"
 
-   echo "Processing MEMBER: $cmem"
+   echo "Processing MEMBER: ${cmem}"
 
    ra=0
 
    skip_mem="NO"
-   if [ -f ${EFCSGRP}.fail ]; then
-      memstat=$(cat ${EFCSGRP}.fail | grep "MEMBER $cmem" | grep "PASS" | wc -l)
-      [[ $memstat -eq 1 ]] && skip_mem="YES"
+   if [[ -f ${EFCSGRP}.fail ]]; then
+      memstat=$(grep "MEMBER ${cmem}" "${EFCSGRP}.fail" | grep -c "PASS")
+      [[ ${memstat} -eq 1 ]] && skip_mem="YES"
    fi
 
    # Construct COM variables from templates (see config.com)
@@ -177,70 +153,70 @@ for imem in $(seq $ENSBEG $ENSEND); do
    fi
 
 
-   if [ $skip_mem = "NO" ]; then
+   if [[ ${skip_mem} = "NO" ]]; then
 
       ra=0
 
-      export MEMBER=$imem
+      export MEMBER=${imem}
       export DATA="${DATATOP}/${memchar}"
-      if [ -d $DATA ]; then rm -rf $DATA; fi
-      mkdir -p $DATA
-      $FORECASTSH
+      if [[ -d ${DATA} ]]; then rm -rf "${DATA}"; fi
+      mkdir -p "${DATA}"
+      ${FORECASTSH}
       ra=$?
 
       # Notify a member forecast failed and abort
-      if [ $ra -ne 0 ]; then
-         err_exit "FATAL ERROR:  forecast of member $cmem FAILED.  Aborting job"
+      if [[ ${ra} -ne 0 ]]; then
+         err_exit "FATAL ERROR:  forecast of member ${cmem} FAILED.  Aborting job"
       fi
 
       rc=$((rc+ra))
 
    fi
 
-   if [ $SENDDBN = YES ]; then
-     fhr=$FHOUT
-     while [ $fhr -le $FHMAX ]; do
-       FH3=$(printf %03i $fhr)
-       if [ $(expr $fhr % 3) -eq 0 ]; then
+   if [[ ${SENDDBN} = YES ]]; then
+     fhr=${FHOUT}
+     while [[ ${fhr} -le ${FHMAX} ]]; do
+       FH3=$(printf %03i "${fhr}")
+       if (( fhr % 3 == 0 )); then
          "${DBNROOT}/bin/dbn_alert" MODEL GFS_ENKF "${job}" "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"
        fi
        fhr=$((fhr+FHOUT))
      done
    fi
 
-   cd $DATATOP
+   cd "${DATATOP}"
 
-   if [ -s $EFCSGRP ]; then
-       $NCP $EFCSGRP log_old
+   if [[ -s ${EFCSGRP} ]]; then
+       ${NCP} "${EFCSGRP}" log_old
    fi
    [[ -f log ]] && rm log
    [[ -f log_new ]] && rm log_new
-   if [ $ra -ne 0 ]; then
-      echo "MEMBER $cmem : FAIL" > log
+   if [[ ${ra} -ne 0 ]]; then
+      echo "MEMBER ${cmem} : FAIL" > log
    else
-      echo "MEMBER $cmem : PASS" > log
+      echo "MEMBER ${cmem} : PASS" > log
    fi
-   if [ -s log_old ] ; then
+   if [[ -s log_old ]] ; then
        cat log_old log > log_new
    else
        cat log > log_new
    fi
-   $NCP log_new $EFCSGRP
+   ${NCP} log_new "${EFCSGRP}"
 
 done
 
 ################################################################################
 # Echo status of ensemble group
-cd $DATATOP
-echo "Status of ensemble members in group $ENSGRP:"
-cat $EFCSGRP
-[[ -f ${EFCSGRP}.fail ]] && rm ${EFCSGRP}.fail
+cd "${DATATOP}"
+echo "Status of ensemble members in group ${ENSGRP}:"
+cat "${EFCSGRP}"
+[[ -f ${EFCSGRP}.fail ]] && rm "${EFCSGRP}".fail
 
 ################################################################################
 # If any members failed, error out
-export err=$rc; err_chk
+export err=${rc}; err_chk
 
 ################################################################################
 #  Postprocessing
 
-exit $err
+exit "${err}"
