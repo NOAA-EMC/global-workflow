@@ -11,7 +11,7 @@ name: globalworkflow-ci-orion
 on:
   pull_request:
     types:
-      - labeled [created, edited]
+      - labeled
 
 jobs:
   clone-build:
