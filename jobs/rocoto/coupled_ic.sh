@@ -1,44 +1,26 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-###############################################################
-## Abstract:
-## Copy initial conditions from BASE_CPLIC to ROTDIR for coupled forecast-only runs
-## HOMEgfs   : /full/path/to/workflow
-## EXPDIR : /full/path/to/config/files
-## CDUMP  : cycle name (gdas / gfs)
-## PDY    : current date (YYYYMMDD)
-## cyc    : current cycle (HH)
-###############################################################
-
-###############################################################
 # Source FV3GFS workflow modules
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
-err=0
 
-###############################################################
-# Source relevant configs
-configs="base coupled_ic wave"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
+export job="coupled_ic"
+export jobid="${job}.$$"
 
-###############################################################
-# Source machine runtime environment
-. ${BASE_ENV}/${machine}.env config.coupled_ic
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+# Execute the JJOB
 
-###############################################################
+source "${HOMEgfs}/ush/jjob_header.sh" -e "coupled_ic" -c "base coupled_ic"
+
 # Locally scoped variables and functions
 GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
+
+# Initialize return code
+err=0
 
 error_message(){
     echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
@@ -78,10 +60,9 @@ if [[ "${DO_OCN:-}" = "YES" ]]; then
   [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
   err=$((err + rc))
   case "${OCNRES}" in
-    "500") 
-      echo "Do not have Mom.res_*.nc files for 5 deg ocean"
-      ;;
-    "025")
+    "500" | "100")  # Only 5 degree or 1 degree ocean does not have MOM.res_[1-4].nc files
+    ;;
+    "025")  # Only 1/4 degree ocean has MOM.res_[1-4].nc files
       for nn in $(seq 1 4); do
         source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res_${nn}.nc"
         if [[ -f "${source}" ]]; then
@@ -101,9 +82,9 @@ if [[ "${DO_OCN:-}" = "YES" ]]; then
   esac
 fi
 
-# Stage ice initial conditions to ROTDIR (cold start as these are SIS2 generated)
+# Stage ice initial conditions to ROTDIR (warm start)
 if [[ "${DO_ICE:-}" = "YES" ]]; then
-  YMD=${PDY} HH=${cyc} generate_com -r COM_ICE_RESTART
+  YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
   [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
   ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
   source="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/ice/${ICERES}/cice5_model_${ICERESdec}.res_${PDY}${cyc}.nc"
@@ -137,4 +118,4 @@ fi
 
 ##############################################################
 # Exit cleanly
-exit 0
+exit "${err}"

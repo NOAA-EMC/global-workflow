@@ -56,7 +56,7 @@ ideflate:                ${ideflate:-1}
 nbits:                   ${nbits:-14}
 imo:                     ${LONB_IMO}
 jmo:                     ${LATB_JMO}
-output_fh:               ${OUTPUT_FH}
+output_fh:               ${FV3_OUTPUT_FH}
 iau_offset:              ${IAU_OFFSET:-0}
 EOF
 
