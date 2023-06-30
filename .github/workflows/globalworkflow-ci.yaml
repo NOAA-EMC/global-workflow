@@ -4,7 +4,6 @@ name: globalworkflow-ci-orion
 # This workflow is triggered by a label being added to a PR
 # The label name determines the environment to deploy to
 # The label name must be one of the following:
-#
 #   - CI-Orion-Ready
 #   - CI-Orion-Build
 #   - CI-Orion-Run
