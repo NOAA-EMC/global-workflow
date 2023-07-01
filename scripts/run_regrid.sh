@@ -14,14 +14,15 @@ export FHR="${fhr}"
 export DATA="${DATA}"
 export FIXreg2grb2="${FIXreg2grb2}"
 
-###### DO NOT MODIFY BELOW UNLESS YOU KNOW WHAT YOU ARE DOING #######
-#Need NCL module to be loaded:
-echo "${NCARG_ROOT}"
-export NCL="${NCARG_ROOT}/bin/ncl"
+export vyyyy=`echo ${VDATE} | cut -c1-4`
+export vmm=`echo ${VDATE} | cut -c5-6`
+export vdd=`echo ${VDATE} | cut -c7-8`
+export outfile0=${DATA}/ocnr${VDATE}.${ENSMEM}.${IDATE}_1p0x1p0_MOM6.nc
+export infile0=${COMOUTocean}/ocn_${vyyyy}_${vmm}_${vdd}.${ENSMEM}.nc
 
 ls -alrt
 
-${NCL} "${USH_DIR}/icepost.ncl"
-${NCL} "${USH_DIR}/ocnpost.ncl"
-#####################################################################
+python ${USH_DIR}/ocnpost.py $COMOUTocean/ocn_${vyyyy}_${vmm}_${vdd}.${ENSMEM}.nc $DATA/ocnr${VDATE}.${ENSMEM}.${IDATE}_0p25x0p25_MOM6.nc $FIXreg2grb2 $PARMgfs/product/ocnpost.parm  "0p25"
+python ${USH_DIR}/ocnpost.py $COMOUTice/iceh.${vyyyy}-${vmm}-${vdd}.${ENSMEM}.nc $DATA/icer${VDATE}.${ENSMEM}.${IDATE}_0p25x0p25_CICE.nc $FIXreg2grb2 $PARMgfs/product/icepost.parm  "0p25"
 
+#####################################################################
