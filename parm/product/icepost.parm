@@ -1,0 +1,5 @@
+hi_d:Ct:bilinear:2
+hs_d:Ct:bilinear:2
+Tsfc_d:Ct:bilinear:2
+aice_d:Ct:bilinear:2
+uvel_d,vvel_d:Bu,Bu:bilinear,bilinear:2,2
