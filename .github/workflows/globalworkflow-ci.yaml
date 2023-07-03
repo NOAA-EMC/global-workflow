@@ -12,14 +12,6 @@ on:
     types:
       - labeled
 
-env:
-  GFS_CI_ROOT: ${{ vars.GFS_CI_ROOT_ORION }}
-  
-defaults:
- run:
-   #working-directory: ${{ vars.GFS_CI_ROOT_ORION }}/PR/${{ github.event.pull_request.number }}
-  working-directory: /work2/noaa/stmp/GFS_CI_ROOT/PR/156
-
 jobs:
   clone-build:
     if:  github.event.label.name == 'CI-Orion-Build'
@@ -30,24 +22,24 @@ jobs:
 
     - name: Setup
       run: |
-        mkdir ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
+        mkdir {{ github.event.pull_request.number }}
 
     - name: Clone
       uses: actions/checkout@v3
       with:
-        path: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
+        path: ${{ github.event.pull_request.number }}
 
     - name: Checkout
       run: |
-        cd ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}/sorc
+        cd ${{ github.event.pull_request.number }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added later
 
     - name: Build
       run: |
-        cd ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}/sorc
+        cd ${{ github.event.pull_request.number }}/sorc
         ./build_all.sh
 
     - name: Link
       run: |
-        cd ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}/sorc
+        cd ${{ github.event.pull_request.number }}/sorc
         ./link_workflow.sh
