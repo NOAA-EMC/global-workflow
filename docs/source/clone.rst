@@ -55,7 +55,7 @@ Clone workflow and component repositories
 Workflow
 ********
 
-There are several ways to clone repositories from GitHub. Below we describe how to clone the global-workflow using the `https` methods.
+There are several ways to clone repositories from GitHub. Below we describe how to clone the global-workflow using the `https` methods. (Note the use of `--recursive` to clone submodules of `global-workflow`)
 
 ::
 
