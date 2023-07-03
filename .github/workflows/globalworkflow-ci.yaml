@@ -18,7 +18,7 @@ env:
   
 defaults:
  run:
-  working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
+  working-directory: ${{ vars.GFS_CI_ROOT_ORION }}/PR/${{ github.event.pull_request.number }}
 
 jobs:
   clone-build:
@@ -34,7 +34,6 @@ jobs:
 
     - name: Clone
       uses: actions/checkout@v3
-      working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
       with:
         path: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
 
