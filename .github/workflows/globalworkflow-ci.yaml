@@ -6,6 +6,7 @@ name: gw-ci-orion
 #   - CI-Orion-Ready
 #   - CI-Orion-Build
 #   - CI-Orion-Run
+#   NO OP
 
 on:
   pull_request:
@@ -17,7 +18,8 @@ env:
   
 defaults:
  run:
-  working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
+   #working-directory: ${{ vars.GFS_CI_ROOT_ORION }}/PR/${{ github.event.pull_request.number }}
+  working-directory: /work2/noaa/stmp/GFS_CI_ROOT/PR/${{ github.event.pull_request.number }}
 
 jobs:
   clone-build:
@@ -33,7 +35,6 @@ jobs:
 
     - name: Clone
       uses: actions/checkout@v3
-      working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
       with:
         path: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
 
