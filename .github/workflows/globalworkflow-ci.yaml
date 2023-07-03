@@ -31,7 +31,6 @@ jobs:
         ./checkout.sh  # Options e.g. -g -u can be added later
 
     - name: update label
-      needs: Checkout
       uses: actions/github-script@v3
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,19 +49,17 @@ jobs:
           })
 
     - name: Build
-      needs: Checkout
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
         ./build_all.sh
 
     - name: Link
-      needs: Build
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
         ./link_workflow.sh
 
-    - name: create-experiments
-      needs: Link
+  create-experiments
+      needs: clone-build
       run: |
         cd ${{ github.event.pull_request.number }}/workflow
         source gw_setup.sh
