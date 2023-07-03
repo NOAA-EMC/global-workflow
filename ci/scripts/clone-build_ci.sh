@@ -79,7 +79,7 @@ echo "${commit}" > "../commit"
 # run checkout script
 cd sorc || exit 1
 set +e
-./checkout.sh -c -g -u >> log.checkout
+./checkout.sh -c -g -u >> log.checkout 2>&1
 checkout_status=$?
 if [[ ${checkout_status} != 0 ]]; then
   {
@@ -99,7 +99,7 @@ fi
 source "${HOMEgfs}/ush/module-setup.sh"
 export BUILD_JOBS=8
 rm -rf log.build
-./build_all.sh  >> log.build
+./build_all.sh  >> log.build 2>&1
 build_status=$?
 
 if [[ ${build_status} != 0 ]]; then
