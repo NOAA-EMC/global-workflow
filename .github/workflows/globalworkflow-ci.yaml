@@ -20,7 +20,7 @@ jobs:
     if:  github.event.label.name == 'CI-Orion-Build'
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
-
+    
     - name: Setup
       run: |
         mkdir ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
