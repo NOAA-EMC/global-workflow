@@ -14,7 +14,7 @@ on:
 
 jobs:
   clone-build:
-    if:  github.event.label.name == 'CI-Orion-Build'
+    if:  github.event.label.name == 'CI-Orion-Ready'
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
     
@@ -30,6 +30,24 @@ jobs:
         cd ${{ github.event.pull_request.number }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added later
 
+    - name: update label
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.issues.removeLabel({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: 'CI-Orion-Ready'
+          })
+          github.issues.addLabels({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: ['CI-Orion-Building']
+          })
+
     - name: Build
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
@@ -44,7 +62,10 @@ jobs:
       run: |
         cd ${{ github.event.pull_request.number }}/workflow
         source gw_setup.sh
-        source ${{ github.event.pull_request.number }}/ci/platforms/orion.sh
+        cd ${{ github.event.pull_request.number }}/ci/platforms
+        source orion.sh
         cd ${{ github.event.pull_request.number }}/ci/scripts
         ./create_experiment.py --yaml ../cases/C48_S2S.yaml -dir ${{ github.event.pull_request.head.ref }}
+
+
 
