@@ -58,12 +58,15 @@ jobs:
         cd ${{ github.event.pull_request.number }}/sorc
         ./link_workflow.sh
 
-  create-experiments
+  create-experiments:
       needs: clone-build
-      run: |
-        cd ${{ github.event.pull_request.number }}/workflow
-        source gw_setup.sh
-        cd ${{ github.event.pull_request.number }}/ci/platforms
-        source orion.sh
-        cd ${{ github.event.pull_request.number }}/ci/scripts
-        ./create_experiment.py --yaml ../cases/C48_S2S.yaml -dir ${{ github.event.pull_request.head.ref }}
+      runs-on: [self-hosted, orion-ready]
+      steps:
+        - name: Create Experiments
+          run: |
+             cd ${{ github.event.pull_request.number }}/workflow
+             source gw_setup.sh
+             cd ${{ github.event.pull_request.number }}/ci/platforms
+             source orion.sh
+             cd ${{ github.event.pull_request.number }}/ci/scripts
+             ./create_experiment.py --yaml ../cases/C48_S2S.yaml -dir ${{ github.event.pull_request.head.ref }}
