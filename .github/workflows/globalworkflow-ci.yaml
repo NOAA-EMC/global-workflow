@@ -6,6 +6,7 @@ name: gw-ci-orion
 #   - CI-Orion-Ready
 #   - CI-Orion-Build
 #   - CI-Orion-Run
+#   no op
 
 on:
   pull_request:
@@ -26,12 +27,14 @@ jobs:
     timeout-minutes: 600
     
     steps:
+
     - name: Setup
       run: |
         mkdir ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
 
     - name: Clone
       uses: actions/checkout@v3
+      working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
       with:
         path: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
 
