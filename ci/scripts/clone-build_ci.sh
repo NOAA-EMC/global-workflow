@@ -46,7 +46,7 @@ if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
 
-git clone "${REPO_URL}"
+git clone --recursive "${REPO_URL}"
 cd global-workflow || exit 1
 
 pr_state=$("${GH}" pr view "${PR}" --json state --jq '.state')
