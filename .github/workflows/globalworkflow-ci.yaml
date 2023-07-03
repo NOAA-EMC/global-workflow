@@ -14,6 +14,10 @@ on:
 
 env:
   GFS_CI_ROOT: ${{ vars.GFS_CI_ROOT_ORION }}
+  
+defaults:
+ run:
+  working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
 
 jobs:
   clone-build:
@@ -21,13 +25,13 @@ jobs:
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
     
+    steps:
     - name: Setup
       run: |
         mkdir ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
 
     - name: Clone
       uses: actions/checkout@v3
-      working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
       with:
         path: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
 
