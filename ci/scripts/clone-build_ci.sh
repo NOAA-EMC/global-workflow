@@ -66,7 +66,6 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 # start output file
 {
  echo "Automated global-workflow Testing Results:"
- echo '```'
  echo "Machine: ${MACHINE_ID^}"
  echo "Start: $(date) on $(hostname)" || true
  echo "---------------------------------------------------"
