@@ -6,7 +6,6 @@ name: gw-ci-orion
 #   - CI-Orion-Ready
 #   - CI-Orion-Build
 #   - CI-Orion-Run
-#   NO OP
 
 on:
   pull_request:
