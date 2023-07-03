@@ -6,7 +6,6 @@ name: gw-ci-orion
 #   - CI-Orion-Ready
 #   - CI-Orion-Build
 #   - CI-Orion-Run
-#   no op
 
 on:
   pull_request:
@@ -15,12 +14,18 @@ on:
 
 env:
   GFS_CI_ROOT: ${{ vars.GFS_CI_ROOT_ORION }}
+  
+defaults:
+ run:
+  working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
 
 jobs:
   clone-build:
     if:  github.event.label.name == 'CI-Orion-Build'
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
+    
+    steps:
 
     - name: Setup
       run: |
