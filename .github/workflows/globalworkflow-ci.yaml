@@ -39,3 +39,12 @@ jobs:
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
         ./link_workflow.sh
+
+    - name: create-experiments
+      run: |
+        cd ${{ github.event.pull_request.number }}/workflow
+        source gw_setup.sh
+        source ${{ github.event.pull_request.number }}/ci/platforms/orion.sh
+        cd ${{ github.event.pull_request.number }}/ci/scripts
+        ./create_experiment.py --yaml ../cases/C48_S2S.yaml -dir ${{ github.event.pull_request.head.ref }}
+
