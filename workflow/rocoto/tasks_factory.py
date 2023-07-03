@@ -1,4 +1,4 @@
-from pygw.factory import Factory
+from wxflow.factory import Factory
 from rocoto.gfs_tasks import GFSTasks
 from rocoto.gefs_tasks import GEFSTasks
 

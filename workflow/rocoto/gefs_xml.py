@@ -2,7 +2,7 @@
 
 from rocoto.workflow_xml import RocotoXML
 from applications.applications import AppConfig
-from pygw.timetools import to_timedelta
+from wxflow.timetools import to_timedelta
 from typing import Dict
 
 

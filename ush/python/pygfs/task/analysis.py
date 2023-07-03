@@ -7,13 +7,13 @@ from logging import getLogger
 from netCDF4 import Dataset
 from typing import List, Dict, Any, Union
 
-from pygw.yaml_file import parse_j2yaml
-from pygw.file_utils import FileHandler
-from pygw.fsutils import rm_p
-from pygw.logger import logit
-from pygw.task import Task
-from pygw.executable import Executable
-from pygw.exceptions import WorkflowException
+from wxflow.yaml_file import parse_j2yaml
+from wxflow.file_utils import FileHandler
+from wxflow.fsutils import rm_p
+from wxflow.logger import logit
+from wxflow.task import Task
+from wxflow.executable import Executable
+from wxflow.exceptions import WorkflowException
 
 logger = getLogger(__name__.split('.')[-1])
 

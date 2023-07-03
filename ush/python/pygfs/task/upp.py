@@ -5,15 +5,15 @@ from logging import getLogger
 from typing import Dict, Any, Union
 from pprint import pformat
 
-from pygw.attrdict import AttrDict
-from pygw.yaml_file import parse_j2yaml
-from pygw.file_utils import FileHandler
-from pygw.jinja import Jinja
-from pygw.logger import logit
-from pygw.task import Task
-from pygw.timetools import add_to_datetime, to_timedelta
-from pygw.exceptions import WorkflowException
-from pygw.executable import Executable, which
+from wxflow.attrdict import AttrDict
+from wxflow.yaml_file import parse_j2yaml
+from wxflow.file_utils import FileHandler
+from wxflow.jinja import Jinja
+from wxflow.logger import logit
+from wxflow.task import Task
+from wxflow.timetools import add_to_datetime, to_timedelta
+from wxflow.exceptions import WorkflowException
+from wxflow.executable import Executable, which
 
 logger = getLogger(__name__.split('.')[-1])
 

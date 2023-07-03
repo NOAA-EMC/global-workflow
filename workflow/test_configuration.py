@@ -1,5 +1,5 @@
 import sys
-from pygw.configuration import Configuration
+from wxflow.configuration import Configuration
 
 
 expdir = sys.argv[1]

@@ -12,9 +12,9 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
 
 from hosts import Host
 
-from pygw.yaml_file import parse_j2yaml
-from pygw.attrdict import AttrDict
-from pygw.timetools import to_datetime, to_timedelta, datetime_to_YMDH
+from wxflow.yaml_file import parse_j2yaml
+from wxflow.attrdict import AttrDict
+from wxflow.timetools import to_datetime, to_timedelta, datetime_to_YMDH
 
 
 _here = os.path.dirname(__file__)

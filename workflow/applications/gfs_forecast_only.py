@@ -1,5 +1,5 @@
 from applications.applications import AppConfig
-from pygw.configuration import Configuration
+from wxflow.configuration import Configuration
 
 
 class GFSForecastOnlyAppConfig(AppConfig):

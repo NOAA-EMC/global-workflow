@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from applications.applications import AppConfig
-from pygw.configuration import Configuration
+from wxflow.configuration import Configuration
 from datetime import timedelta
 
 

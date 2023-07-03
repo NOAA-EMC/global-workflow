@@ -22,9 +22,9 @@ with an error code of 0 upon success.
 
 from pathlib import Path
 
-from pygw.yaml_file import YAMLFile
-from pygw.logger import Logger
-from pygw.executable import Executable
+from wxflow.yaml_file import YAMLFile
+from wxflow.logger import Logger
+from wxflow.executable import Executable
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 

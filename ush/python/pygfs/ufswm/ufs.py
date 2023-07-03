@@ -3,8 +3,8 @@ import copy
 import logging
 from typing import Dict, Any
 
-from pygw.template import Template, TemplateConstants
-from pygw.logger import logit
+from wxflow.template import Template, TemplateConstants
+from wxflow.logger import logit
 
 logger = logging.getLogger(__name__.split('.')[-1])
 

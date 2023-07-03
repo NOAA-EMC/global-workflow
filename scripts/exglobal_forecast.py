@@ -2,9 +2,9 @@
 
 import os
 
-from pygw.logger import Logger, logit
-from pygw.yaml_file import save_as_yaml
-from pygw.configuration import cast_strdict_as_dtypedict
+from wxflow.logger import Logger, logit
+from wxflow.yaml_file import save_as_yaml
+from wxflow.configuration import cast_strdict_as_dtypedict
 from pygfs.task.gfs_forecast import GFSForecast
 
 # initialize root logger

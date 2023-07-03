@@ -7,15 +7,15 @@ import tarfile
 from logging import getLogger
 from typing import Dict, List, Any
 
-from pygw.attrdict import AttrDict
-from pygw.file_utils import FileHandler
-from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD
-from pygw.fsutils import rm_p, chdir
-from pygw.yaml_file import parse_yamltmpl, parse_j2yaml, save_as_yaml
-from pygw.logger import logit
-from pygw.executable import Executable
-from pygw.exceptions import WorkflowException
-from pygw.template import Template, TemplateConstants
+from wxflow.attrdict import AttrDict
+from wxflow.file_utils import FileHandler
+from wxflow.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD
+from wxflow.fsutils import rm_p, chdir
+from wxflow.yaml_file import parse_yamltmpl, parse_j2yaml, save_as_yaml
+from wxflow.logger import logit
+from wxflow.executable import Executable
+from wxflow.exceptions import WorkflowException
+from wxflow.template import Template, TemplateConstants
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])

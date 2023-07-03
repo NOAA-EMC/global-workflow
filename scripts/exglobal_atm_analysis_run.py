@@ -5,8 +5,8 @@
 # which executes the global atm variational analysis
 import os
 
-from pygw.logger import Logger
-from pygw.configuration import cast_strdict_as_dtypedict
+from wxflow.logger import Logger
+from wxflow.configuration import cast_strdict_as_dtypedict
 from pygfs.task.atm_analysis import AtmAnalysis
 
 # Initialize root logger
