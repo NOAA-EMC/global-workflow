@@ -1,0 +1,48 @@
+name: gw-ci-orion
+# A GitHub Action that creates a deployment for a PR, clones, builds and runs a test suite
+# This workflow is triggered by a label being added to a PR
+# The label name determines the environment to deploy to
+# The label name must be one of the following:
+#   - CI-Orion-Ready
+#   - CI-Orion-Build
+#   - CI-Orion-Run
+#   no op
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+env:
+  GFS_CI_ROOT: ${{ vars.GFS_CI_ROOT_ORION }}
+
+jobs:
+  clone-build:
+    if:  github.event.label.name == 'CI-Orion-Build'
+    runs-on: [self-hosted, orion-ready]
+    timeout-minutes: 600
+
+    - name: Setup
+      run: |
+        mkdir ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
+
+    - name: Clone
+      uses: actions/checkout@v3
+      working-directory: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
+      with:
+        path: ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}
+
+    - name: Checkout
+      run: |
+        cd ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}/sorc
+        ./checkout.sh  # Options e.g. -g -u can be added later
+
+    - name: Build
+      run: |
+        cd ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}/sorc
+        ./build_all.sh
+
+    - name: Link
+      run: |
+        cd ${{ env.GFS_CI_ROOT }}/PR/${{ github.event.pull_request.number }}/sorc
+        ./link_workflow.sh
