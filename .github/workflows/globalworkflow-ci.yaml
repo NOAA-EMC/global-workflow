@@ -18,7 +18,7 @@ env:
 defaults:
  run:
    #working-directory: ${{ vars.GFS_CI_ROOT_ORION }}/PR/${{ github.event.pull_request.number }}
-  working-directory: /work2/noaa/stmp/GFS_CI_ROOT/PR/${{ github.event.pull_request.number }}
+  working-directory: /work2/noaa/stmp/GFS_CI_ROOT/PR/155
 
 jobs:
   clone-build:
