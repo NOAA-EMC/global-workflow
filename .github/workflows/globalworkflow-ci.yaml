@@ -46,14 +46,15 @@ jobs:
       steps:
         - name: Create Experiments
           env:
-            HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+            HOMEGFS: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+            HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}           
             
           run: |
-             cd $HOMEgfs/workflow
+             cd $HOMEGFS/workflow
              source gw_setup.sh
-             cd $HOMEgfs/ci/platforms
+             cd $HOMEGFS/ci/platforms
              source orion.sh
-             cd $HOMEgfs/ci/scripts
+             cd $HOMEGFS/ci/scripts
              ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir ${{ github.event.pull_request.head.ref }}
              
          
