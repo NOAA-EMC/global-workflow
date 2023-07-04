@@ -28,7 +28,7 @@ jobs:
     - name: Checkout
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
-        ./checkout.sh  # Options e.g. -g -u can be added later
+        # ./checkout.sh  # Options e.g. -g -u can be added later
 
     - name: Remove label from pull request
       uses: actions/github-script@v3.1.0
@@ -37,16 +37,17 @@ jobs:
         script: |
           const { context, github } = require('@actions/github');
           const { owner, repo } = context.repo;
+          const prNumber = context.payload.pull_request.number;
           await github.issues.removeLabel({
             owner: owner,
             repo: repo,
-            issue_number: context.payload.pull_request.number;
+            issue_number: prNumber;
             name: 'CI-Orion-Ready'
           });
           await github.issues.updateLabel({
             owner: owner,
             repo: repo,
-            issue_number: context.payload.pull_request.number;
+            issue_number: prNumber;
             name: 'CI-Orion-Building'
           });
           
