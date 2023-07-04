@@ -54,6 +54,6 @@ jobs:
              cd $HOMEgfs/ci/platforms
              source orion.sh
              cd $HOMEgfs/ci/scripts
-             ./create_experiment.py --yaml ../cases/C48_S2S.yaml -dir ${{ github.event.pull_request.head.ref }}
+             ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir ${{ github.event.pull_request.head.ref }}
              
          
