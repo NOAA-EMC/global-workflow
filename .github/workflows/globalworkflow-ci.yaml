@@ -36,13 +36,13 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           github.issues.removeLabel({
-            issue_number: prNumber,
+            issue_number: context.payload.pull_request.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
             name: 'CI-Orion-Ready'
           })
           github.issues.addLabels({
-            issue_number: prNumber,
+            issue_number: context.payload.pull_request.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
             labels: ['CI-Orion-Building']
