@@ -47,9 +47,11 @@ jobs:
         - name: Create Experiments
           env:
             HOMEGFS: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-            HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}           
+            HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+            RUNTESTS: ${{ github.workspace }}/RUNTESTS
             
           run: |
+             mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
              source gw_setup.sh
              cd $HOMEGFS/ci/platforms
