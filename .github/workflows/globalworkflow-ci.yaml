@@ -45,12 +45,15 @@ jobs:
       runs-on: [self-hosted, orion-ready]
       steps:
         - name: Create Experiments
+          env:
+            HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+            
           run: |
-             cd ${{ github.event.pull_request.number }}/workflow
+             cd $HOMEgfs/workflow
              source gw_setup.sh
-             cd ${{ github.event.pull_request.number }}/ci/platforms
+             cd $HOMEgfs/ci/platforms
              source orion.sh
-             cd ${{ github.event.pull_request.number }}/ci/scripts
+             cd $Homegfs/ci/scripts
              ./create_experiment.py --yaml ../cases/C48_S2S.yaml -dir ${{ github.event.pull_request.head.ref }}
              
          
