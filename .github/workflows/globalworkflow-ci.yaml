@@ -54,7 +54,7 @@ jobs:
         run: |
              mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
-             # source gw_setup.sh TODO errors on conda init
+             source ./gw_setup.sh
              cd $HOMEGFS/ci/platforms
              source orion.sh
              cd $HOMEGFS/ci/scripts
@@ -73,8 +73,6 @@ jobs:
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       run: |
         cd $HOMEgfs/ci/platforms
-        which gh
         source orion.sh
-        which gh
         cd $HOMEgfs/ci/scripts
         ./run_ci_looped.sh

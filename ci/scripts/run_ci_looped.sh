@@ -57,8 +57,7 @@ else
 fi
 
 RUN_COMPLETE="FALSE"
-
-while [ ${RUN_COMPLETE} .ne. "TRUE" ]; do
+while [ ${RUN_COMPLETE} == "TRUE" ]; do
 
   xml="${EXPDIR}/${pslot}/${pslot}.xml"
   db="${EXPDIR}/${pslot}/${pslot}.db"
