@@ -1,0 +1,63 @@
+name: gw-ci-orion
+# A GitHub Action that creates a deployment for a PR, clones, builds and runs a test suite
+# This workflow is triggered by a label being added to a PR
+# The label name determines the environment to deploy to
+# The label name must be one of the following:
+#   - CI-Orion-Ready
+#   - CI-Orion-Build
+#   - CI-Orion-Run
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  clone-build:
+    if:  github.event.label.name == 'CI-Orion-Ready'
+    runs-on: [self-hosted, orion-ready]
+    timeout-minutes: 600
+    
+    steps:
+
+    - name: Clone
+      uses: actions/checkout@v3
+      with:
+        path: ${{ github.event.pull_request.number }}
+
+    - name: Checkout
+      run: |
+        cd ${{ github.event.pull_request.number }}/sorc
+        ./checkout.sh  # Options e.g. -g -u can be added later
+        
+    - name: Build
+      run: |
+        cd ${{ github.event.pull_request.number }}/sorc
+        ./build_all.sh
+
+    - name: Link
+      run: |
+        cd ${{ github.event.pull_request.number }}/sorc
+        ./link_workflow.sh
+        
+  create-experiments:
+      needs: clone-build
+      runs-on: [self-hosted, orion-ready]
+      steps:
+        - name: Create Experiments
+          env:
+            HOMEGFS: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+            HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+            RUNTESTS: ${{ github.workspace }}/RUNTESTS
+            pslot: C48_S2S
+            
+          run: |
+             mkdir -p $RUNTESTS
+             cd $HOMEGFS/workflow
+             source gw_setup.sh
+             cd $HOMEGFS/ci/platforms
+             source orion.sh
+             cd $HOMEGFS/ci/scripts
+             ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir $HOMEGFS
+             
+         
