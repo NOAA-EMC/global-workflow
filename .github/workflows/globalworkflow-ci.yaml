@@ -54,8 +54,8 @@ jobs:
           run: |
              mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
-             source gw_setup.sh
              continue-on-error: true
+             source gw_setup.sh
              cd $HOMEGFS/ci/platforms
              source orion.sh
              cd $HOMEGFS/ci/scripts
