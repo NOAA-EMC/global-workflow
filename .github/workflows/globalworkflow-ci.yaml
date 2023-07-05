@@ -68,8 +68,8 @@ jobs:
       env:
         pslot: C48_S2S
         pr: ${{ github.event.pull_request.number }}
-        EXPDIR: ${{ github.workspace }}/${{ env.pr }}/RUNTESTS/C48_S2S/EXPDIR
-        HOMEgfs: ${{ github.workspace }}/${{ env.pr }}
+        EXPDIR: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS/C48_S2S/EXPDIR
+        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       run: |
         cd $HOMEgfs/ci/platforms
