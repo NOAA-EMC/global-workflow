@@ -33,12 +33,12 @@ jobs:
     - name: Build
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
-        #./build_all.sh
+        ./build_all.sh
 
     - name: Link
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
-        #./link_workflow.sh
+        ./link_workflow.sh
         
   create-experiments:
       needs: clone-build
@@ -67,8 +67,11 @@ jobs:
     - name: Run Experiment
       env:
         pslot: C48_S2S
-        EXPDIR: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS/C48_S2S/EXPDIR
-        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+        pr: ${{ github.event.pull_request.number }}
+        EXPDIR: ${{ github.workspace }}/${{ env.pr }}/RUNTESTS/C48_S2S/EXPDIR
+        HOMEgfs: ${{ github.workspace }}/${{ env.pr }}
+        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        pr: 
       run: |
         cd $HOMEgfs/ci/platforms
         which gh
