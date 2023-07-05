@@ -59,3 +59,20 @@ jobs:
              source orion.sh
              cd $HOMEGFS/ci/scripts
              ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir $HOMEGFS
+
+  run-experiments:
+    needs: create-experiments
+    runs-on: [self-hosted, orion-ready]
+    steps:
+    - name: Run Experiment
+      env:
+        pslot: C48_S2S
+        EXPDIR: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS/C48_S2S/EXPDIR
+        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+      run: |
+        cd $HOMEgfs/ci/platforms
+        which gh
+        source orion.sh
+        which gh
+        cd $HOMEgfs/ci/scripts
+        ./run_ci_looped.sh
