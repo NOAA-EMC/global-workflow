@@ -6,7 +6,7 @@ set -eux
 #                     running rocotostat on each to determine if the experiment has
 #                     succeeded or faild.  This script is intended
 #                     to run from within a cron job in the CI Managers account
-# Abstract TODO
+# Abstract no op
 #####################################################################################
 
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
