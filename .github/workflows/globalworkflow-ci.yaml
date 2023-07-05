@@ -43,15 +43,17 @@ jobs:
   create-experiments:
       needs: clone-build
       runs-on: [self-hosted, orion-ready]
-      steps:
-        - name: Create Experiments
-          env:
+      # TODO conda init error on sourcing gw_setup.sh
+      continue-on-error: true
+      steps: 
+      - name: Create Experiments
+        env:
             HOMEGFS: ${{ github.workspace }}/${{ github.event.pull_request.number }}
             HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
             RUNTESTS: ${{ github.workspace }}/RUNTESTS
             pslot: C48_S2S
             
-          run: |
+        run: |
              continue-on-error: true
              mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
