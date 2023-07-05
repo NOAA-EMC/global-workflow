@@ -61,10 +61,7 @@ while [ ${RUN_COMPLETE} == "FALSE" ]; do
 
   xml="${EXPDIR}/${pslot}/${pslot}.xml"
   db="${EXPDIR}/${pslot}/${pslot}.db"
-  if [[ ! -f "${db}" ]]; then
-    echo "Database file ${db} not found, experment ${pslot} failed"
-    exit 1 
-  fi
+
   if [[ ! -f "${xml}" ]]; then
     echo "XML file ${xml} not found, experment ${pslot} failed"
     exit 1 
@@ -74,6 +71,10 @@ while [ ${RUN_COMPLETE} == "FALSE" ]; do
 
   # Wait before running rocotostat
   sleep 60
+  if [[ ! -f "${db}" ]]; then
+    echo "Database file ${db} not found, experment ${pslot} failed"
+    exit 1 
+  fi
 
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
@@ -111,6 +112,6 @@ while [ ${RUN_COMPLETE} == "FALSE" ]; do
   fi
 
   # Wait before running rocotorun again
-  sleep 300
+  sleep 240
 
 done
