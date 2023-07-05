@@ -73,7 +73,8 @@ while [ ${RUN_COMPLETE} .ne. "TRUE" ]; do
   echo "Running: ${rocotorun} -v 6 -w ${xml} -d ${db}"
   "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
 
-  sleep 180
+  # Wait before running rocotostat
+  sleep 60
 
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
@@ -109,5 +110,8 @@ while [ ${RUN_COMPLETE} .ne. "TRUE" ]; do
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${HOMEgfs}/output_${id}"
     RUN_COMPLETE="TRUE"
   fi
+
+  # Wait before running rocotorun again
+  sleep 300
 
 done
