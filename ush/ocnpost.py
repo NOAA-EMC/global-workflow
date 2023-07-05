@@ -1,4 +1,4 @@
- #------------------------------------------------------------------
+#------------------------------------------------------------------
 # Denise.Worthen@noaa.gov (Feb 2019)
 #
 # This script will remap MOM6 ocean output on the tripole grid to 
@@ -96,7 +96,6 @@ import numpy as np
 import netCDF4 as nc
 import numpy.f2py
 sys.path.append(os.getcwd()) #add working directory
-#from fortran_module import esmfremap
 
 def initfortranprog():
     fsource1 = '''
@@ -145,11 +144,6 @@ def initfortranprog():
 def esmfmanualregrid(src,S,row,col,frac_b,n_s,varmeth,slatd,slond,dlatd,dlond):
     import esmfwghtinterp_f90subroutine 
 
-#    print('slatd = '+str(slatd))
-#    print('slond = '+str(slond))
-#    print('dlatd = '+str(dlatd))
-#    print('dlond = '+str(dlond))
-
     vardims=len(src.shape)
     if vardims == 4:
         nlevs=26
@@ -175,7 +169,6 @@ def esmfmanualregrid(src,S,row,col,frac_b,n_s,varmeth,slatd,slond,dlatd,dlond):
 
         dst[0,i,:,:] = np.transpose(np.reshape(dst_oned,(dlond,dlatd),'F'))
     return dst
-
 
 def main():
 
@@ -218,7 +211,6 @@ def main():
     output_masks=False
     methods=['bilinear','conserve']
     dsttype=['rect.']
-#   dstgrds=['0p25']
     regridtype='manual' #manual or auto
 
     #variables to be regridded with the native tripole stagger location
@@ -273,7 +265,6 @@ def main():
     
 
     #Get a list of available variables from netcdf file
-    #ncvarlist=list(ocnf.keys()) #Get list of variables using xarray
     ncvarlist=ocnf.variables.keys()  #Get list of variables using nc
 
     #Check which model is to be post-processed 
@@ -316,9 +307,6 @@ def main():
     if model == 'CICE':
         angleT=ocnf['ANGLET'] 
 
-
-
-    print('Generate 2d and 3d masks using SST and temp, respectively.')
     #get a 2 and 3 dimensional fields for creating the interpolation masks
     #the mask2d,mask3d contain 1's on land and 0's at valid points.
 
@@ -462,7 +450,6 @@ def main():
             print('Data has been regridded for mask3d') 
             rgmask3d = np.where(rgmask3d>0.0,  1.0, 0.0)       
 
-
         #Create Mask NETCDF File#########      
         testfile='masks_'+dstgrds[jj]+'.nc'
         os.system('rm -vf '+testfile)
@@ -503,7 +490,6 @@ def main():
 
         f.close()
 
-        ###############################
         #################################################
 
         for fl in range(0,dimfiles):
@@ -559,7 +545,6 @@ def main():
                 depth1[:]=z_l[:]
                 depth2[:]=z_i[:]      
                  
-                                                                                                                                                                                                                                             
     ###########################################################################
             for nv in range(0,nvars):
                 if valid[nv] == True:
@@ -589,8 +574,6 @@ def main():
                     del(varregrid)
                     del(varregridf)
 
-    #                print('Data has been regridded for '+varname)
-
     ###########################################################################
             for nv in range(0,nvpairs):
                 if validv[nv] == True:
@@ -604,9 +587,6 @@ def main():
                     uvel=ocnf[vecnames[0]][:].filled(fill_value=np.nan)
                     vecfldu = np.where(np.isnan(uvel),0.0,uvel)
                     ut=esmfmanualregrid(vecfldu,S3,row3,col3,frac_b3,n_s3,'bilinear',dimyh,dimxh,dimyh,dimxh)
-#                    print(ut.shape)
-#                    print(ut[0,0,985,613])
-#                   exit()
 
                     #Unstagger V component
                     vvel=ocnf[vecnames[1]][:].filled(fill_value=np.nan)
