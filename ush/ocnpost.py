@@ -271,8 +271,12 @@ def main():
     #by searching for a key variable specific to that model
     if 'SST' in ncvarlist:
         model='MOM'
-    elif 'Tsfc_d' in ncvarlist:
+    elif 'Tsfc_d' in ncvarlist or 'Tsfc_h' in ncvarlist:
         model='CICE'
+        if 'Tsfc_d' in ncvarlist:
+            samplevar='Tsfc_d'
+        if 'Tsfc_h' in ncvarlist:
+            samplevar='Tsfc_h' 
     else:
         print('Product not supported. Exiting program...')
         exit()
@@ -315,8 +319,8 @@ def main():
         SST=ocnf['SST'][:].filled(fill_value=np.nan)
         temp=ocnf['temp'][:].filled(fill_value=np.nan)
     if model == 'CICE':
-        ncfillval=ocnf['Tsfc_d'][:].get_fill_value()
-        SST=ocnf['Tsfc_d'][:].filled(fill_value=np.nan)
+        ncfillval=ocnf[samplevar][:].get_fill_value()
+        SST=ocnf[samplevar][:].filled(fill_value=np.nan)
 
     if model == 'MOM':
         mask2d = np.where(np.isnan(SST),  1.0, 0.0)
