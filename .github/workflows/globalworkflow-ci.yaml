@@ -55,7 +55,7 @@ jobs:
              mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
              # source gw_setup.sh TODO errors on conda init
-             cd $HOMEGFS/ci/pl/atforms
+             cd $HOMEGFS/ci/platforms
              source orion.sh
              cd $HOMEGFS/ci/scripts
              ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir $HOMEGFS
