@@ -48,16 +48,14 @@ jobs:
         env:
             HOMEGFS: ${{ github.workspace }}/${{ github.event.pull_request.number }}
             HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-            RUNTESTS: ${{ github.workspace }}/RUNTESTS
+            RUNTESTS: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS
             pslot: C48_S2S
             
         run: |
              mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
-             # source gw_setup.sh
-             cd $HOMEGFS/ci/platforms
+             # source gw_setup.sh TODO errors on conda init
+             cd $HOMEGFS/ci/pl/atforms
              source orion.sh
              cd $HOMEGFS/ci/scripts
              ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir $HOMEGFS
-             
-         
