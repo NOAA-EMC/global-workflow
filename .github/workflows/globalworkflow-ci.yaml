@@ -54,7 +54,6 @@ jobs:
             pslot: C48_S2S
             
         run: |
-             continue-on-error: true
              mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
              source gw_setup.sh
