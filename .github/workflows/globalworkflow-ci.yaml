@@ -70,7 +70,7 @@ jobs:
         pr: ${{ github.event.pull_request.number }}
         EXPDIR: ${{ github.workspace }}/${{ env.pr }}/RUNTESTS/C48_S2S/EXPDIR
         HOMEgfs: ${{ github.workspace }}/${{ env.pr }}
-        REPO_URL: ${{ github.server_url }}/${{ github.repository }
+        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       run: |
         cd $HOMEgfs/ci/platforms
         which gh
