@@ -52,9 +52,9 @@ jobs:
             pslot: C48_S2S
             
           run: |
+             continue-on-error: true
              mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
-             continue-on-error: true
              source gw_setup.sh
              cd $HOMEGFS/ci/platforms
              source orion.sh
