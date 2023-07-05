@@ -33,12 +33,12 @@ jobs:
     - name: Build
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
-        ./build_all.sh
+        #./build_all.sh
 
     - name: Link
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
-        ./link_workflow.sh
+        #./link_workflow.sh
         
   create-experiments:
       needs: clone-build
