@@ -43,8 +43,6 @@ jobs:
   create-experiments:
       needs: clone-build
       runs-on: [self-hosted, orion-ready]
-      # TODO conda init error on sourcing gw_setup.sh
-      continue-on-error: true
       steps: 
       - name: Create Experiments
         env:
@@ -56,7 +54,7 @@ jobs:
         run: |
              mkdir -p $RUNTESTS
              cd $HOMEGFS/workflow
-             source gw_setup.sh
+             # source gw_setup.sh
              cd $HOMEGFS/ci/platforms
              source orion.sh
              cd $HOMEGFS/ci/scripts
