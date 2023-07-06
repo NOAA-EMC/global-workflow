@@ -27,9 +27,6 @@ fi
 
 step=$1
 
-echo "${machine}"
-stop 9099
-
 echo "BEGIN: config.resources"
 
 if [[ "${machine}" = "WCOSS2" ]]; then
