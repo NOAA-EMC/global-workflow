@@ -26,25 +26,28 @@ jobs:
         path: ${{ github.event.pull_request.number }}
 
     - name: Checkout
+      env:
+        HOMEgfs: ${{ github.workspace }}/{{ github.event.pull_request.number }}
       run: |
-        cd ${{ github.event.pull_request.number }}/sorc
+        cd $HOMEgfs/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
-        cd ${{ github.event.pull_request.number }}
+        cd $HOMEgfs
         {
           echo "Automated global-workflow Testing Results:"
           echo '```'
           echo "Machine: Orion"
           echo "Start: $(date) on $(hostname)" || true
           echo "---------------------------------------------------"
-        }  >> ${{ github.workspace }}/${{ github.event.pull_request.number }}/global-workflow.log
+        }  >> global-workflow.log
         gh pr comment ${{ github.event.pull_request.number }} --body "$(cat global-workflow.log)"
 
     - name: Build
       env:
+        HOMEgfs: ${{ github.workspace }}/{{ github.event.pull_request.number }}
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         MACHINE_ID: orion
       run: |
-        cd ${{ github.event.pull_request.number }}/sorc
+        cd $HOMEgfs/sorc
         ./build_all.sh
         if [ $? -ne 0 ]; then
           gh pr comment ${{ github.event.pull_request.number }} --body "Automated global-workflow Testing Results: \n\n Build Failed"
