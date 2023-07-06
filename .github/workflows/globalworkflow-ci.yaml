@@ -27,7 +27,7 @@ jobs:
 
     - name: Checkout
       env:
-        HOMEgfs: ${{ github.workspace }}/{{ github.event.pull_request.number }}
+        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
       run: |
         cd $HOMEgfs/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
@@ -43,7 +43,7 @@ jobs:
 
     - name: Build
       env:
-        HOMEgfs: ${{ github.workspace }}/{{ github.event.pull_request.number }}
+        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         MACHINE_ID: orion
       run: |
