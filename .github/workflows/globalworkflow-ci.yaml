@@ -40,23 +40,10 @@ jobs:
         }  >> global-workflow.log
         cd $HOMEgfs/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
-        if [ $? -ne 0 ]; then
-          {
-            echo "Checkout:                      *FAILED*"
-            echo "Checkout: Failed at $(date)" || true
-            echo "Checkout: see output at ${PWD}/log.checkout"
-          } >> ${HOMEgfs}/global-workflow.log
-          exit 1
-        else
-         {
-           echo "Checkout:                      *SUCCESS*"
-           echo "Checkout: Completed at $(date)" || true
-         } >> ${HOMEgfs}/global-workflow.log
-        fi
-        gh pr comment ${{ github.event.pull_request.number }} --repo $REPO_URL --body-file ${HOMEgfs}/global-workflow.log
-
+        
     - name: Build
       env:
+        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         MACHINE_ID: orion
         pr: ${{ github.event.pull_request.number }}
@@ -67,6 +54,7 @@ jobs:
         ./build_all.sh
 
     - name: Link
+      env:
         HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         MACHINE_ID: orion
