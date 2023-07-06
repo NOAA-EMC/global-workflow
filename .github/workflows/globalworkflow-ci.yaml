@@ -20,19 +20,6 @@ jobs:
     
     steps:
 
-    run: |
-      cd ${{ github.workspace }}
-      mkdir -p ${{ github.event.pull_request.number }}
-      cd ${{ github.event.pull_request.number }}
-      {
-        echo "Automated global-workflow Testing Results:"
-        echo '```'
-        echo "Machine: Orion"
-        echo "Start: $(date) on $(hostname)" || true
-        echo "---------------------------------------------------"
-      }  >> ${{ github.workspace }}/${{ github.event.pull_request.number }}/global-workflow.log
-      gh pr comment ${{ github.event.pull_request.number }} --body "$(cat global-workflow.log)"
-
     - name: Clone
       uses: actions/checkout@v3
       with:
@@ -41,7 +28,16 @@ jobs:
     - name: Checkout
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
-        ./checkout.sh  # Options e.g. -g -u can be added later
+        ./checkout.sh  # Options e.g. -g -u can be added late
+        cd ${{ github.event.pull_request.number }}
+        {
+          echo "Automated global-workflow Testing Results:"
+          echo '```'
+          echo "Machine: Orion"
+          echo "Start: $(date) on $(hostname)" || true
+          echo "---------------------------------------------------"
+        }  >> ${{ github.workspace }}/${{ github.event.pull_request.number }}/global-workflow.log
+        gh pr comment ${{ github.event.pull_request.number }} --body "$(cat global-workflow.log)"
 
     - name: Build
       env:
