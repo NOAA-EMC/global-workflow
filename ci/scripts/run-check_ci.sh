@@ -106,7 +106,9 @@ while [[ ${RUN_COMPLETE} == "FALSE" ]]; do
     } >> "${HOMEgfs}/global-workflow.log"
     sed -i "s/\`\`\`//2g" "${HOMEgfs}/global-workflow.log"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${HOMEgfs}/global-workflow.log"
+    "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
     RUN_COMPLETE="TRUE"
+    exit 0
   fi
 
   # Wait before running rocotorun again
