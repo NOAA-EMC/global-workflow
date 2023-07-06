@@ -75,8 +75,6 @@ while [[ ${RUN_COMPLETE} == "FALSE" ]]; do
     echo "Database file ${db} not found, experment ${pslot} failed"
     exit 1 
   fi
-
-  id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
   num_cycles=$(echo "${rocoto_stat_output}" | wc -l) || true
   num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
