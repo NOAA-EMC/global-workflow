@@ -49,15 +49,16 @@ jobs:
         MACHINE_ID: orion
         pr: ${{ github.event.pull_request.number }}
       run: |
+        gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
         cd ${HOMEgfs}/sorc
         ./build_all.sh
         if [ $? -ne 0 ]; then
           gh pr comment ${pr} --repo ${REPO_URL} --body "Automated global-workflow Testing Results: \n\n Build Failed"
-          gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Failed"
+          gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
           exit 1
         else
           gh pr comment ${pr} --repo $REPO_URL --body "Automated global-workflow Testing Results: \n\n Build Passed"
-          gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Running"
+          gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
         fi 
 
     - name: Link
