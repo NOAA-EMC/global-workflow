@@ -28,6 +28,7 @@ jobs:
     - name: Checkout
       env:
         HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       run: |
         cd $HOMEgfs/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
@@ -39,23 +40,24 @@ jobs:
           echo "Start: $(date) on $(hostname)" || true
           echo "---------------------------------------------------"
         }  >> global-workflow.log
-        gh pr comment ${{ github.event.pull_request.number }} --body "$(cat global-workflow.log)"
+        gh pr comment ${{ github.event.pull_request.number }} --repo $REPO_URL --body "$(cat global-workflow.log)"
 
     - name: Build
       env:
         HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         MACHINE_ID: orion
+        pr: ${{ github.event.pull_request.number }}
       run: |
-        cd $HOMEgfs/sorc
+        cd ${HOMEgfs}/sorc
         ./build_all.sh
         if [ $? -ne 0 ]; then
-          gh pr comment ${{ github.event.pull_request.number }} --body "Automated global-workflow Testing Results: \n\n Build Failed"
-          gh pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Failed"
+          gh pr comment ${pr} --repo ${REPO_URL} --body "Automated global-workflow Testing Results: \n\n Build Failed"
+          gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Failed"
           exit 1
         else
-          gh pr comment ${{ github.event.pull_request.number }} --body "Automated global-workflow Testing Results: \n\n Build Passed"
-          gh pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Running"
+          gh pr comment ${pr} --repo $REPO_URL --body "Automated global-workflow Testing Results: \n\n Build Passed"
+          gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Running"
         fi 
 
     - name: Link
@@ -75,13 +77,13 @@ jobs:
             pslot: C48_S2S
             
         run: |
-             mkdir -p $RUNTESTS
-             cd $HOMEGFS/workflow
+             mkdir -p ${RUNTESTS}
+             cd ${HOMEGFS}/workflow
              source ./gw_setup.sh
-             cd $HOMEGFS/ci/platforms
+             cd ${HOMEGFS}/ci/platforms
              source orion.sh
-             cd $HOMEGFS/ci/scripts
-             ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir $HOMEGFS
+             cd ${HOMEGFS}/ci/scripts
+             ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir ${HOMEGFS}
 
   run-experiments:
     needs: create-experiments
