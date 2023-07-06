@@ -6,7 +6,7 @@ COMINsyn: '${COMROOT}/gfs/prod/syndat' #TODO: This does not yet exist.
 HOMEDIR: '/contrib/${USER}'
 STMP: '/lustre/${USER}/stmp2/'
 PTMP: '/lustre/${USER}/stmp4/'
-NOSCRUB: $HOMEDIR
+NOSCRUB: ${HOMEDIR}
 ACCOUNT: hwufscpldcld
 SCHEDULER: slurm
 QUEUE: batch

@@ -134,7 +134,7 @@ class Tasks:
         if self.cdump in ['gfs'] and f'npe_node_{task_name}_gfs' in task_config.keys():
             ppn = task_config[f'npe_node_{task_name}_gfs']
 
-        nodes = np.int(np.ceil(np.float(cores) / np.float(ppn)))
+        nodes = int(np.ceil(float(cores) / float(ppn)))
 
         threads = task_config[f'nth_{task_name}']
         if self.cdump in ['gfs'] and f'nth_{task_name}_gfs' in task_config.keys():
