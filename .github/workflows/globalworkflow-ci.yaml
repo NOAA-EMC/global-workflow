@@ -67,6 +67,7 @@ jobs:
         ./build_all.sh
 
     - name: Link
+      env:
         HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         MACHINE_ID: orion
