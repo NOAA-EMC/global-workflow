@@ -20,6 +20,19 @@ jobs:
     
     steps:
 
+    run: |
+      cd ${{ github.workspace }}
+      mkdir -p ${{ github.event.pull_request.number }}
+      cd ${{ github.event.pull_request.number }}
+      {
+        echo "Automated global-workflow Testing Results:"
+        echo '```'
+        echo "Machine: Orion"
+        echo "Start: $(date) on $(hostname)" || true
+        echo "---------------------------------------------------"
+      }  >> ${{ github.workspace }}/${{ github.event.pull_request.number }}/global-workflow.log
+      gh pr comment ${{ github.event.pull_request.number }} --body "$(cat global-workflow.log)"
+
     - name: Clone
       uses: actions/checkout@v3
       with:
@@ -29,11 +42,22 @@ jobs:
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added later
-        
+
     - name: Build
+      env:
+        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        MACHINE_ID: orion
       run: |
         cd ${{ github.event.pull_request.number }}/sorc
         ./build_all.sh
+        if [ $? -ne 0 ]; then
+          gh pr comment ${{ github.event.pull_request.number }} --body "Automated global-workflow Testing Results: \n\n Build Failed"
+          gh pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Failed"
+          exit 1
+        else
+          gh pr comment ${{ github.event.pull_request.number }} --body "Automated global-workflow Testing Results: \n\n Build Passed"
+          gh pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Running"
+        fi 
 
     - name: Link
       run: |
@@ -75,4 +99,4 @@ jobs:
         cd $HOMEgfs/ci/platforms
         source orion.sh
         cd $HOMEgfs/ci/scripts
-        ./run_ci_looped.sh
+        ./run-check_ci.sh
