@@ -3,7 +3,7 @@
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
-from wxflow.template import Template, TemplateConstants
+from wxflow import Template, TemplateConstants
 
 __all__ = ['Tasks', 'create_wf_task']
 

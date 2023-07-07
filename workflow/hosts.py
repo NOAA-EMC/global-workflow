@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from wxflow.yaml_file import YAMLFile
+from wxflow import YAMLFile
 
 
 __all__ = ['Host']

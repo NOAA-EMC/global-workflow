@@ -1,4 +1,4 @@
-from wxflow.factory import Factory
+from wxflow import Factory
 from rocoto.gfs_cycled_xml import GFSCycledRocotoXML
 from rocoto.gfs_forecast_only_xml import GFSForecastOnlyRocotoXML
 from rocoto.gefs_xml import GEFSRocotoXML

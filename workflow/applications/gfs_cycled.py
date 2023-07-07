@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from applications.applications import AppConfig
-from wxflow.configuration import Configuration
+from wxflow import Configuration
 from datetime import timedelta
 
 

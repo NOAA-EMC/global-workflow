@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Any
 from hosts import Host
-from wxflow.configuration import Configuration
+from wxflow import Configuration
 from abc import ABC, ABCMeta, abstractmethod
 
 __all__ = ['AppConfig']
