@@ -224,7 +224,8 @@ class LandAnalysis(Analysis):
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_LAND_ANALYSIS', 'APREFIX',
-                'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'ntiles',
+                'SNOWDEPTHVAR', 'BESTDDEV',
+                'FRAC_GRID', 'CASE', 'ntiles',
                 'APRUN_LANDANL', 'JEDIEXE', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
@@ -431,6 +432,7 @@ class LandAnalysis(Analysis):
              COM_ATMOS_RESTART_PREV
              DATA
              current_cycle
+             FRAC_GRID
              CASE
              ntiles
              APPLY_INCR_NML_TMPL
