@@ -2,6 +2,7 @@
 # a collection of functions, classes, etc.
 # used for the GSI global analysis
 
+
 def isTrue(str_in):
     """ isTrue(str_in)
     - function to translate shell variables to python logical variables
