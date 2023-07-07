@@ -12,108 +12,140 @@ on:
     types:
       - labeled
 
+env:
+  HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+  HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+  RUNTESTS: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS
+  MACHINE_ID: orion
+
 jobs:
-  clone-build:
+  checkout-build-link:
     if:  github.event.label.name == 'CI-Orion-Ready'
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
-    
-    steps:
 
-    - name: Clone
+    steps:
+    - name: Checkout
       uses: actions/checkout@v3
       with:
         path: ${{ github.event.pull_request.number }}
 
-    - name: Checkout
+    - name: Checkout components
       env:
         HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       run: |
-        cd ${HOMEgfs}
-        {
-          echo "Automated global-workflow Testing Results:"
-          echo '```'
-          echo "Machine: Orion"
-          echo "Start: $(date) on $(hostname)" || true
-          echo "---------------------------------------------------"
-        }  >> global-workflow.log
-        cd $HOMEgfs/sorc
+        cd ${{ env.HOMEgfs }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
-        
-    - name: Build
-      env:
-        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-        MACHINE_ID: orion
-        pr: ${{ github.event.pull_request.number }}
-      run: |
-        gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
 
-        cd ${HOMEgfs}/sorc
+    - name: Build executables
+      uses: actions-ecosystem/action-remove-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+      with:
+        labels: "CI-Orion-Ready"
+      uses: actions-ecosystem/action-add-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+      with:
+        labels: "CI-Orion-Building"
+      run: |
+        cd ${{ env.HOMEgfs }}/sorc
         ./build_all.sh
+      if: ${{ failure() }}
+      uses: actions-ecosystem/action-remove-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+      with:
+        labels: "CI-Orion-Building"
+      uses: actions-ecosystem/action-add-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+      with:
+        labels: "CI-Orion-Failed"
 
-    - name: Link
-      env:
-        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-        MACHINE_ID: orion
-        pr: ${{ github.event.pull_request.number }}
+    - name: Link artifacts
       run: |
-        cd ${{ github.event.pull_request.number }}/sorc
+        cd ${{ env.HOMEgfs }}/sorc
         ./link_workflow.sh
+      if: success() || failure()
+      uses: actions-ecosystem/action-remove-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+      with:
+        labels: "CI-Orion-Building"
+      if: failure()
+      uses: actions-ecosystem/action-add-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+      with:
+        labels: "CI-Orion-Failed"
+      if: success()
+      uses: actions-ecosystem/action-add-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+      with:
+        labels: "CI-Orion-Running"
 
-        if [ $? -ne 0 ]; then
-          {
-            echo "Build:                         *FAILED*"
-            echo "Build: Failed at $(date)" || true
-            echo "Build: see output at ${PWD}/log.build"
-          } >> ${HOMEgfs}/global-workflow.log
-          gh pr comment ${pr} --repo ${REPO_URL} --body-file global-workflow.log 
-          gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-          exit 1
-        else
-          {
-            echo "Build:                         *SUCCESS*"
-            echo "Build: Completed at $(date)" || true
-          } >> ${HOMEgfs}/global-workflow.log
-          gh pr comment ${pr} --repo $REPO_URL --body-file ${HOMEgfs}/global-workflow.log
-          gh pr edit --repo ${REPO_URL} ${pr} --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
-        fi 
-        
   create-experiments:
-      needs: clone-build
+      needs: checkout-build-link
       runs-on: [self-hosted, orion-ready]
-      steps: 
-      - name: Create Experiments
-        env:
-            HOMEGFS: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-            HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-            RUNTESTS: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS
-            pslot: C48_S2S
-            
-        run: |
-             mkdir -p ${RUNTESTS}
-             cd ${HOMEGFS}/workflow
-             source ./gw_setup.sh
-             cd ${HOMEGFS}/ci/platforms
-             source orion.sh
-             cd ${HOMEGFS}/ci/scripts
-             ./create_experiment.py --yaml ../cases/C48_S2S.yaml --dir ${HOMEGFS}
+      name: Create Experiments
+      strategy:
+        matrix:
+          pslot: ["C48_S2S"]
+      steps:
+      - name: Create Experiment: ${{ matrix.pslot }}
+      env:
+        pslot: ${{ matrix.pslot }}
+      run: |
+           cd ${{ env.HOMEgfs }}
+           source workflow/gw_setup.sh
+           source ci/platforms/orion.sh
+           ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.pslot }}.yaml --dir ${{ env.HOMEgfs }}
+      if: failure()
+      uses: actions-ecosystem/action-remove-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+      with:
+        labels: "CI-Orion-Running"
+      uses: actions-ecosystem/action-add-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+      with:
+        labels: "CI-Orion-Failed"
 
   run-experiments:
     needs: create-experiments
     runs-on: [self-hosted, orion-ready]
+      strategy:
+        matrix:
+          pslot: ["C48_S2S"]
     steps:
-    - name: Run Experiment
-      env:
-        pslot: C48_S2S
-        pr: ${{ github.event.pull_request.number }}
-        EXPDIR: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS/C48_S2S/EXPDIR
-        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-      run: |
-        cd $HOMEgfs/ci/platforms
-        source orion.sh
-        cd $HOMEgfs/ci/scripts
-        ./run-check_ci.sh
+    - name: Run Experiment: ${{ matrix.pslot }}
+    env:
+      pslot: ${{ matrix.pslot }}
+      EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
+    run: |
+      cd ${{ env.HOMEgfs }}
+      source ci/platforms/orion.sh
+      ./ci/scripts/run-check_ci.sh
+    if: failure()
+    uses: actions-ecosystem/action-remove-labels@v1
+    if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+    with:
+      labels: "CI-Orion-Running"
+    uses: actions-ecosystem/action-add-labels@v1
+    if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+    with:
+      labels: "CI-Orion-Failed"
+    uses: actions-ecosystem/action-create-comment@v1
+    if: ${{ startsWith(github.event.comment.body, '/hello') }}
+    with:
+      body: |
+        ${{ env.HOMEgfs}}/global-workflow.log
+
+
+  release-lock:
+    needs: run-experiments
+    runs-on: [self-hosted, orion-ready]
+    steps:
+    - name: Release lock
+      uses: actions-ecosystem/action-remove-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+      with:
+        labels: "CI-Orion-Running"
+      uses: actions-ecosystem/action-add-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+      with:
+        labels: "CI-Orion-Passed"

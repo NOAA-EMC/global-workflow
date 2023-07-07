@@ -47,12 +47,13 @@ def input_args():
     A full path to a YAML file with the following format with required sections: experiment, arguments
 
     experiment:
-        mode: <cycled> <forecast-only>
+        type: 'gfs' | 'gefs'  # TODO: This should be called 'system' not 'type'
+        mode: 'cycled' | 'forecast-only'
             used to hold the only required positional argument to setup_expt.py
 
     arguments:
-        holds all the remaining key values pairs for all requisite arguments documented for setup_expt.py
-        Note: the argument pslot is derived from the basename of the yamlfile itself
+        holds the remaining key:value pairs for all requisite arguments documented for setup_expt.py
+        Note: the argument `pslot` is derived from the basename of the yaml file itself
 
     Returns
     -------
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     type = setup_expt_args.experiment.type
     mode = setup_expt_args.experiment.mode
 
-    setup_expt_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_expt.py'))
+    setup_expt_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_expt.py'))  # TODO:turn setup_expt.py into a function so one does not have to call Executable
 
     setup_expt_cmd.add_default_arg(type)
     setup_expt_cmd.add_default_arg(mode)
