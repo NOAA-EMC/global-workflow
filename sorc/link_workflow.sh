@@ -77,7 +77,6 @@ esac
 source "${top_dir}/versions/fix.ver"
 
 LINK="ln -fs"
-SLINK="ln -fs"
 if [[ "${RUN_ENVIR}" == "nco" ]]; then
   LINK="cp -rp"
 fi
@@ -85,10 +84,13 @@ fi
 # Link wxflow in ush/python, workflow and ci/scripts
 # TODO: This will be unnecessary when wxflow is part of the virtualenv
 cd "${top_dir}/ush/python" || exit 1
+[[ -s "wxflow" ]] && rm -f wxflow
 ${LINK} "${top_dir}/sorc/wxflow/src/wxflow" .
 cd "${top_dir}/workflow" || exit 1
+[[ -s "wxflow" ]] && rm -f wxflow
 ${LINK} "${top_dir}/sorc/wxflow/src/wxflow" .
 cd "${top_dir}/ci/scripts" || exit 1
+[[ -s "wxflow" ]] && rm -f wxflow
 ${LINK} "${top_dir}/sorc/wxflow/src/wxflow" .
 
 # Link post
@@ -301,70 +303,66 @@ cd "${script_dir}" || exit 8
 
     if [[ -d gsi_enkf.fd ]]; then
       [[ -d gsi.fd ]] && rm -rf gsi.fd
-      ${SLINK} gsi_enkf.fd/src/gsi                                                                gsi.fd
+      ${LINK} gsi_enkf.fd/src/gsi                                                                gsi.fd
 
       [[ -d enkf.fd ]] && rm -rf enkf.fd
-      ${SLINK} gsi_enkf.fd/src/enkf                                                               enkf.fd
+      ${LINK} gsi_enkf.fd/src/enkf                                                               enkf.fd
     fi
 
     if [[ -d gsi_utils.fd ]]; then
       [[ -d calc_analysis.fd ]] && rm -rf calc_analysis.fd
-      ${SLINK} gsi_utils.fd/src/netcdf_io/calc_analysis.fd                                        calc_analysis.fd
+      ${LINK} gsi_utils.fd/src/netcdf_io/calc_analysis.fd                                        calc_analysis.fd
 
       [[ -d calc_increment_ens.fd ]] && rm -rf calc_increment_ens.fd
-      ${SLINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens.fd                                calc_increment_ens.fd
+      ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens.fd                                calc_increment_ens.fd
 
       [[ -d calc_increment_ens_ncio.fd ]] && rm -rf calc_increment_ens_ncio.fd
-      ${SLINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens_ncio.fd                           calc_increment_ens_ncio.fd
+      ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens_ncio.fd                           calc_increment_ens_ncio.fd
 
       [[ -d getsfcensmeanp.fd ]] && rm -rf getsfcensmeanp.fd
-      ${SLINK} gsi_utils.fd/src/EnKF/gfs/src/getsfcensmeanp.fd                                    getsfcensmeanp.fd
+      ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsfcensmeanp.fd                                    getsfcensmeanp.fd
 
       [[ -d getsigensmeanp_smooth.fd ]] && rm -rf getsigensmeanp_smooth.fd
-      ${SLINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensmeanp_smooth.fd                             getsigensmeanp_smooth.fd
+      ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensmeanp_smooth.fd                             getsigensmeanp_smooth.fd
 
       [[ -d getsigensstatp.fd ]] && rm -rf getsigensstatp.fd
-      ${SLINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensstatp.fd                                    getsigensstatp.fd
+      ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensstatp.fd                                    getsigensstatp.fd
 
       [[ -d recentersigp.fd ]] && rm -rf recentersigp.fd
-      ${SLINK} gsi_utils.fd/src/EnKF/gfs/src/recentersigp.fd                                      recentersigp.fd
+      ${LINK} gsi_utils.fd/src/EnKF/gfs/src/recentersigp.fd                                      recentersigp.fd
 
       [[ -d interp_inc.fd ]] && rm -rf interp_inc.fd
-      ${SLINK} gsi_utils.fd/src/netcdf_io/interp_inc.fd                                           interp_inc.fd
+      ${LINK} gsi_utils.fd/src/netcdf_io/interp_inc.fd                                           interp_inc.fd
     fi
 
     if [[ -d gsi_monitor.fd ]] ; then
       [[ -d oznmon_horiz.fd ]] && rm -rf oznmon_horiz.fd
-      ${SLINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd         oznmon_horiz.fd
+      ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd         oznmon_horiz.fd
 
       [[ -d oznmon_time.fd ]] && rm -rf oznmon_time.fd
-      ${SLINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd          oznmon_time.fd
+      ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd          oznmon_time.fd
 
       [[ -d radmon_angle.fd ]] && rm -rf radmon_angle.fd
-      ${SLINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd       radmon_angle.fd
+      ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd       radmon_angle.fd
 
       [[ -d radmon_bcoef.fd ]] && rm -rf radmon_bcoef.fd
-      ${SLINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd     radmon_bcoef.fd
+      ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd     radmon_bcoef.fd
 
       [[ -d radmon_bcor.fd ]] && rm -rf radmon_bcor.fd
-      ${SLINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd      radmon_bcor.fd
+      ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd      radmon_bcor.fd
 
       [[ -d radmon_time.fd ]] && rm -rf radmon_time.fd
-      ${SLINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd      radmon_time.fd
+      ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd      radmon_time.fd
     fi
 
     [[ -d gfs_ncep_post.fd ]] && rm -rf gfs_ncep_post.fd
-    ${SLINK} upp.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
+    ${LINK} upp.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
 
-    for prog in fregrid make_hgrid make_solo_mosaic ; do
-        [[ -d "${prog}.fd" ]] && rm -rf "${prog}.fd"
-        ${SLINK} "ufs_utils.fd/sorc/fre-nctools.fd/tools/${prog}"                                "${prog}.fd"
-    done
     for prog in global_cycle.fd \
         emcsfc_ice_blend.fd \
         emcsfc_snow2mdl.fd ;do
         [[ -d "${prog}" ]] && rm -rf "${prog}"
-        ${SLINK} "ufs_utils.fd/sorc/${prog}"                                                     "${prog}"
+        ${LINK} "ufs_utils.fd/sorc/${prog}"                                                     "${prog}"
     done
 
     for prog in enkf_chgres_recenter_nc.fd \
