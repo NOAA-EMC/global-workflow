@@ -82,7 +82,17 @@ if [[ "${RUN_ENVIR}" == "nco" ]]; then
   LINK="cp -rp"
 fi
 
+# Link wxflow in ush/python, workflow and ci/scripts
+# TODO: This will be unnecessary when wxflow is part of the virtualenv
+cd "${top_dir}/ush/python" || exit 1
+${LINK} "${top_dir}/sorc/wxflow/src/wxflow" .
+cd "${top_dir}/workflow" || exit 1
+${LINK} "${top_dir}/sorc/wxflow/src/wxflow" .
+cd "${top_dir}/ci/scripts" || exit 1
+${LINK} "${top_dir}/sorc/wxflow/src/wxflow" .
+
 # Link post
+cd "${top_dir}/sorc" || exit 1
 [[ -d upp.fd ]] && rm -rf upp.fd
 ${LINK} ufs_model.fd/FV3/upp upp.fd
 
