@@ -1,7 +1,7 @@
 import copy
 import logging
 
-from wxflow.logger import logit
+from wxflow import logit
 from pygfs.ufswm.ufs import UFS
 
 logger = logging.getLogger(__name__.split('.')[-1])

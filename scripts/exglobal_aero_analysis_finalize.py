@@ -6,8 +6,7 @@
 # for a global aerosol variational analysis
 import os
 
-from wxflow.logger import Logger
-from wxflow.configuration import cast_strdict_as_dtypedict
+from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.aero_analysis import AerosolAnalysis
 
 

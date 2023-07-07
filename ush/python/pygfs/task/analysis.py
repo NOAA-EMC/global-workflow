@@ -7,13 +7,8 @@ from logging import getLogger
 from netCDF4 import Dataset
 from typing import List, Dict, Any, Union
 
-from wxflow.yaml_file import parse_j2yaml
-from wxflow.file_utils import FileHandler
-from wxflow.fsutils import rm_p
-from wxflow.logger import logit
-from wxflow.task import Task
-from wxflow.executable import Executable
-from wxflow.exceptions import WorkflowException
+from wxflow import (parse_j2yaml, FileHandler, rm_p, logit,
+                    Task, Executable, WorkflowException)
 
 logger = getLogger(__name__.split('.')[-1])
 

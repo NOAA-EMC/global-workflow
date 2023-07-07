@@ -6,8 +6,7 @@
 # for a global atm local ensemble analysis
 import os
 
-from wxflow.logger import Logger
-from wxflow.configuration import cast_strdict_as_dtypedict
+from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.atmens_analysis import AtmEnsAnalysis
 
 
