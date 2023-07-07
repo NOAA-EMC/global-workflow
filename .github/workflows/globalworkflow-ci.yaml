@@ -87,7 +87,7 @@ jobs:
         matrix:
           pslot: ["C48_S2S"]
       steps:
-      - name: Create Experiment: ${{ matrix.pslot }}
+      - name: Create Experiment ${{ matrix.pslot }}
       env:
         pslot: ${{ matrix.pslot }}
       run: |
