@@ -1,4 +1,0 @@
-[submodule "ush/python/wxflow"]
-	path = ush/python/wxflow
-	url = https://github.com/noaa-emc/wxflow
-	branch = develop
