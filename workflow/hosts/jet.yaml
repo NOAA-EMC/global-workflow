@@ -1,5 +1,6 @@
 BASE_GIT: '/lfs4/HFIP/hfv3gfs/glopara/git'
 DMPDIR: '/lfs4/HFIP/hfv3gfs/glopara/dump'
+BASE_CPLIC: '/mnt/lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/prototype_ICs'
 PACKAGEROOT: '/lfs4/HFIP/hfv3gfs/glopara/nwpara'
 COMROOT: '/lfs4/HFIP/hfv3gfs/glopara/com'
 COMINsyn: '${COMROOT}/gfs/prod/syndat'

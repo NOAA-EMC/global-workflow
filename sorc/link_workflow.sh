@@ -206,9 +206,9 @@ fi
 if [[ ! -d "${top_dir}/exec" ]]; then mkdir "${top_dir}/exec" || exit 1 ; fi
 cd "${top_dir}/exec" || exit 1
 
-for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x regrid_nemsio.x supvit.x syndat_getjtbul.x \
-  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x enkf_chgres_recenter.x overgridid.x \
-  mkgfsawps.x enkf_chgres_recenter_nc.x fv3nc2nemsio.x tave.x vint.x reg2grb2.x ; do
+for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
+  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x \
+  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x reg2grb2.x ; do
     [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
     ${LINK} "${script_dir}/gfs_utils.fd/install/bin/${utilexe}" .
 done
@@ -357,17 +357,14 @@ cd "${script_dir}" || exit 8
         ${SLINK} "ufs_utils.fd/sorc/${prog}"                                                     "${prog}"
     done
 
-    for prog in enkf_chgres_recenter.fd \
-      enkf_chgres_recenter_nc.fd \
+    for prog in enkf_chgres_recenter_nc.fd \
       fbwndgfs.fd \
-      fv3nc2nemsio.fd \
       gaussian_sfcanl.fd \
       gfs_bufr.fd \
       mkgfsawps.fd \
       overgridid.fd \
       rdbfmsua.fd \
       reg2grb2.fd \
-      regrid_nemsio.fd \
       supvit.fd \
       syndat_getjtbul.fd \
       syndat_maksynrc.fd \
@@ -380,18 +377,6 @@ cd "${script_dir}" || exit 8
         if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
         ${LINK} "gfs_utils.fd/src/${prog}" .
     done
-
-#------------------------------
-#  copy $HOMEgfs/parm/config/config.base.nco.static as config.base for operations
-#  config.base in the $HOMEgfs/parm/config has no use in development
-cd "${top_dir}/parm/config" || exit 1
-[[ -s "config.base" ]] && rm -f config.base
-if [[ "${RUN_ENVIR}" == "nco" ]] ; then
-  cp -p config.base.nco.static config.base
-  cp -p config.fv3.nco.static config.fv3
-  cp -p config.resources.nco.static config.resources
-fi
-#------------------------------
 
 echo "${BASH_SOURCE[0]} completed successfully"
 

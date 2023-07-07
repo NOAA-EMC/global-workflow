@@ -28,7 +28,6 @@ if [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
 else
   local cmeps_run_type='startup'
 fi
-local res_int=${restart_interval:-3024000}    # Interval in seconds to write restarts
 
 rm -f "${DATA}/nems.configure"
 
@@ -59,12 +58,6 @@ if [[ "${cpl}" = ".true." ]]; then
 fi
 
 if [[ "${cplflx}" = ".true." ]]; then
-  if [[ ${res_int} -gt 0 ]]; then
-    local restart_interval_nems=${res_int}
-  else
-    local restart_interval_nems=${FHMAX}
-  fi
-
   # TODO: Should this be raised up to config.ufs or config.ocn?
   case "${OCNRES}" in
     "500") local eps_imesh="4.0e-1";;
@@ -88,9 +81,8 @@ if [[ "${cplflx}" = ".true." ]]; then
   sed -i -e "s;@\[use_coldstart\];${use_coldstart};g" tmp1
   sed -i -e "s;@\[RUNTYPE\];${cmeps_run_type};g" tmp1
   sed -i -e "s;@\[CPLMODE\];${cplmode};g" tmp1
-  sed -i -e "s;@\[restart_interval\];${res_int};g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];${CPL_FAST};g" tmp1
-  sed -i -e "s;@\[RESTART_N\];${restart_interval_nems};g" tmp1
+  sed -i -e "s;@\[RESTART_N\];${restart_interval};g" tmp1
   sed -i -e "s;@\[use_mommesh\];${use_mommesh};g" tmp1
   sed -i -e "s;@\[eps_imesh\];${eps_imesh};g" tmp1
   sed -i -e "s;@\[ATMTILESIZE\];${restile};g" tmp1

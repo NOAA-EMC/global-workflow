@@ -39,13 +39,18 @@ else
 fi
 local max_blocks=-1
 
+local sec stepsperhr npt
+sec=$(to_seconds "${current_cycle:8:2}0000")
+stepsperhr=$((3600/ICETIM))
+npt=$((FHMAX*stepsperhr)) # Need this in order for dump_last to work
+
 cat > ice_in <<eof
 &setup_nml
    days_per_year  = 365
    use_leap_years = .true.
-   year_init      = ${year}
-   month_init     = ${month}
-   day_init       = ${day}
+   year_init      = ${current_cycle:0:4}
+   month_init     = ${current_cycle:4:2}
+   day_init       = ${current_cycle:6:2}
    sec_init       = ${sec}
    dt             = ${ICETIM}
    npt            = ${npt}
