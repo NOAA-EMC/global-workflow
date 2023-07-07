@@ -47,7 +47,6 @@ fi
 
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
-git submodule update --init --recursive
 
 pr_state=$("${GH}" pr view "${PR}" --json state --jq '.state')
 if [[ "${pr_state}" != "OPEN" ]]; then
@@ -58,7 +57,6 @@ fi
 
 # checkout pull request
 "${GH}" pr checkout "${PR}" --repo "${REPO_URL}"
-git submodule update --init --recursive
 HOMEgfs="${PWD}"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
