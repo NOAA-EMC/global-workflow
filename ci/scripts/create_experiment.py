@@ -22,9 +22,9 @@ with an error code of 0 upon success.
 
 from pathlib import Path
 
-from wxflow.yaml_file import YAMLFile
-from wxflow.logger import Logger
-from wxflow.executable import Executable
+from wxflow import YAMLFile
+from wxflow import Logger
+from wxflow import Executable
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
