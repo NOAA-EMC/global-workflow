@@ -45,20 +45,25 @@ jobs:
       if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Ready"
+
     - uses: actions-ecosystem/action-add-labels@v1
       if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Building"
 
-    - name: foo
-      uses: actions-ecosystem/action-remove-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
-      with:
-        labels: "CI-Orion-Ready"
     - if: ${{ failure() }}
       uses: actions-ecosystem/action-add-labels@v1
       with:
         labels: "CI-Orion-Failed"
+
+    - name: Link artifacts
+      run: |
+        cd ${{ env.HOMEgfs }}/sorc
+        ./link_workflow.sh
+        if [ $? -ne 0 ]; then
+          echo "Linking artifacts failed"
+          exit 1
+        fi
     
     - name: Build components
       run: |
@@ -77,15 +82,6 @@ jobs:
       uses: actions-ecosystem/action-add-labels@v1
       with:
         labels: "CI-Orion-Failed"
-
-    - name: Link artifacts
-      run: |
-        cd ${{ env.HOMEgfs }}/sorc
-        ./link_workflow.sh
-        if [ $? -ne 0 ]; then
-          echo "Linking artifacts failed"
-          exit 1
-        fi
 
     - if: ${{ failure() }}
       uses: actions-ecosystem/action-remove-labels@v1
