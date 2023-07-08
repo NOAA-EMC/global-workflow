@@ -40,25 +40,25 @@ jobs:
           echo "Checkout failed"
           exit 1
         fi
-
-    - needs: Checkout components
-      uses: actions-ecosystem/action-remove-labels@v1
+      
+    - uses: actions-ecosystem/action-remove-labels@v1
       if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Ready"
-      uses: actions-ecosystem/action-add-labels@v1
+    - uses: actions-ecosystem/action-add-labels@v1
       if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Building"
 
-    - if ${{ failure() }}
-        uses: actions-ecosystem/action-remove-labels@v1
-        with:
-          labels: "CI-Orion-Ready"
-        uses: actions-ecosystem/action-add-labels@v1
-        with:
-          labels: "CI-Orion-Failed"
-
+    - if: ${{ failure() }}
+      uses: actions-ecosystem/action-remove-labels@v1
+      with:
+        labels: "CI-Orion-Ready"
+    - if: ${{ failure() }}
+      uses: actions-ecosystem/action-add-labels@v1
+      with:
+        labels: "CI-Orion-Failed"
+    
     - name: Build components
       run: |
         cd ${{ env.HOMEgfs }}/sorc
@@ -68,13 +68,12 @@ jobs:
           exit 1
         fi
 
-    - if ${{ failure() }}
+    - if: ${{ failure() }}
       uses: actions-ecosystem/action-remove-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Building"
+    - if: ${{ failure() }}
       uses: actions-ecosystem/action-add-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Failed"
 
@@ -89,101 +88,97 @@ jobs:
 
     - if: ${{ failure() }}
       uses: actions-ecosystem/action-remove-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Building"
-      if: failure()
+        
+    - if: ${{ failure() }}
       uses: actions-ecosystem/action-add-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Failed"
 
-    - needs: Link artifacts
-      uses: actions-ecosystem/action-remove-labels@v1
+    - uses: actions-ecosystem/action-remove-labels@v1
       if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Building"
-      uses: actions-ecosystem/action-add-labels@v1
+       
+    - uses: actions-ecosystem/action-add-labels@v1
       if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Running"
 
   create-experiments:
-      needs: checkout-build-link
-      runs-on: [self-hosted, orion-ready]
-      name: Create Experiments
-      strategy:
-        matrix:
-          pslot: ["C48_S2S"]
-      steps:
-      - name: Create Experiment ${{ matrix.pslot }}
-      env:
-        pslot: ${{ matrix.pslot }}
-      run: |
-        cd ${{ env.HOMEgfs }}
-        source workflow/gw_setup.sh
-        source ci/platforms/orion.sh
-        ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.pslot }}.yaml --dir ${{ env.HOMEgfs }}
-        if [ $? -ne 0 ]; then
-          echo "Create experiment failed"
-          exit 1
-        fi
-
+    
+    needs: checkout-build-link
+    runs-on: [self-hosted, orion-ready]
+    strategy:
+      matrix:
+       pslot: ["C48_S2S"]
+    steps:
+      - name: Create Experiments ${{ matrix.pslot }}
+        env:
+          pslot: ${{ matrix.pslot }}
+        run: |
+         cd ${{ env.HOMEgfs }}
+         source workflow/gw_setup.sh
+         source ci/platforms/orion.sh
+         ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.pslot }}.yaml --dir ${{ env.HOMEgfs }}
+         if [ $? -ne 0 ]; then
+           echo "Create experiment failed"
+           exit 1
+         fi
+        
       - if: ${{ failure() }}
-      uses: actions-ecosystem/action-remove-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+        uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: "CI-Orion-Running"
-      uses: actions-ecosystem/action-add-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+         labels: "CI-Orion-Running"
+      - if: ${{ failure() }}
+        uses: actions-ecosystem/action-add-labels@v1
         with:
-          labels: "CI-Orion-Failed"
-
+         labels: "CI-Orion-Failed"
+   
   run-experiments:
     needs: create-experiments
     runs-on: [self-hosted, orion-ready]
-      strategy:
-        matrix:
-          pslot: ["C48_S2S"]
+    strategy:
+      matrix:
+       pslot: ["C48_S2S"]    
     steps:
-    - name: Run Experiment: ${{ matrix.pslot }}
-    env:
-      pslot: ${{ matrix.pslot }}
-      EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
-    run: |
-      cd ${{ env.HOMEgfs }}
-      source ci/platforms/orion.sh
-      ./ci/scripts/run-check_ci.sh
-      if [ $? -ne 0 ]; then
-        echo "Run experiment failed"
-        exit 1
-      fi
+      - name: Run Experiment ${{ matrix.pslot }}    
+        env:
+         pslot: ${{ matrix.pslot }}
+         EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
+        run: |
+         cd ${{ env.HOMEgfs }}
+         source ci/platforms/orion.sh
+         ./ci/scripts/run-check_ci.sh
+         if [ $? -ne 0 ]; then
+          echo "Run experiment failed"
+          exit 1
+         fi
 
-    if: ${{ failure() }}
-    uses: actions-ecosystem/action-remove-labels@v1
-    if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
-    with:
-      labels: "CI-Orion-Running"
-    uses: actions-ecosystem/action-add-labels@v1
-    if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
-    with:
-      labels: "CI-Orion-Failed"
-    uses: actions-ecosystem/action-create-comment@v1
-    if: ${{ startsWith(github.event.comment.body, '/hello') }}
-    with:
-      body: |
-        ${{ env.HOMEgfs}}/global-workflow.log
+      - if: ${{ failure() }}
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: "CI-Orion-Running"
+      - if: ${{ failure() }}    
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "CI-Orion-Failed"
+      - if: ${{ failure() }}    
+        uses: actions-ecosystem/action-create-comment@v1
+        with:
+          body: |
+           ${{ env.HOMEgfs}}/global-workflow.log
 
   release-lock:
     needs: run-experiments
     runs-on: [self-hosted, orion-ready]
     steps:
-    - name: Release lock
-      uses: actions-ecosystem/action-remove-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
-      with:
-        labels: "CI-Orion-Running"
-      uses: actions-ecosystem/action-add-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
-      with:
-        labels: "CI-Orion-Passed"
+      - uses: actions-ecosystem/action-remove-labels@v1
+        if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+        with:
+          labels: "CI-Orion-Running"
+      - uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+        with:
+          labels: "CI-Orion-Passed"
