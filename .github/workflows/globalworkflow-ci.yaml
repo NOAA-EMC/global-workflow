@@ -50,8 +50,9 @@ jobs:
       with:
         labels: "CI-Orion-Building"
 
-    - if: ${{ failure() }}
+    - name: foo
       uses: actions-ecosystem/action-remove-labels@v1
+      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Ready"
     - if: ${{ failure() }}
