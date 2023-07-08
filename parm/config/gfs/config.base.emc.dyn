@@ -384,7 +384,7 @@ export binary_diag=".false."
 
 # Verification options
 export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
-export DO_FIT2OBS="NO"      # Run fit to observations package
+export DO_FIT2OBS="YES"      # Run fit to observations package
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
