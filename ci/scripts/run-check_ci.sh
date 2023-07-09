@@ -86,7 +86,7 @@ while [[ ${RUN_COMPLETE} == "FALSE" ]]; do
   if [[ ${num_failed} -ne 0 ]]; then
     {
       echo "Experiment ${pslot} Terminated: *FAILED*"
-      echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)"
+      echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
     } >> "${HOMEgfs}/global-workflow.log"
     error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
     {
