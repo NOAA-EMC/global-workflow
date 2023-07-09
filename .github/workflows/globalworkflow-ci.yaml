@@ -42,12 +42,12 @@ jobs:
         fi
       
     - uses: actions-ecosystem/action-remove-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+      # if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Ready"
 
     - uses: actions-ecosystem/action-add-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+      # if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Building"
 
@@ -94,12 +94,12 @@ jobs:
         labels: "CI-Orion-Failed"
 
     - uses: actions-ecosystem/action-remove-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
+      # if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Building"
        
     - uses: actions-ecosystem/action-add-labels@v1
-      if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
+      # if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Running"
 
