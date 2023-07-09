@@ -36,18 +36,12 @@ jobs:
       run: |
         cd ${{ env.HOMEgfs }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
-        if [ $? -ne 0 ]; then
-          echo "Checkout failed"
-          exit 1
-        fi
       
     - uses: actions-ecosystem/action-remove-labels@v1
-      # if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Ready"
 
     - uses: actions-ecosystem/action-add-labels@v1
-      # if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Building"
 
@@ -60,19 +54,11 @@ jobs:
       run: |
         cd ${{ env.HOMEgfs }}/sorc
         ./build_all.sh
-        if [ $? -ne 0 ]; then
-          echo "Build failed"
-          exit 1
-        fi
         
     - name: Link artifacts
       run: |
         cd ${{ env.HOMEgfs }}/sorc
         ./link_workflow.sh
-        if [ $? -ne 0 ]; then
-          echo "Linking artifacts failed"
-          exit 1
-        fi
 
     - if: ${{ failure() }}
       uses: actions-ecosystem/action-remove-labels@v1
@@ -94,12 +80,10 @@ jobs:
         labels: "CI-Orion-Failed"
 
     - uses: actions-ecosystem/action-remove-labels@v1
-      # if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
       with:
         labels: "CI-Orion-Building"
        
     - uses: actions-ecosystem/action-add-labels@v1
-      # if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
       with:
         labels: "CI-Orion-Running"
 
