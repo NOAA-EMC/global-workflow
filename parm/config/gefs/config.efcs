@@ -66,12 +66,6 @@ export SPPT_LSCALE=500000.
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 
-if [[ ${QUILTING} = ".true." && ${OUTPUT_GRID} = "gaussian_grid" ]]; then
-    export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table_da"
-else
-    export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table_da_orig"
-fi
-
 # FV3 model namelist parameters to over-ride
 export restart_interval=${restart_interval:-6}
 
