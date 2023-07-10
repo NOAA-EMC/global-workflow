@@ -146,10 +146,8 @@ jobs:
     runs-on: [self-hosted, orion-ready]
     steps:
       - uses: actions-ecosystem/action-remove-labels@v1
-        if: ${{ startsWith(github.event.comment.body, '/remove-labels') }}
         with:
           labels: "CI-Orion-Running"
       - uses: actions-ecosystem/action-add-labels@v1
-        if: ${{ startsWith(github.event.comment.body, '/add-labels') }}
         with:
           labels: "CI-Orion-Passed"
