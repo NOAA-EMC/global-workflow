@@ -20,16 +20,18 @@ Functionally an experiment is setup as a result running the two scripts describe
 with an error code of 0 upon success.
 """
 
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path
 
-from wxflow import YAMLFile, Logger, logit, Executable
+from pygw.yaml_file import YAMLFile
+from pygw.logger import Logger
+from pygw.executable import Executable
+
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 
 logger = Logger(level='DEBUG', colored_log=True)
 
 
-@logit(logger)
 def input_args():
     """
     Method to collect user arguments for `create_experiment.py`
@@ -45,12 +47,13 @@ def input_args():
     A full path to a YAML file with the following format with required sections: experiment, arguments
 
     experiment:
-        mode: <cycled> <forecast-only>
+        type: 'gfs' | 'gefs'  # TODO: This should be called 'system' not 'type'
+        mode: 'cycled' | 'forecast-only'
             used to hold the only required positional argument to setup_expt.py
 
     arguments:
-        holds all the remaining key values pairs for all requisite arguments documented for setup_expt.py
-        Note: the argument pslot is derived from the basename of the yamlfile itself
+        holds the remaining key:value pairs for all requisite arguments documented for setup_expt.py
+        Note: the argument `pslot` is derived from the basename of the yaml file itself
 
     Returns
     -------
@@ -69,6 +72,7 @@ def input_args():
 
     parser.add_argument('--yaml', help='yaml configuration file per experiment', type=str, required=True)
     parser.add_argument('--dir', help='full path to top level of repo of global-workflow', type=str, required=True)
+    parser.add_argument('--pslot_tag', help='add a tag to pslot name for uniqueness', type=str, required=False)
 
     args = parser.parse_args()
     return args
@@ -80,11 +84,11 @@ if __name__ == '__main__':
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
     HOMEgfs = Path.absolute(Path(user_inputs.dir))
-    pslot = Path(user_inputs.yaml).stem
+    pslot = Path(user_inputs.yaml).stem+user_inputs.pslot_tag
     type = setup_expt_args.experiment.type
     mode = setup_expt_args.experiment.mode
 
-    setup_expt_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_expt.py'))
+    setup_expt_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_expt.py'))  # TODO:turn setup_expt.py into a function so one does not have to call Executable
 
     setup_expt_cmd.add_default_arg(type)
     setup_expt_cmd.add_default_arg(mode)
