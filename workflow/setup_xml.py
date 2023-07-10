@@ -8,7 +8,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from applications.application_factory import app_config_factory
 from rocoto.rocoto_xml_factory import rocoto_xml_factory
-from pygw.configuration import Configuration
+from wxflow import Configuration
 
 
 def input_args():

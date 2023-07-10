@@ -20,18 +20,16 @@ Functionally an experiment is setup as a result running the two scripts describe
 with an error code of 0 upon success.
 """
 
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path
 
-from pygw.yaml_file import YAMLFile
-from pygw.logger import Logger
-from pygw.executable import Executable
-
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from wxflow import YAMLFile, Logger, logit, Executable
 
 
 logger = Logger(level='DEBUG', colored_log=True)
 
 
+@logit(logger)
 def input_args():
     """
     Method to collect user arguments for `create_experiment.py`
