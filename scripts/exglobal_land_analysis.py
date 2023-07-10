@@ -5,8 +5,7 @@
 # for a global Land Snow Depth analysis
 import os
 
-from pygw.logger import Logger
-from pygw.configuration import cast_strdict_as_dtypedict
+from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.land_analysis import LandAnalysis
 
 # Initialize root logger
