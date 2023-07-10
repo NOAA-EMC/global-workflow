@@ -142,6 +142,7 @@ jobs:
       - if: ${{ failure() }}    
         uses: actions-ecosystem/action-create-comment@v1
         with:
+          github_token: ${{ secrets.github_token }}
           body: |
            ${{ env.HOMEgfs}}/global-workflow.log
 
