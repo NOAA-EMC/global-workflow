@@ -94,7 +94,7 @@ while [[ ${RUN_COMPLETE} == "FALSE" ]]; do
      echo "${error_logs}"
     } >> "${HOMEgfs}/global-workflow.log"
     sed -i "s/\`\`\`//2g" "${HOMEgfs}/global-workflow.log"
-    sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
+    sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
   fi
 
   if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
