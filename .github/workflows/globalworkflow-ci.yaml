@@ -64,15 +64,6 @@ jobs:
       uses: actions-ecosystem/action-remove-labels@v1
       with:
         labels: "CI-Orion-Building"
-    - if: ${{ failure() }}
-      uses: actions-ecosystem/action-add-labels@v1
-      with:
-        labels: "CI-Orion-Failed"
-
-    - if: ${{ failure() }}
-      uses: actions-ecosystem/action-remove-labels@v1
-      with:
-        labels: "CI-Orion-Building"
         
     - if: ${{ failure() }}
       uses: actions-ecosystem/action-add-labels@v1
@@ -128,14 +119,12 @@ jobs:
         env:
          pslot: ${{ matrix.pslot }}
          EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
+         HOMEgfs: ${{ env.HOMEgfs }}
+         pr: ${{ github.event.pull_request.number }}
         run: |
-         cd ${{ env.HOMEgfs }}
+         cd $HOMEgfs
          source ci/platforms/orion.sh
          ./ci/scripts/run-check_ci.sh
-         if [ $? -ne 0 ]; then
-          echo "Run experiment failed"
-          exit 1
-         fi
 
       - if: ${{ failure() }}
         uses: actions-ecosystem/action-remove-labels@v1
