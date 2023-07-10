@@ -70,7 +70,7 @@ while [[ ${RUN_COMPLETE} == "FALSE" ]]; do
   "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
 
   # Wait before running rocotostat
-  sleep 60
+  sleep 30
   if [[ ! -f "${db}" ]]; then
     echo "Database file ${db} not found, experiment ${pslot} failed"
     exit 1
@@ -109,6 +109,6 @@ while [[ ${RUN_COMPLETE} == "FALSE" ]]; do
   fi
 
   # Wait before running rocotorun again
-  sleep 240
+  sleep 210
 
 done
