@@ -6,7 +6,6 @@ set -eux
 # Script description: BASH script for checking for cases in a given PR and
 #                     simply running rocotorun on each.  This script is intended
 #                     to run from within a cron job in the CI Managers account
-# Abstract TODO no-op
 #####################################################################################
 
 scriptname=$(basename "${BASH_SOURCE[0]}")
