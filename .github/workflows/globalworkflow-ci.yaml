@@ -13,7 +13,7 @@ on:
       - labeled
 
 env:
-  HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+  HOMEGFS: ${{ github.workspace }}/${{ github.event.pull_request.number }}
   HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
   RUNTESTS: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS
   MACHINE_ID: orion
@@ -32,7 +32,7 @@ jobs:
 
     - name: Checkout components
       env:
-        HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
+        HOMEgfs: ${{ env.HOMEGFS }}
       run: |
         cd ${{ env.HOMEgfs }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
@@ -51,13 +51,17 @@ jobs:
         labels: "CI-Orion-Failed"
     
     - name: Build components
+      env:
+        HOMEgfs: ${{ env.HOMEGFS }}
       run: |
-        cd ${{ env.HOMEgfs }}/sorc
+        cd ${HOMEgfs}/sorc
         ./build_all.sh
         
     - name: Link artifacts
+      env:
+        HOMEgfs: ${{ env.HOMEGFS }}
       run: |
-        cd ${{ env.HOMEgfs }}/sorc
+        cd ${HOMEgfs}/sorc
         ./link_workflow.sh
 
     - if: ${{ failure() }}
@@ -85,15 +89,16 @@ jobs:
     strategy:
       matrix:
        pslot: ["C48_S2S"]
+
     steps:
       - name: Create Experiments ${{ matrix.pslot }}
         env:
           pslot: ${{ matrix.pslot }}
         run: |
-         cd ${{ env.HOMEgfs }}
+         cd ${{ env.HOMEGFS }}
          source workflow/gw_setup.sh
          source ci/platforms/orion.sh
-         ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.pslot }}.yaml --dir ${{ env.HOMEgfs }}
+         ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.pslot }}.yaml --dir ${{ env.HOMEGFS }}
          if [ $? -ne 0 ]; then
            echo "Create experiment failed"
            exit 1
@@ -117,12 +122,11 @@ jobs:
     steps:
       - name: Run Experiment ${{ matrix.pslot }}    
         env:
+         HOMEgfs: $${{ env.HOMEGFS }}
          pslot: ${{ matrix.pslot }}
          EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
-         HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
          pr: ${{ github.event.pull_request.number }}
         run: |
-         echo "HOMEgfs: $HOMEgfs"
          cd $HOMEgfs
          source ci/platforms/orion.sh
          ./ci/scripts/run-check_ci.sh
