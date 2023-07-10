@@ -7,15 +7,15 @@ from pprint import pformat
 import numpy as np
 from netCDF4 import Dataset
 
-from pygw.attrdict import AttrDict
-from pygw.file_utils import FileHandler
-from pygw.timetools import to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime
-from pygw.fsutils import rm_p
-from pygw.yaml_file import parse_j2yaml, parse_yamltmpl, save_as_yaml
-from pygw.jinja import Jinja
-from pygw.logger import logit
-from pygw.executable import Executable
-from pygw.exceptions import WorkflowException
+from wxflow import (AttrDict,
+                    FileHandler,
+                    to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
+                    rm_p,
+                    parse_j2yaml, parse_yamltmpl, save_as_yaml,
+                    Jinja,
+                    logit,
+                    Executable,
+                    WorkflowException)
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])

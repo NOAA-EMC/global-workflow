@@ -5,15 +5,15 @@ from logging import getLogger
 from typing import Dict, Any, Union
 from pprint import pformat
 
-from pygw.attrdict import AttrDict
-from pygw.yaml_file import parse_j2yaml
-from pygw.file_utils import FileHandler
-from pygw.jinja import Jinja
-from pygw.logger import logit
-from pygw.task import Task
-from pygw.timetools import add_to_datetime, to_timedelta
-from pygw.exceptions import WorkflowException
-from pygw.executable import Executable, which
+from wxflow import (AttrDict,
+                    parse_j2yaml,
+                    FileHandler,
+                    Jinja,
+                    logit,
+                    Task,
+                    add_to_datetime, to_timedelta,
+                    WorkflowException,
+                    Executable, which)
 
 logger = getLogger(__name__.split('.')[-1])
 

@@ -1,4 +1,4 @@
-from pygw.factory import Factory
+from wxflow import Factory
 from applications.gfs_cycled import GFSCycledAppConfig
 from applications.gfs_forecast_only import GFSForecastOnlyAppConfig
 from applications.gefs import GEFSAppConfig
