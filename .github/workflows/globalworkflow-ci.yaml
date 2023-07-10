@@ -1,11 +1,6 @@
 name: gw-ci-orion
 # A GitHub Action that creates a deployment for a PR, clones, builds and runs a test suite
-# This workflow is triggered by a label being added to a PR
-# The label name determines the environment to deploy to
-# The label name must be one of the following:
-#   - CI-Orion-Ready
-#   - CI-Orion-Build
-#   - CI-Orion-Run
+# This workflow is triggered by a label being added to a PR name Orion-Ready
 
 on:
   pull_request:
@@ -88,7 +83,7 @@ jobs:
     runs-on: [self-hosted, orion-ready]
     strategy:
       matrix:
-       pslot: ["C48_S2S"]
+       pslot: ["C48_S2S","C96_atm3DVar"]
 
     steps:
       - name: Create Experiments ${{ matrix.pslot }}
@@ -118,7 +113,7 @@ jobs:
     runs-on: [self-hosted, orion-ready]
     strategy:
       matrix:
-       pslot: ["C48_S2S"]    
+       pslot: ["C48_S2S","C96_atm3DVar"]    
     steps:
       - name: Run Experiment ${{ matrix.pslot }}    
         env:
