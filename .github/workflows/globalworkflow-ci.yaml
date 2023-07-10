@@ -119,9 +119,10 @@ jobs:
         env:
          pslot: ${{ matrix.pslot }}
          EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
-         HOMEgfs: ${{ env.HOMEgfs }}
+         HOMEgfs: ${{ github.workspace }}/${{ github.event.pull_request.number }}
          pr: ${{ github.event.pull_request.number }}
         run: |
+         echo "HOMEgfs: $HOMEgfs"
          cd $HOMEgfs
          source ci/platforms/orion.sh
          ./ci/scripts/run-check_ci.sh
