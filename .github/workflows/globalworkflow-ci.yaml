@@ -87,11 +87,12 @@ jobs:
 
     steps:
       - name: Create Experiments ${{ matrix.pslot }}
+          env:
+          pslot: ${{ matrix.pslot }}_${{ github.run.id }}
         run: |
          cd ${{ env.HOMEGFS }}
          source workflow/gw_setup.sh
          source ci/platforms/orion.sh
-         export pslot="${{ matrix.pslot }}/_${LAST_COMMIT_SHA:0:5}"
          ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.pslot }}.yaml --dir ${{ env.HOMEGFS }}
         
       - if: ${{ failure() }}
@@ -114,11 +115,11 @@ jobs:
         env:
          HOMEgfs: ${{ env.HOMEGFS }}
          EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
+         pslot: ${{ matrix.pslot }}_${{ github.run.id }}
          pr: ${{ github.event.pull_request.number }}
         run: |
          cd $HOMEgfs
          source ci/platforms/orion.sh
-         pslot="${{ matrix.pslot }}/_${LAST_COMMIT_SHA:0:5}"
          ./ci/scripts/run-check_ci.sh
 
       - if: ${{ failure() }}
