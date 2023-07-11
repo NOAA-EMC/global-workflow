@@ -2,20 +2,16 @@ name: gw-ci-orion
 # A GitHub Action that creates a deployment for a PR, clones, builds and runs a test suite
 # This workflow is triggered by a label being added to a PR name Orion-Ready
 
-on:
-  pull_request:
-    types:
-      - labeled
+on: [workflow_dispatch]
 
 env:
-  HOMEGFS: ${{ github.workspace }}/${{ github.event.pull_request.number }}
   HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-  RUNTESTS: ${{ github.workspace }}/${{ github.event.pull_request.number }}/RUNTESTS
+  RUNTESTS: ${{ github.workspace }}/RUNTESTS/${{ github.event.pull_request.number }}
   MACHINE_ID: orion
 
 jobs:
   checkout-build-link:
-    if:  github.event.label.name == 'CI-Orion-Ready'
+    if: github.event.label.name == 'CI-Orion-Ready'
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
 
@@ -26,110 +22,104 @@ jobs:
         path: ${{ github.event.pull_request.number }}
 
     - name: Checkout components
-      env:
-        HOMEgfs: ${{ env.HOMEGFS }}
       run: |
-        cd ${{ env.HOMEgfs }}/sorc
+        cd ${{ env.HOMEgfs_PR }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
-      
-    - uses: actions-ecosystem/action-remove-labels@v1
+
+    - if: success() or failure()
+      uses: actions-ecosystem/action-remove-labels@v1
       with:
         labels: "CI-Orion-Ready"
 
-    - uses: actions-ecosystem/action-add-labels@v1
+    - if: success()
+      uses: actions-ecosystem/action-add-labels@v1
       with:
         labels: "CI-Orion-Building"
 
-    - if: ${{ failure() }}
+    - if: failure()
       uses: actions-ecosystem/action-add-labels@v1
       with:
         labels: "CI-Orion-Failed"
-    
-    - name: Build components
-      env:
-        HOMEgfs: ${{ env.HOMEGFS }}
-      run: |
-        cd ${HOMEgfs}/sorc
-        ./build_all.sh
-        
-    - name: Link artifacts
-      env:
-        HOMEgfs: ${{ env.HOMEGFS }}
-      run: |
-        cd ${HOMEgfs}/sorc
-        ./link_workflow.sh
 
-    - if: ${{ failure() }}
+    - name: Build components
+      run: |
+        cd ${{ env.HOMEgfs_PR }}/sorc
+        ./build_all.sh
+
+    - if: success() or failure()
       uses: actions-ecosystem/action-remove-labels@v1
       with:
         labels: "CI-Orion-Building"
-        
-    - if: ${{ failure() }}
+
+    - if: failure()
       uses: actions-ecosystem/action-add-labels@v1
       with:
         labels: "CI-Orion-Failed"
 
-    - uses: actions-ecosystem/action-remove-labels@v1
+    - name: Link artifacts
+      run: |
+        cd ${{ env.HOMEgfs_PR }}/sorc
+        ./link_workflow.sh
+
+    - if: failure()
+      uses: actions-ecosystem/action-add-labels@v1
       with:
-        labels: "CI-Orion-Building"
-       
-    - uses: actions-ecosystem/action-add-labels@v1
+        labels: "CI-Orion-Failed"
+
+    - if: success()
+      uses: actions-ecosystem/action-add-labels@v1
       with:
         labels: "CI-Orion-Running"
 
   create-experiments:
-    
     needs: checkout-build-link
     runs-on: [self-hosted, orion-ready]
     strategy:
       matrix:
-       pslot: ["C48_S2S","C96_atm3DVar"]
+       case: ["C48_S2S","C96_atm3DVar"]
 
     steps:
-      - name: Create Experiments ${{ matrix.pslot }}
+      - name: Create Experiments ${{ matrix.case }}
         run: |
-         cd ${{ env.HOMEGFS }}
+         cd ${{ env.HOMEgfs_PR }}
          source workflow/gw_setup.sh
          source ci/platforms/orion.sh
-         export pslot="${{ matrix.pslot }}/_${LAST_COMMIT_SHA:0:5}"
-         ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.pslot }}.yaml --dir ${{ env.HOMEGFS }}
-        
-      - if: ${{ failure() }}
+         export pslot="${{ matrix.case }}.${GITHUB_SHA::5}"
+         ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml --dir ${{ env.HOMEgfs_PR }}
+
+      - if: failure()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
          labels: "CI-Orion-Running"
-      - if: ${{ failure() }}
         uses: actions-ecosystem/action-add-labels@v1
         with:
          labels: "CI-Orion-Failed"
-   
+
   run-experiments:
     needs: create-experiments
     runs-on: [self-hosted, orion-ready]
     strategy:
       matrix:
-       pslot: ["C48_S2S","C96_atm3DVar"]    
+       case: ["C48_S2S","C96_atm3DVar"]
     steps:
-      - name: Run Experiment ${{ matrix.pslot }}    
+      - name: Run Experiment ${{ matrix.case }}
         env:
-         HOMEgfs: ${{ env.HOMEGFS }}
-         EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
+         HOMEgfs: ${{ env.HOMEgfs_PR }}
+         EXPDIR: ${{ env.RUNTESTS }}/EXPDIR
          pr: ${{ github.event.pull_request.number }}
         run: |
-         cd $HOMEgfs
+         cd ${HOMEgfs}
          source ci/platforms/orion.sh
-         pslot="${{ matrix.pslot }}/_${LAST_COMMIT_SHA:0:5}"
+         pslot="${{ matrix.case }}.${GITHUB_SHA::5}"
          ./ci/scripts/run-check_ci.sh
 
-      - if: ${{ failure() }}
+      - if: failure()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: "CI-Orion-Running"
-      - if: ${{ failure() }}    
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "CI-Orion-Failed"
-      - if: ${{ failure() }}    
         uses: actions-ecosystem/action-create-comment@v1
         with:
           github_token: ${{ secrets.github_token }}
