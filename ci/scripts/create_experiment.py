@@ -96,7 +96,6 @@ if __name__ == '__main__':
     logger.info(f'Run command: {setup_expt_cmd.command}')
     setup_expt_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stderr'))
     setup_expt_stdout = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stdout'))
-    print(setup_expt_stderr)
     setup_expt_cmd(output=setup_expt_stdout, error=setup_expt_stderr)
 
     setup_xml_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_xml.py'))
