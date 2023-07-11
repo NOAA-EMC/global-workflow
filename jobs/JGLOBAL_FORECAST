@@ -17,8 +17,8 @@ rCDUMP=${CDUMP}
 [[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
 
 # Forecast length for GFS forecast
-case ${CDUMP} in
-  gfs | gefs)
+case ${RUN} in
+  *gfs | *gefs)
     # shellcheck disable=SC2153
     export FHMAX=${FHMAX_GFS}
     # shellcheck disable=SC2153
@@ -26,12 +26,12 @@ case ${CDUMP} in
     export FHMAX_HF=${FHMAX_HF_GFS}
     export FHOUT_HF=${FHOUT_HF_GFS}
     ;;
-  gdas)
+  *gdas)
     export FHMAX_HF=0
     export FHOUT_HF=0
     ;;
   *)
-    echo "FATAL ERROR: Unknown CDUMP '${CDUMP}'"
+    echo "FATAL ERROR: Unsupported RUN '${RUN}'"
     exit 1
 esac
 
