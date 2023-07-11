@@ -88,7 +88,7 @@ jobs:
     steps:
       - name: Create Experiments ${{ matrix.pslot }}
         env:
-          pslot: ${{ matrix.pslot }}
+          pslot: ${{ matrix.pslot }}_${{ github.event.pull_request.head.sha }}
         run: |
          cd ${{ env.HOMEGFS }}
          source workflow/gw_setup.sh
@@ -118,7 +118,7 @@ jobs:
       - name: Run Experiment ${{ matrix.pslot }}    
         env:
          HOMEgfs: ${{ env.HOMEGFS }}
-         pslot: ${{ matrix.pslot }}
+         pslot: ${{ matrix.pslot }}_${{ github.event.pull_request.head.sha }}
          EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
          pr: ${{ github.event.pull_request.number }}
         run: |
