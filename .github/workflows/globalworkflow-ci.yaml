@@ -5,6 +5,7 @@ name: gw-ci-orion
 on: [workflow_dispatch]
 
 env:
+  pr: ${{ github.event.pull_request.number }}
   HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
   RUNTESTS: ${{ github.workspace }}/RUNTESTS/${{ github.event.pull_request.number }}
   MACHINE_ID: orion
@@ -100,18 +101,12 @@ jobs:
     runs-on: [self-hosted, orion-ready]
     strategy:
       matrix:
-       case: ["C48_S2S","C96_atm3DVar"]
+       case: ["C48_S2S", "C96_atm3DVar"]
     steps:
       - name: Run Experiment ${{ matrix.case }}
-        env:
-         HOMEgfs: ${{ env.HOMEgfs_PR }}
-         EXPDIR: ${{ env.RUNTESTS }}/EXPDIR
-         pr: ${{ github.event.pull_request.number }}
         run: |
-         cd ${HOMEgfs}
-         source ci/platforms/orion.sh
-         pslot="${{ matrix.case }}.${GITHUB_SHA::5}"
-         ./ci/scripts/run-check_ci.sh
+         cd ${{ env.HOMEgfs_PR }}
+         ./ci/scripts/run-check_ci.sh ${{ env.HOMEgfs_PR }} ${{ env.RUNTESTS }}/EXPDIR ${{ matrix.case }}.${GITHUB_SHA::5}
 
       - if: failure()
         uses: actions-ecosystem/action-remove-labels@v1

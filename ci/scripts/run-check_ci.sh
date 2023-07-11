@@ -7,6 +7,10 @@
 #                     to run from within a cron job in the CI Managers account
 #####################################################################################
 
+HOMEgfs=${1:-${HOMEgfs:-?}}
+EXPDIR=${2:-${EXPDIR:-?}}
+pslot=${3:-${pslot:-?}}
+
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/workflow/gw_setup.sh"
 
