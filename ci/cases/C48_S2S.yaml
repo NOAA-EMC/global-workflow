@@ -3,6 +3,7 @@ experiment:
   mode: forecast-only
 
 arguments:
+  pslot: ${pslot}
   app: S2S
   resdet: 48
   comrot: ${RUNTESTS}/COMROT

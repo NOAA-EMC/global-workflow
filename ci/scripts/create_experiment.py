@@ -20,6 +20,7 @@ Functionally an experiment is setup as a result running the two scripts describe
 with an error code of 0 upon success.
 """
 
+import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path
 
@@ -45,13 +46,12 @@ def input_args():
     A full path to a YAML file with the following format with required sections: experiment, arguments
 
     experiment:
-        type: 'gfs' | 'gefs'  # TODO: This should be called 'system' not 'type'
-        mode: 'cycled' | 'forecast-only'
+        mode: <cycled> <forecast-only>
             used to hold the only required positional argument to setup_expt.py
 
     arguments:
-        holds the remaining key:value pairs for all requisite arguments documented for setup_expt.py
-        Note: the argument `pslot` is derived from the basename of the yaml file itself
+        holds all the remaining key values pairs for all requisite arguments documented for setup_expt.py
+        Note: the argument pslot is derived from the basename of the yamlfile itself
 
     Returns
     -------
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     type = setup_expt_args.experiment.type
     mode = setup_expt_args.experiment.mode
 
-    setup_expt_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_expt.py'))  # TODO:turn setup_expt.py into a function so one does not have to call Executable
+    setup_expt_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_expt.py'))
 
     setup_expt_cmd.add_default_arg(type)
     setup_expt_cmd.add_default_arg(mode)
@@ -92,9 +92,6 @@ if __name__ == '__main__':
     for conf, value in setup_expt_args.arguments.items():
         setup_expt_cmd.add_default_arg(f'--{conf}')
         setup_expt_cmd.add_default_arg(str(value))
-
-    setup_expt_cmd.add_default_arg('--pslot')
-    setup_expt_cmd.add_default_arg(pslot)
 
     logger.info(f'Run command: {setup_expt_cmd.command}')
     setup_expt_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stderr'))

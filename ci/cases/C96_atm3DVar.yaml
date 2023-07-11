@@ -3,6 +3,7 @@ experiment:
   mode: cycled
 
 arguments:
+  pslot: ${pslot}
   app: ATM
   resdet: 96
   comrot: ${RUNTESTS}/COMROT
