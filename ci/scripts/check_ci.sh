@@ -80,6 +80,7 @@ for pr in ${pr_list}; do
 
   #Check for PR success  when ${pr_dir}/RUNTESTS/EXPDIR is void of subfolders
   # since all successfull ones where previously removed
+  # shellcheck disable=SC2312
   if [[ -z $(ls -A "${pr_dir}/RUNTESTS/EXPDIR") ]] ; then
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
     sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
