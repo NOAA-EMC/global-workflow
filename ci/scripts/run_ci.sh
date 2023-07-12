@@ -70,7 +70,7 @@ for pr in ${pr_list}; do
   fi
   num_cases=0
   for pslot_dir in "${pr_dir}/RUNTESTS/EXPDIR/"*; do
-    if [[ ! -d "${cases}" ]]; then
+    if [[ ! -d "${pslot_dir}" ]]; then
        continue
     fi
     ((num_cases=num_cases+1))
