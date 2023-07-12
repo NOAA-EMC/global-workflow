@@ -115,7 +115,7 @@ jobs:
       - name: Run Experiment ${{ matrix.pslot }}    
         env:
          HOMEgfs: ${{ env.HOMEGFS }}
-         EXPDIR: ${{ env.RUNTESTS }}/${{ matrix.pslot }}/EXPDIR
+         EXPDIR: ${{ env.RUNTESTS }}/EXPDIR
          pslot: ${{ matrix.pslot }}_${{ github.run_id }}
          pr: ${{ github.event.pull_request.number }}
         run: |
