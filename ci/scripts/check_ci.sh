@@ -137,7 +137,7 @@ for pr in ${pr_list}; do
       sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       #Remove Experment cases that completed successfully
-      rm -Rf "${pr_dir}/RUNTESTS/EXPDIR/${pslot}"
+      rm -Rf "${pslot_dir}"
       rm -Rf "${pr_dir}/RUNTESTS/COMROT/${pslot}"
     fi
   done
