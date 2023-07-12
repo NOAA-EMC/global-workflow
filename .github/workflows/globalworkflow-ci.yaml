@@ -12,7 +12,7 @@ env:
 
 jobs:
   checkout-build-link:
-    if: github.event.label.name == 'CI-Orion-Ready'
+    # if: github.event.label.name == 'CI-Orion-Ready'
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
 
