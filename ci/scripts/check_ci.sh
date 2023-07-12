@@ -97,8 +97,8 @@ for pr in ${pr_list}; do
       echo "No experiments found in ${pr_dir}/RUNTESTS/EXPDIR .. exiting"
       exit 0
     fi
-    xml="${pr_dir}/RUNTESTS/EXPDIR/${pslot}/${pslot}.xml"
-    db="${pr_dir}/RUNTESTS/EXPDIR/${pslot}/${pslot}.db"
+    xml="${pslot_dir}/${pslot}.xml"
+    db="${pslot_dir}/${pslot}.db"
     if [[ ! -f "${db}" ]]; then
        continue
     fi
