@@ -47,7 +47,7 @@ jobs:
         cd ${{ env.HOMEgfs_PR }}/sorc
         ./build_all.sh
 
-    - if: success() or failure()
+    - if: success() || failure()
       uses: actions-ecosystem/action-remove-labels@v1
       with:
         labels: "CI-Orion-Building"
