@@ -108,6 +108,7 @@ jobs:
     needs: create-experiments
     runs-on: [self-hosted, orion-ready]
     strategy:
+      max-parallel: 2
       matrix:
        pslot: ["C48_S2S","C96_atm3DVar"]    
     steps:
