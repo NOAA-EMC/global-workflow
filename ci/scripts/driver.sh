@@ -149,7 +149,7 @@ for pr in ${pr_list}; do
     HOMEgfs_PR="${pr_dir}/global-workflow"
     export HOMEgfs_PR
     cd "${HOMEgfs_PR}"
-    discribe=$(git rev-parse --short HEAD)
+    pr_sha=$(git rev-parse --short HEAD)
 
     for yaml_config in "${HOMEgfs_PR}/ci/cases/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
