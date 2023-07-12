@@ -5,9 +5,9 @@ name: gw-ci-orion
 on: [workflow_dispatch]
 
 env:
-  pr: ${{ github.event.pull_request.number }}
-  HOMEgfs_PR: ${{ github.workspace }}/${{ github.event.pull_request.number }}
-  RUNTESTS: ${{ github.workspace }}/RUNTESTS/${{ github.event.pull_request.number }}
+  pr: ${{ github.run_id }}
+  HOMEgfs_PR: ${{ github.workspace }}/${{ github.run_id }}
+  RUNTESTS: ${{ github.workspace }}/RUNTESTS/${{ github.run_id }}
   MACHINE_ID: orion
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-        path: ${{ github.event.pull_request.number }}
+        path: ${{ github.run_id }}
 
     - name: Checkout components
       run: |
