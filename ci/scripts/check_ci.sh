@@ -94,7 +94,7 @@ for pr in ${pr_list}; do
   for pslot_dir in "${pr_dir}/RUNTESTS/EXPDIR/"*; do
     pslot=$(basename "${pslot_dir}") || true
     if [[ -z "${pslot+x}" ]]; then
-      echo "No cases found in ${pr_dir}/RUNTESTS/EXPDIR .. exiting"
+      echo "No experiments found in ${pr_dir}/RUNTESTS/EXPDIR .. exiting"
       exit 0
     fi
     xml="${pr_dir}/RUNTESTS/EXPDIR/${pslot}/${pslot}.xml"
