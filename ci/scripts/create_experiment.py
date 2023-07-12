@@ -20,6 +20,7 @@ Functionally an experiment is setup as a result running the two scripts describe
 with an error code of 0 upon success.
 """
 
+import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path
 
@@ -80,7 +81,6 @@ if __name__ == '__main__':
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
     HOMEgfs = Path.absolute(Path(user_inputs.dir))
-    pslot = Path(user_inputs.yaml).stem
     type = setup_expt_args.experiment.type
     mode = setup_expt_args.experiment.mode
 
@@ -93,17 +93,13 @@ if __name__ == '__main__':
         setup_expt_cmd.add_default_arg(f'--{conf}')
         setup_expt_cmd.add_default_arg(str(value))
 
-    setup_expt_cmd.add_default_arg('--pslot')
-    setup_expt_cmd.add_default_arg(pslot)
-
     logger.info(f'Run command: {setup_expt_cmd.command}')
     setup_expt_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stderr'))
     setup_expt_stdout = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stdout'))
-    print(setup_expt_stderr)
     setup_expt_cmd(output=setup_expt_stdout, error=setup_expt_stderr)
 
     setup_xml_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_xml.py'))
-    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(pslot)))
+    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir),Path(setup_expt_args.arguments.pslot)))
     setup_xml_cmd.add_default_arg(str(expdir))
 
     logger.info(f'Run command: {setup_xml_cmd.command}')

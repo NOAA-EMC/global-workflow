@@ -148,11 +148,15 @@ for pr in ${pr_list}; do
     #############################################################
     HOMEgfs_PR="${pr_dir}/global-workflow"
     export HOMEgfs_PR
+    cd "${HOMEgfs_PR}"
+    discribe=$(git rev-parse --short HEAD)
+
     for yaml_config in "${HOMEgfs_PR}/ci/cases/"*.yaml; do
-      pslot=$(basename "${yaml_config}" .yaml) || true
+      case=$(basename "${yaml_config}" .yaml) || true
+      pslot="${pslot}_${discribe}"
       export pslot
       set +e
-      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/${pslot}.yaml" --dir "${HOMEgfs_PR}"
+      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/${case}.yaml" --dir "${HOMEgfs_PR}"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then

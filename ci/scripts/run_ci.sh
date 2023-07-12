@@ -79,8 +79,8 @@ for pr in ${pr_list}; do
        continue
     fi
     pslot=$(basename "${cases}")
-    xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
-    db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
+    xml="${pr_dir}/RUNTESTS/EXPDIR/${pslot}/${pslot}.xml"
+    db="${pr_dir}/RUNTESTS/EXPDIR/${pslot}/${pslot}.db"
     echo "Running: ${rocotorun} -v 6 -w ${xml} -d ${db}"
     "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
   done
