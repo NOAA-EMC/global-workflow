@@ -93,6 +93,7 @@ jobs:
         uses: actions-ecosystem/action-remove-labels@v1
         with:
          labels: "CI-Orion-Running"
+      - if: failure()
         uses: actions-ecosystem/action-add-labels@v1
         with:
          labels: "CI-Orion-Failed"
@@ -116,9 +117,11 @@ jobs:
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: "CI-Orion-Running"
+      - if: failure()    
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "CI-Orion-Failed"
+      - if: failure()    
         uses: actions-ecosystem/action-create-comment@v1
         with:
           github_token: ${{ secrets.github_token }}
