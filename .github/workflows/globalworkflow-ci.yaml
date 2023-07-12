@@ -27,7 +27,7 @@ jobs:
         cd ${{ env.HOMEgfs_PR }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
 
-    - if: success() or failure()
+    - if: success() || failure()
       uses: actions-ecosystem/action-remove-labels@v1
       with:
         labels: "CI-Orion-Ready"
