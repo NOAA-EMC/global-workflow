@@ -153,7 +153,7 @@ for pr in ${pr_list}; do
 
     for yaml_config in "${HOMEgfs_PR}/ci/cases/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
-      pslot="${pslot}_${discribe}"
+      pslot="${case}_${discribe}"
       export pslot
       set +e
       "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/${case}.yaml" --dir "${HOMEgfs_PR}"
