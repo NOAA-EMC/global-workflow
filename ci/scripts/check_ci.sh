@@ -92,7 +92,7 @@ for pr in ${pr_list}; do
   fi
 
   for pslot_dir in "${pr_dir}/RUNTESTS/EXPDIR/"*; do
-    pslot=$(basename "${cases}") || true
+    pslot=$(basename "${pslot_dir}") || true
     if [[ -z "${pslot+x}" ]]; then
       echo "No cases found in ${pr_dir}/RUNTESTS/EXPDIR .. exiting"
       exit 0
