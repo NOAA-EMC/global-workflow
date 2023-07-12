@@ -20,6 +20,7 @@ vcyc=${CDATE:8:2}
 YMD=${vday} HH=${vcyc} generate_com -rx COM_ATMOS_ANALYSIS_VERIF:COM_ATMOS_ANALYSIS_TMPL
 RUN=${CDUMP} YMD=${vday} HH=${vcyc} generate_com -rx COM_OBS_VERIF:COM_OBS_TMPL
 
+# These are used by fit2obs, so we can't change them to the standard COM variable names
 export COM_INA=${COM_ATMOS_ANALYSIS_VERIF}
 # We want to defer variable expansion, so ignore warning about single quotes
 # shellcheck disable=SC2016
