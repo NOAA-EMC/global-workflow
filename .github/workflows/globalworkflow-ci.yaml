@@ -12,7 +12,6 @@ env:
 
 jobs:
   checkout-build-link:
-    # if: github.event.label.name == 'CI-Orion-Ready'
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
 
@@ -27,50 +26,15 @@ jobs:
         cd ${{ env.HOMEgfs_PR }}/sorc
         ./checkout.sh  # Options e.g. -g -u can be added late
 
-    - if: success() || failure()
-      uses: actions-ecosystem/action-remove-labels@v1
-      with:
-        labels: "CI-Orion-Ready"
-
-    - if: success()
-      uses: actions-ecosystem/action-add-labels@v1
-      with:
-        labels: "CI-Orion-Building"
-
-    - if: failure()
-      uses: actions-ecosystem/action-add-labels@v1
-      with:
-        labels: "CI-Orion-Failed"
-
     - name: Build components
       run: |
         cd ${{ env.HOMEgfs_PR }}/sorc
         ./build_all.sh
 
-    - if: success() || failure()
-      uses: actions-ecosystem/action-remove-labels@v1
-      with:
-        labels: "CI-Orion-Building"
-
-    - if: failure()
-      uses: actions-ecosystem/action-add-labels@v1
-      with:
-        labels: "CI-Orion-Failed"
-
     - name: Link artifacts
       run: |
         cd ${{ env.HOMEgfs_PR }}/sorc
         ./link_workflow.sh
-
-    - if: failure()
-      uses: actions-ecosystem/action-add-labels@v1
-      with:
-        labels: "CI-Orion-Failed"
-
-    - if: success()
-      uses: actions-ecosystem/action-add-labels@v1
-      with:
-        labels: "CI-Orion-Running"
 
   create-experiments:
     needs: checkout-build-link
@@ -89,15 +53,6 @@ jobs:
          source ci/platforms/orion.sh
          ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml --dir ${{ env.HOMEgfs_PR }}
 
-      - if: failure()
-        uses: actions-ecosystem/action-remove-labels@v1
-        with:
-         labels: "CI-Orion-Running"
-      - if: failure()
-        uses: actions-ecosystem/action-add-labels@v1
-        with:
-         labels: "CI-Orion-Failed"
-
   run-experiments:
     needs: create-experiments
     runs-on: [self-hosted, orion-ready]
@@ -112,21 +67,6 @@ jobs:
         run: |
          cd ${{ env.HOMEgfs_PR }}
          ./ci/scripts/run-check_ci.sh ${{ env.HOMEgfs_PR }} ${{ env.RUNTESTS }}/EXPDIR ${{ matrix.case }}.${{ github.run_id }}
-
-      - if: failure()
-        uses: actions-ecosystem/action-remove-labels@v1
-        with:
-          labels: "CI-Orion-Running"
-      - if: failure()    
-        uses: actions-ecosystem/action-add-labels@v1
-        with:
-          labels: "CI-Orion-Failed"
-      - if: failure()    
-        uses: actions-ecosystem/action-create-comment@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          body: |
-           ${{ env.HOMEgfs}}/global-workflow.log
 
   release-lock:
     needs: run-experiments
