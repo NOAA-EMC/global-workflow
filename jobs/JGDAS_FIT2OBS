@@ -17,15 +17,13 @@ export CDATE
 vday=${CDATE:0:8}
 vcyc=${CDATE:8:2}
 
-YMD=${vday} HH=${vcyc} generate_com -rx COM_ATMOS_ANALYSIS_VERIF:COM_ATMOS_ANALYSIS_TMPL
-RUN=${CDUMP} YMD=${vday} HH=${vcyc} generate_com -rx COM_OBS_VERIF:COM_OBS_TMPL
-
 # These are used by fit2obs, so we can't change them to the standard COM variable names
-export COM_INA=${COM_ATMOS_ANALYSIS_VERIF}
+YMD=${vday} HH=${vcyc} generate_com -rx COM_INA:COM_ATMOS_ANALYSIS_TMPL
+RUN=${CDUMP} YMD=${vday} HH=${vcyc} generate_com -rx COM_PRP:COM_OBS_TMPL
+
 # We want to defer variable expansion, so ignore warning about single quotes
 # shellcheck disable=SC2016
 export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
-export COM_PRP=${COM_OBS_VERIF}
 
 export PRPI=${COM_PRP}/${RUN}.t${vcyc}z.prepbufr
 export sig1=${COM_INA}/${RUN}.t${vcyc}z.atmanl.nc
