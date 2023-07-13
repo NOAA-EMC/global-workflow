@@ -18,6 +18,7 @@ vday=${CDATE:0:8}
 vcyc=${CDATE:8:2}
 
 # These are used by fit2obs, so we can't change them to the standard COM variable names
+# shellcheck disable=SC2153
 YMD=${vday} HH=${vcyc} generate_com -rx COM_INA:COM_ATMOS_ANALYSIS_TMPL
 RUN=${CDUMP} YMD=${vday} HH=${vcyc} generate_com -rx COM_PRP:COM_OBS_TMPL
 
