@@ -1,0 +1,69 @@
+name: gw-ci-orion
+# A GitHub Action that creates a deployment for a PR, clones, builds and runs a test suite
+# This workflow is triggered by a label being added to a PR name Orion-Ready
+
+on: [workflow_dispatch]
+
+env:
+  id: ${{ github.run_id }}
+  HOMEgfs_PR: ${{ github.workspace }}/${{ github.run_id }}
+  RUNTESTS: ${{ github.workspace }}/RUNTESTS/${{ github.run_id }}
+  MACHINE_ID: orion
+
+jobs:
+  checkout-build-link:
+    runs-on: [self-hosted, orion-ready]
+    timeout-minutes: 600
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        path: ${{ github.run_id }}
+
+    - name: Checkout components
+      run: |
+        cd ${{ env.HOMEgfs_PR }}/sorc
+        ./checkout.sh -c -g  # Options e.g. -u can be added late
+
+    - name: Build components
+      run: |
+        cd ${{ env.HOMEgfs_PR }}/sorc
+        ./build_all.sh
+
+    - name: Link artifacts
+      run: |
+        cd ${{ env.HOMEgfs_PR }}/sorc
+        ./link_workflow.sh
+
+  create-experiments:
+    needs: checkout-build-link
+    runs-on: [self-hosted, orion-ready]
+    strategy:
+      matrix:
+       case: ["C48_S2S","C96_atm3DVar"]
+
+    steps:
+      - name: Create Experiments ${{ matrix.case }}
+        env:
+          pslot: ${{ matrix.case }}.${{ github.run_id }}
+        run: |
+         cd ${{ env.HOMEgfs_PR }}
+         source workflow/gw_setup.sh
+         source ci/platforms/orion.sh
+         ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml --dir ${{ env.HOMEgfs_PR }}
+
+  run-experiments:
+    needs: create-experiments
+    runs-on: [self-hosted, orion-ready]
+    strategy:
+      max-parallel: 2
+      matrix:
+       case: ["C48_S2S", "C96_atm3DVar"]
+    steps:
+      - name: Run Experiment ${{ matrix.case }}
+        env:
+          id: ${{ env.id }}
+        run: |
+         cd ${{ env.HOMEgfs_PR }}
+         ./ci/scripts/run-check_ci.sh ${{ env.HOMEgfs_PR }} ${{ env.RUNTESTS }}/EXPDIR ${{ matrix.case }}.${{ github.run_id }}
