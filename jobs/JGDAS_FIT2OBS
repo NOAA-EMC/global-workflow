@@ -27,6 +27,7 @@ RUN=${CDUMP} YMD=${vday} HH=${vcyc} generate_com -rx COM_PRP:COM_OBS_TMPL
 export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
 
 export PRPI=${COM_PRP}/${RUN}.t${vcyc}z.prepbufr
+# shellcheck disable=SC2153
 export sig1=${COM_INA}/${RUN}.t${vcyc}z.atmanl.nc
 export sfc1=${COM_INA}/${RUN}.t${vcyc}z.atmanl.nc
 export CNVS=${COM_INA}/${RUN}.t${vcyc}z.cnvstat
