@@ -11,10 +11,7 @@
 #####
 writing_nems_configure()
 {
-echo "SUB ${FUNCNAME[0]}: parsing_nems_configure begins"
-if [[ -e "${SCRIPTDIR}/nems.configure" ]]; then
-  rm -f "${SCRIPTDIR}/nems.configure"
-fi
+echo "SUB ${FUNCNAME[0]}: nems.configure.sh begins"
 
 # Setup nems.configure
 local DumpFields=${NEMSDumpFields:-false}
@@ -34,7 +31,7 @@ rm -f "${DATA}/nems.configure"
 local esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
 # Copy the selected template into run directory
-infile="${SCRIPTDIR}/nems.configure.${confignamevarfornems}.IN"
+infile="${HOMEgfs}/parm/ufs/nems.configure.${confignamevarfornems}.IN"
 if [[ -s ${infile} ]]; then
   cp "${infile}" tmp1
 else
