@@ -146,7 +146,7 @@ def esmfmanualregrid(src,S,row,col,frac_b,n_s,varmeth,slatd,slond,dlatd,dlond):
 
     vardims=len(src.shape)
     if vardims == 4:
-        nlevs=26
+        nlevs=40
     if vardims == 3:
         nlevs=1
 
@@ -372,7 +372,7 @@ def main():
             else:
                 validv[nv]=False
                 break
-        print(veclist[nv,0,0]+' and '+veclist[nv,0,0]+'  '+str(validv[nv]))
+        print(veclist[nv,0,0]+' and '+veclist[nv,0,1]+'  '+str(validv[nv]))
 
     #----------------------------------------------------------------------
     # loop over the output resolutions 
@@ -569,8 +569,11 @@ def main():
                     if vardims == '3':
                         varregridf=np.where(rgmask3d==1,ncfillval,varregrid)
                         odims = np.array(['time', 'z_l', 'lat', 'lon'])
-
-                    SSTrgn = outcdf.createVariable(varname, 'f4', odims,fill_value=ncfillval)
+                    if varname == 'MLD_003':
+                        SSTrgn = outcdf.createVariable('mld', 'f4', odims,fill_value=ncfillval)
+                        print('MLD_003 will be saved as mld in netcdf output')
+                    else:
+                        SSTrgn = outcdf.createVariable(varname, 'f4', odims,fill_value=ncfillval)
                     SSTrgn.units = ocnf[varname].getncattr('units')
                     SSTrgn.long_name = ocnf[varname].getncattr('long_name')
                     SSTrgn[:] = varregridf
