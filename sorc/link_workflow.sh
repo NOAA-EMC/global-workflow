@@ -2,7 +2,7 @@
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
-declare -r HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd )"
+HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd )"
 TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
 
 function usage() {

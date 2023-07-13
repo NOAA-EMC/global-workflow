@@ -9,8 +9,9 @@
 ## This is a child script of modular
 ## forecast script. This script is definition only (Is it? There is nothing defined here being used outside this script.)
 #####
-writing_nems_configure()
-{
+# shellcheck disable=SC2034
+writing_nems_configure() {
+
 echo "SUB ${FUNCNAME[0]}: nems.configure.sh begins"
 
 # Setup nems.configure
@@ -40,11 +41,11 @@ else
 fi
 
 local atm_model="fv3"
-local atm_petlist_bounds="0 $(( ${ATMPETS}-1 ))"
+local atm_petlist_bounds="0 $(( ATMPETS-1 ))"
 local atm_omp_num_threads="${ATMTHREADS}"
 
 local med_model="cmeps"
-local med_petlist_bounds="0 $(( ${MEDPETS}-1 ))"
+local med_petlist_bounds="0 $(( MEDPETS-1 ))"
 local med_omp_num_threads="${MEDTHREADS}"
 
 if [[ "${cpl}" = ".true." ]]; then
@@ -57,7 +58,7 @@ if [[ "${cplflx}" = ".true." ]]; then
   local use_mommesh=${USE_MOMMESH:-"true"}
 
   local ocn_model="mom6"
-  local ocn_petlist_bounds="${ATMPETS} $(( ${ATMPETS}+${OCNPETS}-1 ))"
+  local ocn_petlist_bounds="${ATMPETS} $(( ATMPETS+OCNPETS-1 ))"
   local ocn_omp_num_threads="${OCNTHREADS}"
   local RUNTYPE="${cmeps_run_type}"
   local CPLMODE="${cplmode}"
@@ -69,7 +70,7 @@ fi
 if [[ "${cplice}" = ".true." ]]; then
 
   local ice_model="cice6"
-  local ice_petlist_bounds="$(( ${ATMPETS}+${OCNPETS} )) $(( ${ATMPETS}+${OCNPETS}+${ICEPETS}-1 ))"
+  local ice_petlist_bounds="$(( ATMPETS+OCNPETS )) $(( ATMPETS+OCNPETS+ICEPETS-1 ))"
   local ice_omp_num_threads="${ICETHREADS}"
   local MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
   local FHMAX="${FHMAX_GFS}"  # TODO:  How did this get in here hard-wired to FHMAX_GFS?
@@ -78,7 +79,7 @@ fi
 if [[ "${cplwav}" = ".true." ]]; then
 
   local wav_model="ww3"
-  local wav_petlist_bounds="$(( ${ATMPETS}+${OCNPETS}+${ICEPETS} )) $(( ${ATMPETS}+${OCNPETS}+${ICEPETS}+${WAVPETS}-1 ))"
+  local wav_petlist_bounds="$(( ATMPETS+OCNPETS+ICEPETS )) $(( ATMPETS+OCNPETS+ICEPETS+WAVPETS-1 ))"
   local wav_omp_num_threads="${WAVTHREADS}"
   local MULTIGRID="${waveMULTIGRID}"
 
@@ -87,7 +88,7 @@ fi
 if [[ "${cplchm}" = ".true." ]]; then
 
   local chm_model="gocart"
-  local chm_petlist_bounds="0 $(( ${CHMPETS}-1 ))"
+  local chm_petlist_bounds="0 $(( CHMPETS-1 ))"
   local chm_omp_num_threads="${CHMTHREADS}"
   local coupling_interval_fast_sec="${CPL_FAST}"
 
@@ -97,7 +98,7 @@ source "${HOMEgfs}/ush/atparse.bash"
 rm -f "${DATA}/nems.configure"
 atparse < "${infile}" >> "${DATA}/nems.configure"
 
-echo "$(cat nems.configure)"
+cat nems.configure
 
 ${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_nems.yaml" fd_nems.yaml
 
