@@ -9,6 +9,8 @@
 ## This is a child script of modular
 ## forecast script. This script is definition only (Is it? There is nothing defined here being used outside this script.)
 #####
+
+# Disable variable not used warnings
 # shellcheck disable=SC2034
 writing_nems_configure() {
 
@@ -27,19 +29,9 @@ else
   local cmeps_run_type='startup'
 fi
 
-rm -f "${DATA}/nems.configure"
-
 local esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
-# Copy the selected template into run directory
-infile="${HOMEgfs}/parm/ufs/nems.configure.${confignamevarfornems}.IN"
-if [[ -s ${infile} ]]; then
-  cp "${infile}" tmp1
-else
-  echo "FATAL ERROR: nem.configure template '${infile}' does not exist!"
-  exit 1
-fi
-
+# Atm-related
 local atm_model="fv3"
 local atm_petlist_bounds="0 $(( ATMPETS-1 ))"
 local atm_omp_num_threads="${ATMTHREADS}"
@@ -94,10 +86,17 @@ if [[ "${cplchm}" = ".true." ]]; then
 
 fi
 
+# Ensure the template exists
+template="${HOMEgfs}/parm/ufs/nems.configure.${confignamevarfornems}.IN"
+if [[ ! -f ${template} ]]; then
+  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  exit 1
+fi
+
 source "${HOMEgfs}/ush/atparse.bash"
 rm -f "${DATA}/nems.configure"
-atparse < "${infile}" >> "${DATA}/nems.configure"
-
+atparse < "${template}" >> "${DATA}/nems.configure"
+echo "Rendered nems.configure:"
 cat nems.configure
 
 ${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_nems.yaml" fd_nems.yaml
