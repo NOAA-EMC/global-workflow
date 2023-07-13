@@ -59,8 +59,8 @@ set_trace
 ###############################################################
 # exglobal_forecast.py requires the following in PYTHONPATH
 # This will be moved to a module load when ready
-pygwPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/pygw/src:${HOMEgfs}/ush/python/pygfs"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${pygwPATH}"
+wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src:${HOMEgfs}/ush/python/pygfs"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
 export PYTHONPATH
 
 export job="fcst"
