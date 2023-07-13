@@ -17,4 +17,5 @@ ePBL:Ct:bilinear:2
 MLD_003:Ct:bilinear:2
 MLD_0125:Ct:bilinear:2
 SSU,SSV:Cu,Cv:bilinear,bilinear:2,2
+uo,vo:Cu,Cv:bilinear,bilinear:3,3
 taux,tauy:Cu,Cv:conserve,conserve:2,2
