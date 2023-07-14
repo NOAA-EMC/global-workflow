@@ -25,9 +25,11 @@ HOMEgfs="${TEST_DIR}/HOMEgfs"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 
 # Source modules and setup logging
+echo "Source modules."
 source "${HOMEgfs}/workflow/gw_setup.sh"
 
 # cd into the experiment directory
+echo "cd ${RUNTESTS}/EXPDIR/${pslot}"
 cd "${RUNTESTS}/EXPDIR/${pslot}" || (echo "FATAL ERROR: Unable to cd into '${RUNTESTS}/EXPDIR/${pslot}', ABORT!"; exit 1)
 
 # Name of the Rocoto XML and database files
@@ -40,18 +42,24 @@ if [[ ! -f "${xml}" ]]; then
   exit 1
 fi
 
+# Launch experiment
+echo "Launch experiment with Rocoto."
+rocotorun -v 10 -w "${xml}" -d "${db}"
+sleep 30
+if [[ ! -f "${db}" ]]; then
+  echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
+  exit 2
+fi
+
+# Experiment launched
 rc=99
 while true; do
 
-  echo "Running: rocotorun -v 10 -w ${xml} -d ${db}"
-  rocotorun -v 10 -w "${xml}" -d "${db}"
+  echo "Run rocotorun."
+  rocotorun -v ${ROCOTO_VERBOSE:-0} -w "${xml}" -d "${db}"
 
   # Wait before running rocotostat
-  echo "wait 30s"; sleep 30
-  if [[ ! -f "${db}" ]]; then
-    echo "Database file ${db} not found, experiment ${pslot} failed"
-    exit 2
-  fi
+  sleep 30
 
   # Get job statistics
   echo "Gather Rocoto statistics"
