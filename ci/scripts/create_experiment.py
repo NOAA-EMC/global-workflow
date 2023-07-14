@@ -9,7 +9,7 @@ where ${HOMEgfs} is specified within the input yaml file.
  ${HOMEgfs}/workflow/setup_xml.py
 
 The yaml file are simply the arguments for these two scripts.
-After this scripts runs, and experiment is ready for launch.
+After this scripts runs the experiment is ready for launch.
 
 Output
 ------
