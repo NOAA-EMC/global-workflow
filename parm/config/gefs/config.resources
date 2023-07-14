@@ -550,38 +550,42 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         export MEDPETS MEDTHREADS
         echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
+        CHMPETS=0; CHMTHREADS=0
         if [[ "${DO_AERO}" = "YES" ]]; then
           # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
           (( CHMTHREADS = ATMTHREADS ))
           (( CHMPETS = FV3PETS ))
           # Do not add to NTASKS_TOT
-          export CHMPETS CHMTHREADS
           echo "GOCART using (threads, PETS) = (${CHMTHREADS}, ${CHMPETS})"
         fi
+        export CHMPETS CHMTHREADS
 
+        WAVPETS=0; WAVTHREADS=0
         if [[ "${DO_WAVE}" = "YES" ]]; then
           (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
           (( WAVTHREADS = nthreads_ww3 ))
-          export WAVPETS WAVTHREADS
           echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
           (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
         fi
+        export WAVPETS WAVTHREADS
 
+        OCNPETS=0; OCNTHREADS=0
         if [[ "${DO_OCN}" = "YES" ]]; then
           (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
           (( OCNTHREADS = nthreads_mom6 ))
-          export OCNPETS OCNTHREADS
           echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
           (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
         fi
+        export OCNPETS OCNTHREADS
 
+        ICEPETS=0; ICETHREADS=0
         if [[ "${DO_ICE}" = "YES" ]]; then
           (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
           (( ICETHREADS = nthreads_cice6 ))
-          export ICEPETS ICETHREADS
           echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
           (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
         fi
+        export ICEPETS ICETHREADS
 
         echo "Total PETS for ${_CDUMP} = ${NTASKS_TOT}"
 

@@ -79,16 +79,13 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-SCRIPTDIR="${HOMEgfs}/ush"
-echo "MAIN: environment loaded for ${machine} platform,Current Script locates in ${SCRIPTDIR}."
-
 # include all subroutines. Executions later.
-source "${SCRIPTDIR}/cplvalidate.sh"	# validation of cpl*
-source "${SCRIPTDIR}/forecast_predet.sh"	# include functions for variable definition
-source "${SCRIPTDIR}/forecast_det.sh"  # include functions for run type determination
-source "${SCRIPTDIR}/forecast_postdet.sh"	# include functions for variables after run type determination
-source "${SCRIPTDIR}/nems_configure.sh"	# include functions for nems_configure processing
-source "${SCRIPTDIR}/parsing_model_configure_FV3.sh"
+source "${HOMEgfs}/ush/cplvalidate.sh"	# validation of cpl*
+source "${HOMEgfs}/ush/forecast_predet.sh"	# include functions for variable definition
+source "${HOMEgfs}/ush/forecast_det.sh"  # include functions for run type determination
+source "${HOMEgfs}/ush/forecast_postdet.sh"	# include functions for variables after run type determination
+source "${HOMEgfs}/ush/nems_configure.sh"	# include functions for nems_configure processing
+source "${HOMEgfs}/ush/parsing_model_configure_FV3.sh"
 
 # Compset string. For nems.configure.* template selection. Default ATM only
 confignamevarfornems=${confignamevarfornems:-'atm'}

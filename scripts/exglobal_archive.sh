@@ -103,8 +103,8 @@ if [[ "${RUN}" == "gfs" ]] && [[ "${FITSARC}" = "YES" ]]; then
     fhr=0
     while [[ ${fhr} -le ${fhmax} ]]; do
         fhr3=$(printf %03i "${fhr}")
-        sfcfile="${COM_ATMOS_MASTER}/${prefix}.sfcf${fhr3}.nc"
-        sigfile="${COM_ATMOS_MASTER}/${prefix}.atmf${fhr3}.nc"
+        sfcfile="${COM_ATMOS_HISTORY}/${prefix}.sfcf${fhr3}.nc"
+        sigfile="${COM_ATMOS_HISTORY}/${prefix}.atmf${fhr3}.nc"
         nb_copy "${sfcfile}" "${VFYARC}/${RUN}.${PDY}/${cyc}/"
         nb_copy "${sigfile}" "${VFYARC}/${RUN}.${PDY}/${cyc}/"
         (( fhr = 10#${fhr} + 6 ))
