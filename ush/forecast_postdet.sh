@@ -483,7 +483,7 @@ FV3_nml(){
   # namelist output for a certain component
   echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
   # Call child scripts in current script directory
-  source "${SCRIPTDIR}/parsing_namelists_FV3.sh"
+  source "${HOMEgfs}/ush/parsing_namelists_FV3.sh"
   FV3_namelists
   echo "SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created"
 }
@@ -648,7 +648,7 @@ WW3_nml() {
       exit 4
     fi
   fi
-  source "${SCRIPTDIR}/parsing_namelists_WW3.sh"
+  source "${HOMEgfs}/ush/parsing_namelists_WW3.sh"
   WW3_namelists
 }
 
@@ -835,7 +835,7 @@ MOM6_postdet() {
 
 MOM6_nml() {
   echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-  source "${SCRIPTDIR}/parsing_namelists_MOM6.sh"
+  source "${HOMEgfs}/ush/parsing_namelists_MOM6.sh"
   MOM6_namelists
 }
 
@@ -975,7 +975,7 @@ CICE_postdet() {
 
 CICE_nml() {
   echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-  source "${SCRIPTDIR}/parsing_namelists_CICE.sh"
+  source "${HOMEgfs}/ush/parsing_namelists_CICE.sh"
   CICE_namelists
 }
 
