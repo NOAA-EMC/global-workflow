@@ -213,15 +213,6 @@ def main():
     dsttype=['rect.']
     regridtype='manual' #manual or auto
 
-    #variables to be regridded with the native tripole stagger location
-    #and dimensionality 
-    #first BM contained only field "mld", which was actually ePBL
-    #the remaining BMs contain ePBL, MLD_003 and MLD_0125 
-    #the following NCO command will be issued at the end 
-    #to rename the variable mld to ePBL if the variable mld is found
-
-    ncocmd=['ncrename -O -v MLD_003,mld']
-
     #If a parm file is given
     if len(sys.argv) == 6:
         print('Processing variables from parm')
