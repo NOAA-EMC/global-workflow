@@ -492,7 +492,6 @@ def validate_user_request(host, inputs):
 
 def main(*argv):
 
-
     user_inputs = input_args(argv)
     host = Host()
 
