@@ -159,11 +159,6 @@ def esmfmanualregrid(src,S,row,col,frac_b,n_s,varmeth,slatd,slond,dlatd,dlond):
         if vardims == 3:
             src_oned=np.reshape(np.transpose(src[0,:,:]),(slatd*slond),'F')
 
-        if 1 == 0:
-            dst_oned= np.zeros(shape=(dlatd*dlond),dtype=float)
-            for m in range(0,n_s):
-                dst_oned[row[m]-1]=dst_oned[row[m]-1]+S[m]*src_oned[col[m]-1]
-
         if 1 == 1:        
             dst_oned=esmfwghtinterp_f90subroutine.bilin(src_oned,S,row,col,frac_b,dlatd*dlond)
 
