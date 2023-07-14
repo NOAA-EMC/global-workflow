@@ -44,7 +44,7 @@ fi
 
 # Launch experiment
 echo "Launch experiment with Rocoto."
-rocotorun -v ${ROCOTO_VERBOSE:-0} -w "${xml}" -d "${db}"
+rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 sleep 30
 if [[ ! -f "${db}" ]]; then
   echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
@@ -56,7 +56,7 @@ rc=99
 while true; do
 
   echo "Run rocotorun."
-  rocotorun -v ${ROCOTO_VERBOSE:-0} -w "${xml}" -d "${db}"
+  rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 
   # Wait before running rocotostat
   sleep 30
