@@ -7,5 +7,5 @@ copy:
   - !ENV ${DATA}/fv3jedi/fmsmpp.nml
 - - !ENV ${FV3JEDI_FIX}/fv3jedi/fv3files/field_table_gfdl
   - !ENV ${DATA}/fv3jedi/field_table
-- - !ENV ${FV3JEDI_FIX}/fv3jedi/fieldmetadata/gfs-aerosol.yaml
-  - !ENV ${DATA}/fv3jedi/gfs-restart.yaml
+- - !ENV $(HOMEgfs)/sorc/gdas.cd/parm/io/fv3jedi_fieldmetadata_restart.yaml
+  - !ENV ${DATA}/fv3jedi/fv3jedi_fieldmetadata_restart.yaml
