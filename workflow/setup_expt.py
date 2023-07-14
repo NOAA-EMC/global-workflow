@@ -493,7 +493,7 @@ def validate_user_request(host, inputs):
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
 
 
-if __name__ == '__main__':
+def main():
 
     user_inputs = input_args()
     host = Host()
@@ -514,3 +514,8 @@ if __name__ == '__main__':
         makedirs_if_missing(expdir)
         fill_EXPDIR(user_inputs)
         update_configs(host, user_inputs)
+
+
+if __name__ == '__main__':
+
+    main()

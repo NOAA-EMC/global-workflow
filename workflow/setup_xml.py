@@ -51,7 +51,7 @@ def check_expdir(cmd_expdir, cfg_expdir):
         raise ValueError('Abort!')
 
 
-if __name__ == '__main__':
+def main():
 
     user_inputs = input_args()
     rocoto_param_dict = {'maxtries': user_inputs.maxtries,
@@ -74,3 +74,8 @@ if __name__ == '__main__':
     # Create Rocoto Tasks and Assemble them into an XML
     xml = rocoto_xml_factory.create(f'{net}_{mode}', app_config, rocoto_param_dict)
     xml.write()
+
+
+if __name__ == '__main__':
+
+    main()
