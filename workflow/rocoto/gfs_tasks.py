@@ -890,7 +890,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         metpenvars = self.envars.copy()
-        metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS').strftime("%Y%m%d%H"),
+        metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS'),
                           # TODO - in Forecast-only, this is `SDATE` on the RHS
                           'METPCASE': '#metpcase#'}
         for key, value in metpenvar_dict.items():
