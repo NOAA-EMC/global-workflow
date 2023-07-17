@@ -144,8 +144,12 @@ export topdir
 export logdir="${topdir}/logs"
 mkdir -p "${logdir}"
 
+# Setup lmod environment
+source "${topdir}/../workflow/gw_setup.sh"
+
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
+checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab"                    ; errs=$((errs + $?))
 checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "8965258"                    ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471"                    ; errs=$((errs + $?))
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-bf60924}" ; errs=$((errs + $?))
@@ -156,7 +160,7 @@ if [[ ${checkout_gsi} == "YES" ]]; then
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "1da2e63"; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "7e3d694"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then

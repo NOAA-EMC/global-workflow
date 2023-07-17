@@ -3,4 +3,4 @@ count = False
 ignore = E402,W504
 max-line-length = 160
 statistics = True
-exclude = Experimental
+exclude = Experimental,.git,.vscode,*.fd,*.cd

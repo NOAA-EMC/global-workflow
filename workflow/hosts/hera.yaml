@@ -1,5 +1,6 @@
 BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git'
 DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump'
+BASE_CPLIC: '/scratch1/NCEPDEV/climate/role.ufscpara/IC'
 PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara'
 COMROOT: '/scratch1/NCEPDEV/global/glopara/com'
 COMINsyn: '${COMROOT}/gfs/prod/syndat'

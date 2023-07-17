@@ -20,19 +20,17 @@ Functionally an experiment is setup as a result running the two scripts describe
 with an error code of 0 upon success.
 """
 
-import sys
-import socket
+import os
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path
 
-from pygw.yaml_file import YAMLFile
-from pygw.logger import Logger
-from pygw.executable import Executable
+from wxflow import YAMLFile, Logger, logit, Executable
 
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 logger = Logger(level='DEBUG', colored_log=True)
 
 
+@logit(logger)
 def input_args():
     """
     Method to collect user arguments for `create_experiment.py`
@@ -82,12 +80,11 @@ if __name__ == '__main__':
     user_inputs = input_args()
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
-    HOMEgfs = user_inputs.dir
-    pslot = Path(user_inputs.yaml).stem
+    HOMEgfs = Path.absolute(Path(user_inputs.dir))
     type = setup_expt_args.experiment.type
     mode = setup_expt_args.experiment.mode
 
-    setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_expt.py')))
+    setup_expt_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_expt.py'))
 
     setup_expt_cmd.add_default_arg(type)
     setup_expt_cmd.add_default_arg(mode)
@@ -96,15 +93,17 @@ if __name__ == '__main__':
         setup_expt_cmd.add_default_arg(f'--{conf}')
         setup_expt_cmd.add_default_arg(str(value))
 
-    setup_expt_cmd.add_default_arg('--pslot')
-    setup_expt_cmd.add_default_arg(pslot)
-
     logger.info(f'Run command: {setup_expt_cmd.command}')
-    setup_expt_cmd(output='setup_expt.stdout', error='setup_expt.stderr')
+    setup_expt_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stderr'))
+    setup_expt_stdout = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_expt.stdout'))
+    print(setup_expt_stderr)
+    setup_expt_cmd(output=setup_expt_stdout, error=setup_expt_stderr)
 
-    setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_xml.py')))
-    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(pslot)))
+    setup_xml_cmd = Executable(Path.joinpath(HOMEgfs, 'workflow', 'setup_xml.py'))
+    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(setup_expt_args.arguments.pslot)))
     setup_xml_cmd.add_default_arg(str(expdir))
 
     logger.info(f'Run command: {setup_xml_cmd.command}')
-    setup_xml_cmd(output='setupxml.stdout', error='setupxml.stderr')
+    setup_xml_stderr = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_xml.stderr'))
+    setup_xml_stdout = str(Path.joinpath(HOMEgfs, 'ci', 'scripts', 'setup_xml.stdout'))
+    setup_xml_cmd(output=setup_xml_stdout, error=setup_xml_stderr)
