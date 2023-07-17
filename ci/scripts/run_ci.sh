@@ -69,8 +69,8 @@ for pr in ${pr_list}; do
      continue
   fi
   num_cases=0
-  for cases in "${pr_dir}/RUNTESTS/"*; do
-    if [[ ! -d "${cases}" ]]; then
+  for pslot_dir in "${pr_dir}/RUNTESTS/EXPDIR/"*; do
+    if [[ ! -d "${pslot_dir}" ]]; then
        continue
     fi
     ((num_cases=num_cases+1))
@@ -78,10 +78,10 @@ for pr in ${pr_list}; do
     if [[ "${num_cases}" -gt "${max_concurrent_cases}" ]]; then
        continue
     fi
-    pslot=$(basename "${cases}")
-    xml="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.xml"
-    db="${pr_dir}/RUNTESTS/${pslot}/EXPDIR/${pslot}/${pslot}.db"
-    echo "Running: ${rocotorun} -v 6 -w ${xml} -d ${db}"
+    pslot=$(basename "${pslot_dir}")
+    xml="${pslot_dir}/${pslot}.xml"
+    db="${pslot_dir}/${pslot}.db"
+    echo "Running: ${rocotorun} -v 10 -w ${xml} -d ${db}"
     "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
   done
 done

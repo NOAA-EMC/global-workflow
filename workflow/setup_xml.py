@@ -8,10 +8,10 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from applications.application_factory import app_config_factory
 from rocoto.rocoto_xml_factory import rocoto_xml_factory
-from pygw.configuration import Configuration
+from wxflow import Configuration
 
 
-def input_args():
+def input_args(*argv):
     """
     Method to collect user arguments for `setup_xml.py`
     """
@@ -37,9 +37,7 @@ def input_args():
     parser.add_argument('--verbosity', help='verbosity level of Rocoto', type=int,
                         default=10, required=False)
 
-    args = parser.parse_args()
-
-    return args
+    return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
 
 def check_expdir(cmd_expdir, cfg_expdir):
@@ -51,9 +49,9 @@ def check_expdir(cmd_expdir, cfg_expdir):
         raise ValueError('Abort!')
 
 
-if __name__ == '__main__':
+def main(*argv):
 
-    user_inputs = input_args()
+    user_inputs = input_args(argv)
     rocoto_param_dict = {'maxtries': user_inputs.maxtries,
                          'cyclethrottle': user_inputs.cyclethrottle,
                          'taskthrottle': user_inputs.taskthrottle,
@@ -74,3 +72,8 @@ if __name__ == '__main__':
     # Create Rocoto Tasks and Assemble them into an XML
     xml = rocoto_xml_factory.create(f'{net}_{mode}', app_config, rocoto_param_dict)
     xml.write()
+
+
+if __name__ == '__main__':
+
+    main()

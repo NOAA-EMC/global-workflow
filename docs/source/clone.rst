@@ -11,25 +11,41 @@ Quick clone/build/link instructions (more detailed instructions below).
 .. note::
    Here we are making the assumption that you are using the workflow to run an experiment and so are working from the authoritative repository. If you are using a development branch then follow the instructions in :doc:`development.rst`. Once you do that you can follow the instructions here with the only difference being the repository/fork you are cloning from.
 
-For forecast-only (coupled or uncoupled):
+Clone the `global-workflow` and `cd` into the `sorc` directory:
 
 ::
 
-   git clone https://github.com/NOAA-EMC/global-workflow.git
+   git clone https://github.com/NOAA-EMC/global-workflow
    cd global-workflow/sorc
+
+For forecast-only (coupled or uncoupled) checkout the components:
+
+::
+
    ./checkout.sh
-   ./build_all.sh
-   ./link_workflow.sh
 
-For cycled (w/ data assimilation):
+For cycled (w/ data assimilation) use the `-g` option during checkout:
 
 ::
 
-   git clone https://github.com/NOAA-EMC/global-workflow.git
-   cd global-workflow/sorc
    ./checkout.sh -g
+
+For coupled cycling (include new UFSDA) use the `-gu` options during checkout:
+
+[Currently only available on Hera and Orion]
+
+::
+
+   ./checkout.sh -gu
+
+
+Build workflow components and link workflow artifacts such as executables, etc.
+
+::
+
    ./build_all.sh
    ./link_workflow.sh
+
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Clone workflow and component repositories
@@ -39,24 +55,13 @@ Clone workflow and component repositories
 Workflow
 ********
 
-There are several ways to clone repositories from GitHub. Below we describe how to clone the global-workflow using either the ssh or https methods. **The ssh method is highly preferred and recommended.**
-
-ssh method (using a password protected SSH key):
+There are several ways to clone repositories from GitHub. Below we describe how to clone the global-workflow using the `https` method.
 
 ::
 
-   git clone git@github.com:NOAA-EMC/global-workflow.git
+   git clone https://github.com/NOAA-EMC/global-workflow
 
-.. note::
-   When using ssh methods you need to make sure that your GitHub account is configured for the computer from which you are accessing the repository (See `this link <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account>`_)
-
-https method:
-
-::
-
-   git clone https://github.com/NOAA-EMC/global-workflow.git
-
-Check what you just cloned (by default you will have only the develop branch):
+Check what you just cloned (by default you will have only the `develop` branch):
 
 ::
 
@@ -103,6 +108,14 @@ Or with the ``-g`` switch to include data assimilation (GSI) for cycling:
 
    cd sorc
    ./checkout.sh -g
+
+Or also with the ``-u`` swtich to include coupled DA (via UFSDA):
+[Currently only available on Hera and Orion]
+
+::
+
+   cd sorc
+   ./checkout.sh -gu
 
 Each component cloned via checkout.sh will have a log (``/sorc/logs/checkout-COMPONENT.log``). Check the screen output and logs for clone errors.
 

@@ -2,9 +2,7 @@
 
 import os
 
-from pygw.attrdict import AttrDict
-from pygw.logger import Logger, logit
-from pygw.configuration import cast_strdict_as_dtypedict
+from wxflow import AttrDict, Logger, logit, cast_strdict_as_dtypedict
 from pygfs.task.upp import UPP
 
 # initialize root logger

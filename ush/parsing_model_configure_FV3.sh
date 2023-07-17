@@ -32,7 +32,7 @@ fhrot:                   ${IAU_FHROT:-0}
 
 dt_atmos:                ${DELTIM}
 calendar:                ${calendar:-'julian'}
-restart_interval:        ${restart_interval}
+restart_interval:        ${restart_interval} -1
 output_1st_tstep_rst:    .false.
 
 quilting:                ${QUILTING}
@@ -56,7 +56,7 @@ ideflate:                ${ideflate:-1}
 nbits:                   ${nbits:-14}
 imo:                     ${LONB_IMO}
 jmo:                     ${LATB_JMO}
-output_fh:               ${OUTPUT_FH}
+output_fh:               ${FV3_OUTPUT_FH}
 iau_offset:              ${IAU_OFFSET:-0}
 EOF
 

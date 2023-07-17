@@ -277,75 +277,25 @@ export deflate_level=1
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
 
-if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
+# Write more variables to output
+export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table"
 
-    # Variables used in DA cycling
-    export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table_da"
+# Write gfs restart files to rerun fcst from any break point
+export restart_interval=${restart_interval_gfs:-12}
 
-    # Write restart files, where $number is current model start time.
-    # restart_interval:        $number
-    #    number=0, writes out restart files at the end of forecast.
-    #    number>0, writes out restart files at the frequency of $number and at the end of forecast.
-    # restart_interval:        "$number -1"
-    #    writes out restart files only once at $number forecast hour.
-    # restart_interval:        "$number1 $number2 $number3 ..."
-    #    writes out restart file at the specified forecast hours
-    export restart_interval=${restart_interval:-6}
+# Choose coupling with wave
+if [[ "${DO_WAVE}" = "YES" ]]; then
+    export cplwav=".true."
+fi
 
-    # For IAU, write restarts at beginning of window also
-    if [[ "${DOIAU}" == "YES" ]]; then
-       export restart_interval="3 6"
-    fi
+# Turn off dry mass adjustment in GFS
+export adjust_dry_mass=".false."
 
-    # Choose coupling with wave
-    if [[ "${DO_WAVE}" == "YES" ]]; then export cplwav=".true." ; fi
-
-    # Turn on dry mass adjustment in GDAS
-    export adjust_dry_mass=".true."
-
-elif [[ "${CDUMP}" =~ "gfs" ]] ; then # GFS cycle specific parameters
-
-    # Write more variables to output
-    export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table"
-
-    # Write gfs restart files to rerun fcst from any break point
-    export restart_interval_gfs=${restart_interval_gfs:-0}
-    if (( restart_interval_gfs >= 0 )); then
-        export restart_interval="${FHMAX_GFS}"
-    else
-        rst_list=""
-        IAU_OFFSET=${IAU_OFFSET:-0}
-        [[ ${DOIAU} == "NO" ]] && export IAU_OFFSET=0
-        
-        for ((xfh=restart_interval_gfs+(IAU_OFFSET/2); xfh <= FHMAX_GFS; xfh=xfh+restart_interval_gfs )); do
-          rst_list="${rst_list} ${xfh}"
-          xfh=$((xfh+restart_interval_gfs))
-        done
-        export restart_interval="${rst_list}"
-    fi
-
-    if [[ "${DO_AERO}" == "YES" ]]; then
-        # Make sure a restart file is written at the cadence time
-        if [[ ! "${restart_interval[*]}" =~ ${STEP_GFS}  ]]; then
-            export restart_interval="${STEP_GFS} ${restart_interval}"
-        fi
-    fi
-
-    # Choose coupling with wave
-    if [[ "${DO_WAVE}" = "YES" && "${WAVE_CDUMP}" != "gdas" ]]; then
-        export cplwav=".true."
-    fi
-
-    # Turn off dry mass adjustment in GFS
-    export adjust_dry_mass=".false."
-
-    # Write each restart file in 16 small files to save time
-    if [[ "${CASE}" = C768 ]]; then
-      export io_layout="4,4"
-    else
-      export io_layout="1,1"
-    fi
-
+# Write each restart file in 16 small files to save time
+if [[ "${CASE}" = C768 ]]; then
+  export io_layout="4,4"
+else
+  export io_layout="1,1"
 fi
 
 if [[ "${DO_AERO}" = "YES" ]]; then # temporary settings for aerosol coupling
