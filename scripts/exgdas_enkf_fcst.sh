@@ -112,17 +112,17 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
 
    cd "${DATATOP}"
 
-   MEMNUM=$(printf %03i "${imem}")
-   export MEMNUM
-   memchar="mem${MEMNUM}"
+   ENSMEM=$(printf %03i "${imem}")
+   export ENSMEM
+   memchar="mem${ENSMEM}"
 
-   echo "Processing MEMBER: ${MEMNUM}"
+   echo "Processing MEMBER: ${ENSMEM}"
 
    ra=0
 
    skip_mem="NO"
    if [[ -f ${EFCSGRP}.fail ]]; then
-      memstat=$(grep "MEMBER ${MEMNUM}" "${EFCSGRP}.fail" | grep -c "PASS")
+      memstat=$(grep "MEMBER ${ENSMEM}" "${EFCSGRP}.fail" | grep -c "PASS")
       [[ ${memstat} -eq 1 ]] && skip_mem="YES"
    fi
 
@@ -167,7 +167,7 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
 
       # Notify a member forecast failed and abort
       if [[ ${ra} -ne 0 ]]; then
-         err_exit "FATAL ERROR:  forecast of member ${MEMNUM} FAILED.  Aborting job"
+         err_exit "FATAL ERROR:  forecast of member ${ENSMEM} FAILED.  Aborting job"
       fi
 
       rc=$((rc+ra))
@@ -193,9 +193,9 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
    [[ -f log ]] && rm log
    [[ -f log_new ]] && rm log_new
    if [[ ${ra} -ne 0 ]]; then
-      echo "MEMBER ${MEMNUM} : FAIL" > log
+      echo "MEMBER ${ENSMEM} : FAIL" > log
    else
-      echo "MEMBER ${MEMNUM} : PASS" > log
+      echo "MEMBER ${ENSMEM} : PASS" > log
    fi
    if [[ -s log_old ]] ; then
        cat log_old log > log_new

@@ -740,7 +740,7 @@ MOM6_postdet() {
     # Link output files for RUN = gfs
 
     # TODO: get requirements on what files need to be written out and what these dates here are and what they mean
-    export MEMNUM=${MEMNUM:-00}
+    export ENSMEM=${ENSMEM:-00}
 
     if [[ ! -d ${COM_OCEAN_HISTORY} ]]; then mkdir -p "${COM_OCEAN_HISTORY}"; fi
 
@@ -760,7 +760,7 @@ MOM6_postdet() {
 
       # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
       local source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-      local dest_file="ocn${vdate}.${MEMNUM}.${current_cycle}.nc"
+      local dest_file="ocn${vdate}.${ENSMEM}.${current_cycle}.nc"
       ${NLN} "${COM_OCEAN_HISTORY}/${dest_file}" "${DATA}/${source_file}"
 
       local source_file="ocn_daily_${vdate:0:4}_${vdate:4:2}_${vdate:6:2}.nc"
@@ -920,7 +920,7 @@ CICE_postdet() {
     # TODO: make these forecast output files consistent w/ GFS output
     # TODO: Work w/ NB to determine appropriate naming convention for these files
 
-    export MEMNUM=${MEMNUM:-000}
+    export ENSMEM=${ENSMEM:-000}
 
     # TODO: consult w/ NB on how to improve on this.  Gather requirements and more information on what these files are and how they are used to properly catalog them
     local vdate seconds vdatestr fhr last_fhr
@@ -930,10 +930,10 @@ CICE_postdet() {
       vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
       if [[ 10#${fhr} -eq 0 ]]; then
-        ${NLN} "${COM_ICE_HISTORY}/iceic${vdate}.${MEMNUM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+        ${NLN} "${COM_ICE_HISTORY}/iceic${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
       else
         (( interval = fhr - last_fhr ))  # Umm.. isn't this histfreq_n?
-        ${NLN} "${COM_ICE_HISTORY}/ice${vdate}.${MEMNUM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
+        ${NLN} "${COM_ICE_HISTORY}/ice${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
       fi
       last_fhr=${fhr}
     done
