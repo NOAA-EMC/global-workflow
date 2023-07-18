@@ -502,8 +502,8 @@ FV3_out() {
       done
       local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
     done
-  elif [[ ${RUN} =~ "gfs" ]]; then
-    # No need to copy FV3 restart files when RUN=gfs
+  else
+    # No need to copy FV3 restart files when RUN=gfs or gefs
     ${NCP} "${DATA}/input.nml" "${COM_ATMOS_HISTORY}/input.nml"
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
@@ -736,11 +736,11 @@ MOM6_postdet() {
   [[ ! -d ${COM_OCEAN_HISTORY} ]] && mkdir -p "${COM_OCEAN_HISTORY}"
 
   # Link output files
-  if [[ "${RUN}" =~ "gfs" ]]; then
+  if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
     # Link output files for RUN = gfs
 
     # TODO: get requirements on what files need to be written out and what these dates here are and what they mean
-    export ENSMEM=${ENSMEM:-01}
+    export MEMNUM=${MEMNUM:-00}
 
     if [[ ! -d ${COM_OCEAN_HISTORY} ]]; then mkdir -p "${COM_OCEAN_HISTORY}"; fi
 
@@ -760,7 +760,7 @@ MOM6_postdet() {
 
       # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
       local source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-      local dest_file="ocn${vdate}.${ENSMEM}.${current_cycle}.nc"
+      local dest_file="ocn${vdate}.${MEMNUM}.${current_cycle}.nc"
       ${NLN} "${COM_OCEAN_HISTORY}/${dest_file}" "${DATA}/${source_file}"
 
       local source_file="ocn_daily_${vdate:0:4}_${vdate:4:2}_${vdate:6:2}.nc"
@@ -875,7 +875,7 @@ CICE_postdet() {
 
   if [[ "${RUN}" =~ "gdas" ]]; then
     cice_hist_avg=".false."   # DA needs instantaneous
-  elif [[ "${RUN}" =~ "gfs" ]]; then
+  else
     cice_hist_avg=".true."    # P8 wants averaged over histfreq_n
   fi
 
@@ -914,13 +914,13 @@ CICE_postdet() {
   if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi
   mkdir -p "${COM_ICE_RESTART}"
 
-  if [[ "${RUN}" =~ "gfs" ]]; then
+  if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
     # Link output files for RUN = gfs
 
     # TODO: make these forecast output files consistent w/ GFS output
     # TODO: Work w/ NB to determine appropriate naming convention for these files
 
-    export ENSMEM=${ENSMEM:-01}
+    export MEMNUM=${MEMNUM:-000}
 
     # TODO: consult w/ NB on how to improve on this.  Gather requirements and more information on what these files are and how they are used to properly catalog them
     local vdate seconds vdatestr fhr last_fhr
@@ -930,10 +930,10 @@ CICE_postdet() {
       vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
       if [[ 10#${fhr} -eq 0 ]]; then
-        ${NLN} "${COM_ICE_HISTORY}/iceic${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+        ${NLN} "${COM_ICE_HISTORY}/iceic${vdate}.${MEMNUM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
       else
         (( interval = fhr - last_fhr ))  # Umm.. isn't this histfreq_n?
-        ${NLN} "${COM_ICE_HISTORY}/ice${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
+        ${NLN} "${COM_ICE_HISTORY}/ice${vdate}.${MEMNUM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
       fi
       last_fhr=${fhr}
     done

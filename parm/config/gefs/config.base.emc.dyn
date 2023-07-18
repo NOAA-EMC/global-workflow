@@ -276,6 +276,11 @@ export DO_MERGENSST="NO"
 # Hybrid related
 export NMEM_ENS=@NMEM_ENS@
 
+# set default member number memdir for control
+# this will be overwritten for the perturbed members
+export MEMNUM="000"
+export MEMDIR="mem${MEMNUM}"
+
 # Check if cycle is cold starting
 if [[ "${EXP_WARM_START}" = ".false." ]]; then
     export IAU_FHROT=0

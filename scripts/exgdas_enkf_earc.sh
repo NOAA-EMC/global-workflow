@@ -234,7 +234,7 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
                         # shellcheck disable=SC2312
                         templates=$(compgen -A variable | grep 'COM_OCEAN_.*_TMPL')
                         for template in ${templates}; do
-                            YMEMDIR="${mem}" MD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
+                            MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                             remove_files "${directory}" "${exclude_list[@]}"
                         done
 
