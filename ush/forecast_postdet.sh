@@ -740,7 +740,6 @@ MOM6_postdet() {
     # Link output files for RUN = gfs
 
     # TODO: get requirements on what files need to be written out and what these dates here are and what they mean
-    export ENSMEM=${ENSMEM:-00}
 
     if [[ ! -d ${COM_OCEAN_HISTORY} ]]; then mkdir -p "${COM_OCEAN_HISTORY}"; fi
 
@@ -919,8 +918,6 @@ CICE_postdet() {
 
     # TODO: make these forecast output files consistent w/ GFS output
     # TODO: Work w/ NB to determine appropriate naming convention for these files
-
-    export ENSMEM=${ENSMEM:-000}
 
     # TODO: consult w/ NB on how to improve on this.  Gather requirements and more information on what these files are and how they are used to properly catalog them
     local vdate seconds vdatestr fhr last_fhr
