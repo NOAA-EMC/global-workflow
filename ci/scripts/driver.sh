@@ -13,7 +13,6 @@ set -eux
 # PR number and calls clone-build_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
 # of the PR. It then is ready to run a suite of regression tests with various
 # configurations with run_tests.py.
-# No-op for test
 #######################################################################################
 
 #################################################################
