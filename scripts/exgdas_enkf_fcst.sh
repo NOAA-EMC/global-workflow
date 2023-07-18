@@ -112,7 +112,8 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
 
    cd "${DATATOP}"
 
-   export MEMNUM=$(printf %03i "${imem}")
+   MEMNUM=$(printf %03i "${imem}")
+   export MEMNUM
    memchar="mem${MEMNUM}"
 
    echo "Processing MEMBER: ${MEMNUM}"
