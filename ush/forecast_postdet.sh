@@ -191,6 +191,9 @@ EOF
     IEMS=${IEMS:-1}
   fi
 
+# NoahMP table
+  ${NLN} "$HOMEgfs/parm/ufs/land/noahmptable.tbl" "$DATA/noahmptable.tbl" 
+
   # Files for GWD
   OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/ugwd"}
   ${NLN} "${OROFIX_ugwd}/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
