@@ -13,7 +13,6 @@ set -eux
 # PR number and calls clone-build_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
 # of the PR. It then is ready to run a suite of regression tests with various
 # configurations with run_tests.py.
-# No-op for test
 #######################################################################################
 
 #################################################################
@@ -156,7 +155,7 @@ for pr in ${pr_list}; do
       pslot="${case}_${pr_sha}"
       export pslot
       set +e
-      "${HOMEgfs}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/${case}.yaml" --dir "${HOMEgfs_PR}"
+      "${HOMEgfs_PR}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/${case}.yaml" --dir "${HOMEgfs_PR}"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then

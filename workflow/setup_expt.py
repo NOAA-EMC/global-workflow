@@ -292,6 +292,11 @@ def edit_baseconfig(host, inputs, yaml_dict):
     extend_dict = get_template_dict(host.info)
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
+    if inputs.start in ["warm"]:
+        is_warm_start = ".true."
+    elif inputs.start in ["cold"]:
+        is_warm_start = ".false."
+
     extend_dict = dict()
     extend_dict = {
         "@PSLOT@": inputs.pslot,
@@ -300,7 +305,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@CASECTL@": f'C{inputs.resdet}',
         "@EXPDIR@": inputs.expdir,
         "@ROTDIR@": inputs.comrot,
-        "@EXP_WARM_START@": inputs.warm_start,
+        "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
         "@APP@": inputs.app
@@ -369,7 +374,7 @@ def get_template_dict(input_dict):
     return output_dict
 
 
-def input_args():
+def input_args(*argv):
     """
     Method to collect user arguments for `setup_expt.py`
     """
@@ -451,15 +456,7 @@ def input_args():
     gefs.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
                       default=os.path.join(_top, 'parm/config/gefs/yaml/defaults.yaml'))
 
-    args = parser.parse_args()
-
-    # Add an entry for warm_start = .true. or .false.
-    if args.start in ['warm']:
-        args.warm_start = ".true."
-    elif args.start in ['cold']:
-        args.warm_start = ".false."
-
-    return args
+    return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
 
 def query_and_clean(dirname):
@@ -493,9 +490,9 @@ def validate_user_request(host, inputs):
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
 
 
-if __name__ == '__main__':
+def main(*argv):
 
-    user_inputs = input_args()
+    user_inputs = input_args(argv)
     host = Host()
 
     validate_user_request(host, user_inputs)
@@ -514,3 +511,8 @@ if __name__ == '__main__':
         makedirs_if_missing(expdir)
         fill_EXPDIR(user_inputs)
         update_configs(host, user_inputs)
+
+
+if __name__ == '__main__':
+
+    main()
