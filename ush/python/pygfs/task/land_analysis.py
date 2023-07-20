@@ -7,15 +7,15 @@ from pprint import pformat
 import numpy as np
 from netCDF4 import Dataset
 
-from wxflow import (AttrDict,
-                    FileHandler,
-                    to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
-                    rm_p,
-                    parse_j2yaml, parse_yamltmpl, save_as_yaml,
-                    Jinja,
-                    logit,
-                    Executable,
-                    WorkflowException)
+from pygw.attrdict import AttrDict
+from pygw.file_utils import FileHandler
+from pygw.timetools import to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime
+from pygw.fsutils import rm_p
+from pygw.yaml_file import parse_j2yaml, parse_yamltmpl, save_as_yaml
+from pygw.jinja import Jinja
+from pygw.logger import logit
+from pygw.executable import Executable
+from pygw.exceptions import WorkflowException
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -53,6 +53,66 @@ class LandAnalysis(Analysis):
 
         # task_config is everything that this task should need
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
+
+    @logit(logger)
+    def prepare_GTS(self) -> None:
+        """Prepare the GTS data for a global land analysis
+
+        This method will prepare GTS data for a global land analysis using JEDI.
+        This includes:
+        - processing GTS bufr snow depth observation data to IODA format
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+
+        # create a temporary dict of all keys needed in this method
+        localconf = AttrDict()
+        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+                'OPREFIX', 'CASE', 'ntiles']
+        for key in keys:
+            localconf[key] = self.task_config[key]
+
+        # Read and render the IMS_OBS_LIST yaml
+        logger.info(f"Reading {self.task_config.GTS_OBS_LIST}")
+        prep_gts_config = parse_j2yaml(self.task_config.GTS_OBS_LIST, localconf)
+        logger.debug(f"{self.task_config.GTS_OBS_LIST}:\n{pformat(prep_gts_config)}")
+
+        # copy the GTS obs files from COM_OBS to DATA/obs
+        logger.info("Copying GTS obs for BUFR2IODAX")
+        FileHandler(prep_gts_config.gtsbufr).sync()
+
+        logger.info("Link BUFR2IODAX into DATA/")
+        exe_src = self.task_config.BUFR2IODAX
+        exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        # execute BUFR2IODAX to convert GTS bufr data into IODA format
+        exe = Executable(self.task_config.APRUN_BUFR2IODAX)
+        exe.add_default_arg(os.path.join(localconf.DATA, os.path.basename(exe_src)))
+        logger.info(f"Executing {exe}")
+        try:
+            exe()
+        except OSError:
+            raise OSError(f"Failed to execute {exe}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exe}")
+
+        # Ensure the IODA snow depth GTS file is produced by the IODA converter
+        # If so, copy to COM_OBS/
+        if not os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
+            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce {output_file}")
+            raise FileNotFoundError(f"{os.path.join(localconf.DATA, output_file)}")
+        else:
+            logger.info(f"Copy {output_file} to {self.task_config.COM_OBS}")
+            FileHandler(prep_gts_config.gtsioda).sync()
 
     @logit(logger)
     def prepare_IMS(self) -> None:
@@ -172,7 +232,7 @@ class LandAnalysis(Analysis):
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'ntiles']
+                'OPREFIX', 'CASE', 'ntiles', 'SNOWDEPTHVAR', 'FRAC_GRID']
         for key in keys:
             localconf[key] = self.task_config[key]
 
@@ -224,7 +284,8 @@ class LandAnalysis(Analysis):
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_LAND_ANALYSIS', 'APREFIX',
-                'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'ntiles',
+                'SNOWDEPTHVAR', 'BESTDDEV',
+                'FRAC_GRID', 'CASE', 'ntiles',
                 'APRUN_LANDANL', 'JEDIEXE', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
@@ -382,7 +443,7 @@ class LandAnalysis(Analysis):
         Parameters
         ----------
         vname : str
-            snow depth variable to perturb: "snodl"
+            snow depth variable to perturb. "snowdl" or "snwdph" depending on FRAC_GRID (.true.|.false.)
         bestddev : float
             Background Error Standard Deviation to perturb around to create ensemble
         config: Dict
@@ -431,6 +492,7 @@ class LandAnalysis(Analysis):
              COM_ATMOS_RESTART_PREV
              DATA
              current_cycle
+             FRAC_GRID
              CASE
              ntiles
              APPLY_INCR_NML_TMPL
