@@ -21,11 +21,7 @@ export JEDIEXE="${HOMEgfs}/exec/fv3jedi_letkf.x"
 export JEDIYAML="${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml"
 
 # Ensemble member properties
-if [[ "${FRAC_GRID}" = ".true." ]]; then
-  export SNOWDEPTHVAR="snodl"
-elif [[ "${FRAC_GRID}" = ".false." ]]; then
-  export SNOWDEPTHVAR="snwdph"
-fi
+export SNOWDEPTHVAR="snodl"
 export BESTDDEV="30."  # Background Error Std. Dev. for LETKFOI
 
 # Name of the executable that applies increment to bkg and its namelist template
