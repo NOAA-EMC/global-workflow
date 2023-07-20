@@ -192,7 +192,7 @@ EOF
   fi
 
 # NoahMP table
-  ${NLN} "$HOMEgfs/parm/ufs/land/noahmptable.tbl" "$DATA/noahmptable.tbl" 
+  ${NLN} "${HOMEgfs}/parm/ufs/land/noahmptable.tbl" "${DATA}/noahmptable.tbl" 
 
   # Files for GWD
   OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/ugwd"}
