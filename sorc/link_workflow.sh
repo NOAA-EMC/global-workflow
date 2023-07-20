@@ -145,9 +145,7 @@ done
 cd "${HOMEgfs}/scripts" || exit 8
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
 cd "${HOMEgfs}/ush" || exit 8
-for file in emcsfc_ice_blend.sh fv3gfs_driver_grid.sh fv3gfs_make_orog.sh global_cycle_driver.sh \
-  emcsfc_snow.sh fv3gfs_filter_topo.sh global_cycle.sh fv3gfs_make_grid.sh
-do
+for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
 done
 for file in finddate.sh make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name.sh ; do
