@@ -5,12 +5,6 @@
 
 echo "BEGIN: config.efcs"
 
-# TODO: the _ENKF counterparts need to be defined in config.base
-export DO_AERO=${DO_AERO_ENKF:-"NO"}
-export DO_OCN=${DO_OCN_ENKF:-"NO"}
-export DO_ICE=${DO_ICE_ENKF:-"NO"}
-export DO_WAVE=${DO_WAVE_ENKF:-"NO"}
-
 # TODO: Possibly need OCNRES_ENKF, ICERES_ENKF, WAVRES_ENKF too
 if [[ ${DO_OCN} == "YES" ]]; then
   case "${CASE_ENS}" in
@@ -66,7 +60,6 @@ export SPPT_LSCALE=500000.
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 
-# FV3 model namelist parameters to over-ride
 export restart_interval=${restart_interval:-6}
 
 echo "END: config.efcs"

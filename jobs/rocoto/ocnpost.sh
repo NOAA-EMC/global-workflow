@@ -44,7 +44,7 @@ done
 fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 export OMP_NUM_THREADS=1
-export ENSMEM=${ENSMEM:-01}
+export ENSMEM=${ENSMEM:-000}
 
 export IDATE=${PDY}${cyc}
 
