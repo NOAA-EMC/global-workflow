@@ -192,7 +192,14 @@ EOF
   fi
 
 # NoahMP table
-  ${NLN} "${HOMEgfs}/parm/ufs/land/noahmptable.tbl" "${DATA}/noahmptable.tbl" 
+      local noahmptablefile="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/physics/physics/noahmptable.tbl"
+    if [[ ! -f ${noahmptablefile} ]]; then
+      echo "ERROR: missing noahmp table file ${noahmptablefile}"
+      echo "Abort!"
+      exit 1
+    else
+      ${NLN} "${noahmptablefile}" "${DATA}/noahmptable.tbl"
+    fi
 
   # Files for GWD
   OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/ugwd"}
