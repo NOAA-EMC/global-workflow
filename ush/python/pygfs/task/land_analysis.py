@@ -9,7 +9,7 @@ from netCDF4 import Dataset
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
-from pygw.timetools import to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime
+from pygw.timetools import to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime, to_julian
 from pygw.fsutils import rm_p
 from pygw.yaml_file import parse_j2yaml, parse_yamltmpl, save_as_yaml
 from pygw.jinja import Jinja
@@ -35,6 +35,7 @@ class LandAnalysis(Analysis):
         _res = int(self.config['CASE'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
         _letkfoi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
+        _bufr2ioda_yaml = os.path.join(self.runtime_config.DATA, f"bufr_adpsfc_snow.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -47,7 +48,8 @@ class LandAnalysis(Analysis):
                 'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
-                'jedi_yaml': _letkfoi_yaml
+                'jedi_yaml': _letkfoi_yaml,
+                'bufr2ioda_yaml': _bufr2ioda_yaml
             }
         )
 
@@ -78,7 +80,7 @@ class LandAnalysis(Analysis):
         for key in keys:
             localconf[key] = self.task_config[key]
 
-        # Read and render the IMS_OBS_LIST yaml
+        # Read and render the GTS_OBS_LIST yaml
         logger.info(f"Reading {self.task_config.GTS_OBS_LIST}")
         prep_gts_config = parse_j2yaml(self.task_config.GTS_OBS_LIST, localconf)
         logger.debug(f"{self.task_config.GTS_OBS_LIST}:\n{pformat(prep_gts_config)}")
@@ -87,6 +89,12 @@ class LandAnalysis(Analysis):
         logger.info("Copying GTS obs for BUFR2IODAX")
         FileHandler(prep_gts_config.gtsbufr).sync()
 
+        # generate bufr2ioda YAML file
+        logger.info(f"Generate BUFR2IODA YAML file: {self.task_config.bufr2ioda_yaml}")
+        bufr2ioda_yaml = parse_j2yaml(self.task_config.BUFR2IODAYAML, self.task_config)
+        save_as_yaml(bufr2ioda_yaml, self.task_config.bufr2ioda_yaml)
+        logger.info(f"Wrote bufr2ioda YAML to: {self.task_config.bufr2ioda_yaml}")
+
         logger.info("Link BUFR2IODAX into DATA/")
         exe_src = self.task_config.BUFR2IODAX
         exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
@@ -94,9 +102,18 @@ class LandAnalysis(Analysis):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
+        output_file = f"{localconf.OPREFIX}adpsfc_snow.nc4"
+        if os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
+            rm_p(output_file)
+
         # execute BUFR2IODAX to convert GTS bufr data into IODA format
-        exe = Executable(self.task_config.APRUN_BUFR2IODAX)
-        exe.add_default_arg(os.path.join(localconf.DATA, os.path.basename(exe_src)))
+        yaml_file = f"bufr_adpsfc_snow.yaml"
+        if not os.path.isfile(f"{os.path.join(localconf.DATA, yaml_file)}"):
+            logger.exception(f"{yaml_file} not found")
+            raise FileNotFoundError(f"{os.path.join(localconf.DATA, yaml_file)}")
+        exe = Executable(self.task_config.BUFR2IODAX)
+        exe.add_default_arg(os.path.join(localconf.DATA, f"{yaml_file}"))
+
         logger.info(f"Executing {exe}")
         try:
             exe()
