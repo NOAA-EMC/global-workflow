@@ -7,15 +7,15 @@ from pprint import pformat
 import numpy as np
 from netCDF4 import Dataset
 
-from pygw.attrdict import AttrDict
-from pygw.file_utils import FileHandler
-from pygw.timetools import to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime, to_julian
-from pygw.fsutils import rm_p
-from pygw.yaml_file import parse_j2yaml, parse_yamltmpl, save_as_yaml
-from pygw.jinja import Jinja
-from pygw.logger import logit
-from pygw.executable import Executable
-from pygw.exceptions import WorkflowException
+from wxflow import (AttrDict,
+                    FileHandler,
+                    to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
+                    rm_p,
+                    parse_j2yaml, parse_yamltmpl, save_as_yaml,
+                    Jinja,
+                    logit,
+                    Executable,
+                    WorkflowException)
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -249,7 +249,7 @@ class LandAnalysis(Analysis):
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'ntiles', 'SNOWDEPTHVAR', 'FRAC_GRID']
+                'OPREFIX', 'CASE', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
 
@@ -301,8 +301,7 @@ class LandAnalysis(Analysis):
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_LAND_ANALYSIS', 'APREFIX',
-                'SNOWDEPTHVAR', 'BESTDDEV',
-                'FRAC_GRID', 'CASE', 'ntiles',
+                'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'ntiles',
                 'APRUN_LANDANL', 'JEDIEXE', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
@@ -460,7 +459,7 @@ class LandAnalysis(Analysis):
         Parameters
         ----------
         vname : str
-            snow depth variable to perturb. "snowdl" or "snwdph" depending on FRAC_GRID (.true.|.false.)
+            snow depth variable to perturb: "snodl"
         bestddev : float
             Background Error Standard Deviation to perturb around to create ensemble
         config: Dict
@@ -509,7 +508,6 @@ class LandAnalysis(Analysis):
              COM_ATMOS_RESTART_PREV
              DATA
              current_cycle
-             FRAC_GRID
              CASE
              ntiles
              APPLY_INCR_NML_TMPL
