@@ -192,10 +192,9 @@ EOF
   fi
 
 # NoahMP table
-      local noahmptablefile="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/physics/physics/noahmptable.tbl"
+      local noahmptablefile="${HOMEgfs}/parm/ufs/noahmptable.tbl"
     if [[ ! -f ${noahmptablefile} ]]; then
-      echo "ERROR: missing noahmp table file ${noahmptablefile}"
-      echo "Abort!"
+      echo "FATAL ERROR: missing noahmp table file ${noahmptablefile}"
       exit 1
     else
       ${NLN} "${noahmptablefile}" "${DATA}/noahmptable.tbl"
