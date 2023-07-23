@@ -2,6 +2,9 @@
 
 # Empty variables must include a space otherwise they will be overwritten
 
+# Turn off warnings about unused variables
+# shellcheck disable=SC2034
+
 # config.base
 FHMAX_GFS_00=48
 FHMAX_GFS_06=48

@@ -52,6 +52,7 @@ common_predet(){
   CDUMP=${CDUMP:-gdas}
   CASE=${CASE:-C768}
   CDATE=${CDATE:-2017032500}
+  ENSMEM=${ENSMEM:-000}
 
   FCSTEXECDIR=${FCSTEXECDIR:-${HOMEgfs}/exec}
   FCSTEXEC=${FCSTEXEC:-ufs_model.x}
