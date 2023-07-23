@@ -17,8 +17,10 @@ if __name__ == '__main__':
 
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
+    HH = os.environ.get("CDATE")[8:]
 
     # Instantiate the land prepare task
     LandAnl = LandAnalysis(config)
     LandAnl.prepare_GTS()
-    LandAnl.prepare_IMS()
+    if HH == '18':
+        LandAnl.prepare_IMS()
