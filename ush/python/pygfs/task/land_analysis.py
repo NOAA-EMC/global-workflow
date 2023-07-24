@@ -35,7 +35,6 @@ class LandAnalysis(Analysis):
         _res = int(self.config['CASE'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
         _letkfoi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
-#        _bufr2ioda_yaml = os.path.join(self.runtime_config.DATA, f"bufr_adpsfc_snow.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -49,7 +48,6 @@ class LandAnalysis(Analysis):
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'jedi_yaml': _letkfoi_yaml
-#                'bufr2ioda_yaml': _bufr2ioda_yaml
             }
         )
 
