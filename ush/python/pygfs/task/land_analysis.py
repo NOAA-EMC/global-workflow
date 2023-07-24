@@ -35,7 +35,7 @@ class LandAnalysis(Analysis):
         _res = int(self.config['CASE'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
         _letkfoi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
-        _bufr2ioda_yaml = os.path.join(self.runtime_config.DATA, f"bufr_adpsfc_snow.yaml")
+#        _bufr2ioda_yaml = os.path.join(self.runtime_config.DATA, f"bufr_adpsfc_snow.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -48,8 +48,8 @@ class LandAnalysis(Analysis):
                 'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
-                'jedi_yaml': _letkfoi_yaml,
-                'bufr2ioda_yaml': _bufr2ioda_yaml
+                'jedi_yaml': _letkfoi_yaml
+#                'bufr2ioda_yaml': _bufr2ioda_yaml
             }
         )
 
@@ -90,10 +90,11 @@ class LandAnalysis(Analysis):
         FileHandler(prep_gts_config.gtsbufr).sync()
 
         # generate bufr2ioda YAML file
-        logger.info(f"Generate BUFR2IODA YAML file: {self.task_config.bufr2ioda_yaml}")
-        bufr2ioda_yaml = parse_j2yaml(self.task_config.BUFR2IODAYAML, self.task_config)
-        save_as_yaml(bufr2ioda_yaml, self.task_config.bufr2ioda_yaml)
-        logger.info(f"Wrote bufr2ioda YAML to: {self.task_config.bufr2ioda_yaml}")
+        bufr2ioda_yaml = os.path.join(self.runtime_config.DATA, "bufr_adpsfc_snow.yaml")
+        logger.info(f"Generate BUFR2IODA YAML file: {bufr2ioda_yaml}")
+        temp_yaml = parse_j2yaml(self.task_config.BUFR2IODAYAML, self.task_config)
+        save_as_yaml(temp_yaml, bufr2ioda_yaml)
+        logger.info(f"Wrote bufr2ioda YAML to: {bufr2ioda_yaml}")
 
         logger.info("Link BUFR2IODAX into DATA/")
         exe_src = self.task_config.BUFR2IODAX
