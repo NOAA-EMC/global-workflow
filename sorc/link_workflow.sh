@@ -133,7 +133,7 @@ fi
 #---------------------------------------
 #--copy/link NoahMp table form ccpp-physics repository
 cd "${HOMEgfs}/parm/ufs" || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/physics/physics/noahmptable.tbl" .
+${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/physics/physics/noahmptable.tbl" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
 for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
