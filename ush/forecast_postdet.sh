@@ -191,14 +191,14 @@ EOF
     IEMS=${IEMS:-1}
   fi
 
-# NoahMP table
-      local noahmptablefile="${HOMEgfs}/parm/ufs/noahmptable.tbl"
-    if [[ ! -f ${noahmptablefile} ]]; then
-      echo "FATAL ERROR: missing noahmp table file ${noahmptablefile}"
-      exit 1
-    else
-      ${NLN} "${noahmptablefile}" "${DATA}/noahmptable.tbl"
-    fi
+  # NoahMP table
+  local noahmptablefile="${HOMEgfs}/parm/ufs/noahmptable.tbl"
+  if [[ ! -f ${noahmptablefile} ]]; then
+    echo "FATAL ERROR: missing noahmp table file ${noahmptablefile}"
+    exit 1
+  else
+    ${NLN} "${noahmptablefile}" "${DATA}/noahmptable.tbl"
+  fi
 
   # Files for GWD
   OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/ugwd"}
