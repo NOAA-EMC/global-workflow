@@ -86,7 +86,7 @@ class LandAnalysis(Analysis):
         logger.debug(f"{self.task_config.GTS_OBS_LIST}:\n{pformat(prep_gts_config)}")
 
         # copy the GTS obs files from COM_OBS to DATA/obs
-        logger.info("Copying GTS obs for BUFR2IODAX")
+        logger.info("Copying GTS obs for bufr2ioda.x")
         FileHandler(prep_gts_config.gtsbufr).sync()
 
         # generate bufr2ioda YAML file
