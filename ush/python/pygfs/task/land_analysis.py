@@ -125,9 +125,9 @@ class LandAnalysis(Analysis):
         # If so, copy to COM_OBS/
         try:
             FileHandler(prep_gts_config.gtsioda).sync()
-        except OSError:
+        except OSError as err:
             logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce {output_file}")
-            raise Exception(err)
+            raise OSError(err)
 
     @logit(logger)
     def prepare_IMS(self) -> None:
