@@ -123,12 +123,11 @@ class LandAnalysis(Analysis):
 
         # Ensure the IODA snow depth GTS file is produced by the IODA converter
         # If so, copy to COM_OBS/
-        if not os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
-            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce {output_file}")
-            raise FileNotFoundError(f"{os.path.join(localconf.DATA, output_file)}")
-        else:
-            logger.info(f"Copy {output_file} to {self.task_config.COM_OBS}")
+        try:
             FileHandler(prep_gts_config.gtsioda).sync()
+        except OSError:
+            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce {output_file}")
+            raise Exception(err)
 
     @logit(logger)
     def prepare_IMS(self) -> None:
