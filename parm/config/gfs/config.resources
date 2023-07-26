@@ -884,10 +884,7 @@ elif [[ ${step} = "epos" ]]; then
 
     export wtime_epos="00:15:00"
     export npe_epos=80
-    export nth_epos=4
-    if [[ "${machine}" == "HERA" ]]; then
-      export nth_epos=1
-    fi
+    export nth_epos=1
     npe_node_epos=$(echo "${npe_node_max} / ${nth_epos}" | bc)
     export npe_node_epos
     export is_exclusive=True
