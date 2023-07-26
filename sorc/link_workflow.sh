@@ -308,6 +308,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
                        "soca_setcorscales.x" \
                        "soca_gridgen.x" \
                        "soca_var.x" \
+                       "bufr2ioda.x" \
                        "calcfIMS.exe" \
                        "apply_incr.exe" )
   for gdasexe in "${JEDI_EXE[@]}"; do

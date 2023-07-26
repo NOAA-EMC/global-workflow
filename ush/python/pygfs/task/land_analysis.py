@@ -55,6 +55,81 @@ class LandAnalysis(Analysis):
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
 
     @logit(logger)
+    def prepare_GTS(self) -> None:
+        """Prepare the GTS data for a global land analysis
+
+        This method will prepare GTS data for a global land analysis using JEDI.
+        This includes:
+        - processing GTS bufr snow depth observation data to IODA format
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+
+        # create a temporary dict of all keys needed in this method
+        localconf = AttrDict()
+        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+                'OPREFIX', 'CASE', 'ntiles']
+        for key in keys:
+            localconf[key] = self.task_config[key]
+
+        # Read and render the GTS_OBS_LIST yaml
+        logger.info(f"Reading {self.task_config.GTS_OBS_LIST}")
+        prep_gts_config = parse_j2yaml(self.task_config.GTS_OBS_LIST, localconf)
+        logger.debug(f"{self.task_config.GTS_OBS_LIST}:\n{pformat(prep_gts_config)}")
+
+        # copy the GTS obs files from COM_OBS to DATA/obs
+        logger.info("Copying GTS obs for bufr2ioda.x")
+        FileHandler(prep_gts_config.gtsbufr).sync()
+
+        # generate bufr2ioda YAML file
+        bufr2ioda_yaml = os.path.join(self.runtime_config.DATA, "bufr_adpsfc_snow.yaml")
+        logger.info(f"Generate BUFR2IODA YAML file: {bufr2ioda_yaml}")
+        temp_yaml = parse_j2yaml(self.task_config.BUFR2IODAYAML, self.task_config)
+        save_as_yaml(temp_yaml, bufr2ioda_yaml)
+        logger.info(f"Wrote bufr2ioda YAML to: {bufr2ioda_yaml}")
+
+        logger.info("Link BUFR2IODAX into DATA/")
+        exe_src = self.task_config.BUFR2IODAX
+        exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        output_file = f"{localconf.OPREFIX}adpsfc_snow.nc4"
+        if os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
+            rm_p(output_file)
+
+        # execute BUFR2IODAX to convert GTS bufr data into IODA format
+        yaml_file = f"bufr_adpsfc_snow.yaml"
+        if not os.path.isfile(f"{os.path.join(localconf.DATA, yaml_file)}"):
+            logger.exception(f"{yaml_file} not found")
+            raise FileNotFoundError(f"{os.path.join(localconf.DATA, yaml_file)}")
+        exe = Executable(self.task_config.BUFR2IODAX)
+        exe.add_default_arg(os.path.join(localconf.DATA, f"{yaml_file}"))
+
+        logger.info(f"Executing {exe}")
+        try:
+            exe()
+        except OSError:
+            raise OSError(f"Failed to execute {exe}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exe}")
+
+        # Ensure the IODA snow depth GTS file is produced by the IODA converter
+        # If so, copy to COM_OBS/
+        try:
+            FileHandler(prep_gts_config.gtsioda).sync()
+        except OSError as err:
+            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce {output_file}")
+            raise OSError(err)
+
+    @logit(logger)
     def prepare_IMS(self) -> None:
         """Prepare the IMS data for a global land analysis
 
