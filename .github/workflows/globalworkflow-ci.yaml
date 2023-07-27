@@ -1,6 +1,9 @@
 name: gw-ci-orion
 
-on: [workflow_dispatch]
+on:
+  pull_request:
+    types: [opened, labeled]
+  workflow_dispatch:
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -18,6 +21,7 @@ env:
   MACHINE_ID: orion
 
 jobs:
+  if:  github.event.label.name == 'CI-Orion-Ready
   checkout-build-link:
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
