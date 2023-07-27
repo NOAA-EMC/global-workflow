@@ -1,6 +1,4 @@
-#PARM_FV3DIAGrm/config/gfs/config.aeroparm/config/gfs/config.aeroparm/config/gfs/config.aero
-
-! /usr/bin/env bash
+#!/usr/bin/env bash
 
 # UFS-Aerosols settings
 
