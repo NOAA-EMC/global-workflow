@@ -870,7 +870,7 @@ elif [[ ${step} = "ecen" ]]; then
 
 elif [[ ${step} = "esfc" ]]; then
 
-    export wtime_esfc="00:06:00"
+    export wtime_esfc="00:08:00"
     export npe_esfc=80
     export nth_esfc=1
     npe_node_esfc=$(echo "${npe_node_max} / ${nth_esfc}" | bc)
