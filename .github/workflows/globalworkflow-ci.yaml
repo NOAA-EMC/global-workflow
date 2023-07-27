@@ -21,8 +21,9 @@ env:
   MACHINE_ID: orion
 
 jobs:
-  if:  github.event.label.name == 'CI-Orion-Ready'
+
   checkout-build-link:
+    if:  github.event.label.name == 'CI-Orion-Ready'
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
 
