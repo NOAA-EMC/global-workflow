@@ -12,10 +12,10 @@
 FV3_namelists(){
 
 # setup the tables
-DIAG_TABLE=${DIAG_TABLE:-${PARM_FV3DIAG}/diag_table}
-DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${PARM_FV3DIAG}/diag_table_aod}
-DATA_TABLE=${DATA_TABLE:-${PARM_FV3DIAG}/data_table}
-FIELD_TABLE=${FIELD_TABLE:-${PARM_FV3DIAG}/field_table}
+DIAG_TABLE=${DIAG_TABLE:-${HOMEgfs}/parm/ufs/fv3/diag_table}
+DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${HOMEgfs}/parm/ufs/fv3/diag_table_aod}
+DATA_TABLE=${DATA_TABLE:-${HOMEgfs}/parm/ufs/fv3/data_table}
+FIELD_TABLE=${FIELD_TABLE:-${HOMEgfs}/parm/ufs/fv3/field_table}
 
 # ensure non-prognostic tracers are set
 dnats=${dnats:-0}

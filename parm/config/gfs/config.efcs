@@ -72,9 +72,9 @@ export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 
 if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
-    export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table_da"
+    export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table_da"
 else
-    export DIAG_TABLE="${HOMEgfs}/parm/parm_fv3diag/diag_table_da_orig"
+    export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table_da_orig"
 fi
 
 # For IAU, write restarts at beginning of window also

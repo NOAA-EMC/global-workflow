@@ -61,7 +61,6 @@ common_predet(){
   FIX_DIR=${FIX_DIR:-${HOMEgfs}/fix}
 
   # Model specific stuff
-  PARM_FV3DIAG=${PARM_FV3DIAG:-${HOMEgfs}/parm/parm_fv3diag}
   PARM_POST=${PARM_POST:-${HOMEgfs}/parm/post}
 
   # Define significant cycles
