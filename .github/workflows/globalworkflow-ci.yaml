@@ -3,7 +3,7 @@ name: gw-ci-orion
 on:
   pull_request:
     types: [opened, labeled]
-#  workflow_dispatch:
+  workflow_dispatch:
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
