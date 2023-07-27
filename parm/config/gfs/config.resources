@@ -250,12 +250,12 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
    # below lines are for creating JEDI YAML
    case ${CASE} in
      C768)
-        layout_x=6
-        layout_y=6
+        layout_x=8
+        layout_y=8
         ;;
       C384)
-        layout_x=5
-        layout_y=5
+        layout_x=8
+        layout_y=8
         ;;
      C192 | C96 | C48)
         layout_x=8
@@ -280,12 +280,12 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
 
    case ${CASE} in
      C768)
-        layout_x=6
-        layout_y=6
+        layout_x=8
+        layout_y=8
         ;;
       C384)
-        layout_x=5
-        layout_y=5
+        layout_x=8
+        layout_y=8
         ;;
      C192 | C96 | C48)
         layout_x=8
@@ -470,6 +470,7 @@ elif [[ ${step} = "analcalc" ]]; then
     npe_node_analcalc=$(echo "${npe_node_max} / ${nth_analcalc}" | bc)
     export npe_node_analcalc
     export is_exclusive=True
+    export memory_analcalc="48GB"
 
 elif [[ ${step} = "analdiag" ]]; then
 
@@ -869,7 +870,7 @@ elif [[ ${step} = "ecen" ]]; then
 
 elif [[ ${step} = "esfc" ]]; then
 
-    export wtime_esfc="00:06:00"
+    export wtime_esfc="00:08:00"
     export npe_esfc=80
     export nth_esfc=1
     npe_node_esfc=$(echo "${npe_node_max} / ${nth_esfc}" | bc)
@@ -883,10 +884,7 @@ elif [[ ${step} = "epos" ]]; then
 
     export wtime_epos="00:15:00"
     export npe_epos=80
-    export nth_epos=4
-    if [[ "${machine}" == "HERA" ]]; then
-      export nth_epos=6
-    fi
+    export nth_epos=1
     npe_node_epos=$(echo "${npe_node_max} / ${nth_epos}" | bc)
     export npe_node_epos
     export is_exclusive=True

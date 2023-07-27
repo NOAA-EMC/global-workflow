@@ -30,7 +30,7 @@ class AerosolAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.config['CASE'][1:])
-        _res_enkf = int(self.config['CASE_ENS'][1:])
+        _res_anl = int(self.config['CASE_ANL'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
         _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
 
@@ -41,8 +41,8 @@ class AerosolAnalysis(Analysis):
                 'npy_ges': _res + 1,
                 'npz_ges': self.config.LEVS - 1,
                 'npz': self.config.LEVS - 1,
-                'npx_anl': _res_enkf + 1,
-                'npy_anl': _res_enkf + 1,
+                'npx_anl': _res_anl + 1,
+                'npy_anl': _res_anl + 1,
                 'npz_anl': self.config['LEVS'] - 1,
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
@@ -284,7 +284,7 @@ class AerosolAnalysis(Analysis):
             berror_list.append([
                 os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
             ])
-            template = '{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
+            template = f'{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
             for itile in range(1, config.ntiles + 1):
                 tracer = template.format(tilenum=itile)
                 berror_list.append([

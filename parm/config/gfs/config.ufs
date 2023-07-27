@@ -151,7 +151,7 @@ case "${fv3_res}" in
         export layout_y=8
         export layout_x_gfs=8
         export layout_y_gfs=8
-        export nthreads_fv3=1
+        export nthreads_fv3=2
         export nthreads_fv3_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
