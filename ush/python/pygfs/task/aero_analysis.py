@@ -72,13 +72,13 @@ class AerosolAnalysis(Analysis):
         super().initialize()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_crtm_coeff.yaml')
+        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aero_crtm_coeff.yaml')
         logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
         crtm_fix_list = parse_yamltmpl(crtm_fix_list_path, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aero_jedi_fix.yaml')
         logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
         jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
@@ -208,7 +208,7 @@ class AerosolAnalysis(Analysis):
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + template)
         bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, template)
         # get list of increment vars
-        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aeroanl_inc_vars.yaml')
+        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aeroanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
         super().add_fv3_increments(inc_template, bkg_template, incvars)
 

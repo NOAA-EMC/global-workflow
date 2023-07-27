@@ -71,13 +71,13 @@ class AtmAnalysis(Analysis):
         super().initialize()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'atm_crtm_coeff.yaml')
+        crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_crtm_coeff.yaml')
         logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
         crtm_fix_list = parse_yamltmpl(crtm_fix_list_path, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'atm_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_jedi_fix.yaml')
         logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
         jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
