@@ -1,6 +1,9 @@
 name: gw-ci-orion
 
-on: [workflow_dispatch]
+on:
+  pull_request:
+    types: [opened, labeled]
+  workflow_dispatch:
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -18,7 +21,20 @@ env:
   MACHINE_ID: orion
 
 jobs:
+
+  authenticate:
+    if:  github.event.label.name == 'CI-Orion-Dispatch' || github.event_name == 'workflow_dispatch'
+    runs-on: [self-hosted, orion-ready]
+    steps:
+    - name: Authenticate User
+      run: |
+        cd ${{ github.workspace}}/private/ci/scripts
+        module load python/3.9.2
+        ./authenticate.py --user ${{ github.triggering_actor }}
+
   checkout-build-link:
+    needs: authenticate
+    
     runs-on: [self-hosted, orion-ready]
     timeout-minutes: 600
 
