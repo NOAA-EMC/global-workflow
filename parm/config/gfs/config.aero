@@ -5,8 +5,8 @@
 # Turn off warnings about unused variables
 # shellcheck disable=SC2034
 
-# Directory containing GOCART configuration files. Defaults to parm/chem if unset.
-AERO_CONFIG_DIR=${HOMEgfs}/parm/chem
+# Directory containing GOCART configuration files. Defaults to parm/ufs/chem if unset.
+AERO_CONFIG_DIR=${HOMEgfs}/parm/ufs/chem
 
 # Path to the input data tree
 case ${machine} in
