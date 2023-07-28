@@ -539,6 +539,7 @@ cat >> input.nml <<EOF
   FNVEGC   = '${FNVEGC}'
   FNVETC   = '${FNVETC}'
   FNSOTC   = '${FNSOTC}'
+  FNSOCC   = '${FNSOCC}'
   FNSMCC   = '${FNSMCC}'
   FNMSKH   = '${FNMSKH}'
   FNTSFA   = '${FNTSFA}'
