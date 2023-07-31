@@ -1,4 +1,4 @@
-name: gw-ci-orion
+name: gw-ci-orion_auth
 
 on:
   pull_request:
