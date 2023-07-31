@@ -1,0 +1,10 @@
+name: gw-ci-orion
+
+on:
+  pull_request:
+    types: [opened, labeled]
+  workflow_dispatch:
+
+jobs:
+  run-discover-ci-orion:
+    uses: NOAA-EMC/CI-workflows/projects/ci-workflows/orion.yaml@main
