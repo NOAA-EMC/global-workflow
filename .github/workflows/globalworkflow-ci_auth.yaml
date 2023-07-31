@@ -7,4 +7,4 @@ on:
 
 jobs:
   run-discover-ci-orion:
-    uses: NOAA-EMC/CI-workflows/projects/ci-workflows/orion.yaml@main
+    uses: NOAA-EMC/CI-workflows/.github/workflows/orion.yaml@main
