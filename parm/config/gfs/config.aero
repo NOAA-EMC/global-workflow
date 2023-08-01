@@ -2,11 +2,14 @@
 
 # UFS-Aerosols settings
 
-# Directory containing GOCART configuration files. Defaults to parm/chem if unset.
-AERO_CONFIG_DIR=$HOMEgfs/parm/chem
+# Turn off warnings about unused variables
+# shellcheck disable=SC2034
+
+# Directory containing GOCART configuration files. Defaults to parm/ufs/chem if unset.
+AERO_CONFIG_DIR=${HOMEgfs}/parm/ufs/chem
 
 # Path to the input data tree
-case $machine in
+case ${machine} in
   "HERA")
     AERO_INPUTS_DIR="/scratch1/NCEPDEV/global/glopara/data/gocart_emissions"
     ;;
@@ -23,7 +26,7 @@ case $machine in
     AERO_INPUTS_DIR="/lfs4/HFIP/hfv3gfs/glopara/data/gocart_emissions"
     ;;
   *)
-    echo "FATAL ERROR: Machine $machine unsupported for aerosols"
+    echo "FATAL ERROR: Machine ${machine} unsupported for aerosols"
     exit 2
     ;;
 esac

@@ -91,6 +91,7 @@ parm/post/postxconfig-NT-GFS-WAFS.txt
 parm/post/postxconfig-NT-GFS.txt
 parm/post/postxconfig-NT-gefs-aerosol.txt
 parm/post/postxconfig-NT-gefs-chem.txt
+parm/ufs/noahmptable.tbl
 parm/wafs
 
 # Ignore sorc and logs folders from externals
@@ -142,7 +143,14 @@ ush/make_ntc_bull.pl
 ush/make_tif.sh
 ush/month_name.sh
 ush/imsfv3_scf2ioda.py
-ush/letkf_create_ens.py
+ush/atparse.bash
+
 # version files
 versions/build.ver
 versions/run.ver
+
+# wxflow checkout and symlinks
+sorc/wxflow
+ush/python/wxflow
+workflow/wxflow
+ci/scripts/wxflow

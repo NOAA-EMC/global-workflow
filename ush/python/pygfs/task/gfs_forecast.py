@@ -2,8 +2,7 @@ import os
 import logging
 from typing import Dict, Any
 
-from pygw.logger import logit
-from pygw.task import Task
+from wxflow import logit, Task
 from pygfs.ufswm.gfs import GFS
 
 logger = logging.getLogger(__name__.split('.')[-1])

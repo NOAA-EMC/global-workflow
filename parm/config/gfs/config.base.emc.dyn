@@ -19,7 +19,7 @@ export PARTITION_BATCH="@PARTITION_BATCH@"
 export PARTITION_SERVICE="@PARTITION_SERVICE@"
 
 # Project to use in mass store:
-HPSS_PROJECT="@HPSS_PROJECT@"
+export HPSS_PROJECT="@HPSS_PROJECT@"
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
@@ -41,6 +41,7 @@ export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
+export BASE_CPLIC="@BASE_CPLIC@"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -75,7 +76,7 @@ export MODE="@MODE@" # cycled/forecast-only
 # Build paths relative to $HOMEgfs
 export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
-export HOMEobsproc="${BASE_GIT}/obsproc/v${obsproc_run_ver:-1.1.2}"
+export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -85,8 +86,8 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
-export NCDUMP="$NETCDF/bin/ncdump"
-export NCLEN="$HOMEgfs/ush/getncdimlen"
+export NCDUMP="${NETCDF:-}/bin/ncdump"
+export NCLEN="${HOMEgfs}/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="${HOMEgfs}/env"
@@ -133,7 +134,7 @@ export SENDCOM=${SENDCOM:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
 # APP settings
 export APP=@APP@
@@ -167,7 +168,7 @@ case "${CASE}" in
         export waveGRD='unst_glo_100km'
         ;;
     "C96")
-        export OCNRES=100
+        export OCNRES=500
         export waveGRD='glo_200'
         ;;
     "C192")
@@ -182,9 +183,9 @@ case "${CASE}" in
         export OCNRES=025
         export waveGRD='mx025'
         ;;
-    *) 
-        export OCNRES=025
-        export waveGRD='mx025'
+    *)
+        echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
+        exit 1
         ;;
 esac
 export ICERES=${OCNRES}
@@ -227,11 +228,11 @@ case "${APP}" in
         export confignamevarfornems="${confignamevarfornems}_outerwave"
     fi
 
-    source ${EXPDIR}/config.defaults.s2sw
+    source "${EXPDIR}/config.defaults.s2sw"
 
     ;;
   *)
-    echo "Unrecognized APP: ${1}"
+    echo "Unrecognized APP: '${APP}'"
     exit 1
     ;;
 esac
@@ -262,7 +263,7 @@ export FHMAX_GFS_00=${FHMAX_GFS_00:-120}
 export FHMAX_GFS_06=${FHMAX_GFS_06:-120}
 export FHMAX_GFS_12=${FHMAX_GFS_12:-120}
 export FHMAX_GFS_18=${FHMAX_GFS_18:-120}
-export FHMAX_GFS=$(eval echo \${FHMAX_GFS_${cyc}})
+current_fhmax_var=FHMAX_GFS_${cyc}; declare -x FHMAX_GFS=${!current_fhmax_var}
 
 export FHOUT_GFS=${FHOUT_GFS:-3}
 export FHMAX_HF_GFS=${FHMAX_HF_GFS:-0}
@@ -275,7 +276,10 @@ fi
 export ILPOST=1           # gempak output frequency up to F120
 
 # GFS restart interval in hours
-export restart_interval_gfs=0
+export restart_interval_gfs=12
+# NOTE: Do not set this to zero.  Instead set it to $FHMAX_GFS
+# TODO: Remove this variable from config.base and reference from config.fcst
+# TODO: rework logic in config.wave and push it to parsing_nameslist_WW3.sh where it is actually used
 
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
@@ -285,7 +289,7 @@ export WRITE_NSFLIP=".true."
 # IAU related parameters
 export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
 export IAUFHRS="3,6,9"
-export IAU_FHROT=$(echo ${IAUFHRS} | cut -c1)
+export IAU_FHROT=${IAUFHRS%%,*}
 export IAU_DELTHRS=6
 export IAU_OFFSET=6
 export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
@@ -325,7 +329,7 @@ if [[ ${DOHYBVAR} = "YES" ]]; then
     export FHMAX_ENKF=9
     export FHMAX_ENKF_GFS=120
     export FHOUT_ENKF_GFS=3
-    if [ $l4densvar = ".true." ]; then
+    if [[ ${l4densvar} = ".true." ]]; then
         export FHOUT=1
         export FHOUT_ENKF=1
     else
@@ -381,7 +385,7 @@ export binary_diag=".false."
 
 # Verification options
 export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
-export DO_FIT2OBS="NO"      # Run fit to observations package
+export DO_FIT2OBS="YES"      # Run fit to observations package
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive

@@ -5,17 +5,17 @@ import glob
 import gzip
 import tarfile
 from logging import getLogger
-from typing import Dict, List, Any
+from typing import Dict, List
 
-from pygw.attrdict import AttrDict
-from pygw.file_utils import FileHandler
-from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD
-from pygw.fsutils import rm_p, chdir
-from pygw.yaml_file import parse_yamltmpl, parse_j2yaml, save_as_yaml
-from pygw.logger import logit
-from pygw.executable import Executable
-from pygw.exceptions import WorkflowException
-from pygw.template import Template, TemplateConstants
+from wxflow import (AttrDict,
+                    FileHandler,
+                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD,
+                    chdir,
+                    parse_yamltmpl, parse_j2yaml, save_as_yaml,
+                    logit,
+                    Executable,
+                    WorkflowException,
+                    Template, TemplateConstants)
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -96,13 +96,13 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': dirlist}).sync()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'atm_crtm_coeff.yaml')
+        crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_crtm_coeff.yaml')
         logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
         crtm_fix_list = parse_yamltmpl(crtm_fix_list_path, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'parm_gdas', 'atm_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_jedi_fix.yaml')
         logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
         jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()

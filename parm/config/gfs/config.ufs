@@ -151,7 +151,7 @@ case "${fv3_res}" in
         export layout_y=8
         export layout_x_gfs=8
         export layout_y_gfs=8
-        export nthreads_fv3=1
+        export nthreads_fv3=2
         export nthreads_fv3_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
@@ -255,6 +255,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
+      eps_imesh="4.0e-1"
       ;;
     "100")
       ntasks_mom6=20
@@ -267,6 +268,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='False'
+      eps_imesh="2.5e-1"
       ;;
     "50")
       ntasks_mom6=60
@@ -279,7 +281,8 @@ if [[ "${skip_mom6}" == "false" ]]; then
       CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='True'
-        ;;
+      eps_imesh="1.0e-1"
+      ;;
     "025")
       ntasks_mom6=220
       OCNTIM=1800
@@ -291,12 +294,14 @@ if [[ "${skip_mom6}" == "false" ]]; then
       CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
+      eps_imesh="1.0e-1"
       ;;
     *)
       echo "FATAL ERROR: Unsupported MOM6 resolution = ${mom6_res}, ABORT!"
       exit 1
       ;;
   esac
+
   export nthreads_mom6 ntasks_mom6
   export OCNTIM
   export NX_GLB NY_GLB
@@ -305,6 +310,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
   export CHLCLIM
   export MOM6_RIVER_RUNOFF
   export MOM6_RESTART_SETTING
+  export eps_imesh
 fi
 
 # CICE6 specific settings

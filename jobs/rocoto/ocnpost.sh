@@ -44,7 +44,7 @@ done
 fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 export OMP_NUM_THREADS=1
-export ENSMEM=${ENSMEM:-01}
+export ENSMEM=${ENSMEM:-000}
 
 export IDATE=${PDY}${cyc}
 
@@ -56,7 +56,7 @@ for fhr in ${fhrlst}; do
   # shellcheck disable=
   declare -x VDATE
   cd "${DATA}" || exit 2
-  if (( fhr > 0 )); then
+  if (( 10#${fhr} > 0 )); then
     # TODO: This portion calls NCL scripts that are deprecated (see Issue #923)
     if [[ "${MAKE_OCN_GRIB:-YES}" == "YES" ]]; then
       export MOM6REGRID=${MOM6REGRID:-${HOMEgfs}}

@@ -38,6 +38,13 @@ case $(hostname -f) in
   *) MACHINE_ID=UNKNOWN ;;  # Unknown platform
 esac
 
+if [[ ${MACHINE_ID} == "UNKNOWN" ]]; then 
+   case ${PW_CSP:-} in
+      "aws" | "google" | "azure") MACHINE_ID=noaacloud ;;
+      *) PW_CSP="UNKNOWN"
+   esac
+fi
+
 # Overwrite auto-detect with MACHINE if set
 MACHINE_ID=${MACHINE:-${MACHINE_ID}}
 

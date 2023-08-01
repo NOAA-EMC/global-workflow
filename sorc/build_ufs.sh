@@ -5,10 +5,7 @@ cwd=$(pwd)
 
 # Default settings
 APP="S2SWA"
-CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_no_nsst,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
-export RT_COMPILER="intel"
-source "${cwd}/ufs_model.fd/tests/detect_machine.sh"
-source "${cwd}/ufs_model.fd/tests/module-setup.sh"
+CCPP_SUITES="FV3_GFS_v17_p8,FV3_GFS_v17_coupled_p8"  # TODO: does the g-w need to build with all these CCPP_SUITES?
 
 while getopts ":da:vw" option; do
   case "${option}" in
@@ -27,6 +24,9 @@ done
 
 cd "${cwd}/ufs_model.fd"
 
+source "./tests/detect_machine.sh"
+source "./tests/module-setup.sh"
+
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
 [[ ${PDLIB:-"OFF"} = "ON" ]] && MAKE_OPT+=" -DPDLIB=ON"
 [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
@@ -35,9 +35,28 @@ RT_COMPILER=intel
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
-./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "${RT_COMPILER}" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
-mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
-mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
-cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
+if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
+  ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+  mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
+  mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
+  cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
+else
+  
+  if [[ "${PW_CSP:-}" == "aws" ]]; then
+    # TODO: This will need to be addressed further when the EPIC stacks are available/supported.
+    module use /contrib/spack-stack/envs/ufswm/install/modulefiles/Core
+    module load stack-intel
+    module load stack-intel-oneapi-mpi
+    module load ufs-weather-model-env/1.0.0
+    # TODO: It is still uncertain why this is the only module that is 
+    # missing; check the spack build as this needed to be added manually.
+    module load w3emc/2.9.2 # TODO: This has similar issues for the EPIC stack.
+    module list
+  fi
+
+  export CMAKE_FLAGS="${MAKE_OPT}"
+  ./build.sh 
+  mv "${cwd}/ufs_model.fd/build/ufs_model" "${cwd}/ufs_model.fd/tests/ufs_model.x"
+fi
 
 exit 0

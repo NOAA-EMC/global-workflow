@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from pygw.yaml_file import YAMLFile
+from wxflow import YAMLFile
 
 
 __all__ = ['Host']
@@ -15,14 +15,15 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET',
-                       'WCOSS2', 'S4', 'CONTAINER']
+                       'WCOSS2', 'S4', 'CONTAINER', 'AWSPW']
 
     def __init__(self, host=None):
 
         detected_host = self.detect()
 
         if host is not None and host != detected_host:
-            raise ValueError(f'detected host: "{detected_host}" does not match host: "{host}"')
+            raise ValueError(
+                f'detected host: "{detected_host}" does not match host: "{host}"')
 
         self.machine = detected_host
         self.info = self._get_info
@@ -33,6 +34,7 @@ class Host:
 
         machine = 'NOTFOUND'
         container = os.getenv('SINGULARITY_NAME', None)
+        pw_csp = os.getenv('PW_CSP', None)
 
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
@@ -46,6 +48,11 @@ class Host:
             machine = 'S4'
         elif container is not None:
             machine = 'CONTAINER'
+        elif pw_csp is not None:
+            if pw_csp.lower() not in ['azure', 'aws', 'gcp']:
+                raise ValueError(
+                    f'NOAA cloud service provider "{pw_csp}" is not supported.')
+            machine = f"{pw_csp.upper()}PW"
 
         if machine not in Host.SUPPORTED_HOSTS:
             raise NotImplementedError(f'This machine is not a supported host.\n' +
@@ -57,7 +64,8 @@ class Host:
     @property
     def _get_info(self) -> dict:
 
-        hostfile = Path(os.path.join(os.path.dirname(__file__), f'hosts/{self.machine.lower()}.yaml'))
+        hostfile = Path(os.path.join(os.path.dirname(__file__),
+                        f'hosts/{self.machine.lower()}.yaml'))
         try:
             info = YAMLFile(path=hostfile)
         except FileNotFoundError:

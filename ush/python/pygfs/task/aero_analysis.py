@@ -7,15 +7,15 @@ import tarfile
 from logging import getLogger
 from typing import Dict, List, Any
 
-from pygw.attrdict import AttrDict
-from pygw.file_utils import FileHandler
-from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta
-from pygw.fsutils import rm_p, chdir
-from pygw.timetools import to_fv3time
-from pygw.yaml_file import YAMLFile, parse_yamltmpl, parse_j2yaml, save_as_yaml
-from pygw.logger import logit
-from pygw.executable import Executable
-from pygw.exceptions import WorkflowException
+from wxflow import (AttrDict,
+                    FileHandler,
+                    add_to_datetime, to_fv3time, to_timedelta,
+                    chdir,
+                    to_fv3time,
+                    YAMLFile, parse_yamltmpl, parse_j2yaml, save_as_yaml,
+                    logit,
+                    Executable,
+                    WorkflowException)
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -30,7 +30,7 @@ class AerosolAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.config['CASE'][1:])
-        _res_enkf = int(self.config['CASE_ENS'][1:])
+        _res_anl = int(self.config['CASE_ANL'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
         _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
 
@@ -41,8 +41,8 @@ class AerosolAnalysis(Analysis):
                 'npy_ges': _res + 1,
                 'npz_ges': self.config.LEVS - 1,
                 'npz': self.config.LEVS - 1,
-                'npx_anl': _res_enkf + 1,
-                'npy_anl': _res_enkf + 1,
+                'npx_anl': _res_anl + 1,
+                'npy_anl': _res_anl + 1,
                 'npz_anl': self.config['LEVS'] - 1,
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
@@ -72,13 +72,13 @@ class AerosolAnalysis(Analysis):
         super().initialize()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_crtm_coeff.yaml')
+        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aero_crtm_coeff.yaml')
         logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
         crtm_fix_list = parse_yamltmpl(crtm_fix_list_path, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aero_jedi_fix.yaml')
         logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
         jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
@@ -208,7 +208,7 @@ class AerosolAnalysis(Analysis):
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + template)
         bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, template)
         # get list of increment vars
-        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aeroanl_inc_vars.yaml')
+        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aeroanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
         super().add_fv3_increments(inc_template, bkg_template, incvars)
 
@@ -284,7 +284,7 @@ class AerosolAnalysis(Analysis):
             berror_list.append([
                 os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
             ])
-            template = '{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
+            template = f'{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
             for itile in range(1, config.ntiles + 1):
                 tracer = template.format(tilenum=itile)
                 berror_list.append([

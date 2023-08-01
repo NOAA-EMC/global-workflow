@@ -28,6 +28,7 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 
 # Add UFSDA to PYTHONPATH
 export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/:${HOMEgfs}/sorc/gdas.cd/ush/eva:${PYTHONPATH}
+export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/soca:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # exglobal_land_analysis_prepare.py
 # This script creates a LandAnalysis object
-# and runs the prepare_IMS method
-# which perform the pre-processing for IMS data
+# and runs the prepare_GTS and prepare_IMS method
+# which perform the pre-processing for GTS and IMS data
 import os
 
-from pygw.logger import Logger
-from pygw.configuration import cast_strdict_as_dtypedict
+from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.land_analysis import LandAnalysis
 
 
@@ -21,4 +20,6 @@ if __name__ == '__main__':
 
     # Instantiate the land prepare task
     LandAnl = LandAnalysis(config)
-    LandAnl.prepare_IMS()
+    LandAnl.prepare_GTS()
+    if f"{ LandAnl.runtime_config.cyc }" == '18':
+        LandAnl.prepare_IMS()
