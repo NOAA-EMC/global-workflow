@@ -35,7 +35,7 @@ if [[ "$DONST" = "YES" ]]; then
     . $EXPDIR/config.nsst
 fi
 
-export esmf_profile=".false."
+export esmf_profile=".true."
 export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
 

@@ -16,7 +16,7 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-v]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-v][-w]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -c build_config:
@@ -25,6 +25,8 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-v]
     print this help message and exit
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
+  -w: 
+    Use unstructured wave grid 
 EOF
   exit 1
 }
@@ -36,15 +38,17 @@ _build_ufs_opt=""
 _ops_opt=""
 _verbose_opt=""
 _partial_opt=""
+_wave_unst=""
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:c:hov" option; do
+while getopts ":a:c:hovw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     c) _partial_opt+="-c ${OPTARG} ";;
     h) _usage;;
     o) _ops_opt+="-o";;
     v) _verbose_opt="-v";;
+    w) _wave_unst="-w";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
@@ -127,7 +131,7 @@ fi
 if [[ ${Build_ww3_prepost} == "true" ]]; then
   echo " .... Building WW3 pre and post execs .... "
   # shellcheck disable=SC2086,SC2248
-  ./build_ww3prepost.sh ${_verbose_opt} ${_build_ufs_opt} > "${logs_dir}/build_ww3_prepost.log" 2>&1
+  ./build_ww3prepost.sh ${_verbose_opt} ${_build_ufs_opt} ${_wave_unst} > "${logs_dir}/build_ww3_prepost.log" 2>&1
   # shellcheck disable=
   rc=$?
   if (( rc != 0 )) ; then
@@ -143,7 +147,7 @@ fi
 if [[ ${Build_ufs_model} == 'true' ]]; then
   echo " .... Building forecast model .... "
   # shellcheck disable=SC2086,SC2248
-  ./build_ufs.sh ${_verbose_opt} ${_build_ufs_opt} > "${logs_dir}/build_ufs.log" 2>&1
+  ./build_ufs.sh ${_verbose_opt} ${_build_ufs_opt} ${_wave_unst} > "${logs_dir}/build_ufs.log" 2>&1
   # shellcheck disable=
   rc=$?
   if (( rc != 0 )) ; then
