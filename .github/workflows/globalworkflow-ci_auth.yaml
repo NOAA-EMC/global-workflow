@@ -8,5 +8,5 @@ on:
 jobs:
   run-ci-orion:
     if:  github.event.label.name == 'CI-Orion-Dispatch' || github.event_name == 'workflow_dispatch'
-    uses: TerrenceMcGuinness-NOAA/CI-workflows/.github/workflows/orion.yaml@main
+    uses: TerrenceMcGuinness-NOAA/CI-workflows/.github/workflows/global-workflow_ci_orion.yaml@main
     secrets: inherit
