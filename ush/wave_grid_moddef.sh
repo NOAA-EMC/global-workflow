@@ -83,6 +83,14 @@ source "$HOMEgfs/ush/preamble.sh"
  
   rm -f ww3_grid.inp 
   ln -sf ../ww3_grid.inp.$grdID ww3_grid.inp
+
+  if [ -f ../${grdID}.msh ]
+  then
+     rm -f ${grdID}.msh 
+     ln -sf ../${grdID}.msh ${grdID}.msh 
+  fi
+
+
  
   $EXECwave/ww3_grid 1> grid_${grdID}.out 2>&1
   err=$?

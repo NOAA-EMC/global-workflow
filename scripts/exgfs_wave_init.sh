@@ -118,6 +118,13 @@ source "${HOMEgfs}/ush/preamble.sh"
         err=2;export err;${errchk}
       fi
 
+
+      if [ -f ${FIXwave}/${grdID}.msh ]
+      then
+        cp $FIXwave/${grdID}.msh ${grdID}.msh
+      fi
+      #TO DO: how do we say "it's unstructured, and therefore need to have error check here" 
+
       [[ ! -d "${COM_WAVE_PREP}" ]] && mkdir -m 775 -p "${COM_WAVE_PREP}"
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
         echo "$nmoddef $USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
