@@ -1,4 +1,5 @@
 BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git' #TODO: This does not yet exist.
+BASE_CPLIC: '/contrib/Terry.McGuinness/home/ICSDIR/prototype_ICs'  
 DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump' # TODO: This does not yet exist.
 PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara' #TODO: This does not yet exist.
 COMROOT: '/scratch1/NCEPDEV/global/glopara/com' #TODO: This does not yet exist.
