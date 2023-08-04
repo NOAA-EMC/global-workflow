@@ -131,22 +131,22 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
    MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
      COM_ATMOS_HISTORY COM_ATMOS_MASTER
 
-   RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+   MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
    if [[ ${DO_WAVE} == "YES" ]]; then
      MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
-     RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+     MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
    fi
 
    if [[ ${DO_OCN} == "YES" ]]; then
      MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_MED_RESTART COM_OCEAN_RESTART \
        COM_OCEAN_INPUT COM_OCEAN_HISTORY COM_OCEAN_ANALYSIS
-     RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+     MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
    fi
 
    if [[ ${DO_ICE} == "YES" ]]; then
      MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ICE_HISTORY COM_ICE_INPUT COM_ICE_RESTART
-     RUN=${rCDUMP} MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+     MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
    fi
 
    if [[ ${DO_AERO} == "YES" ]]; then
