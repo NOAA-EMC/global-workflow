@@ -1,13 +1,13 @@
 mkdir:
 - $(DATA)/crtm/
 copy:
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/AerosolCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/CloudCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/v.viirs-m_npp.SpcCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/v.viirs-m_npp.TauCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/v.viirs-m_j1.SpcCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/v.viirs-m_j1.TauCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/NPOESS.VISice.EmisCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/NPOESS.VISland.EmisCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/NPOESS.VISsnow.EmisCoeff.bin, $(DATA)/crtm/]
-- [$(FV3JEDI_FIX)/crtm/$(crtm_VERSION)/NPOESS.VISwater.EmisCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/AerosolCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/CloudCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/v.viirs-m_npp.SpcCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/v.viirs-m_npp.TauCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/v.viirs-m_j1.SpcCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/v.viirs-m_j1.TauCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/NPOESS.VISice.EmisCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/NPOESS.VISland.EmisCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/NPOESS.VISsnow.EmisCoeff.bin, $(DATA)/crtm/]
+- [$(CRTM_FIX)/NPOESS.VISwater.EmisCoeff.bin, $(DATA)/crtm/]
