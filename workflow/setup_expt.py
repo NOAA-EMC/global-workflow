@@ -230,8 +230,8 @@ def fill_COMROT_forecasts(host, inputs):
         print('temporary hack to stage gefs ICs for testing')
         comrot = os.path.join(inputs.comrot, inputs.pslot)
         idatestr = datetime_to_YMDH(inputs.idate)
-        current_cycle_dir = f'gefs.{idatestr[:8]}}'
-        cmd = f"cp -as {inputs.icsdir}/gefs.{idatestr} {comrot}/{current_cycle_dir}"
+        current_cycle_dir = f"gefs.{idatestr[:8]}"
+        cmd = f"cp -as {inputs.icsdir}/{current_cycle_dir} {comrot}/{current_cycle_dir}"
         os.system(cmd)
     return
 
@@ -463,8 +463,7 @@ def input_args(*argv):
                       default=os.path.join(_top, 'parm/config/gefs'))
     gefs.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
                       default=os.path.join(_top, 'parm/config/gefs/yaml/defaults.yaml'))
-    gefs.add_argument('--icsdir', help='full path to initial condition directory
-                      [temporary hack in place for testing]',
+    gefs.add_argument('--icsdir', help='full path to initial condition directory [temporary hack in place for testing]',
                       type=str, required=False, default=None)
 
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
