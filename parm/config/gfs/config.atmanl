@@ -20,6 +20,5 @@ export io_layout_x=1
 export io_layout_y=1
 
 export JEDIEXE=${HOMEgfs}/exec/fv3jedi_var.x
-export crtm_VERSION="2.3.0"
 
 echo "END: config.atmanl"
