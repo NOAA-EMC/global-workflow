@@ -21,7 +21,7 @@ resolution.
    * - **Cloud Service Provider**
      - **Global Workflow Resolution**
      - **Instance Type**
-     - **Parition**
+     - **Partition**
      - **File System**
    * - Amazon Web Services Parallel Works
      - C48
@@ -98,4 +98,7 @@ previous section and click on the link as illustrated below.
 
 The respective CSP cluster maybe defined
 
-### Need to create image where cluster is configured.
+### TODO: Need to create image where cluster is configured.
+
+### TODO: Update _static/noaacsp_instance_1.png such that black boxes
+are aligned.
