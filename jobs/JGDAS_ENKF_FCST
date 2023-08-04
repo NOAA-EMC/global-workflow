@@ -8,7 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 # Set variables used in the script
 ##############################################
 export CDUMP=${RUN/enkf}
-export rCDUMP="enkfgdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
