@@ -492,7 +492,7 @@ def input_args(*argv):
     for subp in [gefsforecasts]:
         subp = _gefs_args(subp)
 
-    return parser.parse_args(argv[0][0] if len(argv[0]) else None)
+    return parser.parse_args(list(*argv) if len(argv) else None)
 
 
 def query_and_clean(dirname):
@@ -528,7 +528,7 @@ def validate_user_request(host, inputs):
 
 def main(*argv):
 
-    user_inputs = input_args(argv)
+    user_inputs = input_args(*argv)
     host = Host()
 
     validate_user_request(host, user_inputs)
