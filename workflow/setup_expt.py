@@ -446,7 +446,6 @@ def input_args(*argv):
                             type=str, required=False, default=None)
         return parser
 
-
     description = """
         Setup files and directories to start a GFS parallel.\n
         Create EXPDIR, copy config files.\n
