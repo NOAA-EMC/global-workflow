@@ -1,1 +1,6 @@
-# This file intentionally left blank
+base:
+  DO_JEDIATMVAR: "NO"
+  DO_JEDIATMENS: "NO"
+  DO_JEDIOCNVAR: "NO"
+  DO_JEDILANDDA: "NO"
+  DO_MERGENSST: "NO"
