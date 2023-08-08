@@ -262,6 +262,12 @@ export OUTPUT_GRID="gaussian_grid"
 export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST
 export WRITE_NSFLIP=".true."
 
+if [[ ${WRITE_DOPOST} == ".true." ]]; then
+    # Override normal post flat files for GEFS
+    export FLTFILEGFS="${PARMgfs}/post/postxconfig-NT-GEFS.txt"
+    export FLTFILEGFSF00="${PARMgfs}/post/postxconfig-NT-GEFS-F00.txt"
+fi
+
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=@IMP_PHYSICS@
 
