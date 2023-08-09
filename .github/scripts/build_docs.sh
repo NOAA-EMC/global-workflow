@@ -4,7 +4,6 @@ set -eux
 
 # path to docs directory relative to top level of repository
 # $GITHUB_WORKSPACE is set if the actions/checkout@v3 action is run first
-# no up for testing
 
 cwd=$(pwd)
 DOCS_DIR="${GITHUB_WORKSPACE}/docs"
