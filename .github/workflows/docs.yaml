@@ -13,6 +13,9 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
+  permissions:
+    issues: 'write'
+
   documentation:
     runs-on: ubuntu-latest
     name: Build and deploy documentation
