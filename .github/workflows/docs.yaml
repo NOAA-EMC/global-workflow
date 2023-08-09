@@ -9,7 +9,7 @@ on:
       - release/*
     paths:
       - docs/**
-  pull_request_target:
+  pull_request:
     types: [opened, reopened, synchronize]
 
 jobs:
