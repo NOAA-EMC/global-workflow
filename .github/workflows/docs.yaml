@@ -53,9 +53,13 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
+          const message = `
+          Link to ReadTheDocs sample build for this PR can be foune at:
+          https://global-workflow--${{ github.event.pull_request.number }}.org.readthedocs.build/en/${{ github.event.pull_request.number }}
+          `
           github.rest.issues.createComment({
            issue_number: context.issue.number,
            owner: context.repo.owner,
            repo: context.repo.repo,
-           body: 'https://global-workflow--${{ github.event.pull_request.number }}.org.readthedocs.build/en/${{ github.event.pull_request.number }}'
+           body: message 
           })     
