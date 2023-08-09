@@ -49,15 +49,13 @@ jobs:
         path: artifact/doc_warnings.log
         if-no-files-found: ignore
 
-  comment:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'https://global-workflow--${{ github.event.pull_request.number }}.org.readthedocs.build/en/$${{ github.event.pull_request.number }}'
-            })     
+    - name: Comment ReadDocs
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+           issue_number: context.issue.number,
+           owner: context.repo.owner,
+           repo: context.repo.repo,
+           body: 'https://global-workflow--${{ github.event.pull_request.number }}.org.readthedocs.build/en/${{ github.event.pull_request.number }}'
+          })     
