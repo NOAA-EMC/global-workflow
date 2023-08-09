@@ -15,7 +15,10 @@ on:
 jobs:
 
   documentation:
-    permissions: write-all
+    
+    permissions:
+      pull-requests: 'write'
+
     runs-on: ubuntu-latest
     name: Build and deploy documentation
 
