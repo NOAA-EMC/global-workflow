@@ -59,7 +59,7 @@ jobs:
       with:
         script: |
           const message = `
-          Link to ReadTheDocs sample build for this PR can be foune at:
+          Link to ReadTheDocs sample build for this PR can be found at:
           https://global-workflow--${{ github.event.pull_request.number }}.org.readthedocs.build/en/${{ github.event.pull_request.number }}
           `
           github.rest.issues.createComment({
