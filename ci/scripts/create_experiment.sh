@@ -49,7 +49,6 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
-   echo "Running Automated Testing on ${MACHINE_ID}"
    source "${HOMEgfs}/ci/platforms/${MACHINE_ID}.sh"
    ;;
  *)
