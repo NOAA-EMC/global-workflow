@@ -58,8 +58,6 @@ case ${MACHINE_ID} in
    ;;
 esac
 
-source "${HOMEgfs}/ci/platforms/${MACHINE_ID}.sh"
-
 filename=$(basename -- ${YAML_CASE})
 export pslot="${filename%.*}"
 export RUNTESTS=${RUNTESTS:-"${PWD}"}
