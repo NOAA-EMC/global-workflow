@@ -62,7 +62,6 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--yaml', help='full path to yaml file describing the experiment configuration', type=str, required=True)
-    parser.add_argument('--dir', help='full path to global-workflow build', type=str, required=True)
 
     return parser.parse_args()
 
@@ -70,7 +69,6 @@ def input_args():
 if __name__ == '__main__':
 
     user_inputs = input_args()
-    HOMEgfs = Path.absolute(Path(user_inputs.dir))
     testconf = YAMLFile(path=user_inputs.yaml)
     experiment_dir = Path.absolute(Path.joinpath(Path(testconf.arguments.expdir), Path(testconf.arguments.pslot)))
 

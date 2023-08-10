@@ -155,7 +155,7 @@ for pr in ${pr_list}; do
       pslot="${case}_${pr_sha}"
       export pslot
       set +e
-      "${HOMEgfs_PR}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/${case}.yaml" --dir "${HOMEgfs_PR}"
+      "${HOMEgfs_PR}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/${case}.yaml"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
