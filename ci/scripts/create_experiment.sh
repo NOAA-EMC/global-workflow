@@ -57,7 +57,7 @@ case ${MACHINE_ID} in
    ;;
 esac
 
-filename=$(basename -- ${YAML_CASE})
+filename=$(basename -- "${YAML_CASE}")
 export pslot="${filename%.*}"
 export RUNTESTS=${RUNTESTS:-"${PWD}"}
 # TODO env HOMEgfs being set will cause runtime error
@@ -65,4 +65,4 @@ export RUNTESTS=${RUNTESTS:-"${PWD}"}
 export HOMEgfs_PR="${HOMEgfs}"
 unset HOMEgfs;
 
-${HOMEgfs_PR}/ci/scripts/create_experiment.py --yaml $YAML_CASE
+${HOMEgfs_PR}/ci/scripts/create_experiment.py --yaml "${YAML_CASE}"
