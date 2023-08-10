@@ -65,4 +65,4 @@ export RUNTESTS=${RUNTESTS:-"${PWD}"}
 export HOMEgfs_PR="${HOMEgfs}"
 unset HOMEgfs;
 
-${HOMEgfs_PR}/ci/scripts/create_experiment.py --yaml "${YAML_CASE}"
+"${HOMEgfs_PR}/ci/scripts/create_experiment.py" --yaml "${YAML_CASE}"
