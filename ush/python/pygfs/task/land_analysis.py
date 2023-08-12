@@ -34,6 +34,7 @@ class LandAnalysis(Analysis):
 
         _res = int(self.config['CASE'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
+        _window_begin = add_to_datetime(_window_begin, -to_timedelta(f"1S") )
         _letkfoi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
@@ -323,8 +324,10 @@ class LandAnalysis(Analysis):
     def finalize(self) -> None:
         """Performs closing actions of the Land analysis task
         This method:
-        - copies analysis back to COM/ from DATA/
-        - tar and gzips the JEDI diagnostic files
+        - tarring up output diag files and place in COM/
+        - copying the generated YAML file from initialize to the COM/
+        - copying the analysis files to the COM/
+        - copying the increment files to the COM/
 
         Parameters
         ----------
@@ -336,6 +339,15 @@ class LandAnalysis(Analysis):
         statfile = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config.APREFIX}landstat.tgz")
         self.tgz_diags(statfile, self.task_config.DATA)
 
+        logger.info("Copy full YAML  to COM")
+        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
+        dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
+        yaml_copy = {
+            'mkdir': [self.task_config.COM_LAND_ANALYSIS],
+            'copy': [[src, dest]]
+        }
+        FileHandler(yaml_copy).sync()
+
         logger.info("Copy analysis to COM")
         template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
         anllist = []
@@ -345,6 +357,16 @@ class LandAnalysis(Analysis):
             dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, filename)
             anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
+
+        logger.info('Copy increments to COM')
+        template = f'landinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+        inclist = []
+        for itile in range(1, self.task_config.ntiles + 1):
+            filename = template.format(tilenum=itile)
+            src = os.path.join(self.task_config.DATA, 'anl', filename)
+            dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, filename)
+            inclist.append([src, dest])
+        FileHandler({'copy': inclist}).sync()
 
     @staticmethod
     @logit(logger)
