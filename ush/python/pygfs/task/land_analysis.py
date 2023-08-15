@@ -45,7 +45,7 @@ class LandAnalysis(Analysis):
                 'npz_ges': self.config.LEVS - 1,
                 'npz': self.config.LEVS - 1,
                 'LAND_WINDOW_BEGIN': _window_begin,
-                'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
+                'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H1S",
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'jedi_yaml': _letkfoi_yaml
@@ -324,10 +324,10 @@ class LandAnalysis(Analysis):
     def finalize(self) -> None:
         """Performs closing actions of the Land analysis task
         This method:
-        - tarring up output diag files and place in COM/
-        - copying the generated YAML file from initialize to the COM/
-        - copying the analysis files to the COM/
-        - copying the increment files to the COM/
+        - tar and gzip the output diag files and place in COM/
+        - copy the generated YAML file from initialize to the COM/
+        - copy the analysis files to the COM/
+        - copy the increment files to the COM/
 
         Parameters
         ----------
@@ -339,7 +339,7 @@ class LandAnalysis(Analysis):
         statfile = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config.APREFIX}landstat.tgz")
         self.tgz_diags(statfile, self.task_config.DATA)
 
-        logger.info("Copy full YAML  to COM")
+        logger.info("Copy full YAML to COM")
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
         dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
         yaml_copy = {
