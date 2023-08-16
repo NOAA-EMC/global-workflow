@@ -45,7 +45,7 @@ class LandAnalysis(Analysis):
                 'npz_ges': self.config.LEVS - 1,
                 'npz': self.config.LEVS - 1,
                 'LAND_WINDOW_BEGIN': _window_begin,
-                'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H2S",
+                'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H1S",
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'jedi_yaml': _letkfoi_yaml
