@@ -22,6 +22,4 @@ python:
   install:
     - method: pip
       path: .
-      extra_requirements:
-        - all
     - requirements: docs/requirements.txt
