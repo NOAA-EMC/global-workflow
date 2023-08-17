@@ -222,7 +222,7 @@ class Analysis(Task):
 
         # define template
         template_res = self.task_config.COM_ATMOS_RESTART_TMPL
-        prev_cycle=self.task_config.previous_cycle
+        prev_cycle = self.task_config.previous_cycle
         tmpl_res_dict = {
             'ROTDIR': self.task_config.ROTDIR,
             'RUN': self.task_config.RUN,
@@ -235,7 +235,7 @@ class Analysis(Task):
         if self.task_config.RUN in ['enkfgdas', 'enkfgfs']:
             dirtype = 'bkg'
         else:
-            tmpl_res_dict['RUN'] = 'enkf' + self.task_config.RUN 
+            tmpl_res_dict['RUN'] = 'enkf' + self.task_config.RUN
             dirtype = 'ens'
 
         # construct ensemble member file list
