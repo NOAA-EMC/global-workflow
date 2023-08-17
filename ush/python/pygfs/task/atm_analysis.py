@@ -9,12 +9,12 @@ from typing import Dict, List, Any
 
 from wxflow import (AttrDict,
                     FileHandler,
-                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD,
+                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
                     chdir,
                     parse_yamltmpl, parse_j2yaml, save_as_yaml,
                     logit,
                     Executable,
-                    WorkflowException, Template, TemplateConstants)
+                    WorkflowException)
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -82,16 +82,14 @@ class AtmAnalysis(Analysis):
         jedi_fix_list = parse_j2yaml(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
-        # stage berror files
-        # copy static background error files, otherwise it will assume ID matrix
+        # stage static background error files, otherwise it will assume ID matrix
         logger.debug(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
         FileHandler(self.get_berror_dict(self.task_config)).sync()
 
-        # optionally stage ensemble files for use in background error
-        do_hybvar = self.task_config.DOHYBVAR
-        if do_hybvar:
+        # stage ensemble files for use in hybrid background error
+        if self.task_config.DOHYBVAR:
             logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
-            FileHandler(self.get_berror_ens_dict(self.task_config)).sync()
+            FileHandler(Analysis.get_ens_dict(self, self.task_config)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config))).sync()
@@ -397,67 +395,6 @@ class AtmAnalysis(Analysis):
         berror_dict = {
             'mkdir': [os.path.join(config.DATA, 'berror')],
             'copy': berror_list,
-        }
-        return berror_dict
-
-    @logit(logger)
-    def get_berror_ens_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Compile a dictionary of atm ens background error files to copy
-
-        This method will construct a dictionary of atm ensemble files to use
-        in the background error calculation for global atm DA and return
-        said dictionary to the parent
-
-        Parameters
-        ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
-
-        Returns
-        ----------
-        berror_dict: Dict
-            a dictionary of atm ens background error files to copy for FileHandler
-        """
-
-        # define template
-        template_res = config.COM_ATMOS_RESTART_ENS_TMPL
-        tmpl_res_dict = {
-            'ROTDIR': config.ROTDIR,
-            'RUN': config.RUN,
-            'YMD': to_YMD(config.previous_cycle),
-            'HH': config.previous_cycle.strftime('%H'),
-            'MEMDIR': None
-        }
-
-        # construct ensemble member file list
-        dirlist = []
-        enslist = []
-        for imem in range(1, config.NMEM_ENS + 1):
-            memchar = f"mem{imem:03d}"
-
-            # create directory path for ensemble member restart
-            dirlist.append(os.path.join(config.DATA, 'ens', f'mem{imem:03d}'))
-
-            # get FV3 restart files, this will be a lot simpler when using history files
-            tmpl_res_dict['MEMDIR'] = memchar
-            rst_dir = Template.substitute_structure(template_res, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_res_dict.get)
-            run_dir = os.path.join(config.DATA, 'ens', memchar)
-
-            # atm DA needs coupler
-            basename = f'{to_fv3time(config.current_cycle)}.coupler.res'
-            enslist.append([os.path.join(rst_dir, basename), os.path.join(config.DATA, 'ens', memchar, basename)])
-
-            # atm DA needs core, srf_wnd, tracer, phy_data, sfc_data
-            for ftype in ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']:
-                template = f'{to_fv3time(config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
-                for itile in range(1, config.ntiles + 1):
-                    basename = template.format(tilenum=itile)
-                    enslist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        # create dictionary of ensemble members to stage for background errork
-        berror_dict = {
-            'mkdir': dirlist,
-            'copy': enslist,
         }
         return berror_dict
 
