@@ -8,9 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 # Set variables used in the script
 ##############################################
 export CDUMP="${RUN/enkf}"
-if [[ ${RUN_ENVIR} = "nco" ]]; then
-    export ROTDIR=${COMROOT:?}/${NET}/${envir}
-fi
 
 
 ##############################################
