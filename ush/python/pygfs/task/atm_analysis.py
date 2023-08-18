@@ -89,9 +89,14 @@ class AtmAnalysis(Analysis):
         # stage ensemble files for use in hybrid background error
         if self.task_config.DOHYBVAR:
             logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
-            self.task_config.RUN = 'enkf' + self.task_config.RUN
-            self.task_config.dirname = 'ens'
-            FileHandler(self.get_fv3ens_dict(self.task_config)).sync()
+            localconf = AttrDict()
+            keys = ['COM_ATMOS_RESTART_TMPL', 'previous_cycle', 'ROTDIR', 'RUN',
+                    'NMEM_ENS', 'DATA', 'current_cycle', 'ntiles']
+            for key in keys:
+                localconf[key] = self.task_config[key]
+            localconf.RUN = 'enkf' + self.task_config.RUN
+            localconf.dirname = 'ens'
+            FileHandler(self.get_fv3ens_dict(localconf)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config))).sync()

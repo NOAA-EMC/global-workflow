@@ -109,8 +109,13 @@ class AtmEnsAnalysis(Analysis):
 
         # stage backgrounds
         logger.debug(f"Stage ensemble member background files")
-        self.task_config.dirname = 'bkg'
-        FileHandler(self.get_fv3ens_dict(self.task_config)).sync()
+        localconf = AttrDict()
+        keys = ['COM_ATMOS_RESTART_TMPL', 'previous_cycle', 'ROTDIR', 'RUN',
+                'NMEM_ENS', 'DATA', 'current_cycle', 'ntiles']
+        for key in keys:
+            localconf[key] = self.task_config[key]
+        localconf.dirname = 'bkg'
+        FileHandler(self.get_fv3ens_dict(localconf)).sync()
 
         # generate ensemble da YAML file
         logger.debug(f"Generate ensemble da YAML file: {self.task_config.fv3jedi_yaml}")
