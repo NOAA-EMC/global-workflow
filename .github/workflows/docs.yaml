@@ -3,12 +3,12 @@ on:
   push:
     branches:
       - develop
-      - feature/*
-      - main/*
-      - bugfix/*
-      - release/*
+      - 'feature/*'
+      - 'main/*'
+      - 'bugfix/*'
+      - 'release/*'
     paths:
-      - docs/**
+      - 'docs/**'
   pull_request_target:
     types: [issues, opened, reopened, synchronize]
 
