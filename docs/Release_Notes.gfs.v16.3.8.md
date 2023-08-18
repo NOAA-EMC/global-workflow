@@ -4,7 +4,7 @@ GFS V16.3.8 RELEASE NOTES
 PRELUDE
 -------
 
-
+This change turns of ingest of NOAA-21 radiances into the GSI until CRTM fix file issues can be solved.  This is necessary for a satingest upgrade to proceed.  PlanetIQ GPSRO and NOAA-20 OMPS Ozone retrievals will also be actively assimilated, and the OMPS observation errors adjusted.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -51,10 +51,7 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.8`, `gfs_ver=v16.3.8`, and `obsproc_ver=v1.2`
-* `versions/hera.ver` - change `obsproc_run_ver=1.2.0`
-* `versions/orion.ver` - change `obsproc_run_ver=1.2.0`
-* `versions/wcoss2.ver` - change `obsproc_run_ver=1.2.0`
+* `versions/run.ver` - change `version=v16.3.8`, and  `gfs_ver=v16.3.8`
 
 SORC CHANGES
 ------------
@@ -74,12 +71,13 @@ PARM/CONFIG CHANGES
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.7
+* Changes to sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh and sorc/checkout.sh
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.7
+* Change to sorc/gsi.fd/fix/global_convinfo.txt
+* Change to sorc/gsi.fd/fix/global_ozinfo.txt
 
 MODULE CHANGES
 --------------
