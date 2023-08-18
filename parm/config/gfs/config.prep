@@ -13,8 +13,6 @@ export cdate10=${PDY}${cyc}
 
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
-[[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
-export DO_RELOCATE="NO"
 export TROPCYQCRELOSH="$HOMEgfs/scripts/exglobal_atmos_tropcy_qc_reloc.sh"
 export SENDCOM=YES
 
