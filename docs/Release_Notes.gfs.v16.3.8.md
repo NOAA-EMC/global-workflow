@@ -4,7 +4,7 @@ GFS V16.3.8 RELEASE NOTES
 PRELUDE
 -------
 
-
+This change turns of ingest of NOAA-21 radiances into the GSI until CRTM fix file issues can be solved.  This is necessary for a satingest upgrade to proceed.  PlanetIQ GPSRO and NOAA-20 OMPS Ozone retrievals will also be actively assimilated, and the OMPS observation errors adjusted.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -76,7 +76,8 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.7
+* Change to sorc/gsi.fd/fix/global_convinfo.txt
+* Change to sorc/gsi.fd/fix/global_ozinfo.txt
 
 MODULE CHANGES
 --------------
