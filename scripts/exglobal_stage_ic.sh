@@ -7,12 +7,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
-export job="coupled_ic"
+export job="stage_ic"
 export jobid="${job}.$$"
 
 # Execute the JJOB
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "coupled_ic" -c "base coupled_ic"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
 # Locally scoped variables and functions
 GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
@@ -28,6 +28,26 @@ error_message(){
 
 ###############################################################
 # Start staging
+
+# Stage the initial conditions 
+YMD=${PDY} HH=${cyc} generate_com -r COM_STAGE_IC
+[[ ! -d "${COM_STAGE_IC}" ]] && mkdir -p "${COM_STAGE_IC}"
+source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/gfs_ctrl.nc"
+target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
+${NCP} "${source}" "${target}"
+rc=$?
+[[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+err=$((err + rc))
+for ftype in gfs_data sfc_data; do
+  for tt in $(seq 1 6); do
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/${ftype}.tile${tt}.nc"
+    target="${COM_STAGE_IC}/${ftype}.tile${tt}.nc"
+    ${NCP} "${source}" "${target}"
+    rc=$?
+    [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+    err=$((err + rc))
+  done
+done
 
 # Stage the FV3 initial conditions to ROTDIR (cold start)
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
