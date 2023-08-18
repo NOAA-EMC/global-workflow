@@ -5,12 +5,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
 
 # Set COM Paths
-YMD=${PDY} HH=${cyc} generate_com -rx COM_STAGE_IC COM_ATM_INPUT
-
-# Shall we remove below statement? 
-if [[ ! -d "${COM_STAGE_IC}" ]]; then mkdir -p "${COM_STAGE_IC}"; fi
-
-
+YMD=${PDY} HH=${cyc} generate_com -rx COM_STAGE_IC COM_ATM_INPUT COM_OCEAN_RESTART COM_ICE_RESTART COM_WAVE_RESTART 
 
 # Execute the Script
 ${HOMEgfs}/scripts/exglobal_stage_ic.sh

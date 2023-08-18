@@ -27,7 +27,7 @@ YMD=${PDY} HH=${cyc} generate_com -r COM_STAGE_IC
 
 # copying IC files from /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500/gefs.20210323 ${COMROT}/${PSLOT}/gefs.20210323
 
-nb_copy "" ""
+cp as  "" ""
 
 source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/gfs_ctrl.nc"
 
