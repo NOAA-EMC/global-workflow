@@ -21,7 +21,7 @@ case "${CASE}" in
     export CPL_WAVIC=GEFSwave20210528v2
     ;;
   "C768")
-    export CPL_ATMIC=HR2
+    export CPL_ATMIC=HR1
     export CPL_ICEIC=HR1
     export CPL_OCNIC=HR1
     export CPL_WAVIC=HR1
