@@ -2,15 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-# Source FV3GFS workflow modules
-. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
-
-export job="stage_ic"
-export jobid="${job}.$$"
-
-# Execute the JJOB
+source "${HOMEgfs}/ush/file_utils.sh"
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
@@ -32,22 +24,13 @@ error_message(){
 # Stage the initial conditions 
 YMD=${PDY} HH=${cyc} generate_com -r COM_STAGE_IC
 [[ ! -d "${COM_STAGE_IC}" ]] && mkdir -p "${COM_STAGE_IC}"
+
+# copying IC files from /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500/gefs.20210323 ${COMROT}/${PSLOT}/gefs.20210323
+
+nb_copy "" ""
+
 source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/gfs_ctrl.nc"
-target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
-${NCP} "${source}" "${target}"
-rc=$?
-[[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
-err=$((err + rc))
-for ftype in gfs_data sfc_data; do
-  for tt in $(seq 1 6); do
-    source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/${ftype}.tile${tt}.nc"
-    target="${COM_STAGE_IC}/${ftype}.tile${tt}.nc"
-    ${NCP} "${source}" "${target}"
-    rc=$?
-    [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
-    err=$((err + rc))
-  done
-done
+
 
 # Stage the FV3 initial conditions to ROTDIR (cold start)
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
