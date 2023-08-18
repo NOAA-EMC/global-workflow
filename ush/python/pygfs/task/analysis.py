@@ -201,8 +201,9 @@ class Analysis(Task):
 
         return
 
+    @staticmethod
     @logit(logger)
-    def get_fv3ens_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_fv3ens_dict(config: Dict[str, Any]) -> Dict[str, Any]:
         """Compile a dictionary of ensemble member restarts to copy
 
         This method constructs a dictionary of ensemble FV3 restart files (coupler, core, tracer)
@@ -210,8 +211,8 @@ class Analysis(Task):
 
         Parameters
         ----------
-        task_config: Dict
-            a dictionary containing all of the configuration needed for the task
+        config: Dict
+            a dictionary containing all of the configuration needed
 
         Returns
         ----------
@@ -221,45 +222,38 @@ class Analysis(Task):
         # NOTE for now this is FV3 restart files and just assumed to be fh006
 
         # define template
-        template_res = self.task_config.COM_ATMOS_RESTART_TMPL
-        prev_cycle = self.task_config.previous_cycle
+        template_res = config.COM_ATMOS_RESTART_TMPL
+        prev_cycle = config.previous_cycle
         tmpl_res_dict = {
-            'ROTDIR': self.task_config.ROTDIR,
-            'RUN': self.task_config.RUN,
+            'ROTDIR': config.ROTDIR,
+            'RUN': config.RUN,
             'YMD': to_YMD(prev_cycle),
             'HH': prev_cycle.strftime('%H'),
             'MEMDIR': None
         }
 
-        # set directory type based on RUN
-        if self.task_config.RUN in ['enkfgdas', 'enkfgfs']:
-            dirtype = 'bkg'
-        else:
-            tmpl_res_dict['RUN'] = 'enkf' + self.task_config.RUN
-            dirtype = 'ens'
-
         # construct ensemble member file list
         dirlist = []
         enslist = []
-        for imem in range(1, self.task_config.NMEM_ENS + 1):
+        for imem in range(1, config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"
 
             # create directory path for ensemble member restart
-            dirlist.append(os.path.join(self.task_config.DATA, dirtype, f'mem{imem:03d}'))
+            dirlist.append(os.path.join(config.DATA, config.dirname, f'mem{imem:03d}'))
 
             # get FV3 restart files, this will be a lot simpler when using history files
             tmpl_res_dict['MEMDIR'] = memchar
             rst_dir = Template.substitute_structure(template_res, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_res_dict.get)
-            run_dir = os.path.join(self.task_config.DATA, dirtype, memchar)
+            run_dir = os.path.join(config.DATA, config.dirname, memchar)
 
             # atmens DA needs coupler
-            basename = f'{to_fv3time(self.task_config.current_cycle)}.coupler.res'
-            enslist.append([os.path.join(rst_dir, basename), os.path.join(self.task_config.DATA, dirtype, memchar, basename)])
+            basename = f'{to_fv3time(config.current_cycle)}.coupler.res'
+            enslist.append([os.path.join(rst_dir, basename), os.path.join(config.DATA, config.dirname, memchar, basename)])
 
             # atmens DA needs core, srf_wnd, tracer, phy_data, sfc_data
             for ftype in ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']:
-                template = f'{to_fv3time(self.task_config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
-                for itile in range(1, self.task_config.ntiles + 1):
+                template = f'{to_fv3time(config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
+                for itile in range(1, config.ntiles + 1):
                     basename = template.format(tilenum=itile)
                     enslist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
 

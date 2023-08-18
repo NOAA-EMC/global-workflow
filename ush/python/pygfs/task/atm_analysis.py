@@ -89,6 +89,8 @@ class AtmAnalysis(Analysis):
         # stage ensemble files for use in hybrid background error
         if self.task_config.DOHYBVAR:
             logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
+            self.task_config.RUN = 'enkf' + self.task_config.RUN
+            self.task_config.dirname ='ens'
             FileHandler(self.get_fv3ens_dict(self.task_config)).sync()
 
         # stage backgrounds

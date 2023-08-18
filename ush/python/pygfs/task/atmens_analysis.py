@@ -109,6 +109,7 @@ class AtmEnsAnalysis(Analysis):
 
         # stage backgrounds
         logger.debug(f"Stage ensemble member background files")
+        self.task_config.dirname = 'bkg'
         FileHandler(self.get_fv3ens_dict(self.task_config)).sync()
 
         # generate ensemble da YAML file
