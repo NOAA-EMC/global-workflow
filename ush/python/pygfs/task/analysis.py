@@ -202,7 +202,7 @@ class Analysis(Task):
         return
 
     @logit(logger)
-    def get_ens_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_fv3ens_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
         """Compile a dictionary of ensemble member restarts to copy
 
         This method constructs a dictionary of ensemble FV3 restart files (coupler, core, tracer)
@@ -210,8 +210,8 @@ class Analysis(Task):
 
         Parameters
         ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
+        task_config: Dict
+            a dictionary containing all of the configuration needed for the task
 
         Returns
         ----------

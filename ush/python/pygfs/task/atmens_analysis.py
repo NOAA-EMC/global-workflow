@@ -109,7 +109,7 @@ class AtmEnsAnalysis(Analysis):
 
         # stage backgrounds
         logger.debug(f"Stage ensemble member background files")
-        FileHandler(Analysis.get_ens_dict(self, self.task_config)).sync()
+        FileHandler(self.get_fv3ens_dict(self.task_config)).sync()
 
         # generate ensemble da YAML file
         logger.debug(f"Generate ensemble da YAML file: {self.task_config.fv3jedi_yaml}")
