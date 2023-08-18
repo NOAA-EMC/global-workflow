@@ -1,12 +1,13 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage stage_ic"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
 
 # Set COM Paths
 YMD=${PDY} HH=${cyc} generate_com -rx COM_STAGE_IC COM_ATM_INPUT
 
+# Shall we remove below statement? 
 if [[ ! -d "${COM_STAGE_IC}" ]]; then mkdir -p "${COM_STAGE_IC}"; fi
 
 
@@ -17,8 +18,7 @@ ${HOMEgfs}/scripts/exglobal_stage_ic.sh
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
-
+cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
