@@ -341,9 +341,9 @@ class LandAnalysis(Analysis):
 
         logger.info("Copy full YAML to COM")
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
-        dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
+        dest = os.path.join(self.task_config.COM_CONF, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
         yaml_copy = {
-            'mkdir': [self.task_config.COM_LAND_ANALYSIS],
+            'mkdir': [self.task_config.COM_CONF],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
