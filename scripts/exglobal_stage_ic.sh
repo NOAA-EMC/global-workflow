@@ -2,15 +2,17 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-source "${HOMEgfs}/ush/file_utils.sh"
+
+# start staging
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
-# Locally scoped variables and functions
+
 GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
+source "${HOMEgfs}/ush/file_utils.sh"
 # Initialize return code
 err=0
 
