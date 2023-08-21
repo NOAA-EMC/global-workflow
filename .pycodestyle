@@ -3,4 +3,4 @@ count = False
 ignore = E402,W504
 max-line-length = 160
 statistics = True
-exclude = Experimental,.git,.vscode,*.fd,*.cd
+exclude = .git,.github,.vscode,venv,*.fd,*.cd,docs/source/conf.py

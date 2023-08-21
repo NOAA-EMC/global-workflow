@@ -6,7 +6,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # exgdas_vrfyozn.sh
 #
 # This script runs the data extract/validation portion of the Ozone Monitor
-# (OznMon) DA package.  
+# (OznMon) DA package.
 #
 ################################################################################
 err=0
@@ -14,7 +14,6 @@ err=0
 #-------------------------------------------------------------------------------
 #  Set environment
 #
-export RUN_ENVIR=${RUN_ENVIR:-nco}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export envir=${envir:-prod}
@@ -49,11 +48,11 @@ fi
 data_available=0
 
 if [[ -s ${oznstat} ]]; then
-   data_available=1                                         
+   data_available=1
 
    #------------------------------------------------------------------
-   #  Copy data files file to local data directory.  
-   #  Untar oznstat file.  
+   #  Copy data files file to local data directory.
+   #  Untar oznstat file.
    #------------------------------------------------------------------
 
    $NCP $oznstat ./oznstat.$PDATE
@@ -70,7 +69,7 @@ if [[ -s ${oznstat} ]]; then
          mv $filenc4 $file
       done
    fi
-   
+
    export OZNMON_NETCDF=${netcdf}
 
    ${HOMEoznmon}/ush/ozn_xtrct.sh
