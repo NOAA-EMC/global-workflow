@@ -27,7 +27,7 @@ resolution.
    * - Amazon Web Services Parallel Works
      - C48
      - ``ATM``
-     - ``c4.8xlarge (36 vCPUs, 60 GB Memory, amd64)``
+     - ``c5.9xlarge (36 vCPUs, 72 GB Memory, amd64)``
      - ``compute``
      - ``/lustre``
 
@@ -42,19 +42,19 @@ Log in to the `NOAA CSP <http://noaa.parallel.works/login>`_ and into
 the resources configuration. The user should arrive at the following
 screen.
 
-.. image:: _static/noaacsp_login.png
-
 Note that the ``Username or email`` query is case-sensitive. The user
-will then be promoted for their respective RSA token key using the
-same application that is used for the other RDHPCS machines (i.e.,
-Hera, Jet, etc.,).
+will then be prompted for their respective RSA token key using the
+same application use for the other RDHPCS machines (i.e., Hera, Jet,
+etc.,).
+
+.. image:: _static/noaacsp_login.png
 
 *******************************
 Configure the NOAA CSP Instance
 *******************************
 
 Once logged into the NOAA CSP, navigate to the :red-text:`RESOURCES` section
-and click the ``+ Add Resource`` button in the upper-right corner.  as
+and click the ``+ Add Resource`` button in the upper-right corner as
 illustrated below.
 
 .. image:: _static/noaacsp_instance_1.png
@@ -104,46 +104,48 @@ configuration attributes are as follows.
 
 - Availability zone;
 - Disk size and storage type(s);
-- Available compute and resource partitions;
+- Available compute and resource partitions.
+
+The following image describes the general settings for the respective
+cluster. These attributes are specific to the user and the respective
+user's group allocation. The right-most panel provides a breakdown of
+the costs related to the requested compute and storage resources. In
+addition to specifying the ``Resource Account`` and ``Group``
+attributes, the user may optionally provide the public RSA token which
+can be found beneath ``~/.ssh/id_rsa.pub``. This will allow the user
+to login from their host rather than requiring them to use the
+Parallel Works terminal.
 
 .. image:: _static/noaacsp_cluster_2.png
-
-The above image describes the general settings for the respective
-cluster. These attributes are specific to the user and the user's
-respective group allocation. The right-most panel provides a breakdown
-of the costs related to the requested compute and storage
-resources. In addition to specifying the ``Resource Account`` and
-``Group`` attributes, the user may optionally provide the public RSA
-token which can be found beneath ``~/.ssh/id_rsa.pub``. This will
-allow the user to login via their host terminal rather than requiring
-them to use the Parallel Works terminal.
-
-.. image:: _static/noaacsp_cluster_3.png
 	   
-The above image describes the controller settings for a cluster
+The following image describes the controller settings for a cluster
 created for a C48 atmosphere forecast-only configuration. Here the
 user must define the instance type (see the table above), the number
 of image disks and the image disk sizes.
 
-.. image:: _static/noaacsp_cluster_4.png
+.. image:: _static/noaacsp_cluster_3.png
 
 Next the partitions for the cluster may be defined. A partition
 configuration for the aforementioned C48 atmosphere forecast-only
-application is illustrated in the figure above. Note that instance
+application is illustrated in the figure below. Note that the instance
 type beneath ``Controller Settings`` and ``Partitions`` must be
 identical. Other configurations are not supported by the
-global-workflow team. Once the partitions are configured, click the ``+
-Add Partition`` button in the upper-right corner.
+global-workflow team. Once the partitions are configured, click the
+``+ Add Partition`` button in the upper-right corner.
+
+.. image:: _static/noaacsp_cluster_4.png
+
+For the storage do be allocated for the global-workflow application it
+is suggested that the ``Mount Point`` be ``/lustre``. Once the storage
+has been configured, click the ``+ Add Attached Storage`` button in
+the upper-right corner. This is illustrated in the following image.
 
 .. image:: _static/noaacsp_cluster_5.png
 
-Finally the storage for the global-workflow application. It is
-suggested that the ``Mount Point`` be ``/lustre``. Once the storage
-has been configured, click the ``+ Add Attached Storage`` button in
-the upper-right corner. The following illustrates a JSON version of
-the cluster configuration created from the steps above. When opening
-issues related to the NOAA CSP global-workflow applications please
-include the JSON content.
+Finally, the following illustrates a JSON version of the cluster
+configuration created from the steps above. When opening issues
+related to the NOAA CSP global-workflow applications please include
+the JSON content.
 
 .. image:: _static/noaacsp_cluster_6.png
 
@@ -151,16 +153,19 @@ include the JSON content.
 Using the NOAA CSP Cluster
 **************************
 
-.. image:: _static/noaacsp_using_1.png
-
 To activate the cluster, click the button circled in
 :red-text:red. The cluster status is denoted by the color-coded button
 on the right. The amount of time required to start the cluster is
-variable and not immediate. For instances where NOAA CSP clusters do
-not initialize, useful output can be found beneath the ``Provision``
-tab beneath the ``Logs`` section as illustrated below. Once again,
-when opening issues related to the NOAA CSP cluster initialization
-please include this information.
+variable and not immediate and may take several minutes for the
+cluster to become.
+
+.. image:: _static/noaacsp_using_1.png
+
+For instances where a NOAA CSP cluster does not initialize, useful
+output can be found beneath the ``Logs`` section beneath the
+``Provision`` tab as illustrated below. Once again, when opening
+issues related to the NOAA CSP cluster initialization please include
+this information.
 
 .. image:: _static/noaacsp_using_2.png
 
@@ -169,13 +174,13 @@ Running the Global Workflow
 ***************************
 
 The global-workflow configuration currently requires that all initial
-conditions, observations, fixed-files, are staged in the appropriate
-paths prior to running the global-workflow. As suggested above, it is
-strongly recommended the the user configure their respective
-experiments to use the ``/lustre`` file system for the ``EXPDIR`` and
-``ROTDIR`` contents. The ``/contrib`` file system is suitable for
-compiling and linking the workflow components required of the
-global-workflow.
+conditions, observations, and fixed-files, are staged in the
+appropriate paths prior to running the global-workflow. As suggested
+above, it is strongly recommended the the user configure their
+respective experiments to use the ``/lustre`` file system for the
+``EXPDIR`` and ``ROTDIR`` contents. The ``/contrib`` file system is
+suitable for compiling and linking the workflow components required of
+the global-workflow.
 
 The software stack supporting the ``develop`` branch of the
 global-workflow is provided for the user and is located beneath
@@ -200,3 +205,6 @@ as those for the RDHPCS on-premise hosts.
 
 ### TODO: Update _static/noaacsp_instance_1.png such that black boxes
 are aligned.
+
+### TODO: Update image `_static/noaacsp_cluster_4.png` such that
+correct instance is used.
