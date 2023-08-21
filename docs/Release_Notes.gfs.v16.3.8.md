@@ -6,6 +6,8 @@ PRELUDE
 
 This change turns of ingest of NOAA-21 radiances into the GSI until CRTM fix file issues can be solved.  This is necessary for a satingest upgrade to proceed.  PlanetIQ GPSRO and NOAA-20 OMPS Ozone retrievals will also be actively assimilated, and the OMPS observation errors adjusted.
 
+Also included in this update is a fix to a compilation error with "-check all" for gfs_bufrsnd, which resolves NCO bugzilla #1208.
+
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
 
@@ -56,7 +58,7 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.7
+* Compilation error fix in sorc/gfs_bufr.fd/meteorg.f, resolves NCO bugzilla #1208
 
 JOBS CHANGES
 ------------
@@ -127,3 +129,4 @@ PREPARED BY
 Kate.Friedman@noaa.gov
 Andrew.Collard@noaa.gov
 Iliana.Genkova@noaa.gov
+Walter.Kolczynski@noaa.gov
