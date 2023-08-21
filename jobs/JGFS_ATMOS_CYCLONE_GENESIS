@@ -4,9 +4,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 
 
-# TODO (#1220) Determine if this is still needed
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
 ##############################################
 # Set variables used in the exglobal script
 ##############################################

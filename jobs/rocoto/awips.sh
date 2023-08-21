@@ -5,7 +5,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 ###############################################################
 ## Abstract:
 ## Inline awips driver script
-## RUN_ENVIR : runtime environment (emc | nco)
 ## HOMEgfs   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
@@ -49,7 +48,7 @@ for fhr in ${fhrlst}; do
             export fcsthrs=${fhr3}
             ${AWIPS20SH}
         fi
-    
+
         if ((fhr % 6 == 0)); then
             ${AWIPSG2SH}
         fi
@@ -57,9 +56,9 @@ for fhr in ${fhrlst}; do
 
     fhmin=90
     fhmax=240
-    if (( fhr >= fhmin && fhr <= fhmax )); then    
+    if (( fhr >= fhmin && fhr <= fhmax )); then
         if ((fhr % 6 == 0)); then
-            fhr3=$(printf %03i $((10#${fhr})))            
+            fhr3=$(printf %03i $((10#${fhr})))
             export fcsthrs=${fhr3}
             ${AWIPS20SH}
             ${AWIPSG2SH}
