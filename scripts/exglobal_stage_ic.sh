@@ -2,28 +2,18 @@ c! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
 
+error_message(){
+    echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
+}
 
-# start staging
-
-source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
 
 GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
-source "${HOMEgfs}/ush/file_utils.sh"
-
-# Utilities 
-export NCP=${NCP:-"/bin/cp"}
-export NMV=${NMV:-"/bin/mv"}
-export NLN=${NLN:-"/bin/ln -sf"}
 # Initialize return code
 err=0
-
-error_message(){
-    echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
-}
 
 ###############################################################
 # Stage the FV3 initial conditions to ROTDIR (cold start)
