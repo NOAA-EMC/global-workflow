@@ -210,7 +210,7 @@ FV3_predet(){
       done
     done
     for file in ${files}; do
-      ${NLN} "${COM_ATMOS_RESTART}/${file}" "${COM_ATMOS_RESTART}/${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${file}"
+      ${NLN} "${file}" "${COM_ATMOS_RESTART}/${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${file}"
     done
   else
     mkdir -p "${DATA}/RESTART"
