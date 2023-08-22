@@ -1,7 +1,7 @@
 <!-- PLEASE READ -->
 <!-- Any PRs not following this template will be closed -->
 <!--
-    Please use a short (<54 char), descriptive title above. It should complete the sentence "If merged, this PR will _____". Capitalize the first word and do not end with a period.
+    Please use a short (<60 char), descriptive title above. It should complete the sentence "If merged, this PR will _____". Capitalize the first word and do not end with a period.
 
     PRs should meet these guidelines:
     - Each PR should address ONE topic and have an associated issue.
@@ -17,18 +17,21 @@
 
   Describe your changes. Focus on the *what* and *why*. The *how* will be evident from the changes. In particular, be sure to note any interface changes, such as command line syntax, that will need to be communicated to users.
 
-  At the end of your description, please be sure to add the issue this PR solves using the word "Resolves". If there are any issues that are related but not resolved, you can use "Refs".
+  At the end of your description, please be sure to add the issue this PR solves using the word "Resolves". If there are any issues that are related but not yet resolved (including in other repos), you may use "Refs".
 
   Resolves #1234
-  Refs #5678
+  Refs #4321
+  Refs NOAA-EMC/repo#5678
 -->
 
-
 # Type of change
-<!-- Delete those that do not apply -->
+<!-- Delete all except one -->
 - Bug fix (fixes something broken)
 - New feature (adds functionality)
 - Maintenance (code refactor, clean-up, new CI test, etc.)
+
+# Change characteristics
+<!-- Delete any that do not apply -->
 - Breaking change (causes a change in existing functionality)
 - This change requires a documentation update (please include it in the PR)
 
@@ -49,12 +52,3 @@ Example:
 - [ ] My changes generate no new warnings
 - [ ] New and existing tests pass with my changes
 - [ ] I have made corresponding changes to the documentation if necessary
-
-
-
-
-
-
-
-
-
