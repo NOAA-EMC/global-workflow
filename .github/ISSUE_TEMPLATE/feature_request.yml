@@ -1,0 +1,55 @@
+name: Feature request
+description: Request new capability
+labels: ["feature", "triage"]
+
+body:
+	- type: markdown
+    attributes:
+      value: |
+        *If your issue falls into one of the follow categories, please go back and use the appropriate template:*
+        - Something is wrong or broken
+        - It is a request from NCO
+        - It is initiating a production update
+        - Files need to be updated or added to fix
+
+        Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) to make sure the feature has not already been requested to avoid duplicates.
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: What new functionality do you need?
+      placeholder: Provide a consise description of the problem to be addressed by this feature request. Please be clear what parts of the problem are considered to be in-scope and out-of-scope
+    validations:
+      required: true
+  
+  - type: textarea
+    id: requirements
+    attributes:
+      label: What are the requirements for the new functionality?
+    validations:
+      required: true
+  
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance Criteria
+      placeholder: What does it mean for this issue to be complete?
+    validations:
+      required: true
+  
+  - type: textarea
+    id: suggested_solution
+    attributes:
+      label: Suggest a solution (optional)
+      placeholder: |
+        Propose how this issue can be resolved.
+
+        Things to address include:
+          * Details of the technical implementation
+          * Tradeoffs made in design decisions
+          * Caveats and considerations for the future
+
+          If there are multiple solutions, please present each one separately. Save comparisons for the very end.)"
+    validations:
+      required: false
+  

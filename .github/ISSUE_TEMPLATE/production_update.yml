@@ -1,0 +1,47 @@
+name: Production Update
+description: Begin the process of an operational production update
+labels: ["production update", "triage"]
+assignees:
+  - WalterKolczynski-NOAA
+  - KateFriedman-NOAA
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a concise description of the production update.
+      placeholder: Include related issues in component repositories.
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Target version
+      description: What is the target GFS version?
+      placeholder: Use v#.#.# format
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: Expected workflow changes
+      description: What are the anticipated changes coming into the workflow?
+      placeholder: Include version variables, checkout tags, config/parm, etc.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ** Tasks **
+        - [ ] Create release branch
+        - [ ] Make workflow changes for upgrade in release branch (add additional checklist items as needed)
+        - [ ] Create release notes
+        - [ ] Cut hand-off tag for CDF
+        - [ ] Submit CDF to NCO
+        - [ ] Implementation into operations complete
+        - [ ] Merge release branch into operational branch
+        - [ ] Cut version tag from operational branch
+        - [ ] Release new version tag
+        - [ ] Announce to users
+        - [ ] Update Read-The-Docs operations status version in develop
