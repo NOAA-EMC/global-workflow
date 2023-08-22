@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+c! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
 
@@ -13,6 +13,11 @@ gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
 source "${HOMEgfs}/ush/file_utils.sh"
+
+# Utilities 
+export NCP=${NCP:-"/bin/cp"}
+export NMV=${NMV:-"/bin/mv"}
+export NLN=${NLN:-"/bin/ln -sf"}
 # Initialize return code
 err=0
 
@@ -28,10 +33,14 @@ YMD=${PDY} HH=${cyc} generate_com -r COM_STAGE_IC
 [[ ! -d "${COM_STAGE_IC}" ]] && mkdir -p "${COM_STAGE_IC}"
 
 # copying IC files from /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500/gefs.20210323 ${COMROT}/${PSLOT}/gefs.20210323
+# Shall I use cp command to copy ic files from source to destinations?
+source "${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/"
+target="${COM_STAGE_IC}/${COMROT}/${PSLOT}/gefs.20210323"
+${NCP} "${source}" "${target}"
+rc=$?
+[[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+err=$((err + rc))
 
-cp as  "" ""
-
-source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/gfs_ctrl.nc"
 
 
 # Stage the FV3 initial conditions to ROTDIR (cold start)
@@ -123,4 +132,4 @@ fi
 
 ##############################################################
 # Exit cleanly
-exit "${err}"
+exir "${err}"
