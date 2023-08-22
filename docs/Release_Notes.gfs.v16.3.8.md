@@ -8,6 +8,8 @@ This change turns of ingest of NOAA-21 radiances into the GSI until CRTM fix fil
 
 Also included in this update is a fix to a compilation error with "-check all" for gfs_bufrsnd, which resolves NCO bugzilla #1208.
 
+Remove NEMSIOGFS dependency in sorc/build_tropcy_NEMS.sh.
+
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
 
@@ -74,6 +76,7 @@ SCRIPT CHANGES
 --------------
 
 * Changes to sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh and sorc/checkout.sh
+* Change to sorc/build_tropcy_NEMS.sh
 
 FIX CHANGES
 -----------
@@ -84,7 +87,7 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.7
+* Remove nemsiogfs from modulefiles/modulefile.storm_reloc_v6.0.0.wcoss2.lua
 
 CHANGES TO FILE SIZES
 ---------------------
