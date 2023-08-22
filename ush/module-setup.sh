@@ -15,7 +15,9 @@ elif [[ ${MACHINE_ID} = hera* ]] ; then
         source /apps/lmod/lmod/init/bash
     fi
     export LMOD_SYSTEM_DEFAULT_MODULES=contrib
+    set +u
     module reset
+    set -u
 
 elif [[ ${MACHINE_ID} = orion* ]] ; then
     # We are on Orion
@@ -23,7 +25,9 @@ elif [[ ${MACHINE_ID} = orion* ]] ; then
         source /apps/lmod/init/bash
     fi
     export LMOD_SYSTEM_DEFAULT_MODULES=contrib
+    set +u
     module reset
+    set -u
 
 elif [[ ${MACHINE_ID} = s4* ]] ; then
     # We are on SSEC Wisconsin S4

@@ -5,7 +5,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 ###############################################################
 ## Abstract:
 ## Inline METplus verification and diagnostics driver script
-## RUN_ENVIR : runtime environment (emc | nco)
 ## HOMEgfs   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
