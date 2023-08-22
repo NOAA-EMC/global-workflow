@@ -6,11 +6,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        *If your issue falls into one of the follow categories, please go back and use the appropriate template:*
+        If your issue falls into one of the follow categories, please go back and use the appropriate template:
         - Something is wrong or broken
         - It is a request from NCO
         - It is initiating a production update
         - Files need to be updated or added to fix
+
 
         Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) to make sure the feature has not already been requested to avoid duplicates.
   
