@@ -74,7 +74,7 @@ body:
         Please provide a path to the data on either Hera or WCOSS.
 
         If this requires a version update, please provide the *entire* directory, including unchanged files from current fix.
-      placeholder: /path/to/new/fix
+      placeholder: "/path/to/new/fix"
     validations:
       required: true
 

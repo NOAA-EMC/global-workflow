@@ -10,6 +10,7 @@ body:
       value: |
         Your bug may already be reported!
         Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) before creating one.
+
   - type: textarea
     id: current_behavior
     attributes:
@@ -21,6 +22,7 @@ body:
         For any longer logs, please create a GitHub gist (https://gist.github.com/) and link it here.
     validations:
       required: true
+
   - type: textarea
     id: expected_behavior
     attributes:
@@ -28,6 +30,7 @@ body:
       placeholder: Describe what you expected to happen.
     validations:
       required: true
+
   - type: textarea
     id: reproduction_steps
     attributes:
@@ -39,12 +42,14 @@ body:
         3.
     validations:
       required: true
+
   - type: input
     id: bugzilla
     attributes:
       label: Bugzilla issue
       description: What is the corresponding NCO bugzilla issue number?
       placeholder: "#..."
+
   - type: textarea
     id: description
     attributes:
@@ -52,6 +57,7 @@ body:
       description: Provide context or any additional information about the bug.
     validations:
       required: true
+
   - type: textarea
     id: propsed_implementation
     attributes:

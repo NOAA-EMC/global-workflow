@@ -14,6 +14,7 @@ body:
       placeholder: Include related issues in component repositories.
     validations:
       required: true
+
   - type: input
     id: target
     attributes:
@@ -22,6 +23,7 @@ body:
       placeholder: Use v#.#.# format
     validations:
       required: true
+
   - type: textarea
     id: changes
     attributes:
@@ -30,6 +32,7 @@ body:
       placeholder: Include version variables, checkout tags, config/parm, etc.
     validations:
       required: true
+
   - type: markdown
     attributes:
       value: |

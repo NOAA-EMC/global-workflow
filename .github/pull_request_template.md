@@ -31,9 +31,8 @@
 - Maintenance (code refactor, clean-up, new CI test, etc.)
 
 # Change characteristics
-<!-- Delete any that do not apply -->
-- Breaking change (causes a change in existing functionality)
-- This change requires a documentation update (please include it in the PR)
+- Is this a breaking change (a change in existing functionality)? YES/NO
+- Does this change require a documentation update? YES/NO
 
 # How has this been tested?
 <!-- Please list any test you conducted, including the machine.
