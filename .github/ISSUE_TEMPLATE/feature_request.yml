@@ -3,7 +3,7 @@ description: Request new capability
 labels: ["feature", "triage"]
 
 body:
-	- type: markdown
+  - type: markdown
     attributes:
       value: |
         *If your issue falls into one of the follow categories, please go back and use the appropriate template:*
@@ -52,4 +52,3 @@ body:
           If there are multiple solutions, please present each one separately. Save comparisons for the very end.)"
     validations:
       required: false
-  

@@ -2,8 +2,8 @@ name: Fix File Update
 description: Request fix files be added or updated
 labels: ["Fix Files", "triage"]
 assignees:
-  -KateFriedman-NOAA
-  -WalterKolczynski-NOAA
+  - KateFriedman-NOAA
+  - WalterKolczynski-NOAA
 
 body:
   - type: dropdown
@@ -88,7 +88,7 @@ body:
 
   - type: markdown
     value: |
-      **Tasks**
+      # Tasks
       - [ ] Discuss needs with global-workflow developer assigned to request.
       - [ ] Add/update/remove fix file(s) in fix sets on supported platforms (global-workflow assignee task).
       - [ ] Update "Fix File Management" spreadsheet (https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing).
