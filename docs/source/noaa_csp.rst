@@ -184,14 +184,14 @@ the global-workflow.
 
 The software stack supporting the ``develop`` branch of the
 global-workflow is provided for the user and is located beneath
-``/contrib/workflow/spack-stack``. The modules required for the
+``/contrib/global-workflow/spack-stack``. The modules required for the
 global-workflow execution may be loaded as follows.
 
 .. code-block:: bash
 
    user@host:$ module unuse /opt/cray/craype/default/modulefiles
    user@host:$ module unuse /opt/cray/modulefiles
-   user@host:$ module use –a /contrib/global-workflow/spack-stack/miniconda/modulefiles/miniconda
+   user@host:$ module use /contrib/global-workflow/spack-stack/miniconda/modulefiles/miniconda
    user@host:$ module load py39_4.12.0
    user@host:$ module load rocoto/1.3.3
 
@@ -199,12 +199,3 @@ The execution of the global-workflow should now follow the same steps
 as those for the RDHPCS on-premise hosts.
 
 
-### TODO: Update all images such that the margins are identical.
-
-### TODO: Link table.
-
-### TODO: Update _static/noaacsp_instance_1.png such that black boxes
-are aligned.
-
-### TODO: Update image `_static/noaacsp_cluster_4.png` such that
-correct instance is used.
