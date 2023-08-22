@@ -110,11 +110,7 @@ The following image describes the general settings for the respective
 cluster. These attributes are specific to the user and the respective
 user's group allocation. The right-most panel provides a breakdown of
 the costs related to the requested compute and storage resources. In
-addition to specifying the ``Resource Account`` and ``Group``
-attributes, the user may optionally provide the public RSA token which
-can be found beneath ``~/.ssh/id_rsa.pub``. This will allow the user
-to login from their host rather than requiring them to use the
-Parallel Works terminal.
+addition.
 
 .. image:: _static/noaacsp_cluster_2.png
 	   
