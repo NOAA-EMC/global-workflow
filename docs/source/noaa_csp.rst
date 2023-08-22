@@ -109,8 +109,11 @@ configuration attributes are as follows.
 The following image describes the general settings for the respective
 cluster. These attributes are specific to the user and the respective
 user's group allocation. The right-most panel provides a breakdown of
-the costs related to the requested compute and storage resources. In
-addition.
+the costs related to the requested compute and storage
+resources. While there is a space to place an SSH key here, RDHPCS
+recommends adding any SSH keys under the respective user's
+``Account➡Authentication instead``. This will allow you to connect
+from another machine instead of using the Parallel Works web terminal.
 
 .. image:: _static/noaacsp_cluster_2.png
 	   
