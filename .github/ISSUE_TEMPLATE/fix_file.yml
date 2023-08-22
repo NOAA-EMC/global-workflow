@@ -1,6 +1,9 @@
 name: Fix File Update
 description: Request fix files be added or updated
 labels: ["Fix Files", "triage"]
+assignees:
+  -KateFriedman-NOAA
+  -WalterKolczynski-NOAA
 
 body:
   - type: dropdown
