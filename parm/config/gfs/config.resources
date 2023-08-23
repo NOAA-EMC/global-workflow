@@ -9,7 +9,7 @@ if [[ $# -ne 1 ]]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "coupled_ic aerosol_init"
-    echo "prep preplandobs"
+    echo "prep preplandobs prepiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl"
@@ -72,6 +72,14 @@ elif [[ "${step}" = "preplandobs" ]]; then
     export nth_preplandobs=1
     npe_node_preplandobs=1
     export npe_node_preplandobs
+
+elif [[ "${step}" = "prepiodaobs" ]]; then
+    export wtime_prepiodaobs="00:05:00"
+    npe_prepiodaobs=1
+    export npe_prepiodaobs
+    export nth_prepiodaobs=1
+    npe_node_prepiodaobs=1
+    export npe_node_prepiodaobs
 
 elif [[ "${step}" = "aerosol_init" ]]; then
     export wtime_aerosol_init="00:05:00"

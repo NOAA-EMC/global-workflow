@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.prepiodaobs ##########
+# Atm Obs Prep specific
+
+echo "BEGIN: config.prepiodaobs"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" prepiodaobs
+
+export BUFR2IODASH="${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.sh"
+export IODAPARM="${HOMEgfs}/sorc/gdas.cd/parm/ioda/bufr2ioda"
+
+echo "END: config.prepiodaobs"

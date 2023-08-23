@@ -12,7 +12,7 @@ class Tasks:
     SERVICE_TASKS = ['arch', 'earc']
     VALID_TASKS = ['aerosol_init', 'coupled_ic',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch',
-                   'atmanlinit', 'atmanlrun', 'atmanlfinal',
+                   'prepiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
