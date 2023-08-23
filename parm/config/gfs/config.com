@@ -48,6 +48,7 @@ COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
 
 declare -rx COM_TOP_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
 
+declare -rx COM_CONF_TMPL=${COM_BASE}'/conf'
 declare -rx COM_ATMOS_INPUT_TMPL=${COM_BASE}'/model_data/atmos/input'
 declare -rx COM_ATMOS_RESTART_TMPL=${COM_BASE}'/model_data/atmos/restart'
 declare -rx COM_ATMOS_ANALYSIS_TMPL=${COM_BASE}'/analysis/atmos'
