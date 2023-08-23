@@ -1,109 +1,107 @@
 #! /usr/bin/env bash
 
-# this script generates 0.25/0.5/1/2.5 deg pgb files for each small Grib file
-# Hui-Ya Chuang 01/2014: First Version
-# Fanglin Yang  09/2015: Modified to use WGRIB2 instead of COPYGB2 for interpolation
-# Fanglin Yang  02/2016: remove 0.5-deg and 2.5deg output to speed up post            
-# Fanglin Yang  09/11/2017: add option opt24 to turn on bitmap (from Wen Meng) 
-# Wen Meng 12/2017: add trim_rh.sh for triming RH values larger than 100.
-# Wen Meng 01/2018: add flag PGB1F for turning on/off wgrib1 pgb data at 1.00 deg. generation.
-# Wen Meng 02/2018: add flag PGBS for turning on/off pgb data at 1.0 and 0.5 deg. generation.
-# Wen Meng 10/2019: Use bilinear interpolation for LAND, It can trancate land-sea mask as 0 or 1.
-# Wen Meng 11/2019: Teak sea ice cover via land-sea mask.
+# This script takes in a master grib file and creates products at various interpolated resolutions
+# Generate 0.25 / 0.5 / 1 degree interpolated grib2 files for each input grib2 file
+# Also generate 1 degree grib1 file fox XYZ TODO: who?
+# trim's RH and tweaks sea-ice cover
 
-source "$HOMEgfs/ush/preamble.sh"
 
-export tmpfile=$1
-export fhr3=$2
-export iproc=$3
-export nset=$4
+source "${HOMEgfs}/ush/preamble.sh"
 
-export CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
-export COPYGB2=${COPYGB2:-${grib_util_ROOT}/bin/copygb}
-export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
-export MODICEC=${MODICEC:-$USHgfs/mod_icec.sh}
+input_file=${1:-"pgb2file_in"}  # Input pressure grib2 file
+output_file_prefix=${2:-"pgb2file_out"}  # Prefix for output grib2 file; the prefix is appended by resolution e.g. _0p25
+nset=${3:-"1"}  # 1st or 2nd downstream set.
 
-export opt1=' -set_grib_type same -new_grid_winds earth '
-export opt21=' -new_grid_interpolation bilinear  -if '
-export opt22=":(CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
-export opt23=' -new_grid_interpolation neighbor -fi '
-export opt24=' -set_bitmap 1 -set_grib_max_bits 16 -if '
-export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
-export opt26=' -set_grib_max_bits 25 -fi -if '
-export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
-export opt28=' -new_grid_interpolation budget -fi '
-if [ $machine = "S4" ]; then
-  export optncpu=' -ncpu 1 '
+CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
+WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
+
+PGBS=${PGBS:-"NO"}  # Supplemental 1/2-degree and 1-degree products
+PGB1F=${PGB1F:-"NO"}  # Supplementary 1-degree grib1 product for XYZ TODO: who?
+
+# wgrib2 options for regridding
+defaults="-set_grib_type same -set_bitmap 1 -set_grib_max_bits 16"
+interp_winds="-new_grid_winds earth"
+interp_bilinear="-new_grid_interpolation bilinear"
+interp_neighbor="-if :(CSNOW|CRAIN|CFRZR|CICEP|ICSEV): -new_grid_interpolation neighbor -fi"
+interp_budget="-if :(APCP|ACPCP|PRATE|CPRAT|DZDT): -new_grid_interpolation budget -fi"
+max_bits="-if :(APCP|ACPCP|PRATE|CPRAT): -set_grib_max_bits 25 -fi"
+
+# interpolated target grids
+grid0p25="latlon 0:1440:0.25 90:721:-0.25"
+grid0p5="latlon 0:720:0.5 90:361:-0.5"
+grid1p0="latlon 0:360:1.0 90:181:-1.0"
+
+# Functions used in this script
+function trim_rh() {
+  # trim RH values larger than 100.
+  local filename=$1
+  ${WGRIB2} "${filename}" \
+        -not_if ':RH:' -grib "${filename}.new" \
+        -if ':RH:' -rpn "10:*:0.5:+:floor:1000:min:10:/" -set_grib_type same \
+        -set_scaling -1 0 -grib_out "${filename}.new"
+  rc=$?
+  if (( rc == 0 )); then mv "${filename}.new" "${filename}"; fi
+  return "${rc}"
+}
+
+function mod_icec() {
+  # modify icec based on land-sea mask
+  local filename=$1
+  ${WGRIB2} "${filename}" \
+          -if 'LAND' -rpn 'sto_1' -fi \
+          -if 'ICEC' -rpn 'rcl_1:0:==:*' -fi \
+          -set_grib_type same \
+          -set_scaling same same \
+          -grib_out "${filename}.new"
+  rc=$?
+  if (( rc == 0 )); then mv "${filename}.new" "${filename}"; fi
+  return "${rc}"
+}
+
+output_grids="-new_grid ${grid0p25} ${output_file_prefix}_0p25"
+# Create additional 1/2-degree and 1-degree grib2 products
+if [[ "${PGBS}" = "YES" ]]; then
+  output_grids="${output_grids} -new_grid ${grid0p5} ${output_file_prefix}_0p5 -new_grid ${grid1p0} ${output_file_prefix}_1p0"
 fi
-export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
-export grid0p5="latlon 0:720:0.5 90:361:-0.5"
-export grid1p0="latlon 0:360:1.0 90:181:-1.0"
-export grid2p5="latlon 0:144:2.5 90:73:-2.5"
 
-export PGB1F=${PGB1F:-"NO"}
-export PGBS=${PGBS:-"NO"}
-optncpu=${optncpu:-}
+${WGRIB2} "${input_file}" ${defaults} \
+                          ${interp_winds} \
+                          ${interp_bilinear} \
+                          ${interp_neighbor} \
+                          ${interp_budget} \
+                          ${max_bits} \
+                          ${output_grids}
+export err=$?; err_chk
+trim_rh "${output_file_prefix}_0p25"; export err=$?; err_chk
 
-if [ $nset = 1 ]; then
-  if [ "$PGBS" = "YES" ]; then
-    $WGRIB2 $optncpu $tmpfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 \
-      -new_grid $grid0p25 pgb2file_${fhr3}_${iproc}_0p25 \
-      -new_grid $grid1p0  pgb2file_${fhr3}_${iproc}_1p0  \
-      -new_grid $grid0p5  pgb2file_${fhr3}_${iproc}_0p5   
-    export err=$?; err_chk
-    $TRIMRH pgb2file_${fhr3}_${iproc}_0p25
-    $TRIMRH pgb2file_${fhr3}_${iproc}_0p5
-    $TRIMRH pgb2file_${fhr3}_${iproc}_1p0
-    #tweak sea ice cover 
-    count=$($WGRIB2 $optncpu pgb2file_${fhr3}_${iproc}_0p25 -match "LAND|ICEC" |wc -l)
-    if [ $count -eq 2 ]; then
-      $MODICEC pgb2file_${fhr3}_${iproc}_0p25
-      $MODICEC pgb2file_${fhr3}_${iproc}_0p5
-      $MODICEC pgb2file_${fhr3}_${iproc}_1p0
+if [[ "${PGBS}" = "YES" ]]; then
+  trim_rh "${output_file_prefix}_0p5"; export err=$?; err_chk
+  trim_rh "${output_file_prefix}_1p0"; export err=$?; err_chk
+fi
+
+# tweak sea ice cover if this is the first product dataset (pgb2a)
+if (( nset == 1 )); then
+  # shellcheck disable=SC2312
+  count=$(${WGRIB2} "${output_file_prefix}"_0p25 -match "LAND|ICEC" | wc -l)
+  if (( count == 2 )); then
+    mod_icec "${output_file_prefix}_0p25"; export err=$?; err_chk
+  fi
+  if [[ "${PGBS}" = "YES" ]]; then
+    if (( count == 2 )); then
+      mod_icec "${output_file_prefix}_0p5"; export err=$?; err_chk
+      mod_icec "${output_file_prefix}_1p0"; export err=$?; err_chk
     fi
-    #$CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_0p25 pgbfile_${fhr3}_${iproc}_0p25          
-    if [ "$PGB1F" = 'YES' ]; then
-      $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_1p0 pgbfile_${fhr3}_${iproc}_1p0  
+  fi
+fi
+
+# Create supplemental 1-degree grib1 output for XYZ TODO: who needs 1-degree grib1 product?
+if (( nset == 1 )); then
+  if [[ "${PGBS}" = "YES" ]]; then
+    if [[ "${PGB1F}" = "YES" ]]; then
+      ${CNVGRIB} -g21 "${output_file_prefix}_1p0" "${output_file_prefix/pgb2/pgb}_1p0"
       export err=$?; err_chk
     fi
-  else
-    $WGRIB2 $optncpu $tmpfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 \
-    -new_grid $grid0p25 pgb2file_${fhr3}_${iproc}_0p25 
-    export err=$?; err_chk
-    $TRIMRH pgb2file_${fhr3}_${iproc}_0p25
-    #tweak sea ice cover
-    count=$($WGRIB2 $optncpu pgb2file_${fhr3}_${iproc}_0p25 -match "LAND|ICEC" |wc -l)
-    if [ $count -eq 2 ]; then
-      $MODICEC pgb2file_${fhr3}_${iproc}_0p25 
-    fi
-  fi
-elif [ $nset = 2 ]; then
-  if [ "$PGBS" = "YES" ]; then
-    $WGRIB2 $optncpu $tmpfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 \
-      -new_grid $grid0p25 pgb2bfile_${fhr3}_${iproc}_0p25 \
-      -new_grid $grid1p0  pgb2bfile_${fhr3}_${iproc}_1p0  \
-      -new_grid $grid0p5  pgb2bfile_${fhr3}_${iproc}_0p5  
-    export err=$?; err_chk
-    $TRIMRH pgb2bfile_${fhr3}_${iproc}_0p25
-    $TRIMRH pgb2bfile_${fhr3}_${iproc}_0p5
-    $TRIMRH pgb2bfile_${fhr3}_${iproc}_1p0
-  else 
-    $WGRIB2 $optncpu $tmpfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 \
-    -new_grid $grid0p25 pgb2bfile_${fhr3}_${iproc}_0p25
-    export err=$?; err_chk
-    $TRIMRH pgb2bfile_${fhr3}_${iproc}_0p25
   fi
 fi
 
-#----------------------------------------------------------------------------------------------
-#--Hui-Ya Chuang
-# export grid1p0="0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0"
-# $COPYGB2 -g "${grid1p0}" -i0 -x tmpfile_${FH}_${iproc} pgb2file_${FH}_${iproc}_1p0
-# export grid0p5="0 6 0 0 0 0 0 0 720 361 0 0 90000000 0 48 -90000000 359500000 500000 500000 0"
-# $COPYGB2 -g "${grid0p5}" -i0 -x tmpfile_${FH}_${iproc} pgb2file_${FH}_${iproc}_0p5
-# export grid2p5="0 6 0 0 0 0 0 0 144 73 0 0 90000000 0 48 -90000000 357500000 2500000 2500000 0"
-# $COPYGB2 -g "${grid2p5}" -i0 -x tmpfile_${FH}_${iproc} pgb2file_${FH}_${iproc}_2p5
-# $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_1p0 pgbfile_${fhr3}_${iproc}_1p0          
-# $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_2p5 pgbfile_${fhr3}_${iproc}_2p5 
-#----------------------------------------------------------------------------------------------
+exit 0
