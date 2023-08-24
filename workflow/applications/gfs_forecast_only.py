@@ -29,6 +29,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if self.do_atm and self.do_metp:
             configs += ['metp']
 
+        if self.do_bufrsnd:
+            configs += ['postsnd']
+
         if self.do_gempak:
             configs += ['gempak']
 

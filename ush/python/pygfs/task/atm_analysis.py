@@ -73,19 +73,30 @@ class AtmAnalysis(Analysis):
         # stage CRTM fix files
         crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_crtm_coeff.yaml')
         logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
-        crtm_fix_list = parse_yamltmpl(crtm_fix_list_path, self.task_config)
+        crtm_fix_list = parse_j2yaml(crtm_fix_list_path, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
         jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_jedi_fix.yaml')
         logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
-        jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
+        jedi_fix_list = parse_j2yaml(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
-        # stage berror files
-        # copy static background error files, otherwise it will assume ID matrix
+        # stage static background error files, otherwise it will assume ID matrix
         logger.debug(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
         FileHandler(self.get_berror_dict(self.task_config)).sync()
+
+        # stage ensemble files for use in hybrid background error
+        if self.task_config.DOHYBVAR:
+            logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
+            localconf = AttrDict()
+            keys = ['COM_ATMOS_RESTART_TMPL', 'previous_cycle', 'ROTDIR', 'RUN',
+                    'NMEM_ENS', 'DATA', 'current_cycle', 'ntiles']
+            for key in keys:
+                localconf[key] = self.task_config[key]
+            localconf.RUN = 'enkf' + self.task_config.RUN
+            localconf.dirname = 'ens'
+            FileHandler(self.get_fv3ens_dict(localconf)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config))).sync()
