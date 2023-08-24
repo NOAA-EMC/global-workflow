@@ -20,8 +20,8 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_BUFR COM_ATMO
   COM_WAVE_GRID COM_WAVE_HISTORY COM_WAVE_STATION
 
 for grid in "0p25" "0p50" "1p00"; do
-  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_TMPL"
-  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_OCEAN_GRIB_${grid}:COM_OCEAN_GRIB_TMPL"
+  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_OCEAN_GRIB_${grid}:COM_OCEAN_GRIB_GRID_TMPL"
 done
 
 ###############################################################
