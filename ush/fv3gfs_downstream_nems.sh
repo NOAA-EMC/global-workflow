@@ -2,35 +2,41 @@
 
 source "${HOMEgfs}/ush/preamble.sh" "${FH}"
 
+# Programs used
 export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 export CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
 export GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
 
-downset=${downset:-1}
-DATA=${DATA:-/ptmpd2/${LOGNAME}/test}
-PREFIX=${PREFIX:-"${RUN:-gfs}.t${cyc}z."}
-FHOUT_PGB=${FHOUT_PGB:-3}
+# Scripts used
+GFSDWNSH=${GFSDWNSH:-"${HOMEgfs}/ush/fv3gfs_dwn_nems.sh"}
 
+# variables used here and in $GFSDWNSH
+PGBOUT2=${PGBOUT2:-"master.grib2"}  # grib2 file from UPP
+FH=${FH:-0}  # Forecast hour to process
+FHOUT_PGB=${FHOUT_PGB:-3}  # Output frequency of GFS PGB file at 1-degree and 0.5 degree
+npe_dwn=${npe_dwn:-24}
+downset=${downset:-1}
+PREFIX=${PREFIX:-"${RUN:-gfs}.t${cyc}z."}
 export PGBS=${PGBS:-"NO"}  # YES - generate 1 and 1/2-degree grib2 data
 export PGB1F=${PGB1F:-"NO"}  # YES - generate 1-degree grib1 data
 
-unset paramlist paramlistb
+# Files used
 if (( FH == -1 )); then
   fhr3=anl
   export PGBS="YES"
-  paramlista=${paramlist:-${PARMpost}/global_1x1_paramlist_g2.anl}
+  paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2.anl"}
 elif (( FH == 0 )); then
   fhr3=000
   export PGBS="YES"
-  paramlista=${paramlist:-${PARMpost}/global_1x1_paramlist_g2.f000}
+  paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2.f000"}
 else
   fhr3=$(printf "%03d" "${FH}")
   if (( FH%FHOUT_PGB == 0 )); then
     export PGBS="YES"
   fi
-  paramlista=${paramlist:-${PARMpost}/global_1x1_paramlist_g2}
+  paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2"}
 fi
-paramlistb=${paramlistb:-${PARMpost}/global_master-catchup_parmlist_g2}
+paramlistb=${paramlistb:-"${HOMEgfs}/parm/post/global_master-catchup_parmlist_g2"}
 
 # Get inventory from ${PGBOUT2} that matches patterns from ${paramlista}
 # Extract this inventory from ${PGBOUT2} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
@@ -45,7 +51,7 @@ if (( downset = 2 )); then
 fi
 
 #-----------------------------------------------------
-nproc=${nproc:-${npe_dwn:-24}}
+nproc=${nproc:-${npe_dwn}}
 
 #..............................................
 nset=1
@@ -102,7 +108,7 @@ while (( nset <= downset )); do
     export err=$?; err_chk
     input_file="${tmpfile}_${iproc}"
     output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
-    echo "${GFSDWNSH:-${USHgfs}/fv3gfs_dwn_nems.sh} ${input_file} ${output_file_prefix} ${nset}" >> "${DATA}/poescript"
+    echo "${GFSDWNSH} ${input_file} ${output_file_prefix} ${nset}" >> "${DATA}/poescript"
 
     # if at final record and have not reached the final processor then write echo's to
     # poescript for remaining processors
@@ -117,8 +123,8 @@ while (( nset <= downset )); do
   done
 
   # Run with MPMD or serial
-  if [[ "${POE:-}" = "YES" ]]; then
-    run_mpmd "${DATA}/poescript"
+  if [[ "${USE_CFP:-}" = "YES" ]]; then
+    ${HOMEgfs}/ush/run_mpmd.sh "${DATA}/poescript"
     err=$?
   else
     chmod 755 "$DATA/poescript"
