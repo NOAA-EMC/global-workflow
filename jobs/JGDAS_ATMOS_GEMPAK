@@ -40,7 +40,7 @@ export model=${model:-gdas}
 # Define COM directories
 ##############################################
 for grid in 0p25 0p50 1p00; do
-  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_TMPL"
+  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 for grid in 1p00 0p25; do
