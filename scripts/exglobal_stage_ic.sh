@@ -2,12 +2,19 @@ c! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-error_message(){
-    echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
-}
+# Source FV3GFS workflow modules
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
+status=$?
+[[ ${status} -ne 0 ]] && exit ${status}
 
+export job="stage_ic"
+export jobid="${job}.$$"
 
+# Execute the JJOB
 
+source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
+
+# Locally scoped variables and functions
 GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
@@ -15,7 +22,13 @@ gcyc="${GDATE:8:2}"
 # Initialize return code
 err=0
 
+error_message(){
+    echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
+}
+
 ###############################################################
+# Start staging
+
 # Stage the FV3 initial conditions to ROTDIR (cold start)
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
