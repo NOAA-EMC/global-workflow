@@ -39,7 +39,7 @@ export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 for grid in 0p25 0p50 1p00; do
-  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_TMPL"
+  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 for grid in 1p00 0p50 0p25 40km 35km_atl 35km_pac; do
