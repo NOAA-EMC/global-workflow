@@ -1,4 +1,4 @@
-c! /usr/bin/env bash
+#! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
 
