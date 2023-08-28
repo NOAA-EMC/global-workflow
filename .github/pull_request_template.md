@@ -1,50 +1,53 @@
 <!-- PLEASE READ -->
+<!-- Any PRs not following this template will be closed -->
 <!--
-Before opening a PR, please note these guidelines:
+    Please use a short (<60 char), descriptive title above. It should complete the sentence "If merged, this PR will _____". Capitalize the first word and do not end with a period.
 
-- Each PR should only address ONE topic and have an associated issue
-- No hardcoded or paths to personal directories should be present
-- No temporary or backup files should be committed
-- Any code that was disabled by being commented out should be removed
+    PRs should meet these guidelines:
+    - Each PR should address ONE topic and have an associated issue.
+    - No hard-coded paths or personal directories.
+    - No temporary or backup files should be committed (including logs).
+    - Any code that you disabled by being commented out should be removed or reenabled.
+
+    Please delete all these comments before submitting the PR.
+-->
+# Description
+<!-- This description will become the commit message for the PR-->
+<!-- Please use this format for your description:
+
+  Describe your changes. Focus on the *what* and *why*. The *how* will be evident from the changes. In particular, be sure to note any interface changes, such as command line syntax, that will need to be communicated to users.
+
+  At the end of your description, please be sure to add the issue this PR solves using the word "Resolves". If there are any issues that are related but not yet resolved (including in other repos), you may use "Refs".
+
+  Resolves #1234
+  Refs #4321
+  Refs NOAA-EMC/repo#5678
 -->
 
-**Description**
+# Type of change
+<!-- Delete all except one -->
+- Bug fix (fixes something broken)
+- New feature (adds functionality)
+- Maintenance (code refactor, clean-up, new CI test, etc.)
 
-<!-- Please include relevant motivation and context. -->
-<!-- Please include a summary of the change and which issue is fixed. -->
-<!-- List any dependencies that are required for this change. -->
+# Change characteristics
+- Is this a breaking change (a change in existing functionality)? YES/NO
+- Does this change require a documentation update? YES/NO
 
-<!-- Please provide reference to the issue this pull request is addressing. -->
-<!-- For e.g. Fixes #IssueNumber -->
+# How has this been tested?
+<!-- Please list any test you conducted, including the machine.
 
-**Type of change**
-
-Please delete options that are not relevant.
-
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
-
-**How Has This Been Tested?**
-
-<!-- Please describe the tests that you ran to verify your changes and on the platforms these tests were conducted. -->
-<!-- Provide instructions so we can reproduce. -->
-<!-- Please also list any relevant details for your test configuration -->
-
-<!-- Use the following as a guide to list your tests and delete options that are not relevant. Expand as necessary. -->
-<!--
-- [ ] Clone and Build tests on WCOSS Dell P3
-- [ ] Cycled test on Orion
-- [ ] Forecast-only test on Hera
+Example:
+- Clone and build on WCOSS
+- Cycled test on Orion
+- Forecast-only on Hera
 -->
-  
-**Checklist**
 
+# Checklist
+- [ ] Any dependent changes have been merged and published
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my own code
 - [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] My changes need updates to the documentation. I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings
 - [ ] New and existing tests pass with my changes
-- [ ] Any dependent changes have been merged and published
+- [ ] I have made corresponding changes to the documentation if necessary
