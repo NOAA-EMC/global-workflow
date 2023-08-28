@@ -37,3 +37,4 @@ GitHub updates: Users should adjust their "Watch" settings for this repo so they
    hpc.rst
    output.rst
    run.rst
+   noaa_csp.rst
