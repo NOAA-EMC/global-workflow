@@ -37,7 +37,7 @@ target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
 ${NCP} "${source}" "${target}"
 rc=$?
 (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-(( err = err + rc ))
+err=$((err + rc))
 for ftype in gfs_data sfc_data; do
   for tt in $(seq 1 6); do
     source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/${ftype}.tile${tt}.nc"
@@ -45,7 +45,7 @@ for ftype in gfs_data sfc_data; do
     ${NCP} "${source}" "${target}"
     rc=$?
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-    (( err = err + rc ))
+    err=$((err + rc))
   done
 done
 
@@ -58,7 +58,7 @@ if [[ "${DO_OCN:-}" = "YES" ]]; then
   ${NCP} "${source}" "${target}"
   rc=$?
   (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-  (( err = err + rc ))
+  err=$((err + rc))
   case "${OCNRES}" in
     "500" | "100")  # Only 5 degree or 1 degree ocean does not have MOM.res_[1-4].nc files
     ;;
@@ -70,14 +70,14 @@ if [[ "${DO_OCN:-}" = "YES" ]]; then
           ${NCP} "${source}" "${target}"
           rc=$?
           (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-          (( err = err + rc ))
+          err=$((err + rc))
         fi
       done
     ;;
     *)
       echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
       rc=1
-      (( err = err + rc ))
+      err=$((err + rc))
     ;;
   esac
 fi
@@ -92,7 +92,7 @@ if [[ "${DO_ICE:-}" = "YES" ]]; then
   ${NCP} "${source}" "${target}"
   rc=$?
   (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-  (( err = err + rc ))
+  err=$((err + rc))
 fi
 
 # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
@@ -105,7 +105,7 @@ if [[ "${DO_WAVE:-}" = "YES" ]]; then
     ${NCP} "${source}" "${target}"
     rc=$?
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-    (( err = err + rc ))
+    err=$((err + rc))
   done
 fi
 
