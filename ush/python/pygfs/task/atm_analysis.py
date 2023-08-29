@@ -82,10 +82,21 @@ class AtmAnalysis(Analysis):
         jedi_fix_list = parse_j2yaml(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
-        # stage berror files
-        # copy static background error files, otherwise it will assume ID matrix
+        # stage static background error files, otherwise it will assume ID matrix
         logger.debug(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
         FileHandler(self.get_berror_dict(self.task_config)).sync()
+
+        # stage ensemble files for use in hybrid background error
+        if self.task_config.DOHYBVAR:
+            logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
+            localconf = AttrDict()
+            keys = ['COM_ATMOS_RESTART_TMPL', 'previous_cycle', 'ROTDIR', 'RUN',
+                    'NMEM_ENS', 'DATA', 'current_cycle', 'ntiles']
+            for key in keys:
+                localconf[key] = self.task_config[key]
+            localconf.RUN = 'enkf' + self.task_config.RUN
+            localconf.dirname = 'ens'
+            FileHandler(self.get_fv3ens_dict(localconf)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config))).sync()

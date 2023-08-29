@@ -10,8 +10,8 @@ source "$HOMEgfs/ush/preamble.sh"
 #
 # Author:        Ed Safford       Org: NP23         Date: 2015-04-10
 #
-# Abstract: This script runs the data extract/validation portion of the 
-#           MinMon package.  
+# Abstract: This script runs the data extract/validation portion of the
+#           MinMon package.
 #
 # Condition codes
 #       0 - no problem encountered
@@ -23,7 +23,6 @@ source "$HOMEgfs/ush/preamble.sh"
 ########################################
 #  Set environment
 ########################################
-export RUN_ENVIR=${RUN_ENVIR:-nco}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export envir=${envir:-prod}
@@ -60,7 +59,7 @@ data_available=0
 
 if [[ -s ${gsistat} ]]; then
 
-   data_available=1                                         
+   data_available=1
 
    #-----------------------------------------------------------------------
    #  Copy the $MINMON_SUFFIX.gnorm_data.txt file to the working directory
