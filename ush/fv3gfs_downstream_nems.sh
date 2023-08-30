@@ -4,8 +4,8 @@ source "${HOMEgfs}/ush/preamble.sh" "${FH}"
 
 # Programs used
 export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-export CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
-export GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
+CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
+GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
 
 # Scripts used
 GFSDWNSH=${GFSDWNSH:-"${HOMEgfs}/ush/fv3gfs_dwn_nems.sh"}
@@ -18,7 +18,7 @@ npe_dwn=${npe_dwn:-24}
 downset=${downset:-1}
 PREFIX=${PREFIX:-"${RUN:-gfs}.t${cyc}z."}
 export PGBS=${PGBS:-"NO"}  # YES - generate 1 and 1/2-degree grib2 data
-export PGB1F=${PGB1F:-"NO"}  # YES - generate 1-degree grib1 data
+PGB1F=${PGB1F:-"NO"}  # YES - generate 1-degree grib1 data
 
 # Files used
 if (( FH == -1 )); then
@@ -50,6 +50,13 @@ if (( downset = 2 )); then
   export err=$?; err_chk
 fi
 
+# Determine grids once # Cannot export arrays in bash, so need to export PGBS
+grids=("0p25")
+if [[ "${PGBS}" = "YES" ]]; then
+  grids+=("0p50")
+  grids+=("1p00")
+fi
+
 #-----------------------------------------------------
 nproc=${nproc:-${npe_dwn}}
 
@@ -76,14 +83,14 @@ while (( nset <= downset )); do
     export err=8
     err_chk
   fi
-  (( inv = ncount / nproc ))
+  inv=$(( ncount / nproc ))
   rm -f "${DATA}/poescript"
 
   iproc=1
   end=0
   while (( iproc <= nproc )); do
-    (( start = end + 1 ))
-    (( end = start + inv - 1 ))
+    start=$(( end + 1 ))
+    end=$(( start + inv - 1 ))
     if (( end >= ncount )); then
       (( end = ncount ))
     fi
@@ -97,7 +104,7 @@ while (( nset <= downset )); do
     rc=$?
     set_strict
     if (( rc == 0 )); then  # Matched the grep
-      (( end = end + 1 ))
+      end=$(( end + 1 ))
     fi
     if (( iproc == nproc )); then
       end=${ncount}
@@ -108,27 +115,27 @@ while (( nset <= downset )); do
     export err=$?; err_chk
     input_file="${tmpfile}_${iproc}"
     output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
-    echo "${GFSDWNSH} ${input_file} ${output_file_prefix} ${nset}" >> "${DATA}/poescript"
+    echo "${GFSDWNSH} ${input_file} ${output_file_prefix}" >> "${DATA}/poescript"
 
     # if at final record and have not reached the final processor then write echo's to
     # poescript for remaining processors
     if (( end == ncount )); then
       while (( iproc < nproc )); do
-        (( iproc = iproc + 1 ))
+        iproc=$(( iproc + 1 ))
         echo "/bin/echo ${iproc}" >> "${DATA}/poescript"
       done
       break
     fi
-    (( iproc = iproc + 1 ))
+    iproc=$(( iproc + 1 ))
   done
 
   # Run with MPMD or serial
   if [[ "${USE_CFP:-}" = "YES" ]]; then
-    ${HOMEgfs}/ush/run_mpmd.sh "${DATA}/poescript"
+    "${HOMEgfs}/ush/run_mpmd.sh" "${DATA}/poescript"
     err=$?
   else
-    chmod 755 "$DATA/poescript"
-    sh +x "${DATA}/poescript" |& tee mpmd.out
+    chmod 755 "${DATA}/poescript"
+    sh +x "${DATA}/poescript" 2>&1 mpmd.out
     err=$?
   fi
   if (( err != 0 )); then
@@ -144,48 +151,37 @@ while (( nset <= downset )); do
   echo "Concatenating processor specific grib2 files into a single product"
   iproc=1
   while (( iproc <= nproc )); do
-    cat "pgb2${grp}file_${fhr3}_${iproc}_0p25" >> "pgb2${grp}file_${fhr3}_0p25"
-    rm  "pgb2${grp}file_${fhr3}_${iproc}_0p25"
-    if [[ "${PGBS}" = "YES" ]]; then
-      cat "pgb2${grp}file_${fhr3}_${iproc}_0p5" >> "pgb2${grp}file_${fhr3}_0p5"
-      rm  "pgb2${grp}file_${fhr3}_${iproc}_0p5"
-      cat "pgb2${grp}file_${fhr3}_${iproc}_1p0" >> "pgb2${grp}file_${fhr3}_1p0"
-      rm  "pgb2${grp}file_${fhr3}_${iproc}_1p0"
-    fi
-    if (( nset == 1 )); then
-      if [[ "${PGBS}" = "YES" ]]; then
-        if [[ "${PGB1F}" = 'YES' ]]; then
-          cat "pgb${grp}file_${fhr3}_${iproc}_1p0" >> "pgb${grp}file_${fhr3}_1p0"
-          rm  "pgb${grp}file_${fhr3}_${iproc}_1p0"
-        fi
-      fi
-    fi
+    for grid in "${grids[@]}"; do
+      cat "pgb2${grp}file_${fhr3}_${iproc}_${grid}" >> "pgb2${grp}file_${fhr3}_${grid}"
+      rm  "pgb2${grp}file_${fhr3}_${iproc}_${grid}"
+    done
     # There is no further use of the processor specific tmpfile; delete it
-    rm ${tmpfile}_${iproc}
-    (( iproc = iproc + 1 ))
+    rm "${tmpfile}_${iproc}"
+    iproc=$(( iproc + 1 ))
   done
 
   # Move to COM and index the product grib files
-  ${NCP} "pgb2${grp}file_${fhr3}_0p25" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2${grp}.0p25.${fhr3}"
-  ${WGRIB2} -s "pgb2${grp}file_${fhr3}_0p25" > "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2${grp}.0p25.${fhr3}.idx"
-  if [[ "${PGBS}" = "YES" ]]; then
-    ${NCP} "pgb2${grp}file_${fhr3}_0p5" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2${grp}.0p50.${fhr3}"
-    ${NCP} "pgb2${grp}file_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2${grp}.1p00.${fhr3}"
-    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_0p5" > "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2${grp}.0p50.${fhr3}.idx"
-    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_1p0" > "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2${grp}.1p00.${fhr3}.idx"
-  fi
+  for grid in "${grids[@]}"; do
+    ${NCP} "pgb2${grp}file_${fhr3}_${grid}" "${COM_ATMOS_GRIB}/${grid}${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
+    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${COM_ATMOS_GRIB}/${grid}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
+  done
+
+  # Create supplemental 1-degree grib1 output TODO: who needs 1-degree grib1 product?
+  # move to COM and index it
   if (( nset == 1 )); then
     if [[ "${PGBS}" = "YES" ]]; then
-      if [[ "${PGB1F}" = 'YES' ]]; then
-        ${NCP} "pgb${grp}file_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}"
-        ${GRBINDEX} "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}.idx"
+      if [[ "${PGB1F}" = "YES" ]]; then
+        ${CNVGRIB} -g21 "pgb2${grp}file_${fhr3}_1p00" "pgb${grp}file_${fhr3}_1p00"
+        export err=$?; err_chk
+        ${NCP} "pgb${grp}file_${fhr3}_1p00" "${COM_ATMOS_GRIB}/1p00/${PREFIX}pgrb${grp}.1p00.${fhr3}"
+        ${GRBINDEX} "${COM_ATMOS_GRIB}/1p00/${PREFIX}pgrb${grp}.1p00.${fhr3}" "${COM_ATMOS_GRIB}/1p00/${PREFIX}pgrb${grp}.1p00.${fhr3}.idx"
       fi
     fi
   fi
 
   echo "Finished processing nset = ${nset}"
 
-  (( nset = nset + 1 ))
+  nset=$(( nset + 1 ))
 
 done  # while (( nset <= downset )); do
 

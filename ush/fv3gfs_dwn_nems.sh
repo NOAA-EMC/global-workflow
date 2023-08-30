@@ -10,13 +10,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 input_file=${1:-"pgb2file_in"}  # Input pressure grib2 file
 output_file_prefix=${2:-"pgb2file_out"}  # Prefix for output grib2 file; the prefix is appended by resolution e.g. _0p25
-nset=${3:-"1"}  # 1st or 2nd downstream set.
 
-CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
 WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-
 PGBS=${PGBS:-"NO"}  # Supplemental 1/2-degree and 1-degree products
-PGB1F=${PGB1F:-"NO"}  # Supplementary 1-degree grib1 product for XYZ TODO: who?
 
 # wgrib2 options for regridding
 defaults="-set_grib_type same -set_bitmap 1 -set_grib_max_bits 16"
@@ -27,9 +23,12 @@ interp_budget="-if :(APCP|ACPCP|PRATE|CPRAT|DZDT): -new_grid_interpolation budge
 max_bits="-if :(APCP|ACPCP|PRATE|CPRAT): -set_grib_max_bits 25 -fi"
 
 # interpolated target grids
+# shellcheck disable=SC2034
 grid0p25="latlon 0:1440:0.25 90:721:-0.25"
-grid0p5="latlon 0:720:0.5 90:361:-0.5"
-grid1p0="latlon 0:360:1.0 90:181:-1.0"
+# shellcheck disable=SC2034
+grid0p50="latlon 0:720:0.5 90:361:-0.5"
+# shellcheck disable=SC2034
+grid1p00="latlon 0:360:1.0 90:181:-1.0"
 
 # Functions used in this script
 function trim_rh() {
@@ -58,12 +57,20 @@ function mod_icec() {
   return "${rc}"
 }
 
-output_grids="-new_grid ${grid0p25} ${output_file_prefix}_0p25"
-# Create additional 1/2-degree and 1-degree grib2 products
+# Determine grids once
+grids=("0p25")
 if [[ "${PGBS}" = "YES" ]]; then
-  output_grids="${output_grids} -new_grid ${grid0p5} ${output_file_prefix}_0p5 -new_grid ${grid1p0} ${output_file_prefix}_1p0"
+  grids+=("0p50")
+  grids+=("1p00")
 fi
 
+output_grids=""
+for grid in "${grids[@]}"; do
+  gridopt="grid${grid}"
+  output_grids="${output_grids} -new_grid ${!gridopt} ${output_file_prefix}_${grid}"
+done
+
+#shellcheck disable=SC2086
 ${WGRIB2} "${input_file}" ${defaults} \
                           ${interp_winds} \
                           ${interp_bilinear} \
@@ -72,36 +79,11 @@ ${WGRIB2} "${input_file}" ${defaults} \
                           ${max_bits} \
                           ${output_grids}
 export err=$?; err_chk
-trim_rh "${output_file_prefix}_0p25"; export err=$?; err_chk
 
-if [[ "${PGBS}" = "YES" ]]; then
-  trim_rh "${output_file_prefix}_0p5"; export err=$?; err_chk
-  trim_rh "${output_file_prefix}_1p0"; export err=$?; err_chk
-fi
-
-# tweak sea ice cover if this is the first product dataset (pgb2a)
-if (( nset == 1 )); then
-  # shellcheck disable=SC2312
-  count=$(${WGRIB2} "${output_file_prefix}"_0p25 -match "LAND|ICEC" | wc -l)
-  if (( count == 2 )); then
-    mod_icec "${output_file_prefix}_0p25"; export err=$?; err_chk
-  fi
-  if [[ "${PGBS}" = "YES" ]]; then
-    if (( count == 2 )); then
-      mod_icec "${output_file_prefix}_0p5"; export err=$?; err_chk
-      mod_icec "${output_file_prefix}_1p0"; export err=$?; err_chk
-    fi
-  fi
-fi
-
-# Create supplemental 1-degree grib1 output for XYZ TODO: who needs 1-degree grib1 product?
-if (( nset == 1 )); then
-  if [[ "${PGBS}" = "YES" ]]; then
-    if [[ "${PGB1F}" = "YES" ]]; then
-      ${CNVGRIB} -g21 "${output_file_prefix}_1p0" "${output_file_prefix/pgb2/pgb}_1p0"
-      export err=$?; err_chk
-    fi
-  fi
-fi
+# trim and mask for all grids
+for grid in "${grids[@]}"; do
+  trim_rh "${output_file_prefix}_${grid}"; export err=$?; err_chk
+  mod_icec "${output_file_prefix}_${grid}"; export err=$?; err_chk
+done
 
 exit 0
