@@ -23,6 +23,7 @@ HPC helpdesks
 * Gaea: oar.gfdl.help@noaa.gov
 * S4: david.huber@noaa.gov
 * Jet: rdhpcs.jet.help@noaa.gov
+* Cloud: rdhpcs.cloud.help@noaa.gov
 
 ======================
 Restricted data access
@@ -82,6 +83,8 @@ It is advised to use Git v2+ when available. At the time of writing this documen
 | WCOSS2  | v2.26.2  | default or **module load git/2.29.0** |
 +---------+----------+---------------------------------------+
 | S4      | v1.8.3.1 | **module load git/2.30.0**            |
++---------+----------+---------------------------------------+
+| AWS PW  | v1.8.3.1 | default
 +---------+----------+---------------------------------------+
 
 ^^^^^^^^^^^^^
