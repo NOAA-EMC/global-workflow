@@ -2,7 +2,6 @@
 
 # This script takes in a master grib file and creates products at various interpolated resolutions
 # Generate 0.25 / 0.5 / 1 degree interpolated grib2 files for each input grib2 file
-# Also generate 1 degree grib1 file fox XYZ TODO: who?
 # trim's RH and tweaks sea-ice cover
 
 
