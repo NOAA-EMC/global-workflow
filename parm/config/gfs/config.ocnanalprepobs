@@ -1,0 +1,10 @@
+#!/bin/bash
+
+########## config.ocnanalprep ##########
+# Pre Ocn Analysis specific
+
+echo "BEGIN: config.ocnanalprepobs"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" ocnanalprepobs
+echo "END: config.ocnanalprepobs"
