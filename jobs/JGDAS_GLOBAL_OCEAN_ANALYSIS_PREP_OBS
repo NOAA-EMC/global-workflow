@@ -22,10 +22,7 @@ export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/soca:${PYTHONPATH}
 ###############################################################
 # Run relevant script
 
-#EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_vrfy.py}
-#${EXSCRIPT}
-#status=$?
-#[[ ${status} -ne 0 ]] && exit "${status}"
+# the relevant script goes here
 
 ##############################################
 # End JOB SPECIFIC work
