@@ -19,7 +19,7 @@ interp_winds="-new_grid_winds earth"
 interp_bilinear="-new_grid_interpolation bilinear"
 interp_neighbor="-if :(CSNOW|CRAIN|CFRZR|CICEP|ICSEV): -new_grid_interpolation neighbor -fi"
 interp_budget="-if :(APCP|ACPCP|PRATE|CPRAT|DZDT): -new_grid_interpolation budget -fi"
-max_bits="-if :(APCP|ACPCP|PRATE|CPRAT): -set_grib_max_bits 25 -fi"
+increased_bits="-if :(APCP|ACPCP|PRATE|CPRAT): -set_grib_max_bits 25 -fi"
 
 # interpolated target grids
 # shellcheck disable=SC2034
@@ -75,7 +75,7 @@ ${WGRIB2} "${input_file}" ${defaults} \
                           ${interp_bilinear} \
                           ${interp_neighbor} \
                           ${interp_budget} \
-                          ${max_bits} \
+                          ${increased_bits} \
                           ${output_grids}
 export err=$?; err_chk
 

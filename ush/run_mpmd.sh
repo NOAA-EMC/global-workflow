@@ -12,10 +12,10 @@ cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in 
 if [[ -s "${DATA:-}/cmdfile_srun" ]]; then rm -f "${DATA:-}/poescript_srun"; fi
 nm=0
 # shellcheck disable=SC2312
-cat "${cmdfile}" | while read line; do
+while IFS= read -r line; do
   echo "${nm} ${line}" >> "${DATA:-}/cmdfile_srun"
   ((nm=nm+1))
-done
+done < ${cmdfile}
 
 nprocs=$(wc -l < "${DATA:-}/cmdfile_srun")
 set +e
@@ -27,7 +27,7 @@ if (( rc == 0 )); then
 fi
 # On success concatenate processor specific output into a single mpmd.out
 if (( rc == 0 )); then
-  out_files=$(ls | grep -P "[0-9]*?.out")
+  out_files=$(find . -maxdepth 1 -regex '\.\/[0-9]+.out')
   for file in ${out_files}; do
     cat "${file}" >> mpmd.out
     rm -f "${file}"
