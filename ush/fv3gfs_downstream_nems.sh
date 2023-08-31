@@ -12,7 +12,7 @@ GFSDWNSH=${GFSDWNSH:-"${HOMEgfs}/ush/fv3gfs_dwn_nems.sh"}
 
 # variables used here and in $GFSDWNSH
 PGBOUT2=${PGBOUT2:-"master.grib2"}  # grib2 file from UPP
-FH=${FH:-0}  # Forecast hour to process
+FH=$(( ${FH:-0} ))  # Forecast hour to process
 FHOUT_PGB=${FHOUT_PGB:-3}  # Output frequency of GFS PGB file at 1-degree and 0.5 degree
 npe_dwn=${npe_dwn:-24}
 downset=${downset:-1}
@@ -61,8 +61,7 @@ fi
 nproc=${nproc:-${npe_dwn}}
 
 #..............................................
-nset=1
-while (( nset <= downset )); do
+for (( nset=1 ; nset <= downset ; nset++ )); do
 
   echo "Begin processing nset = ${nset}"
 
@@ -135,7 +134,7 @@ while (( nset <= downset )); do
     err=$?
   else
     chmod 755 "${DATA}/poescript"
-    sh +x "${DATA}/poescript" 2>&1 mpmd.out
+    bash +x "${DATA}/poescript" 2>&1 mpmd.out
     err=$?
   fi
   if (( err != 0 )); then
@@ -149,15 +148,13 @@ while (( nset <= downset )); do
   # Concatenate grib files from each processor into a single one
   # and clean-up as you go
   echo "Concatenating processor specific grib2 files into a single product"
-  iproc=1
-  while (( iproc <= nproc )); do
+  for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
     for grid in "${grids[@]}"; do
       cat "pgb2${grp}file_${fhr3}_${iproc}_${grid}" >> "pgb2${grp}file_${fhr3}_${grid}"
       rm  "pgb2${grp}file_${fhr3}_${iproc}_${grid}"
     done
     # There is no further use of the processor specific tmpfile; delete it
     rm "${tmpfile}_${iproc}"
-    iproc=$(( iproc + 1 ))
   done
 
   # Move to COM and index the product grib files
@@ -181,8 +178,7 @@ while (( nset <= downset )); do
 
   echo "Finished processing nset = ${nset}"
 
-  nset=$(( nset + 1 ))
 
-done  # while (( nset <= downset )); do
+done  # for (( nset=1 ; nset <= downset ; nset++ ))
 
 exit 0
