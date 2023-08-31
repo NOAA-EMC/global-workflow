@@ -62,7 +62,16 @@ echo "$(cat input.nml)"
 
 
 #Copy MOM_input and edit:
-${NCP} -pf "${HOMEgfs}/parm/ufs/mom6/MOM_input_template_${OCNRES}" "${DATA}/INPUT/"
+case "${PROTO}" in
+  EP4A)
+    MOM_input_tmpl="${HOMEgfs}/parm/ufs/ep4a/MOM_input_template_${OCNRES}"
+    ;;
+  *)
+    MOM_input_tmpl="${HOMEgfs}/parm/ufs/mom6/MOM_input_template_${OCNRES}"
+    ;;
+esac
+
+${NCP} -pf "${MOM_input_tmpl}" "${DATA}/INPUT/"
 sed -e "s/@\[DT_THERM_MOM6\]/${DT_THERM_MOM6}/g" \
     -e "s/@\[DT_DYNAM_MOM6\]/${DT_DYNAM_MOM6}/g" \
     -e "s/@\[MOM6_RIVER_RUNOFF\]/${MOM6_RIVER_RUNOFF}/g" \

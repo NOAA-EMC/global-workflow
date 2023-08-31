@@ -42,23 +42,48 @@ export RERUN_EFCSGRP="NO"
 export WRITE_DOPOST=".true."
 
 # Stochastic physics parameters (only for ensemble forecasts)
-export DO_SKEB="YES"
-export SKEB=0.3
-export SKEB_TAU=21600.
-export SKEB_LSCALE=250000.
-export SKEBNORM=0
-export SKEB_NPASS=30
-export SKEB_VDOF=5
-export DO_SHUM="YES"
-export SHUM=0.005
-export SHUM_TAU=21600.
-export SHUM_LSCALE=500000.
-export DO_SPPT="YES"
-export SPPT=0.5
-export SPPT_TAU=21600.
-export SPPT_LSCALE=500000.
-export SPPT_LOGIT=".true."
-export SPPT_SFCLIMIT=".true."
+case "${PROTO:-}" in
+  EP4A)
+    export OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    export OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    export MOM6_RESTART_SETTING=n
+    export IEMS_ENKF=2
+    export FHCYC_ENKF=24
+    export DO_SKEB="YES"
+    export SKEB=0.8
+    export SKEB_TAU=21600.
+    export SKEB_LSCALE=500000.
+    export SKEBNORM=1
+    export SKEB_NPASS=30
+    export SKEB_VDOF=5
+    export DO_SHUM="NO"
+    export DO_SPPT="YES"
+    export SPPT=0.56
+    export SPPT_TAU=21600.
+    export SPPT_LSCALE=500000.
+    export SPPT_LOGIT=".true."
+    export SPPT_SFCLIMIT=".true."
+  ;;
+    *)
+    export DO_SKEB="YES"
+    export SKEB=0.3
+    export SKEB_TAU=21600.
+    export SKEB_LSCALE=250000.
+    export SKEBNORM=0
+    export SKEB_NPASS=30
+    export SKEB_VDOF=5
+    export DO_SHUM="YES"
+    export SHUM=0.005
+    export SHUM_TAU=21600.
+    export SHUM_LSCALE=500000.
+    export DO_SPPT="YES"
+    export SPPT=0.5
+    export SPPT_TAU=21600.
+    export SPPT_LSCALE=500000.
+    export SPPT_LOGIT=".true."
+    export SPPT_SFCLIMIT=".true."
+  ;;
+esac
 
 export restart_interval=${restart_interval:-6}
 

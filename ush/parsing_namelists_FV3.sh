@@ -421,6 +421,12 @@ if [[ ${DO_LAND_PERT:-"NO"} = "YES" ]]; then
 EOF
 fi
 
+# End &gfs_physics_nml
+cat >> input.nml << EOF
+/
+
+EOF
+
 if [[ ${knob_ugwp_version} -eq 0 ]]; then
   cat >> input.nml << EOF
 &cires_ugwp_nml
@@ -539,7 +545,19 @@ cat >> input.nml <<EOF
   FNVEGC   = '${FNVEGC}'
   FNVETC   = '${FNVETC}'
   FNSOTC   = '${FNSOTC}'
+EOF
+
+case "${PROTO}" in
+  EP4A)
+    ;;
+  *)
+    cat >> input.nml << EOF
   FNSOCC   = '${FNSOCC}'
+EOF
+    ;;
+esac
+
+cat >> input.nml << EOF
   FNSMCC   = '${FNSMCC}'
   FNMSKH   = '${FNMSKH}'
   FNTSFA   = '${FNTSFA}'

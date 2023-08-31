@@ -298,6 +298,26 @@ else
   export io_layout="1,1"
 fi
 
+# Use prototype settings
+case "${PROTO}" in
+   EP4A)
+      export tau=0.0
+      export rf_cutoff=10.
+      export d2_bg_k1=0.15
+      export d2_bg_k2=0
+      export IAER=2011
+      export io_layout="16,16"
+      export MOM6_RESTART_SETTING=n
+      export ODA_INCUPD_NHOURS=0
+      AERO_CONFIG_DIR=${HOMEgfs}/parm/ufs/ep4a
+      AERO_DIAG_TABLE=${AERO_CONFIG_DIR}/diag_table.aero
+      AERO_FIELD_TABLE=${AERO_CONFIG_DIR}/field_table.aero
+      aero_conv_scav_factors="'*:0.3','so2:0.0','msa:0.0','dms:0.0','bc1:0.6','bc2:0.6','oc1:0.4','oc2:0.4','dust1:0.6','dust2:0.6', 'dust3:0.6','dust4:0.6','dust5:0.6','seas1:0.5','seas2:0.5','seas3:0.5','seas4:0.5','seas5:0.5'"
+      ;;
+   *)
+      ;;
+esac
+
 if [[ "${DO_AERO}" = "YES" ]]; then # temporary settings for aerosol coupling
     export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-${HOMEgfs}/parm/ufs/fv3/diag_table.aero}"
     export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-${HOMEgfs}/parm/ufs/fv3/field_table.aero}"
@@ -308,6 +328,7 @@ if [[ "${DO_AERO}" = "YES" ]]; then # temporary settings for aerosol coupling
     export fscav_aero="${aero_conv_scav_factors:-${fscav_aero}}"
     export dnats_aero="${aero_diag_tracers:-0}"
 fi
+
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.

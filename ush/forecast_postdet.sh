@@ -238,7 +238,7 @@ EOF
   ${NLN} "${FIX_DIR}/am/global_sfc_emissivity_idx.txt"     "${DATA}/sfc_emissivity_idx.txt"
 
   ## merra2 aerosol climo
-  if [[ ${IAER} -eq "1011" ]]; then
+  if [[ ${IAER} -eq "1011" ]] || [[ ${IAER} -eq "2011" ]]; then
     for month in $(seq 1 12); do
       MM=$(printf %02d "${month}")
       ${NLN} "${FIX_DIR}/aer/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
@@ -677,16 +677,30 @@ CPL_out() {
 MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
-  # Copy MOM6 ICs
-  ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
-  case ${OCNRES} in
-    "025")
-      for nn in $(seq 1 4); do
-        if [[ -f "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
-          ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
-        fi
-      done
-    ;;
+  case "${PROTO:-none}" in
+    EP4A)
+      ${NCP} -pf ${COM_OCEAN_INPUT}/ORAS5.mx025.ic.nc ${DATA}/INPUT/ORAS5.mx025.ic.nc
+      if [[ -n "${ENSGRP:-}" ]]; then
+	pfile="${COM_OCEAN_INPUT}/mem$(printf %03i ${ENSGRP})_pert.nc"
+        ${NCP} -pf ${pfile} ${DATA}/INPUT/mom6_increment.nc
+      fi
+      ${NCP} -pf ${FIX_DIR}/ep4a/interpolate_zgrid_26L.nc ${DATA}/INPUT
+      ;;
+    none)
+      # Copy MOM6 ICs
+      ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+      case ${OCNRES} in
+        "025")
+          for nn in $(seq 1 4); do
+            if [[ -f "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
+              ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
+            fi
+          done
+        ;;
+      esac
+      ;;
+    *)
+      ;;
   esac
 
   # Link increment

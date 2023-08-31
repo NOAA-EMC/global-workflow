@@ -99,9 +99,18 @@ WW3_namelists(){
 
 # Buoy location file
 
-  if [ -f $PARMwave/wave_${NET}.buoys ]
+  case "${PROTO}" in
+    EP4A)
+      PARMbuoy=${HOMEgfs}/parm/ufs/ep4a
+      ;;
+       *)
+      PARMbuoy=${PARMwave}
+      ;;
+  esac
+
+  if [ -f $PARMbuoy/wave_${NET}.buoys ]
   then
-    cp $PARMwave/wave_${NET}.buoys buoy.loc
+    cp $PARMbuoy/wave_${NET}.buoys buoy.loc
   fi
 
   if [ -f buoy.loc ]

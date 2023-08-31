@@ -381,4 +381,31 @@ if [[ "${skip_ww3}" == "false" ]]; then
   export ntasks_ww3 nthreads_ww3
 fi
 
+case "${PROTO}" in
+  EP4A)
+    export layout_x=16
+    export layout_y=16
+    export nthreads_fv3=1
+    export nthreads_fv3_gfs=1
+    (( ntasks_fv3 = layout_x * layout_y * 6 ))
+    (( ntasks_fv3_gfs = layout_x_gfs * layout_y_gfs * 6 ))
+    export ntasks_fv3
+    export ntasks_fv3_gfs
+    export WRITE_GROUP=1
+    export WRITE_GROUP_GFS=1
+    (( ntasks_quilt = WRITE_GROUP * WRTTASK_PER_GROUP_PER_THREAD ))
+    (( ntasks_quilt_gfs = WRITE_GROUP_GFS * WRTTASK_PER_GROUP_PER_THREAD_GFS ))
+    export ntasks_quilt
+    export ntasks_quilt_gfs
+    export ntasks_cice6=72
+    export nthreads_cice6=1
+    export ntasks_mom6=130
+    export nthreads_mom6=1
+    export ntasks_ww3=262
+    export nthreads_ww3=1
+    ;;
+     *)
+    ;;
+esac
+
 echo "END: config.ufs"

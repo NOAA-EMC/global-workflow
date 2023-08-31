@@ -128,6 +128,9 @@ export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
+# PROTO settings
+export PROTO=@PROTO@
+
 # APP settings
 export APP=@APP@
 
@@ -151,6 +154,19 @@ export OPS_RES="C768" # Do not change
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENS="@CASEENS@"
+#
+# Setup prototype cases
+case "${PROTO}" in
+  EP4A)
+    APP="S2SWA"
+    CASE="C384"
+    CASE_ENS="C384"
+    ;;
+  *)
+    ;;
+esac
+
+
 # TODO: This should not depend on $CASE or $CASE_ENS
 # These are the currently available grid-combinations
 case "${CASE}" in
@@ -321,5 +337,18 @@ export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capabili
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
 export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
+
+# Setup prototype cases
+case "${PROTO}" in
+  EP4A)
+    APP="S2SWA"
+    CASE="C384"
+    CASE_ENS="C384"
+    OCNRES=025
+    waveGRD='glo_025'
+    ;;
+  *)
+    ;;
+esac
 
 echo "END: config.base"
