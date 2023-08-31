@@ -1,0 +1,8 @@
+#====== BIOMASS BURNING EMISSIONS =======================================
+
+# NONE
+#--------------------------------------------------------------------------------------------------------------------------------
+SU_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none none biomass /dev/null
+OC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none none biomass /dev/null
+BC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none none biomass /dev/null
+EMI_NH3_BB NA  N Y %y4-%m2-%d2t12:00:00 none none biomass /dev/null
