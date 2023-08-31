@@ -15,7 +15,7 @@ nm=0
 while IFS= read -r line; do
   echo "${nm} ${line}" >> "${DATA:-}/cmdfile_srun"
   ((nm=nm+1))
-done < ${cmdfile}
+done < "${cmdfile}"
 
 nprocs=$(wc -l < "${DATA:-}/cmdfile_srun")
 set +e

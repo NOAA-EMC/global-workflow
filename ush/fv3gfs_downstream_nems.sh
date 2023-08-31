@@ -72,7 +72,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     grp="b"
   fi
 
-  # process  Grib files to run downstream jobs using MPMD
+  # process Grib files to run downstream jobs using MPMD
   tmpfile="tmpfile${grp}_${fhr3}"
 
   # shellcheck disable=SC2312
@@ -85,32 +85,29 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   inv=$(( ncount / nproc ))
   rm -f "${DATA}/poescript"
 
-  iproc=1
-  end=0
-  while (( iproc <= nproc )); do
-    start=$(( end + 1 ))
-    end=$(( start + inv - 1 ))
-    if (( end >= ncount )); then
-      (( end = ncount ))
-    fi
+  last=0
+  for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
+    first=$((last + 1))
+    last=$((last + inv))
+    if (( last > ncount )); then (( last = ncount )); fi
 
     # if final record of is u-component, add next record v-component
     # if final record is land, add next record icec
     # grep returns 1 if no match is found, so temporarily turn off exit on non-zero rc
     set +e
     # shellcheck disable=SC2312
-    ${WGRIB2} -d "${end}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land"
+    ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land"
     rc=$?
     set_strict
     if (( rc == 0 )); then  # Matched the grep
-      end=$(( end + 1 ))
+      last=$(( last + 1 ))
     fi
     if (( iproc == nproc )); then
-      end=${ncount}
+      last=${ncount}
     fi
 
     # Break tmpfile into processor specific chunks in preparation for MPMD
-    ${WGRIB2} "${tmpfile}" -for "${start}":"${end}" -grib "${tmpfile}_${iproc}"
+    ${WGRIB2} "${tmpfile}" -for "${first}":"${last}" -grib "${tmpfile}_${iproc}"
     export err=$?; err_chk
     input_file="${tmpfile}_${iproc}"
     output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
@@ -118,29 +115,25 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
     # if at final record and have not reached the final processor then write echo's to
     # poescript for remaining processors
-    if (( end == ncount )); then
-      while (( iproc < nproc )); do
-        iproc=$(( iproc + 1 ))
-        echo "/bin/echo ${iproc}" >> "${DATA}/poescript"
+    if (( last == ncount )); then
+      for (( pproc = iproc+1 ; pproc < nproc ; pproc++ )); do
+        echo "/bin/echo ${pproc}" >> "${DATA}/poescript"
       done
       break
     fi
-    iproc=$(( iproc + 1 ))
-  done
+  done  # for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
 
   # Run with MPMD or serial
   if [[ "${USE_CFP:-}" = "YES" ]]; then
     "${HOMEgfs}/ush/run_mpmd.sh" "${DATA}/poescript"
-    err=$?
+    export err=$?
   else
     chmod 755 "${DATA}/poescript"
     bash +x "${DATA}/poescript" 2>&1 mpmd.out
-    err=$?
+    export err=$?
   fi
-  if (( err != 0 )); then
-    echo "FATAL ERROR: mpmd failed; ABORT!"
-    exit 9
-  fi
+  err_chk
+
   # We are in a loop over downset, save output from mpmd into nset specific output
   cat mpmd.out  # so we capture output into the main logfile
   mv mpmd.out "mpmd_${nset}.out"
