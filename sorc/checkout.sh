@@ -15,6 +15,8 @@ Usage: ${BASH_SOURCE[0]} [-c][-h][-m ufs_hash]
     Create a fresh clone (delete existing directories)
   -h:
     Print this help message and exit
+  -r ufs_repo:
+    Check out this UFS repository instead of the default
   -m ufs_hash:
     Check out this UFS hash instead of the default
   -g:
@@ -107,8 +109,12 @@ export CLEAN="NO"
 checkout_gsi="NO"
 checkout_gdas="NO"
 
+ufs_model_hash=4d05445
+ufs_model_repo=https://github.com/ufs-community/ufs-weather-model
+ufs_model_proto=none
+
 # Parse command line arguments
-while getopts ":chgum:o" option; do
+while getopts ":chgur:m:op:" option; do
   case ${option} in
     c)
       echo "Received -c flag, will delete any existing directories and start clean"
@@ -122,6 +128,14 @@ while getopts ":chgum:o" option; do
     u)
       echo "Received -u flag for optional checkout of UFS-based DA"
       checkout_gdas="YES"
+      ;;
+    p)
+      echo "Received -p flag with argument, will check out ufs-weather-model prototype ${OPTARG} instead of default"
+      ufs_model_proto=${OPTARG}
+      ;;
+    r)
+      echo "Received -r flag with argument, will check out ufs-weather-model repository ${OPTARG} instead of default"
+      ufs_model_repo=${OPTARG}
       ;;
     m)
       echo "Received -m flag with argument, will check out ufs-weather-model hash ${OPTARG} instead of default"
@@ -148,11 +162,20 @@ mkdir -p "${logdir}"
 source "${topdir}/../workflow/gw_setup.sh"
 
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
+case "${ufs_model_proto}" in
+  EP4A)
+    ufs_model_repo=https://github.com/rmontuoro/ufs-weather-model
+    ufs_model_hash=ee4992b
+    ;;
+  *)
+    ;;
+esac
+
 errs=0
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab"                    ; errs=$((errs + $?))
 checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "8965258"                    ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471"                    ; errs=$((errs + $?))
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-4d05445}" ; errs=$((errs + $?))
+checkout "ufs_model.fd"    "${ufs_model_repo}"                                  "${ufs_model_hash}"          ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
 
 if [[ ${checkout_gsi} == "YES" ]]; then
@@ -167,6 +190,43 @@ if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
   checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
   checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "45783e3"; errs=$((errs + $?))
 fi
+
+cd "${topdir}" || exit 1
+
+case "${ufs_model_proto}" in
+  EP4A)
+    echo -n "Patching UFS prototype source code for global workflow compatibility ... "
+    ed <<-"EOF" >> ${logdir}/checkout_ufs_model.log
+	e ufs_model.fd/tests/detect_machine.sh
+	/Append compiler
+	.,$d
+	w
+	e ufs_model.fd/tests/compile.sh
+	/BUILD_NAME=fv3
+	a
+
+	compiler=${4:-intel}
+	clean_before=${5:-YES}
+	clean_after=${6:-YES}
+	MACHINE_ID=${MACHINE_ID}.${compiler}
+	.
+	w
+	q
+	EOF
+    if [ $? -eq 0 ]; then
+      > ufs_model.fd/FV3/ccpp/physics/physics/noahmptable.tbl
+    fi
+    if [ $? -eq 0 ]; then
+      echo SUCCESS
+    else
+      errs=$((errs + $?))
+      echo FAILED
+    fi
+    ;;
+  *)
+    ;;
+esac
+
 
 if (( errs > 0 )); then
   echo "WARNING: One or more errors encountered during checkout process, please check logs before building"
