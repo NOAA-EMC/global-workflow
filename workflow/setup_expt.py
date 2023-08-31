@@ -316,7 +316,8 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
-        "@APP@": inputs.app
+        "@APP@": inputs.app,
+        "@PROTO@": inputs.proto
     }
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
@@ -430,8 +431,10 @@ def input_args(*argv):
         return parser
 
     def _gfs_or_gefs_forecast_args(parser):
+        parser.add_argument('--proto', help='UFS prototype', type=str,
+                            choices=['EP4A'], required=False, default='None')
         parser.add_argument('--app', help='UFS application', type=str,
-                            choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
+                            choices=ufs_apps + ['S2SWA', 'EP4A'], required=False, default='ATM')
         parser.add_argument('--gfs_cyc', help='Number of forecasts per day', type=int,
                             choices=[1, 2, 4], default=1, required=False)
         return parser
