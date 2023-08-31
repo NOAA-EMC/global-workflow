@@ -8,6 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 # Set variables used in the script
 ##############################################
 export CDUMP=${RUN/enkf}
+[[ ${DO_WAVE} == "YES" ]] && declare -rx RUNwave="${RUN}wave"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -29,7 +30,6 @@ if [[ $CDUMP == "gfs" ]]; then
 fi
 export ENSEND=$((NMEM_EFCSGRP * 10#${ENSGRP}))
 export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
-
 
 ###############################################################
 # Run relevant script
