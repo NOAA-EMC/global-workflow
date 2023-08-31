@@ -9,7 +9,7 @@ if [[ $# -ne 1 ]]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "coupled_ic aerosol_init"
-    echo "prep preplandobs prepiodaobs"
+    echo "prep preplandobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl"
@@ -73,12 +73,12 @@ elif [[ "${step}" = "preplandobs" ]]; then
     npe_node_preplandobs=1
     export npe_node_preplandobs
 
-elif [[ "${step}" = "prepiodaobs" ]]; then
-    export wtime_prepiodaobs="00:10:00"
-    export npe_prepiodaobs=1
-    export nth_prepiodaobs=1
-    npe_node_prepiodaobs=$(echo "${npe_node_max} / ${nth_prepiodaobs}" | bc)
-    export npe_node_prepiodaobs
+elif [[ "${step}" = "prepatmiodaobs" ]]; then
+    export wtime_prepatmiodaobs="00:10:00"
+    export npe_prepatmiodaobs=1
+    export nth_prepatmiodaobs=1
+    npe_node_prepatmiodaobs=$(echo "${npe_node_max} / ${nth_prepatmiodaobs}" | bc)
+    export npe_node_prepatmiodaobs
 
 elif [[ "${step}" = "aerosol_init" ]]; then
     export wtime_aerosol_init="00:05:00"
