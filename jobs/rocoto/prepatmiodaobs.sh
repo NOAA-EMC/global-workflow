@@ -13,6 +13,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_PREP_IODA_OBS"
+"${HOMEgfs}/jobs/JGLOBAL_ATM_PREP_IODA_OBS"
 status=$?
 exit "${status}"
