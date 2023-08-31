@@ -256,7 +256,7 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
 
    # below lines are for creating JEDI YAML
    case ${CASE} in
-     C768)
+      C768)
         layout_x=8
         layout_y=8
         ;;
@@ -264,9 +264,14 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
         layout_x=8
         layout_y=8
         ;;
-     C192 | C96 | C48)
+      C192 | C96)
         layout_x=8
         layout_y=8
+        ;;
+      C48 )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
         ;;
       *)
           echo "FATAL ERROR: Resolution not supported for aerosol analysis'"
@@ -286,7 +291,7 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
 elif [[ "${step}" = "aeroanlrun" ]]; then
 
    case ${CASE} in
-     C768)
+      C768)
         layout_x=8
         layout_y=8
         ;;
@@ -294,9 +299,14 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
         layout_x=8
         layout_y=8
         ;;
-     C192 | C96 | C48)
+      C192 | C96)
         layout_x=8
         layout_y=8
+        ;;
+      C48 )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
         ;;
       *)
           echo "FATAL ERROR: Resolution ${CASE} is not supported, ABORT!"
