@@ -3,8 +3,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "sfc_prep" -c "base"
 
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 

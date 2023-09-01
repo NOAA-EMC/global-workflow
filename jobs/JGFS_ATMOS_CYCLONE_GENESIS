@@ -4,9 +4,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 
 
-# TODO (#1220) Determine if this is still needed
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
 ##############################################
 # Set variables used in the exglobal script
 ##############################################
@@ -33,7 +30,7 @@ export SCRIPTens_tracker=${SCRIPTens_tracker:-${HOMEens_tracker}/scripts}
 # Define COM directories
 ##############################################
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GENESIS
-YMD=${PDY} HH=${cyc} GRID="0p25" generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_TMPL
+YMD=${PDY} HH=${cyc} GRID="0p25" generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
 
 # The following variables are used by the tracker scripts which are outside
 #   of global-workflow and therefore can't be standardized at this time

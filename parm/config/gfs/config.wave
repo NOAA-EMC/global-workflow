@@ -135,7 +135,9 @@ if [[ "${CDUMP}" != gfs ]]; then    # Setting is valid for GDAS and GEFS
 else                              # This is a GFS run
   rst_dt_gfs=$(( restart_interval_gfs * 3600 ))  # TODO: This calculation needs to move to parsing_namelists_WW3.sh
   if [[ ${rst_dt_gfs} -gt 0 ]]; then
-    export DT_1_RST_WAV=${rst_dt_gfs:-0}   # time between restart files, set to DTRST=1 for a single restart file
+    export DT_1_RST_WAV=0 #${rst_dt_gfs:-0}   # time between restart files, set to DTRST=1 for a single restart file
+                                          #temporarily set to zero to avoid a clash in requested restart times 
+                                          #which makes the wave model crash a fix for the model issue will be coming
     export DT_2_RST_WAV=${rst_dt_gfs:-0}   # restart stride for checkpointing restart
   else
     rst_dt_fhmax=$(( FHMAX_WAV * 3600 ))

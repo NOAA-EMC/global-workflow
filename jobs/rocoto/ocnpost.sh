@@ -21,9 +21,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnpost" -c "base ocnpost"
 # Set variables used in the exglobal script
 ##############################################
 export CDUMP=${RUN/enkf}
-if [[ ${RUN_ENVIR} = "nco" ]]; then
-    export ROTDIR=${COMROOT:?}/${NET}/${envir}
-fi
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -49,7 +46,7 @@ export ENSMEM=${ENSMEM:-000}
 export IDATE=${PDY}${cyc}
 
 for fhr in ${fhrlst}; do
-  export fhr=${fhr}  
+  export fhr=${fhr}
   # Ignore possible spelling error (nothing is misspelled)
   # shellcheck disable=SC2153
   VDATE=$(${NDATE} "${fhr}" "${IDATE}")
@@ -110,7 +107,7 @@ for fhr in ${fhrlst}; do
       status=$?
       [[ ${status} -ne 0 ]] && exit "${status}"
     fi
-  fi 
+  fi
 done
 
 # clean up working folder

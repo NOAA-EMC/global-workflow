@@ -3,9 +3,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
 
-# TODO (#1220) Evaluate if this is still needed
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
 
 ##############################################
 # Set variables used in the exglobal script
