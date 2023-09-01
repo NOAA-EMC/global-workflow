@@ -30,7 +30,7 @@ export SENDAWIP=${SENDAWIP:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_WMO
-GRID="0p25" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_TMPL
+GRID="0p25" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
 
 if [[ ${SENDCOM} == "YES" && ! -d "${COM_ATMOS_WMO}" ]] ; then
   mkdir -m 775 -p "${COM_ATMOS_WMO}"
