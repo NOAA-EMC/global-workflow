@@ -345,6 +345,7 @@ cat >> input.nml <<EOF
   iopt_tbot    = ${iopt_tbot:-"2"}
   iopt_stc     = ${iopt_stc:-"1"}
   iopt_trs     = ${iopt_trs:-"2"}
+  iopt_diag    = ${iopt_diag:-"3"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = ${nstf_name}
   nst_anl      = ${nst_anl}
