@@ -18,7 +18,7 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 ###############################################################
 # Run relevant script
 EXSCRIPT=${BUFR2IODASH:-${HOMEgfs}/ush/run_bufr2ioda.py}
-${EXSCRIPT} "${PDY}${cyc}" "${CDUMP}" "${DMPDIR}" "${IODAPARM}" "${COM_OBS}/"
+${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${IODAPARM}" "${COM_OBS}/"
 status=$?
 [[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")
 
