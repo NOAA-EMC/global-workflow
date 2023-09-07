@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 
