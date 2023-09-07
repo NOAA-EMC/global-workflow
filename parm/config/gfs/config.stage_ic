@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-########## config.coupled_ic ##########
+########## config.stage_ic ##########
 
 echo "BEGIN: config.stage_ic"
 
