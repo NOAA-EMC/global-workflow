@@ -58,7 +58,7 @@ for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    # Make sure all files are available:
    ic=0
    while (( ic < 1000 )); do
-      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.logf${hh3}.${logfm}" ]]; then
+      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}" ]]; then
           sleep 10
           ic=$((ic + 1))
       else
