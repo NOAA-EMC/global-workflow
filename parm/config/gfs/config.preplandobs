@@ -10,8 +10,6 @@ echo "BEGIN: config.preplandobs"
 
 export GTS_OBS_LIST="${HOMEgfs}/sorc/gdas.cd/parm/land/prep/prep_gts.yaml"
 export BUFR2IODAX="${HOMEgfs}/exec/bufr2ioda.x"
-export BUFRADPSFCYAML="${HOMEgfs}/sorc/gdas.cd/test/testinput/bufr_adpsfc_snow.yaml"
-export BUFRSNOCVRYAML="${HOMEgfs}/sorc/gdas.cd/test/testinput/bufr_snocvr.yaml"
 export FIMS_NML_TMPL="${HOMEgfs}/sorc/gdas.cd/parm/land/prep/fims.nml.j2"
 export IMS_OBS_LIST="${HOMEgfs}/sorc/gdas.cd/parm/land/prep/prep_ims.yaml"
 export CALCFIMSEXE="${HOMEgfs}/exec/calcfIMS.exe"
