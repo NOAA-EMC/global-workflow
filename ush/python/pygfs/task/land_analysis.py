@@ -108,6 +108,7 @@ class LandAnalysis(Analysis):
 
         # Create executable instance
         exe = Executable(self.task_config.BUFR2IODAX)
+
         def _gtsbufr2iodax(exe, yaml_file):
             if not os.path.isfile(yaml_file):
                 logger.exception(f"{yaml_file} not found")
