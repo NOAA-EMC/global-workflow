@@ -90,12 +90,12 @@ class LandAnalysis(Analysis):
         # generate bufr2ioda YAML files
         adpsfc_yaml = os.path.join(self.runtime_config.DATA, "bufr_adpsfc_snow.yaml")
         logger.info(f"Generate BUFR2IODA YAML file: {adpsfc_yaml}")
-        temp_yaml = parse_j2yaml(self.task_config.BUFRADPSFCYAML, self.task_config)
+        temp_yaml = parse_j2yaml(self.task_config.BUFRADPSFCYAML, localconf)
         save_as_yaml(temp_yaml, adpsfc_yaml)
         logger.info(f"Wrote bufr2ioda YAML to: {adpsfc_yaml}")
         snocvr_yaml = os.path.join(self.runtime_config.DATA, "bufr_snocvr.yaml")
         logger.info(f"Generate BUFR2IODA YAML file: {snocvr_yaml}")
-        temp_yaml = parse_j2yaml(self.task_config.BUFRSNOCVRYAML, self.task_config)
+        temp_yaml = parse_j2yaml(self.task_config.BUFRSNOCVRYAML, localconf)
         save_as_yaml(temp_yaml, snocvr_yaml)
         logger.info(f"Wrote bufr2ioda YAML to: {snocvr_yaml}")
 
@@ -106,45 +106,30 @@ class LandAnalysis(Analysis):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
+        # Create executable instance
+        exe = Executable(self.task_config.BUFR2IODAX)
+        def _gtsbufr2iodax(exe, yaml_file):
+            if not os.path.isfile(yaml_file):
+                logger.exception(f"{yaml_file} not found")
+                raise FileNotFoundError(yaml_file)
+
+            logger.info(f"Executing {exe}")
+            try:
+                exe(yaml_file)
+            except OSError:
+                raise OSError(f"Failed to execute {exe} {yaml_file}")
+            except Exception:
+                raise WorkflowException(f"An error occured during execution of {exe} {yaml_file}")
+
         output_file = f"{localconf.OPREFIX}adpsfc_snow.nc4"
         if os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
             rm_p(output_file)
 
         # execute BUFR2IODAX to convert adpsfc bufr data into IODA format
-        yaml_file = f"bufr_adpsfc_snow.yaml"
-        if not os.path.isfile(f"{os.path.join(localconf.DATA, yaml_file)}"):
-            logger.exception(f"{yaml_file} not found")
-            raise FileNotFoundError(f"{os.path.join(localconf.DATA, yaml_file)}")
-        exe = Executable(self.task_config.BUFR2IODAX)
-        exe.add_default_arg(os.path.join(localconf.DATA, f"{yaml_file}"))
-
-        logger.info(f"Executing {exe}")
-        try:
-            exe()
-        except OSError:
-            raise OSError(f"Failed to execute {exe}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exe}")
-
-        output_file = f"{localconf.OPREFIX}snocvr_snow.nc4"
-        if os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
-            rm_p(output_file)
+        _gtsbufr2iodax(exe, os.path.join(localconf.DATA, "bufr_adpsfc_snow.yaml"))
 
         # execute BUFR2IODAX to convert snocvr bufr data into IODA format
-        yaml_file = f"bufr_snocvr.yaml"
-        if not os.path.isfile(f"{os.path.join(localconf.DATA, yaml_file)}"):
-            logger.exception(f"{yaml_file} not found")
-            raise FileNotFoundError(f"{os.path.join(localconf.DATA, yaml_file)}")
-        exe = Executable(self.task_config.BUFR2IODAX)
-        exe.add_default_arg(os.path.join(localconf.DATA, f"{yaml_file}"))
-
-        logger.info(f"Executing {exe}")
-        try:
-            exe()
-        except OSError:
-            raise OSError(f"Failed to execute {exe}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exe}")
+        _gtsbufr2iodax(exe, os.path.join(localconf.DATA, "bufr_snocvr.yaml"))
 
         # Ensure the IODA snow depth GTS file is produced by the IODA converter
         # If so, copy to COM_OBS/
