@@ -73,7 +73,7 @@ class LandAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -88,16 +88,12 @@ class LandAnalysis(Analysis):
         FileHandler(prep_gts_config.gtsbufr).sync()
 
         # generate bufr2ioda YAML files
-        adpsfc_yaml = os.path.join(self.runtime_config.DATA, "bufr_adpsfc_snow.yaml")
-        logger.info(f"Generate BUFR2IODA YAML file: {adpsfc_yaml}")
-        temp_yaml = parse_j2yaml(self.task_config.BUFRADPSFCYAML, localconf)
-        save_as_yaml(temp_yaml, adpsfc_yaml)
-        logger.info(f"Wrote bufr2ioda YAML to: {adpsfc_yaml}")
-        snocvr_yaml = os.path.join(self.runtime_config.DATA, "bufr_snocvr.yaml")
-        logger.info(f"Generate BUFR2IODA YAML file: {snocvr_yaml}")
-        temp_yaml = parse_j2yaml(self.task_config.BUFRSNOCVRYAML, localconf)
-        save_as_yaml(temp_yaml, snocvr_yaml)
-        logger.info(f"Wrote bufr2ioda YAML to: {snocvr_yaml}")
+        for name in ["adpsfc", "snocvr"]:
+            gts_yaml = os.path.join(self.runtime_config.DATA, f"bufr_{name}_snow.yaml")
+            logger.info(f"Generate BUFR2IODA YAML file: {gts_yaml}")
+            temp_yaml = parse_j2yaml(prep_gts_config.bufr2ioda[name], localconf)
+            save_as_yaml(temp_yaml, gts_yaml)
+            logger.info(f"Wrote bufr2ioda YAML to: {gts_yaml}")
 
         logger.info("Link BUFR2IODAX into DATA/")
         exe_src = self.task_config.BUFR2IODAX
@@ -130,7 +126,7 @@ class LandAnalysis(Analysis):
         _gtsbufr2iodax(exe, os.path.join(localconf.DATA, "bufr_adpsfc_snow.yaml"))
 
         # execute BUFR2IODAX to convert snocvr bufr data into IODA format
-        _gtsbufr2iodax(exe, os.path.join(localconf.DATA, "bufr_snocvr.yaml"))
+        _gtsbufr2iodax(exe, os.path.join(localconf.DATA, "bufr_snocvr_snow.yaml"))
 
         # Ensure the IODA snow depth GTS file is produced by the IODA converter
         # If so, copy to COM_OBS/
