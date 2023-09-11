@@ -121,7 +121,7 @@ class LandAnalysis(Analysis):
             logger.info(f"Wrote bufr2ioda YAML to: {gts_yaml}")
 
             # execute BUFR2IODAX to convert {name} bufr data into IODA format
-            _gtsbufr2iodax(exe, os.path.join(localconf.DATA, f"bufr_{name}_snow.yaml"))
+            _gtsbufr2iodax(exe, gts_yaml)
 
         # Ensure the IODA snow depth GTS file is produced by the IODA converter
         # If so, copy to COM_OBS/
