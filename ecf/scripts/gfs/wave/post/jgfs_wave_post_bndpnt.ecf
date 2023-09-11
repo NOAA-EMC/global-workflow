@@ -7,6 +7,7 @@
 #PBS -l select=3:ncpus=80:ompthreads=1
 #PBS -l place=vscatter:exclhost
 #PBS -l debug=true
+#PBS -l ldebug=true
 
 model=gfs
 %include <head.h>
