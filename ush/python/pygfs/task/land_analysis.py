@@ -87,14 +87,6 @@ class LandAnalysis(Analysis):
         logger.info("Copying GTS obs for bufr2ioda.x")
         FileHandler(prep_gts_config.gtsbufr).sync()
 
-        # generate bufr2ioda YAML files
-        for name in ["adpsfc", "snocvr"]:
-            gts_yaml = os.path.join(self.runtime_config.DATA, f"bufr_{name}_snow.yaml")
-            logger.info(f"Generate BUFR2IODA YAML file: {gts_yaml}")
-            temp_yaml = parse_j2yaml(prep_gts_config.bufr2ioda[name], localconf)
-            save_as_yaml(temp_yaml, gts_yaml)
-            logger.info(f"Wrote bufr2ioda YAML to: {gts_yaml}")
-
         logger.info("Link BUFR2IODAX into DATA/")
         exe_src = self.task_config.BUFR2IODAX
         exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
@@ -118,11 +110,18 @@ class LandAnalysis(Analysis):
             except Exception:
                 raise WorkflowException(f"An error occured during execution of {exe} {yaml_file}")
 
-        # execute BUFR2IODAX to convert adpsfc bufr data into IODA format
-        _gtsbufr2iodax(exe, os.path.join(localconf.DATA, "bufr_adpsfc_snow.yaml"))
+        # Loop over entries in prep_gts_config.bufr2ioda keys
+        # 1. generate bufr2ioda YAML files
+        # 2. execute bufr2ioda.x
+        for name in prep_gts_config.bufr2ioda.keys():
+            gts_yaml = os.path.join(self.runtime_config.DATA, f"bufr_{name}_snow.yaml")
+            logger.info(f"Generate BUFR2IODA YAML file: {gts_yaml}")
+            temp_yaml = parse_j2yaml(prep_gts_config.bufr2ioda[name], localconf)
+            save_as_yaml(temp_yaml, gts_yaml)
+            logger.info(f"Wrote bufr2ioda YAML to: {gts_yaml}")
 
-        # execute BUFR2IODAX to convert snocvr bufr data into IODA format
-        _gtsbufr2iodax(exe, os.path.join(localconf.DATA, "bufr_snocvr_snow.yaml"))
+            # execute BUFR2IODAX to convert {name} bufr data into IODA format
+            _gtsbufr2iodax(exe, os.path.join(localconf.DATA, f"bufr_{name}_snow.yaml"))
 
         # Ensure the IODA snow depth GTS file is produced by the IODA converter
         # If so, copy to COM_OBS/
