@@ -71,7 +71,7 @@ export FINT=$NINT1
 
    ic=0
    while [ $ic -lt 1000 ]; do
-      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.logf${FEND}.${logfm}" ]]; then
+      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${FEND}.${logfm}" ]]; then
           sleep 10
           ic=$(expr $ic + 1)
       else

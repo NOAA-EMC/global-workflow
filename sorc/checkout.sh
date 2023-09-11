@@ -150,17 +150,17 @@ source "${topdir}/../workflow/gw_setup.sh"
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab"                    ; errs=$((errs + $?))
-checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "8965258"                    ; errs=$((errs + $?))
+checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "a283262"                    ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471"                    ; errs=$((errs + $?))
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-4d05445}" ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "8735959" "NO"; errs=$((errs + $?))
+  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "accb07e" "NO"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "f614cc2"; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "ac8fdb1"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
