@@ -118,10 +118,6 @@ class LandAnalysis(Analysis):
             except Exception:
                 raise WorkflowException(f"An error occured during execution of {exe} {yaml_file}")
 
-        output_file = f"{localconf.OPREFIX}adpsfc_snow.nc4"
-        if os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
-            rm_p(output_file)
-
         # execute BUFR2IODAX to convert adpsfc bufr data into IODA format
         _gtsbufr2iodax(exe, os.path.join(localconf.DATA, "bufr_adpsfc_snow.yaml"))
 
@@ -133,7 +129,7 @@ class LandAnalysis(Analysis):
         try:
             FileHandler(prep_gts_config.gtsioda).sync()
         except OSError as err:
-            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce {output_file}")
+            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce GTS ioda files")
             raise OSError(err)
 
     @logit(logger)
