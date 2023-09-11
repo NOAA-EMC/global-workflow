@@ -8,13 +8,10 @@ if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-<<<<<<< HEAD
     echo "stage_ic aerosol_init"
     echo "prep preplandobs"
-=======
     echo "coupled_ic aerosol_init"
     echo "prep preplandobs prepatmiodaobs"
->>>>>>> 06c2e284bf41a812c9f6c38bc31cbc9737454d72
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl"
