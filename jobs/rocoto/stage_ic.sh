@@ -11,7 +11,7 @@ export job="stage_ic"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGLOBAL_STAGE_IC
+"${HOMEgfs}/jobs/JGLOBAL_STAGE_IC"
 status=$?
 
 
