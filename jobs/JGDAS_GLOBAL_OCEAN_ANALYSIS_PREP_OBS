@@ -14,9 +14,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Add UFSDA to PYTHONPATH
-export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/:${HOMEgfs}/sorc/gdas.cd/ush/eva:${PYTHONPATH}
-export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/soca:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script
