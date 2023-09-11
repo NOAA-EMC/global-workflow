@@ -99,7 +99,7 @@ use_gfs_nemsio=".false."
 paranc=${paranc:-".true."}
 WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
 if [ $DO_CALC_INCREMENT = "YES" ]; then
-   write_fv3_incr=".false." 
+   write_fv3_incr=".false."
 else
    write_fv3_incr=".true."
 fi
@@ -255,7 +255,7 @@ cat > enkf.nml << EOFnml
 &nam_enkf
    datestring="${PDY}${cyc}",datapath="$DATA/",
    analpertwtnh=${analpertwt},analpertwtsh=${analpertwt},analpertwttr=${analpertwt},
-   covinflatemax=1.e2,covinflatemin=1,pseudo_rh=.true.,iassim_order=0,
+   covinflatemax=1.e2,covinflatemin=1,pseudo_rh=.false.,iassim_order=0,
    corrlengthnh=${corrlength},corrlengthsh=${corrlength},corrlengthtr=${corrlength},
    lnsigcutoffnh=${lnsigcutoff},lnsigcutoffsh=${lnsigcutoff},lnsigcutofftr=${lnsigcutoff},
    lnsigcutoffpsnh=${lnsigcutoff},lnsigcutoffpssh=${lnsigcutoff},lnsigcutoffpstr=${lnsigcutoff},
@@ -269,7 +269,7 @@ cat > enkf.nml << EOFnml
    use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},imp_physics=$imp_physics,lupp=$lupp,
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    letkf_flag=${letkf_flag},nobsl_max=${nobsl_max},denkf=${denkf},getkf=${getkf}.,
-   nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},use_qsatensmean=.true.,
+   nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},
    lobsdiag_forenkf=$lobsdiag_forenkf,
    write_spread_diag=$write_spread_diag,
    modelspace_vloc=$modelspace_vloc,
