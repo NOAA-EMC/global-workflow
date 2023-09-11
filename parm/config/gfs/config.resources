@@ -8,8 +8,13 @@ if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
+<<<<<<< HEAD
     echo "stage_ic aerosol_init"
     echo "prep preplandobs"
+=======
+    echo "coupled_ic aerosol_init"
+    echo "prep preplandobs prepatmiodaobs"
+>>>>>>> 06c2e284bf41a812c9f6c38bc31cbc9737454d72
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl"
@@ -72,6 +77,13 @@ elif [[ "${step}" = "preplandobs" ]]; then
     export nth_preplandobs=1
     npe_node_preplandobs=1
     export npe_node_preplandobs
+
+elif [[ "${step}" = "prepatmiodaobs" ]]; then
+    export wtime_prepatmiodaobs="00:10:00"
+    export npe_prepatmiodaobs=1
+    export nth_prepatmiodaobs=1
+    npe_node_prepatmiodaobs=$(echo "${npe_node_max} / ${nth_prepatmiodaobs}" | bc)
+    export npe_node_prepatmiodaobs
 
 elif [[ "${step}" = "aerosol_init" ]]; then
     export wtime_aerosol_init="00:05:00"
@@ -249,7 +261,7 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
 
    # below lines are for creating JEDI YAML
    case ${CASE} in
-     C768)
+      C768)
         layout_x=8
         layout_y=8
         ;;
@@ -257,9 +269,14 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
         layout_x=8
         layout_y=8
         ;;
-     C192 | C96 | C48)
+      C192 | C96)
         layout_x=8
         layout_y=8
+        ;;
+      C48 )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
         ;;
       *)
           echo "FATAL ERROR: Resolution not supported for aerosol analysis'"
@@ -279,7 +296,7 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
 elif [[ "${step}" = "aeroanlrun" ]]; then
 
    case ${CASE} in
-     C768)
+      C768)
         layout_x=8
         layout_y=8
         ;;
@@ -287,9 +304,14 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
         layout_x=8
         layout_y=8
         ;;
-     C192 | C96 | C48)
+      C192 | C96)
         layout_x=8
         layout_y=8
+        ;;
+      C48 )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
         ;;
       *)
           echo "FATAL ERROR: Resolution ${CASE} is not supported, ABORT!"

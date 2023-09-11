@@ -1,4 +1,0 @@
-defaults:
-  !INC {{ HOMEgfs }}/parm/config/gefs/yaml/defaults.yaml
-base:
-  ACCOUNT: ${SLURM_ACCOUNT}
