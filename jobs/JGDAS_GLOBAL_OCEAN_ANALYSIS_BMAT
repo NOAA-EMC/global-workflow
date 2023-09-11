@@ -1,5 +1,5 @@
 #!/bin/bash
-export STRICT="NO"
+#export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 
