@@ -2,9 +2,6 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-
-source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
-
 # Locally scoped variables and functions
 # shellcheck disable=SC2153
 GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
