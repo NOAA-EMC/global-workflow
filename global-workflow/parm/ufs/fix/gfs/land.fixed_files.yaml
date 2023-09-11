@@ -1,0 +1,58 @@
+copy:
+     
+     # Files from FIX_orog/C??.mx??_frac/sfc
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).facsf.tile1.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).facsf.tile2.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).facsf.tile3.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).facsf.tile4.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).facsf.tile5.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).facsf.tile6.nc, $(DATA)/]
+
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).maximum_snow_albedo.tile1.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).maximum_snow_albedo.tile2.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).maximum_snow_albedo.tile3.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).maximum_snow_albedo.tile4.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).maximum_snow_albedo.tile5.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).maximum_snow_albedo.tile6.nc, $(DATA)/]
+
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).slope_type.tile1.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).slope_type.tile2.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).slope_type.tile3.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).slope_type.tile4.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).slope_type.tile5.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).slope_type.tile6.nc, $(DATA)/]
+
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).snowfree_albedo.tile1.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).snowfree_albedo.tile2.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).snowfree_albedo.tile3.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).snowfree_albedo.tile4.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).snowfree_albedo.tile5.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).snowfree_albedo.tile6.nc, $(DATA)/]
+
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).soil_type.tile1.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).soil_type.tile2.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).soil_type.tile3.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).soil_type.tile4.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).soil_type.tile5.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).soil_type.tile6.nc, $(DATA)/]
+
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).substrate_temperature.tile1.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).substrate_temperature.tile2.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).substrate_temperature.tile3.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).substrate_temperature.tile4.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).substrate_temperature.tile5.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).substrate_temperature.tile6.nc, $(DATA)/]
+
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_greenness.tile1.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_greenness.tile2.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_greenness.tile3.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_greenness.tile4.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_greenness.tile5.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_greenness.tile6.nc, $(DATA)/]
+
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_type.tile1.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_type.tile2.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_type.tile3.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_type.tile4.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_type.tile5.nc, $(DATA)/]
+     - [$(FIX_orog)/$(atm_res).mx$(ocn_res)_frac/sfc/$(atm_res).mx$(ocn_res).vegetation_type.tile6.nc, $(DATA)/]

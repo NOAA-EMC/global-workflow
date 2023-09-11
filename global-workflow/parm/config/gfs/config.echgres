@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.echgres ##########
+# regrid full-res forecast for use in ensemble-res analysis generation
+
+echo "BEGIN: config.echgres"
+
+# Get task specific resources
+. $EXPDIR/config.resources echgres
+
+echo "END: config.echgres"

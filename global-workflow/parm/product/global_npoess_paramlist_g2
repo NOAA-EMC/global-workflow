@@ -1,0 +1,86 @@
+HGT:1000 mb
+HGT:100 mb
+HGT:10 mb
+HGT:150 mb
+HGT:200 mb
+HGT:20 mb
+HGT:250 mb
+HGT:300 mb
+HGT:30 mb
+HGT:350 mb
+HGT:400 mb
+HGT:450 mb
+HGT:500 mb
+HGT:50 mb
+HGT:550 mb
+HGT:600 mb
+HGT:650 mb
+HGT:700 mb
+HGT:70 mb
+HGT:750 mb
+HGT:800 mb
+HGT:850 mb
+HGT:900 mb
+HGT:925 mb
+HGT:950 mb
+HGT:975 mb
+HGT:surface
+HGT:tropopause
+PRES:surface
+PRMSL:mean sea level
+PWAT:entire atmosphere
+SPFH:1000 mb
+SPFH:100 mb
+SPFH:150 mb
+SPFH:200 mb
+SPFH:250 mb
+SPFH:2 m above ground
+SPFH:300 mb
+SPFH:350 mb
+SPFH:400 mb
+SPFH:450 mb
+SPFH:500 mb
+SPFH:550 mb
+SPFH:600 mb
+SPFH:650 mb
+SPFH:700 mb
+SPFH:750 mb
+SPFH:800 mb
+SPFH:850 mb
+SPFH:900 mb
+SPFH:925 mb
+SPFH:950 mb
+SPFH:975 mb
+TMP:1000 mb
+TMP:100 mb
+TMP:10 mb
+TMP:150 mb
+TMP:200 mb
+TMP:20 mb
+TMP:250 mb
+:TMP:2 m above ground:
+TMP:300 mb
+TMP:30 mb
+TMP:350 mb
+TMP:400 mb
+TMP:450 mb
+TMP:500 mb
+TMP:50 mb
+TMP:550 mb
+TMP:600 mb
+TMP:650 mb
+TMP:700 mb
+TMP:70 mb
+TMP:750 mb
+TMP:800 mb
+TMP:850 mb
+TMP:900 mb
+TMP:925 mb
+TMP:950 mb
+TMP:975 mb
+TMP:surface
+TOZNE:entire atmosphere (considered as a single layer)
+UGRD:100 m above ground
+UGRD:10 m above ground
+VGRD:100 m above ground
+VGRD:10 m above ground

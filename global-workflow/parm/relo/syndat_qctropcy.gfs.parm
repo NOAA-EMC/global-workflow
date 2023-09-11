@@ -1,0 +1,5 @@
+        IDATEZ=-99999,IUTCZ=-999,MAXUNT=5,WINMIN=10.,LNDFIL=T,
+        IVSBRS=0,3,4,7,8,9,NVSBRS=5
+ /
+   Parm field for GFS version of syndat_qctropcy program
+   (First line is added by script syndat_qctropcy.sh)

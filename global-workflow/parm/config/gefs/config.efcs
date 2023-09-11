@@ -1,0 +1,65 @@
+#! /usr/bin/env bash
+
+########## config.efcs ##########
+# Ensemble forecast specific, dependency: config.fcst
+
+echo "BEGIN: config.efcs"
+
+# TODO: Possibly need OCNRES_ENKF, ICERES_ENKF, WAVRES_ENKF too
+if [[ ${DO_OCN} == "YES" ]]; then
+  case "${CASE_ENS}" in
+    "C48") export OCNRES=500;;
+    "C96") export OCNRES=100;;
+    "C192") export OCNRES=050;;
+    "C384") export OCNRES=025;;
+    "C768") export OCNRES=025;;
+    *) export OCNRES=025;;
+  esac
+fi
+[[ ${DO_ICE} == "YES" ]] && export ICERES=${OCNRES}
+[[ ${DO_WAVE} == "YES" ]] && export waveGRD=${waveGRD_ENKF:-${waveGRD}}  # TODO: will we run waves with a different resolution in the ensemble?
+
+# Source model specific information that is resolution dependent
+string="--fv3 ${CASE_ENS}"
+[[ ${DO_OCN} == "YES" ]] && string="${string} --mom6 ${OCNRES}"
+[[ ${DO_ICE} == "YES" ]] && string="${string} --cice6 ${ICERES}"
+[[ ${DO_WAVE} == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
+# shellcheck disable=SC2086
+source "${EXPDIR}/config.ufs" ${string}
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" efcs
+
+# Use serial I/O for ensemble (lustre?)
+export OUTPUT_FILETYPE_ATM="netcdf"
+export OUTPUT_FILETYPE_SFC="netcdf"
+
+# Number of enkf members per fcst job
+export NMEM_EFCSGRP=1
+export RERUN_EFCSGRP="NO"
+
+# Turn off inline UPP for EnKF forecast
+export WRITE_DOPOST=".true."
+
+# Stochastic physics parameters (only for ensemble forecasts)
+export DO_SKEB="YES"
+export SKEB=0.3
+export SKEB_TAU=21600.
+export SKEB_LSCALE=250000.
+export SKEBNORM=0
+export SKEB_NPASS=30
+export SKEB_VDOF=5
+export DO_SHUM="YES"
+export SHUM=0.005
+export SHUM_TAU=21600.
+export SHUM_LSCALE=500000.
+export DO_SPPT="YES"
+export SPPT=0.5
+export SPPT_TAU=21600.
+export SPPT_LSCALE=500000.
+export SPPT_LOGIT=".true."
+export SPPT_SFCLIMIT=".true."
+
+export restart_interval=${restart_interval:-6}
+
+echo "END: config.efcs"

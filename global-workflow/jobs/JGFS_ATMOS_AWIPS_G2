@@ -1,0 +1,67 @@
+#! /usr/bin/env bash
+
+########################################
+# GFS_AWIPS_G2 AWIPS PRODUCT GENERATION
+########################################
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
+
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
+
+################################
+# Set up the HOME directory
+################################
+export USHgfs=${USHgfs:-${HOMEgfs}/ush}
+export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
+export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
+export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
+export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
+export FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
+export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export model=${model:-gfs}
+export COMPONENT="atmos"
+
+##############################################
+# Define COM directories
+##############################################
+export SENDDBN=${SENDDBN:-NO}
+export SENDAWIP=${SENDAWIP:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_WMO
+GRID="0p25" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+
+if [[ ${SENDCOM} == "YES" && ! -d "${COM_ATMOS_WMO}" ]] ; then
+  mkdir -m 775 -p "${COM_ATMOS_WMO}"
+fi
+
+export pgmout=OUTPUT.$$
+
+
+########################################################
+# Execute the script.
+#########################################################
+mkdir -m 775 awips_g1
+cd ${DATA}/awips_g1
+${HOMEgfs}/scripts/exgfs_atmos_grib_awips.sh ${fcsthrs}
+export err=$?; err_chk
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [ "${KEEPDATA}" != "YES" ] ; then
+  rm -rf ${DATA}
+fi
+

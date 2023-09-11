@@ -1,0 +1,88 @@
+# This file specifies the directories to be tranatmfered and, optionally, the files within
+# those directories to include or exclude.  If one directory is specified per line, it
+# will be used as both the source and destination.  If two directories are specified per
+# line, separated by one or more spaces, the first will be used as the source and the
+# second the destination.  Directories that begin with "com/" will be resolved using
+# the compath.py utility.  Rules may be placed below each directory or directory pair
+# and must begin with one of the following characters:
+#  -  exclude, specifies an exclude pattern
+#  +  include, specifies an include pattern
+#  .  merge, specifies a merge-file to read for more rules
+#  :  dir-merge, specifies a per-directory merge-file
+#  H  hide, specifies a pattern for hiding files from the tranatmfer
+#  S  show, files that match the pattern are not hidden
+#  P  protect, specifies a pattern for protecting files from deletion
+#  R  risk, files that match the pattern are not protected
+#  !  clear, clears the current include/exclude list (takes no arg)
+#  B  bytes, relative size of the path in relation to the other paths in the list
+#  D  delete, delete extraneous files from destination directories (takes no arg)
+#  E  encrypt, enables data encryption [two cores should be allocated] (takes no arg)
+#  T  two-way syncronization will update both sides with latest changes (takes no arg)
+#  Z  compress data as it is sent, accepts optional compression level argument (1-9)
+# Rules higher in the list take precedence over lower ones.  By default, all files in a
+# directory are included, so if no exclude patterns match that file, it will be
+# tranatmferred.
+
+com/gfs/_ENVIR_/gfs._PDY_/
++ /gfs.t??z.pgrb2.*
++ /gfs.t??z.pgrb2b.*
++ /gfs.t??z.atmf000*
++ /gfs.t??z.atmf004*
++ /gfs.t??z.atmf008*
++ /gfs.t??z.atmf012*
++ /gfs.t??z.atmf016*
++ /gfs.t??z.atmf020*
++ /gfs.t??z.atmf024*
++ /gfs.t??z.atmf028*
++ /gfs.t??z.atmf032*
++ /gfs.t??z.atmf036*
++ /gfs.t??z.atmf040*
++ /gfs.t??z.atmf044*
++ /gfs.t??z.atmf048*
++ /gfs.t??z.atmf052*
++ /gfs.t??z.atmf054*
++ /gfs.t??z.atmf066*
++ /gfs.t??z.atmf076*
++ /gfs.t??z.atmf081*
++ /gfs.t??z.atmf093*
++ /gfs.t??z.atmf105*
++ /gfs.t??z.atmf117*
++ /gfs.t??z.atmf156*
++ /gfs.t??z.atmf219*
++ /gfs.t??z.atmf288*
++ /gfs.t??z.atmf384*
+- *
+B 738000
+ 
+
+com/gfs/_ENVIR_/gfs._PDYm1_/
++ /gfs.t??z.pgrb2.*
++ /gfs.t??z.pgrb2b.*
++ /gfs.t??z.atmf000*
++ /gfs.t??z.atmf004*
++ /gfs.t??z.atmf008*
++ /gfs.t??z.atmf012*
++ /gfs.t??z.atmf016*
++ /gfs.t??z.atmf020*
++ /gfs.t??z.atmf024*
++ /gfs.t??z.atmf028*
++ /gfs.t??z.atmf032*
++ /gfs.t??z.atmf036*
++ /gfs.t??z.atmf040*
++ /gfs.t??z.atmf044*
++ /gfs.t??z.atmf048*
++ /gfs.t??z.atmf052*
++ /gfs.t??z.atmf054*
++ /gfs.t??z.atmf066*
++ /gfs.t??z.atmf076*
++ /gfs.t??z.atmf081*
++ /gfs.t??z.atmf093*
++ /gfs.t??z.atmf105*
++ /gfs.t??z.atmf117*
++ /gfs.t??z.atmf156*
++ /gfs.t??z.atmf219*
++ /gfs.t??z.atmf288*
++ /gfs.t??z.atmf384*
+- *
+B 738000
+ 

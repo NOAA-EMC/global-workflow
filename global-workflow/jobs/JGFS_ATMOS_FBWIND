@@ -1,0 +1,62 @@
+#! /usr/bin/env bash
+
+# TODO (#1221) This job is not part of the rocoto suite
+
+############################################
+# GFS FBWIND PRODUCT GENERATION
+############################################
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base"
+
+################################
+# Set up the HOME directory
+################################
+export USHgfs=${USHgfs:-${HOMEgfs}/ush}
+export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
+export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
+export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
+export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
+export FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
+export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export model=${model:-gfs}
+export COMPONENT="atmos"
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
+
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
+if [ ${SENDCOM} = YES ] ; then
+  mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
+fi
+
+
+########################################################
+# Execute the script.
+${HOMEgfs}/scripts/exgfs_atmos_fbwind.sh
+export err=$?;err_chk
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [ "${KEEPDATA}" != "YES" ] ; then
+  rm -rf ${DATA}
+fi
+

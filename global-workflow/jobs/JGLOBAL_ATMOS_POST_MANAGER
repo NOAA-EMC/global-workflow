@@ -1,0 +1,44 @@
+#! /usr/bin/env bash
+
+# TODO (#1227) This job is not used in the rocoto suite
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
+
+
+####################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+
+####################################
+# Specify version numbers
+####################################
+export gfs_ver=${gfs_ver:-v15.0.0}
+
+####################################
+# Specify Execution Areas
+####################################
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
+export EXECgfs=${HOMEgfs:-${HOMEgfs}/exec}
+export FIXgfs=${HOMEgfs:-${HOMEgfs}/fix}
+export PARMgfs=${HOMEgfs:-${HOMEgfs}/parm}
+export USHgfs=${HOMEgfs:-${HOMEgfs}/ush}
+
+###########################
+# Set up EXT variable
+###########################
+export EXT_FCST=NO
+
+export ROTDIR=${ROTDIR:-${COMROOT:?}/${NET}/${envir}}
+export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+
+
+########################################################
+# Execute the script.
+${HOMEgfs}/scripts/exglobal_atmos_pmgr.sh
+########################################################
+

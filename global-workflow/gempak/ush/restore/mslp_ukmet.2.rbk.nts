@@ -1,0 +1,17 @@
+GAREA   awnh
+GLEVEL  0
+PROJ    
+PANEL   0
+CONTUR  2
+MAP     1
+CLEAR   yes
+CLRBAR  0
+LATLON  1
+GVCORD  NONE                                                                    
+SKIP    0            
+SCALE   0            
+GDPFUN  pmsl         
+TYPE    c
+CINT    4           
+LINE    1/31/2/1/1          
+TEXT    .8/21//hw                                                              

@@ -1,0 +1,81 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDUMP=${RUN/enkf}
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+export CASE=${CASE_ENS}
+
+YMD=${PDY} HH=${cyc} generate_com -rx COM_TOP
+
+
+# Forecast length for EnKF forecast
+export FHMIN=${FHMIN_ENKF}
+export FHOUT=${FHOUT_ENKF}
+export FHMAX=${FHMAX_ENKF}
+
+# Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
+if [[ $CDUMP == "gfs" ]]; then
+    export NMEM_EFCSGRP=${NMEM_EFCSGRP_GFS:-${NMEM_EFCSGRP:-1}}
+fi
+export ENSEND=$((NMEM_EFCSGRP * 10#${ENSGRP}))
+export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
+
+
+###############################################################
+# Run relevant script
+
+${ENKFFCSTSH:-${SCRgfs}/exgdas_enkf_fcst.sh}
+status=$?
+[[ ${status} -ne 0 ]] && exit ${status}
+
+
+# Double check the status of members in ENSGRP
+EFCSGRP="${COM_TOP}/efcs.grp${ENSGRP}"
+npass=0
+if [ -f ${EFCSGRP} ]; then
+    npass=$(grep "PASS" ${EFCSGRP} | wc -l)
+fi
+echo "${npass}/${NMEM_EFCSGRP} members successfull in efcs.grp${ENSGRP}"
+if [ ${npass} -ne ${NMEM_EFCSGRP} ]; then
+    echo "FATAL ERROR: Failed members in group ${ENSGRP}, ABORT!"
+    cat ${EFCSGRP}
+    exit 99
+fi
+
+
+##############################################
+# Send Alerts
+##############################################
+if [ ${SENDDBN} = YES ] ; then
+   ${DBNROOT}/bin/dbn_alert MODEL ENKF1_MSC_fcsstat ${job} ${EFCSGRP}
+fi
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+
+exit 0

@@ -1,0 +1,64 @@
+#
+name: shellnorms
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -o pipefail {0}
+
+jobs:
+  lint-shell:
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - id: ShellCheck
+        name: Lint shell scripts
+        uses: redhat-plumbers-in-action/differential-shellcheck@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: ${{ always() }}
+        name: Upload artifact with ShellCheck defects in SARIF format
+        uses: actions/upload-artifact@v3
+        with:
+          name: Differential ShellCheck SARIF
+          path: ${{ steps.ShellCheck.outputs.sarif }}
+
+  # lint-python:
+  #   runs-on: ubuntu-latest
+
+  #   permissions:
+  #     security-events: write
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     - id: VCS_Diff_Lint
+  #       name: Lint python scripts
+  #       uses: fedora-copr/vcs-diff-lint-action@v1
+
+  #     - if: ${{ always() }}
+  #       name: Upload artifact with detected defects in SARIF format
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: VCS Diff Lint SARIF
+  #         path: ${{ steps.VCS_Diff_Lint.outputs.sarif }}
+
+  #     - if: ${{ failure() }}
+  #       name: Upload SARIF to GitHub using github/codeql-action/upload-sarif
+  #       uses: github/codeql-action/upload-sarif@v2
+  #       with:
+  #         sarif_file: ${{ steps.VCS_Diff_Lint.outputs.sarif }}

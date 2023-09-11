@@ -1,0 +1,20 @@
+GLEVEL  0                                                                       
+GVCORD  none                                                                    
+PANEL   0                                                                       
+SKIP    0                                                                       
+SCALE   0                                                                       
+GDPFUN  p06i !pmsl                                   
+TYPE    f    !c                                                    
+CONTUR  1    !7                                                                       
+CINT         !4
+LINE         !5/1/1/0                                              
+FINT    .01;.1;.25;.5;.75;1;1.25;1.5;1.75;2;2.5;3;4;5;6;7;8;9     
+FLINE   0;21-30;14-20;5                                                         
+HILO         !26;2////30;30/y                                                       
+HLSYM   2;1.5//3/2/sw                                                           
+CLRBAR  1|.8/2/2/sw                                                         
+WIND                                                                            
+REFVEC                                                                          
+TITLE   5//~ ^ 6-HOUR TOTAL PCPN, MSLP|^ 6-HOURLY TOTAL PCPN, MSLP!            
+TEXT    .8/3/2/c/sw                                                                
+CLEAR   yes                                                                     

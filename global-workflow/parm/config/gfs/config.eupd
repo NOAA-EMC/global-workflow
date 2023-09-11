@@ -1,0 +1,34 @@
+#! /usr/bin/env bash
+
+########## config.eupd ##########
+# Ensemble update specific, dependency config.anal
+
+echo "BEGIN: config.eupd"
+
+# Get task specific resources
+. $EXPDIR/config.resources eupd
+
+export npe_enkf=$npe_eupd
+
+# Use NAM_ENKF below for serial EnKF
+##export NAM_ENKF="analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"
+
+# LETKF specific settings with model space localization
+export modelspace_vloc=".true."  # model space localization
+export letkf_flag=".true."       # use LETKF instead of serial filter
+export getkf=".true."            # Gain form of LETKF (needed for model-space localization)
+export denkf=".true."            # EnKF approximation (beneficial since less spread removed by analysis)
+export nobsl_max=10000           # max number of obs in each LETKF volume (uses closest nobsl_max). can
+                                 #  be reduced to speed up execution time.
+export analpertwt=0.85           # relaxation to prior spread inflation factor
+export readin_localization_enkf=".false." # Don’t read in localization scales from file (doesn’t make
+                                          # sense for LETKF if model space localization on and nobsl_max>0)
+export corrlength=1250           # Horizontal localization scale (max horizontal distance to search for nobsl_max local obs)
+export lnsigcutoff=2.75          # ignored if modelspace_vloc=.true.
+
+export lobsdiag_forenkf=".true." # use jacobian.  must be .true. if modelspace_vloc=".true."
+                                 # need to specify .true. setting since config.anal sets to .false.
+
+export NAM_ENKF="smoothparm=35,"
+
+echo "END: config.eupd"

@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+########## config.fit2obs ##########
+# Fit to Observations
+
+echo "BEGIN: config.fit2obs"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" fit2obs
+
+export PRVT=${HOMEgfs}/fix/gsi/prepobs_errtable.global
+export HYBLEVS=${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt
+
+export VBACKUP_FITS=24
+export OUTPUT_FILETYPE="netcdf"
+export CONVNETC="YES"
+export ACPROFit="YES"
+
+if [[ ${netcdf_diag:-".false."} = ".true." ]]; then
+    export CONVNETC="YES"
+fi
+
+echo "END: config.fit2obs"

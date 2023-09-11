@@ -1,0 +1,12 @@
+AREA    dset
+GAREA   105
+MAP     1
+PROJ    str/55;-100;0/1;1;1;2
+DATTIM  all
+TEXT    .8/3/2/c/sw 
+CLEAR   yes
+COLORS  1;0;;;;;;;;1;1
+FILTER  0
+LATLON  0
+PANEL   0
+TITLE 

@@ -1,0 +1,25 @@
+BASE_GIT: '/data/prod/glopara/git'
+DMPDIR: '/data/prod/glopara/dump'
+BASE_CPLIC: '/data/prod/glopara/coupled_ICs'
+PACKAGEROOT: '/data/prod/glopara/nwpara'
+COMROOT: '/data/prod/glopara/com'
+COMINsyn: '${COMROOT}/gfs/prod/syndat'
+HOMEDIR: '/data/users/${USER}'
+STMP: '/scratch/users/${USER}'
+PTMP: '/scratch/users/${USER}'
+NOSCRUB: ${HOMEDIR}
+ACCOUNT: star
+SCHEDULER: slurm
+QUEUE: s4
+QUEUE_SERVICE: serial
+PARTITION_BATCH: s4
+PARTITION_SERVICE: serial
+CHGRP_RSTPROD: 'NO'
+CHGRP_CMD: 'ls'
+HPSSARCH: 'NO'
+HPSS_PROJECT: emc-global
+LOCALARCH: 'NO'
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+MAKE_NSSTBUFR: 'YES'
+MAKE_ACFTBUFR: 'YES'
+SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']

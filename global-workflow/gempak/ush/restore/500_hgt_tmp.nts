@@ -1,0 +1,15 @@
+GLEVEL  500
+GVCORD  PRES
+GDPFUN  sm9s(hght)         ! sm9s(tmpc)
+SCALE   -1                 ! 0
+TYPE    C                  ! C
+CONTUR  2                                                                       
+CINT    6                  ! 5
+LINE    4/31/2/1/1         ! 7/13/2/1/1 
+HILO    1/H#;L#//8//yes    ! 0               
+HLSYM   2.5;1.5/2/3/5/sw   ! 0
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    
+REFVEC                                                                          
+TITLE   1/0/~ DOC/NOAA/NWS/NCEP  http://www.ncep.noaa.gov               !0        
+TEXT    .8/2/2/c/sw                                                               

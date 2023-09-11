@@ -1,0 +1,39 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
+
+
+# Add default errchk = err_chk
+export errchk=${errchk:-err_chk}
+
+export MP_PULSE=0
+
+# Path to HOME Directory
+export FIXwave=${FIXwave:-${HOMEgfs}/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
+export USHwave=${USHwave:-${HOMEgfs}/ush}
+export EXECwave=${EXECwave:-${HOMEgfs}/exec}
+
+# Set COM Paths
+YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP
+
+if [ ${SENDCOM} = YES ]; then
+  mkdir -m 775 -p ${COM_WAVE_PREP}
+fi
+
+# Set mpi serial command
+export wavempexec=${wavempexec:-"mpirun -n"}
+export wave_mpmd=${wave_mpmd:-"cfp"}
+
+# Execute the Script
+${HOMEgfs}/scripts/exgfs_wave_init.sh
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+
+
+exit 0

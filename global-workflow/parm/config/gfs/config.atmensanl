@@ -1,0 +1,21 @@
+#! /usr/bin/env bash
+
+########## config.atmensanl ##########
+# configuration common to all atm ens analysis tasks
+
+echo "BEGIN: config.atmensanl"
+
+export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/config/
+export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/lgetkf_prototype.yaml
+export ATMENSYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/lgetkf/lgetkf.yaml
+export INTERP_METHOD='barycentric'
+
+export layout_x=1
+export layout_y=1
+
+export io_layout_x=1
+export io_layout_y=1
+
+export JEDIEXE=${HOMEgfs}/exec/fv3jedi_letkf.x
+
+echo "END: config.atmensanl"

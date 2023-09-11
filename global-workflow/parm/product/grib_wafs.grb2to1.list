@@ -1,0 +1,92 @@
+:TMP:1000 mb:
+:TMP:850 mb:
+:TMP:700 mb:
+:TMP:600 mb:
+:TMP:500 mb:
+:TMP:400 mb:
+:TMP:300 mb:
+:TMP:250 mb:
+:TMP:200 mb:
+:TMP:150 mb:
+:TMP:100 mb:
+:TMP:70 mb:
+:UGRD:1000 mb:
+:UGRD:850 mb:
+:UGRD:700 mb:
+:UGRD:600 mb:
+:UGRD:500 mb:
+:UGRD:400 mb:
+:UGRD:300 mb:
+:UGRD:250 mb:
+:UGRD:200 mb:
+:UGRD:150 mb:
+:UGRD:100 mb:
+:UGRD:70 mb:
+:VGRD:1000 mb:
+:VGRD:850 mb:
+:VGRD:700 mb:
+:VGRD:600 mb:
+:VGRD:500 mb:
+:VGRD:400 mb:
+:VGRD:300 mb:
+:VGRD:250 mb:
+:VGRD:200 mb:
+:VGRD:150 mb:
+:VGRD:100 mb:
+:VGRD:70 mb:
+:HGT:1000 mb:
+:HGT:850 mb:
+:HGT:700 mb:
+:HGT:600 mb:
+:HGT:500 mb:
+:HGT:400 mb:
+:HGT:300 mb:
+:HGT:250 mb:
+:HGT:200 mb:
+:HGT:150 mb:
+:HGT:100 mb:
+:HGT:70 mb:
+:RH:1000 mb:
+:RH:850 mb:
+:RH:700 mb:
+:RH:600 mb:
+:RH:500 mb:
+:RH:400 mb:
+:RH:300 mb:
+:RH:250 mb:
+:RH:200 mb:
+:RH:150 mb:
+:RH:100 mb:
+:VVEL:850 mb:
+:VVEL:700 mb:
+:VVEL:600 mb:
+:VVEL:500 mb:
+:VVEL:400 mb:
+:VVEL:300 mb:
+:VVEL:250 mb:
+:VVEL:200 mb:
+:VVEL:150 mb:
+:VVEL:100 mb:
+:TMP:tropopause:
+:UGRD:tropopause:
+:VGRD:tropopause:
+:HGT:tropopause:
+:PRES:tropopause
+:TMP:max wind:
+:UGRD:max wind:
+:VGRD:max wind:
+:HGT:max wind:
+:PRES:max wind:
+:TMP:30-0 mb above ground:
+:UGRD:30-0 mb above ground:
+:VGRD:30-0 mb above ground:
+:RH:30-0 mb above ground:
+:TMP:2 m above ground:
+:RH:2 m above ground:
+:UGRD:10 m above ground:
+:VGRD:10 m above ground:
+:APCP:surface:
+:ACPCP:surface:
+:PRES:surface:
+:PRMSL:mean sea level:
+:ABSV:500 mb:

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+########## config.ocnanal ##########
+# configuration common to all ocean analysis tasks
+
+echo "BEGIN: config.ocnanal"
+
+export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config
+export OBS_LIST=@SOCA_OBS_LIST@
+[[ -n "${OBS_LIST}" ]] || export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
+export OBS_YAML=${OBS_LIST}
+export FV3JEDI_STAGE_YAML=${HOMEgfs}/sorc/gdas.cd/test/soca/testinput/dumy.yaml
+export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
+export SOCA_VARS=tocn,socn,ssh
+export SABER_BLOCKS_YAML=@SABER_BLOCKS_YAML@
+export SOCA_NINNER=@SOCA_NINNER@
+export CASE_ANL=@CASE_ANL@
+export DOMAIN_STACK_SIZE=116640000 #TODO: Make the stack size reolution dependent 
+export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin
+
+# R2D2
+export R2D2_OBS_DB=shared
+export R2D2_OBS_DUMP=@R2D2_OBS_DUMP@
+export R2D2_OBS_SRC=@R2D2_OBS_SRC@
+export R2D2_OBS_WINDOW=24     # TODO: Check if the R2D2 sampling DB window is still needed
+export COMIN_OBS=@COMIN_OBS@
+
+# NICAS
+export NICAS_RESOL=@NICAS_RESOL@
+export NICAS_GRID_SIZE=@NICAS_GRID_SIZE@
+
+echo "END: config.ocnanal"

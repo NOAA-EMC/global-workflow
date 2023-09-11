@@ -1,0 +1,64 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${RUN/enkf}
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+export PROCESS_TROPCY=${PROCESS_TROPCY:-YES}    # Turn on tropical cyclone tcvitals QC proc. if YES
+export DO_RELOCATE=${DO_RELOCATE:-NO}           # Turn on tropical cyclone relocation proc. if YES
+
+export tmmark=tm00
+export ARCHSYND=${ROTDIR}/syndat  # this location is unique, do not change
+if [ ! -d ${ARCHSYND} ]; then mkdir -p ${ARCHSYND}; fi
+
+export HOMENHC=${HOMENHC:-/lfs/h1/ops/prod/dcom/nhc/atcf/ncep}
+
+export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}}   # path to tropical cyclone record database
+
+##############################################
+# Define COM directories
+##############################################
+generate_com COM_OBS
+if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
+
+export CRES=$(echo ${CASE} | cut -c2-)
+export LATB=$((CRES*2))
+export LONB=$((CRES*4))
+export BKGFREQ=1                                # for hourly relocation
+
+
+##############################################
+# Run relevant script
+##############################################
+
+${TROPCYQCRELOSH:-${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh}
+status=$?
+[[ ${status} -ne 0 ]] && exit ${status}
+
+
+##############################################
+# Final processing
+##############################################
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+
+
+exit 0

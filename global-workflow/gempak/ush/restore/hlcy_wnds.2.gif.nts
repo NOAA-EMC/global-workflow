@@ -1,0 +1,21 @@
+PANEL    0
+GVCORD   none                              ! hght
+GLEVEL   0                                 ! 10
+CONTUR   2
+SKIP     0
+SCALE    0
+CLEAR    yes
+CLRBAR   1|.8/2/2/sw
+CINT    
+FINT     0;75;150;250;400;600;800
+FLINE    0;0;5;3;6;25;17;2;7
+LINE     3                                 ! 1
+WIND     BK1
+TITLE    1/2/~ RUC   HELICITY(M*M/S*S)  10M WINDS (KNOTS)
+TEXT     .8/3/2/c/sw 
+POSN     0
+MARKER   0
+GRDLBL   0
+FILTER   YES
+TYPE     f                                 ! b
+LATLON   0

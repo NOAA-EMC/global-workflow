@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -ex
+
+machine=${1:-${machine:-"HERA"}}
+machine=$(echo $machine | tr '[a-z]' '[A-Z]')
+
+if [ $machine = "HERA" ]; then
+    doxygen=/usr/bin/doxygen
+elif [ $machine = "ORION" ]; then
+    doxygen=/bin/doxygen
+elif [ $machine = "JET" ]; then
+    doxygen=/contrib/doxygen/1.8.10/bin/doxygen
+else
+    echo "machine $machine is unrecognized!"
+    echo "trying system doxygen"
+    doxygen=$(which doxygen)
+    rc=$?
+    [[ $rc -ne 0 ]] && (echo "doxygen not found, ABORT!"; exit 1)
+fi
+
+$doxygen
+status=$?
+exit $status

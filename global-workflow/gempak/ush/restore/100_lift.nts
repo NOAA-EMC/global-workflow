@@ -1,0 +1,17 @@
+GLEVEL  0
+GVCORD  NONE
+GDPFUN  sm9s(sm9s(sm9s(sm9s(sm9s(lift)))))
+SCALE   0 
+TYPE    C/F 
+CONTUR  2                                                                       
+CINT    4
+FINT    0;4;8;12;16;20;24;28;32;36;40
+FLINE   0;0;0;0;0;0;12;12;13;14;15;16
+LINE    4/31/2/1/1
+HILO    1/X#;N#//8//yes
+HLSYM   1/2/3/5/sw
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    
+REFVEC                                                                          
+TITLE 
+TEXT    .8/2/2/c/sw                                                               

@@ -1,0 +1,103 @@
+#! /usr/bin/env bash
+
+############################################
+# GDAS GEMPAK META NCDC PRODUCT GENERATION
+############################################
+
+# TODO (#1222) This j-job is not part of the rocoto
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
+export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
+export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
+export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
+export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
+export FIXgempak=${FIXgempak:-${HOMEgfs}/gempak/fix}
+export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
+export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
+export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
+
+#
+# Now set up GEMPAK/NTRANS environment
+#
+
+cp ${FIXgempak}/datatype.tbl datatype.tbl
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export COMPONENT="atmos"
+export MODEL=GDAS
+export GRID_NAME=gdas
+export fend=09
+
+######################################################
+# set increment to 6 hours  --  3 hours is available.
+######################################################
+export finc=6
+export fstart=00
+
+export DBN_ALERT_TYPE=GDAS_METAFILE
+
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak}
+export COMINgdas=${COMINgdas:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}/gempak/meta}
+export COMOUTncdc=${COMOUTncdc:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
+
+export COMINukmet=${COMINukmet:-$(compath.py ${envir}/ukmet/${ukmet_ver})/ukmet}
+export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
+
+export COMOUTukmet=${COMOUT}
+export COMOUTecmwf=${COMOUT}
+
+if [ ${SENDCOM} = YES ] ; then
+  mkdir -m 775 -p ${COMOUT} ${COMOUTncdc} ${COMOUTukmet} ${COMOUTecmwf}
+fi
+
+export pgmout=OUTPUT.$$
+
+
+########################################################
+# Execute the script.
+${USHgempak}/gdas_meta_na.sh
+${USHgempak}/gdas_ecmwf_meta_ver.sh
+${USHgempak}/gdas_meta_loop.sh
+${USHgempak}/gdas_ukmet_meta_ver.sh
+export err=$?; err_chk
+########################################################
+
+############################################
+# GDAS GEMPAK NCDC PRODUCT GENERATION
+############################################
+
+########################################################
+# Execute the script.
+${SRCgfs}/exgdas_atmos_gempak_gif_ncdc.sh
+export err=$?; err_chk
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [ "${KEEPDATA}" != "YES" ] ; then
+  rm -rf ${DATA}
+fi
+

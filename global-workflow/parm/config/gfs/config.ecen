@@ -1,0 +1,21 @@
+#! /usr/bin/env bash
+
+########## config.ecen ##########
+# Ensemble recentering specific
+
+echo "BEGIN: config.ecen"
+
+# Get task specific resources
+. $EXPDIR/config.resources ecen
+
+# Number of concurrent ecen jobs [1 implies sequential]
+# Usually IAUFHRS_ENKF=3,6,9, so NECENGRP=3.  Scripting
+# below queries IAUFHRS_ENKF to determine NECENGRP
+export NECENGRP=1
+if [ $DOIAU_ENKF = "YES" ]; then
+   ngrps=$(grep -o ',' <<<"$IAUFHRS_ENKF" | grep -c .)
+   ((ngrps++))
+   export NECENGRP=$ngrps
+fi
+
+echo "END: config.ecen"

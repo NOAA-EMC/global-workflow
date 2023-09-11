@@ -1,0 +1,46 @@
+#!/bin/bash
+export STRICT="NO"
+source "${HOMEgfs}/ush/preamble.sh"
+export WIPE_DATA="NO"
+export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalpost" -c "base ocnanalpost"
+
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export CDATE=${CDATE:-${PDY}${cyc}}
+export GDUMP=${GDUMP:-"gdas"}
+
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS COM_ICE_RESTART
+
+mkdir -p "${COM_OCEAN_ANALYSIS}"
+mkdir -p "${COM_ICE_RESTART}"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Add UFSDA to PYTHONPATH
+ufsdaPATH="${HOMEgfs}/sorc/gdas.cd/ush/"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${ufsdaPATH}"
+export PYTHONPATH
+
+###############################################################
+# Run relevant script
+###############################################################
+
+EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_post.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
+
+exit 0

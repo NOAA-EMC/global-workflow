@@ -1,0 +1,384 @@
+#! /usr/bin/env bash
+
+########## config.ufs ##########
+# UFS model resolution specific parameters
+# e.g. time-step, processor layout, physics and dynamics parameters
+# This config sets default variables for FV3, MOM6, CICE6 for their resolutions
+# User can over-ride after sourcing this config file
+
+echo "BEGIN: config.ufs"
+
+if [ $# -le 1 ]; then
+
+    echo "Must specify an input resolution argument to set variables!"
+    echo "argument can be any one of the following:"
+    echo "--fv3 C48|C96|C192|C384|C768|C1152|C3072"
+    echo "--mom6 500|100|025"
+    echo "--cice6 500|100|025"
+    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_200|glo_500|mx025"
+
+    exit 1
+
+fi
+
+# Initialize
+skip_mom6=true
+skip_cice6=true
+skip_ww3=true
+skip_mediator=true
+
+# Loop through named arguments
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case "${key}" in
+    "--fv3")
+      fv3_res="$2"
+      ;;
+    "--mom6")
+      mom6_res="$2"
+      skip_mom6=false
+      ;;
+    "--cice6")
+      cice6_res="$2"
+      skip_cice6=false
+      ;;
+    "--ww3")
+      ww3_res="$2"
+      skip_ww3=false
+      ;;
+    *)    # unknown option
+      echo "FATAL ERROR: Unknown option: ${key}, ABORT!"
+      exit 1
+      ;;
+  esac
+  shift
+  shift
+done
+
+# Mediator is required if any of the non-ATM components are used
+if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${skip_ww3}" == "false" ]]; then
+  skip_mediator=false
+fi
+
+case "${machine}" in
+  "WCOSS2")
+    npe_node_max=128
+    ;;
+  "HERA" | "ORION")
+    npe_node_max=40
+    ;;
+  "JET")
+    case "${PARTITION_BATCH}" in
+      "xjet")
+        npe_node_max=24
+        ;;
+      "vjet" | "sjet")
+        npe_node_max=16
+        ;;
+      "kjet")
+        npe_node_max=40
+        ;;
+      *)
+        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
+        exit 1
+        ;;
+    esac
+    ;;
+  "S4")
+    case "${PARTITION_BATCH}" in
+      "s4")
+        npe_node_max=32
+        ;;
+      "ivy")
+        npe_node_max=20
+        ;;
+      *)
+        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
+        exit 1
+        ;;
+    esac
+    ;;
+esac
+export npe_node_max
+
+# (Standard) Model resolution dependent variables
+case "${fv3_res}" in
+    "C48")
+        export DELTIM=1200
+        export layout_x=1
+        export layout_y=1
+        export layout_x_gfs=1
+        export layout_y_gfs=1
+        export nthreads_fv3=1
+        export nthreads_fv3_gfs=1
+        export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
+        export WRITE_GROUP_GFS=1
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
+        ;;
+    "C96")
+        export DELTIM=600
+        export layout_x=2
+        export layout_y=2
+        export layout_x_gfs=2
+        export layout_y_gfs=2
+        export nthreads_fv3=1
+        export nthreads_fv3_gfs=1
+        export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
+        export WRITE_GROUP_GFS=1
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
+        ;;
+    "C192")
+        export DELTIM=450
+        export layout_x=4
+        export layout_y=6
+        export layout_x_gfs=4
+        export layout_y_gfs=6
+        export nthreads_fv3=1
+        export nthreads_fv3_gfs=2
+        export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
+        export WRITE_GROUP_GFS=2
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=5
+        ;;
+    "C384")
+        export DELTIM=300
+        export layout_x=6
+        export layout_y=8
+        export layout_x_gfs=8
+        export layout_y_gfs=8
+        export nthreads_fv3=1
+        export nthreads_fv3_gfs=2
+        export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=2
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
+        export WRITE_GROUP_GFS=2
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10
+        ;;
+    "C768")
+        export DELTIM=150
+        export layout_x=8
+        export layout_y=12
+        export layout_x_gfs=12
+        export layout_y_gfs=16
+        export nthreads_fv3=4
+        export nthreads_fv3_gfs=4
+        export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=2
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
+        export WRITE_GROUP_GFS=4
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10
+        ;;
+    "C1152")
+        export DELTIM=120
+        export layout_x=8
+        export layout_y=16
+        export layout_x_gfs=8
+        export layout_y_gfs=16
+        export nthreads_fv3=4
+        export nthreads_fv3_gfs=4
+        export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=4
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
+        export WRITE_GROUP_GFS=4
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10  # TODO: refine these numbers when a case is available
+        ;;
+    "C3072")
+        export DELTIM=90
+        export layout_x=16
+        export layout_y=32
+        export layout_x_gfs=16
+        export layout_y_gfs=32
+        export nthreads_fv3=4
+        export nthreads_fv3_gfs=4
+        export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=4
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
+        export WRITE_GROUP_GFS=4
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10  # TODO: refine these numbers when a case is available
+        ;;
+    *)
+        echo "FATAL ERROR: Unsupported FV3 resolution = ${fv3_res}, ABORT!"
+        exit 1
+        ;;
+esac
+
+(( WRTTASK_PER_GROUP_PER_THREAD = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6 ))
+(( WRTTASK_PER_GROUP_PER_THREAD_GFS = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS * 6 ))
+export WRTTASK_PER_GROUP_PER_THREAD
+export WRTTASK_PER_GROUP_PER_THREAD_GFS
+
+(( ntasks_fv3 = layout_x * layout_y * 6 ))
+(( ntasks_fv3_gfs = layout_x_gfs * layout_y_gfs * 6 ))
+export ntasks_fv3
+export ntasks_fv3_gfs
+
+(( ntasks_quilt = WRITE_GROUP * WRTTASK_PER_GROUP_PER_THREAD ))
+(( ntasks_quilt_gfs = WRITE_GROUP_GFS * WRTTASK_PER_GROUP_PER_THREAD_GFS ))
+export ntasks_quilt
+export ntasks_quilt_gfs
+
+# Determine whether to use parallel NetCDF based on resolution
+case ${fv3_res} in
+  "C48" | "C96" | "C192" | "C384")
+    OUTPUT_FILETYPE_ATM="netcdf"
+    OUTPUT_FILETYPE_SFC="netcdf"
+    ;;
+  "C768" | "C1152" | "C3072")
+    OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    OUTPUT_FILETYPE_SFC="netcdf_parallel"
+    ;;
+esac
+export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
+
+# Mediator specific settings
+if [[ "${skip_mediator}" == "false" ]]; then
+  export nthreads_mediator=${nthreads_fv3}  # Use same threads as FV3
+fi
+
+# MOM6 specific settings
+if [[ "${skip_mom6}" == "false" ]]; then
+  nthreads_mom6=1
+  case "${mom6_res}" in
+    "500")
+      ntasks_mom6=8
+      OCNTIM=3600
+      NX_GLB=72
+      NY_GLB=35
+      DT_DYNAM_MOM6='3600'
+      DT_THERM_MOM6='3600'
+      FRUNOFF=""
+      CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
+      MOM6_RESTART_SETTING='r'
+      MOM6_RIVER_RUNOFF='False'
+      eps_imesh="4.0e-1"
+      ;;
+    "100")
+      ntasks_mom6=20
+      OCNTIM=3600
+      NX_GLB=360
+      NY_GLB=320
+      DT_DYNAM_MOM6='1800'
+      DT_THERM_MOM6='3600'
+      FRUNOFF=""
+      CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
+      MOM6_RESTART_SETTING='n'
+      MOM6_RIVER_RUNOFF='False'
+      eps_imesh="2.5e-1"
+      ;;
+    "50")
+      ntasks_mom6=60
+      OCNTIM=3600
+      NX_GLB=720
+      NY_GLB=576
+      DT_DYNAM_MOM6='1800'
+      DT_THERM_MOM6='3600'
+      FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
+      CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
+      MOM6_RESTART_SETTING='n'
+      MOM6_RIVER_RUNOFF='True'
+      eps_imesh="1.0e-1"
+      ;;
+    "025")
+      ntasks_mom6=220
+      OCNTIM=1800
+      NX_GLB=1440
+      NY_GLB=1080
+      DT_DYNAM_MOM6='900'
+      DT_THERM_MOM6='1800'
+      FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
+      CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
+      MOM6_RIVER_RUNOFF='True'
+      MOM6_RESTART_SETTING="r"
+      eps_imesh="1.0e-1"
+      ;;
+    *)
+      echo "FATAL ERROR: Unsupported MOM6 resolution = ${mom6_res}, ABORT!"
+      exit 1
+      ;;
+  esac
+
+  export nthreads_mom6 ntasks_mom6
+  export OCNTIM
+  export NX_GLB NY_GLB
+  export DT_DYNAM_MOM6 DT_THERM_MOM6
+  export FRUNOFF
+  export CHLCLIM
+  export MOM6_RIVER_RUNOFF
+  export MOM6_RESTART_SETTING
+  export eps_imesh
+fi
+
+# CICE6 specific settings
+if [[ "${skip_cice6}" == "false" ]]; then
+  # Ensure we sourced the MOM6 section
+  if [[ "${skip_mom6}" == "true" ]]; then
+    echo "FATAL ERROR: CICE6 cannot be configured without MOM6, ABORT!"
+    exit 1
+  fi
+  nthreads_cice6=${nthreads_mom6}  # CICE6 needs to run on same threads as MOM6
+  case "${cice6_res}" in
+    "500")
+      ntasks_cice6=4
+      cice6_processor_shape="slenderX1"
+      ;;
+    "100")
+      ntasks_cice6=10
+      cice6_processor_shape="slenderX2"
+      ;;
+    "050")
+      ntasks_cice6=30
+      cice6_processor_shape="slenderX2"
+      ;;
+    "025")
+      ntasks_cice6=120
+      cice6_processor_shape="slenderX2"
+      ;;
+    *)
+      echo "FATAL ERROR: Unsupported CICE6 resolution = ${cice6_res}, ABORT!"
+      exit 1
+      ;;
+  esac
+  # NX_GLB and NY_GLB are set in the MOM6 section above
+  # CICE6 runs on the same domain decomposition as MOM6
+  export nthreads_cice6 ntasks_cice6
+  export cice6_processor_shape
+fi
+
+# WW3 specific settings
+if [[ "${skip_ww3}" == "false" ]]; then
+  nthreads_ww3=2
+  case "${ww3_res}" in
+    "gnh_10m;aoc_9km;gsh_15m")
+      ntasks_ww3=140
+      ;;
+    "gwes_30m")
+      ntasks_ww3=100
+      ;;
+    "glo_025")
+      ntasks_ww3=262
+      ;;
+    "glo_200")
+      ntasks_ww3=30
+      nthreads_ww3=1
+      ;;
+    "glo_500")
+      ntasks_ww3=12
+      nthreads_ww3=1
+      ;;
+    "mx025")
+      ntasks_ww3=80
+      ;;
+    *)
+      echo "FATAL ERROR: Unsupported WW3 resolution = ${ww3_res}, ABORT!"
+      exit 1
+      ;;
+  esac
+  export ntasks_ww3 nthreads_ww3
+fi
+
+echo "END: config.ufs"

@@ -1,0 +1,298 @@
+4LFTX:surface
+5WAVH:500 mb
+ABSV:250 mb
+ABSV:500 mb
+ABSV:700 mb
+ABSV:850 mb
+ACPCP:surface
+APCP:surface
+CAPE:180-0 mb above ground
+CAPE:surface
+CFRZR:surface
+CICEP:surface
+CIN:180-0 mb above ground
+CIN:surface
+CRAIN:surface
+CSNOW:surface
+HGT:0C isotherm
+HGT:1000 mb
+HGT:100 mb
+HGT:150 mb
+HGT:200 mb
+HGT:250 mb
+HGT:300 mb
+HGT:350 mb
+HGT:400 mb
+HGT:450 mb
+HGT:500 mb
+HGT:525 mb
+HGT:550 mb
+HGT:575 mb
+HGT:600 mb
+HGT:625 mb
+HGT:650 mb
+HGT:675 mb
+HGT:700 mb
+HGT:725 mb
+HGT:750 mb
+HGT:775 mb
+HGT:800 mb
+HGT:825 mb
+HGT:850 mb
+HGT:875 mb
+HGT:900 mb
+HGT:925 mb
+HGT:950 mb
+HGT:975 mb
+HGT:70 mb
+HGT:max wind
+HGT:tropopause
+HGT:surface
+HGT:PV=1.5e-06 (Km^2/kg/s) surface
+HGT:PV=1e-06 (Km^2/kg/s) surface
+HGT:PV=2e-06 (Km^2/kg/s) surface
+HGT:PV=5e-07 (Km^2/kg/s) surface
+LFTX:surface
+MSLET:mean sea level
+PRES:high cloud bottom level
+PRES:low cloud bottom level
+PRES:max wind
+PRMSL:mean sea level
+PRES:middle cloud bottom level
+PRES:PV=1.5e-06 (Km^2/kg/s) surface
+PRES:PV=1e-06 (Km^2/kg/s) surface
+PRES:PV=2e-06 (Km^2/kg/s) surface
+PRES:PV=5e-07 (Km^2/kg/s) surface
+PRES:surface
+PRES:tropopause
+PWAT:entire atmosphere
+TCDC:entire atmosphere
+RH:0.44-1 sigma layer
+RH:0C isotherm
+RH:1000 mb
+RH:100 mb
+RH:120-90 mb above ground
+RH:150-120 mb above ground
+RH:150 mb
+RH:180-150 mb above ground
+RH:200 mb
+RH:250 mb
+RH:2 m above ground
+RH:300 mb
+RH:30-0 mb above ground
+RH:350 mb
+RH:400 mb
+RH:450 mb
+RH:500 mb
+RH:525 mb
+RH:550 mb
+RH:575 mb
+RH:600 mb
+RH:60-30 mb above ground
+RH:625 mb
+RH:650 mb
+RH:675 mb
+RH:700 mb
+RH:725 mb
+RH:750 mb
+RH:775 mb
+RH:800 mb
+RH:825 mb
+RH:850 mb
+RH:875 mb
+RH:900 mb
+RH:90-60 mb above ground
+RH:925 mb
+RH:950 mb
+RH:975 mb
+TMP:1000 mb
+TMP:100 mb
+TMP:120-90 mb above ground
+TMP:150-120 mb above ground
+TMP:150 mb
+TMP:180-150 mb above ground
+TMP:200 mb
+TMP:250 mb
+TMP:2 m above ground
+TMP:300 mb
+TMP:30-0 mb above ground
+TMP:350 mb
+TMP:400 mb
+TMP:450 mb
+TMP:500 mb
+TMP:525 mb
+TMP:550 mb
+TMP:575 mb
+TMP:600 mb
+TMP:60-30 mb above ground
+TMP:625 mb
+TMP:650 mb
+TMP:675 mb
+TMP:700 mb
+TMP:725 mb
+TMP:750 mb
+TMP:775 mb
+TMP:800 mb
+TMP:825 mb
+TMP:850 mb
+TMP:875 mb
+TMP:900 mb
+TMP:90-60 mb above ground
+TMP:925 mb
+TMP:950 mb
+TMP:975 mb
+TMP:PV=1.5e-06 (Km^2/kg/s) surface
+TMP:PV=1e-06 (Km^2/kg/s) surface
+TMP:PV=2e-06 (Km^2/kg/s) surface
+TMP:PV=5e-07 (Km^2/kg/s) surface
+TMP:tropopause
+TMP:70 mb
+TMP:max wind
+UGRD:1000 mb
+UGRD:100 mb
+UGRD:10 m above ground
+UGRD:120-90 mb above ground
+UGRD:150-120 mb above ground
+UGRD:150 mb
+UGRD:180-150 mb above ground
+UGRD:200 mb
+UGRD:250 mb
+UGRD:300 mb
+UGRD:30-0 mb above ground
+UGRD:350 mb
+UGRD:400 mb
+UGRD:450 mb
+UGRD:500 mb
+UGRD:525 mb
+UGRD:550 mb
+UGRD:575 mb
+UGRD:600 mb
+UGRD:60-30 mb above ground
+UGRD:625 mb
+UGRD:650 mb
+UGRD:675 mb
+UGRD:700 mb
+UGRD:725 mb
+UGRD:750 mb
+UGRD:775 mb
+UGRD:800 mb
+UGRD:825 mb
+UGRD:850 mb
+UGRD:875 mb
+UGRD:900 mb
+UGRD:90-60 mb above ground
+UGRD:925 mb
+UGRD:950 mb
+UGRD:975 mb
+UGRD:70 mb
+UGRD:max wind
+UGRD:PV=1.5e-06 (Km^2/kg/s) surface
+UGRD:PV=1e-06 (Km^2/kg/s) surface
+UGRD:PV=2e-06 (Km^2/kg/s) surface
+UGRD:PV=5e-07 (Km^2/kg/s) surface
+UGRD:tropopause
+VGRD:1000 mb
+VGRD:100 mb
+VGRD:10 m above ground
+VGRD:120-90 mb above ground
+VGRD:150-120 mb above ground
+VGRD:150 mb
+VGRD:180-150 mb above ground
+VGRD:200 mb
+VGRD:250 mb
+VGRD:300 mb
+VGRD:30-0 mb above ground
+VGRD:350 mb
+VGRD:400 mb
+VGRD:450 mb
+VGRD:500 mb
+VGRD:525 mb
+VGRD:550 mb
+VGRD:575 mb
+VGRD:600 mb
+VGRD:60-30 mb above ground
+VGRD:625 mb
+VGRD:650 mb
+VGRD:675 mb
+VGRD:700 mb
+VGRD:725 mb
+VGRD:750 mb
+VGRD:775 mb
+VGRD:800 mb
+VGRD:825 mb
+VGRD:850 mb
+VGRD:875 mb
+VGRD:900 mb
+VGRD:90-60 mb above ground
+VGRD:925 mb
+VGRD:950 mb
+VGRD:975 mb
+VGRD:70 mb
+VGRD:max wind
+VGRD:PV=1.5e-06 (Km^2/kg/s) surface
+VGRD:PV=1e-06 (Km^2/kg/s) surface
+VGRD:PV=2e-06 (Km^2/kg/s) surface
+VGRD:PV=5e-07 (Km^2/kg/s) surface
+VGRD:tropopause
+VVEL:1000 mb
+VVEL:100 mb
+VVEL:150 mb
+VVEL:200 mb
+VVEL:250 mb
+VVEL:300 mb
+VVEL:350 mb
+VVEL:400 mb
+VVEL:450 mb
+VVEL:500 mb
+VVEL:525 mb
+VVEL:550 mb
+VVEL:575 mb
+VVEL:600 mb
+VVEL:625 mb
+VVEL:650 mb
+VVEL:675 mb
+VVEL:700 mb
+VVEL:725 mb
+VVEL:750 mb
+VVEL:775 mb
+VVEL:800 mb
+VVEL:825 mb
+VVEL:850 mb
+VVEL:875 mb
+VVEL:900 mb
+VVEL:925 mb
+VVEL:950 mb
+VVEL:975 mb
+DZDT:1000 mb
+DZDT:100 mb
+DZDT:150 mb
+DZDT:200 mb
+DZDT:250 mb
+DZDT:300 mb
+DZDT:350 mb
+DZDT:400 mb
+DZDT:450 mb
+DZDT:500 mb
+DZDT:525 mb
+DZDT:550 mb
+DZDT:575 mb
+DZDT:600 mb
+DZDT:625 mb
+DZDT:650 mb
+DZDT:675 mb
+DZDT:700 mb
+DZDT:725 mb
+DZDT:750 mb
+DZDT:775 mb
+DZDT:800 mb
+DZDT:825 mb
+DZDT:850 mb
+DZDT:875 mb
+DZDT:900 mb
+DZDT:925 mb
+DZDT:950 mb
+DZDT:975 mb
+VWSH:tropopause
+WEASD:surface
+TMAX:2 m above ground
+TMIN:2 m above ground

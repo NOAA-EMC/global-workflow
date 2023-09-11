@@ -1,0 +1,43 @@
+#! /usr/bin/env bash
+
+# UFS-Aerosols settings
+
+# Turn off warnings about unused variables
+# shellcheck disable=SC2034
+
+# Directory containing GOCART configuration files. Defaults to parm/ufs/chem if unset.
+AERO_CONFIG_DIR=${HOMEgfs}/parm/ufs/chem
+
+# Path to the input data tree
+case ${machine} in
+  "HERA")
+    AERO_INPUTS_DIR="/scratch1/NCEPDEV/global/glopara/data/gocart_emissions"
+    ;;
+  "ORION")
+    AERO_INPUTS_DIR="/work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions"
+    ;;
+  "S4")
+    AERO_INPUTS_DIR="/data/prod/glopara/gocart_emissions"
+    ;;
+  "WCOSS2")
+    AERO_INPUTS_DIR="/lfs/h2/emc/global/noscrub/emc.global/data/gocart_emissions"
+    ;;
+  "JET")
+    AERO_INPUTS_DIR="/lfs4/HFIP/hfv3gfs/glopara/data/gocart_emissions"
+    ;;
+  *)
+    echo "FATAL ERROR: Machine ${machine} unsupported for aerosols"
+    exit 2
+    ;;
+esac
+
+# Biomass burning emission dataset. Choose from: GBBEPx, QFED, NONE (default)
+AERO_EMIS_FIRE=QFED
+
+# Aerosol convective scavenging factors (list of string array elements)
+# Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers
+# Scavenging factors are set to 0 (no scavenging) if unset
+aero_conv_scav_factors="'*:0.3','so2:0.0','msa:0.0','dms:0.0','nh3:0.4','nh4:0.6','bc1:0.6','bc2:0.6','oc1:0.4','oc2:0.4','dust1:0.6','dust2:0.6', 'dust3:0.6','dust4:0.6','dust5:0.6','seas1:0.5','seas2:0.5','seas3:0.5','seas4:0.5','seas5:0.5'"
+#
+# Number of diagnostic aerosol tracers (default: 0)
+aero_diag_tracers=2

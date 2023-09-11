@@ -1,0 +1,12 @@
+# ESMF #
+logKindFlag:            @[esmf_logkind]
+globalResourceControl:  true
+
+EARTH_component_list: ATM
+ATM_model:                      @[atm_model]
+ATM_petlist_bounds:             @[atm_petlist_bounds]
+ATM_omp_num_threads:            @[atm_omp_num_threads]
+
+runSeq::
+  ATM
+::

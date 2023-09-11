@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.analdiag ##########
+# GFS post-anal specific (diag)
+
+echo "BEGIN: config.analdiag"
+
+# Get task specific resources
+. $EXPDIR/config.resources analdiag
+
+echo "END: config.analdiag"

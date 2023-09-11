@@ -1,0 +1,30 @@
+!
+! G2VCRDNCEP2.TBL -- GRIB 2 vertical coordinate conversion table
+!
+!ID1 ID2  NAME                             UNITS                GNAM SCALE
+!23|123|123456789012345678901234567890123|12345678901234567890|1234|12345678
+!
+200 255 Entire atmosphere as a layer      -                    NONE     0
+201 255 Entire ocean as a layer           -                    NONE     0
+204 255 Highest tropospheric freezing lvl -                    HTFL     0
+209 255 Boundary layer cloud bottom level -                    BCBL     0
+210 255 Boundary layer cloud top level    -                    BCTL     0
+211 255 Boundary layer cloud layer        -                    BCLY     0
+212 255 Low cloud bottom level            -                    LCBL     0
+213 255 Low cloud top level               -                    LCTL     0
+214 255 Low cloud layer                   -                    LCLY     0
+215 255 Cloud Ceiling                     -                    CEIL     0
+220 255 Planetary Boundary layer          -                    PBLY     0
+222 255 Middle cloud bottom level         -                    MCBL     0
+223 255 Middle cloud top level            -                    MCTL     0
+224 255 Middle cloud layer                -                    MCLY     0
+232 255 High cloud bottom level           -                    HCBL     0
+233 255 High cloud top level              -                    HCTL     0
+234 255 High cloud layer                  -                    HCLY     0
+241 255 Ordered Sequence of Data          -                    OSEQ     0
+242 255 Convective cloud bottom level     -                    CCBL     0
+243 255 Convective cloud top level        -                    CCTL     0
+244 255 Convective cloud layer            -                    CCLY     0
+246 255 Maximum equiv potential tmp level -                    MTHE     0
+247 255 Equilibrium level                 -                    EHLT     0
+

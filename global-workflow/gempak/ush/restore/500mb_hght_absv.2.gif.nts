@@ -1,0 +1,20 @@
+GLEVEL  500                                                                     
+GVCORD  PRES                                                                    
+PANEL   0                                                                       
+SKIP    0                  !0             !0            
+SCALE   5                  !5             !-1           
+GDPFUN  abs(avor(wnd))//v  !v             !sm5s(hght)   !kntv(wnd)      
+TYPE    c/f                !c             !c            !b
+CONTUR  2                                                                       
+CINT    4/12/12            !4/12/12       !6           
+LINE    18/1/1/2           ! 18/1/1/2     !1/1/2/1             
+FINT    16;20;24;28;32;36;40                                                 
+FLINE   0;5;19-14;8                                                             
+HILO    1/X;N/10-99;10-99!              !               
+HLSYM                                                                           
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    24/.7/1
+REFVEC                                                                          
+TITLE   1/0/~ DOC/NOAA/NWS/NCEP  http://www.ncep.noaa.gov               !0        
+TEXT    .8/3/2/c/sw                                                                  
+CLEAR   yes                                                                     

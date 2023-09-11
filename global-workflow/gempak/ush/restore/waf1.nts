@@ -1,0 +1,18 @@
+$MAPFIL locowo.gsf
+GVCORD  PRES                                                                    
+GDPFUN  tmpc                     ! kntv(wnd)
+MAP     1//2/yes
+BOXLIN  1//4
+REGION  plot
+POSN    0/WAFT
+TITLE   0
+TXTYPE
+TXTFIL
+TXTLOC
+SCALE   0                        ! 0
+TYPE    p                        ! b
+FILTER  no
+SKIP    0/4;4    
+WIND    bk1/1.0//132
+CINT                             ! 5
+LINE    4/31/2/1/1

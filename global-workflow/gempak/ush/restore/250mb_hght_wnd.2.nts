@@ -1,0 +1,20 @@
+GLEVEL  250                                                                     
+GVCORD  PRES                                                                    
+PANEL   0                                                                       
+SKIP    0/1;-1                      
+SCALE   0                           !-1        !0
+GDPFUN  knts((mag(wnd)))            !sm9s(hght)!kntv(wnd)
+TYPE    c/f                         !c         !b
+CONTUR  2                                                                       
+CINT    30;50;70;90;110;130;150       ! 12                                      
+LINE    27/5/2/1               ! 20/1/2/1                                       
+FINT    70;90;110;130;150                                                       
+FLINE   0;25;24;29;7;15                                                         
+HILO                                                                            
+HLSYM                                                                           
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    18//1                                                             
+REFVEC                                                                          
+TITLE   5/-2/~ ^  @  HEIGHTS, ISOTACHS AND WIND (KTS)|^ @ HGHT AND WIND!        
+TEXT    .8/3/2/c/sw                                                                
+CLEAR   yes                                                                     

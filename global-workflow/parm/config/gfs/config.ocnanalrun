@@ -1,0 +1,11 @@
+#!/bin/bash
+
+########## config.ocnanalrun ##########
+# Ocn Analysis specific
+
+echo "BEGIN: config.ocnanalrun"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" ocnanalrun
+
+echo "END: config.ocnanalrun"

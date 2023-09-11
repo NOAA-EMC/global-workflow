@@ -1,0 +1,379 @@
+---
+suites:
+  prod00:
+    edits:
+      CYC: '00'
+  prod06:
+    edits:
+      CYC: '06'
+    nodes:
+      gfs:
+        atmos:
+          post:
+            tasks:
+              jgfs_atmos_post_manager:
+                triggers:
+                - task: jgfs_atmos_tropcy_qc_reloc
+                  suite: prod00
+  prod[00,06]:
+    edits:
+      ECF_TRIES: '1'
+      ENVIR: 'prod'
+      PROJ: 'GFS'
+      PROJENVIR: 'DEV'
+      QUEUESHARED: 'dev_shared'
+      QUEUESERV: 'dev_transfer'
+      MACHINE_SITE: 'development'
+    nodes:
+      gfs:
+        edits:
+          RUN: 'gfs'
+          NET: 'gfs'
+        tasks:
+          jgfs_forecast:
+            triggers:
+            - task: jgfs_atmos_analysis
+              event: release_fcst
+            - task: jgfs_wave_prep
+        atmos:
+          obsproc:
+            dump:
+              tasks:
+                jgfs_atmos_tropcy_qc_reloc:
+                  events:
+                  - 'jtwc_bull_email'
+            prep:
+              tasks:
+                jgfs_atmos_emcsfc_sfc_prep:
+                  triggers:
+                  - task: jobsproc_gfs_atmos_dump
+                    event: release_sfcprep
+          analysis:
+            tasks:
+              jgfs_atmos_analysis:
+                triggers:
+                - task: jobsproc_gfs_atmos_prep
+                - task: jgfs_atmos_emcsfc_sfc_prep
+                events:
+                - "release_fcst"
+              jgfs_atmos_analysis_calc:
+                triggers:
+                - task: jgfs_atmos_analysis
+          post:
+            tasks:
+              jgfs_atmos_post_manager:
+                triggers:
+                - task: jgfs_atmos_analysis
+                events:
+                - "release_postanl"
+                - "release_post( 384 )"
+              jgfs_atmos_post_anl:
+                template: skip
+                triggers:
+                - task: jgfs_atmos_post_manager
+                  event: release_postanl
+                edits:
+                  FHRGRP: '000'
+                  FHRLST: 'anl'
+                  HR: 'anl'
+                  FHR: 'anl'
+              jgfs_atmos_post_f( 384 ):
+                template: jgfs_atmos_post_master
+                triggers:
+                - task: jgfs_atmos_post_manager
+                  event: release_post( )
+                edits:
+                  FHRGRP: '( 1, )'
+                  FHRLST: 'f( )'
+                  FHR: 'f( )'
+                  HR: '( )'
+          post_processing:
+            bufr_sounding:
+              tasks:
+                jgfs_atmos_postsnd:
+                  triggers:
+                  - task: jgfs_atmos_post_manager
+                    event: release_post000
+            bulletins:
+              tasks:
+                jgfs_atmos_fbwind:
+                  triggers:
+                  - task: jgfs_atmos_post_f( 6,3,6 )
+            awips_20km_1p0:
+              tasks:
+                jgfs_atmos_awips_f( 0,80,3 ):
+                  template: jgfs_atmos_awips_master
+                  triggers:
+                  - task: jgfs_atmos_post_f( )
+                  edits:
+                    FHRGRP: '( )'
+                    FHRLST: 'f( )'
+                    FCSTHR: '( )'
+                    TRDRUN: 'YES'
+                jgfs_atmos_awips_f( 3,27,6 ):
+                  edits:
+                    TRDRUN: 'NO'
+            awips_g2:
+              tasks:
+                jgfs_atmos_awips_g2_f( 0,64,6 ):
+                  template: jgfs_atmos_awips_g2_master
+                  triggers:
+                  - task: jgfs_atmos_post_f( )
+                  edits:
+                    FHRGRP: '( )'
+                    FHRLST: 'f( )'
+                    FCSTHR: '( )'
+                    TRDRUN: 'YES'
+            gempak:
+              tasks:
+                jgfs_atmos_gempak:
+                  triggers:
+                  - task: jgfs_atmos_analysis
+                jgfs_atmos_gempak_meta:
+                  triggers:
+                  - task: jgfs_atmos_analysis
+                jgfs_atmos_gempak_ncdc_upapgif:
+                  triggers:
+                  - task: jgfs_atmos_gempak
+                  - task: jgfs_atmos_gempak
+                jgfs_atmos_npoess_pgrb2_0p5deg:
+                  triggers:
+                  - task: jgfs_atmos_post_anl
+                    state: active
+                  - task: jgfs_atmos_post_anl
+                jgfs_atmos_pgrb2_spec_gempak:
+                  triggers:
+                  - task: jgfs_atmos_npoess_pgrb2_0p5deg
+            verf:
+              tasks:
+                jgfs_atmos_vminmon:
+                  triggers:
+                  - task: jgfs_atmos_analysis
+        wave:
+            init:
+              tasks:
+                jgfs_wave_init:
+                  triggers:
+                  - task: jobsproc_gfs_atmos_prep
+            prep:
+              tasks:
+                jgfs_wave_prep:
+                  triggers:
+                  - task: jgfs_wave_init
+            post:
+              tasks:
+                jgfs_wave_postsbs:
+                  triggers:
+                  - task: jgfs_atmos_post_manager
+                    event: release_post000
+                jgfs_wave_postpnt:
+                  triggers:
+                  - task: jgfs_forecast
+                jgfs_wave_post_bndpnt:
+                  triggers:
+                  - task: jgfs_atmos_post_manager
+                    event: release_post180
+                jgfs_wave_post_bndpntbll:
+                  triggers:
+                  - task: jgfs_atmos_post_manager
+                    event: release_post180
+                jgfs_wave_prdgen_gridded:
+                  triggers:
+                  - task: jgfs_wave_postsbs
+                    state: active
+                  - task: jgfs_wave_postsbs
+                    operand: OR
+                jgfs_wave_prdgen_bulls:
+                  triggers:
+                  - task: jgfs_wave_postpnt
+                  - task: jgfs_wave_postsbs
+            gempak:
+              tasks:
+                jgfs_wave_gempak:
+                  triggers:
+                  - task: jgfs_wave_postsbs
+                    state: [active, complete]
+                    operand: or
+      gdas:
+        edits:
+          RUN: 'gdas'
+        tasks:
+          jgdas_forecast:
+            triggers:
+            - task: jgdas_atmos_analysis
+              event: release_fcst
+            - task: jgdas_wave_prep
+        atmos:
+          obsproc:
+            dump:
+              tasks:
+                jgdas_atmos_tropcy_qc_reloc:
+            prep:
+              tasks:
+                jgdas_atmos_emcsfc_sfc_prep:
+                  triggers:
+                  - task: jobsproc_gdas_atmos_dump
+                    event: release_sfcprep
+          analysis:
+            tasks:
+              jgdas_atmos_analysis:
+                triggers:
+                - task: jobsproc_gdas_atmos_prep
+                - task: jgdas_atmos_emcsfc_sfc_prep
+                events:
+                - "release_fcst"
+              jgdas_atmos_analysis_calc:
+                triggers:
+                - task: jgdas_atmos_analysis
+              jgdas_atmos_analysis_diag:
+                triggers:
+                - task: jgdas_atmos_analysis
+          post:
+            tasks:
+              jgdas_atmos_post_manager:
+                triggers:
+                - task: jgdas_forecast
+                  state: active
+                events:
+                - "release_postanl"
+                - "release_post( 10 )"
+              jgdas_atmos_post_anl:
+                template: jgdas_atmos_post_master
+                triggers:
+                - task: jgdas_atmos_post_manager
+                  event: release_postanl
+                - task: jgdas_atmos_analysis_calc
+                edits:
+                  FHRGRP: '000'
+                  FHRLST: 'anl'
+                  HR: 'anl'
+                  FHR: 'anl'
+              jgdas_atmos_post_f( 10 ):
+                template: jgdas_atmos_post_master
+                triggers:
+                - task: jgdas_atmos_post_manager
+                  event: release_post( )
+                edits:
+                  FHR: 'f( )'
+                  HR: '( )'
+                  FHRGRP: '( 1, )'
+                  FHRLST: 'f( )'
+          post_processing:
+            tasks:
+              jgdas_atmos_chgres_forenkf:
+                triggers:
+                - task: jgdas_forecast
+                #- task: forecast
+          gempak:
+            tasks:
+              jgdas_atmos_gempak:
+                triggers:
+                - task: jgdas_forecast
+              jgdas_atmos_gempak_meta_ncdc:
+                triggers:
+                - task: jgdas_atmos_gempak
+          verf:
+            tasks:
+              jgdas_atmos_vminmon:
+                triggers:
+                - task: jgdas_atmos_analysis
+              jgdas_atmos_verfrad:
+                triggers:
+                - task: jgdas_atmos_analysis_diag
+              jgdas_atmos_verfozn:
+                triggers:
+                - task: jgdas_atmos_analysis_diag
+        wave:
+          init:
+            tasks:
+              jgdas_wave_init:
+                triggers:
+                - task: jobsproc_gdas_atmos_prep
+          prep:
+            tasks:
+              jgdas_wave_prep:
+                triggers:
+                - task: jgdas_wave_init
+          post:
+            tasks:
+              jgdas_wave_postsbs:
+                triggers:
+                - task: jgdas_atmos_post_manager
+                  event: release_post000
+              jgdas_wave_postpnt:
+                triggers:
+                - task: jgdas_forecast
+      enkfgdas:
+        edits:
+          RUN: 'gdas'
+        analysis:
+          create:
+            tasks:
+              jenkfgdas_select_obs:
+                triggers:
+                - task: jobsproc_gdas_atmos_prep
+              jenkfgdas_diag:
+                triggers:
+                - task: jenkfgdas_select_obs
+              jenkfgdas_update:
+                triggers:
+                - task: jenkfgdas_diag
+          recenter:
+            ecen:
+              grp(1, 3):
+                tasks:
+                  jenkfgdas_ecen( ):
+                    template: jenkfgdas_ecen
+                    triggers:
+                    - task: jgdas_atmos_post_f( )
+                edits:
+                  FHRGRP( 3 ): '( )'
+              tasks:
+                jenkfgdas_sfc:
+                  triggers:
+                  - task: jgdas_atmos_analysis_calc
+                  - task: jenkfgdas_update
+          #forecast:
+            #grp( 1,40 ):
+            #  edits:
+            #    ENSGRP: '( )'
+            #  tasks:
+            #    jenkfgdas_fcst:
+          post:
+            tasks:
+              jenkfgdas_post_f( 3,6 ):
+                triggers:
+                  - family: ['enkfgdas/analysis/recenter/ecen', 'enkfgdas/analysis/create']
+                    operand: 'or'
+                template: jenkfgdas_post_master
+                edits:
+                  FHMIN_EPOS: ( )
+                  FHMAX_EPOS: ( )
+                  FHOUT_EPOS: ( )
+      obsproc:
+        defstatus: complete
+        v1.0:
+          gfs:
+            atmos:
+              dump:
+                tasks:
+                  jobsproc_gfs_atmos_dump:
+                    template: skip
+                    events:
+                    - "release_sfcprep"
+              prep:
+                tasks:
+                  jobsproc_gfs_atmos_prep:
+                    template: skip
+          gdas:
+            atmos:
+              dump:
+                tasks:
+                  jobsproc_gdas_atmos_dump:
+                    template: skip
+                    events:
+                    - "release_sfcprep"
+              prep:
+                tasks:
+                  jobsproc_gdas_atmos_prep:
+                    template: skip

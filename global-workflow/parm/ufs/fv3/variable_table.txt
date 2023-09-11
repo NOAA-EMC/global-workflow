@@ -1,0 +1,71 @@
+hgtsfc               orog                 sfc                  1 bilinear             F 2
+pressfc              pres                 sfc                  1 bilinear             F 2
+u10m                 ugrd                 10 m above gnd       1 vector               F 2
+v10m                 vgrd                 10 m above gnd       1 vector               F 2
+cnvprcp              crain                sfc                  1 bilinear             T 2
+tprcp                tprcp                sfc                  1 bilinear             T 2
+weasd                weasd                sfc                  1 nrstnghbr            T 2
+f10m                 f10m                 10 m above gnd       1 bilinear             F 2
+q2m                  spfh                 2 m above gnd        1 bilinear             T 2
+t2m                  tmp                  2 m above gnd        1 bilinear             F 2
+tsfc                 tmp                  sfc                  1 bilinear             F 2
+vtype                vtype                sfc                  1 nrstnghbr            F 2
+stype                sotyp                sfc                  1 nrstnghbr            F 2
+slope                slope                sfc                  1 nrstnghbr            F 2
+slmsk                land                 sfc                  1 nrstnghbr            F 2
+vfrac                veg                  sfc                  1 bilinear             T 2
+zorl                 sfcr                 sfc                  1 bilinear             T 2
+soilt1               stc                  soil layer           1 nrstnghbr            F 2
+soilt2               stc                  soil layer           2 nrstnghbr            F 2
+soilt3               stc                  soil layer           3 nrstnghbr            F 2
+soilt4               stc                  soil layer           4 nrstnghbr            F 2
+soilw1               smc                  soil layer           1 nrstnghbr            F 2
+soilw2               smc                  soil layer           2 nrstnghbr            F 2
+soilw3               smc                  soil layer           3 nrstnghbr            F 2
+soilw4               smc                  soil layer           4 nrstnghbr            F 2
+slc_1                slc                  soil layer           1 nrstnghbr            T 2
+slc_2                slc                  soil layer           2 nrstnghbr            T 2
+slc_3                slc                  soil layer           3 nrstnghbr            T 2
+slc_4                slc                  soil layer           4 nrstnghbr            T 2
+alvsf                alvsf                sfc                  1 bilinear             T 2
+alvwf                alvwf                sfc                  1 bilinear             T 2
+alnsf                alnsf                sfc                  1 bilinear             T 2
+alnwf                alnwf                sfc                  1 bilinear             T 2
+canopy               cnwat                sfc                  1 bilinear             T 2
+facsf                facsf                sfc                  1 bilinear             F 2
+facwf                facwf                sfc                  1 bilinear             F 2
+ffhh                 ffhh                 sfc                  1 bilinear             F 2
+ffmm                 ffmm                 sfc                  1 bilinear             F 2
+uustar               uustar               sfc                  1 bilinear             F 2
+fice                 icec                 sfc                  1 nrstnghbr            T 2
+hice                 icetk                sfc                  1 nrstnghbr            T 2
+snoalb               snoalb               sfc                  1 nrstnghbr            F 2
+shdmin               shdmin               sfc                  1 nrstnghbr            T 2
+shdmax               shdmax               sfc                  1 nrstnghbr            T 2
+snowd                snod                 sfc                  1 nrstnghbr            T 2
+tg3                  tg3                  sfc                  1 nrstnghbr            F 2
+tisfc                tisfc                sfc                  1 nrstnghbr            F 2
+tref                 tref                 sfc                  1 bilinear             F 2
+z_c                  z_c                  sfc                  1 bilinear             F 2
+c_0                  c_0                  sfc                  1 bilinear             F 2
+c_d                  c_d                  sfc                  1 bilinear             F 2
+w_0                  w_0                  sfc                  1 bilinear             F 2
+w_d                  w_d                  sfc                  1 bilinear             F 2
+xt                   xt                   sfc                  1 bilinear             F 2
+xz                   xz                   sfc                  1 bilinear             F 2
+dt_cool              dt_cool              sfc                  1 bilinear             F 2
+xs                   xs                   sfc                  1 bilinear             F 2
+xu                   xu                   sfc                  1 bilinear             F 2
+xv                   xv                   sfc                  1 bilinear             F 2
+xtts                 xtts                 sfc                  1 bilinear             F 2
+xzts                 xzts                 sfc                  1 bilinear             F 2
+d_conv               d_conv               sfc                  1 bilinear             F 2
+qrain                qrain                sfc                  1 bilinear             F 2
+ucomp                ugrd                 mid layer            0 vector               F 3
+vcomp                vgrd                 mid layer            0 vector               F 3
+sphum                spfh                 mid layer            0 bilinear             T 3
+temp                 tmp                  mid layer            0 bilinear             F 3
+liq_wat              clwmr                mid layer            0 bilinear             T 3
+o3mr                 o3mr                 mid layer            0 bilinear             T 3
+vvel                 vvel                 mid layer            0 bilinear             T 3
+nhpres               pres                 mid layer            0 bilinear             T 3

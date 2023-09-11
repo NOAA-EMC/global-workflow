@@ -1,0 +1,14 @@
+MAP       1
+GDPFUN    sm5s(hght) 	              !sm5s(hght)  !sm9s(avor(wnd))           
+CINT                                  ! 60         ! 8    
+LATLON    28/12/1//5;10               ! 0
+SCALE     0                           ! 0          ! 5  
+TYPE      f                           ! c          ! c/f          
+LINE                                  ! 1/1/2      ! 14/5/2    
+FINT      10;20;30;40;50;70;90;110;130! 16;24;32
+FLINE     0;3;5;6;26;25;4;17;2;7;28   !            ! 0;1;1;17;26;25;4;17;2;7;28/ 3;7;2
+CLRBAR    1|.8/2/2/sw                  !            ! 0
+PANEL      0    
+CLEAR     YES
+GVCORD    PRES
+CONTUR      

@@ -1,0 +1,204 @@
+#! /usr/bin/env bash
+
+########## config.wave ##########
+# Wave steps specific
+
+echo "BEGIN: config.wave"
+
+# Parameters that are common to all wave model steps
+
+# System and version
+export wave_sys_ver=v1.0.0
+
+export EXECwave="${HOMEgfs}/exec"
+export FIXwave="${HOMEgfs}/fix/wave"
+export PARMwave="${HOMEgfs}/parm/wave"
+export USHwave="${HOMEgfs}/ush"
+
+# This config contains variables/parameters used in the fcst step
+# Some others are also used across the workflow in wave component scripts
+
+# General runtime labels
+export CDUMPwave="${RUN}wave"
+
+# In GFS/GDAS, restart files are generated/read from gdas runs
+export CDUMPRSTwave="gdas"
+
+# Grids for wave model
+export waveGRD=${waveGRD:-'mx025'}
+
+#grid dependent variable defaults
+export waveGRDN='1'                   # grid number for ww3_multi
+export waveGRDG='10'                  # grid group for ww3_multi
+export USE_WAV_RMP='NO'               # YES/NO rmp grid remapping pre-processed coefficients
+export waveMULTIGRID='.false.'        # .true./.false. for multi or shel
+export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
+export waveesmfGRD=' '                # input grid for multigrid
+
+#Grid dependent variables for various grids
+case "${waveGRD}" in
+  "gnh_10m;aoc_9km;gsh_15m")
+    #GFSv16 settings:
+    export waveGRDN='1 2 3'
+    export waveGRDG='10 20 30'
+    export USE_WAV_RMP='YES'
+    export waveMULTIGRID='.true.'
+    export IOSRV='3'
+    export MESH_WAV=' '
+    export waveesmfGRD='glox_10m'
+    export waveuoutpGRD='points'
+    export waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m glo_30m'
+    export wavepostGRD='gnh_10m aoc_9km gsh_15m'
+    ;;
+  "gwes_30m")
+    #Grid used for P8
+    export waveinterpGRD=''
+    export wavepostGRD='gwes_30m'
+    export waveuoutpGRD=${waveGRD}
+    ;;
+  "mx025")
+    #Grid used for HR1 (tripolar 1/4 deg)
+    export waveinterpGRD='reg025'
+    export wavepostGRD=''
+    export waveuoutpGRD=${waveGRD}
+    ;;
+  "glo_025")
+    #GEFSv13 regular lat/lon 1/4 deg grid
+    export waveinterpGRD=''
+    export wavepostGRD='glo_025'
+    export waveuoutpGRD=${waveGRD}
+    ;;
+  "glo_200")
+    #Global regular lat/lon 2deg deg grid
+    export waveinterpGRD=''
+    export wavepostGRD='glo_200'
+    export waveuoutpGRD=${waveGRD}
+    ;;
+  "glo_500")
+    #Global regular lat/lon 5deg deg grid
+    export waveinterpGRD=''
+    export wavepostGRD='glo_500'
+    export waveuoutpGRD=${waveGRD}
+    ;;
+  *)
+    echo "FATAL ERROR: No grid specific wave config values exist for ${waveGRD}. Aborting."
+    exit 1
+    ;;
+esac
+
+# Grids for input wind fields
+export WAVEWND_DID=
+export WAVEWND_FID=
+
+# The start time reflects the number of hindcast hours prior to the cycle initial time
+if [[ "${CDUMP}" = "gdas" ]]; then
+  export FHMAX_WAV=${FHMAX:-9}
+else
+  export FHMAX_WAV=${FHMAX_GFS}
+fi
+export WAVHINDH=${WAVHINDH:-0}
+export FHMIN_WAV=${FHMIN_WAV:-0}
+export FHOUT_WAV=${FHOUT_WAV:-3}
+export FHMAX_HF_WAV=${FHMAX_HF_WAV:-120}
+export FHOUT_HF_WAV=${FHOUT_HF_WAV:-1}
+export FHMAX_WAV_IBP=180
+if (( FHMAX_WAV < FHMAX_WAV_IBP )); then export FHMAX_WAV_IBP=${FHMAX_GFS} ; fi
+
+# gridded and point output rate
+export DTFLD_WAV=$(( FHOUT_HF_WAV * 3600 ))
+export DTPNT_WAV=${DTPNT_WAV:-3600}
+export FHINCP_WAV=$(( DTPNT_WAV / 3600 ))
+
+# Selected output parameters (gridded)
+export OUTPARS_WAV=${OUTPARS_WAV:-"WND HS FP DP PHS PTP PDIR"}
+
+# Restart file config
+if [[ "${CDUMP}" = "gdas" ]]; then
+  export WAVNCYC=4
+  export WAVHCYC=${assim_freq:-6}
+  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-48} # RTOFS forecasts only out to 8 days
+elif [[ ${gfs_cyc} -ne 0 ]]; then
+  export WAVHCYC=${assim_freq:-6}
+  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
+else
+  export WAVHCYC=0
+  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
+fi
+
+# Restart timing business
+
+export RSTTYPE_WAV='T'          # generate second tier of restart files
+if [[ "${CDUMP}" != gfs ]]; then    # Setting is valid for GDAS and GEFS
+  export DT_1_RST_WAV=10800       # time between restart files, set to DTRST=1 for a single restart file
+  export DT_2_RST_WAV=43200       # restart stride for checkpointing restart
+  export RSTIOFF_WAV=0            # first restart file offset relative to model start
+else                              # This is a GFS run
+  rst_dt_gfs=$(( restart_interval_gfs * 3600 ))  # TODO: This calculation needs to move to parsing_namelists_WW3.sh
+  if [[ ${rst_dt_gfs} -gt 0 ]]; then
+    export DT_1_RST_WAV=0 #${rst_dt_gfs:-0}   # time between restart files, set to DTRST=1 for a single restart file
+                                          #temporarily set to zero to avoid a clash in requested restart times 
+                                          #which makes the wave model crash a fix for the model issue will be coming
+    export DT_2_RST_WAV=${rst_dt_gfs:-0}   # restart stride for checkpointing restart
+  else
+    rst_dt_fhmax=$(( FHMAX_WAV * 3600 ))
+    export DT_1_RST_WAV=0                    # time between restart files, set to DTRST=1 for a single restart file
+    export DT_2_RST_WAV=${rst_dt_fhmax:-0}   # use checkpoint restart file name for creating restart at end of run
+  fi
+  export RSTIOFF_WAV=0                   # first restart file offset relative to model start
+fi
+#
+# Set runmember to default value if not GEFS cpl run
+#  (for a GFS coupled run, RUNMEN would be unset, this should default to -1)
+export RUNMEM=${RUNMEM:--1}
+# Set wave model member tags if ensemble run
+# -1: no suffix, deterministic; xxxNN: extract two last digits to make ofilename prefix=gwesNN
+if [[ ${RUNMEM} = -1 ]]; then
+# No suffix added to model ID in case of deterministic run
+  export waveMEMB=
+else
+# Extract member number only
+  export waveMEMB="${RUNMEM: -2}"
+fi
+
+# Determine if wave component needs input and/or is coupled
+export WW3ATMINP='CPL'
+if [[ ${DO_ICE} == "YES" ]]; then
+  export WW3ICEINP='CPL'
+  export WAVEICE_FID=
+else
+  export WW3ICEINP='YES'
+  export WAVEICE_FID=glix_10m
+fi
+
+export WAVECUR_DID=rtofs
+if [[ ${DO_OCN} == "YES" ]]; then
+  export WW3CURINP='CPL'
+  export WAVECUR_FID=
+else
+  export WW3CURINP='YES'
+  export WAVECUR_FID=glix_10m
+fi
+
+# Determine if input is from perturbed ensemble (T) or single input file (F) for all members
+export WW3ATMIENS='F'
+export WW3ICEIENS='F'
+export WW3CURIENS='F'
+
+export GOFILETYPE=1     # GOFILETYPE=1 one gridded file per output step
+export POFILETYPE=1     # POFILETYPE=1 one point file per output step
+
+# Parameters for ww3_multi/shel.inp
+# Unified output T or F
+export FUNIPNT='T'
+# Output server type (see ww3_shel/multi.inp in WW3 repo)
+export IOSRV=${IOSRV:-'1'}
+# Flag for dedicated output process for unified points
+export FPNTPROC='T'
+# Flag for grids sharing dedicated output processes
+export FGRDPROC='F'
+# Flag for masking computation in two-way nesting
+export FLAGMASKCOMP="F"
+# Flag for masking at printout time.
+export FLAGMASKOUT="F"
+
+echo "END: config.wave"

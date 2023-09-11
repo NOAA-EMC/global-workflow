@@ -1,0 +1,13 @@
+GLEVEL  700                                                                     
+GVCORD  PRES                                                                    
+GDPFUN  sm9s(sm9s(sm9s(relh)))  ! sm9s(sm9s(sm9s(omeg)))
+SCALE   0                  ! 3
+TYPE    C                  ! C/F
+CONTUR  2                                                                       
+CINT    20                 ! 4
+FINT                       ! -12;-8;-4;0;4;8;12;16
+FLINE                      ! 11;10;9;0;0;17;18;19;20
+LINE    4/31/2/1/1         ! 7/13/2/1/1 
+HILO    1/H#;L#//8//yes    ! 0
+HLSYM   2.5;1.5/2/3/2/sw   ! 0 
+CLRBAR  1|.8/2/2/sw                                                         
