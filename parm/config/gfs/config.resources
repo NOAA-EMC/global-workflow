@@ -20,7 +20,7 @@ if [[ $# -ne 1 ]]; then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
-    echo "ocnanalprep ocnanalprepobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -345,14 +345,14 @@ elif [[ "${step}" = "ocnanalprep" ]]; then
     export npe_node_ocnanalprep
     export memory_ocnanalprep="24GB"
 
-elif [[ "${step}" = "ocnanalprepobs" ]]; then
+elif [[ "${step}" = "prepoceanobs" ]]; then
 
-    export wtime_ocnanalprepobs="00:10:00"
-    export npe_ocnanalprepobs=1
-    export nth_ocnanalprepobs=1
-    npe_node_ocnanalprepobs=$(echo "${npe_node_max} / ${nth_ocnanalprepobs}" | bc)
-    export npe_node_ocnanalprepobs
-    export memory_ocnanalprepobs="24GB"
+    export wtime_prepoceanobs="00:10:00"
+    export npe_prepoceanobs=1
+    export nth_prepoceanobs=1
+    npe_node_prepoceanobs=$(echo "${npe_node_max} / ${nth_prepoceanobs}" | bc)
+    export npe_node_prepoceanobs
+    export memory_prepoceanobs="24GB"
 
 
 elif [[ "${step}" = "ocnanalbmat" ]]; then
