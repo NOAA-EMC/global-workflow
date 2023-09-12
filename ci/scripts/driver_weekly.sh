@@ -68,7 +68,7 @@ set -x
   id="develop"
   # call clone-build_ci to clone and build PR
   set +e
-  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p 0 -d "${develop_dir}" -o "${develop_dir}/output_${id}.log"
+  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p develop -d "${develop_dir}" -o "${develop_dir}/output_${id}.log"
   ci_status=$?
   ##################################################################
   # Checking for special case when Ready label was updated

@@ -48,7 +48,7 @@ fi
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
 
-if [[ "${PR}" -ne 0 ]]; then
+if [[ "${PR}" != "develop" ]]; then
   pr_state=$("${GH}" pr view "${PR}" --json state --jq '.state')
   if [[ "${pr_state}" != "OPEN" ]]; then
     title=$("${GH}" pr view "${PR}" --json title --jq '.title')
