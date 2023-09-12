@@ -55,103 +55,39 @@ module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 set -x
 
-############################################################
-# query repo and get list of open PRs with tags {machine}-CI
-############################################################
-
-pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
-
-if [[ ! -f "${pr_list_dbfile}" ]]; then
-  "${HOMEgfs}/ci/scripts/pr_list_database.py" --create --dbfile "${pr_list_dbfile}"
-fi
-
-pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
-
-for pr in ${pr_list}; do
-  pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  db_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
-  pr_id=0
-  #############################################################
-  # Check if a Ready labeled PR has changed back from once set   
-  # and in that case remove all previous jobs in scheduler and
-  # and remove PR from filesystem to start clean
-  #############################################################
-  if [[ "${db_list}" == *"already is in list"* ]]; then
-    pr_id=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
-    pr_id=$((pr_id+1))
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Ready "${pr_id}"
-    for cases in "${pr_dir}/RUNTESTS/"*; do
-      if [[ -z "${cases+x}" ]]; then
-         break
-      fi   
-      pslot=$(basename "${cases}")
-      sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
-    done
-    rm -Rf "${pr_dir}"
-  fi  
-done
-
-pr_list=""
-if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --dbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}') || true
-fi
-if [[ -z "${pr_list+x}" ]]; then
-  echo "no PRs open and ready for checkout/build .. exiting"
-  exit 0
-fi
-
  
 #############################################################
 # Loop throu all open PRs
 # Clone, checkout, build, creat set of cases, for each
 #############################################################
 
-for pr in ${pr_list}; do
-  # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
-  pr_building=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
-  if [[ -z "${pr_building+x}" ]]; then
-      continue
-  fi
-  "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
-  "${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building
-  echo "Processing Pull Request #${pr}"
-  pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  rm -Rf "${pr_dir}"
-  mkdir -p "${pr_dir}"
+  echo "Building development branch on ${MACHINE_ID}"
+  develop_dir="${GFS_CI_ROOT}/develop"
+  rm -Rf "${develop_dir:?}/global-workflow"
+  mkdir -p "${develop_dir}"
+  id="develop"
   # call clone-build_ci to clone and build PR
-  id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   set +e
-  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p 0 -d "${develop_dir}" -o "${develop_dir}/output_${id}.log"
   ci_status=$?
   ##################################################################
   # Checking for special case when Ready label was updated
   # that cause a running driver exit fail because was currently
   # building so we force and exit 0 instead to does not get relabled
   #################################################################
-  if [[ ${ci_status} -ne 0 ]]; then
-     pr_id_check=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display "{pr}" --dbfile "${pr_list_dbfile}" | awk '{print $4}') || true
-     if [[ "${pr_id}" -ne "${pr_id_check}" ]]; then
-        exit 0
-     fi   
-  fi
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built
-    #setup space to put an experiment
-    # export RUNTESTS for yaml case files to pickup
-    export RUNTESTS="${pr_dir}/RUNTESTS"
-    #rm -Rf "${pr_dir:?}/RUNTESTS/"*
-
+  
     #############################################################
-    # loop over every yaml file in the PR's ci/cases
+    # loop over every yaml file in the PR's ci/cases/weekly dir
     # and create an run directory for each one for this PR loop
     #############################################################
-    HOMEgfs_PR="${pr_dir}/global-workflow"
+    HOMEgfs_PR="${develop_dir}/global-workflow"
     export HOMEgfs_PR
     cd "${HOMEgfs_PR}"
     pr_sha=$(git rev-parse --short HEAD)
 
-    for yaml_config in "${HOMEgfs_PR}/ci/cases/pr/"*.yaml; do
+    for yaml_config in "${HOMEgfs_PR}/ci/cases/weekly/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
       pslot="${case}_${pr_sha}"
       export pslot
@@ -164,8 +100,7 @@ for pr in ${pr_list}; do
           echo "Created experiment:            *SUCCESS*"
           echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-        "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
-        "${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running
+        # TODO Message "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
       else 
         {
           echo "Failed to create experiment:  *FAIL* ${pslot}"
@@ -173,8 +108,7 @@ for pr in ${pr_list}; do
           echo ""
           cat "${HOMEgfs_PR}/ci/scripts/"setup_*.std*
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-        "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-        "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+        # TODO Message "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
       fi
     done
 
@@ -184,11 +118,10 @@ for pr in ${pr_list}; do
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
     } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-    "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    # TODO Message "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
   fi
   sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-  "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+  # TODO Message "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
 
 done # looping over each open and labeled PR
 
