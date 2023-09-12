@@ -41,12 +41,12 @@ done
 
 cd "${repodir}" || exit 1
 # clone copy of repo
-if [[ -d global-workflow ]]; then
-  rm -Rf global-workflow
+if [[ -d HOMEgfs ]]; then
+  rm -Rf HOMEgfs
 fi
 
-git clone "${REPO_URL}"
-cd global-workflow || exit 1
+git clone "${REPO_URL}" HOMEgfs
+cd HOMEgfs || exit 1
 
 if [[ "${PR}" != "develop" ]]; then
   pr_state=$("${GH}" pr view "${PR}" --json state --jq '.state')

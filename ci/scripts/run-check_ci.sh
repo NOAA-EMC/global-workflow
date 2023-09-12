@@ -25,8 +25,8 @@ HOMEgfs="${TEST_DIR}/HOMEgfs"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 
 # Source modules and setup logging
-echo "Source modules."
-source "${HOMEgfs}/workflow/gw_setup.sh"
+echo "NOT Source modules."
+#source "${HOMEgfs}/workflow/gw_setup.sh"
 
 # cd into the experiment directory
 echo "cd ${RUNTESTS}/EXPDIR/${pslot}"

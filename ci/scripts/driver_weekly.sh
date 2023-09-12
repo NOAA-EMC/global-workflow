@@ -62,26 +62,24 @@ set -x
 
   echo "Building development branch on ${MACHINE_ID}"
   develop_dir="${GFS_CI_ROOT}/develop"
-  rm -Rf "${develop_dir:?}/global-workflow"
-  mkdir -p "${develop_dir}"
+  #rm -Rf "${develop_dir:?}/HOMEgfs
+  RUNTESTS="${develop_dir}/RUNTESTS"
+  export RUNTESTS
+  mkdir -p "${RUNTESTS}"
   id="develop"
-  # call clone-build_ci to clone and build PR
+  # call clone-build_ci to clone and build the develop branch
   set +e
-  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p develop -d "${develop_dir}" -o "${develop_dir}/output_${id}.log"
+  #"${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p develop -d "${develop_dir}" -o "${develop_dir}/output_${id}.log"
+  echo " SKIPPING: ${HOMEgfs}/ci/scripts/clone-build_ci.sh -p develop -d ${develop_dir} -o ${develop_dir}/output_${id}.log"
   ci_status=$?
-  ##################################################################
-  # Checking for special case when Ready label was updated
-  # that cause a running driver exit fail because was currently
-  # building so we force and exit 0 instead to does not get relabled
-  #################################################################
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
   
     #############################################################
-    # loop over every yaml file in the PR's ci/cases/weekly dir
-    # and create an run directory for each one for this PR loop
+    # loop over every yaml file in ci/cases/weekly dir
+    # and create an EXPDIR directory for each one
     #############################################################
-    HOMEgfs_PR="${develop_dir}/global-workflow"
+    HOMEgfs_PR="${develop_dir}/HOMEgfs"
     export HOMEgfs_PR
     cd "${HOMEgfs_PR}"
     pr_sha=$(git rev-parse --short HEAD)
@@ -91,14 +89,15 @@ set -x
       pslot="${case}_${pr_sha}"
       export pslot
       set +e
-      "${HOMEgfs_PR}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/pr/${case}.yaml" --dir "${HOMEgfs_PR}"
+      "${HOMEgfs_PR}/ci/scripts/create_experiment.py" --yaml "${yaml_config}" --dir "${HOMEgfs_PR}"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
         {
           echo "Created experiment:            *SUCCESS*"
           echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
-        } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+        } >> "${develop_dir}/output_${id}"
+        "${HOMEgfs}/ci/scripts/run-check_ci.sh" "${develop_dir}" "${pslot}" 2>> "${develop_dir}/output_${case}.stderr" > "${develop_dir}/output_${case}.stdout"
         # TODO Message "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
       else 
         {
@@ -106,24 +105,19 @@ set -x
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
           echo ""
           cat "${HOMEgfs_PR}/ci/scripts/"setup_*.std*
-        } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+        } >> "${develop_dir}/output_${id}"
         # TODO Message "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
       fi
     done
 
-  else 
-    {
+   else 
+   {
       echo '```'
-      echo "Failed on cloning and building global-workflowi PR: ${pr}"
+      echo "Failed on cloning and building global-workflow"
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
-    } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-    # TODO Message "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
+   } >> "${develop_dir}/output_${id}"
+   # TODO Message "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
   fi
-  sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+  sed -i "s/\`\`\`//2g" "${develop_dir}/output_${id}"
   # TODO Message "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
 
-##########################################
-# scrub working directory for older files
-##########################################
-#
-#find "${GFS_CI_ROOT}/PR/*" -maxdepth 1 -mtime +3 -exec rm -rf {} \;
