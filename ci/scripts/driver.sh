@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux
 
-#####################################################################################
+##############################################################################################
 #
 # Script description: Top level driver script for checking PR
 #                     ready for CI regression testing
@@ -11,9 +11,10 @@ set -eux
 # This script uses GitHub CLI to check for Pull Requests with CI-Ready-${machine} tags on the
 # development branch for the global-workflow repo.  It then stages tests directories per
 # PR number and calls clone-build_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
-# of the PR. It then is ready to run a suite of regression tests with various
-# configurations with run_tests.py.
-#######################################################################################
+# of the PR. It then creates an expiment directory in ${GFS_CI_ROOT}/PR/$[pr}/RUNTESTS
+# for each yaml case file in ${HOMEgfs}/ci/cases/pr.  At his point the run-ci.sh script
+# will advance the experiment using Rocoto while check_ci.sh script will tests for complition
+#######################################################################################i######
 
 #################################################################
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
