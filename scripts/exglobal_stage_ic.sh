@@ -39,6 +39,8 @@ for ftype in gfs_data sfc_data; do
 done
 
 # Stage ocean initial conditions to ROTDIR (warm start)
+
+# Staging ICs  for gfs and gefs system 
 if [[ "${DO_OCN:-}" = "YES" ]]; then
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
   [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
