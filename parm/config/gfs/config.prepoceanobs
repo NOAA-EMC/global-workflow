@@ -1,0 +1,10 @@
+#!/bin/bash
+
+########## config.prepoceanobs ##########
+# Pre Ocn Analysis specific
+
+echo "BEGIN: config.config.prepoceanobs"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" prepoceanobs
+echo "END: config.prepoceanobs"

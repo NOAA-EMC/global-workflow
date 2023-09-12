@@ -11,7 +11,11 @@ export job="stage_ic"
 export jobid="${job}.$$"
 
 # Execute the JJOB
+<<<<<<< HEAD
 "${HOMEgfs}"/jobs/JGLOBAL_STAGE_IC
+=======
+"${HOMEgfs}/jobs/JGLOBAL_STAGE_IC"
+>>>>>>> 1842c22f4f4afe945e32382dec6f48a2b2830123
 status=$?
 
 
