@@ -55,10 +55,9 @@ module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 set -x
 
- 
 #############################################################
-# Loop throu all open PRs
-# Clone, checkout, build, creat set of cases, for each
+# Clone, checkout, build, develop branch and creat set of
+# cases from $HOMEgfs/ci/cases/weekly 
 #############################################################
 
   echo "Building development branch on ${MACHINE_ID}"
@@ -122,8 +121,6 @@ set -x
   fi
   sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
   # TODO Message "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-
-done # looping over each open and labeled PR
 
 ##########################################
 # scrub working directory for older files
