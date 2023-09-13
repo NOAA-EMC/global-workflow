@@ -21,10 +21,11 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then  #  srun-based system e.g. Hera, Orion
 
   nprocs=$(wc -l < "${DATA:-}/cmdfile_srun")
   set +e
-  ${launcher:-} "${mpmd_opt:-}" -n "${nprocs}" "${DATA:-}/cmdfile_srun"
+  ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${DATA:-}/cmdfile_srun"
   rc=$?
   set_strict
   if (( rc == 0 )); then
+    out_files=$(find . -name 'mpmd.*.*.out')
     rm -f "${DATA:-}/cmdfile_srun"
   fi
 
@@ -45,6 +46,7 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
   ${launcher:-} "${MP_CMDFILE}"  # TODO: Is MP_CMDFILE needed?  Can it just be cmdfile?
   rc=$?
   if (( rc == 0 )); then
+    out_files=$(find . -name 'mpmd.*.out')
     rm -f "${DATA:-}/cmdfile_mpiexec"
   fi
 
@@ -57,7 +59,6 @@ fi
 
 # On success concatenate processor specific output into a single mpmd.out
 if (( rc == 0 )); then
-  out_files=$(find . -maxdepth 1 -regex '\.\/[0-9]+.out')
   for file in ${out_files}; do
     cat "${file}" >> mpmd.out
     rm -f "${file}"

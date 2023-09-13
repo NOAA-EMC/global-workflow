@@ -53,7 +53,7 @@ fi
 # Determine grids once and save them as a string and an array for processing
 grid_string="0p25"
 if [[ "${PGBS}" = "YES" ]]; then
-  grid_string="{grid_string}:0p50:1p00"
+  grid_string="${grid_string}:0p50:1p00"
 fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
