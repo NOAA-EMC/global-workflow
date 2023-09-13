@@ -17,22 +17,22 @@ FHOUT_PGB=${FHOUT_PGB:-3}  # Output frequency of GFS PGB file at 1-degree and 0.
 npe_dwn=${npe_dwn:-24}
 downset=${downset:-1}
 PREFIX=${PREFIX:-"${RUN:-gfs}.t${cyc}z."}
-export PGBS=${PGBS:-"NO"}  # YES - generate 1 and 1/2-degree grib2 data
+PGBS=${PGBS:-"NO"}  # YES - generate 1 and 1/2-degree grib2 data
 PGB1F=${PGB1F:-"NO"}  # YES - generate 1-degree grib1 data
 
 # Files used
 if (( FH == -1 )); then
   fhr3=anl
-  export PGBS="YES"
+  PGBS="YES"
   paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2.anl"}
 elif (( FH == 0 )); then
   fhr3=000
-  export PGBS="YES"
+  PGBS="YES"
   paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2.f000"}
 else
   fhr3=$(printf "%03d" "${FH}")
   if (( FH%FHOUT_PGB == 0 )); then
-    export PGBS="YES"
+    PGBS="YES"
   fi
   paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2"}
 fi
@@ -50,12 +50,13 @@ if (( downset = 2 )); then
   export err=$?; err_chk
 fi
 
-# Determine grids once # Cannot export arrays in bash, so need to export PGBS
-grids=("0p25")
+# Determine grids once and save them as a string and an array for processing
+grid_string="0p25"
 if [[ "${PGBS}" = "YES" ]]; then
-  grids+=("0p50")
-  grids+=("1p00")
+  grid_string="{grid_string}:0p50:1p00"
 fi
+# Also transform the ${grid_string} into an array for processing
+IFS=':' read -ra grids <<< "${grid_string}"
 
 #-----------------------------------------------------
 nproc=${nproc:-${npe_dwn}}
@@ -111,7 +112,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     export err=$?; err_chk
     input_file="${tmpfile}_${iproc}"
     output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
-    echo "${GFSDWNSH} ${input_file} ${output_file_prefix}" >> "${DATA}/poescript"
+    echo "${GFSDWNSH} ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/poescript"
 
     # if at final record and have not reached the final processor then write echo's to
     # poescript for remaining processors
@@ -152,8 +153,9 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
   # Move to COM and index the product grib files
   for grid in "${grids[@]}"; do
-    ${NCP} "pgb2${grp}file_${fhr3}_${grid}" "${COM_ATMOS_GRIB}/${grid}${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
-    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${COM_ATMOS_GRIB}/${grid}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
+    prod_dir="COM_ATMOS_GRIB_${grid}"
+    ${NCP} "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
+    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
   done
 
   # Create supplemental 1-degree grib1 output TODO: who needs 1-degree grib1 product?
@@ -163,8 +165,8 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
       if [[ "${PGB1F}" = "YES" ]]; then
         ${CNVGRIB} -g21 "pgb2${grp}file_${fhr3}_1p00" "pgb${grp}file_${fhr3}_1p00"
         export err=$?; err_chk
-        ${NCP} "pgb${grp}file_${fhr3}_1p00" "${COM_ATMOS_GRIB}/1p00/${PREFIX}pgrb${grp}.1p00.${fhr3}"
-        ${GRBINDEX} "${COM_ATMOS_GRIB}/1p00/${PREFIX}pgrb${grp}.1p00.${fhr3}" "${COM_ATMOS_GRIB}/1p00/${PREFIX}pgrb${grp}.1p00.${fhr3}.idx"
+        ${NCP} "pgb${grp}file_${fhr3}_1p00" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}"
+        ${GRBINDEX} "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}.idx"
       fi
     fi
   fi

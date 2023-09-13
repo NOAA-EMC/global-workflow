@@ -40,7 +40,7 @@ export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER COM_ATMOS_GRIB
 if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -m 775 -p "${COM_ATMOS_MASTER}"; fi
 
 if [[ ${GOESF} == "YES" ]]; then
@@ -51,7 +51,7 @@ fi
 for grid in '0p25' '0p50' '1p00'; do
   prod_dir="COM_ATMOS_GRIB_${grid}"
   GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
-  if [[ ! -d "${prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
+  if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
 done
 
 if [ "${RUN}" = gfs ];then

@@ -9,9 +9,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 input_file=${1:-"pgb2file_in"}  # Input pressure grib2 file
 output_file_prefix=${2:-"pgb2file_out"}  # Prefix for output grib2 file; the prefix is appended by resolution e.g. _0p25
+grid_string=${3:-"0p25"}  # Target grids; e.g. "0p25" or "0p25:0p50"; If multiple, they need to be ":" seperated
 
 WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-PGBS=${PGBS:-"NO"}  # Supplemental 1/2-degree and 1-degree products
 
 # wgrib2 options for regridding
 defaults="-set_grib_type same -set_bitmap 1 -set_grib_max_bits 16"
@@ -56,12 +56,8 @@ function mod_icec() {
   return "${rc}"
 }
 
-# Determine grids once
-grids=("0p25")
-if [[ "${PGBS}" = "YES" ]]; then
-  grids+=("0p50")
-  grids+=("1p00")
-fi
+# Transform the input ${grid_string} into an array for processing
+IFS=':' read -ra grids <<< "${grid_string}"
 
 output_grids=""
 for grid in "${grids[@]}"; do
