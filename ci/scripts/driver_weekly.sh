@@ -8,12 +8,13 @@ set -eux
 #
 # Abstract:
 #
-# This script uses GitHub CLI to check for Pull Requests with CI-Ready-${machine} tags on the
-# development branch for the global-workflow repo.  It then stages tests directories per
-# PR number and calls clone-build_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
-# of the PR. It then creates an expiment directory in ${GFS_CI_ROOT}/PR/$[pr}/RUNTESTS
-# for each yaml case file in ${HOMEgfs}/ci/cases/pr.  At his point the run-ci.sh script
-# will advance the experiment using Rocoto while check_ci.sh script will tests for complition
+# This script runs the CI Expirments foreach case files found in $HOMEgfs/ci/cases/weekly
+# from the develop branch for the global-workflow repo that is intended to run on a weekly basis
+# from a cron job. When ran it will clone and build from the EMC's global-workflow and
+# create each expiment directory in ${GFS_CI_ROOT}/develop/RUNTESTS
+# for each yaml case file in ${HOMEgfs}/ci/cases/weekly.  As each EXPDIR is created it will
+# run run-check_ci.sh agaist it to advance the experiment using Rocoto.  After each
+# weekly case file is finished it will email from the EMAIL_LIST the results.
 #######################################################################################i######
 
 #################################################################
@@ -21,6 +22,9 @@ set -eux
 #################################################################
 export GH=${HOME}/bin/gh
 export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+
+#EMAIL_LIST="walter.kolczynski@noaa.gov, rahul.mahajan@noaa.gov, terry.mcguinness@noaa.gov"
+EMAIL_LIST="terry.mcguinness@noaa.gov"
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
@@ -62,15 +66,17 @@ set -x
 
   echo "Building development branch on ${MACHINE_ID}"
   develop_dir="${GFS_CI_ROOT}/develop"
-  #rm -Rf "${develop_dir:?}/HOMEgfs
   RUNTESTS="${develop_dir}/RUNTESTS"
   export RUNTESTS
   mkdir -p "${RUNTESTS}"
-  id="develop"
+  date_stamp=$(date | awk '{print $1"-"$2"-"$3"-"$6}')
+  export CI_LOG="${develop_dir}/ci_${date_stamp}.log"
+  rm -f "${CI_LOG}"
   # call clone-build_ci to clone and build the develop branch
   set +e
-  #"${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p develop -d "${develop_dir}" -o "${develop_dir}/output_${id}.log"
-  echo " SKIPPING: ${HOMEgfs}/ci/scripts/clone-build_ci.sh -p develop -d ${develop_dir} -o ${develop_dir}/output_${id}.log"
+  rm -Rf "${develop_dir:?}/HOMEgfs"
+  "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p develop -d "${develop_dir}" -o "${CI_LOG}"
+  #echo "SKIPPING: ${HOMEgfs}/ci/scripts/clone-build_ci.sh -p develop -d ${develop_dir} -o ${CI_LOG}"
   ci_status=$?
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
@@ -96,28 +102,37 @@ set -x
         {
           echo "Created experiment:            *SUCCESS*"
           echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
-        } >> "${develop_dir}/output_${id}"
+        } >> "${CI_LOG}"
+        rm -f "${develop_dir}/EXPDIR/ci.log"
         "${HOMEgfs}/ci/scripts/run-check_ci.sh" "${develop_dir}" "${pslot}" 2>> "${develop_dir}/output_${case}.stderr" > "${develop_dir}/output_${case}.stdout"
-        # TODO Message "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
+        ci_status=$?
+        if [[ ${ci_status} -eq 0 ]]; then
+          {
+            echo -e "\n**** CASE ${case} SUCCEDED at $(date) ****" || true
+            cat "${develop_dir}/EXPDIR/ci.log"
+          } >> "${CI_LOG}"
+        else
+         {
+          echo -e "\n**** CASE ${case} FAILED ****"
+          cat "${develop_dir}/output_${case}.stderr"
+          cat "${develop_dir}/EXPDIR/ci.log"
+         } >> "${CI_LOG}"
+        fi
       else 
         {
           echo "Failed to create experiment:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
           echo ""
           cat "${HOMEgfs_PR}/ci/scripts/"setup_*.std*
-        } >> "${develop_dir}/output_${id}"
-        # TODO Message "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
+        } >> "${CI_LOG}"
       fi
     done
 
    else 
    {
-      echo '```'
       echo "Failed on cloning and building global-workflow"
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
-   } >> "${develop_dir}/output_${id}"
-   # TODO Message "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
+   } >> "${CI_LOG}"
   fi
-  sed -i "s/\`\`\`//2g" "${develop_dir}/output_${id}"
-  # TODO Message "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+  mail -s "Weekly CI Tests Results for ${date_stamp}" "${EMAIL_LIST}" < "${CI_LOG}"
 

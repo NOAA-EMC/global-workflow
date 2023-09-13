@@ -83,7 +83,7 @@ while true; do
      echo "${error_logs}"
     } >> "${RUNTESTS}/ci.log"
     sed -i "s/\`\`\`//2g" "${RUNTESTS}/ci.log"
-    sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
+    sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep RUNTESTS |  awk '{print $1}' | xargs scancel || true
     rc=1
     break
   fi
