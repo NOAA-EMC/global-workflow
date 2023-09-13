@@ -40,10 +40,21 @@ FV3_det(){
     tcyc=${scyc}
   fi
 
+
+  RERUN=${RERUN:-"NO"}
+  #-------------------------------------------------------
+  # prototype-specific settings
+  case "${PROTO}" in
+    EP4A)
+      return
+      ;;
+       *)
+      ;;
+  esac
+  #
   #-------------------------------------------------------
   # determine if restart IC exists to continue from a previous forecast run attempt
 
-  RERUN=${RERUN:-"NO"}
   # Get a list of all YYYYMMDD.HH0000.coupler.res files from the atmos restart directory
   mapfile -t file_array < <(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res")
   if [[ ( "${RUN}" = "gfs" || "${RUN}" = "gefs" ) \
