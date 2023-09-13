@@ -313,6 +313,10 @@ case "${PROTO}" in
       AERO_DIAG_TABLE=${AERO_CONFIG_DIR}/diag_table.aero
       AERO_FIELD_TABLE=${AERO_CONFIG_DIR}/field_table.aero
       aero_conv_scav_factors="'*:0.3','so2:0.0','msa:0.0','dms:0.0','bc1:0.6','bc2:0.6','oc1:0.4','oc2:0.4','dust1:0.6','dust2:0.6', 'dust3:0.6','dust4:0.6','dust5:0.6','seas1:0.5','seas2:0.5','seas3:0.5','seas4:0.5','seas5:0.5'"
+      rst_wav=$(( restart_interval_gfs > 0 ? restart_interval_gfs : FHMAX_WAV ))
+      export DT_1_RST_WAV=0
+      export DT_2_RST_WAV=$(( 3600 * rst_wav ))
+      export RSTIOFF_WAV=0
       ;;
    *)
       ;;
