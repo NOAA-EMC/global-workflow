@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-########## config.coupled_ic ##########
+########## config.stage_ic ##########
 
-echo "BEGIN: config.coupled_ic"
+echo "BEGIN: config.stage_ic"
 
 # Get task specific resources
-source "${EXPDIR}/config.resources" coupled_ic
+source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
   "C48" | "C96")
@@ -32,4 +32,4 @@ case "${CASE}" in
     ;;
 esac
 
-echo "END: config.coupled_ic"
+echo "END: config.stage_ic"

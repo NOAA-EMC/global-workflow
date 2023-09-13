@@ -8,7 +8,7 @@ if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "coupled_ic aerosol_init"
+    echo "stage_ic aerosol_init"
     echo "prep preplandobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
@@ -20,7 +20,7 @@ if [[ $# -ne 1 ]]; then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
-    echo "ocnanalprep ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -344,6 +344,16 @@ elif [[ "${step}" = "ocnanalprep" ]]; then
     npe_node_ocnanalprep=$(echo "${npe_node_max} / ${nth_ocnanalprep}" | bc)
     export npe_node_ocnanalprep
     export memory_ocnanalprep="24GB"
+
+elif [[ "${step}" = "prepoceanobs" ]]; then
+
+    export wtime_prepoceanobs="00:10:00"
+    export npe_prepoceanobs=1
+    export nth_prepoceanobs=1
+    npe_node_prepoceanobs=$(echo "${npe_node_max} / ${nth_prepoceanobs}" | bc)
+    export npe_node_prepoceanobs
+    export memory_prepoceanobs="24GB"
+
 
 elif [[ "${step}" = "ocnanalbmat" ]]; then
    npes=16
@@ -762,12 +772,12 @@ elif [[ ${step} = "arch" || ${step} = "earc" || ${step} = "getic" ]]; then
       eval "export memory_${step}=50GB"
     fi
 
-elif [[ ${step} = "coupled_ic" ]]; then
+elif [[ ${step} = "stage_ic" ]]; then
 
-    export wtime_coupled_ic="00:15:00"
-    export npe_coupled_ic=1
-    export npe_node_coupled_ic=1
-    export nth_coupled_ic=1
+    export wtime_stage_ic="00:15:00"
+    export npe_stage_ic=1
+    export npe_node_stage_ic=1
+    export nth_stage_ic=1
     export is_exclusive=True
 
 elif [[ "${step}" = "atmensanlinit" ]]; then
