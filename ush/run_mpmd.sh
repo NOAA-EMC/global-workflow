@@ -21,6 +21,7 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then  #  srun-based system e.g. Hera, Orion
 
   nprocs=$(wc -l < "${DATA:-}/cmdfile_srun")
   set +e
+  # shellcheck disable=SC2086
   ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${DATA:-}/cmdfile_srun"
   rc=$?
   set_strict
