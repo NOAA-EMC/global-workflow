@@ -146,7 +146,7 @@ for pr in ${pr_list}; do
     # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    HOMEgfs_PR="${pr_dir}/global-workflow"
+    HOMEgfs_PR="${pr_dir}/HOMEgfs"
     export HOMEgfs_PR
     cd "${HOMEgfs_PR}"
     pr_sha=$(git rev-parse --short HEAD)
