@@ -73,7 +73,7 @@ class LandAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -87,13 +87,6 @@ class LandAnalysis(Analysis):
         logger.info("Copying GTS obs for bufr2ioda.x")
         FileHandler(prep_gts_config.gtsbufr).sync()
 
-        # generate bufr2ioda YAML file
-        bufr2ioda_yaml = os.path.join(self.runtime_config.DATA, "bufr_adpsfc_snow.yaml")
-        logger.info(f"Generate BUFR2IODA YAML file: {bufr2ioda_yaml}")
-        temp_yaml = parse_j2yaml(self.task_config.BUFR2IODAYAML, self.task_config)
-        save_as_yaml(temp_yaml, bufr2ioda_yaml)
-        logger.info(f"Wrote bufr2ioda YAML to: {bufr2ioda_yaml}")
-
         logger.info("Link BUFR2IODAX into DATA/")
         exe_src = self.task_config.BUFR2IODAX
         exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
@@ -101,32 +94,41 @@ class LandAnalysis(Analysis):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
-        output_file = f"{localconf.OPREFIX}adpsfc_snow.nc4"
-        if os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
-            rm_p(output_file)
-
-        # execute BUFR2IODAX to convert GTS bufr data into IODA format
-        yaml_file = f"bufr_adpsfc_snow.yaml"
-        if not os.path.isfile(f"{os.path.join(localconf.DATA, yaml_file)}"):
-            logger.exception(f"{yaml_file} not found")
-            raise FileNotFoundError(f"{os.path.join(localconf.DATA, yaml_file)}")
+        # Create executable instance
         exe = Executable(self.task_config.BUFR2IODAX)
-        exe.add_default_arg(os.path.join(localconf.DATA, f"{yaml_file}"))
 
-        logger.info(f"Executing {exe}")
-        try:
-            exe()
-        except OSError:
-            raise OSError(f"Failed to execute {exe}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exe}")
+        def _gtsbufr2iodax(exe, yaml_file):
+            if not os.path.isfile(yaml_file):
+                logger.exception(f"{yaml_file} not found")
+                raise FileNotFoundError(yaml_file)
+
+            logger.info(f"Executing {exe}")
+            try:
+                exe(yaml_file)
+            except OSError:
+                raise OSError(f"Failed to execute {exe} {yaml_file}")
+            except Exception:
+                raise WorkflowException(f"An error occured during execution of {exe} {yaml_file}")
+
+        # Loop over entries in prep_gts_config.bufr2ioda keys
+        # 1. generate bufr2ioda YAML files
+        # 2. execute bufr2ioda.x
+        for name in prep_gts_config.bufr2ioda.keys():
+            gts_yaml = os.path.join(self.runtime_config.DATA, f"bufr_{name}_snow.yaml")
+            logger.info(f"Generate BUFR2IODA YAML file: {gts_yaml}")
+            temp_yaml = parse_j2yaml(prep_gts_config.bufr2ioda[name], localconf)
+            save_as_yaml(temp_yaml, gts_yaml)
+            logger.info(f"Wrote bufr2ioda YAML to: {gts_yaml}")
+
+            # execute BUFR2IODAX to convert {name} bufr data into IODA format
+            _gtsbufr2iodax(exe, gts_yaml)
 
         # Ensure the IODA snow depth GTS file is produced by the IODA converter
         # If so, copy to COM_OBS/
         try:
             FileHandler(prep_gts_config.gtsioda).sync()
         except OSError as err:
-            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce {output_file}")
+            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce GTS ioda files")
             raise OSError(err)
 
     @logit(logger)
