@@ -2,19 +2,8 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-# Source FV3GFS workflow modules
-. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
-
-export job="coupled_ic"
-export jobid="${job}.$$"
-
-# Execute the JJOB
-
-source "${HOMEgfs}/ush/jjob_header.sh" -e "coupled_ic" -c "base coupled_ic"
-
 # Locally scoped variables and functions
+# shellcheck disable=SC2153
 GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
@@ -36,7 +25,7 @@ source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/gfs_ctrl.
 target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
 ${NCP} "${source}" "${target}"
 rc=$?
-[[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+(( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
 err=$((err + rc))
 for ftype in gfs_data sfc_data; do
   for tt in $(seq 1 6); do
@@ -44,7 +33,7 @@ for ftype in gfs_data sfc_data; do
     target="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
     ${NCP} "${source}" "${target}"
     rc=$?
-    [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+    (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
   done
 done
@@ -57,7 +46,7 @@ if [[ "${DO_OCN:-}" = "YES" ]]; then
   target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res.nc"
   ${NCP} "${source}" "${target}"
   rc=$?
-  [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+  (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
   err=$((err + rc))
   case "${OCNRES}" in
     "500" | "100")  # Only 5 degree or 1 degree ocean does not have MOM.res_[1-4].nc files
@@ -69,7 +58,7 @@ if [[ "${DO_OCN:-}" = "YES" ]]; then
           target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
           ${NCP} "${source}" "${target}"
           rc=$?
-          [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+          (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
           err=$((err + rc))
         fi
       done
@@ -91,7 +80,7 @@ if [[ "${DO_ICE:-}" = "YES" ]]; then
   target="${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
   ${NCP} "${source}" "${target}"
   rc=$?
-  [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+  (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
   err=$((err + rc))
 fi
 
@@ -104,7 +93,7 @@ if [[ "${DO_WAVE:-}" = "YES" ]]; then
     target="${COM_WAVE_RESTART}/${PDY}.${cyc}0000.restart.${grdID}"
     ${NCP} "${source}" "${target}"
     rc=$?
-    [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
+    (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
   done
 fi

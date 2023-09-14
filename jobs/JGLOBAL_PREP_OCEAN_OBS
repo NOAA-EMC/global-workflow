@@ -1,0 +1,38 @@
+#!/bin/bash
+export STRICT="NO"
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
+
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+
+###############################################################
+# Run relevant script
+
+# the relevant script goes here
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+##########################################
+# Handle the temporary working directory 
+##########################################
+cd "${DATAROOT}" || (echo "FATAL ERROR: ${DATAROOT} does not exist. ABORT!"; exit 1)
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+
+exit 0

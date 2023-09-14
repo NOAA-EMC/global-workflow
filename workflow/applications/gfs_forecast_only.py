@@ -15,7 +15,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         Returns the config_files that are involved in the forecast-only app
         """
 
-        configs = ['coupled_ic', 'fcst', 'arch']
+        configs = ['stage_ic', 'fcst', 'arch']
 
         if self.do_atm:
             configs += ['post', 'vrfy']
@@ -65,7 +65,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         This is the place where that order is set.
         """
 
-        tasks = ['coupled_ic']
+        tasks = ['stage_ic']
 
         if self.do_aero:
             tasks += ['aerosol_init']
