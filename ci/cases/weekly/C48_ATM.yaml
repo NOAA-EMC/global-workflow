@@ -4,7 +4,7 @@ experiment:
 
 arguments:
   pslot: ${pslot}
-  app: S2SW
+  app: ATM
   resdet: 48
   comrot: ${RUNTESTS}/COMROT
   expdir: ${RUNTESTS}/EXPDIR

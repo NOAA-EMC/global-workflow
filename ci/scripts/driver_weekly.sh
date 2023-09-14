@@ -74,7 +74,7 @@ set -x
   rm -f "${CI_LOG}"
   # call clone-build_ci to clone and build the develop branch
   set +e
-  rm -Rf "${develop_dir:?}/HOMEgfs"
+   rm -Rf "${develop_dir:?}/HOMEgfs"
   "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p develop -d "${develop_dir}" -o "${CI_LOG}"
   #echo "SKIPPING: ${HOMEgfs}/ci/scripts/clone-build_ci.sh -p develop -d ${develop_dir} -o ${CI_LOG}"
   ci_status=$?
@@ -103,19 +103,19 @@ set -x
           echo "Created experiment:            *SUCCESS*"
           echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
         } >> "${CI_LOG}"
-        rm -f "${develop_dir}/EXPDIR/ci.log"
+        rm -f "${develop_dir}/RUNTESTS/ci.log"
         "${HOMEgfs}/ci/scripts/run-check_ci.sh" "${develop_dir}" "${pslot}" 2>> "${develop_dir}/output_${case}.stderr" > "${develop_dir}/output_${case}.stdout"
         ci_status=$?
         if [[ ${ci_status} -eq 0 ]]; then
           {
             echo -e "\n**** CASE ${case} SUCCEDED at $(date) ****" || true
-            cat "${develop_dir}/EXPDIR/ci.log"
+            cat "${develop_dir}/RUNTESTS/ci.log"
           } >> "${CI_LOG}"
         else
          {
           echo -e "\n**** CASE ${case} FAILED ****"
           cat "${develop_dir}/output_${case}.stderr"
-          cat "${develop_dir}/EXPDIR/ci.log"
+          cat "${develop_dir}/RUNTESTS/ci.log"
          } >> "${CI_LOG}"
         fi
       else 
