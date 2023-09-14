@@ -8,7 +8,7 @@ echo "BEGIN: config.landanl"
 # Get task specific resources
 . "${EXPDIR}/config.resources" landanl
 
-obs_list_name=gdas_land_adpsfc_only.yaml
+obs_list_name=gdas_land_gts_only.yaml
 if [[ "${cyc}" = "18" ]]; then
     obs_list_name=gdas_land_prototype.yaml
 fi

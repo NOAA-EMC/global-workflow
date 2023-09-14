@@ -1,26 +1,26 @@
-#!/bin/bash
-source "${HOMEgfs}/ush/preamble.sh"
-export WIPE_DATA="NO"
-export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalrun"
+#! /usr/bin/env bash
 
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmiodaobs" -c "base prepatmiodaobs"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 
 
 ###############################################################
 # Run relevant script
-
-EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_run.sh}
-${EXSCRIPT}
+EXSCRIPT=${BUFR2IODASH:-${HOMEgfs}/ush/run_bufr2ioda.py}
+${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${IODAPARM}" "${COM_OBS}/"
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+[[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")
 
 ##############################################
 # End JOB SPECIFIC work
@@ -32,10 +32,5 @@ status=$?
 if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
-
-##########################################
-# Do not remove the Temporary working directory (do this in POST)
-##########################################
-cd "${DATAROOT}" || exit 1
 
 exit 0

@@ -8,8 +8,8 @@ if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "coupled_ic aerosol_init"
-    echo "prep preplandobs"
+    echo "stage_ic aerosol_init"
+    echo "prep preplandobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl"
@@ -20,7 +20,7 @@ if [[ $# -ne 1 ]]; then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
-    echo "ocnanalprep ocnanalprepobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -72,6 +72,13 @@ elif [[ "${step}" = "preplandobs" ]]; then
     export nth_preplandobs=1
     npe_node_preplandobs=1
     export npe_node_preplandobs
+
+elif [[ "${step}" = "prepatmiodaobs" ]]; then
+    export wtime_prepatmiodaobs="00:10:00"
+    export npe_prepatmiodaobs=1
+    export nth_prepatmiodaobs=1
+    npe_node_prepatmiodaobs=$(echo "${npe_node_max} / ${nth_prepatmiodaobs}" | bc)
+    export npe_node_prepatmiodaobs
 
 elif [[ "${step}" = "aerosol_init" ]]; then
     export wtime_aerosol_init="00:05:00"
@@ -249,7 +256,7 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
 
    # below lines are for creating JEDI YAML
    case ${CASE} in
-     C768)
+      C768)
         layout_x=8
         layout_y=8
         ;;
@@ -257,9 +264,14 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
         layout_x=8
         layout_y=8
         ;;
-     C192 | C96 | C48)
+      C192 | C96)
         layout_x=8
         layout_y=8
+        ;;
+      C48 )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
         ;;
       *)
           echo "FATAL ERROR: Resolution not supported for aerosol analysis'"
@@ -279,7 +291,7 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
 elif [[ "${step}" = "aeroanlrun" ]]; then
 
    case ${CASE} in
-     C768)
+      C768)
         layout_x=8
         layout_y=8
         ;;
@@ -287,9 +299,14 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
         layout_x=8
         layout_y=8
         ;;
-     C192 | C96 | C48)
+      C192 | C96)
         layout_x=8
         layout_y=8
+        ;;
+      C48 )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
         ;;
       *)
           echo "FATAL ERROR: Resolution ${CASE} is not supported, ABORT!"
@@ -328,14 +345,14 @@ elif [[ "${step}" = "ocnanalprep" ]]; then
     export npe_node_ocnanalprep
     export memory_ocnanalprep="24GB"
 
-elif [[ "${step}" = "ocnanalprepobs" ]]; then
+elif [[ "${step}" = "prepoceanobs" ]]; then
 
-    export wtime_ocnanalprepobs="00:10:00"
-    export npe_ocnanalprepobs=1
-    export nth_ocnanalprepobs=1
-    npe_node_ocnanalprepobs=$(echo "${npe_node_max} / ${nth_ocnanalprepobs}" | bc)
-    export npe_node_ocnanalprepobs
-    export memory_ocnanalprepobs="24GB"
+    export wtime_prepoceanobs="00:10:00"
+    export npe_prepoceanobs=1
+    export nth_prepoceanobs=1
+    npe_node_prepoceanobs=$(echo "${npe_node_max} / ${nth_prepoceanobs}" | bc)
+    export npe_node_prepoceanobs
+    export memory_prepoceanobs="24GB"
 
 
 elif [[ "${step}" = "ocnanalbmat" ]]; then
@@ -755,12 +772,12 @@ elif [[ ${step} = "arch" || ${step} = "earc" || ${step} = "getic" ]]; then
       eval "export memory_${step}=50GB"
     fi
 
-elif [[ ${step} = "coupled_ic" ]]; then
+elif [[ ${step} = "stage_ic" ]]; then
 
-    export wtime_coupled_ic="00:15:00"
-    export npe_coupled_ic=1
-    export npe_node_coupled_ic=1
-    export nth_coupled_ic=1
+    export wtime_stage_ic="00:15:00"
+    export npe_stage_ic=1
+    export npe_node_stage_ic=1
+    export nth_stage_ic=1
     export is_exclusive=True
 
 elif [[ "${step}" = "atmensanlinit" ]]; then

@@ -1,8 +1,6 @@
 #!/bin/bash
 source "${HOMEgfs}/ush/preamble.sh"
-export WIPE_DATA="NO"
-export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalrun"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
 
 
 ##############################################
@@ -17,10 +15,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalr
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_run.sh}
-${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+# the relevant script goes here
 
 ##############################################
 # End JOB SPECIFIC work
@@ -34,8 +29,9 @@ if [[ -e "${pgmout}" ]] ; then
 fi
 
 ##########################################
-# Do not remove the Temporary working directory (do this in POST)
+# Handle the temporary working directory 
 ##########################################
-cd "${DATAROOT}" || exit 1
+cd "${DATAROOT}" || (echo "FATAL ERROR: ${DATAROOT} does not exist. ABORT!"; exit 1)
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
