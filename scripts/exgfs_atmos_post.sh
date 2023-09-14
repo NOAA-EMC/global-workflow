@@ -399,8 +399,6 @@ else   ## not_anl if_stime
       fi
 
       if [[ "${SENDCOM}" = "YES" ]]; then
-        #       echo "$PDY$cyc$pad$fhr" > $COMOUT/${RUN}.t${cyc}z.master.control
-
         mv goesfile "${COM_ATMOS_GOES}/${SPECIALFL}f${fhr3}"
         mv goesifile "${COM_ATMOS_GOES}/${SPECIALFLIDX}f${fhr3}"
 
