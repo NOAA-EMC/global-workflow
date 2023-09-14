@@ -1,5 +1,4 @@
 #!/bin/bash
-#export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
