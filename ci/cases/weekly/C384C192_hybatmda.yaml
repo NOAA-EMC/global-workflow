@@ -9,9 +9,9 @@ arguments:
   resens: 192
   comrot: ${RUNTESTS}/COMROT
   expdir: ${RUNTESTS}/EXPDIR
-  icsdir: /scratch1/NCEPDEV/stmp2/Rahul.Mahajan/ICSDIR/IC_C384
-  idate: 2023040118
-  edate: 2023040200
+  icsdir: ${ICSDIR_ROOT}/C384C192
+  idate: 2021122018
+  edate: 2021122100
   nens: 2
   gfs_cyc: 1
   start: cold
