@@ -68,7 +68,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
   # Each set represents a group of files
   if (( nset == 1 )); then
-    grp="a"
+    grp=""  # TODO: this should be "a" when we eventually rename the pressure grib2 files per EE2 convention
   elif (( nset == 2 )); then
     grp="b"
   fi
