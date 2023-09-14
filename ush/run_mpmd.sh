@@ -36,6 +36,7 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
   # Read the incoming cmdfile and create mpiexec usable cmdfile
   if [[ -s "${DATA:-}/cmdfile_mpiexec" ]]; then rm -f "${DATA:-}/poescript_mpiexec"; fi
   nm=0
+  echo "#!/bin/bash" >> "${DATA:-}/cmdfile_mpiexec"
   # shellcheck disable=SC2312
   while IFS= read -r line; do
     echo "${line} > mpmd.${nm}.out" >> "${DATA:-}/cmdfile_mpiexec"
@@ -44,6 +45,7 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
 
   export MP_PGMMODEL="mpmd"
   export MP_CMDFILE="${DATA:-}/cmdfile_mpiexec"
+  chmod 755 "${MP_CMDFILE}"
   ${launcher:-} "${MP_CMDFILE}"  # TODO: Is MP_CMDFILE needed?  Can it just be cmdfile?
   rc=$?
   if (( rc == 0 )); then
