@@ -41,7 +41,7 @@ paramlistb=${paramlistb:-"${HOMEgfs}/parm/post/global_master-catchup_parmlist_g2
 # Get inventory from ${PGBOUT2} that matches patterns from ${paramlista}
 # Extract this inventory from ${PGBOUT2} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
 # shellcheck disable=SC2312
-${WGRIB2} "${PGBOUT2}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfilea_${fhr3}" "${PGBOUT2}"
+${WGRIB2} "${PGBOUT2}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${PGBOUT2}"
 export err=$?; err_chk
 # Do the same as above for ${paramlistb}
 if (( downset = 2 )); then
