@@ -15,7 +15,7 @@
 # echo "-----------------------------------------------------"
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 # export CNVGRIB=/nwprod/util/exec/cnvgrib
 # export GRB2INDX=/nwprod/util/exec/grb2index
@@ -59,7 +59,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # DBNet Alerts for gfs suite
 #
 
-if [ "$SENDDBN" = 'YES' -a "$RUN" = 'gfs' ]; then
+if [[ "${SENDDBN}" = 'YES' && "${RUN}" = 'gfs' ]]; then
   #if [ $(expr $fhr % 3) -eq 0 ]; then
   #echo $DBNROOT/bin/dbn_alert MODEL GFS_SGB $job $COMOUT/${RUN}.${cycle}.sfluxgrbf$fhr
   #echo $DBNROOT/bin/dbn_alert MODEL GFS_SGBI $job $COMOUT/${RUN}.${cycle}.sfluxgrbif$fhr
@@ -67,14 +67,14 @@ if [ "$SENDDBN" = 'YES' -a "$RUN" = 'gfs' ]; then
   #echo $DBNROOT/bin/dbn_alert MODEL GFS_SGB_GB2_WIDX $job $COMOUT/${RUN}.${cycle}.sfluxgrbf${fhr}.grib2.idx
   #fi
 
-  fhr=$(printf "%03d" $fhr)
-  $DBNROOT/bin/dbn_alert MODEL GFS_SF $job $COMOUT/${RUN}.t${cyc}z.atmf$fhr.nc
+  fhr3=$(printf "%03d" "${fhr}")
+  "${DBNROOT}/bin/dbn_alert" MODEL GFS_SF "${job}" "${COMOUT}/${RUN}.t${cyc}z.atmf${fhr3}.nc"
  
-  if [[ $fhr -gt 0  && $fhr -le 84  ]]; then
-     $DBNROOT/bin/dbn_alert MODEL GFS_BF $job $COMOUT/${RUN}.t${cyc}z.sfcf$fhr.nc
+  if (( fhr > 0  && fhr <= 84 )); then
+     "${DBNROOT}/bin/dbn_alert" MODEL GFS_BF "${job}" "${COMOUT}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
   fi
-  if [[ $fhr -eq 120  ]]; then
-     $DBNROOT/bin/dbn_alert MODEL GFS_BF $job $COMOUT/${RUN}.t${cyc}z.sfcf$fhr.nc
+  if (( fhr == 120 )); then
+     "${DBNROOT}/bin/dbn_alert" MODEL GFS_BF "${job}" "${COMOUT}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
   fi
 fi
 
