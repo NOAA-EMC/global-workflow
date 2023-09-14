@@ -22,15 +22,15 @@ PGB1F=${PGB1F:-"NO"}  # YES - generate 1-degree grib1 data
 
 # Files used
 if (( FH == -1 )); then
-  fhr3=anl
+  fhr3="anl"
   PGBS="YES"
   paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2.anl"}
 elif (( FH == 0 )); then
-  fhr3=000
+  fhr3="f000"
   PGBS="YES"
   paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2.f000"}
 else
-  fhr3=$(printf "%03d" "${FH}")
+  fhr3=$(printf "f%03d" "${FH}")
   if (( FH%FHOUT_PGB == 0 )); then
     PGBS="YES"
   fi
