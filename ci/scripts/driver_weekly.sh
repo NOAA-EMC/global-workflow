@@ -69,7 +69,7 @@ set -x
   RUNTESTS="${develop_dir}/RUNTESTS"
   export RUNTESTS
   mkdir -p "${RUNTESTS}"
-  date_stamp=$(date | awk '{print $1"-"$2"-"$3"-"$6}')
+  date_stamp=$(date | awk '{print $1"-"$2"-"$3"-"$6}') || true
   export CI_LOG="${develop_dir}/ci_${date_stamp}.log"
   rm -f "${CI_LOG}"
   # call clone-build_ci to clone and build the develop branch
