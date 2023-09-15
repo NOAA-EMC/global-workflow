@@ -10,8 +10,8 @@ arguments:
   comrot: ${RUNTESTS}/COMROT
   expdir: ${RUNTESTS}/EXPDIR
   icsdir: ${ICSDIR_ROOT}/C384C192
-  idate: 2021122018
-  edate: 2021122100
+  idate: 2023040118
+  edate: 2023040200
   nens: 2
   gfs_cyc: 1
   start: cold
