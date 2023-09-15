@@ -74,7 +74,7 @@ set -x
   rm -f "${CI_LOG}"
   # call clone-build_ci to clone and build the develop branch
   set +e
-   rm -Rf "${develop_dir:?}/HOMEgfs"
+  rm -Rf "${develop_dir:?}/HOMEgfs"
   "${HOMEgfs}/ci/scripts/clone-build_ci.sh" -p develop -d "${develop_dir}" -o "${CI_LOG}"
   #echo "SKIPPING: ${HOMEgfs}/ci/scripts/clone-build_ci.sh -p develop -d ${develop_dir} -o ${CI_LOG}"
   ci_status=$?
@@ -94,10 +94,10 @@ set -x
       case=$(basename "${yaml_config}" .yaml) || true
       pslot="${case}_${pr_sha}"
       export pslot
+      # Do not quit on errors so we can email results
       set +e
       "${HOMEgfs_PR}/ci/scripts/create_experiment.py" --yaml "${yaml_config}" --dir "${HOMEgfs_PR}"
       ci_status=$?
-      set -e
       if [[ ${ci_status} -eq 0 ]]; then
         {
           echo "Created experiment:            *SUCCESS*"
@@ -106,6 +106,10 @@ set -x
         rm -f "${develop_dir}/RUNTESTS/ci.log"
         "${HOMEgfs}/ci/scripts/run-check_ci.sh" "${develop_dir}" "${pslot}" 2>> "${develop_dir}/output_${case}.stderr" > "${develop_dir}/output_${case}.stdout"
         ci_status=$?
+        stdout_errors=$(cat "${develop_dir}/output_${case}.stdout")
+        if [[ "FATAL ERROR" == *"${stdout_errors}"* ]]; then
+          ci_status=1
+        fi
         if [[ ${ci_status} -eq 0 ]]; then
           {
             echo -e "\n**** CASE ${case} SUCCEDED at $(date) ****" || true
