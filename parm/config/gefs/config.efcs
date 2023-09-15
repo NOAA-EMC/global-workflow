@@ -31,8 +31,14 @@ source "${EXPDIR}/config.ufs" ${string}
 source "${EXPDIR}/config.resources" efcs
 
 # Use serial I/O for ensemble (lustre?)
-export OUTPUT_FILETYPE_ATM="netcdf"
-export OUTPUT_FILETYPE_SFC="netcdf"
+case "${PROTO:-}" in
+  EP4A)
+  ;;
+    *)
+    export OUTPUT_FILETYPE_ATM="netcdf"
+    export OUTPUT_FILETYPE_SFC="netcdf"
+  ;;
+esac
 
 # Number of enkf members per fcst job
 export NMEM_EFCSGRP=1
@@ -44,8 +50,6 @@ export WRITE_DOPOST=".true."
 # Stochastic physics parameters (only for ensemble forecasts)
 case "${PROTO:-}" in
   EP4A)
-    export OUTPUT_FILETYPE_ATM="netcdf_parallel"
-    export OUTPUT_FILETYPE_ATM="netcdf_parallel"
     export MOM6_RESTART_SETTING=n
     export IEMS_ENKF=2
     export FHCYC_ENKF=24

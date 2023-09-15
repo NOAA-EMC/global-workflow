@@ -403,6 +403,8 @@ case "${PROTO}" in
     export nthreads_mom6=1
     export ntasks_ww3=262
     export nthreads_ww3=1
+    export OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    export OUTPUT_FILETYPE_SFC="netcdf_parallel"
     ;;
      *)
     ;;
