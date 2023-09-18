@@ -18,6 +18,14 @@ error_message(){
 ###############################################################
 # Start staging gefs and gfs here
 
+# Check for command line argument to select gfs or gefs
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 [gfs | gefs]"
+  exit 1
+fi
+
+
+if [ "$selection" = "gfs" ]; then
 # Stage the FV3 initial conditions to ROTDIR (cold start)
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
@@ -37,6 +45,46 @@ for ftype in gfs_data sfc_data; do
     err=$((err + rc))
   done
 done
+elif [ "$selection" = "gefs" ]; then
+YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
+[[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
+
+# for gefs selection, BASE_CPLIC path need to be change to
+# /scratch1/NCEPDEV/global/glopara/data/ICSDIR (gfs base cplic path /scratch1/NCEPDEV/climate/role.ufscpara/IC
+
+# Loop through subdirectories within the specified member directory (mem_dir)
+
+# Define the array of CASE values
+CASE=("12")  # Add more values as needed
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/mem000/model_data/atmos/input/gfs_ctrl.nc"
+    
+# Construct the target file path with ${mem_dir} as part of the name
+    target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
+    ${NCP} "${source}" "${target}"
+    rc=$?
+    (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
+    err=$((err + rc))
+
+for mem_dir in "${member_dir}"/*; do
+  if [ -d "$mem_dir" ]; then
+    for ftype in gfs_data sfc_data; do
+      for tt in $(seq 1 6); do
+        source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${mem_dir}/model_data/atmos/input/${ftype}.tile${tt}.nc"
+        target="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
+        copy_files "${source}" "${target}"
+      done
+    done
+  done
+  fi
+done
+else
+  echo "Invalid selection. Use 'gfs' or 'gefs'."
+  exit 1
+fi
+
+echo "All files copied successfully."
+exit 0
+
 
 # Stage ocean initial conditions to ROTDIR (warm start)
 if [[ "${DO_OCN:-}" = "YES" ]]; then
