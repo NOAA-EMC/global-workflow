@@ -1,20 +1,20 @@
 #! /usr/bin/env python3
 
-import os
 import time
 from github import Github
 from datetime import datetime
-
-_here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
+from pathlib import Path
 
 now = datetime.now()
 date = now.strftime("%m %d %Y")
 
 # Provide your personal access token or use a GitHub token if available
-access_token = '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'
+
+with open(Path.home().joinpath('.gittokens','access_token.txt'), 'r') as file:
+    access_token = file.read().strip()
+
 # Create a PyGitHub instance using the access token
-github = Github(access_token)
+githue = Github(access_token)
 
 # Specify the repository where you want to open the Pull Request and modify the label
 repo_owner = 'TerrenceMcGuinness-NOAA'
@@ -46,15 +46,6 @@ for case in cases:
     file_name = case.name
     file_content = case.decoded_content.decode('utf-8')
     repo.create_file(path=file_name, message='adding a new file for weekly tests', content=file_content, branch=branch_name)
-
-# Create a new file in the new branch
-#file_name = 'weekly_tests.txt'
-#file_content = 'This is a test file for weekly tests'
-#repo.create_file(path=file_name, message='adding a new file for weekly tests', content=file_content, branch=branch_name)
-# Commit the changes made to the new branch
-#commit_message = 'Adding a new file for weekly tests'
-#repo.update_file(path=file_name, message=commit_message, content=file_content, sha=repo.get_contents(path=file_name, ref=branch_name).sha, branch=branch_name)
-#new_commit = repo.get_commits()[0]
 
 new_commit = repo.get_commits()[0]
 
