@@ -57,8 +57,6 @@ YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 # Define the array of CASE values
 CASE=("12")  # Add more values as needed
     source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/mem000/model_data/atmos/input/gfs_ctrl.nc"
-    
-# Construct the target file path with ${mem_dir} as part of the name
     target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
     ${NCP} "${source}" "${target}"
     rc=$?
