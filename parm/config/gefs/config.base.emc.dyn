@@ -219,8 +219,6 @@ case "${APP}" in
         export confignamevarfornems="${confignamevarfornems}_outerwave"
     fi
 
-    source ${EXPDIR}/config.defaults.s2sw
-
     ;;
   *)
     echo "Unrecognized APP: ${1}"
