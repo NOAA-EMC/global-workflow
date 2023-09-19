@@ -52,8 +52,6 @@ YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 # for gefs selection, BASE_CPLIC path need to be change to
 # /scratch1/NCEPDEV/global/glopara/data/ICSDIR (gfs base cplic path /scratch1/NCEPDEV/climate/role.ufscpara/IC
 
-# Loop through subdirectories within the specified member directory (mem_dir)
-
 # Define the array of CASE values
 CASE=("12")  # Add more values as needed
     source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/mem000/model_data/atmos/input/gfs_ctrl.nc"
@@ -63,6 +61,9 @@ CASE=("12")  # Add more values as needed
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
 
+# Loop through subdirectories within the specified member directory (mem_dir)
+# Define the array of member directories
+member_dirs=("mem000" "mem001" "mem002")  # Add more directories as needed
 for mem_dir in "${member_dir}"/*; do
   if [ -d "$mem_dir" ]; then
     for ftype in gfs_data sfc_data; do
@@ -72,7 +73,6 @@ for mem_dir in "${member_dir}"/*; do
         copy_files "${source}" "${target}"
       done
     done
-  done
   fi
 done
 else
@@ -85,6 +85,7 @@ exit 0
 
 
 # Stage ocean initial conditions to ROTDIR (warm start)
+if [ "$selection" = "gfs" ]; then
 if [[ "${DO_OCN:-}" = "YES" ]]; then
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
   [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
