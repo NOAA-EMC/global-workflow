@@ -95,10 +95,10 @@ PULL_REQUEST_BODY="${PULL_REQUEST_TITLE}"
 PULL_REQUEST_LABELS=("CI-Orion-Ready" "CI-Hera-Ready")
 
 "${GH}" repo set-default "${REPO_OWNER}/${REPO_NAME}"
-"${GH}" pr create --title "$PULL_REQUEST_TITLE" --body "$PULL_REQUEST_BODY" --base $BASE_BRANCH --head $HEAD_BRANCH
+"${GH}" pr create --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --base "${BASE_BRANCH}" --head "${HEAD_BRANCH}"
 
 # Add labels to the pull request
 for label in "${PULL_REQUEST_LABELS[@]}"
 do
-  "${GH}" pr edit --add-label "$label"
+  "${GH}" pr edit --add-label "${label}"
 done
