@@ -20,11 +20,7 @@ set -eux
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
-#export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
-export REPO_URL=git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git
-
-#EMAIL_LIST="walter.kolczynski@noaa.gov, rahul.mahajan@noaa.gov, terry.mcguinness@noaa.gov"
-EMAIL_LIST="terry.mcguinness@noaa.gov"
+export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
@@ -62,15 +58,17 @@ set -x
 #########################################################
 # Create a new branch from develop and move yaml files
 #########################################################
-branch="weekly_ci_$(date +%Y%m%d)"
-develop_dir="${GFS_CI_ROOT}/develop"
+branch="weekly_ci_$(date +%A_%b_%Y)"
+develop_dir="${GFS_CI_ROOT}/develop_temp"
+HOMEgfs_PR="${develop_dir}/global-workflow"
 echo "Creating new branch ${branch} from develop on ${MACHINE_ID} in ${develop_dir}"
-HOMEgfs_PR="${develop_dir}/develop/global-workflow"
 export HOMEgfs_PR
-rm -Rf "${HOMEgfs_PR:?}"
+rm -Rf "${develop_dir}"
 mkdir -p "${develop_dir}"
 cd "${develop_dir}" || exit 1
-git clone "${REPO_URL}" -b "${branch}"
+git clone "${REPO_URL}"
+cd "${HOMEgfs_PR}" || exit 1
+git checkout -b "${branch}"
 
 ######################################################
 # move yaml files from ci/cases/weekly to ci/cases/pr 
@@ -79,6 +77,8 @@ git clone "${REPO_URL}" -b "${branch}"
 rm -Rf "${HOMEgfs_PR}/ci/cases/pr"
 mv "${HOMEgfs_PR}/ci/cases/weekly" "${HOMEgfs_PR}/ci/cases/pr"
 cd "${HOMEgfs_PR}" || exit 1
+git add "${HOMEgfs_PR}/ci/cases/pr"
+git commit -m "Moved weekly cases files into pr for high resultuion testing"
 git push --set-upstream origin "${branch}"
 
 ####################################################################
@@ -86,17 +86,19 @@ git push --set-upstream origin "${branch}"
 ####################################################################
 
 REPO_OWNER="TerrenceMcGuinness-NOAA"
+#REPO_OWNER="NOAA-EMC"
 REPO_NAME="global-workflow"
 BASE_BRANCH="develop"
 HEAD_BRANCH="${branch}"
-PULL_REQUEST_TITLE="Weekly High Resolution Forecast Tests $(date +"%A %b %Y)"
+PULL_REQUEST_TITLE="Weekly High Resolution Forecast Tests $(date +'%A %b %Y')"
 PULL_REQUEST_BODY="${PULL_REQUEST_TITLE}"
 PULL_REQUEST_LABELS=("CI-Orion-Ready" "CI-Hera-Ready")
 
-gh pr create --title "$PULL_REQUEST_TITLE" --body "$PULL_REQUEST_BODY" --base $BASE_BRANCH --head $HEAD_BRANCH
+"${GH}" repo set-default "${REPO_OWNER}/${REPO_NAME}"
+"${GH}" pr create --title "$PULL_REQUEST_TITLE" --body "$PULL_REQUEST_BODY" --base $BASE_BRANCH --head $HEAD_BRANCH
 
 # Add labels to the pull request
 for label in "${PULL_REQUEST_LABELS[@]}"
 do
-  gh pr label add --label "$label"
+  "${GH}" pr edit --add-label "$label"
 done
