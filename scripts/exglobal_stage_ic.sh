@@ -50,14 +50,14 @@ YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
 # Define the array of CASE values
 CASE=("12")  # Add more values as needed
-    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/mem000/model_data/atmos/input/gfs_ctrl.nc"
+for member_dir in "${member_dirs[@]}"; do
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${member_dir}/model_data/atmos/input/gfs_ctrl.nc"
     target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
     ${NCP} "${source}" "${target}"
     rc=$?
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
 # Loop through member directories
-for member_dir in "${member_dirs[@]}"; do
   for ftype in gfs_data sfc_data; do
     for tt in $(seq 1 6); do
         source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${member_dir}/model_data/atmos/input/${ftype}.tile${tt}.nc"
