@@ -119,12 +119,18 @@ function cdo_rotate(){
     # Execute the CDO command based on the grid rotation angle
     # declarations.
     nangles="${#angle_array[@]}"
+    echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${xvar_file}."
     if [[ "${nangles}" == 1 ]]; then
 	# Define the grid rotation angle variable names.    
 	_strip_whitespace "${angle_array[0]}"
 	theta="${out_string}"
 
-	# Rotate the specificed vectors accordingly; here it is assumed that a single angle (e.g., `theta`) defines the grid rotation angle; the 
+	# Rotate the specificed vectors accordingly; here it is
+	# assumed that a single angle (e.g., `theta`) defines the grid
+	# rotation angle; the units of `theta` are assumed to be
+	# radians.
+	($(command -v cdo) -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" ${varfile} "${var_rotate_path}")
+	
     elif [[ "${nangles}" == 2 ]]; then
 	# Define the grid rotation angle variable names.
 	_strip_whitespace "${angle_array[0]}"
@@ -136,7 +142,6 @@ function cdo_rotate(){
 	# that the `cos(theta)` and `sin(theta)` have been computed
 	# a'priori and assigned the input file variable names defined
 	# by `cosang` and `sinang` respectively.
-	echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${xvar_file}."	
 	($(command -v cdo) -expr,"xr=${xvar}*${cosang}-${yvar}*${sinang}; yr=${xvar}*${sinang}+${yvar}*${cosang}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" ${varfile} "${var_rotate_path}")
 
 	# Remap the respective vector components and rename
