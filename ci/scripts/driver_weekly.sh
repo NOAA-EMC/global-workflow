@@ -14,7 +14,7 @@ set -eux
 # and create a pr using GitHub CLI by moving and replacing the yaml case files in
 # ${HOMEgfs}/ci/cases/weekly to {HOMEgfs}/ci/cases/pr.  Then at point it can simply also add the
 # the requisite labels so that current BASH CI framework can run these cases.
-#######################################################################################i######
+##############################################################################################
 
 #################################################################
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
