@@ -31,7 +31,7 @@ echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE[0]})[${LINENO}]'
 
 #########################################################################
-#  Set up runtime environment varibles for accounts on supproted machines
+# Set up runtime environment variables for accounts on supported machines
 #########################################################################
 
 source "${HOMEgfs}/ush/detect_machine.sh"
