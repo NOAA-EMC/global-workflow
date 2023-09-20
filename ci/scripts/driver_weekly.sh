@@ -91,7 +91,7 @@ REPO_OWNER="TerrenceMcGuinness-NOAA"
 REPO_NAME="global-workflow"
 BASE_BRANCH="develop"
 HEAD_BRANCH="${branch}"
-PULL_REQUEST_TITLE="[DO NOT MERGE] Weekly High Resolution CI Tests $(date +'%A %b %Y')"
+PULL_REQUEST_TITLE="[DO NOT MERGE] Weekly High Resolution CI Tests $(date +'%A %b %d, %Y')"
 PULL_REQUEST_BODY="${PULL_REQUEST_TITLE}"
 PULL_REQUEST_LABELS=("CI-Orion-Ready" "CI-Hera-Ready")
 
