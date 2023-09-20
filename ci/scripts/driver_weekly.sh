@@ -9,8 +9,8 @@ set -eux
 # Abstract:
 #
 # This script runs the high resolution cases found in $HOMEgfs/ci/cases/weekly
-# from the develop branch for the global-workflow repo that is intended to run on a weekly basis
-# from a cron job. When ran it will clone and build a new branch from the EMC's global-workflow and
+# from the develop branch for the global-workflow repo that are intended to run on a weekly basis
+# from a cron job. When run it will clone and build a new branch from the EMC's global-workflow and
 # and create a pr using GitHub CLI by moving and replacing the yaml case files in
 # ${HOMEgfs}/ci/cases/weekly to {HOMEgfs}/ci/cases/pr.  Then at point it can simply also add the
 # the requisite labels so that current BASH CI framework can run these cases.
