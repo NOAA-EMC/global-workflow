@@ -56,7 +56,7 @@ CASE=("12")  # Add more values as needed
     rc=$?
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
-  # Loop through member directories
+# Loop through member directories
 for member_dir in "${member_dirs[@]}"; do
   for ftype in gfs_data sfc_data; do
     for tt in $(seq 1 6); do
