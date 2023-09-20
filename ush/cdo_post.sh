@@ -334,10 +334,10 @@ function varname_update(){
 
 #######
 
-start_time=$(gdate +%s) # TODO: For debugging locally.
-_calling_script=$(basename "${BASH_SOURCE[1]}")
-start_time_human=$(gdate -d"@${start_time}" -u) # TODO: For debugging locally.
-echo "Begin ${_calling_script} at ${start_time_human}"
+start_time=$(date +%s)
+_calling_script=$(basename "${BASH_SOURCE[0]}")
+start_time_human=$(date -d"@${start_time}" -u)
+echo "Begin ${_calling_script} at ${start_time_human}."
 
 # Read the configuration file for the the variables to be remapped and
 # proceed accordingly.
@@ -355,12 +355,14 @@ while IFS= read -r line; do
     	# directly.
 	echo "Remapping variable ${varname} without rotation."
 	cdo_remap "${varname}" "${srcgrid}" "${interp_type}"
+	
     elif [[ "${rotate}" = "1" ]]; then
     	# Rotation necessary; rotate the respective vector quantities
     	# relative to the source grid projection and subsequently
     	# remap the variables to the specified destination grid.
 	echo "Remapping variables ${varname} with rotation."
 	cdo_rotate "${varname}" "${srcgrid}" "${interp_type}" "${angle}"
+	
     else
 	echo "Rotation option ${rotate} not recognized. Aborting!!!"
 	exit 901
@@ -368,7 +370,7 @@ while IFS= read -r line; do
 
 done < "${variable_file}"
 
-stop_time=$(gdate +%s) # TODO: For debugging locally.
-_calling_script=$(basename "${BASH_SOURCE[1]}")
-stop_time_human=$(gdate -d"@${stop_time}" -u) # TODO: For debugging locally.
-echo "End ${_calling_script} at ${stop_time_human}"
+stop_time=$(date +%s)
+_calling_script=$(basename "${BASH_SOURCE[0]}")
+stop_time_human=$(date -d"@${stop_time}" -u)
+echo "End ${_calling_script} at ${stop_time_human}."
