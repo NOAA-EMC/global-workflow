@@ -62,23 +62,20 @@ set -x
 #########################################################
 branch="weekly_ci_$(date +%Y%m%d)"
 develop_dir="${GFS_CI_ROOT}/develop_temp"
-HOMEgfs_PR="${develop_dir}/global-workflow"
 echo "Creating new branch ${branch} from develop on ${MACHINE_ID} in ${develop_dir}"
 rm -Rf "${develop_dir}"
 mkdir -p "${develop_dir}"
 cd "${develop_dir}" || exit 1
 git clone "${REPO_URL}"
-cd "${HOMEgfs_PR}" || exit 1
+cd global-workflow || exit 1
 git checkout -b "${branch}"
 
 ######################################################
 # move yaml files from ci/cases/weekly to ci/cases/pr 
 # and push new branch for PR weekly CI tests to GitHub
 
-rm -Rf "${HOMEgfs_PR}/ci/cases/pr"
-mv "${HOMEgfs_PR}/ci/cases/weekly" "${HOMEgfs_PR}/ci/cases/pr"
-cd "${HOMEgfs_PR}" || exit 1
-git add "${HOMEgfs_PR}/ci/cases/pr"
+mv ci/cases/weekly ci/cases/pr
+git add ci/cases
 git commit -m "Moved weekly cases files into pr for high resolution testing"
 git push --set-upstream origin "${branch}"
 
