@@ -70,9 +70,9 @@ output_path="${3}"
 
 #######
 
-if [ "$#" -ne 3 ]; then
+if [[ "$#" -ne 3 ]]; then
     echo "Usage: $0 <variable_file> <dstgrid_path> <output_path>"
-    exit 900
+    exit 100
 fi
 
 #######
@@ -141,7 +141,7 @@ function _strip_whitespace(){
     local in_string="${1}"
 
     # Remove any residual whitespaces.
-    out_string=$((echo ${in_string}) | $(command -v sed) "s/ //g")
+    out_string=$(echo "${in_string}" | $(command -v sed) "s/ //g")
 }
 
 #######
@@ -284,17 +284,17 @@ function cdo_rotate(){
     if [[ "${nangles}" == 1 ]]; then
 	_strip_whitespace "${angle_array[0]}"
 	theta="${out_string}"
-	($(command -v cdo) -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" ${varfile} "${var_rotate_path}")
+	$(command -v cdo) -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
     elif [[ "${nangles}" == 2 ]]; then
 	_strip_whitespace "${angle_array[0]}"
 	cosang="${out_string}"
 	_strip_whitespace "${angle_array[1]}"
 	sinang="${out_string}"
-	($(command -v cdo) -expr,"xr=${xvar}*${cosang}-${yvar}*${sinang}; yr=${xvar}*${sinang}+${yvar}*${cosang}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" ${varfile} "${var_rotate_path}")
+	$(command -v cdo) -expr,"xr=${xvar}*${cosang}-${yvar}*${sinang}; yr=${xvar}*${sinang}+${yvar}*${cosang}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}"
 	
     else
 	echo "Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
-	exit 902
+	exit 102
     fi
 
     cdo_remap "xr" "${var_rotate_path}" "${interp_type}"
@@ -329,7 +329,7 @@ function varname_update(){
     local ncfile="${3}"
 
     echo "Renaming variable ${old_varname} to ${new_varname} and writing to file ${ncfile}."
-    ($(command -v ncrename) -O -v "${old_varname}","${new_varname}" "${ncfile}")
+    $(command -v ncrename) -O -v "${old_varname}","${new_varname}" "${ncfile}"
 }
 
 #######
@@ -344,11 +344,11 @@ echo "Begin ${_calling_script} at ${start_time_human}."
 while IFS= read -r line; do
 
     # Get the attributes for the respective variable(s).
-    varname=$(echo "${line}" | $(command -v awk) '{print $1}')
-    interp_type=$(echo "${line}" | $(command -v awk) '{print $2}')
-    srcgrid=$(echo "${line}" | $(command -v awk) '{print $3}')
-    rotate=$(echo "${line}" | $(command -v awk) '{print $4}')
-    angle=$(echo "${line}" | $(command -v awk) '{print $5}')
+    varname=$(echo "${line}" | $(command -v awk) "{print $1}")
+    interp_type=$(echo "${line}" | $(command -v awk) "{print $2}")
+    srcgrid=$(echo "${line}" | $(command -v awk) "{print $3}")
+    rotate=$(echo "${line}" | $(command -v awk) "{print $4}")
+    angle=$(echo "${line}" | $(command -v awk) "{print $5}")
     
     if [[ "${rotate}" == 0 ]]; then
     	# No rotation necessary; interpolate/remap the variables and
@@ -365,7 +365,7 @@ while IFS= read -r line; do
 	
     else
 	echo "Rotation option ${rotate} not recognized. Aborting!!!"
-	exit 901
+	exit 101
     fi
 
 done < "${variable_file}"
