@@ -13,7 +13,9 @@ set -eux
 # from a cron job. When run it will clone and build a new branch from the EMC's global-workflow and
 # and create a pr using GitHub CLI by moving and replacing the yaml case files in
 # ${HOMEgfs}/ci/cases/weekly to {HOMEgfs}/ci/cases/pr.  Then at point it can simply also add the
-# the requisite labels so that current BASH CI framework can run these cases.
+# the requisite labels so that current BASH CI framework can run these cases.  Since this script
+# creates a PR with the CI-Ready labels, the BASH CI framework will automatically run these cases 
+# from that point so it is only required to run this script once from a single machine.
 ##############################################################################################
 
 #################################################################
@@ -101,3 +103,4 @@ for label in "${PULL_REQUEST_LABELS[@]}"
 do
   "${GH}" pr edit --add-label "${label}"
 done
+rm -Rf "${develop_dir}"
