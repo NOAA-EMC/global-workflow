@@ -11,9 +11,34 @@
 #
 #     variable_file: ASCII formatted file containing attributes
 #                      specific to the variables to be remapped to the
-#                      destination grid projection(s).
+#                      destination grid projection(s); supported
+#                      formats are as follows.
 #
-#     TODO: Add description of file here.
+#     <scalar variable> <CDO remapping type> <input variable netCDF file> 0
+#     <vector variables> <CDO remapping type> <input variable netCDF file> 1
+#        <grid rotation variable(s)>
+#
+#       An example using the format described above is as follows.
+#
+#     aice_h remapbil /path/to/ice/model/file 0
+#     uo,vo remapbil /path/to/ocean/model/file 1 cos_rot,sin_rot
+#
+#       The example above will perform the following tasks using this
+#       script.
+#
+#       * Remap the ice model `aice_h` scalar variable, **without**
+#         rotation, using the CDO `remapbil` type;
+#
+#       * Rotate the ocean model current velocity vectors `uo` and
+#         `vo` using the `cos_rot` and `sin_rot` values within the
+#         ocean model netCDF file and subsequently remap them using
+#         the CDO `remapbil` type.
+#
+#       The tested CDO interpolation types are as follows.
+#
+#       * remapbil: bilinear interpolation;
+#       * remapcon: conservative remapping;
+#       * remapnn: nearest-neighbor interpolation.
 #
 #     dstgrid_config: A netCDF-formatted or CDO-type grid description
 #                       file; and example of such a CDO-type grid
@@ -43,36 +68,106 @@ variable_file="${1}"
 dstgrid_config="${2}"
 output_path="${3}"
 
+#######
+
 if [ "$#" -ne 3 ]; then
     echo "Usage: $0 <variable_file> <dstgrid_path> <output_path>"
-    exit 1
+    exit 900
 fi
 
-function _comma_split_string(){
+#######
+
+# _comma_split_string - Split a comma-delimited string into an array.
+#
+# Description:
+#   This function takes a comma-delimited string as input and splits
+#   it into an array. Each element in the resulting array is obtained
+#   by splitting the input string at commas and then removing leading
+#   and trailing spaces.
+#
+# Parameters:
+#   $1 - The comma-delimited string to split.
+#
+# Global Variables:
+#   global_array - An array containing the split elements.
+#
+# Example usage:
+#   _comma_split_string "item1,item2 item3,item4"
+#   for element in "${global_array[@]}"; do
+#       echo "$element"
+#   done
+#
+# This example will split the input string into individual elements
+# and print each element on a separate line.
+function _comma_split_string() {
     local string="${1}"
 
-    # Split the comma-delimited string.
     local local_array=()
-    IFS="," read -ra items <<< ${string}
-    for item in "${items[@]}"; do
-	local_array+="${item} "
-    done
     global_array=()
+    IFS="," read -ra items <<< "${string}"
+    for item in "${items[@]}"; do
+        local_array+=("${item} ")
+    done
     for item in "${local_array[@]}"; do
-	IFS=" " read -ra items <<< "${item}"
-	for element in "${items[@]}"; do
-	    global_array+=("${element} ")
-	done
+        IFS=" " read -ra items <<< "${item}"
+        for element in "${items[@]}"; do
+            global_array+=("${element} ")
+        done
     done
 }
 
+#######
+
+# _strip_whitespace - Remove whitespace from a string.
+#
+# Description:
+#   This function takes an input string and removes all whitespace
+#   characters (spaces, tabs, and newline characters) to produce a
+#   cleaned output string.
+#
+# Parameters:
+#   $1 - The input string from which whitespace will be removed.
+#
+# Return:
+#   The cleaned string with no whitespace.
+#
+# Example usage:
+#   cleaned_string=$(_strip_whitespace "   This is a string   with spaces  ")
+#   echo "Cleaned string: \"$cleaned_string\""
+#
+# This example will remove all leading, trailing, and internal
+# whitespace from the input string and display the cleaned result.
 function _strip_whitespace(){
     local in_string="${1}"
 
     # Remove any residual whitespaces.
     out_string=$((echo ${in_string}) | $(command -v sed) "s/ //g")
 }
- 
+
+#######
+
+# nc_concat - Concatenate netCDF files and manage file paths.
+#
+# Description:
+#   This function performs the concatenation of two netCDF files:
+#   `output_path` and `var_interp_path`. If the `output_path` file
+#   exists, the function merges `var_interp_path` into it and manages
+#   temporary files accordingly. If `output_path` does not exist, it
+#   creates a new netCDF file by renaming `var_interp_path` to
+#   `output_path`.
+#
+# Parameters:
+#   $1 - The path to the variable-interpolated netCDF file.
+#
+# Global Variables:
+#   output_path - The path to the output netCDF file.
+#
+# Example usage:
+#   nc_concat "variable_interpolated.nc"
+#
+# This example will concatenate the variable-interpolated file into
+# the output netCDF file, handling the case where the output file may
+# or may not exist.
 function nc_concat(){
     local var_interp_path="${1}"
 
@@ -88,6 +183,33 @@ function nc_concat(){
     fi
 }
 
+#######
+
+# cdo_remap - Perform CDO remapping and concatenate the result.
+#
+# Description:
+#   This function remaps a specific variable `varname` from an input
+#   netCDF file `varfile` using the specified interpolation method
+#   `interp_type`. It creates an intermediate netCDF file
+#   `varname.interp.nc` containing the remapped variable, and then it
+#   concatenates this intermediate file into the output netCDF file
+#   defined by the global variable `output_path`.
+#
+# Parameters:
+#   $1 - The name of the variable to remap.
+#   $2 - The path to the input netCDF file.
+#   $3 - The interpolation method to use (e.g., "remapbil").
+#
+# Global Variables:
+#   output_path - The path to the output netCDF file.
+#   dstgrid_config - The configuration for destination grid specifications.
+#
+# Example usage:
+#   cdo_remap "temperature" "input_file.nc" "remapbil"
+#
+# This example remaps the "temperature" variable using bilinear
+# interpolation from the input file and appends the result to the
+# output netCDF file.
 function cdo_remap(){
     local varname="${1}"
     local varfile="${2}"
@@ -99,6 +221,48 @@ function cdo_remap(){
     nc_concat "${var_interp_path}"
 }
 
+#######
+
+# cdo_rotate - Rotate and remap vector variables in a netCDF file.
+#
+# Description:
+#   This function rotates vector variables specified by `varnames` in
+#   an input netCDF file `varfile` using the specified interpolation
+#   method `interp_type` and the rotation angles defined in
+#   `angles`. It creates an intermediate netCDF file `rotate.nc` to
+#   store the rotated variables, performs remapping if required, and
+#   renames the components before appending them to the output netCDF
+#   file defined by the global variable `output_path`.
+#
+# Parameters:
+#   $1 - Comma-delimited variable names to rotate (e.g., "u,v").
+#   $2 - The path to the input netCDF file.
+#   $3 - The interpolation method to use (e.g., "remapbil").
+#   $4 - Comma-delimited rotation angles or trigonometric functions
+#        (e.g., "theta" or "cosang,sinang").
+#
+# Global Variables:
+#   output_path - The path to the output netCDF file.
+#
+# Example usage:
+#   cdo_rotate "u,v" "input_file.nc" "remapbil" "theta"
+#
+# This example rotates the "u" and "v" vector components using a
+# single angle variable "theta" and appends the rotated vectors to the
+# output netCDF file.
+#
+# Vector Rotation Options:
+#   nangles = 1:
+#      Rotate the specificed vectors accordingly; here it is assumed
+#      that a single angle (e.g., `theta`) defines the grid rotation
+#      angle; the units of `theta` are assumed to be radians.
+#
+#   nangles = 2:
+#     Rotate the specified vectors accordingly; here it is assumed
+#     that the `cos(theta)` and `sin(theta)` have been computed
+#     a'priori and assigned the input file variable names defined by
+#     `cosang` and `sinang` respectively.
+#
 function cdo_rotate(){
     local varnames="${1}"
     local varfile="${2}"
@@ -106,7 +270,6 @@ function cdo_rotate(){
     local angles="${4}"  
     local var_rotate_path="${PWD}/rotate.nc"    
 
-    # Collect attributes required for the vector rotations.
     _comma_split_string "${varnames}"    
     varname_array=("${global_array[@]}")    
     _comma_split_string "${angles}"
@@ -115,49 +278,51 @@ function cdo_rotate(){
     xvar="${out_string}"
     _strip_whitespace "${varname_array[1]}"
     yvar="${out_string}"
-    
-    # Execute the CDO command based on the grid rotation angle
-    # declarations.
     nangles="${#angle_array[@]}"
-    echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${xvar_file}."
+    
+    echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${varfile}."
     if [[ "${nangles}" == 1 ]]; then
-	# Define the grid rotation angle variable names.    
 	_strip_whitespace "${angle_array[0]}"
 	theta="${out_string}"
-
-	# Rotate the specificed vectors accordingly; here it is
-	# assumed that a single angle (e.g., `theta`) defines the grid
-	# rotation angle; the units of `theta` are assumed to be
-	# radians.
 	($(command -v cdo) -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" ${varfile} "${var_rotate_path}")
-	
     elif [[ "${nangles}" == 2 ]]; then
-	# Define the grid rotation angle variable names.
 	_strip_whitespace "${angle_array[0]}"
 	cosang="${out_string}"
 	_strip_whitespace "${angle_array[1]}"
 	sinang="${out_string}"
-
-	# Rotate the specified vectors accordingly; here it is assumed
-	# that the `cos(theta)` and `sin(theta)` have been computed
-	# a'priori and assigned the input file variable names defined
-	# by `cosang` and `sinang` respectively.
 	($(command -v cdo) -expr,"xr=${xvar}*${cosang}-${yvar}*${sinang}; yr=${xvar}*${sinang}+${yvar}*${cosang}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" ${varfile} "${var_rotate_path}")
-
-	# Remap the respective vector components and rename
-	# accordingly.
-	cdo_remap "xr" "${var_rotate_path}" "${interp_type}"
-	varname_update "xr" "${xvar}" "${output_path}"
-	cdo_remap "yr" "${var_rotate_path}" "${interp_type}"
-	varname_update "yr" "${yvar}" "${output_path}"
-	$(command -v rm) "${var_rotate_path}" >> /dev/null
 	
     else
 	echo "Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
-	exit 2
-    fi       	 
+	exit 902
+    fi
+
+    cdo_remap "xr" "${var_rotate_path}" "${interp_type}"
+    varname_update "xr" "${xvar}" "${output_path}"
+    cdo_remap "yr" "${var_rotate_path}" "${interp_type}"
+    varname_update "yr" "${yvar}" "${output_path}"
+    $(command -v rm) "${var_rotate_path}" >> /dev/null
 }
 
+#######
+
+# varname_update - Rename a variable in a netCDF file and write to a new file.
+#
+# Description:
+#   This function renames a variable in a netCDF file from
+#   `old_varname` to `new_varname` and writes the result to a new
+#   netCDF file specified by `ncfile`.
+#
+# Parameters:
+#   $1 - The old variable name to be renamed.
+#   $2 - The new variable name to use.
+#   $3 - The path to the input netCDF file.
+#
+# Example usage:
+#   varname_update "old_variable" "new_variable" "input_file.nc"
+#
+# This example renames the variable "old_variable" to "new_variable"
+# in the input netCDF file and writes the result to a new netCDF file.
 function varname_update(){
     local old_varname="${1}"
     local new_varname="${2}"
@@ -167,7 +332,7 @@ function varname_update(){
     ($(command -v ncrename) -O -v "${old_varname}","${new_varname}" "${ncfile}")
 }
 
-# ----
+#######
 
 start_time=$(gdate +%s) # TODO: For debugging locally.
 _calling_script=$(basename "${BASH_SOURCE[1]}")
@@ -190,19 +355,20 @@ while IFS= read -r line; do
     	# directly.
 	echo "Remapping variable ${varname} without rotation."
 	cdo_remap "${varname}" "${srcgrid}" "${interp_type}"
-	
     elif [[ "${rotate}" = "1" ]]; then
     	# Rotation necessary; rotate the respective vector quantities
     	# relative to the source grid projection and subsequently
     	# remap the variables to the specified destination grid.
 	echo "Remapping variables ${varname} with rotation."
 	cdo_rotate "${varname}" "${srcgrid}" "${interp_type}" "${angle}"
-	
     else
-
-	echo "fail"
-
+	echo "Rotation option ${rotate} not recognized. Aborting!!!"
+	exit 901
     fi
 
 done < "${variable_file}"
 
+stop_time=$(gdate +%s) # TODO: For debugging locally.
+_calling_script=$(basename "${BASH_SOURCE[1]}")
+stop_time_human=$(gdate -d"@${stop_time}" -u) # TODO: For debugging locally.
+echo "End ${_calling_script} at ${stop_time_human}"
