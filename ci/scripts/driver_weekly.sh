@@ -3,8 +3,8 @@ set -eux
 
 ##############################################################################################
 #
-# Script description: Top level driver script for checking PR
-#                     ready for CI regression testing
+# Script description: Top level driver script for running
+#                     weekly CI regression tests
 #
 # Abstract:
 #
