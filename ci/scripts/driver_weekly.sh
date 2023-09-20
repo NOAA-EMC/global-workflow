@@ -77,7 +77,7 @@ rm -Rf "${HOMEgfs_PR}/ci/cases/pr"
 mv "${HOMEgfs_PR}/ci/cases/weekly" "${HOMEgfs_PR}/ci/cases/pr"
 cd "${HOMEgfs_PR}" || exit 1
 git add "${HOMEgfs_PR}/ci/cases/pr"
-git commit -m "Moved weekly cases files into pr for high resultuion testing"
+git commit -m "Moved weekly cases files into pr for high resolution testing"
 git push --set-upstream origin "${branch}"
 
 ####################################################################
