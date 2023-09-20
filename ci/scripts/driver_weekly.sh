@@ -23,7 +23,7 @@ export GH=${HOME}/bin/gh
 export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 ################################################################
-# Setup the reletive paths to scripts and PS4 for better logging 
+# Setup the relative paths to scripts and PS4 for better logging
 ################################################################
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
