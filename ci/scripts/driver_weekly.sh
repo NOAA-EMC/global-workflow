@@ -58,7 +58,7 @@ set -x
 #########################################################
 # Create a new branch from develop and move yaml files
 #########################################################
-branch="weekly_ci_$(date +%A_%b_%Y)"
+branch="weekly_ci_$(date +%Y%m%d)"
 develop_dir="${GFS_CI_ROOT}/develop_temp"
 HOMEgfs_PR="${develop_dir}/global-workflow"
 echo "Creating new branch ${branch} from develop on ${MACHINE_ID} in ${develop_dir}"
