@@ -28,7 +28,7 @@ export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
-export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
+export PS4='+ $(basename ${BASH_SOURCE[0]})[${LINENO}]'
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
