@@ -163,9 +163,9 @@ function ncattr_update(){
 
 #######
 
-start_time=$(gdate +%s) # TODO: For local debugging.
+start_time=$(date +%s)
 _calling_script=$(basename "${BASH_SOURCE[0]}")
-start_time_human=$(gdate -d"@${start_time}" -u) # TODO: For local debugging.
+start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${_calling_script} at ${start_time_human}."
 
 # Copy the input file path to the output file path.
@@ -187,7 +187,7 @@ while IFS= read -r line; do
     
 done < "${variable_file}"
 
-stop_time=$(gdate +%s) # TODO: For local debugging.
+stop_time=$(date +%s) 
 _calling_script=$(basename "${BASH_SOURCE[0]}")
-stop_time_human=$(gdate -d"@${stop_time}" -u) # TODO: For local debugging.
+stop_time_human=$(date -d"@${stop_time}" -u) 
 echo "End ${_calling_script} at ${stop_time_human}."
