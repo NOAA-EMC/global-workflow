@@ -129,7 +129,7 @@ function ncattr_update(){
     _comma_split_string "${coords}"
     coords_str="${global_array[@]}"
     echo "Adding netCDF attribute ${ncattr} values ${coords} to variable ${varname} metadata and writing to file ${output_path}"
-    ($(command -v ncatted) -O -a "${ncattr}","${varname}",c,c," ${coords}" "${output_path}")
+    ($(command -v ncatted) -O -a "${ncattr}","${varname}",c,c,"${coords}" "${output_path}")
 }
 
 #######
