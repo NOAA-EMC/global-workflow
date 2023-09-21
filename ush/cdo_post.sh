@@ -140,7 +140,6 @@ function _comma_split_string() {
 function _strip_whitespace(){
     local in_string="${1}"
 
-    # Remove any residual whitespaces.
     out_string=$(echo "${in_string}" | $(command -v sed) "s/ //g")
 }
 
@@ -263,7 +262,7 @@ function cdo_remap(){
 #     a'priori and assigned the input file variable names defined by
 #     `cosang` and `sinang` respectively.
 #
-function cdo_rotate(){
+function cdo_rotate(){    
     local varnames="${1}"
     local varfile="${2}"
     local interp_type="${3}"
@@ -344,11 +343,11 @@ echo "Begin ${_calling_script} at ${start_time_human}."
 while IFS= read -r line; do
 
     # Get the attributes for the respective variable(s).
-    varname=$(echo "${line}" | $(command -v awk) "{print $1}")
-    interp_type=$(echo "${line}" | $(command -v awk) "{print $2}")
-    srcgrid=$(echo "${line}" | $(command -v awk) "{print $3}")
-    rotate=$(echo "${line}" | $(command -v awk) "{print $4}")
-    angle=$(echo "${line}" | $(command -v awk) "{print $5}")
+    varname=$(echo "${line}" | $(command -v awk) '{print $1}')
+    interp_type=$(echo "${line}" | $(command -v awk) '{print $2}')
+    srcgrid=$(echo "${line}" | $(command -v awk) '{print $3}')
+    rotate=$(echo "${line}" | $(command -v awk) '{print $4}')
+    angle=$(echo "${line}" | $(command -v awk) '{print $5}')
     
     if [[ "${rotate}" == 0 ]]; then
     	# No rotation necessary; interpolate/remap the variables and
