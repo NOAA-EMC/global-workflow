@@ -1,0 +1,9 @@
+hi_h remapbil CICE6_INTERP_NC 0
+hs_h remapbil CICE6_INTERP_NC 0
+Tsfc_h remapbil CICE6_INTERP_NC 0
+aice_h remapbil CICE6_INTERP_NC 0
+uvel_h,vvel_h remapbil CICE6_INTERP_NC 1 ANGLE
+frzmlt_h remapbil CICE6_INTERP_NC 0
+albsni_h remapbil CICE6_INTERP_NC 0
+mlt_onset_h remapbil CICE6_INTERP_NC 0
+frz_onset_h remapbil CICE6_INTERP_NC 0

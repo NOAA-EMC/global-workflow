@@ -1,0 +1,18 @@
+SST remapbil MOM6_INTERP_NC 0
+SSS remapbil MOM6_INTERP_NC 0
+SSH remapbil MOM6_INTERP_NC 0
+speed remapbil MOM6_INTERP_NC 0
+MLD_003 remapbil MOM6_INTERP_NC 0
+so remapbil MOM6_INTERP_NC 0
+temp remapbil MOM6_INTERP_NC 0
+latent remapbil MOM6_INTERP_NC 0
+sensible remapbil MOM6_INTERP_NC 0
+SW remapbil MOM6_INTERP_NC 0
+LW remapbil MOM6_INTERP_NC 0
+evap remapbil MOM6_INTERP_NC 0
+lprec remapbil MOM6_INTERP_NC 0
+LwLatSens remapbil MOM6_INTERP_NC 0
+Heat_PmE remapbil MOM6_INTERP_NC 0
+SSU,SSV remapbil MOM6_INTERP_NC 1 cos_rot,sin_rot
+uo,vo remapbil MOM6_INTERP_NC 1 cos_rot,sin_rot
+taux,tauy remapbil MOM6_INTERP_NC 1 cos_rot,sin_rot
