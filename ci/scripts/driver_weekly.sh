@@ -100,4 +100,5 @@ for label in "${PULL_REQUEST_LABELS[@]}"
 do
   "${GH}" pr edit --add-label "${label}"
 done
+cd "${GFS_CI_ROOT}}"
 rm -Rf "${develop_dir}"
