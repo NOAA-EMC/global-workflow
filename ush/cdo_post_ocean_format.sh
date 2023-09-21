@@ -101,6 +101,33 @@ function _comma_split_string() {
 
 #######
 
+# _strip_whitespace - Remove whitespace from a string.
+#
+# Description:
+#   This function takes an input string and removes all whitespace
+#   characters (spaces, tabs, and newline characters) to produce a
+#   cleaned output string.
+#
+# Parameters:
+#   $1 - The input string from which whitespace will be removed.
+#
+# Return:
+#   The cleaned string with no whitespace.
+#
+# Example usage:
+#   cleaned_string=$(_strip_whitespace "   This is a string   with spaces  ")
+#   echo "Cleaned string: \"$cleaned_string\""
+#
+# This example will remove all leading, trailing, and internal
+# whitespace from the input string and display the cleaned result.
+function _strip_whitespace(){
+    local in_string="${1}"
+
+    out_string=$(echo "${in_string}" | $(command -v sed) "s/ //g")
+}
+
+#######
+
 # ncattr_update - Update/add attributes for a variable in a netCDF file.
 #
 # Description:
@@ -127,9 +154,11 @@ function ncattr_update(){
     local coords="${3}"
 
     _comma_split_string "${coords}"
-    coords_str="${global_array[@]}"
-    echo "Adding netCDF attribute ${ncattr} values ${coords} to variable ${varname} metadata and writing to file ${output_path}"
-    ($(command -v ncatted) -O -a "${ncattr}","${varname}",c,c,"${coords}" "${output_path}")
+    coords="${global_array[@]}"
+    coords_str="$(echo "${coords}" | $(command -v tr) -s ' ')"
+    ncattr_str="$(echo "${ncattr}" | $(command -v tr) -s ' ')"
+    echo "Adding netCDF attribute ${ncattr_str} values ${coords_str} to variable ${varname} metadata and writing to file ${output_path}"
+    ($(command -v ncatted) -O -a "${ncattr_str}","${varname}",c,c," ${coords_str}" "${output_path}" "${output_path}")
 }
 
 #######
