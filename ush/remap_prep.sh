@@ -124,7 +124,7 @@ function _comma_split_string() {
 function _strip_whitespace(){
     local in_string="${1}"
 
-    out_string=$(echo "${in_string}" | $(command -v sed) "s/ //g")
+    out_string=$(echo "${in_string}" | sed "s/ //g")
 }
 
 #######
@@ -156,10 +156,10 @@ function ncattr_update(){
 
     _comma_split_string "${coords}"
     coords="${global_array[@]}"
-    coords_str="$(echo "${coords}" | $(command -v tr) -s ' ')"
-    ncattr_str="$(echo "${ncattr}" | $(command -v tr) -s ' ')"
+    coords_str="$(echo "${coords}" | tr -s ' ')"
+    ncattr_str="$(echo "${ncattr}" | tr -s ' ')"
     echo "Adding netCDF attribute ${ncattr_str} values ${coords_str} to variable ${varname} metadata and writing to file ${output_path}"
-    ($(command -v ncatted) -O -a "${ncattr_str}","${varname}",c,c," ${coords_str}" "${output_path}" "${output_path}")
+    (ncatted -O -a "${ncattr_str}","${varname}",c,c," ${coords_str}" "${output_path}" "${output_path}")
 }
 
 #######
@@ -171,16 +171,16 @@ echo "Begin ${_calling_script} at ${start_time_human}."
 
 # Copy the input file path to the output file path.
 echo "Copying file ${input_path} to ${output_path} and preparing for variable updates."
-$(command -v cp) "${input_path}" "${output_path}"
+cp "${input_path}" "${output_path}"
 
 # Read the configuration file for the the variables to be updated and
 # proceed accordingly.
 while IFS= read -r line; do
 
     # Get the attributes for the respective variable.
-    varname=$(echo "${line}" | $(command -v awk) '{print $1}')
-    ncattr=$(echo "${line}" | $(command -v awk) '{print $2}')
-    coords=$(echo "${line}" | $(command -v awk) '{print $3}')
+    varname=$(echo "${line}" | awk '{print $1}')
+    ncattr=$(echo "${line}" | awk '{print $2}')
+    coords=$(echo "${line}" | awk '{print $3}')
     
     # Update the variable attributes and write the updates to the
     # specified output file (see `output_path`).
