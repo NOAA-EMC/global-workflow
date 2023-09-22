@@ -54,7 +54,8 @@ output_path="${3}"
 #######
 
 if [[ "$#" -ne 3 ]]; then
-    echo "Usage: $0 <variable_file> <input_path> <output_path>"
+    echo "FATAL ERROR: invalid argument syntax provided to ${BASH_SOURCE[0]}"
+    echo "Usage: ${BASH_SOURCE[0]} <variable_file> <input_path> <output_path>"
     exit 100
 fi
 
@@ -75,7 +76,7 @@ fi
 #   global_array - An array containing the split elements.
 #
 # Example usage:
-#   _comma_split_string "item1,item2 item3,item4"
+#   _comma_split_string "item1,item2,item3,item4"
 #   for element in "${global_array[@]}"; do
 #       echo "$element"
 #   done
