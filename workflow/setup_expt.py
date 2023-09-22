@@ -73,11 +73,11 @@ def fill_COMROT_cycled(host, inputs):
 
     # Test if we are using the new COM structure or the old flat one for ICs
     if(inputs.start in ['warm']):
-      pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{rdatestr[:8]}',
-         rdatestr[8:], 'model_data', 'atmos')
+        pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{rdatestr[:8]}',
+                               rdatestr[8:], 'model_data', 'atmos')
     else:
-      pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{idatestr[:8]}',
-         idatestr[8:], 'model_data', 'atmos')
+        pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{idatestr[:8]}',
+                               idatestr[8:], 'model_data', 'atmos')
 
     if os.path.isdir(pathstr):
         flat_structure = False
