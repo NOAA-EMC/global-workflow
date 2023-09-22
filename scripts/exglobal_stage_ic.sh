@@ -50,16 +50,16 @@ for ftype in gfs_data sfc_data; do
   done
 done
 elif [ "$selection" = "gefs" ]; then
+
 MEM=""
+
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
 # Define the array of CASE values
 CASE=("12")  # Add more values as needed
 
-# Additional logic based on MEM and NMEM_ENS
-if [ "$NMEM_ENS" -gt 0 ]; then
   for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
-    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${MEM}/model_data/atmos/input/gfs_ctrl.nc"
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${member_dir}/model_data/atmos/input/gfs_ctrl.nc"
     target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
     ${NCP} "${source}" "${target}"
     rc=$?
@@ -67,7 +67,7 @@ if [ "$NMEM_ENS" -gt 0 ]; then
     err=$((err + rc))
   for ftype in gfs_data sfc_data; do
     for tt in $(seq 1 6); do
-        source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${MEM}/model_data/atmos/input/${ftype}.tile${tt}.nc"
+        source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${member_dir}/model_data/atmos/input/${ftype}.tile${tt}.nc"
         target="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
         rc=$?
         (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
@@ -75,7 +75,6 @@ if [ "$NMEM_ENS" -gt 0 ]; then
     done
   done
 done
-fi
 
 # Stage ocean initial conditions to ROTDIR (warm start)
 if [[ "${DO_OCN:-}" = "YES" ]]; then
