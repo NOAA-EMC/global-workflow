@@ -72,7 +72,7 @@ def fill_COMROT_cycled(host, inputs):
     idatestr = datetime_to_YMDH(inputs.idate)
 
     # Test if we are using the new COM structure or the old flat one for ICs
-    if(inputs.start in ['warm']):
+    if inputs.start in ['warm']:
         pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{rdatestr[:8]}',
                                rdatestr[8:], 'model_data', 'atmos')
     else:
