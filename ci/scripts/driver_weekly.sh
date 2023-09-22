@@ -74,6 +74,7 @@ git checkout -b "${branch}"
 # move yaml files from ci/cases/weekly to ci/cases/pr 
 # and push new branch for PR weekly CI tests to GitHub
 
+rm -Rf ci/cases/pr
 mv ci/cases/weekly ci/cases/pr
 git add ci/cases
 git commit -m "Moved weekly cases files into pr for high resolution testing"
@@ -83,22 +84,22 @@ git push --set-upstream origin "${branch}"
 # Create Pull Request using GitHub CLI and add labels for CI testing
 ####################################################################
 
-REPO_OWNER="TerrenceMcGuinness-NOAA"
-#REPO_OWNER="NOAA-EMC"
+REPO_OWNER="NOAA-EMC"
 REPO_NAME="global-workflow"
 BASE_BRANCH="develop"
 HEAD_BRANCH="${branch}"
 PULL_REQUEST_TITLE="[DO NOT MERGE] Weekly High Resolution CI Tests $(date +'%A %b %d, %Y')"
 PULL_REQUEST_BODY="${PULL_REQUEST_TITLE}"
-PULL_REQUEST_LABELS=("CI-Orion-Ready" "CI-Hera-Ready")
+PULL_REQUEST_LABELS=("CI/CD" "CI-Orion-Ready" "CI-Hera-Ready")
 
 "${GH}" repo set-default "${REPO_OWNER}/${REPO_NAME}"
 "${GH}" pr create --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --base "${BASE_BRANCH}" --head "${HEAD_BRANCH}"
+"${GH}" pr ready --undo
 
 # Add labels to the pull request
 for label in "${PULL_REQUEST_LABELS[@]}"
 do
   "${GH}" pr edit --add-label "${label}"
 done
-cd "${GFS_CI_ROOT}}"
+cd "${GFS_CI_ROOT}"
 rm -Rf "${develop_dir}"
