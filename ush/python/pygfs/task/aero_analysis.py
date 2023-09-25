@@ -293,7 +293,7 @@ class AerosolAnalysis(Analysis):
         radius = 'cor_aero_universe_radius'
         berror_list.append([
             os.path.join(b_dir, radius), os.path.join(config.DATA, 'berror', radius)
-            ]) 
+        ])
         nproc = config.ntiles * config.layout_x * config.layout_y
         for nn in range(1, nproc + 1):
             berror_list.append([
