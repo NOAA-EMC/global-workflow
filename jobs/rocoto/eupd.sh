@@ -21,7 +21,7 @@ else
     # Append compiler (only on machines that have multiple compilers)
     COMPILER=${COMPILER:-"intel"}
     if [[ "${MACHINE_ID}" = "hera" ]] || [[ "${MACHINE_ID}" = "cheyenne" ]]; then
-	MACHINE_ID=${MACHINE_ID}.${COMPILER}
+        MACHINE_ID=${MACHINE_ID}.${COMPILER}
     fi
 
     # Source machine specific GSI-EnKF modules
