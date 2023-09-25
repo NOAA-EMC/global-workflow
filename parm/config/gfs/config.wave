@@ -110,7 +110,7 @@ export DTPNT_WAV=${DTPNT_WAV:-10800} # 3600 for ops
 export FHINCP_WAV=$(( DTPNT_WAV / 3600 ))
 
 # Selected output parameters (gridded)
-export OUTPARS_WAV=${OUTPARS_WAV:-"WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"}
+export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
 
 # Restart file config
 if [[ "${CDUMP}" = "gdas" ]]; then
