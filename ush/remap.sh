@@ -5,7 +5,7 @@
 #   to specified destination grid projections.
 #
 # Syntax:
-#   cdo_post.sh variable_file destination_grid output_netcdf
+#   remap.sh variable_file destination_grid output_netcdf
 #
 #   Arguments:
 #
@@ -71,7 +71,8 @@ output_path="${3}"
 #######
 
 if [[ "$#" -ne 3 ]]; then
-    echo "Usage: $0 <variable_file> <dstgrid_path> <output_path>"
+    echo "FATAL ERROR: invalid argument syntax provided to ${BASH_SOURCE[0]}"
+    echo "Usage: ${BASH_SOURCE[0]} <variable_file> <input_path> <output_path>"
     exit 100
 fi
 
@@ -140,7 +141,7 @@ function _comma_split_string() {
 function _strip_whitespace(){
     local in_string="${1}"
 
-    out_string=$(echo "${in_string}" | $(command -v sed) "s/ //g")
+    out_string=$(echo "${in_string}" | sed "s/ //g")
 }
 
 #######
@@ -173,12 +174,12 @@ function nc_concat(){
     tmp_nc_file="${PWD}/tmp_nc.nc"
     if test -e "${output_path}"; then
 	echo "netCDF-formatted file path ${output_path} exists; merging ${var_interp_path}"
-	$(command -v cdo) merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}"
-	$(command -v mv) "${tmp_nc_file}" "${output_path}"
-	$(command -v rm) "${var_interp_path}" >> /dev/null
+	cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}"
+	mv "${tmp_nc_file}" "${output_path}"
+	rm "${var_interp_path}" >> /dev/null
     else
 	echo "netCDF-formatted file path ${output_path} does not exist; creating..."
-	$(command -v mv) "${var_interp_path}" "${output_path}"
+	mv "${var_interp_path}" "${output_path}"
     fi
 }
 
@@ -216,7 +217,7 @@ function cdo_remap(){
     local var_interp_path="${PWD}/${varname}.interp.nc"
     
     echo "Remapping variable ${varname} from file ${varfile} using ${interp_type} interpolation."
-    $(command -v cdo) "${interp_type}","${dstgrid_config}" -selname,"${varname}" "${varfile}" "${var_interp_path}"
+    cdo "${interp_type}","${dstgrid_config}" -selname,"${varname}" "${varfile}" "${var_interp_path}"
     nc_concat "${var_interp_path}"
 }
 
@@ -283,13 +284,13 @@ function cdo_rotate(){
     if [[ "${nangles}" == 1 ]]; then
 	_strip_whitespace "${angle_array[0]}"
 	theta="${out_string}"
-	$(command -v cdo) -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
+	cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
     elif [[ "${nangles}" == 2 ]]; then
 	_strip_whitespace "${angle_array[0]}"
 	cosang="${out_string}"
 	_strip_whitespace "${angle_array[1]}"
 	sinang="${out_string}"
-	$(command -v cdo) -expr,"xr=${xvar}*${cosang}-${yvar}*${sinang}; yr=${xvar}*${sinang}+${yvar}*${cosang}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}"
+	cdo -expr,"xr=${xvar}*${cosang}-${yvar}*${sinang}; yr=${xvar}*${sinang}+${yvar}*${cosang}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}"
 	
     else
 	echo "Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
@@ -300,7 +301,7 @@ function cdo_rotate(){
     varname_update "xr" "${xvar}" "${output_path}"
     cdo_remap "yr" "${var_rotate_path}" "${interp_type}"
     varname_update "yr" "${yvar}" "${output_path}"
-    $(command -v rm) "${var_rotate_path}" >> /dev/null
+    rm "${var_rotate_path}" >> /dev/null
 }
 
 #######
@@ -328,7 +329,7 @@ function varname_update(){
     local ncfile="${3}"
 
     echo "Renaming variable ${old_varname} to ${new_varname} and writing to file ${ncfile}."
-    $(command -v ncrename) -O -v "${old_varname}","${new_varname}" "${ncfile}"
+    ncrename -O -v "${old_varname}","${new_varname}" "${ncfile}"
 }
 
 #######
@@ -343,11 +344,11 @@ echo "Begin ${_calling_script} at ${start_time_human}."
 while IFS= read -r line; do
 
     # Get the attributes for the respective variable(s).
-    varname=$(echo "${line}" | $(command -v awk) '{print $1}')
-    interp_type=$(echo "${line}" | $(command -v awk) '{print $2}')
-    srcgrid=$(echo "${line}" | $(command -v awk) '{print $3}')
-    rotate=$(echo "${line}" | $(command -v awk) '{print $4}')
-    angle=$(echo "${line}" | $(command -v awk) '{print $5}')
+    varname=$(echo "${line}" | awk '{print $1}')
+    interp_type=$(echo "${line}" | awk '{print $2}')
+    srcgrid=$(echo "${line}" | awk '{print $3}')
+    rotate=$(echo "${line}" | awk '{print $4}')
+    angle=$(echo "${line}" | awk '{print $5}')
     
     if [[ "${rotate}" == 0 ]]; then
     	# No rotation necessary; interpolate/remap the variables and
