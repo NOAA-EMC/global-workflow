@@ -344,6 +344,9 @@ if [[ ${type} == "gdas" ]]; then
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}oznstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}oznstat"
     fi
+    if [[ -s "${COM_CHEM_ANALYSIS}/${head}aerostat" ]]; then
+       echo "${COM_CHEM_ANALYSIS/${ROTDIR}\//}/${head}aerostat"
+    fi
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat"
     fi
