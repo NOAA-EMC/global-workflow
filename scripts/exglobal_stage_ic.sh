@@ -52,7 +52,7 @@ done
 elif [ "$selection" = "gefs" ]; then
 
 MEM=""
-
+NMEM_ENS=10 # this will pass from config base about ensembles numbers
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
 # Define the array of CASE values
