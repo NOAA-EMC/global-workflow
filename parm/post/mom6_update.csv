@@ -19,3 +19,5 @@ taux coordinates geolon_u,geolat_u,time
 SSV coordinates geolon_v,geolat_v,time
 vo coordinates geolon_v,geolat_v,time
 tauy coordinates geolon_v,geolat_v,time
+cos_rot coordinates geolon,geolat,time
+sin_rot coordinates geolon,geolat,time
