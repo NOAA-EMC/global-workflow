@@ -176,9 +176,9 @@ function nc_concat(){
     tmp_nc_file="${PWD}/tmp_nc.nc"
     if [[ -e "${output_path}" ]]; then
         echo "netCDF-formatted file path ${output_path} exists; merging ${var_interp_path}"
-        cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}"
+        cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}" >> "${PWD}/remap.out" 2>&1
         mv "${tmp_nc_file}" "${output_path}"
-        rm "${var_interp_path}" >> /dev/null
+        rm -f "${var_interp_path}" >> /dev/null
     else
         echo "netCDF-formatted file path ${output_path} does not exist; creating..."
         mv "${var_interp_path}" "${output_path}"
@@ -219,7 +219,7 @@ function cdo_remap(){
     local var_interp_path="${PWD}/${varname}.interp.nc"
     
     echo "Remapping variable ${varname} from file ${varfile} using ${interp_type} interpolation."
-    cdo "${interp_type}","${dstgrid_config}" -selname,"${varname}" "${varfile}" "${var_interp_path}"
+    cdo "${interp_type}","${dstgrid_config}" -selname,"${varname}" "${varfile}" "${var_interp_path}" >> "${PWD}/remap.out" 2>&1
     nc_concat "${var_interp_path}"
 }
 
@@ -287,13 +287,13 @@ function cdo_rotate(){
         _strip_whitespace "${angle_array[0]}"
         theta="${out_string}"
         #cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
-        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
+        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}" >> "${PWD}/remap.out" 2>&1
     elif (( nangles == 2 )); then
         _strip_whitespace "${angle_array[0]}"
         cosang="${out_string}"
         _strip_whitespace "${angle_array[1]}"
         sinang="${out_string}"
-        cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}"
+        cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}" >> "${PWD}/remap.out" 2>&1
     else
         echo "FATAL ERROR: Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
         exit 102
@@ -331,7 +331,7 @@ function varname_update(){
     local ncfile="${3}"
 
     echo "Renaming variable ${old_varname} to ${new_varname} and writing to file ${ncfile}."
-    ncrename -O -v "${old_varname}","${new_varname}" "${ncfile}"
+    ncrename -O -v "${old_varname}","${new_varname}" "${ncfile}" >> "${PWD}/remap.out" 2>&1
 }
 
 #######
