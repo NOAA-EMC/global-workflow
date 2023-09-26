@@ -107,16 +107,17 @@ fi
 # or may not exist.
 function nc_concat(){
     local var_interp_path="${1}"
+    local nc_output_path="${2}"
 
     tmp_nc_file="${PWD}/tmp_nc.nc"
-    if [[ -e "${output_path}" ]]; then
-        echo "netCDF-formatted file path ${output_path} exists; merging ${var_interp_path}"
-        cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}" >> "${REMAP_LOG}" 2>&1
-        mv "${tmp_nc_file}" "${output_path}"
+    if [[ -e "${nc_output_path}" ]]; then
+        echo "netCDF-formatted file path ${nc_output_path} exists; merging ${var_interp_path}."
+        cdo merge "${nc_output_path}" "${var_interp_path}" "${tmp_nc_file}" >> "${REMAP_LOG}" 2>&1
+        mv "${tmp_nc_file}" "${nc_output_path}"
         rm -f "${var_interp_path}" >> /dev/null
     else
-        echo "netCDF-formatted file path ${output_path} does not exist; creating..."
-        mv "${var_interp_path}" "${output_path}"
+        echo "netCDF-formatted file path ${nc_output_path} does not exist and will be created."
+        mv "${var_interp_path}" "${nc_output_path}"
     fi
 }
 
@@ -155,7 +156,7 @@ function cdo_remap(){
     
     echo "Remapping variable ${varname} from file ${varfile} using ${interp_type} interpolation."
     cdo "${interp_type}","${dstgrid_config}" -selname,"${varname}" "${varfile}" "${var_interp_path}" >> "${REMAP_LOG}" 2>&1
-    nc_concat "${var_interp_path}"
+    nc_concat "${var_interp_path}" "${output_path}"
 }
 
 #######
@@ -238,7 +239,7 @@ function cdo_rotate(){
     varname_update "xr" "${xvar}" "${output_path}"
     cdo_remap "yr" "${var_rotate_path}" "${interp_type}"
     varname_update "yr" "${yvar}" "${output_path}"
-    rm "${var_rotate_path}" >> /dev/null
+    rm -f "${var_rotate_path}" >> /dev/null
 }
 
 #######
