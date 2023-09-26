@@ -658,8 +658,8 @@ class GFSTasks(Tasks):
 
     def wavepostbndpntbll(self):
         deps = []
-        wave_hist_path = self._template_to_rocoto_cycstring(self._base["COM_WAVE_HISTORY_TMPL"])
-        data = f'{wave_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
+        atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
+        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
