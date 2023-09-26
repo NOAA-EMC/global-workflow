@@ -46,6 +46,8 @@
 #                      grid projection.
 #######
 
+source "${HOMEgfs}/ush/preamble.sh"
+
 # Collect the command line arguments and check the validity.
 variable_file="${1}"
 input_path="${2}"
@@ -164,11 +166,6 @@ function ncattr_update(){
 
 #######
 
-start_time=$(date +%s)
-_calling_script=$(basename "${BASH_SOURCE[0]}")
-start_time_human=$(date -d"@${start_time}" -u)
-echo "Begin ${_calling_script} at ${start_time_human}."
-
 # Copy the input file path to the output file path.
 echo "Copying file ${input_path} to ${output_path} and preparing for variable updates."
 cp "${input_path}" "${output_path}"
@@ -178,9 +175,9 @@ cp "${input_path}" "${output_path}"
 while IFS= read -r line; do
 
     # Get the attributes for the respective variable.
-    varname=$(echo "${line}" | awk '{print $1}')
-    ncattr=$(echo "${line}" | awk '{print $2}')
-    coords=$(echo "${line}" | awk '{print $3}')
+    varname=$(awk '{print $1}' <<< "${line}")
+    ncattr=$(awk '{print $2}' <<< "${line}")
+    coords=$(awk '{print $3}' <<< "${line}")
     
     # Update the variable attributes and write the updates to the
     # specified output file (see `output_path`).
@@ -188,7 +185,4 @@ while IFS= read -r line; do
     
 done < "${variable_file}"
 
-stop_time=$(date +%s) 
-_calling_script=$(basename "${BASH_SOURCE[0]}")
-stop_time_human=$(date -d"@${stop_time}" -u) 
-echo "End ${_calling_script} at ${stop_time_human}."
+exit 0
