@@ -30,6 +30,14 @@ else
     module use "${HOMEgfs}/sorc/gsi_enkf.fd/modulefiles"
     module load gsi_"${MACHINE_ID}"
 
+    set -x
+    if [[ "${MACHINE_ID}" = "orion" ]]; then
+	wxflowPATH="${HOMEgfs}/ush:${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
+	PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
+	export PYTHONPATH
+    fi
+    set +x
+
     module list
     unset MACHINE_ID
     set_trace
