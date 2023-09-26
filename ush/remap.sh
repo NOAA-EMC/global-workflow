@@ -260,7 +260,8 @@ function cdo_rotate(){
 #   varname_update "old_variable" "new_variable" "input_file.nc"
 #
 # This example renames the variable "old_variable" to "new_variable"
-# in the input netCDF file and writes the result to a new netCDF file.
+# in the input netCDF file and writes the result to the specified
+# netCDF file.
 function varname_update(){
     local old_varname="${1}"
     local new_varname="${2}"
