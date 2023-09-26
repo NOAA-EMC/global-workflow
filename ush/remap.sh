@@ -175,13 +175,13 @@ function nc_concat(){
 
     tmp_nc_file="${PWD}/tmp_nc.nc"
     if [[ -e "${output_path}" ]]; then
-	echo "netCDF-formatted file path ${output_path} exists; merging ${var_interp_path}"
-	cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}"
-	mv "${tmp_nc_file}" "${output_path}"
-	rm "${var_interp_path}" >> /dev/null
+        echo "netCDF-formatted file path ${output_path} exists; merging ${var_interp_path}"
+        cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}"
+        mv "${tmp_nc_file}" "${output_path}"
+        rm "${var_interp_path}" >> /dev/null
     else
-	echo "netCDF-formatted file path ${output_path} does not exist; creating..."
-	mv "${var_interp_path}" "${output_path}"
+        echo "netCDF-formatted file path ${output_path} does not exist; creating..."
+        mv "${var_interp_path}" "${output_path}"
     fi
 }
 
@@ -284,20 +284,19 @@ function cdo_rotate(){
     
     echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${varfile}."
     if (( nangles == 1 )); then
-	_strip_whitespace "${angle_array[0]}"
-	theta="${out_string}"
-	#cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
-	cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
+        _strip_whitespace "${angle_array[0]}"
+        theta="${out_string}"
+        #cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
+        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
     elif (( nangles == 2 )); then
-	_strip_whitespace "${angle_array[0]}"
-	cosang="${out_string}"
-	_strip_whitespace "${angle_array[1]}"
-	sinang="${out_string}"
-	cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}"
-	
+        _strip_whitespace "${angle_array[0]}"
+        cosang="${out_string}"
+        _strip_whitespace "${angle_array[1]}"
+        sinang="${out_string}"
+        cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}"
     else
-	echo "FATAL ERROR: Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
-	exit 102
+        echo "FATAL ERROR: Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
+        exit 102
     fi
 
     cdo_remap "xr" "${var_rotate_path}" "${interp_type}"
@@ -349,21 +348,21 @@ while IFS= read -r line; do
     angle=$(awk '{print $5}' <<< "${line}")
     
     if (( rotate == 0 )); then
-    	# No rotation necessary; interpolate/remap the variables and
-    	# directly.
-	echo "Remapping variable ${varname} without rotation."
-	cdo_remap "${varname}" "${srcgrid}" "${interp_type}"
+        # No rotation necessary; interpolate/remap the variables and
+        # directly.
+        echo "Remapping variable ${varname} without rotation."
+        cdo_remap "${varname}" "${srcgrid}" "${interp_type}"
 	
     elif (( rotate == 1 )); then
-    	# Rotation necessary; rotate the respective vector quantities
-    	# relative to the source grid projection and subsequently
-    	# remap the variables to the specified destination grid.
-	echo "Remapping variables ${varname} with rotation."
-	cdo_rotate "${varname}" "${srcgrid}" "${interp_type}" "${angle}"
+        # Rotation necessary; rotate the respective vector quantities
+        # relative to the source grid projection and subsequently
+        # remap the variables to the specified destination grid.
+        echo "Remapping variables ${varname} with rotation."
+        cdo_rotate "${varname}" "${srcgrid}" "${interp_type}" "${angle}"
 	
     else
-	echo "FATAL ERROR: Rotation option ${rotate} not recognized. Aborting!!!"
-	exit 101
+        echo "FATAL ERROR: Rotation option ${rotate} not recognized. Aborting!!!"
+        exit 101
     fi
 
 done < "${variable_file}"
