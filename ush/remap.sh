@@ -64,7 +64,8 @@
 #######
 
 source "${HOMEgfs}/ush/preamble.sh"
-export REMAP_LOG="${PWD}/remap.log"
+REMAP_LOG="${PWD}/remap.log"
+rm -f "${REMAP_LOG}" >& /dev/null
 
 # Collect the command line arguments and check the validity.
 variable_file="${1}"
@@ -336,6 +337,11 @@ function varname_update(){
 }
 
 #######
+
+# Clobber the output file; otherwise the respective variables will be
+# written multiple times to the file; for example VAR, VAR_1, VAR_2,
+# etc.,
+rm -f "${output_path}" >& /dev/null
 
 # Read the configuration file for the the variables to be remapped and
 # proceed accordingly.
