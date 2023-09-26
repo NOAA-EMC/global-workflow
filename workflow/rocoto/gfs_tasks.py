@@ -15,9 +15,9 @@ class GFSTasks(Tasks):
             raise TypeError(f'{task_name} must be part of the "enkfgdas" cycle and not {cdump}')
 
     # Specific Tasks begin here
-    def coupled_ic(self):
+    def stage_ic(self):
 
-        cpl_ic = self._configs['coupled_ic']
+        cpl_ic = self._configs['stage_ic']
 
         deps = []
 
@@ -72,8 +72,8 @@ class GFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('coupled_ic')
-        task = create_wf_task('coupled_ic', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        resources = self.get_resource('stage_ic')
+        task = create_wf_task('stage_ic', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -484,7 +484,7 @@ class GFSTasks(Tasks):
     def _fcst_forecast_only(self):
         dependencies = []
 
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}coupled_ic'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
