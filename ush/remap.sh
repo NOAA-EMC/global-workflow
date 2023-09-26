@@ -63,6 +63,8 @@
 
 #######
 
+source "${HOMEgfs}/ush/preamble.sh"
+
 # Collect the command line arguments and check the validity.
 variable_file="${1}"
 dstgrid_config="${2}"
@@ -172,7 +174,7 @@ function nc_concat(){
     local var_interp_path="${1}"
 
     tmp_nc_file="${PWD}/tmp_nc.nc"
-    if test -e "${output_path}"; then
+    if [[ -e "${output_path}" ]]; then
 	echo "netCDF-formatted file path ${output_path} exists; merging ${var_interp_path}"
 	cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}"
 	mv "${tmp_nc_file}" "${output_path}"
@@ -281,19 +283,20 @@ function cdo_rotate(){
     nangles="${#angle_array[@]}"
     
     echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${varfile}."
-    if [[ "${nangles}" == 1 ]]; then
+    if (( nangles == 1 )); then
 	_strip_whitespace "${angle_array[0]}"
 	theta="${out_string}"
-	cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
-    elif [[ "${nangles}" == 2 ]]; then
+	#cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
+	cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
+    elif (( nangles == 2 )); then
 	_strip_whitespace "${angle_array[0]}"
 	cosang="${out_string}"
 	_strip_whitespace "${angle_array[1]}"
 	sinang="${out_string}"
-	cdo -expr,"xr=${xvar}*${cosang}-${yvar}*${sinang}; yr=${xvar}*${sinang}+${yvar}*${cosang}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}"
+	cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}"
 	
     else
-	echo "Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
+	echo "FATAL ERROR: Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
 	exit 102
     fi
 
@@ -334,29 +337,24 @@ function varname_update(){
 
 #######
 
-start_time=$(date +%s)
-_calling_script=$(basename "${BASH_SOURCE[0]}")
-start_time_human=$(date -d"@${start_time}" -u)
-echo "Begin ${_calling_script} at ${start_time_human}."
-
 # Read the configuration file for the the variables to be remapped and
 # proceed accordingly.
 while IFS= read -r line; do
 
     # Get the attributes for the respective variable(s).
-    varname=$(echo "${line}" | awk '{print $1}')
-    interp_type=$(echo "${line}" | awk '{print $2}')
-    srcgrid=$(echo "${line}" | awk '{print $3}')
-    rotate=$(echo "${line}" | awk '{print $4}')
-    angle=$(echo "${line}" | awk '{print $5}')
+    varname=$(awk '{print $1}' <<< "${line}")
+    interp_type=$(awk '{print $2}' <<< "${line}")
+    srcgrid=$(awk '{print $3}' <<< "${line}")
+    rotate=$(awk '{print $4}' <<< "${line}")
+    angle=$(awk '{print $5}' <<< "${line}")
     
-    if [[ "${rotate}" == 0 ]]; then
+    if (( rotate == 0 )); then
     	# No rotation necessary; interpolate/remap the variables and
     	# directly.
 	echo "Remapping variable ${varname} without rotation."
 	cdo_remap "${varname}" "${srcgrid}" "${interp_type}"
 	
-    elif [[ "${rotate}" = "1" ]]; then
+    elif (( rotate == 1 )); then
     	# Rotation necessary; rotate the respective vector quantities
     	# relative to the source grid projection and subsequently
     	# remap the variables to the specified destination grid.
@@ -364,13 +362,10 @@ while IFS= read -r line; do
 	cdo_rotate "${varname}" "${srcgrid}" "${interp_type}" "${angle}"
 	
     else
-	echo "Rotation option ${rotate} not recognized. Aborting!!!"
+	echo "FATAL ERROR: Rotation option ${rotate} not recognized. Aborting!!!"
 	exit 101
     fi
 
 done < "${variable_file}"
 
-stop_time=$(date +%s)
-_calling_script=$(basename "${BASH_SOURCE[0]}")
-stop_time_human=$(date -d"@${stop_time}" -u)
-echo "End ${_calling_script} at ${stop_time_human}."
+exit 0
