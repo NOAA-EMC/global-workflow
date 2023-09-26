@@ -64,6 +64,7 @@
 #######
 
 source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/string_utils.sh"
 REMAP_LOG="${PWD}/remap.log"
 rm -f "${REMAP_LOG}" >& /dev/null
 
@@ -79,74 +80,6 @@ if [[ "$#" -ne 3 ]]; then
     echo "Usage: ${BASH_SOURCE[0]} <variable_file> <input_path> <output_path>"
     exit 100
 fi
-
-#######
-
-# _comma_split_string - Split a comma-delimited string into an array.
-#
-# Description:
-#   This function takes a comma-delimited string as input and splits
-#   it into an array. Each element in the resulting array is obtained
-#   by splitting the input string at commas and then removing leading
-#   and trailing spaces.
-#
-# Parameters:
-#   $1 - The comma-delimited string to split.
-#
-# Global Variables:
-#   global_array - An array containing the split elements.
-#
-# Example usage:
-#   _comma_split_string "item1,item2 item3,item4"
-#   for element in "${global_array[@]}"; do
-#       echo "$element"
-#   done
-#
-# This example will split the input string into individual elements
-# and print each element on a separate line.
-function _comma_split_string() {
-    local string="${1}"
-
-    local local_array=()
-    global_array=()
-    IFS="," read -ra items <<< "${string}"
-    for item in "${items[@]}"; do
-        local_array+=("${item} ")
-    done
-    for item in "${local_array[@]}"; do
-        IFS=" " read -ra items <<< "${item}"
-        for element in "${items[@]}"; do
-            global_array+=("${element} ")
-        done
-    done
-}
-
-#######
-
-# _strip_whitespace - Remove whitespace from a string.
-#
-# Description:
-#   This function takes an input string and removes all whitespace
-#   characters (spaces, tabs, and newline characters) to produce a
-#   cleaned output string.
-#
-# Parameters:
-#   $1 - The input string from which whitespace will be removed.
-#
-# Return:
-#   The cleaned string with no whitespace.
-#
-# Example usage:
-#   cleaned_string=$(_strip_whitespace "   This is a string   with spaces  ")
-#   echo "Cleaned string: \"$cleaned_string\""
-#
-# This example will remove all leading, trailing, and internal
-# whitespace from the input string and display the cleaned result.
-function _strip_whitespace(){
-    local in_string="${1}"
-
-    out_string=$(echo "${in_string}" | sed "s/ //g")
-}
 
 #######
 
@@ -274,26 +207,26 @@ function cdo_rotate(){
     local angles="${4}"  
     local var_rotate_path="${PWD}/rotate.nc"    
 
-    _comma_split_string "${varnames}"    
+    comma_split_string "${varnames}"    
     varname_array=("${global_array[@]}")    
-    _comma_split_string "${angles}"
+    comma_split_string "${angles}"
     angle_array=("${global_array[@]}")
-    _strip_whitespace "${varname_array[0]}"
+    strip_whitespace "${varname_array[0]}"
     xvar="${out_string}"
-    _strip_whitespace "${varname_array[1]}"
+    strip_whitespace "${varname_array[1]}"
     yvar="${out_string}"
     nangles="${#angle_array[@]}"
     
     echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${varfile}."
     if (( nangles == 1 )); then
-        _strip_whitespace "${angle_array[0]}"
+        strip_whitespace "${angle_array[0]}"
         theta="${out_string}"
         #cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
         cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
     elif (( nangles == 2 )); then
-        _strip_whitespace "${angle_array[0]}"
+        strip_whitespace "${angle_array[0]}"
         cosang="${out_string}"
-        _strip_whitespace "${angle_array[1]}"
+        strip_whitespace "${angle_array[1]}"
         sinang="${out_string}"
         cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
     else
