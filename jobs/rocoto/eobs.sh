@@ -32,9 +32,7 @@ else
 
     set -x
     if [[ "${MACHINE_ID}" = "orion" ]]; then
-	wxflowPATH="${HOMEgfs}/ush:${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-	PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
-	export PYTHONPATH
+       conda activate regional_workflow
     fi
     set +x
 
