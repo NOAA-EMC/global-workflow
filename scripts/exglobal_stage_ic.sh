@@ -7,6 +7,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
+member_dirs=("mem000" "mem001" "mem002")
+
+# Determine NMEM_ENS based on the configuration file (e.g., config.base)
+# Assuming NMEM_ENS is defined in config.base as an integer
+NMEM_ENS=$(cat config.base | grep "NMEM_ENS" | awk -F= '{print $2}')
 
 # Initialize return code
 err=0
@@ -39,46 +44,48 @@ ${NCP} "${source}" "${target}"
 rc=$?
 (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
 err=$((err + rc))
-for ftype in gfs_data sfc_data; do
-  for tt in $(seq 1 6); do
+  for ftype in gfs_data sfc_data; do
+    for tt in $(seq 1 6); do
     source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/${ftype}.tile${tt}.nc"
     target="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
     ${NCP} "${source}" "${target}"
     rc=$?
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
+    done
   done
-done
 elif [ "$selection" = "gefs" ]; then
-
 MEM=""
-NMEM_ENS=10 # this will pass from config base about ensembles numbers
+NMEM_ENS=3 # this will pass from config base about ensembles numbers
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
-# Define the array of CASE values
-CASE=("12")  # Add more values as needed
-
-for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
-    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${member_dir}/model_data/atmos/input/gfs_ctrl.nc"
+  for member_idx in $(seq -w 0 $((NMEM_ENS - 1))); do
+    # Pad member_idx with zeros to make it three digits
+    member_dir="mem$(printf "%03d" "$member_idx")"
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${member_dir}/atmos/gfs_ctrl.nc"
     target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
     ${NCP} "${source}" "${target}"
     rc=$?
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
-  for ftype in gfs_data sfc_data; do
-    for tt in $(seq 1 6); do
-        source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${CDUMP}/${CASE}/${member_dir}/model_data/atmos/input/${ftype}.tile${tt}.nc"
+    for ftype in gfs_data sfc_data; do
+      for tt in $(seq 1 6); do
+        source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${member_dir}/atmos/${ftype}.tile${tt}.nc"
         target="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
         rc=$?
         (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
         err=$((err + rc))
+      done
     done
   done
-done
 fi
 
 # Stage ocean initial conditions to ROTDIR (warm start)
 if [[ "${DO_OCN:-}" = "YES" ]]; then
+  if [ "$selection" = "gfs" ]; then
+MEM=""
+NMEM_ENS=0
+
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
   [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
   source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res.nc"
@@ -91,27 +98,49 @@ if [[ "${DO_OCN:-}" = "YES" ]]; then
     "500" | "100")  # Only 5 degree or 1 degree ocean does not have MOM.res_[1-4].nc files
     ;;
     "025")  # Only 1/4 degree ocean has MOM.res_[1-4].nc files
-      for nn in $(seq 1 4); do
-        source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res_${nn}.nc"
-        if [[ -f "${source}" ]]; then
+    for nn in $(seq 1 4); do
+    source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res_${nn}.nc"
+      if [[ -f "${source}" ]]; then
           target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
           ${NCP} "${source}" "${target}"
           rc=$?
           (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
           err=$((err + rc))
-        fi
-      done
+      fi
+    done
     ;;
     *)
+    echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
+    rc=1
+    err=$((err + rc))
+    ;;
+  esac
+  elif [ "$selection" = "gefs" ]; then
+  MEM=""
+  NMEM_ENS=3
+  YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
+  [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
+    for member_idx in $(seq -w 0 $((NMEM_ENS - 1))); do
+    # Pad member_idx with zeros to make it three digits
+    member_dir="mem$(printf "%03d" "$member_idx")"
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${member_dir}/ocean/${PDY}.${cyc}0000.MOM.res.nc"
+    target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res.nc"
+    ${NCP} "${source}" "${target}"
+    rc=$?
+    (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
+    err=$((err + rc))
+    done
       echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
       rc=1
       err=$((err + rc))
-    ;;
-  esac
+  fi
 fi
 
 # Stage ice initial conditions to ROTDIR (warm start)
 if [[ "${DO_ICE:-}" = "YES" ]]; then
+  if [ "$selection" = "gfs" ]; then
+  MEM=""
+  NMEM_ENS=0
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
   [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
   ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
@@ -121,10 +150,34 @@ if [[ "${DO_ICE:-}" = "YES" ]]; then
   rc=$?
   (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
   err=$((err + rc))
+
+# GEFS SELECTIONS
+  elif [ "$selection" = "gefs" ]; then
+  MEM=""
+  NMEM_ENS=3
+  YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
+  [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
+    for member_idx in $(seq -w 0 $((NMEM_ENS - 1))); do
+    # Pad member_idx with zeros to make it three digits
+    member_dir="mem$(printf "%03d" "$member_idx")"
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${member_dir}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
+    target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
+    ${NCP} "${source}" "${target}"
+    rc=$?
+    (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
+    err=$((err + rc))
+    done
+      echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
+      rc=1
+      err=$((err + rc))
+  fi
 fi
 
 # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
 if [[ "${DO_WAVE:-}" = "YES" ]]; then
+  if [ "$selection" = "gfs" ]; then
+  MEM=""
+  NMEM_ENS=0
   YMD=${PDY} HH=${cyc} generate_com -r COM_WAVE_RESTART
   [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
   for grdID in ${waveGRD}; do  # TODO: check if this is a bash array; if so adjust
@@ -135,6 +188,26 @@ if [[ "${DO_WAVE:-}" = "YES" ]]; then
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
   done
+# GEFS SELECTIONS
+  elif [ "$selection" = "gefs" ]; then
+  MEM=""
+  NMEM_ENS=3
+  YMD=${gPDY} HH=${gcyc} generate_com -r COM_WAVE_RESTART
+  [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
+    for member_idx in $(seq -w 0 $((NMEM_ENS - 1))); do
+    # Pad member_idx with zeros to make it three digits
+    member_dir="mem$(printf "%03d" "$member_idx")"
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${member_dir}/ice/${PDY}.${cyc}0000.restart.gwes_30m"
+    target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.restart.gwes_30m"
+    ${NCP} "${source}" "${target}"
+    rc=$?
+    (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
+    err=$((err + rc))
+    done
+      echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
+      rc=1
+      err=$((err + rc))
+  fi
 fi
 
 ###############################################################
