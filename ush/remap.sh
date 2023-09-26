@@ -64,6 +64,7 @@
 #######
 
 source "${HOMEgfs}/ush/preamble.sh"
+export REMAP_LOG="${PWD}/remap.log"
 
 # Collect the command line arguments and check the validity.
 variable_file="${1}"
@@ -176,7 +177,7 @@ function nc_concat(){
     tmp_nc_file="${PWD}/tmp_nc.nc"
     if [[ -e "${output_path}" ]]; then
         echo "netCDF-formatted file path ${output_path} exists; merging ${var_interp_path}"
-        cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}" >> "${PWD}/remap.out" 2>&1
+        cdo merge "${output_path}" "${var_interp_path}" "${tmp_nc_file}" >> "${REMAP_LOG}" 2>&1
         mv "${tmp_nc_file}" "${output_path}"
         rm -f "${var_interp_path}" >> /dev/null
     else
@@ -219,7 +220,7 @@ function cdo_remap(){
     local var_interp_path="${PWD}/${varname}.interp.nc"
     
     echo "Remapping variable ${varname} from file ${varfile} using ${interp_type} interpolation."
-    cdo "${interp_type}","${dstgrid_config}" -selname,"${varname}" "${varfile}" "${var_interp_path}" >> "${PWD}/remap.out" 2>&1
+    cdo "${interp_type}","${dstgrid_config}" -selname,"${varname}" "${varfile}" "${var_interp_path}" >> "${REMAP_LOG}" 2>&1
     nc_concat "${var_interp_path}"
 }
 
@@ -287,13 +288,13 @@ function cdo_rotate(){
         _strip_whitespace "${angle_array[0]}"
         theta="${out_string}"
         #cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
-        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}" >> "${PWD}/remap.out" 2>&1
+        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
     elif (( nangles == 2 )); then
         _strip_whitespace "${angle_array[0]}"
         cosang="${out_string}"
         _strip_whitespace "${angle_array[1]}"
         sinang="${out_string}"
-        cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}" >> "${PWD}/remap.out" 2>&1
+        cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
     else
         echo "FATAL ERROR: Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
         exit 102
@@ -310,15 +311,15 @@ function cdo_rotate(){
 
 # varname_update - Rename a variable in a netCDF file and write to a new file.
 #
-# Description:
-#   This function renames a variable in a netCDF file from
-#   `old_varname` to `new_varname` and writes the result to a new
-#   netCDF file specified by `ncfile`.
+# Description: This function renames a variable in a netCDF file from
+#   `old_varname` to `new_varname` and writes the result to the
+#   (existing) netCDF file specified by `ncfile`.
 #
 # Parameters:
 #   $1 - The old variable name to be renamed.
 #   $2 - The new variable name to use.
-#   $3 - The path to the input netCDF file.
+#   $3 - The path to the input netCDF file; note that this is updated
+#        with every call to this function.
 #
 # Example usage:
 #   varname_update "old_variable" "new_variable" "input_file.nc"
@@ -331,7 +332,7 @@ function varname_update(){
     local ncfile="${3}"
 
     echo "Renaming variable ${old_varname} to ${new_varname} and writing to file ${ncfile}."
-    ncrename -O -v "${old_varname}","${new_varname}" "${ncfile}" >> "${PWD}/remap.out" 2>&1
+    ncrename -O -v "${old_varname}","${new_varname}" "${ncfile}" >> "${REMAP_LOG}" 2>&1
 }
 
 #######
