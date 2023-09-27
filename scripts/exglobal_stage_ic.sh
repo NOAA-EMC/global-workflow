@@ -13,7 +13,7 @@ gcyc="${GDATE:8:2}"
 
 config_file="${EXPDIR}/config.base"
 
-if [ -e "${config_file}" ]; then
+if [[ -e "${config_file}" ]]; then
     NMEM_ENS=$(grep "NMEM_ENS" "${config_file}" | awk -F= '{print $2}' || true)
 else
     echo "Error: ${config_file} does not exist or is not accessible." >&2
