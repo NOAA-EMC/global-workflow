@@ -29,32 +29,8 @@ grid0p50="latlon 0:720:0.5 90:361:-0.5"
 # shellcheck disable=SC2034
 grid1p00="latlon 0:360:1.0 90:181:-1.0"
 
-# Functions used in this script
-function trim_rh() {
-  # trim RH values larger than 100.
-  local filename=$1
-  ${WGRIB2} "${filename}" \
-        -not_if ':RH:' -grib "${filename}.new" \
-        -if ':RH:' -rpn "10:*:0.5:+:floor:1000:min:10:/" -set_grib_type same \
-        -set_scaling -1 0 -grib_out "${filename}.new"
-  rc=$?
-  if (( rc == 0 )); then mv "${filename}.new" "${filename}"; fi
-  return "${rc}"
-}
-
-function mod_icec() {
-  # modify icec based on land-sea mask
-  local filename=$1
-  ${WGRIB2} "${filename}" \
-          -if 'LAND' -rpn 'sto_1' -fi \
-          -if 'ICEC' -rpn 'rcl_1:0:==:*' -fi \
-          -set_grib_type same \
-          -set_scaling same same \
-          -grib_out "${filename}.new"
-  rc=$?
-  if (( rc == 0 )); then mv "${filename}.new" "${filename}"; fi
-  return "${rc}"
-}
+# "Import" functions used in this script
+source "${HOMEgfs}/ush/product_functions.sh"
 
 # Transform the input ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
