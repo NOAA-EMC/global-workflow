@@ -65,11 +65,11 @@ common_predet(){
 
   # Define significant cycles
   current_cycle=${CDATE}
-  previous_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
+  previous_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
   # ignore errors that variable isn't used
   # shellcheck disable=SC2034
-  next_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
-  forecast_end_cycle=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+  next_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
+  forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
   cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
@@ -217,7 +217,7 @@ FV3_predet(){
   fi
 
   if [[ "${DOIAU}" = "YES" ]]; then
-    sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
+    sCDATE=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
     sPDY="${sCDATE:0:8}"
     scyc="${sCDATE:8:2}"
     tPDY=${previous_cycle:0:8}
