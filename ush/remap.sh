@@ -206,8 +206,8 @@ function cdo_rotate(){
     local varfile="${2}"
     local interp_type="${3}"
     local angles="${4}"  
-    local var_rotate_path="${PWD}/rotate.nc"    
-
+    local var_rotate_path="${PWD}/rotate.nc"
+    
     comma_split_string "${varnames}"    
     varname_array=("${global_array[@]}")    
     comma_split_string "${angles}"
@@ -222,19 +222,18 @@ function cdo_rotate(){
     if (( nangles == 1 )); then
         strip_whitespace "${angle_array[0]}"
         theta="${out_string}"
-        #cdo -expr,"xr=${xvar}*cos(${theta})-${yvar}*sin(${theta}); yr=${xvar}*sin(${theta})+${yvar}*cos(${theta})" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}"
-        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${xvar}-sin(${theta})*${yvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
+        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${yvar}-sin(${theta})*${xvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
     elif (( nangles == 2 )); then
         strip_whitespace "${angle_array[0]}"
         cosang="${out_string}"
         strip_whitespace "${angle_array[1]}"
         sinang="${out_string}"
-        cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${xvar}-${sinang}*${yvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
+        cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${yvar}-${sinang}*${xvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
     else
         echo "FATAL ERROR: Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
         exit 102
     fi
-
+    
     cdo_remap "xr" "${var_rotate_path}" "${interp_type}"
     varname_update "xr" "${xvar}" "${output_path}"
     cdo_remap "yr" "${var_rotate_path}" "${interp_type}"
