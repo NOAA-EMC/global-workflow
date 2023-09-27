@@ -13,10 +13,10 @@ gcyc="${GDATE:8:2}"
 
 config_file="${EXPDIR}/config.base"
 
-if [ -e "$config_file" ]; then
-    NMEM_ENS=$(grep "NMEM_ENS" "$config_file" | awk -F= '{print $2}')
+if [[ -e "${config_file}" ]]; then
+    NMEM_ENS=$(grep "NMEM_ENS" "${config_file}" | awk -F= '{print $2}')
 else
-    echo "Error: $config_file does not exist or is not accessible." >&2
+    echo "Error: ${config_file} does not exist or is not accessible." >&2
     exit 1
 fi
 
@@ -47,7 +47,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 
-if [ "$selection" = "gfs" ]; then
+if [[ "${selection}" = "gfs" ]]; then
 # Stage the FV3 initial conditions to ROTDIR (cold start)
 
 member_dir=""
