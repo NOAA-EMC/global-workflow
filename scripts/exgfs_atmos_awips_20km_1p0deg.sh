@@ -231,8 +231,6 @@ for GRID in conus ak prico pac 003; do
          # Post Files to  ${COM_ATMOS_WMO} 
          ##############################
 
-         pwd
-
          mv "grib2.awpgfs_20km_${GRID}_f${fcsthrs}" \
             "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name}"
 
