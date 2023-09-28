@@ -8,27 +8,17 @@ GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
-# Determine NMEM_ENS based on the configuration file (e.g., config.base)
-# Assuming NMEM_ENS is defined in config.base as an integer
-
-config_file="${EXPDIR}/config.base"
-
-if [[ -e "${config_file}" ]]; then
-    NMEM_ENS=$(grep "NMEM_ENS" "${config_file}" | awk -F= '{print $2}' || true)
-else
-    echo "Error: ${config_file} does not exist or is not accessible." >&2
-    exit 1
-fi
 
 member_dirs=()
 
+if [[ "${RUN}" == "gefs" ]]; then
 # Populate the member_dirs array based on the value of NMEM_ENS
-for ((i = 0; i < "${NMEM_ENS}"; i++)); do
+  for ((i = 0; i < "${NMEM_ENS}"; i++)); do
     member_dirs+=("mem$(printf "%03d" "${i}")")
-done
-
-# Now, member_dirs contains elements like "mem000," "mem001," ..., "memNNN" where NNN is the value of NMEM_ENS.
-
+  done
+else
+member_dirs+=("")
+fi
 
 # Initialize return code
 err=0
@@ -39,15 +29,6 @@ error_message(){
 
 ###############################################################
 # Start staging gefs and gfs here
-
-# Check for command line argument to select gfs or gefs
-if [[ $# -ne 1 ]]; then
-  echo "Usage: ${0} [gfs | gefs]"
-  exit 1
-fi
-
-
-if [[ "${selection}" = "gfs" ]]; then
 # Stage the FV3 initial conditions to ROTDIR (cold start)
 
 member_dir=""
@@ -71,9 +52,7 @@ err=$((err + rc))
     err=$((err + rc))
     done
   done
-elif [[ "${selection}" = "gefs" ]]; then
-
-member_dir=""
+if [[ "${RUN}" == "gefs" ]]; then
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
   for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
@@ -96,7 +75,7 @@ YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 fi
 
 # Stage ocean initial conditions to ROTDIR (warm start)
-if [[ "${DO_OCN:-}" = "YES" && "${selection}" = "gfs" ]]; then
+if [[ "${DO_OCN:-}" = "YES" && "${RUN}" = "gfs" ]]; then
 
 member_dir=""
 NMEM_ENS=0
@@ -130,8 +109,7 @@ NMEM_ENS=0
     err=$((err + rc))
     ;;
   esac
-elif [[ "${DO_OCN:-}" = "YES" && "${selection}" = "gefs" ]]; then
-  member_dir=""
+elif [[ "${DO_OCN:-}" = "YES" && "${RUN}" = "gefs" ]]; then
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
   [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
     for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
@@ -148,7 +126,7 @@ elif [[ "${DO_OCN:-}" = "YES" && "${selection}" = "gefs" ]]; then
 fi
 
 # Stage ice initial conditions to ROTDIR (warm start)
-if [[ "${DO_ICE:-}" = "YES" && "${selection}" = "gfs" ]]; then
+if [[ "${DO_ICE:-}" = "YES" && "${RUN}" = "gfs" ]]; then
   member_dir=""
   NMEM_ENS=0
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
@@ -161,8 +139,7 @@ if [[ "${DO_ICE:-}" = "YES" && "${selection}" = "gfs" ]]; then
   (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
   err=$((err + rc))
 
-elif [[ "${DO_ICE:-}" = "YES" && "${selection}" = "gefs" ]]; then
-  member_dir=""
+elif [[ "${DO_ICE:-}" = "YES" && "${RUN}" = "gefs" ]]; then
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
   [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
     for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
@@ -179,7 +156,7 @@ elif [[ "${DO_ICE:-}" = "YES" && "${selection}" = "gefs" ]]; then
 fi
 
 # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
-if [[ "${DO_WAVE:-}" = "YES" && "${selection}" = "gfs" ]]; then
+if [[ "${DO_WAVE:-}" = "YES" && "${RUN}" = "gfs" ]]; then
   member_dir=""
   NMEM_ENS=0
   YMD=${PDY} HH=${cyc} generate_com -r COM_WAVE_RESTART
@@ -192,12 +169,11 @@ if [[ "${DO_WAVE:-}" = "YES" && "${selection}" = "gfs" ]]; then
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
     err=$((err + rc))
   done
-elif [[ "${DO_WAVE:-}" = "YES" && "${selection}" = "gefs" ]]; then
-  member_dir=""
+elif [[ "${DO_WAVE:-}" = "YES" && "${RUN}" = "gefs" ]]; then
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_WAVE_RESTART
   [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
     for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
-    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${member_dir}/ice/${PDY}.${cyc}0000.restart.gwes_30m"
+    source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${member_dir}/ice/${PDY}.${cyc}0000.restart.${waveGRD}"
     target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.restart.gwes_30m"
     ${NCP} "${source}" "${target}"
     rc=$?
