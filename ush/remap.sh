@@ -66,6 +66,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/string_utils.sh"
 REMAP_LOG="${PWD}/remap.log"
+TMP_NC_FILE="${PWD}/tmp_nc.nc"
 rm -f "${REMAP_LOG}" >& /dev/null
 
 # Collect the command line arguments and check the validity.
@@ -109,15 +110,14 @@ function nc_concat(){
     local var_interp_path="${1}"
     local nc_output_path="${2}"
 
-    tmp_nc_file="${PWD}/tmp_nc.nc"
     if [[ -e "${nc_output_path}" ]]; then
-        echo "netCDF-formatted file path ${nc_output_path} exists; merging ${var_interp_path}."
-        cdo merge "${nc_output_path}" "${var_interp_path}" "${tmp_nc_file}" >> "${REMAP_LOG}" 2>&1
-        mv "${tmp_nc_file}" "${nc_output_path}"
+        echo "netCDF-formatted file path ${output_path} exists; merging ${var_interp_path}."
+        cdo merge "${nc_output_path}" "${var_interp_path}" "${TMP_NC_FILE}" >> "${REMAP_LOG}" 2>&1 
+        mv "${TMP_NC_FILE}" "${nc_output_path}"
         rm -f "${var_interp_path}" >> /dev/null
     else
         echo "netCDF-formatted file path ${nc_output_path} does not exist and will be created."
-        mv "${var_interp_path}" "${nc_output_path}"
+	mv "${var_interp_path}" "${nc_output_path}"
     fi
 }
 
@@ -152,11 +152,12 @@ function cdo_remap(){
     local varname="${1}"
     local varfile="${2}"
     local interp_type="${3}"
+    local nc_output_path="${4}"
     local var_interp_path="${PWD}/${varname}.interp.nc"
     
     echo "Remapping variable ${varname} from file ${varfile} using ${interp_type} interpolation."
     cdo "${interp_type}","${dstgrid_config}" -selname,"${varname}" "${varfile}" "${var_interp_path}" >> "${REMAP_LOG}" 2>&1
-    nc_concat "${var_interp_path}" "${output_path}"
+    nc_concat "${var_interp_path}" "${nc_output_path}"
 }
 
 #######
@@ -207,6 +208,7 @@ function cdo_rotate(){
     local interp_type="${3}"
     local angles="${4}"  
     local var_rotate_path="${PWD}/rotate.nc"
+    local nc_output_path="${PWD}/rotate_vars.nc"
     
     comma_split_string "${varnames}"    
     varname_array=("${global_array[@]}")    
@@ -217,27 +219,38 @@ function cdo_rotate(){
     strip_whitespace "${varname_array[1]}"
     yvar="${out_string}"
     nangles="${#angle_array[@]}"
-    
+
+    # Interpolate the ocean vectors to the destination grid.
+    echo "Interpolating variable ${xvar} and ${yvar} to destination grid."
+    cdo_remap "${xvar}" "${varfile}" "${interp_type}" "${nc_output_path}" 
+    cdo_remap "${yvar}" "${varfile}" "${interp_type}" "${nc_output_path}"    
     echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${varfile}."
+
     if (( nangles == 1 )); then
         strip_whitespace "${angle_array[0]}"
         theta="${out_string}"
-        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${yvar}-sin(${theta})*${xvar}" -selname,"${xvar}","${yvar}","${theta}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
+	cdo_remap "${theta}" "${varfile}" "${interp_type}" "${nc_output_path}"
+        cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${yvar}-sin(${theta})*${xvar}" -selname,"${xvar}","${yvar}","${theta}" "${output_path}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
+	
     elif (( nangles == 2 )); then
         strip_whitespace "${angle_array[0]}"
         cosang="${out_string}"
+	cdo_remap "${cosang}" "${varfile}" "${interp_type}" "${nc_output_path}" 
         strip_whitespace "${angle_array[1]}"
         sinang="${out_string}"
-        cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${yvar}-${sinang}*${xvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${varfile}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
+	cdo_remap "${sinang}" "${varfile}" "${interp_type}" "${nc_output_path}" 	
+	cdo -expr,"xr=${cosang}*${xvar}+${sinang}*${yvar}; yr=${cosang}*${yvar}-${sinang}*${xvar}" -selname,"${xvar}","${yvar}","${cosang}","${sinang}" "${nc_output_path}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1 
+	varname_update "xr" "${xvar}" "${var_rotate_path}"
+	cdo_remap "${xvar}" "${var_rotate_path}" "${interp_type}" "${output_path}"
+	varname_update "yr" "${yvar}" "${var_rotate_path}"
+	cdo_remap "${yvar}" "${var_rotate_path}" "${interp_type}" "${output_path}"
+
     else
         echo "FATAL ERROR: Vector rotations with ${nangles} attributes is not supported. Aborting!!!"
         exit 102
     fi
     
-    cdo_remap "xr" "${var_rotate_path}" "${interp_type}"
-    varname_update "xr" "${xvar}" "${output_path}"
-    cdo_remap "yr" "${var_rotate_path}" "${interp_type}"
-    varname_update "yr" "${yvar}" "${output_path}"
+    echo "Updating variable arrays following vector rotation."
     rm -f "${var_rotate_path}" >> /dev/null
 }
 
@@ -277,6 +290,9 @@ function varname_update(){
 # etc.,
 rm -f "${output_path}" >& /dev/null
 
+# Define a local file path to be used for file manipulations.
+#workgrid_path="${PWD}/workgrid.nc"
+
 # Read the configuration file for the the variables to be remapped and
 # proceed accordingly.
 while IFS= read -r line; do
@@ -292,7 +308,7 @@ while IFS= read -r line; do
         # No rotation necessary; interpolate/remap the variables and
         # directly.
         echo "Remapping variable ${varname} without rotation."
-        cdo_remap "${varname}" "${srcgrid}" "${interp_type}"
+        cdo_remap "${varname}" "${srcgrid}" "${interp_type}" "${output_path}"
 	
     elif (( rotate == 1 )); then
         # Rotation necessary; rotate the respective vector quantities
@@ -305,7 +321,7 @@ while IFS= read -r line; do
         echo "FATAL ERROR: Rotation option ${rotate} not recognized. Aborting!!!"
         exit 101
     fi
-
+    
 done < "${variable_file}"
 
 exit 0
