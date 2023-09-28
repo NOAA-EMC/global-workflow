@@ -30,11 +30,12 @@ else
     module use "${HOMEgfs}/sorc/gsi_enkf.fd/modulefiles"
     module load gsi_"${MACHINE_ID}"
 
-    set -x
     if [[ "${MACHINE_ID}" = "orion" ]]; then
-       conda activate regional_workflow
+       module load miniconda3/4.12.0
+       set +u
+       conda activate regional_workflow_cmaq
+       set -u
     fi
-    set +x
 
     module list
     unset MACHINE_ID

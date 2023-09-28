@@ -31,7 +31,10 @@ else
     module load gsi_"${MACHINE_ID}"
 
     if [[ "${MACHINE_ID}" = "orion" ]]; then
-       conda activate regional_workflow
+       module load miniconda3/4.12.0
+       set +u
+       conda activate regional_workflow_cmaq
+       set -u
     fi
 
     module list
