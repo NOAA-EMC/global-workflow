@@ -10,7 +10,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalchkpt" -c "base ocnanal ocnana
 ##############################################
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export GDATE
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
