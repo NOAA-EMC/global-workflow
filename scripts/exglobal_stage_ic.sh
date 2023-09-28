@@ -174,7 +174,7 @@ elif [[ "${DO_WAVE:-}" = "YES" && "${RUN}" = "gefs" ]]; then
   [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
     for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
     source="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${member_dir}/ice/${PDY}.${cyc}0000.restart.${waveGRD}"
-    target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.restart.gwes_30m"
+    target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.restart.${waveGRD}"
     ${NCP} "${source}" "${target}"
     rc=$?
     (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
