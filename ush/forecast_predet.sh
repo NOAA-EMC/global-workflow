@@ -29,7 +29,7 @@ middle_date(){
   local date1s=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
   local date2s=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
   local dtsecsby2=$(( $((date2s - date1s)) / 2 ))
-  local mid_date=$(date -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
+  local mid_date=$(date --utc -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
   echo "${mid_date:0:10}"
 }
 
