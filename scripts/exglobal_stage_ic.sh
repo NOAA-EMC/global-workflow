@@ -31,6 +31,8 @@ error_message(){
 # Start staging gefs and gfs here
 # Stage the FV3 initial conditions to ROTDIR (cold start)
 
+for MEMDIR in ${memdir[@]}; do
+
 member_dir=""
 NMEM_ENS=0
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
@@ -54,41 +56,9 @@ YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
   done
 
 # Stage ocean initial conditions to ROTDIR (warm start)
-if [[ "${DO_OCN:-}" = "YES" && "${RUN}" = "gfs" ]]; then
-
+if [[ "${DO_OCN:-}" = "YES" ]]; then
 member_dir=""
 NMEM_ENS=0
-
-  YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
-  [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
-  source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res.nc"
-  target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res.nc"
-  ${NCP} "${source}" "${target}"
-  rc=$?
-  (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-  err=$((err + rc))
-  case "${OCNRES}" in
-    "500" | "100")  # Only 5 degree or 1 degree ocean does not have MOM.res_[1-4].nc files
-    ;;
-    "025")  # Only 1/4 degree ocean has MOM.res_[1-4].nc files
-    for nn in $(seq 1 4); do
-    source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res_${nn}.nc"
-      if [[ -f "${source}" ]]; then
-          target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
-          ${NCP} "${source}" "${target}"
-          rc=$?
-          (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-          err=$((err + rc))
-      fi
-    done
-    ;;
-    *)
-    echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
-    rc=1
-    err=$((err + rc))
-    ;;
-  esac
-elif [[ "${DO_OCN:-}" = "YES" && "${RUN}" = "gefs" ]]; then
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
   [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
     for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
@@ -152,7 +122,7 @@ elif [[ "${DO_WAVE:-}" = "YES" && "${RUN}" = "gefs" ]]; then
       rc=1
       err=$((err + rc))
 fi
-
+done
 ###############################################################
 # Check for errors and exit if any of the above failed
 if  [[ "${err}" -ne 0 ]] ; then
