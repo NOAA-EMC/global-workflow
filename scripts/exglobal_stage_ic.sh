@@ -33,26 +33,6 @@ error_message(){
 
 member_dir=""
 NMEM_ENS=0
-
-YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
-[[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
-source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/gfs_ctrl.nc"
-target="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
-${NCP} "${source}" "${target}"
-rc=$?
-(( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-err=$((err + rc))
-  for ftype in gfs_data sfc_data; do
-    for tt in $(seq 1 6); do
-    source="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${CDUMP}/${CASE}/INPUT/${ftype}.tile${tt}.nc"
-    target="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
-    ${NCP} "${source}" "${target}"
-    rc=$?
-    (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-    err=$((err + rc))
-    done
-  done
-if [[ "${RUN}" == "gefs" ]]; then
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
   for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
@@ -72,7 +52,6 @@ YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
       done
     done
   done
-fi
 
 # Stage ocean initial conditions to ROTDIR (warm start)
 if [[ "${DO_OCN:-}" = "YES" && "${RUN}" = "gfs" ]]; then
@@ -126,20 +105,9 @@ elif [[ "${DO_OCN:-}" = "YES" && "${RUN}" = "gefs" ]]; then
 fi
 
 # Stage ice initial conditions to ROTDIR (warm start)
-if [[ "${DO_ICE:-}" = "YES" && "${RUN}" = "gfs" ]]; then
+if [[ "${DO_ICE:-}" = "YES" ]]; then
   member_dir=""
   NMEM_ENS=0
-  YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
-  [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
-  ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
-  source="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/ice/${ICERES}/cice5_model_${ICERESdec}.res_${PDY}${cyc}.nc"
-  target="${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
-  ${NCP} "${source}" "${target}"
-  rc=$?
-  (( rc != 0 )) && error_message "${source}" "${target}" "${rc}"
-  err=$((err + rc))
-
-elif [[ "${DO_ICE:-}" = "YES" && "${RUN}" = "gefs" ]]; then
   YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
   [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
     for member_dir in $(seq -w 0 $((NMEM_ENS - 1))); do
@@ -156,7 +124,7 @@ elif [[ "${DO_ICE:-}" = "YES" && "${RUN}" = "gefs" ]]; then
 fi
 
 # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
-if [[ "${DO_WAVE:-}" = "YES" && "${RUN}" = "gfs" ]]; then
+if [[ "${DO_WAVE:-}" = "YES" ]]; then
   member_dir=""
   NMEM_ENS=0
   YMD=${PDY} HH=${cyc} generate_com -r COM_WAVE_RESTART
