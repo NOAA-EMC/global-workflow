@@ -27,12 +27,13 @@ function mod_icec() {
 }
 
 function scale_dec() {
-	local filename=$1
-	${WGRIB2} "${filename}" -not_if ':(TMP|PWAT|WEASD):' -grib "${filename}.new" \
-        -if ':(TMP|PWAT):' -set_grib_type same \
-        -set_scaling -1 0 -grib_out "${filename}.new" \
-        -if ':(WEASD):' -set_grib_type same \
-        -set_scaling 0 0 -grib_out "${filename}.new"
+  # change the scaling for temperature, precipitable water, and water-equivalent accumlated snow depth
+  local filename=$1
+  ${WGRIB2} "${filename}" -not_if ':(TMP|PWAT|WEASD):' -grib "${filename}.new" \
+    -if ':(TMP|PWAT):' -set_grib_type same \
+    -set_scaling -1 0 -grib_out "${filename}.new" \
+    -if ':(WEASD):' -set_grib_type same \
+    -set_scaling 0 0 -grib_out "${filename}.new"
   rc=$?
   if (( rc == 0 )); then mv "${filename}.new" "${filename}"; fi
   return "${rc}"
