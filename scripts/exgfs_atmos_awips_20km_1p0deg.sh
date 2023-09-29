@@ -37,6 +37,9 @@ fi
 
 cd "${DATA}" || exit 2
 
+# "Import" functions used in this script
+source "${HOMEgfs}/ush/product_functions.sh"
+
 ###############################################
 # Wait for the availability of the pgrb file
 ###############################################
@@ -51,6 +54,7 @@ while (( icnt < 1000 )); do
    if (( icnt >= 180 )); then
       msg="FATAL ERROR: No GFS pgrb2 file after 30 min of waiting"
       err_exit "${msg}"
+      exit 5
    fi
 done
 
@@ -79,8 +83,6 @@ export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
 export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
-export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
-export SCALEDEC=${SCALDEC:-$USHgfs/scale_dec.sh}
 
 ###############################################################
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
@@ -109,43 +111,28 @@ export err=$?; err_chk
 cat temp_gfs   gfs_pwat_levels_10.grb > tmp_masterfile
 
 for GRID in conus ak prico pac 003; do
-   # shellcheck disable=SC2086
    case ${GRID} in
       conus)
-         #  Grid 20km_conus - CONUS - 20 km Quadruple Resolution (Lambert Conformal)
-         # export grid_20km_conus="30 6 0 0 0 0 0 0 369 257 12190000 226541000 8 25000000 265000000 20318000 20318000 0 64 25000000 25000000 0 0"
-         # $COPYGB2 -g "$grid_20km_conus" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
-
-         export gridconus="lambert:265.0:25.0:25.0 226.541:369:20318.0 12.19:257:20318.0"
+         gridconus="lambert:265.0:25.0:25.0 226.541:369:20318.0 12.19:257:20318.0"
+         # shellcheck disable=SC2086,SC2248
          ${WGRIB2} tmp_masterfile ${opt1uv} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} \
             ${opt27} ${opt28} -new_grid ${gridconus} "awps_file_f${fcsthrs}_${GRID}"
          ;;
       ak)
-         #  Grid 20km_ak - Alaska - Double Resolution (Polar Stereographic)
-         #  Redefined grid 217 for Alaska region
-         # export grid_20km_ak="20 6 0 0 0 0 0 0 277 213 30000000 187000000 8 60000000 225000000 22500000 22500000 0 64"
-         # $COPYGB2 -g "$grid_20km_ak" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
-
-         export gridak="nps:210.0:60.0 170.0:277:22500 35.0:225:22500"
+         gridak="nps:210.0:60.0 170.0:277:22500 35.0:225:22500"
+         # shellcheck disable=SC2086,SC2248
          ${WGRIB2} tmp_masterfile ${opt1uv} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} \
             ${opt27} ${opt28} -new_grid ${gridak} "awps_file_f${fcsthrs}_${GRID}"
          ;;
       prico)
-         #  Grid 20km_prico - 0.25 degree Lat/Lon grid for Puerto Rico (20km)
-         # export grid_20km_prico="0 6 0 0 0 0 0 0 275 205 0 0 50750000 271750000 48 -250000 340250000 250000 250000 0"
-         # $COPYGB2 -g "$grid_20km_prico" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
-
-         export gridprico="latlon 271.75:275:0.25 50.75:205:-0.25"
+         gridprico="latlon 271.75:275:0.25 50.75:205:-0.25"
+         # shellcheck disable=SC2086,SC2248
          ${WGRIB2} tmp_masterfile ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} \
             ${opt27} ${opt28} -new_grid ${gridprico} "awps_file_f${fcsthrs}_${GRID}"
          ;;
       pac)
-         #  Grid 20km_pac - 20 km Mercator grid for Pacific Region
-         # export grid_20km_pac="10 6 0 0 0 0 0 0 837 692 -45000000 110000000 48 20000000 65720000 270000000 64 0 20000000 20000000"
-         # NEW export grid_20km_pac="10 6 0 0 0 0 0 0 837 725 -45000000 110000000 48 20000000 65734500 270000000 64 0 20000000 20000000"
-         # $COPYGB2 -g "$grid_20km_pac" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
-
-         export gridpac="mercator:20.0 110.0:837:20000:270.0 -45.0:725:20000:65.7345"
+         gridpac="mercator:20.0 110.0:837:20000:270.0 -45.0:725:20000:65.7345"
+         # shellcheck disable=SC2086,SC2248
          ${WGRIB2} tmp_masterfile ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} \
             ${opt27} ${opt28} -new_grid ${gridpac} "awps_file_f${fcsthrs}_${GRID}"
          ;;
@@ -153,7 +140,8 @@ for GRID in conus ak prico pac 003; do
          ######################################################################
          #    Process GFS GRIB AWIP 1.0 DEGREE (GRID 003)  PRODUCTS IN GRIB2  #
          ######################################################################
-         export grid003="latlon 0:360:1.0 90:181:-1.0"
+         grid003="latlon 0:360:1.0 90:181:-1.0"
+         # shellcheck disable=SC2086,SC2248
          ${WGRIB2} tmp_masterfile ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} \
             ${opt27} ${opt28} -new_grid ${grid003} "awps_file_f${fcsthrs}_${GRID}"
          ;;
@@ -162,9 +150,8 @@ for GRID in conus ak prico pac 003; do
          exit 2
          ;;
    esac
-   # shellcheck disable=
-   ${TRIMRH} "awps_file_f${fcsthrs}_${GRID}" 
-   ${SCALEDEC} "awps_file_f${fcsthrs}_${GRID}"
+   trim_rh "awps_file_f${fcsthrs}_${GRID}"
+   scale_dec "awps_file_f${fcsthrs}_${GRID}"
    ${GRB2INDEX} "awps_file_f${fcsthrs}_${GRID}" "awps_file_fi${fcsthrs}_${GRID}"
 
    ###########################################################################
@@ -201,7 +188,8 @@ for GRID in conus ak prico pac 003; do
 
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile
       export err=$?; err_chk
-      echo " error from tocgrib2=",$err
+      # TODO: Should this be fatal?
+      echo "error from tocgrib2=${err}"
 
       if [[ ${SENDCOM} == "YES" ]]; then
         ##############################
