@@ -69,7 +69,8 @@ cd "${develop_dir}" || exit 1
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
 git ls-remote --exit-code origin "${branch}"
-if [[ $? == '0' ]]; then
+ci_status=$?
+if [[ "${ci_status}" == '0' ]]; then
     # Delete the branch if it exists
     git push origin --delete "${branch}"
 fi
