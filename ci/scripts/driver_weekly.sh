@@ -22,7 +22,7 @@ set -eux
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
-export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+export REPO_URL="ssh://git@ssh.github.com:443/NOAA-EMC/global-workflow.git"
 
 ################################################################
 # Setup the relative paths to scripts and PS4 for better logging
@@ -68,6 +68,11 @@ mkdir -p "${develop_dir}"
 cd "${develop_dir}" || exit 1
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
+git ls-remote --exit-code origin "${branch}"
+if [[ $? == '0' ]]; then
+    # Delete the branch if it exists
+    git push origin --delete "${branch}"
+fi
 git checkout -b "${branch}"
 
 ######################################################
