@@ -37,7 +37,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
     echo "Running Automated Testing on ${MACHINE_ID}"
-    source "${HOMEgfs}/ci/platforms/${MACHINE_ID}.sh"
+    source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -153,6 +153,7 @@ for pr in ${pr_list}; do
     for yaml_config in "${HOMEgfs_PR}/ci/cases/pr/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
       pslot="${case}_${pr_sha}"
+      rm -Rf "${STMP}/RUNDIRS/${pslot}"
       export pslot
       set +e
       "${HOMEgfs_PR}/ci/scripts/create_experiment.py" --yaml "${HOMEgfs_PR}/ci/cases/pr/${case}.yaml" --dir "${HOMEgfs_PR}"

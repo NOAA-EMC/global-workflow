@@ -37,13 +37,10 @@ if (( num != 1 )); then
    exit 16
 fi
 
-cd "${DATA}" || exit 2
+cd "${DATA}/awips_g1" || exit 2
 
-fcsthrs=$(printf "%03d" "${fcsthrs}")
-
-export SCALEDEC=${SCALDEC:-${USHgfs}/scale_dec.sh}
-
-cd ${DATA}/awips_g1 || exit 2
+# "Import" functions used in this script
+source "${HOMEgfs}/ush/product_functions.sh"
 
 ###############################################
 # Wait for the availability of the pgrb file
@@ -59,6 +56,7 @@ while (( icnt < 1000 )); do
    if (( icnt >= 180 )); then
       msg="FATAL ERROR: No GFS pgrb2 file after 30 min of waiting"
       err_exit "${msg}"
+      exit 5
    fi
 done
 
@@ -79,7 +77,7 @@ cp "${COM_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}" "tmpfile2b"
 cat tmpfile2 tmpfile2b > tmpfile
 ${WGRIB2} tmpfile | grep -F -f "${PARMproduct}/gfs_awips_parmlist_g2" | \
    ${WGRIB2} -i -grib masterfile tmpfile
-${SCALEDEC} masterfile
+scale_dec masterfile
 ${CNVGRIB} -g21 masterfile masterfile.grib1
 
 ln -s masterfile.grib1 fort.11
@@ -130,7 +128,7 @@ if [[ "${SENDCOM}" = 'YES' ]]; then
 fi
 
 if [[ -e "${pgmout}" ]] ; then
-   cat ${pgmout}
+   cat "${pgmout}"
 fi
 
 ###############################################################################

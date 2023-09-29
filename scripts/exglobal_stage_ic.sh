@@ -4,7 +4,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 # Locally scoped variables and functions
 # shellcheck disable=SC2153
-GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 

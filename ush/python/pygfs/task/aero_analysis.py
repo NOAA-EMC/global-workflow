@@ -279,7 +279,7 @@ class AerosolAnalysis(Analysis):
         b_datestr = to_fv3time(config.BERROR_DATE)
         berror_list = []
 
-        for ftype in ['cor_rh', 'cor_rv', 'stddev']:
+        for ftype in ['stddev']:
             coupler = f'{b_datestr}.{ftype}.coupler.res'
             berror_list.append([
                 os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
@@ -290,7 +290,10 @@ class AerosolAnalysis(Analysis):
                 berror_list.append([
                     os.path.join(b_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
                 ])
-
+        radius = 'cor_aero_universe_radius'
+        berror_list.append([
+            os.path.join(b_dir, radius), os.path.join(config.DATA, 'berror', radius)
+        ])
         nproc = config.ntiles * config.layout_x * config.layout_y
         for nn in range(1, nproc + 1):
             berror_list.append([

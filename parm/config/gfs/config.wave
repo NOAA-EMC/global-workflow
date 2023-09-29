@@ -96,33 +96,33 @@ if [[ "${CDUMP}" = "gdas" ]]; then
 else
   export FHMAX_WAV=${FHMAX_GFS}
 fi
-export WAVHINDH=${WAVHINDH:-0}
-export FHMIN_WAV=${FHMIN_WAV:-0}
-export FHOUT_WAV=${FHOUT_WAV:-3}
-export FHMAX_HF_WAV=${FHMAX_HF_WAV:-120}
-export FHOUT_HF_WAV=${FHOUT_HF_WAV:-1}
+export WAVHINDH=0
+export FHMIN_WAV=0
+export FHOUT_WAV=3
+export FHMAX_HF_WAV=120
+export FHOUT_HF_WAV=1
 export FHMAX_WAV_IBP=180
 if (( FHMAX_WAV < FHMAX_WAV_IBP )); then export FHMAX_WAV_IBP=${FHMAX_GFS} ; fi
 
 # gridded and point output rate
 export DTFLD_WAV=$(( FHOUT_HF_WAV * 3600 ))
-export DTPNT_WAV=${DTPNT_WAV:-3600}
+export DTPNT_WAV=3600
 export FHINCP_WAV=$(( DTPNT_WAV / 3600 ))
 
 # Selected output parameters (gridded)
-export OUTPARS_WAV=${OUTPARS_WAV:-"WND HS FP DP PHS PTP PDIR"}
+export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
 
 # Restart file config
 if [[ "${CDUMP}" = "gdas" ]]; then
   export WAVNCYC=4
   export WAVHCYC=${assim_freq:-6}
-  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-48} # RTOFS forecasts only out to 8 days
+  export FHMAX_WAV_CUR=48 # RTOFS forecasts only out to 8 days
 elif [[ ${gfs_cyc} -ne 0 ]]; then
   export WAVHCYC=${assim_freq:-6}
-  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
+  export FHMAX_WAV_CUR=192 # RTOFS forecasts only out to 8 days
 else
   export WAVHCYC=0
-  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
+  export FHMAX_WAV_CUR=192 # RTOFS forecasts only out to 8 days
 fi
 
 # Restart timing business

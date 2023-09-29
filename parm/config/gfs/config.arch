@@ -8,9 +8,9 @@ echo "BEGIN: config.arch"
 # Get task specific resources
 . "${EXPDIR}/config.resources" arch
 
-export ARCH_GAUSSIAN=${ARCH_GAUSSIAN:-"NO"}
-export ARCH_GAUSSIAN_FHMAX=${ARCH_GAUSSIAN_FHMAX:-36}
-export ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
+export ARCH_GAUSSIAN="YES"
+export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS}
+export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS}
 
 #--online archive of nemsio files for fit2obs verification
 export FITSARC="YES"
