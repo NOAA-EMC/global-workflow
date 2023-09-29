@@ -72,7 +72,7 @@ if [[ ${type} = "gfs" ]]; then
                      "loginc.txt")
         for file in "${gsida_files[@]}"; do
           [[ -s ${COM_ATMOS_ANALYSIS}/${head}${file} ]] && echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}${file}"
-	done
+        done
       } >> gfs_netcdfa.txt
     fi
 
