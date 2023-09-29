@@ -56,7 +56,7 @@ if [[ "${cplflx}" = ".true." ]]; then
   local CPLMODE="${cplmode}"
   local coupling_interval_fast_sec="${CPL_FAST}"
   local RESTART_N="${restart_interval}"
-  local ATMTILESIZE="${CASE:2:}"
+  local ATMTILESIZE="${CASE:1}"
 fi
 
 if [[ "${cplice}" = ".true." ]]; then
