@@ -42,8 +42,6 @@ export POSTGPSH=${POSTGPSH:-${USHgfs}/gfs_post.sh}
 export GFSDOWNSH=${GFSDOWNSH:-${USHgfs}/fv3gfs_downstream_nems.sh}
 export GFSDOWNSHF=${GFSDOWNSHF:-${USHgfs}/inter_flux.sh}
 export GFSDWNSH=${GFSDWNSH:-${USHgfs}/fv3gfs_dwn_nems.sh}
-export TRIMRH=${TRIMRH:-${USHgfs}/trim_rh.sh}
-export MODICEC=${MODICEC:-${USHgfs}/mod_icec.sh}
 export INLINE_POST=${INLINE_POST:-".false."}
 
 ############################################################

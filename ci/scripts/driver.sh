@@ -37,7 +37,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
     echo "Running Automated Testing on ${MACHINE_ID}"
-    source "${HOMEgfs}/ci/platforms/${MACHINE_ID}.sh"
+    source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."

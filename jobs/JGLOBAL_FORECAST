@@ -38,7 +38,7 @@ esac
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(date -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 declare -rx GDATE
 # shellcheck disable=
 declare -rx gPDY="${GDATE:0:8}"
