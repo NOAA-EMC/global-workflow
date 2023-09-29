@@ -34,7 +34,7 @@ else
        module load miniconda3/4.12.0
        set +u
        conda activate regional_workflow_cmaq
-       set -u
+       set_strict
     fi
 
     module list
