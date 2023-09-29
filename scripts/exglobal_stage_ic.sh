@@ -31,7 +31,7 @@ error_message(){
 ###############################################################
 # Stage the FV3 initial conditions to ROTDIR (cold start)
 
-for MEMDIR in ${memdir[@]}; do
+for MEMDIR in "${memdir[@]}"; do
 
 YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_INPUT
 [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
