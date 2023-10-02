@@ -15,10 +15,11 @@ source "${HOMEgfs}/ush/module-setup.sh"
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
   module load modules.ufs_model.lua
-  module load prod_util
+  module load prod-util
 fi
   
 if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+  module load prod_util
   module load cray-pals
 fi
 if [[ "${MACHINE_ID}" = "hera" ]]; then
