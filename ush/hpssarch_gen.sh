@@ -72,7 +72,7 @@ if [[ ${type} = "gfs" ]]; then
                      "loginc.txt")
         for file in "${gsida_files[@]}"; do
           [[ -s ${COM_ATMOS_ANALYSIS}/${head}${file} ]] && echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}${file}"
-	done
+        done
       } >> gfs_netcdfa.txt
     fi
 
@@ -343,6 +343,9 @@ if [[ ${type} == "gdas" ]]; then
     fi
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}oznstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}oznstat"
+    fi
+    if [[ -s "${COM_CHEM_ANALYSIS}/${head}aerostat" ]]; then
+       echo "${COM_CHEM_ANALYSIS/${ROTDIR}\//}/${head}aerostat"
     fi
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat"
