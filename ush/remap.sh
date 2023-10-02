@@ -67,20 +67,19 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/string_utils.sh"
 REMAP_LOG="${PWD}/remap.log"
 TMP_NC_FILE="${PWD}/tmp_nc.nc"
-rm -f "${REMAP_LOG}" >& /dev/null
-
-# Collect the command line arguments and check the validity.
-variable_file="${1}"
-dstgrid_config="${2}"
-output_path="${3}"
 
 #######
 
+# Collect the command line arguments and check the validity.
 if [[ "$#" -ne 3 ]]; then
     echo "FATAL ERROR: invalid argument syntax provided to ${BASH_SOURCE[0]}"
     echo "Usage: ${BASH_SOURCE[0]} <variable_file> <input_path> <output_path>"
     exit 100
 fi
+
+variable_file="${1}"
+dstgrid_config="${2}"
+output_path="${3}"
 
 #######
 
@@ -226,12 +225,17 @@ function cdo_rotate(){
     cdo_remap "${yvar}" "${varfile}" "${interp_type}" "${nc_output_path}"    
     echo "Rotating and remapping variables ${xvar} and ${yvar} from file ${varfile}."
 
+    # This is for instances of rotated grid projections defined by a
+    # single array/attribute value (e.g., `theta`).
     if (( nangles == 1 )); then
         strip_whitespace "${angle_array[0]}"
         theta="${out_string}"
 	cdo_remap "${theta}" "${varfile}" "${interp_type}" "${nc_output_path}"
         cdo -expr,"xr=cos(${theta})*${xvar}+sin(${theta})*${yvar}; yr=cos(${theta})*${yvar}-sin(${theta})*${xvar}" -selname,"${xvar}","${yvar}","${theta}" "${output_path}" "${var_rotate_path}" >> "${REMAP_LOG}" 2>&1
-	
+
+    # This is typically used for MOM6 (ocean model) forecast output;
+    # the angle of rotation `theta` is not explicitly provided by
+    # rather the cosine and sine of the respective angle.
     elif (( nangles == 2 )); then
         strip_whitespace "${angle_array[0]}"
         cosang="${out_string}"
@@ -289,9 +293,7 @@ function varname_update(){
 # written multiple times to the file; for example VAR, VAR_1, VAR_2,
 # etc.,
 rm -f "${output_path}" >& /dev/null
-
-# Define a local file path to be used for file manipulations.
-#workgrid_path="${PWD}/workgrid.nc"
+rm -f "${REMAP_LOG}" >& /dev/null
 
 # Read the configuration file for the the variables to be remapped and
 # proceed accordingly.
