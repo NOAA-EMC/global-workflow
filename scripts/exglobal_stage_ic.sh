@@ -11,15 +11,15 @@ gcyc="${GDATE:8:2}"
 
 MEMDIR_ARRAY=()
 if [[ "${RUN}" == "gefs" ]]; then
-# Populate the member_dirs array based on the value of NMEM_ENS
+ # Populate the member_dirs array based on the value of NMEM_ENS
   for ((ii = 0; ii < "${NMEM_ENS}"; ii++)); do
     MEMDIR_ARRAY+=("mem$(printf "%03d" "${ii}")")
   done
 else
-MEMDIR_ARRAY+=("")
+  MEMDIR_ARRAY+=("")
 fi
 
-# Initialize return code
+ # Initialize return code
 err=0
 
 error_message(){
@@ -41,6 +41,9 @@ err=$((err + rc))
 for ftype in gfs_data sfc_data; do
   for tt in $(seq 1 6); do
     src="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
+    tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
+    ${NCP} "${src}" "${tgt}"
+    rc=$?
     tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
     ${NCP} "${src}" "${tgt}"
     rc=$?
@@ -88,12 +91,12 @@ if [[ "${DO_ICE:-}" = "YES" ]]; then
   [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
 #  ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
 #  source="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/ice/${ICERES}/cice5_model_${ICERESdec}.res_${PDY}${cyc}.nc"
-    src="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${MEMDIR}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
-    tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
-    ${NCP} "${src}" "${tgt}"
-    rc=$?
-    (( rc != 0 )) && error_message "${src}" "${tgt}" "${rc}"
-    err=$((err + rc))
+  src="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${MEMDIR}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
+  tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
+  ${NCP} "${src}" "${tgt}"
+  rc=$?
+  (( rc != 0 )) && error_message "${src}" "${tgt}" "${rc}"
+  err=$((err + rc))
 fi
 
 # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
