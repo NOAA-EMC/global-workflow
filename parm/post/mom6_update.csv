@@ -1,7 +1,6 @@
 SST coordinates geolon,geolat,time
 SSS coordinates geolon,geolat,time
 SSH coordinates geolon,geolat,time
-speed coordinates geolon,geolat,time
 MLD_003 coordinates geolon,geolat,time
 so coordinates geolon,geolat,time
 temp coordinates geolon,geolat,time
@@ -9,8 +8,6 @@ latent coordinates geolon,geolat,time
 sensible coordinates geolon,geolat,time
 SW coordinates geolon,geolat,time
 LW coordinates geolon,geolat,time
-evap coordinates geolon,geolat,time
-lprec coordinates geolon,geolat,time
 LwLatSens coordinates geolon,geolat,time
 Heat_PmE coordinates geolon,geolat,time
 SSU coordinates geolon_u,geolat_u,time
