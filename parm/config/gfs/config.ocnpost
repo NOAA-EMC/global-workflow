@@ -24,6 +24,6 @@ if [[ "${machine}" = "WCOSS2" ]]; then
 fi
 
 # No. of concurrent post jobs [0 implies sequential]
-export NPOSTGRP=2
+export NPOSTGRP=5
 
 echo "END: config.ocnpost"

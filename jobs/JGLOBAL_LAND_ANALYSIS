@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "landanl" -c "base landanl"
 ##############################################
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 GDUMP="gdas"
