@@ -61,44 +61,50 @@ set -x
 # Create a new branch from develop and move yaml files
 #########################################################
 branch="weekly_ci_$(date +%Y%m%d)"
-develop_dir="${GFS_CI_ROOT}/develop_temp"
+develop_dir="${GFS_CI_ROOT}/develop_weekly"
 echo "Creating new branch ${branch} from develop on ${MACHINE_ID} in ${develop_dir}"
 rm -Rf "${develop_dir}"
 mkdir -p "${develop_dir}"
 cd "${develop_dir}" || exit 1
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
-git ls-remote --exit-code origin "${branch}"
-ci_status=$?
-if [[ "${ci_status}" == '0' ]]; then
-    # Delete the branch if it exists
-    git push origin --delete "${branch}"
-fi
 git checkout -b "${branch}"
 
 ######################################################
 # move yaml files from ci/cases/weekly to ci/cases/pr 
 # and push new branch for PR weekly CI tests to GitHub
+REPO_OWNER="emcbot"
+REPO_NAME="global-workflow"
 
 rm -Rf ci/cases/pr
 mv ci/cases/weekly ci/cases/pr
 git add ci/cases
 git commit -m "Moved weekly cases files into pr for high resolution testing"
-git push --set-upstream origin "${branch}"
+
+git remote add upstream "git@github.com:${REPO_OWNER}/${REPO_NAME}.git"
+
+set +e
+# Delete the branch if it exists
+git ls-remote --exit-code upstream "${branch}"
+ci_status=$?
+if [[ "${ci_status}" == '0' ]]; then
+    git push upstream --delete "${branch}"
+fi
+set -e
+
+git push --set-upstream upstream "${branch}"
 
 ####################################################################
 # Create Pull Request using GitHub CLI and add labels for CI testing
 ####################################################################
 
-REPO_OWNER="TerrenceMcGuinness-NOAA"
-REPO_NAME="global-workflow"
+HEAD_BRANCH="${REPO_OWNER}:${branch}"
 BASE_BRANCH="develop"
-HEAD_BRANCH="${branch}"
 PULL_REQUEST_TITLE="[DO NOT MERGE] Weekly High Resolution CI Tests $(date +'%A %b %d, %Y')"
 PULL_REQUEST_BODY="${PULL_REQUEST_TITLE}"
 PULL_REQUEST_LABELS=("CI/CD" "CI-Orion-Ready" "CI-Hera-Ready")
 
-"${GH}" repo set-default "${REPO_OWNER}/${REPO_NAME}"
+"${GH}" repo set-default "NOAA-EMC/global-workflow"
 "${GH}" pr create --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --base "${BASE_BRANCH}" --head "${HEAD_BRANCH}"
 "${GH}" pr ready --undo
 
