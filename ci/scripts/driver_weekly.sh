@@ -90,7 +90,7 @@ git push --set-upstream origin "${branch}"
 # Create Pull Request using GitHub CLI and add labels for CI testing
 ####################################################################
 
-REPO_OWNER="NOAA-EMC"
+REPO_OWNER="TerrenceMcGuinness-NOAA"
 REPO_NAME="global-workflow"
 BASE_BRANCH="develop"
 HEAD_BRANCH="${branch}"
