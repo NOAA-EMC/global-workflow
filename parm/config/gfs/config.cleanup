@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+########## config.cleanup ##########
+echo "BEGIN: config.cleanup"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" cleanup
+
+export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in cleanup.sh
+
+#--starting and ending hours of previous cycles to be removed from rotating directory
+export RMOLDSTD=144
+export RMOLDEND=24
+
+echo "END: config.cleanup"
