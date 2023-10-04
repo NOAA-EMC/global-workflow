@@ -86,7 +86,7 @@ git remote add "${REMOTE_NAME}" "git@github.com:${REPO_OWNER}/${REPO_NAME}.git"
 
 set +e
 # Delete the branch if it exists
-git ls-remote --exit-code upstream "${branch}"
+git ls-remote --exit-code "${REMOTE_NAME}" "${branch}"
 ci_status=$?
 if [[ "${ci_status}" == '0' ]]; then
     git push "${REMOTE_NAME}" --delete "${branch}"
