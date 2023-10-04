@@ -89,11 +89,11 @@ set +e
 git ls-remote --exit-code upstream "${branch}"
 ci_status=$?
 if [[ "${ci_status}" == '0' ]]; then
-    git push upstream --delete "${branch}"
+    git push "${REMMOT_NAME}" --delete "${branch}"
 fi
 set -e
 
-git push --set-upstream upstream "${branch}"
+git push --set-upstream "${REMOTE_NAME}" "${branch}"
 
 ####################################################################
 # Create Pull Request using GitHub CLI and add labels for CI testing
