@@ -44,12 +44,16 @@ function remove_files() {
     fi
     local file_list
     declare -a file_list
+    # Ignore compound command warning
+    # shellcheck disable=SC2312
     readarray -t file_list < <(find -L "${directory}" -type f)
     if (( ${#file_list[@]} == 0 )); then return; fi
     # echo "Number of files to remove before exclusions: ${#file_list[@]}"
     for exclude in ${exclude_list}; do
         echo "Excluding ${exclude}"
         declare -a file_list_old=("${file_list[@]}")
+        # Ignore compound command warning
+        # shellcheck disable=SC2312
         readarray file_list < <(printf -- '%s\n' "${file_list_old[@]}" | grep -v "${exclude}")
         # echo "Number of files to remove after exclusion: ${#file_list[@]}"
         if (( ${#file_list[@]} == 0 )); then return; fi
