@@ -962,7 +962,7 @@ CICE_postdet() {
       seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
       vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
       fhr3=$(printf %03i "${fhr}")
-      ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.icef${fhr3}.nc" "${DATA}/CICE_OUTPUT/iceh_inst.-${vdatestr}.nc"
+      ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.icef${fhr3}.nc" "${DATA}/CICE_OUTPUT/iceh_inst.${vdatestr}.nc"
       fhr=$((fhr + FHOUT))
     done
 
