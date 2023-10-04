@@ -101,7 +101,7 @@ git push --set-upstream "${REMOTE_NAME}" "${branch}"
 
 HEAD_BRANCH="${REPO_OWNER}:${branch}"
 BASE_BRANCH="develop"
-PULL_REQUEST_TITLE="[DO NOT MERGE] Weekly High Resolution CI Tests $(date +'%A %b %d, %Y')"
+PULL_REQUEST_TITLE="[DO NOT MERGE] Weekly CI Tests $(date +'%A %b %d, %Y')"
 PULL_REQUEST_BODY="${PULL_REQUEST_TITLE}"
 PULL_REQUEST_LABELS=("CI/CD" "CI-Orion-Ready" "CI-Hera-Ready")
 
