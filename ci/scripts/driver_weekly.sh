@@ -75,13 +75,14 @@ git checkout -b "${branch}"
 # and push new branch for PR weekly CI tests to GitHub
 REPO_OWNER="emcbot"
 REPO_NAME="global-workflow"
+REMOTE_NAME="${REPO_OWNER}"
 
 rm -Rf ci/cases/pr
 mv ci/cases/weekly ci/cases/pr
 git add ci/cases
 git commit -m "Moved weekly cases files into pr for high resolution testing"
 
-git remote add upstream "git@github.com:${REPO_OWNER}/${REPO_NAME}.git"
+git remote add "${REMOTE_NAME}" "git@github.com:${REPO_OWNER}/${REPO_NAME}.git"
 
 set +e
 # Delete the branch if it exists
