@@ -89,7 +89,7 @@ set +e
 git ls-remote --exit-code upstream "${branch}"
 ci_status=$?
 if [[ "${ci_status}" == '0' ]]; then
-    git push "${REMMOT_NAME}" --delete "${branch}"
+    git push "${REMOTE_NAME}" --delete "${branch}"
 fi
 set -e
 
