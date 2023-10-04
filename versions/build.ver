@@ -15,7 +15,7 @@ export netcdf_ver=4.7.4
 export esmf_ver=8.0.1
 export wgrib2_ver=2.0.7
 
-export crtm_ver=2.4.0
+export crtm_ver=2.4.0.1
 
 export g2tmpl_ver=1.9.1
 export bacio_ver=2.4.1
