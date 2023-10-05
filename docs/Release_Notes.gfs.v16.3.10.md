@@ -4,6 +4,7 @@ GFS V16.3.10 RELEASE NOTES
 PRELUDE
 -------
 
+Enable the monitoring of NOAA-21 and GOES-18 radiances in the GFS. A new version of CRTM with new coefficient files is required and included in this change.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
