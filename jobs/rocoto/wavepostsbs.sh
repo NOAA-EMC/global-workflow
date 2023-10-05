@@ -15,17 +15,17 @@ set +x
 source "${HOMEgfs}/ush/module-setup.sh"
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
-  module load modules.ufs_model
-fi
-
-if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-  module load prod_util
-  module load cray-pals
-else 
-  module load prod-util
+  module load modules.ufs_model.lua
+  if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+    module load prod_util
+    module load cray-pals
+  else
+    module load prod-util
+  fi
   module load wgrib2
   export WGRIB2=wgrib2
 fi
+
 if [[ "${MACHINE_ID}" = "hera" ]]; then
   module use "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/modulefiles/core"
   module load "miniconda3/4.6.14"

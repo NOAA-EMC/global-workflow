@@ -13,16 +13,19 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 source "${HOMEgfs}/ush/detect_machine.sh"
 set +x
 source "${HOMEgfs}/ush/module-setup.sh"
+
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
   module load modules.ufs_model.lua
-  module load prod-util
+  if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+    module load prod_util
+    module load cray-pals
+  else
+    module load prod-util
+  fi
 fi
 
-if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-  module load prod_util
-  module load cray-pals
-fi
+
 if [[ "${MACHINE_ID}" = "hera" ]]; then
   module use "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/modulefiles/core"
   module load "miniconda3/4.6.14"
