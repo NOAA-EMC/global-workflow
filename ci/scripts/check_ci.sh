@@ -14,7 +14,8 @@ echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 GH=${HOME}/bin/gh
-REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+#REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
@@ -87,13 +88,14 @@ for pr in ${pr_list}; do
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
-    weekly_labels = $(${GH} pr view ${pr} --repo ${REPO_URL}  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci") ) | .labels[].name ') || true
+    weekly_labels=$(${GH} pr view ${pr} --repo ${REPO_URL}  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci")) | .labels[].name ') || true
+    echo "weekly_labels: ${weekly_labels}"
     if [[ -n "${weekly_labels}" ]]; then
       num_platforms=$(ls -1 ../platforms/config.* | wc -l)
       passed=0
-      for platforms in ../platforms/config.* ; do
+      for platforms in ../platforms/config.*; do
         machine=$(basename $platforms | cut -d. -f2)
-        if [[ "${weekly_labels}" == *"CI-${machine^}-Passed"* ]]  && ; then
+        if [[ "${weekly_labels}" == *"CI-${machine^}-Passed"* ]]; then
           ((passed=passed+1))
         fi
       done
