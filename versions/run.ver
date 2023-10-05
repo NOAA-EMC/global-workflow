@@ -35,7 +35,7 @@ export util_shared_ver=1.4.0
 export grib_util_ver=1.2.3
 export wgrib2_ver=2.0.7
 
-export crtm_ver=2.4.0
+export crtm_ver=2.4.0.1
 
 export g2tmpl_ver=1.9.1
 export bacio_ver=2.4.1

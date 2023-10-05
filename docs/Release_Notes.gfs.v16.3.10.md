@@ -25,9 +25,9 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.3.0   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.8 | Andrew.Collard@noaa.gov |
+| GSI       | gfsda.v16.3.10 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
-| POST      | upp_v8.2.0 | Wen.Meng@noaa.gov |
+| POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
 | WAFS      | gfs_wafs.v6.3.1 | Yali.Mao@noaa.gov |
 
 To build all the GFS components, execute:
@@ -50,7 +50,8 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.10`, `gfs_ver=v16.3.10`, and `obsproc_ver=v1.2`
+* `versions/build.ver` - change `crtm_ver=2.4.0.1`
+* `versions/run.ver` - change `version=v16.3.10`, `gfs_ver=v16.3.10`, `obsproc_ver=v1.2` and `crtm_ver=2.4.0.1`
 * `versions/hera.ver` - change `obsproc_run_ver=1.2.0`
 * `versions/orion.ver` - change `obsproc_run_ver=1.2.0`
 * `versions/wcoss2.ver` - change `obsproc_run_ver=1.2.0`
@@ -73,12 +74,13 @@ PARM/CONFIG CHANGES
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.9
+* Changes to sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.9
+* Changes to fix/fix_gsi/global_anavinfo.l127.txt, fix/fix_gsi/global_satinfo.txt
+  and add fix/fix_gsi/Rcov_crisn21 
 
 MODULE CHANGES
 --------------
