@@ -18,7 +18,7 @@ gcyc="${GDATE:8:2}"
 COMIN="${DATAROOT}/${GDATE}"
 [[ -d ${COMIN} ]] && rm -rf "${COMIN}"
 
-if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
+if [[ "${CLEANUP_COM:-YES}" == NO ]] ; then
     exit 0
 fi
 
