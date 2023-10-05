@@ -6,10 +6,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
 # shellcheck disable=SC2153
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-
+GDATE=$(date --utc -d "${PDY} ${cyc} -${assim_freq} hours")
 # PREVIOUS to the PRIOR CYCLE
-GDATE=$(${NDATE} -"${assim_freq}" "${GDATE}")
+GDATE=$(date --utc -d "${GDATE:0:8} ${GDATE:8:2} -${assim_freq} hours")
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
@@ -28,9 +27,9 @@ fi
 # Retain files needed by Fit2Obs
 # TODO: This whole section needs to be revamped to remove marine component
 #  directories and not look at the rocoto log.
-GDATEEND=$(${NDATE} -"${RMOLDEND:-24}"  "${PDY}${cyc}")
-GDATE=$(${NDATE} -"${RMOLDSTD:-120}" "${PDY}${cyc}")
-RTOFS_DATE=$(${NDATE} -48 "${PDY}${cyc}")
+GDATEEND=$(date --utc -d "${PDY} ${cyc} -${RMOLDEND:-24} hours" )
+GDATE=$(date --utc -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
+RTOFS_DATE=$(date --utc -d "${PDY} ${cyc} -48 hours")
 function remove_files() {
     local directory=$1
     shift
@@ -178,7 +177,7 @@ while (( GDATE <= GDATEEND )); do
         find "${target_dir}" -empty -type d -delete
     fi
 
-    GDATE=$(${NDATE} +"${assim_freq}" "${GDATE}")
+    GDATE=$(date --utc -d "${GDATE:0:8} ${GDATE:8:2} +${assim_freq} hours")
 done
 
 # Remove archived gaussian files used for Fit2Obs in $VFYARC that are
@@ -188,24 +187,24 @@ done
 
 if [[ "${RUN}" == "gfs" ]]; then
     fhmax=$((FHMAX_FITS + 36))
-    RDATE=$(${NDATE} -"${fhmax}" "${PDY}${cyc}")
+    RDATE=$(date --utc -d "${PDY} ${cyc} -${fhmax} hours")
     rPDY="${RDATE:0:8}"
     COMIN="${ROTDIR}/vrfyarch/${RUN}.${rPDY}"
     [[ -d ${COMIN} ]] && rm -rf "${COMIN}"
 
-    TDATE=$(${NDATE} -"${FHMAX_FITS}" "${PDY}${cyc}")
+    TDATE=$(date --utc -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
     while (( TDATE < "${PDY}${cyc}" )); do
         tPDY="${TDATE:0:8}"
         tcyc="${TDATE:8:2}"
         TDIR="${ROTDIR}/vrfyarch/${RUN}.${tPDY}/${tcyc}"
         [[ -d ${TDIR} ]] && touch "${TDIR}"/*
-        TDATE=$(${NDATE} +6 "${TDATE}")
+        TDATE=$(date --utc -d "${TDATE:0:8} ${TDATE:8:2} +6 hours")
     done
 fi
 
 # Remove $RUN.$rPDY for the older of GDATE or RDATE
-GDATE=$(${NDATE} -"${RMOLDSTD:-120}" "${PDY}${cyc}")
-RDATE=$(${NDATE} -"${FHMAX_GFS}" "${PDY}${cyc}")
+GDATE=$(date --utc -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
+RDATE=$(date --utc -d "${PDY} ${cyc} -${FHMAX_GFS} hours")
 if (( GDATE < RDATE )); then
     RDATE=${GDATE}
 fi
