@@ -9,10 +9,10 @@ source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
   "C48" | "C96")
-    export CPL_ATMIC=workflowtest
-    export CPL_ICEIC=workflowtest
-    export CPL_OCNIC=workflowtest
-    export CPL_WAVIC=workflowtest
+    export CPL_ATMIC="workflow_${CASE}"
+    export CPL_ICEIC="workflow_${CASE}"
+    export CPL_OCNIC="workflow_${CASE}"
+    export CPL_WAVIC="workflow_${CASE}"
     ;;
   "C384")
     export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
