@@ -19,6 +19,8 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
     module load prod_util
     module load cray-pals
+    module load cfp 
+    export USE_CFP="YES"
   else 
     module load prod-util
   fi
