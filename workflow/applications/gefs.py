@@ -32,7 +32,7 @@ class GEFSAppConfig(AppConfig):
 
     def get_task_names(self):
 
-        tasks = ['fcst']
+        tasks = ['stage_ic', 'fcst']
 
         if self.nens > 0:
             tasks += ['efcs']
