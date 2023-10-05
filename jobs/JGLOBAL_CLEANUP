@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
 
 "${HOMEgfs}/scripts/exglobal_cleanup.sh"
 status=$?
