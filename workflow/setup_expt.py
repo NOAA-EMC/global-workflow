@@ -232,7 +232,7 @@ def fill_COMROT_forecasts(host, inputs):
     """
     Implementation of 'fill_COMROT' for forecast-only mode
     """
-        print('forecast-only mode treats ICs differently and cannot be staged here')
+    print('forecast-only mode treats ICs differently and cannot be staged here')
 
 
 def fill_EXPDIR(inputs):
