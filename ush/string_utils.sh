@@ -71,9 +71,11 @@ function comma_split_string() {
 #
 # This example will remove all leading, trailing, and internal
 # whitespace from the input string and display the cleaned result.
+
+# shellcheck disable=SC2034
+#   SC2034; disabling since string is returned to caller function.
 function strip_whitespace(){
     local in_string="${1}"
 
-    # shellcheck disable=SC2034
     out_string="${in_string// /}"
 }
