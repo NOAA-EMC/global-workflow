@@ -84,6 +84,11 @@ output_path="${3}"
 #
 # This example updates the `coords` attributes for the specified
 #   variable and writes the updates to the output netCDF file.
+
+# shellcheck disable=SC2140,SC2124
+#   SC2140; disabling due to `ncatted` syntax.
+#   SC2124; disabling in order to correctly parse the coordinate
+#     arguments.
 function ncattr_update(){
     local varname="${1}"
     local ncattr="${2}"
