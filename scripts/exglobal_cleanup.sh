@@ -6,9 +6,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
 # shellcheck disable=SC2153
-GDATE=$(date --utc -d "${PDY} ${cyc} -${assim_freq} hours")
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${assim_freq} hours")
 # PREVIOUS to the PRIOR CYCLE
-GDATE=$(date --utc -d "${GDATE:0:8} ${GDATE:8:2} -${assim_freq} hours")
+GDATE=$(date --utc +%Y%m%d%H -d "${GDATE:0:8} ${GDATE:8:2} -${assim_freq} hours")
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
@@ -27,9 +27,9 @@ fi
 # Retain files needed by Fit2Obs
 # TODO: This whole section needs to be revamped to remove marine component
 #  directories and not look at the rocoto log.
-GDATEEND=$(date --utc -d "${PDY} ${cyc} -${RMOLDEND:-24} hours" )
-GDATE=$(date --utc -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
-RTOFS_DATE=$(date --utc -d "${PDY} ${cyc} -48 hours")
+GDATEEND=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDEND:-24} hours" )
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
+RTOFS_DATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -48 hours")
 function remove_files() {
     local directory=$1
     shift
@@ -104,7 +104,7 @@ while (( GDATE <= GDATEEND )); do
 
                     # Obs
                     exclude_list="prepbufr"
-                    templates="COM_OBS"
+                    templates="COM_OBS_TMPL"
                     for template in ${templates}; do
                         RUN="${local_run}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                         remove_files "${directory}" "${exclude_list[@]}"
@@ -177,7 +177,7 @@ while (( GDATE <= GDATEEND )); do
         find "${target_dir}" -empty -type d -delete
     fi
 
-    GDATE=$(date --utc -d "${GDATE:0:8} ${GDATE:8:2} +${assim_freq} hours")
+    GDATE=$(date --utc +%Y%m%d%H -d "${GDATE:0:8} ${GDATE:8:2} +${assim_freq} hours")
 done
 
 # Remove archived gaussian files used for Fit2Obs in $VFYARC that are
@@ -187,24 +187,24 @@ done
 
 if [[ "${RUN}" == "gfs" ]]; then
     fhmax=$((FHMAX_FITS + 36))
-    RDATE=$(date --utc -d "${PDY} ${cyc} -${fhmax} hours")
+    RDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${fhmax} hours")
     rPDY="${RDATE:0:8}"
     COMIN="${ROTDIR}/vrfyarch/${RUN}.${rPDY}"
     [[ -d ${COMIN} ]] && rm -rf "${COMIN}"
 
-    TDATE=$(date --utc -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
+    TDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
     while (( TDATE < "${PDY}${cyc}" )); do
         tPDY="${TDATE:0:8}"
         tcyc="${TDATE:8:2}"
         TDIR="${ROTDIR}/vrfyarch/${RUN}.${tPDY}/${tcyc}"
         [[ -d ${TDIR} ]] && touch "${TDIR}"/*
-        TDATE=$(date --utc -d "${TDATE:0:8} ${TDATE:8:2} +6 hours")
+        TDATE=$(date --utc +%Y%m%d%H -d "${TDATE:0:8} ${TDATE:8:2} +6 hours")
     done
 fi
 
 # Remove $RUN.$rPDY for the older of GDATE or RDATE
-GDATE=$(date --utc -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
-RDATE=$(date --utc -d "${PDY} ${cyc} -${FHMAX_GFS} hours")
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
+RDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_GFS} hours")
 if (( GDATE < RDATE )); then
     RDATE=${GDATE}
 fi
