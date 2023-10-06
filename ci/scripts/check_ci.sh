@@ -92,7 +92,7 @@ for pr in ${pr_list}; do
       num_platforms=$(ls -1 ../platforms/config.* | wc -l)
       passed=0
       for platforms in ../platforms/config.*; do
-        machine=$(basename $platforms | cut -d. -f2)
+        machine=$(basename "${platforms}" | cut -d. -f2)
         if [[ "${weekly_labels}" == *"CI-${machine^}-Passed"* ]]; then
           ((passed=passed+1))
         fi
