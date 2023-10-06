@@ -48,6 +48,8 @@ cd ../ecf
 ./setup_ecf_links.sh
 ```
 
+Additional release notes for upp/8.3.0 installation on WCOSS2: https://docs.google.com/document/d/18bUYWmsN7FuweyA2CQTBW1rk3FNRMHKPlYHZlbS8ODs/edit?pli=1
+
 VERSION FILE CHANGES
 --------------------
 
