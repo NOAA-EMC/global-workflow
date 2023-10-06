@@ -87,7 +87,7 @@ for pr in ${pr_list}; do
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
-    weekly_labels=$(${GH} pr view ${pr} --repo ${REPO_URL}  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci")) | .labels[].name ') || true
+    weekly_labels=$(${GH} pr view "${pr}" --repo "${REPO_URL}"  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci")) | .labels[].name ') || true
     if [[ -n "${weekly_labels}" ]]; then
       num_platforms=$(ls -1 ../platforms/config.* | wc -l)
       passed=0
