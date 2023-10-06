@@ -950,6 +950,10 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}arch'}
         deps.append(rocoto.add_dependency(dep_dict))
 
+        if self.cdump in ['gdas'] and self.app_config.do_hybvar:
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdaseamn'}
+            deps.append(rocoto.add_dependency(dep_dict))
+
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('cleanup')
