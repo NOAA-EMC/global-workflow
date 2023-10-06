@@ -4,6 +4,7 @@ GFS V16.3.10 RELEASE NOTES
 PRELUDE
 -------
 
+Enable the monitoring of NOAA-21 and GOES-18 radiances in the GFS. A new version of CRTM with new coefficient files is required and included in this change.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -23,7 +24,7 @@ The checkout script extracts the following GFS components:
 
 | Component | Tag         | POC               |
 | --------- | ----------- | ----------------- |
-| MODEL     | GFS.v16.3.0   | Jun.Wang@noaa.gov |
+| MODEL     | GFS.v16.3.1   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
 | GSI       | gfsda.v16.3.10 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
@@ -46,6 +47,8 @@ Lastly, link the ecf scripts by moving back up to the ecf folder and executing:
 cd ../ecf
 ./setup_ecf_links.sh
 ```
+
+Additional release notes for upp/8.3.0 installation on WCOSS2: https://docs.google.com/document/d/18bUYWmsN7FuweyA2CQTBW1rk3FNRMHKPlYHZlbS8ODs/edit?pli=1
 
 VERSION FILE CHANGES
 --------------------
@@ -130,3 +133,5 @@ PREPARED BY
 Kate.Friedman@noaa.gov
 Andrew.Collard@noaa.gov
 Iliana.Genkova@noaa.gov
+Wen.Meng@noaa.gov
+Jun.Wang@noaa.gov
