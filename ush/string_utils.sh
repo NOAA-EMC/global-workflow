@@ -3,6 +3,11 @@
 #######
 # String manipulation functions.
 #
+# The functions herein are available to all functions sourcing this
+#   file; to source this file, do as follows:
+#
+#   source "${HOMEgfs}/ush/string_utils.sh"
+#
 
 #######
 
@@ -69,5 +74,6 @@ function comma_split_string() {
 function strip_whitespace(){
     local in_string="${1}"
 
-    out_string=$(echo "${in_string}" | sed "s/ //g")
+    # shellcheck disable=SC2034
+    out_string="${in_string// /}"
 }
