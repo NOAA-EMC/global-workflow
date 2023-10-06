@@ -35,9 +35,7 @@ export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-if [ ${SENDCOM} = YES ] ; then
-  mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
-fi
+mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
 
 
 ########################################################

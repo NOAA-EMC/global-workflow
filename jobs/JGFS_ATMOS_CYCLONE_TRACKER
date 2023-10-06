@@ -15,10 +15,8 @@ export CDUMP=${RUN/enkf}
 
 
 ####################################
-# SENDCOM  - Copy Files From TMPDIR to $COMOUT
 # SENDDBN  - Issue DBNet Client Calls
 ####################################
-export SENDCOM=YES
 export SENDDBN=${SENDDBN:-NO}
 export SENDECF=${SENDECF:-NO}
 
@@ -81,7 +79,6 @@ ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 export err=$?; err_chk
 
 
-#if [ "$SENDCOM" = 'YES' ]; then
 #  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
 #      sed s:AVNX:GFSO:g \
 #    > ${COMOUT}/gfso.t${cyc}z.cyclone.trackatcfunix
@@ -89,7 +86,6 @@ export err=$?; err_chk
 #  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
 #      sed s:AVNX:AVNO:g \
 #    > ${COMOUT}/avn.t${cyc}z.cyclone.trackatcfunix
-#fi
 
 ##############################################
 # Final processing

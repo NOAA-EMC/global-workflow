@@ -15,7 +15,6 @@ export CDUMP=${RUN/enkf}
 ########################################
 
 export model=${model:-gfs}
-export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
