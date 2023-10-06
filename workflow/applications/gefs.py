@@ -14,7 +14,7 @@ class GEFSAppConfig(AppConfig):
         """
         Returns the config_files that are involved in gefs
         """
-        configs = ['fcst']
+        configs = ['stage_ic','fcst']
 
         if self.nens > 0:
             configs += ['efcs']
@@ -32,7 +32,7 @@ class GEFSAppConfig(AppConfig):
 
     def get_task_names(self):
 
-        tasks = ['fcst']
+        tasks = ['stage_ic', 'fcst']
 
         if self.nens > 0:
             tasks += ['efcs']
