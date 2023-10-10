@@ -61,11 +61,13 @@ class GEFSTasks(Tasks):
 
         return task
 
+
     def fcst(self):
         # TODO: Add real dependencies
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
+
         resources = self.get_resource('fcst')
         task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
@@ -76,6 +78,7 @@ class GEFSTasks(Tasks):
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
+
         efcsenvars = self.envars.copy()
         efcsenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 

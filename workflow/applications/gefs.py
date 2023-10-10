@@ -14,7 +14,7 @@ class GEFSAppConfig(AppConfig):
         """
         Returns the config_files that are involved in gefs
         """
-        configs = ['stage_ic','fcst']
+        configs = ['stage_ic', 'fcst']
 
         if self.nens > 0:
             configs += ['efcs']
