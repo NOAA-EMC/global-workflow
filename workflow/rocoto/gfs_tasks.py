@@ -884,7 +884,7 @@ class GFSTasks(Tasks):
 
     def metp(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}arch'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -913,9 +913,6 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         if self.cdump in ['gdas'] and self.app_config.do_fit2obs:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_metp and self.cdump in ['gfs']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}metp'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostsbs'}
