@@ -54,8 +54,6 @@ class GFSTasks(Tasks):
 
         # Ice ICs
         if self.app_config.do_ice:
-            ice_res = f"{self._base.get('ICERES', '025'):03d}"
-            ice_res_dec = f'{float(ice_res) / 100:.2f}'
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ICEIC']}/@Y@m@d@H/ice"
             data = f"{prefix}/@Y@m@d.@H0000.cice_model.res.nc"
             dep_dict = {'type': 'data', 'data': data}
