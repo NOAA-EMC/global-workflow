@@ -61,7 +61,6 @@ class GEFSTasks(Tasks):
 
         return task
 
-
     def fcst(self):
         # TODO: Add real dependencies
         dependencies = []
