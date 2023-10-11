@@ -552,11 +552,11 @@ ODA_SALTINC_VAR = "Salt"        ! default = "sal_inc"
 ODA_THK_VAR = "h"               ! default = "h"
                                 ! The name of the int. depth inc. variable in
                                 ! ODA_INCUPD_FILE.
-ODA_INCUPD_UV = false           !
-!ODA_UINC_VAR = "u"             ! default = "u_inc"
+ODA_INCUPD_UV = true            !
+ODA_UINC_VAR = "u"              ! default = "u_inc"
                                 ! The name of the zonal vel. inc. variable in
                                 ! ODA_INCUPD_UV_FILE.
-!ODA_VINC_VAR = "v"             ! default = "v_inc"
+ODA_VINC_VAR = "v"              ! default = "v_inc"
                                 ! The name of the meridional vel. inc. variable in
                                 ! ODA_INCUPD_UV_FILE.
 ODA_INCUPD_NHOURS = @[ODA_INCUPD_NHOURS]            ! default=3.0
