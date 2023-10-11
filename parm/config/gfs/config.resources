@@ -860,7 +860,7 @@ elif [[ ${step} = "eupd" ]]; then
       fi
     elif [[ ${CASE} = "C384" ]]; then
       export npe_eupd=270
-      export nth_eupd=2
+      export nth_eupd=8
       if [[ "${machine}" = "WCOSS2" ]]; then
         export npe_eupd=315
         export nth_eupd=14
