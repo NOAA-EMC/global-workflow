@@ -21,7 +21,8 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
     module load cray-pals
     module load cfp 
     export USE_CFP="YES"
-  else 
+    module load libjpeg
+else 
     module load prod-util
   fi
 fi 
