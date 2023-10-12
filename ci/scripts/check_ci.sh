@@ -89,7 +89,7 @@ for pr in ${pr_list}; do
     # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
     weekly_labels=$(${GH} pr view "${pr}" --repo "${REPO_URL}"  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci")) | .labels[].name ') || true
     if [[ -n "${weekly_labels}" ]]; then
-      num_platforms=$(find ../platforms -type f -name "config.*")
+      num_platforms=$(find ../platforms -type f -name "config.*" | wc -l)
       passed=0
       for platforms in ../platforms/config.*; do
         machine=$(basename "${platforms}" | cut -d. -f2)
