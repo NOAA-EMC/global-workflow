@@ -19,6 +19,7 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
     module load prod_util
     module load cray-pals
+    module load libjpeg
   else
     module load prod-util
   fi
