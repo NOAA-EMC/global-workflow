@@ -14,7 +14,7 @@ echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 GH=${HOME}/bin/gh
-REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
@@ -86,7 +86,23 @@ for pr in ${pr_list}; do
     sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
     "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
-    # Completely remove the PR and its cloned repo on sucess of all cases
+    # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
+    weekly_labels=$(${GH} pr view "${pr}" --repo "${REPO_URL}"  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci")) | .labels[].name ') || true
+    if [[ -n "${weekly_labels}" ]]; then
+      num_platforms=$(find ../platforms -type f -name "config.*")
+      passed=0
+      for platforms in ../platforms/config.*; do
+        machine=$(basename "${platforms}" | cut -d. -f2)
+        if [[ "${weekly_labels}" == *"CI-${machine^}-Passed"* ]]; then
+          ((passed=passed+1))
+        fi
+      done
+      if [[ "${passed}" == "${num_platforms}" ]]; then
+        "${GH}" pr close --repo "${REPO_URL}" "${pr}"
+      fi
+    fi
+    # Completely remove the PR and its cloned repo on sucess
+    # of all cases on this platform
     rm -Rf "${pr_dir}" 
     continue 
   fi
