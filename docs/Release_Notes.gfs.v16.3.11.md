@@ -1,4 +1,4 @@
-GFS V16.3.10 RELEASE NOTES
+GFS V16.3.11 RELEASE NOTES
 
 -------
 PRELUDE
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub .com are u
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.10
-cd gfs.v16.3.10
-git clone -b EMC-v16.3.10 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.11
+cd gfs.v16.3.11
+git clone -b EMC-v16.3.11 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -54,7 +54,7 @@ VERSION FILE CHANGES
 --------------------
 
 * `versions/build.ver` - change `crtm_ver=2.4.0.1`
-* `versions/run.ver` - change `version=v16.3.10`, `gfs_ver=v16.3.10`, `obsproc_ver=v1.2` and `crtm_ver=2.4.0.1`
+* `versions/run.ver` - change `version=v16.3.11`, `gfs_ver=v16.3.11`, `obsproc_ver=v1.2` and `crtm_ver=2.4.0.1`
 * `versions/hera.ver` - change `obsproc_run_ver=1.2.0`
 * `versions/orion.ver` - change `obsproc_run_ver=1.2.0`
 * `versions/wcoss2.ver` - change `obsproc_run_ver=1.2.0`
@@ -62,17 +62,17 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 SCRIPT CHANGES
 --------------
@@ -88,17 +88,17 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -111,22 +111,22 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.9
+* No changes from GFS v16.3.10
 
 PREPARED BY
 -----------
