@@ -47,21 +47,22 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-${HOMEgfs}/scripts/exgfs_atmos_awips_20km_1p0deg.sh ${fcsthrs}
+"${HOMEgfs}/scripts/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthrs}"
 export err=$?; err_chk
 ########################################################
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "${KEEPDATA}" != "YES" ] ; then
-  rm -rf ${DATA}
+cd "${DATAROOT}" || pass
+if [[ "${KEEPDATA}" != "YES" ]] ; then
+  rm -rf "${DATA}"
 fi
 
