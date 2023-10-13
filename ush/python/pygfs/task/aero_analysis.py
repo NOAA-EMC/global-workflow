@@ -238,16 +238,29 @@ class AerosolAnalysis(Analysis):
         # Start accumulating list of background files to copy
         bkglist = []
 
-        # aerosol DA needs coupler
-        basename = f'{to_fv3time(task_config.current_cycle)}.coupler.res'
-        bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
+        # if using IAU, we can use FGAT
+        bkgtimes = []
+        if task_config.DO_IAU:
+            nowtime = task_config._window_begin
+            while nowtime <= add_to_datetime(task_config.current_cycle, to_timedelta(f"{task_config['assim_freq']}H") / 2):
+                bkgtimes.append(nowtime)
+                nowtime = add_to_datetime(nowtime, to_timedelta(f"{task_config['restart_interval']}H"))
+        else:
+            # we only use the center of the window background
+            bkgtimes.append(task_config.current_cycle)
 
-        # aerosol DA only needs core/tracer
-        for ftype in ['core', 'tracer']:
-            template = f'{to_fv3time(self.task_config.current_cycle)}.fv_{ftype}.res.tile{{tilenum}}.nc'
-            for itile in range(1, task_config.ntiles + 1):
-                basename = template.format(tilenum=itile)
-                bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
+        # now loop over background times
+        for bkgtime in bkgtimes:
+            # aerosol DA needs coupler
+            basename = f'{to_fv3time(bkgtime)}.coupler.res'
+            bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
+
+            # aerosol DA only needs core/tracer
+            for ftype in ['core', 'tracer']:
+                template = f'{to_fv3time(bkgtime)}.fv_{ftype}.res.tile{{tilenum}}.nc'
+                for itile in range(1, task_config.ntiles + 1):
+                    basename = template.format(tilenum=itile)
+                    bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
 
         bkg_dict = {
             'mkdir': [run_dir],
