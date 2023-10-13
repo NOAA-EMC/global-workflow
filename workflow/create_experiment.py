@@ -17,23 +17,17 @@ Functionally an experiment is setup as a result running the two scripts describe
 with an error code of 0 upon success.
 """
 
-import os
-import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path
 
 from wxflow import YAMLFile, Logger, logit
 
-
-_here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
-logger = Logger(level='DEBUG', colored_log=True)
-
-
-# TODO: move create_experiment.py to workflow/ and remove this sys.path.insert business
-sys.path.insert(0, os.path.join(_top, 'workflow'))
 import setup_expt
 import setup_xml
+
+
+# Setup the logger
+logger = Logger(level='DEBUG', colored_log=True)
 
 
 @logit(logger)
