@@ -1,5 +1,5 @@
 experiment:
-  type: gfs
+  system: gfs
   mode: forecast-only
 
 arguments:
@@ -10,4 +10,4 @@ arguments:
   expdir: ${RUNTESTS}/EXPDIR
   idate: 2016070100
   edate: 2016070100
-  yaml: ${HOMEgfs_PR}/ci/platforms/gfs_defaults_ci-updates.yaml
+  yaml: ${HOMEgfs}/ci/platforms/gfs_defaults_ci.yaml

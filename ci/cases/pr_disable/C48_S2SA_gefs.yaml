@@ -1,5 +1,5 @@
 experiment:
-  type: gefs
+  system: gefs
   mode: forecast-only
 
 arguments:

@@ -1,5 +1,5 @@
 experiment:
-  type: gfs
+  system: gfs
   mode: forecast-only
 
 arguments:
