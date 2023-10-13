@@ -69,7 +69,7 @@ if __name__ == '__main__':
     experiment_dir = Path.absolute(Path.joinpath(Path(testconf.arguments.expdir), Path(testconf.arguments.pslot)))
 
     # Create a list of arguments to setup_expt.py
-    setup_expt_args = [testconf.experiment.system , testconf.experiment.mode]
+    setup_expt_args = [testconf.experiment.system, testconf.experiment.mode]
     for kk, vv in testconf.arguments.items():
         setup_expt_args.append(f"--{kk}")
         setup_expt_args.append(str(vv))
