@@ -62,7 +62,7 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--yaml', help='full path to yaml file describing the experiment configuration', type=str, required=True)
-    parser.add_argument('--dir', help='full path to global-workflow build', type=str, required=True)
+    parser.add_argument('--dir', help='full path to global-workflow', type=str, required=True)
 
     return parser.parse_args()
 

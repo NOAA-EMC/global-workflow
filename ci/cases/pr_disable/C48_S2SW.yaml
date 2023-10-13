@@ -10,4 +10,4 @@ arguments:
   expdir: ${RUNTESTS}/EXPDIR
   idate: 2021032312
   edate: 2021032312
-  yaml: ${HOMEgfs_PR}/ci/platforms/gfs_defaults_ci.yaml
+  yaml: ${HOMEgfs}/ci/platforms/gfs_defaults_ci.yaml
