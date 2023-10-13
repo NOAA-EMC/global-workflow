@@ -22,7 +22,7 @@ set -eux
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
-export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+export REPO_URL="ssh://git@ssh.github.com:443/NOAA-EMC/global-workflow.git"
 
 ################################################################
 # Setup the relative paths to scripts and PS4 for better logging
@@ -61,7 +61,7 @@ set -x
 # Create a new branch from develop and move yaml files
 #########################################################
 branch="weekly_ci_$(date +%Y%m%d)"
-develop_dir="${GFS_CI_ROOT}/develop_temp"
+develop_dir="${GFS_CI_ROOT}/develop_weekly"
 echo "Creating new branch ${branch} from develop on ${MACHINE_ID} in ${develop_dir}"
 rm -Rf "${develop_dir}"
 mkdir -p "${develop_dir}"
@@ -73,26 +73,39 @@ git checkout -b "${branch}"
 ######################################################
 # move yaml files from ci/cases/weekly to ci/cases/pr 
 # and push new branch for PR weekly CI tests to GitHub
+REPO_OWNER="emcbot"
+REPO_NAME="global-workflow"
+REMOTE_NAME="${REPO_OWNER}"
 
 rm -Rf ci/cases/pr
 mv ci/cases/weekly ci/cases/pr
 git add ci/cases
 git commit -m "Moved weekly cases files into pr for high resolution testing"
-git push --set-upstream origin "${branch}"
+
+git remote add "${REMOTE_NAME}" "git@github.com:${REPO_OWNER}/${REPO_NAME}.git"
+
+set +e
+# Delete the branch if it exists
+git ls-remote --exit-code "${REMOTE_NAME}" "${branch}"
+ci_status=$?
+if [[ "${ci_status}" == '0' ]]; then
+    git push "${REMOTE_NAME}" --delete "${branch}"
+fi
+set -e
+
+git push --set-upstream "${REMOTE_NAME}" "${branch}"
 
 ####################################################################
 # Create Pull Request using GitHub CLI and add labels for CI testing
 ####################################################################
 
-REPO_OWNER="NOAA-EMC"
-REPO_NAME="global-workflow"
+HEAD_BRANCH="${REPO_OWNER}:${branch}"
 BASE_BRANCH="develop"
-HEAD_BRANCH="${branch}"
-PULL_REQUEST_TITLE="[DO NOT MERGE] Weekly High Resolution CI Tests $(date +'%A %b %d, %Y')"
+PULL_REQUEST_TITLE="[DO NOT MERGE] Weekly CI Tests $(date +'%A %b %d, %Y')"
 PULL_REQUEST_BODY="${PULL_REQUEST_TITLE}"
 PULL_REQUEST_LABELS=("CI/CD" "CI-Orion-Ready" "CI-Hera-Ready")
 
-"${GH}" repo set-default "${REPO_OWNER}/${REPO_NAME}"
+"${GH}" repo set-default "NOAA-EMC/global-workflow"
 "${GH}" pr create --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --base "${BASE_BRANCH}" --head "${HEAD_BRANCH}"
 "${GH}" pr ready --undo
 

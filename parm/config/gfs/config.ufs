@@ -147,16 +147,16 @@ case "${fv3_res}" in
         ;;
     "C384")
         export DELTIM=300
-        export layout_x=6
+        export layout_x=8
         export layout_y=8
         export layout_x_gfs=8
         export layout_y_gfs=8
         export nthreads_fv3=2
         export nthreads_fv3_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-        export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
-        export WRITE_GROUP_GFS=2
+        export WRITE_GROUP=4
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
+        export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10
         ;;
     "C768")
