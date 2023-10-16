@@ -59,19 +59,12 @@ for (( current_date=first_date; current_date <= last_date; \
         # TODO: This needs to be revamped to not look at the rocoto log.
         # shellcheck disable=SC2312
         if [[ $(tail -n 1 "${rocotolog}") =~ "This cycle is complete: Success" ]]; then
-            # Also cleanup the enkf version of $RUN. Since the directory's existence
-            # is checked first, it doesn't matter if that is not a legitimate $RUN
-            # for this experiment.
-            runs_to_clean=("${RUN}" "enkf${RUN}")
-            for run in "${runs_to_clean[@]}"; do
-                RUN=${run} YMD="${current_PDY}" HH="${current_cyc}" generate_com COM_TOP
-                if [[ -d "${COM_TOP}" ]]; then
-                    exclude_list=("*prepbufr*" "*cnvstat*" "*atmanl.nc")
-                    remove_files "${COM_TOP}" "${exclude_list[@]:-}"
-
-                    if [[ -d "${rtofs_dir}" ]] && (( current_date < last_rtofs )); then rm -rf "${rtofs_dir}" ; fi
-                fi
-            done
+            YMD="${current_PDY}" HH="${current_cyc}" generate_com COM_TOP
+            if [[ -d "${COM_TOP}" ]]; then
+                exclude_list=("*prepbufr*" "*cnvstat*" "*atmanl.nc")
+                remove_files "${COM_TOP}" "${exclude_list[@]:-}"
+            fi
+            if [[ -d "${rtofs_dir}" ]] && (( current_date < last_rtofs )); then rm -rf "${rtofs_dir}" ; fi
         fi
     fi
 
