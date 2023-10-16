@@ -9,8 +9,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${assim_freq} hours")
 # PREVIOUS to the PRIOR CYCLE
 GDATE=$(date --utc +%Y%m%d%H -d "${GDATE:0:8} ${GDATE:8:2} -${assim_freq} hours")
-gPDY="${GDATE:0:8}"
-gcyc="${GDATE:8:2}"
 
 # Remove the TMPDIR directory
 # TODO Only prepbufr is currently using this directory, and all jobs should be
@@ -25,11 +23,9 @@ fi
 # Step back every assim_freq hours and remove old rotating directories
 # for successful cycles (defaults from 24h to 120h).
 # Retain files needed by Fit2Obs
-# TODO: This whole section needs to be revamped to remove marine component
-#  directories and not look at the rocoto log.
-GDATEEND=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDEND:-24} hours" )
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
-RTOFS_DATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -48 hours")
+last_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDEND:-24} hours" )
+first_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
+last_rtofs=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -48 hours")
 function remove_files() {
     local directory=$1
     shift
@@ -37,147 +33,48 @@ function remove_files() {
         echo "No directory ${directory} to remove files from, skiping"
         return
     fi
-    local exclude_list=""
-    if (($# > 0)); then
-        exclude_list=$*
-    fi
-    local file_list
-    declare -a file_list
-    # Ignore compound command warning
-    # shellcheck disable=SC2312
-    readarray -t file_list < <(find -L "${directory}" -type f)
-    if (( ${#file_list[@]} == 0 )); then return; fi
-    # echo "Number of files to remove before exclusions: ${#file_list[@]}"
-    for exclude in ${exclude_list}; do
-        echo "Excluding ${exclude}"
-        declare -a file_list_old=("${file_list[@]}")
-        # Ignore compound command warning
-        # shellcheck disable=SC2312
-        readarray file_list < <(printf -- '%s\n' "${file_list_old[@]}" | grep -v "${exclude}")
-        # echo "Number of files to remove after exclusion: ${#file_list[@]}"
-        if (( ${#file_list[@]} == 0 )); then return; fi
+    local exclude_string=""
+    for exclude in "$@"; do
+        exclude_string+="${exclude_string} -name ${exclude} -or"
     done
-    # echo "Number of files to remove after exclusions: ${#file_list[@]}"
-
-    for file in "${file_list[@]}"; do
-        rm -f "${file}"
-    done
-    # Remove directory if empty
-    rmdir "${directory}" || true
+    # Chop off any trailing or
+    exclude_string="${exclude_string[*]/%-or}"
+    # Remove all regular files that do not match
+    # shellcheck disable=SC2086
+    find "${directory}" -type f -not \( ${exclude_string} \) -delete
+    # Remove all symlinks that do not match
+    # shellcheck disable=SC2086
+    find "${directory}" -type l -not \( ${exclude_string} \) -delete
+    # Remove any empty directories
+    find "${directory}" -type d -empty -delete
 }
 
-while (( GDATE <= GDATEEND )); do
-    gPDY="${GDATE:0:8}"
-    gcyc="${GDATE:8:2}"
-    COMINrtofs="${ROTDIR}/rtofs.${gPDY}"
-    YMD="${gPDY}" HH="${gcyc}" generate_com COM_TOP
-    if [[ -d "${COM_TOP}" ]]; then
-        rocotolog="${EXPDIR}/logs/${GDATE}.log"
-        if [[ -f "${rocotolog}" ]]; then
-            # shellcheck disable=SC2312
-            if [[ $(tail -n 1 "${rocotolog}") =~ "This cycle is complete: Success" ]]; then
-                case ${RUN} in
-                    gdas)   nmem="${NMEM_ENS}";;
-                    gfs)    nmem="${NMEM_ENS_GFS}";;
-                    *)
-                        echo "FATAL ERROR: Unknown RUN ${RUN} during cleanup"
-                        exit 10
-                        ;;
-                esac
+for (( current_date=first_date; current_date <= last_date; \
+  current_date=$(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours") )); do
+    current_PDY="${current_date:0:8}"
+    current_cyc="${current_date:8:2}"
+    rtofs_dir="${ROTDIR}/rtofs.${current_PDY}"
+    rocotolog="${EXPDIR}/logs/${current_date}.log"
+    if [[ -f "${rocotolog}" ]]; then
+        # TODO: This needs to be revamped to not look at the rocoto log.
+        # shellcheck disable=SC2312
+        if [[ $(tail -n 1 "${rocotolog}") =~ "This cycle is complete: Success" ]]; then
+            YMD="${current_PDY}" HH="${current_cyc}" generate_com COM_TOP
 
-                memlist=("") # Empty MEMDIR for deterministic
+            if [[ -d "${COM_TOP}" ]]; then
+                exclude_list=("prepbufr" "cnvstat" "atmanl.nc")
+                remove_files "${COM_TOP}" "${exclude_list[@]:-}"
 
-                RUN="enkf${RUN}" YMD="${gPDY}" HH="${gcyc}" generate_com enkf_top:COM_TOP_TMPL
-                if [[ -d ${enkf_top} ]]; then
-                    # Add ensemble directories if they exist
-                    readarray -O"${#memlist[@]}" memlist< <(seq --format="mem%03g" 1 "${nmem}")
-                    memlist+=("ensstat")
-                fi
-
-                for MEMDIR in "${memlist[@]}"; do
-
-                    if [[ -n "${MEMDIR}" ]]; then
-                        local_run="enkf${RUN}"
-                    else
-                        local_run="${RUN}"
-                    fi
-
-                    # Obs
-                    exclude_list="prepbufr"
-                    templates="COM_OBS_TMPL"
-                    for template in ${templates}; do
-                        RUN="${local_run}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                        remove_files "${directory}" "${exclude_list[@]}"
-                    done
-
-                    # Atmos
-                    exclude_list="cnvstat atmanl.nc"
-                    templates=$(compgen -A variable | grep 'COM_ATMOS_.*_TMPL')
-                    for template in ${templates}; do
-                        RUN="${local_run}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                        remove_files "${directory}" "${exclude_list[@]}"
-                    done
-
-                    # Wave
-                    exclude_list=""
-                    templates=$(compgen -A variable | grep 'COM_WAVE_.*_TMPL')
-                    for template in ${templates}; do
-                        RUN="${local_run}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                        remove_files "${directory}" "${exclude_list[@]}"
-                    done
-
-                    # Ocean
-                    exclude_list=""
-                    templates=$(compgen -A variable | grep 'COM_OCEAN_.*_TMPL')
-                    for template in ${templates}; do
-                        RUN="${local_run}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                        remove_files "${directory}" "${exclude_list[@]}"
-                    done
-
-                    # Ice
-                    exclude_list=""
-                    templates=$(compgen -A variable | grep 'COM_ICE_.*_TMPL')
-                    for template in ${templates}; do
-                        RUN="${local_run}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                        remove_files "${directory}" "${exclude_list[@]}"
-                    done
-
-                    # Aerosols (GOCART)
-                    exclude_list=""
-                    templates=$(compgen -A variable | grep 'COM_CHEM_.*_TMPL')
-                    for template in ${templates}; do
-                        RUN="${local_run}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                        remove_files "${directory}" "${exclude_list[@]}"
-                    done
-
-                    # Mediator
-                    exclude_list=""
-                    templates=$(compgen -A variable | grep 'COM_MED_.*_TMPL')
-                    for template in ${templates}; do
-                        RUN="${local_run}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                        remove_files "${directory}" "${exclude_list[@]}"
-                    done
-
-                done
-
-                if [[ -d "${COMINrtofs}" ]] && (( GDATE < RTOFS_DATE )); then rm -rf "${COMINrtofs}" ; fi
+                if [[ -d "${rtofs_dir}" ]] && (( current_date < last_rtofs )); then rm -rf "${rtofs_dir}" ; fi
             fi
         fi
     fi
 
     # Remove mdl gfsmos directory
     if [[ "${RUN}" == "gfs" ]]; then
-        COMIN="${ROTDIR}/gfsmos.${gPDY}"
-        if [[ -d "${COMIN}" ]] && (( GDATE < CDATE_MOS )); then rm -rf "${COMIN}" ; fi
+        mos_dir="${ROTDIR}/gfsmos.${current_PDY}"
+        if [[ -d "${mos_dir}" ]] && (( current_date < CDATE_MOS )); then rm -rf "${mos_dir}" ; fi
     fi
-
-    # Remove any empty directories
-    target_dir="${ROTDIR:?}/${RUN}.${gPDY}/${gcyc}/"
-    if [[ -d "${target_dir}" ]]; then
-        find "${target_dir}" -empty -type d -delete
-    fi
-
-    GDATE=$(date --utc +%Y%m%d%H -d "${GDATE:0:8} ${GDATE:8:2} +${assim_freq} hours")
 done
 
 # Remove archived gaussian files used for Fit2Obs in $VFYARC that are
@@ -188,17 +85,16 @@ done
 if [[ "${RUN}" == "gfs" ]]; then
     fhmax=$((FHMAX_FITS + 36))
     RDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${fhmax} hours")
-    rPDY="${RDATE:0:8}"
-    COMIN="${ROTDIR}/vrfyarch/${RUN}.${rPDY}"
-    [[ -d ${COMIN} ]] && rm -rf "${COMIN}"
+    verify_dir="${ROTDIR}/vrfyarch/${RUN}.${RDATE:0:8}"
+    [[ -d ${verify_dir} ]] && rm -rf "${verify_dir}"
 
-    TDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
-    while (( TDATE < "${PDY}${cyc}" )); do
-        tPDY="${TDATE:0:8}"
-        tcyc="${TDATE:8:2}"
-        TDIR="${ROTDIR}/vrfyarch/${RUN}.${tPDY}/${tcyc}"
-        [[ -d ${TDIR} ]] && touch "${TDIR}"/*
-        TDATE=$(date --utc +%Y%m%d%H -d "${TDATE:0:8} ${TDATE:8:2} +6 hours")
+    touch_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
+    while (( touch_date < "${PDY}${cyc}" )); do
+        touch_PDY="${touch_date:0:8}"
+        touch_cyc="${touch_date:8:2}"
+        touch_dir="${ROTDIR}/vrfyarch/${RUN}.${touch_PDY}/${touch_cyc}"
+        [[ -d ${touch_dir} ]] && touch "${touch_dir}"/*
+        touch_date=$(date --utc +%Y%m%d%H -d "${touch_PDY} ${touch_cyc} +6 hours")
     done
 fi
 
@@ -208,6 +104,5 @@ RDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_GFS} hours")
 if (( GDATE < RDATE )); then
     RDATE=${GDATE}
 fi
-rPDY="${RDATE:0:8}"
-COMIN="${ROTDIR}/${RUN}.${rPDY}"
-if [[ -d ${COMIN} ]]; then rm -rf "${COMIN}"; fi
+deletion_target="${ROTDIR}/${RUN}.${RDATE:0:8}"
+if [[ -d ${deletion_target} ]]; then rm -rf "${deletion_target}"; fi
