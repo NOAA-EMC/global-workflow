@@ -25,7 +25,7 @@ fi
 # Retain files needed by Fit2Obs
 last_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDEND:-24} hours" )
 first_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
-last_rtofs=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -48 hours")
+last_rtofs=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDRTOFS:-48} hours")
 function remove_files() {
     local directory=$1
     shift
