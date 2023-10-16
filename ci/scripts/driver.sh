@@ -154,7 +154,7 @@ for pr in ${pr_list}; do
       rm -Rf "${STMP}/RUNDIRS/${pslot}"
       export pslot
       set +e
-      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" --dir "${HOMEgfs}"
+      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then

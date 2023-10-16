@@ -3,16 +3,16 @@ experiment:
   mode: cycled
 
 arguments:
-  pslot: ${pslot}
+  pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdet: 96
   resens: 48
-  comrot: ${RUNTESTS}/COMROT
-  expdir: ${RUNTESTS}/EXPDIR
-  icsdir: ${ICSDIR_ROOT}/C96C48
+  comrot: {{ 'RUNTESTS' | getenv }}/COMROT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48
   idate: 2021122018
   edate: 2021122106
   nens: 2
   gfs_cyc: 1
   start: cold
-  yaml: ${HOMEgfs}/ci/platforms/gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/platforms/gfs_defaults_ci.yaml
