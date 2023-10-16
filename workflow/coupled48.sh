@@ -1,6 +1,6 @@
 APP=S2SWA
-PSLOT=s2swc48t02
-BASEDIR=/work2/noaa/marine/jmeixner/HR3
+PSLOT=s2swc48t03
+BASEDIR=/scratch1/NCEPDEV/climate/Jessica.Meixner/HR3/updatemodel02
 CDUMP=gfs #gfs or gefs
 CONFIGDIR=$BASEDIR/global-workflow/parm/config/${CDUMP}
 IDATE=2021032312
