@@ -240,8 +240,8 @@ class AerosolAnalysis(Analysis):
 
         # if using IAU, we can use FGAT
         bkgtimes = []
-        if task_config.DO_IAU:
-            nowtime = task_config._window_begin
+        if task_config.DOIAU:
+            nowtime = task_config.AERO_WINDOW_BEGIN
             while nowtime <= add_to_datetime(task_config.current_cycle, to_timedelta(f"{task_config['assim_freq']}H") / 2):
                 bkgtimes.append(nowtime)
                 nowtime = add_to_datetime(nowtime, to_timedelta(f"{task_config['restart_interval']}H"))

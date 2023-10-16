@@ -8,7 +8,6 @@ echo "BEGIN: config.aeroanl"
 export CASE_ANL=${CASE}
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/aero/obs/config/
 export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/aero/obs/lists/gdas_aero_prototype.yaml
-export AEROVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/variational/3dvar_gfs_aero.yaml
 export STATICB_TYPE='identity'
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/berror/staticb_${STATICB_TYPE}.yaml
 export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
