@@ -9,7 +9,6 @@ export errchk=${errchk:-err_chk}
 ###################################
 # Set COM Paths
 ###################################
-export SENDCOM=${SENDCOM:-YES}
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}

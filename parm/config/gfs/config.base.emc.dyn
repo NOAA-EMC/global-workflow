@@ -130,7 +130,6 @@ export REDOUT="1>"
 export REDERR="2>"
 
 export SENDECF=${SENDECF:-"NO"}
-export SENDCOM=${SENDCOM:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}

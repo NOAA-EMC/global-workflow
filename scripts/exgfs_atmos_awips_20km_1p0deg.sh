@@ -191,24 +191,22 @@ for GRID in conus ak prico pac 003; do
       # TODO: Should this be fatal?
       echo "error from tocgrib2=${err}"
 
-      if [[ ${SENDCOM} == "YES" ]]; then
-        ##############################
-        # Post Files to  ${COM_ATMOS_WMO}
-        ##############################
+      ##############################
+      # Post Files to  ${COM_ATMOS_WMO}
+      ##############################
 
-        mv "grib2.awpgfs${fcsthrs}.${GRID}" \
+      mv "grib2.awpgfs${fcsthrs}.${GRID}" \
          "${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}"
 
-        ##############################
-        # Distribute Data
-        ##############################
+      ##############################
+      # Distribute Data
+      ##############################
 
-        if [[ "${SENDDBN}" == 'YES' || "${SENDAWIP}" == 'YES' ]]; then
-           "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
-            "${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}"
-        else
-           echo "File ${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
-        fi
+      if [[ "${SENDDBN}" == 'YES' || "${SENDAWIP}" == 'YES' ]]; then
+          "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
+				     "${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}"
+      else
+          echo "File ${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
       fi
    elif [[ ${GRID} != "003" ]]; then
       export FORT11="awps_file_f${fcsthrs}_${GRID}"
@@ -225,25 +223,22 @@ for GRID in conus ak prico pac 003; do
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile
       export err=$?; err_chk || exit "${err}"
 
-      if [[ ${SENDCOM} = "YES" ]]; then
+      ##############################
+      # Post Files to  ${COM_ATMOS_WMO} 
+      ##############################
 
-         ##############################
-         # Post Files to  ${COM_ATMOS_WMO} 
-         ##############################
+      mv "grib2.awpgfs_20km_${GRID}_f${fcsthrs}" \
+         "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name}"
 
-         mv "grib2.awpgfs_20km_${GRID}_f${fcsthrs}" \
-            "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name}"
+      ##############################
+      # Distribute Data
+      ##############################
 
-         ##############################
-         # Distribute Data
-         ##############################
-
-         if [[ "${SENDDBN}" = 'YES' || "${SENDAWIP}" = 'YES' ]]; then
-            "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
-               "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name}"
-         else
-            echo "File ${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name} not posted to db_net."
-         fi
+      if [[ "${SENDDBN}" = 'YES' || "${SENDAWIP}" = 'YES' ]]; then
+          "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
+				     "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name}"
+      else
+          echo "File ${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name} not posted to db_net."
       fi
    fi
    echo "Awip Processing ${fcsthrs} hour completed normally"

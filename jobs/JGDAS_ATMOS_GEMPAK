@@ -27,7 +27,6 @@ export GRIB=pgrb2f
 export EXT=""
 export DBN_ALERT_TYPE=GDAS_GEMPAK
 
-export SENDCOM=${SENDCOM:-NO}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
@@ -47,7 +46,7 @@ for grid in 1p00 0p25; do
   prod_dir="COM_ATMOS_GEMPAK_${grid}"
   GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
 
-  if [[ ${SENDCOM} == YES && ! -d "${!prod_dir}" ]] ; then
+  if [[ ! -d "${!prod_dir}" ]] ; then
     mkdir -m 775 -p "${!prod_dir}"
   fi
 done

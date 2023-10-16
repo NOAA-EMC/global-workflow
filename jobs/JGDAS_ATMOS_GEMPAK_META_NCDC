@@ -61,9 +61,7 @@ export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
 export COMOUTukmet=${COMOUT}
 export COMOUTecmwf=${COMOUT}
 
-if [ ${SENDCOM} = YES ] ; then
-  mkdir -m 775 -p ${COMOUT} ${COMOUTncdc} ${COMOUTukmet} ${COMOUTecmwf}
-fi
+mkdir -m 775 -p ${COMOUT} ${COMOUTncdc} ${COMOUTukmet} ${COMOUTecmwf}
 
 export pgmout=OUTPUT.$$
 
