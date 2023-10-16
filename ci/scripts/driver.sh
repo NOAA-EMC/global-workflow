@@ -144,15 +144,15 @@ for pr in ${pr_list}; do
     # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    export HOMEgfs="${pr_dir}/global-workflow"
+    HOMEgfs="${pr_dir}/global-workflow"
     cd "${HOMEgfs}"
     pr_sha=$(git rev-parse --short HEAD)
 
     for yaml_config in "${HOMEgfs}/ci/cases/pr/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
-      pslot="${case}_${pr_sha}"
+      # export pslot for yaml case files to pickup
+      export pslot="${case}_${pr_sha}"
       rm -Rf "${STMP}/RUNDIRS/${pslot}"
-      export pslot
       set +e
       "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml"
       ci_status=$?
