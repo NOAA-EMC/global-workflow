@@ -19,6 +19,9 @@ export layout_y=1
 export io_layout_x=1
 export io_layout_y=1
 
+export layout_gsib_x=$(echo "${layout_x} * 3" | bc)
+export layout_gsib_y=$(echo "${layout_y} * 2" | bc)
+
 export JEDIEXE=${HOMEgfs}/exec/fv3jedi_var.x
 
 echo "END: config.atmanl"
