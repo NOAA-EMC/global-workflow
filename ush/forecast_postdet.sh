@@ -1049,6 +1049,13 @@ GOCART_out() {
 
   # Copy gocart.inst_aod after the forecast is run (and successfull)
   # TO DO: this should be linked but there were issues where gocart was crashing if it was linked
-  ${NCP} "${DATA}/gocart.inst_aod.*" "${COM_CHEM_HISTORY}/"
+  #${NCP} "${DATA}/gocart.inst_aod.*" "${COM_CHEM_HISTORY}/"
+  if (( $( ls -1 "${DATA}/gocart.inst_aod."* 2> /dev/null | wc -l) > 0 )); then
+    for file in $(ls "${DATA}/gocart.inst_aod."*) ; do
+      ${NCP} "${file}"  "${COM_CHEM_HISTORY}/"
+    done
+  fi
+
+
 }
 
