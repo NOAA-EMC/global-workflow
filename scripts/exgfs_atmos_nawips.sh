@@ -145,12 +145,10 @@ r
 EOF
     export err=$?;err_chk
 
-    if [[ ${SENDCOM} == "YES" ]] ; then
-       cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
-       if [[ ${SENDDBN} == "YES" ]] ; then
-           "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-             "${destination}/${GEMGRD}"
-       fi
+    cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
+    if [[ ${SENDDBN} == "YES" ]] ; then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+				   "${destination}/${GEMGRD}"
     fi
     cd "${DATA_RUN}" || exit 1
   else

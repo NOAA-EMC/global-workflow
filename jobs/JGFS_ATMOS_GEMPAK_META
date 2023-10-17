@@ -62,9 +62,7 @@ export COMINnam=${COMINnam:-$(compath.py ${envir}/nam/${nam_ver})/nam}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-if [ ${SENDCOM} = YES ] ; then
-  mkdir -m 775 -p ${COMOUT}
-fi
+mkdir -m 775 -p ${COMOUT}
 
 
 ########################################################

@@ -71,10 +71,8 @@ startmsg
 $EXECgfs/fbwndgfs < $PARMproduct/fbwnd_pacific.stnlist >> $pgmout 2> errfile
 export err=$?; err_chk
 
-if test "$SENDCOM" = 'YES'
-then
-    cp tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
-fi
+
+cp tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
 
 if test "$SENDDBN" = 'YES'
 then
