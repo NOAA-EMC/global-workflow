@@ -46,7 +46,7 @@ for grid in 1p00 0p50 0p25 40km 35km_atl 35km_pac; do
   prod_dir="COM_ATMOS_GEMPAK_${grid}"
   GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
 
-  if [[ ${SENDCOM} == YES && ! -d "${!prod_dir}" ]] ; then
+  if [[ ! -d "${!prod_dir}" ]] ; then
     mkdir -m 775 -p "${!prod_dir}"
   fi
 done

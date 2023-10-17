@@ -202,18 +202,16 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 3. Send output files to the proper destination
 set_trace
-if [ "$SENDCOM" = YES ]; then
-  cp "awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
-  if [ "$SENDDBN_NTC" = YES ]; then
+cp "awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
+if [ "$SENDDBN_NTC" = YES ]; then
     make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" "${DATA}/awipsbull.${cycle}.${RUNwave}" \
-      "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
-  else
+		     "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
+else
     if [ "${envir}" = "para" ] || [ "${envir}" = "test" ] || [ "${envir}" = "dev" ]; then
-      echo "Making NTC bulletin for parallel environment, but do not alert."
-      (export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
-          "${DATA}/awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}")
+	echo "Making NTC bulletin for parallel environment, but do not alert."
+	(export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
+					     "${DATA}/awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}")
     fi
-  fi
 fi
 
 # --------------------------------------------------------------------------- #

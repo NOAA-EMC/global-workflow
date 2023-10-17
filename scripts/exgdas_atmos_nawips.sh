@@ -135,21 +135,19 @@ while [ $fhcnt -le $fend ] ; do
 EOF
   export err=$?;err_chk
 
-  if [ $SENDCOM = "YES" ] ; then
-     cp "${GEMGRD}" "${destination}/.${GEMGRD}"
-     export err=$?
-     if [[ ${err} -ne 0 ]] ; then
-        echo " File ${GEMGRD} does not exist."
-        exit "${err}"
-     fi
+  cp "${GEMGRD}" "${destination}/.${GEMGRD}"
+  export err=$?
+  if [[ ${err} -ne 0 ]] ; then
+      echo " File ${GEMGRD} does not exist."
+      exit "${err}"
+  fi
 
-     mv "${destination}/.${GEMGRD}" "${destination}/${GEMGRD}"
-     if [[ ${SENDDBN} = "YES" ]] ; then
-         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-           "${destination}/${GEMGRD}"
-     else
-       echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
-     fi
+  mv "${destination}/.${GEMGRD}" "${destination}/${GEMGRD}"
+  if [[ ${SENDDBN} = "YES" ]] ; then
+      "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+				 "${destination}/${GEMGRD}"
+  else
+      echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
   fi
 
   if [ $fhcnt -ge 240 ] ; then

@@ -9,8 +9,8 @@ usage() {
   echo
   echo "Usage: $0 -p <PR#> -d <directory> -o <output> -h"
   echo
-  echo "  -p  PR nunber to clone and build"
-  echo "  -d  Full path of <directory> of were to clone and build PR"
+  echo "  -p  PR number to clone and build"
+  echo "  -d  Full path of <directory> of where to clone and build PR"
   echo "  -o  Full path to output message file detailing results of CI tests"
   echo "  -h  display this message and quit"
   echo

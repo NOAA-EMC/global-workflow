@@ -95,14 +95,12 @@ export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
 if [ $filesize -gt 40 ]
 then
 
-if [ $SENDCOM = "YES" ]; then
-       cp rdbfmsua.out $COMOUT/${RUN}.${cycle}.msupperair
-       cp sonde.idsms.tbl $COMOUT/${RUN}.${cycle}.msupperairtble
-       if [ $SENDDBN = "YES" ]; then
-          $DBNROOT/bin/dbn_alert DATA MSUPPER_AIR $job $COMOUT/${RUN}.${cycle}.msupperair
-          $DBNROOT/bin/dbn_alert DATA MSUPPER_AIRTBL $job $COMOUT/${RUN}.${cycle}.msupperairtble
-       fi
-fi
+    cp rdbfmsua.out $COMOUT/${RUN}.${cycle}.msupperair
+    cp sonde.idsms.tbl $COMOUT/${RUN}.${cycle}.msupperairtble
+    if [ $SENDDBN = "YES" ]; then
+        $DBNROOT/bin/dbn_alert DATA MSUPPER_AIR $job $COMOUT/${RUN}.${cycle}.msupperair
+        $DBNROOT/bin/dbn_alert DATA MSUPPER_AIRTBL $job $COMOUT/${RUN}.${cycle}.msupperairtble
+    fi
 
 fi
 

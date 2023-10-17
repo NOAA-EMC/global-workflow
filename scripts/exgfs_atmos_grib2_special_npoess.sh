@@ -90,18 +90,16 @@ for (( fhr=$((10#${SHOUR})); fhr <= $((10#${FHOUR})); fhr = fhr + FHINC )); do
    ${WGRIB2} tmpfile | grep -F -f ${paramlist} | ${WGRIB2} -i -grib  pgb2file tmpfile
    export err=$?; err_chk
 
-   if [[ ${SENDCOM} == "YES" ]]; then
-      cp pgb2file "${COM_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
+   cp pgb2file "${COM_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
 
-      if [[ ${SENDDBN} == "YES" ]]; then
-         "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGBNPOESS "${job}" \
-            "${COM_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
-      else
-         msg="File ${RUN}.${cycle}.pgrb2f${fhr3}.npoess not posted to db_net."
-         postmsg "${msg}" || echo "${msg}"
-      fi
-      echo "${PDY}${cyc}${fhr3}" > "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.halfdeg.npoess"
+   if [[ ${SENDDBN} == "YES" ]]; then
+       "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGBNPOESS "${job}" \
+				  "${COM_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
+   else
+       msg="File ${RUN}.${cycle}.pgrb2f${fhr3}.npoess not posted to db_net."
+       postmsg "${msg}" || echo "${msg}"
    fi
+   echo "${PDY}${cyc}${fhr3}" > "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.halfdeg.npoess"
    rm tmpfile pgb2file
 
 done
@@ -161,23 +159,20 @@ for (( fhr=$((10#${SHOUR})); fhr <= $((10#${FHOUR})); fhr = fhr + FHINC )); do
 
    ${WGRIB2} pgb2file -s > pgb2ifile
 
-   if [[ ${SENDCOM} == "YES" ]]; then
+   cp pgb2file "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}"
+   cp pgb2ifile "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}.idx"
+   cp pgb2file2 "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221"
 
-      cp pgb2file "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}"
-      cp pgb2ifile "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}.idx"
-      cp pgb2file2 "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221"
-
-      if [[ ${SENDDBN} == "YES" ]]; then
-         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25 "${job}" \
-            "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}"
-         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25_WIDX "${job}" \
-            "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx"
-         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMGRD221_PGB2 "${job}" \
-            "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221"
-      fi
-
-      echo "${PDY}${cyc}${fhr}" > "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb"
+   if [[ ${SENDDBN} == "YES" ]]; then
+       "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25 "${job}" \
+				  "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}"
+       "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25_WIDX "${job}" \
+				  "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx"
+       "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMGRD221_PGB2 "${job}" \
+				  "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221"
    fi
+
+   echo "${PDY}${cyc}${fhr}" > "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb"
    rm pgb2file2 pgb2ifile
 
    if [[ ${SENDECF} == "YES" ]]; then
