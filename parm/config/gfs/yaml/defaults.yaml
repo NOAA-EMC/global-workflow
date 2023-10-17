@@ -1,9 +1,11 @@
 base:
+  DOIAU: "YES"
   DO_JEDIATMVAR: "NO"
   DO_JEDIATMENS: "NO"
   DO_JEDIOCNVAR: "NO"
   DO_JEDILANDDA: "NO"
   DO_MERGENSST: "NO"
+
 aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
@@ -13,13 +15,13 @@ landanl:
   IO_LAYOUT_Y: 1
 
 ocnanal:
-  SOCA_INPUT_FIX_DIR: '/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25'
-  CASE_ANL: 'C48'
-  SOCA_OBS_LIST: ''
-  COMIN_OBS: '/scratch2/NCEPDEV/marineda/r2d2'
-  SABER_BLOCKS_YAML: ''
-  SOCA_NINNER: 50
-  R2D2_OBS_SRC: 'gdas_marine'
-  R2D2_OBS_DUMP: 's2s_v1'
+  SOCA_INPUT_FIX_DIR: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca"  # TODO: These need to go to glopara fix space. @guillaumevernieres will open an issue
+  CASE_ANL: "C48"
+  COMIN_OBS: "/scratch2/NCEPDEV/marineda/r2d2-v2-v3"  # TODO: make platform agnostic
+  SOCA_OBS_LIST: "{{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml"
+  SOCA_NINNER: 100
+  R2D2_OBS_SRC: "gdas_marine"
+  R2D2_OBS_DUMP: "s2s_v1"
+  SABER_BLOCKS_YAML: ""
   NICAS_RESOL: 1
   NICAS_GRID_SIZE: 15000

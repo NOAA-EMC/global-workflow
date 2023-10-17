@@ -112,19 +112,17 @@ export err=$?; err_chk
 # Post Files to ${COM_ATMOS_WMO}
 ##############################
 
-if [[ "${SENDCOM}" = 'YES' ]]; then
-   cp "xtrn.awpgfs${fcsthrs}.${GRID}" "${COM_ATMOS_WMO}/xtrn.awpgfs${fcsthrs}.${GRID}.${job_name}"
+cp "xtrn.awpgfs${fcsthrs}.${GRID}" "${COM_ATMOS_WMO}/xtrn.awpgfs${fcsthrs}.${GRID}.${job_name}"
 
-   ##############################
-   # Distribute Data
-   ##############################
+##############################
+# Distribute Data
+##############################
 
-   if [[ "${SENDDBN}" == 'YES' || "${SENDAWIP}" == 'YES' ]] ; then
-      "${DBNROOT}/bin/dbn_alert" "${DBNALERT_TYPE}" "${NET}" "${job}" \
-         "${COM_ATMOS_WMO}/xtrn.awpgfs${fcsthrs}.${GRID}.${job_name}"
-   else
-      echo "File ${output_grb}.${job_name} not posted to db_net."
-   fi
+if [[ "${SENDDBN}" == 'YES' || "${SENDAWIP}" == 'YES' ]] ; then
+    "${DBNROOT}/bin/dbn_alert" "${DBNALERT_TYPE}" "${NET}" "${job}" \
+			       "${COM_ATMOS_WMO}/xtrn.awpgfs${fcsthrs}.${GRID}.${job_name}"
+else
+    echo "File ${output_grb}.${job_name} not posted to db_net."
 fi
 
 if [[ -e "${pgmout}" ]] ; then

@@ -10,10 +10,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 export cmodel=${RUN}
 
 ####################################
-# SENDCOM  - Copy Files From TMPDIR to $COMOUT
 # SENDDBN  - Issue DBNet Client Calls
 ####################################
-export SENDCOM=YES
 export SENDDBN=${SENDDBN:-NO}
 export SENDECF=${SENDECF:-NO}
 

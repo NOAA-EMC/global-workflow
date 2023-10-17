@@ -57,12 +57,10 @@ EOF
        rm $DATA/${m}/bufrout
     done
 
-    if [[ ${SENDCOM} == 'YES' ]]; then 
-      if [[ ${SENDDBN} == 'YES' ]] ; then
-         cp "${DATA}/${m}/gfs_collective${m}.fil" "${COM_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
-         "${DBNROOT}/bin/dbn_alert" NTC_LOW BUFR "${job}" \
-          "${COM_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
-      fi
-      cp "${DATA}/${m}/gfs_collective${m}.fil" "${COM_ATMOS_BUFR}/."
+    if [[ ${SENDDBN} == 'YES' ]] ; then
+        cp "${DATA}/${m}/gfs_collective${m}.fil" "${COM_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
+        "${DBNROOT}/bin/dbn_alert" NTC_LOW BUFR "${job}" \
+				   "${COM_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
     fi
+    cp "${DATA}/${m}/gfs_collective${m}.fil" "${COM_ATMOS_BUFR}/."
 

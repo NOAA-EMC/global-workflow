@@ -147,8 +147,6 @@
 #                   Default is "$EXECUTIL/gettrk"
 #     BKGFREQ       Frequency of background files for relocation
 #                   Default is "3" 
-#     SENDCOM       String when set to "YES" copies output files to $COMSP
-#                   Default is "YES"
 #     SENDDBN       String when set to "YES" alerts output files to $COMSP
 #     NDATE         String indicating executable path for NDATE utility program
 #                   Default is "$EXECUTIL/ndate"
@@ -210,7 +208,6 @@ source "$HOMEgfs/ush/preamble.sh"
 
 MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 
-SENDCOM=${SENDCOM:-YES}
 export OPSROOT=${OPSROOT:-/lfs/h1/ops/prod}
 GRIBVERSION=${GRIBVERSION:-"grib2"}
 
@@ -687,21 +684,20 @@ else
    fi
    rm -f RELOCATE_GES cmd
 
-   if [ "$SENDCOM" = "YES" ]; then
-      cp "rel_inform1" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-      cp "tcvitals" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
-      if [ "$SENDDBN" = "YES" ]; then
-         if test "$RUN" = "gdas1"
-         then
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
-         fi
-         if test "$RUN" = "gfs"
-         then
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
-         fi
-      fi
+
+   cp "rel_inform1" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+   cp "tcvitals" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+   if [ "$SENDDBN" = "YES" ]; then
+       if test "$RUN" = "gdas1"
+       then
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+       fi
+       if test "$RUN" = "gfs"
+       then
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+       fi
    fi
 
 #  --------------------------------------------------------------------------
