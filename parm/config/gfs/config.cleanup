@@ -12,4 +12,14 @@ export CLEANUP_COM="YES"   # NO=retain ROTDIR.  YES default in cleanup.sh
 export RMOLDSTD=144
 export RMOLDEND=24
 
+# Specify the list of files to exclude from the first stage of cleanup
+# Because arrays cannot be exported, list is a single string of comma-
+# separated values. This string is split to form an array at runtime.
+case ${RUN} in
+	gdas | gfs)	exclude_string="*prepbufr*, *cnvstat*, *atmanl.nc" ;;
+	enkf*)      exclude_string="*f006.ens*" ;;
+	*)			exclude_string="" ;;
+esac
+export exclude_string
+
 echo "END: config.cleanup"

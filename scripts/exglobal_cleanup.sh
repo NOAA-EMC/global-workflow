@@ -33,18 +33,18 @@ function remove_files() {
         echo "No directory ${directory} to remove files from, skiping"
         return
     fi
-    local exclude_string=""
+    local find_exclude_string=""
     for exclude in "$@"; do
-        exclude_string+="${exclude_string} -name ${exclude} -or"
+        find_exclude_string+="${find_exclude_string} -name ${exclude} -or"
     done
     # Chop off any trailing or
-    exclude_string="${exclude_string[*]/%-or}"
+    find_exclude_string="${find_exclude_string[*]/%-or}"
     # Remove all regular files that do not match
     # shellcheck disable=SC2086
-    find "${directory}" -type f -not \( ${exclude_string} \) -delete
+    find "${directory}" -type f -not \( ${find_exclude_string} \) -delete
     # Remove all symlinks that do not match
     # shellcheck disable=SC2086
-    find "${directory}" -type l -not \( ${exclude_string} \) -delete
+    find "${directory}" -type l -not \( ${find_exclude_string} \) -delete
     # Remove any empty directories
     find "${directory}" -type d -empty -delete
 }
@@ -61,7 +61,7 @@ for (( current_date=first_date; current_date <= last_date; \
         if [[ $(tail -n 1 "${rocotolog}") =~ "This cycle is complete: Success" ]]; then
             YMD="${current_PDY}" HH="${current_cyc}" generate_com COM_TOP
             if [[ -d "${COM_TOP}" ]]; then
-                exclude_list=("*prepbufr*" "*cnvstat*" "*atmanl.nc")
+                IFS=", " read -r -a exclude_list <<< "${exclude_string:-}"
                 remove_files "${COM_TOP}" "${exclude_list[@]:-}"
             fi
             if [[ -d "${rtofs_dir}" ]] && (( current_date < last_rtofs )); then rm -rf "${rtofs_dir}" ; fi
