@@ -150,7 +150,7 @@ source "${topdir}/../workflow/gw_setup.sh"
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab"                    ; errs=$((errs + $?))
-checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "a283262"                    ; errs=$((errs + $?))
+checkout "gfs_utils.fd"    "https://github.com/davidhuber-noaa/gfs-utils"              "feature/spack-stack"                    ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471"                    ; errs=$((errs + $?))
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-4d05445}" ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
@@ -164,8 +164,8 @@ if [[ ${checkout_gdas} == "YES" ]]; then
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
-  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
-  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "45783e3"; errs=$((errs + $?))
+  checkout "gsi_utils.fd"    "https://github.com/davidhuber-noaa/GSI-Utils.git"   "feature/spack-stack"; errs=$((errs + $?))
+  checkout "gsi_monitor.fd"  "https://github.com/davidhuber-noaa/GSI-Monitor.git" "spack-stack"; errs=$((errs + $?))
 fi
 
 if (( errs > 0 )); then
