@@ -6,7 +6,6 @@ on:
       pr_number:
         description: PR number
         type: string
-  pull_request: [labeled]
 
 jobs:
 
