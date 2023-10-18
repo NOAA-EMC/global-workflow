@@ -13,14 +13,8 @@ export STATICB_TYPE="gsibec"
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
 export INTERP_METHOD='barycentric'
 
-export layout_x=1
-export layout_y=1
-
-export io_layout_x=1
-export io_layout_y=1
-
-export layout_gsib_x=$(echo "${layout_x} * 3" | bc)
-export layout_gsib_y=$(echo "${layout_y} * 2" | bc)
+export io_layout_x=@IO_LAYOUT_X@
+export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIEXE=${HOMEgfs}/exec/fv3jedi_var.x
 
