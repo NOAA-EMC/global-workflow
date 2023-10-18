@@ -857,6 +857,39 @@ class GFSTasks(Tasks):
 
         return task
 
+    def verfozn(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}analdiag'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('verfozn')
+        task = create_wf_task('verfozn', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def verfrad(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}analdiag'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('verfrad')
+        task = create_wf_task('verfrad', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def vminmon(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('vminmon')
+        task = create_wf_task('vminmon', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def vrfy(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
