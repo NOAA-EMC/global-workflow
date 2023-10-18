@@ -137,8 +137,6 @@ class AerosolAnalysis(Analysis):
         - applying the increments to the original RESTART files
         - moving the increment files to the ROTDIR
 
-        Please note that some of these steps are temporary and will be modified
-        once the model is able to read aerosol tracer increments.
         """
         # ---- tar up diags
         # path of output tar statfile
@@ -167,10 +165,12 @@ class AerosolAnalysis(Analysis):
         }
         FileHandler(yaml_copy).sync()
 
-        # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
-        # ---- all of the rest of this method will need to be changed but requires model and JEDI changes
         # ---- copy RESTART fv_tracer files for future reference
-        template = '{}.fv_tracer.res.tile{}.nc'.format(to_fv3time(self.task_config.current_cycle), '{tilenum}')
+        if self.task_config.DOIAU:
+            restarttime = self.task_config.AERO_WINDOW_BEGIN
+        else:
+            restarttime = self.task_config.current_cycle
+        template = '{}.fv_tracer.res.tile{}.nc'.format(to_fv3time(restarttime), '{tilenum}')
         bkglist = []
         for itile in range(1, self.task_config.ntiles + 1):
             tracer = template.format(tilenum=itile)
@@ -200,13 +200,16 @@ class AerosolAnalysis(Analysis):
     @logit(logger)
     def _add_fms_cube_sphere_increments(self: Analysis) -> None:
         """This method adds increments to RESTART files to get an analysis
-        NOTE this is only needed for now because the model cannot read aerosol increments.
-        This method will be assumed to be deprecated before this is implemented operationally
         """
+        if self.task_config.DOIAU:
+            restarttime = self.task_config.AERO_WINDOW_BEGIN
+        else:
+            restarttime = self.task_config.current_cycle
         # only need the fv_tracer files
-        template = f'{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
-        inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + template)
-        bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, template)
+        restart_template = f'{to_fv3time(restarttime)}.fv_tracer.res.tile{{tilenum}}.nc'
+        increment_template = f'{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
+        inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + increment_template)
+        bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, restart_template)
         # get list of increment vars
         incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aeroanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
