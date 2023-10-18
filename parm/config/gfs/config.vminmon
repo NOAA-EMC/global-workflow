@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+########## config.vminmon ##########
+echo "BEGIN: config.vminmon"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" vminmon
+
+CDATEm1c=$(${NDATE} -06 "${PDY}${cyc}")
+PDYm1c=${CDATEm1c:0:8}
+pcyc=${CDATEm1c:8:2}
+
+export MINMON_SUFFIX="${PSLOT}"
+
+export TANKverf="${NOSCRUB}/monitor/minmon"
+export M_TANKverf="${TANKverf}/stats/${PSLOT}/${RUN}.${PDY}/${cyc}"
+export M_TANKverfM0="${TANKverf}/stats/${PSLOT}/${RUN}.${PDY}/${cyc}"
+export M_TANKverfM1="${TANKverf}/stats/${PSLOT}/${RUN}.${PDYm1c}/${pcyc}"
+
+echo "END: config.vminmon"
