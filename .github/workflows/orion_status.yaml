@@ -30,17 +30,19 @@ jobs:
           echo "labels=$LABELS" >> $GITHUB_OUTPUT
 
   Ready:
-    if: contains( needs.getlabels.outputs.labels, 'CI-Orion-Ready')
     runs-on: ubuntu-latest
     needs:
      - getlabels
 
     steps:
     - name: Ready
-      run: echo "Ready"
+      run:  |
+        until[ $ready ]
+        do
+          ready=$(${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Ready') }})
+        done  
 
   Building:
-    if: contains( needs.getlabels.outputs.labels, 'CI-Orion-Building')
     runs-on: ubuntu-latest
     needs:
      - getlabels
@@ -48,10 +50,13 @@ jobs:
 
     steps:
     - name: Building
-      run: echo "Building"
+      run: |
+        until[ $building ]
+        do
+          building=$(${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Building') }})
+        done  
 
   Passed:
-    if: contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed')
     runs-on: ubuntu-latest
     needs:
      - getlabels
@@ -59,4 +64,8 @@ jobs:
 
     steps:
     - name: Passed
-      run: echo "Passed"
+      run: |
+        until[ $passed ]
+        do
+          passed=$(${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed') }})
+        done  
