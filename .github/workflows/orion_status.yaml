@@ -2,8 +2,11 @@ name: OrionStatus
 
 on:
   workflow_dispatch:
-    pull_request:
-    types: [labeled]
+    inputs:
+      pr_number:
+        description: PR number
+        type: string
+  pull_request: [labeled]
 
 jobs:
 
@@ -18,7 +21,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
-          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          PULL_REQUEST_NUMBER: ${{ inputs.pr_number }}
         run: |
           LABELS1="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
           LABELS=$(echo "$LABELS1" | tr '\n' ' ')
