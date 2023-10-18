@@ -31,7 +31,6 @@ jobs:
     needs:
      - getlabels
 
-    steps:
     - name: Ready
       run:  |
         until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Ready') }}
@@ -45,7 +44,6 @@ jobs:
      - getlabels
      - Ready
 
-    steps:
     - name: Building
       run: |
         until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Building') }}
@@ -59,7 +57,6 @@ jobs:
      - getlabels
      - Building
 
-    steps:
     - name: Passed
       run: |
         until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed') }}
