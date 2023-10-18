@@ -39,7 +39,8 @@ jobs:
       run:  |
         until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Ready') }}
         do
-        done  
+         noop=""
+        done
 
   Building:
     runs-on: ubuntu-latest
@@ -52,7 +53,8 @@ jobs:
       run: |
         until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Building') }}
         do
-        done  
+         noop=""
+        done
 
   Passed:
     runs-on: ubuntu-latest
@@ -65,4 +67,5 @@ jobs:
       run: |
         until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed') }}
         do
-        done  
+         noop=""
+        done
