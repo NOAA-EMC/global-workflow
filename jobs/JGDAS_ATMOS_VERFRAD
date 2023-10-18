@@ -4,7 +4,7 @@
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 
 export COMPONENT="atmos"
 

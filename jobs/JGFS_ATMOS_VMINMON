@@ -4,7 +4,7 @@
 # GFS Minimization Monitor (MinMon) job
 ###########################################################
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "vminmon" -c "base vminmon"
 
 ###########################################################
 # obtain unique process id (pid) and make temp directories
