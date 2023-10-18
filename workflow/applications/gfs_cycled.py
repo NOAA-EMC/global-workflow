@@ -56,6 +56,15 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
+        if self.do_verfozn:
+            configs += ['verfozn']
+
+        if self.do_verfrad:
+            configs += ['verfrad']
+
+        if self.do_vminmon:
+            configs += ['vminmon']
+
         if self.do_metp:
             configs += ['metp']
 
@@ -159,6 +168,16 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_fit2obs:
             gdas_tasks += ['fit2obs']
 
+        if self.do_verfozn:
+            gdas_tasks += ['verfozn']
+
+        if self.do_verfrad:
+            gdas_tasks += ['verfrad']
+
+        if self.do_vminmon:
+            gdas_tasks += ['vminmon']
+
+        gdas_tasks += gdas_gfs_common_cleanup_tasks
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
         # Collect "gfs" cycle tasks
@@ -170,6 +189,9 @@ class GFSCycledAppConfig(AppConfig):
         gfs_tasks += ['fcst']
 
         gfs_tasks += gdas_gfs_common_tasks_after_fcst
+
+        if self.do_vminmon:
+            gfs_tasks += ['vminmon']
 
         if self.do_metp:
             gfs_tasks += ['metp']
