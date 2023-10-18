@@ -34,10 +34,8 @@ jobs:
     steps:
     - name: Ready
       run:  |
-        ready=false
-        until $ready
+        until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Ready') }}
         do
-          ready=$(${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Ready') }})
         done  
 
   Building:
@@ -49,10 +47,8 @@ jobs:
     steps:
     - name: Building
       run: |
-        building=false
-        until $building
+        until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Building') }}
         do
-          building=$(${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Building') }})
         done  
 
   Passed:
@@ -64,8 +60,6 @@ jobs:
     steps:
     - name: Passed
       run: |
-        passed=false
-        until $passed
+        until ${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed') }}
         do
-          passed=$(${{ contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed') }})
         done  
