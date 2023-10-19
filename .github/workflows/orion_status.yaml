@@ -40,7 +40,7 @@ jobs:
 
   Building:
     runs-on: ubuntu-latest
-    needs: get_Building
+    needs: [get_Building, Ready]
     steps:
       - run: |
          if [[ ${{ needs.get_Building.outputs.state }}  ]]; then
@@ -58,7 +58,7 @@ jobs:
 
   Running:
     runs-on: ubuntu-latest
-    needs: get_Running
+    needs: [get_Running, Building]
     steps:
       - run: |
          if [[ ${{ needs.get_Running.outputs.state }}  ]]; then
