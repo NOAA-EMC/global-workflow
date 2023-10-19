@@ -157,13 +157,11 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
       gpend
     fi
 
-    if [ $SENDCOM = "YES" ] ; then
-      cpfs "${GEMGRD}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
-      if [ $SENDDBN = "YES" ] ; then
+    cpfs "${GEMGRD}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
+    if [ $SENDDBN = "YES" ] ; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
-      else
+    else
         echo "##### DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} ${job} ${COM_WAVE_GEMPAK}/${GEMGRD}#####"
-      fi
     fi
     rm grib_$grid
   done

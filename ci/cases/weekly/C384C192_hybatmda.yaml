@@ -1,18 +1,18 @@
 experiment:
-  type: gfs
+  system: gfs
   mode: cycled
 
 arguments:
-  pslot: ${pslot}
+  pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdet: 384
   resens: 192
-  comrot: ${RUNTESTS}/COMROT
-  expdir: ${RUNTESTS}/EXPDIR
-  icsdir: ${ICSDIR_ROOT}/C384C192
+  comrot: {{ 'RUNTESTS' | getenv }}/COMROT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C384C192
   idate: 2023040118
   edate: 2023040200
   nens: 2
   gfs_cyc: 1
   start: cold
-  yaml: ${HOMEgfs_PR}/ci/platforms/gfs_defaults_ci-updates.yaml
+  yaml: {{ HOMEgfs }}/ci/platforms/gfs_defaults_ci.yaml

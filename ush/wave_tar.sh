@@ -77,7 +77,7 @@ source "$HOMEgfs/ush/preamble.sh"
 #     The tested variables should be exported by the postprocessor script.
 
   if [[ -z "${cycle}" ]] || [[ -z "${COM_WAVE_STATION}" ]] || [[ -z "${WAV_MOD_TAG}" ]] ||  \
-     [[ -z "${SENDCOM}" ]] || [[ -z "${SENDDBN}" ]] || [[ -z "${STA_DIR}" ]]; then
+     [[ -z "${SENDDBN}" ]] || [[ -z "${STA_DIR}" ]]; then
     set +x
     echo ' '
     echo '*****************************************************'

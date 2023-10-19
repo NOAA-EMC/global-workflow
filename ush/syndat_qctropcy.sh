@@ -63,8 +63,6 @@
 #   copy_back - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
-#   SENDCOM     switch  copy output files to $COMSP
-#                (Default: YES)
 #   files_override - switch to override default "files" setting for given run
 #                (Default: not set)
 #   TIMEIT   - optional time and resource reporting (Default: not set)
@@ -83,7 +81,6 @@ PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}
 
 slmask=${slmask:-$FIXSYND/syndat_slmask.t126.gaussian}
 copy_back=${copy_back:-YES}
-SENDCOM=${SENDCOM:-YES}
 files_override=${files_override:-""}
 
 cd $DATA
@@ -119,13 +116,11 @@ positional parameter 1"
 #  to remote machine(s)
 #  (Note: Only do so if files don't already exist)
 
-   if [ $SENDCOM = YES ]; then
-      if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
-         cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
-      fi
-      if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}" ]]; then
-         cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
-      fi
+   if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
+       cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+   fi
+   if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}" ]]; then
+       cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
    fi
 
    exit
@@ -296,13 +291,11 @@ if [ "$errqct" -gt '0' ];then
 #  wasting time with multiple attempts to remote machine(s)
 #  (Note: Only do so if files don't already exist)
 
-   if [ $SENDCOM = YES ]; then
-      if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
-         cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
-      fi
-      if [[ ! -s ${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark} ]]; then
-         cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
-      fi
+   if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
+       cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+   fi
+   if [[ ! -s ${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark} ]]; then
+       cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
    fi
 
    exit
@@ -379,7 +372,7 @@ fi
 
 
 #  This is the file that connects to the later RELOCATE and/or PREP scripts
-[ $SENDCOM = YES ]  &&  cp current "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+cp current "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
 
 #  Create the DBNet alert 
 if [ $SENDDBN = "YES" ]
@@ -388,6 +381,6 @@ then
 fi
     
 #  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
-[ $SENDCOM = YES ]  &&  cp fnoc "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+cp fnoc "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
 
 exit

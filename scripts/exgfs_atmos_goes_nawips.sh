@@ -103,15 +103,13 @@ EOF
 
   $GEMEXE/gpend
 
-  if [ $SENDCOM = "YES" ] ; then
-     cp $GEMGRD $COMOUT/.$GEMGRD
-     mv $COMOUT/.$GEMGRD $COMOUT/$GEMGRD
-     if [ $SENDDBN = "YES" ] ; then
-         $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-           $COMOUT/$GEMGRD
-     else
-       echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
-     fi
+  cp $GEMGRD $COMOUT/.$GEMGRD
+  mv $COMOUT/.$GEMGRD $COMOUT/$GEMGRD
+  if [ $SENDDBN = "YES" ] ; then
+      $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
+			     $COMOUT/$GEMGRD
+  else
+      echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
   fi
 
   let fhcnt=fhcnt+finc

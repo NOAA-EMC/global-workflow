@@ -381,6 +381,7 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
    case ${CASE} in
       C384)
         npes=480
+        export memory_ocnanalchkpt="2.8TB"
         ;;
       C48)
         npes=16
@@ -390,7 +391,7 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
           exit 1
     esac
 
-    export wtime_ocnanalrun="00:30:00"
+    export wtime_ocnanalrun="00:15:00"
     export npe_ocnanalrun=${npes}
     export nth_ocnanalrun=1
     export is_exclusive=True

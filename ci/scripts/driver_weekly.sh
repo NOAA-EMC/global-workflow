@@ -8,13 +8,13 @@ set -eux
 #
 # Abstract:
 #
-# This script runs the high resolution cases found in $HOMEgfs/ci/cases/weekly
+# This script runs the high resolution cases found in ${HOMEgfs}/ci/cases/weekly
 # from the develop branch for the global-workflow repo that are intended to run on a weekly basis
 # from a cron job. When run it will clone and build a new branch from the EMC's global-workflow and
 # and create a pr using GitHub CLI by moving and replacing the yaml case files in
 # ${HOMEgfs}/ci/cases/weekly to {HOMEgfs}/ci/cases/pr.  Then the requisite labels are added
 # so that the current BASH CI framework can then run these cases.  Since this script
-# creates a PR with the CI-Ready labels, the BASH CI framework will automatically run these cases 
+# creates a PR with the CI-Ready labels, the BASH CI framework will automatically run these cases
 # from that point so it is only required to run this script once from a single machine.
 ##############################################################################################
 
@@ -27,7 +27,7 @@ export REPO_URL="ssh://git@ssh.github.com:443/NOAA-EMC/global-workflow.git"
 ################################################################
 # Setup the relative paths to scripts and PS4 for better logging
 ################################################################
-HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
+ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE[0]})[${LINENO}]'
@@ -36,11 +36,11 @@ export PS4='+ $(basename ${BASH_SOURCE[0]})[${LINENO}]'
 # Set up runtime environment variables for accounts on supported machines
 #########################################################################
 
-source "${HOMEgfs}/ush/detect_machine.sh"
+source "${ROOT_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
     echo "Running Automated Testing on ${MACHINE_ID}"
-    source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+    source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -52,8 +52,8 @@ esac
 # setup runtime env for correct python install and git
 ######################################################
 set +x
-source "${HOMEgfs}/ush/module-setup.sh"
-module use "${HOMEgfs}/modulefiles"
+source "${ROOT_DIR}/ush/module-setup.sh"
+module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 set -x
 
@@ -71,7 +71,7 @@ cd global-workflow || exit 1
 git checkout -b "${branch}"
 
 ######################################################
-# move yaml files from ci/cases/weekly to ci/cases/pr 
+# move yaml files from ci/cases/weekly to ci/cases/pr
 # and push new branch for PR weekly CI tests to GitHub
 REPO_OWNER="emcbot"
 REPO_NAME="global-workflow"
