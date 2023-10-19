@@ -11,7 +11,7 @@ gcyc="${GDATE:8:2}"
 MEMDIR_ARRAY=()
 if [[ "${RUN}" == "gefs" ]]; then
   # Populate the member_dirs array based on the value of NMEM_ENS
-  for ((ii = 0; ii < "${NMEM_ENS}"; ii++)); do
+  for ((ii = 0; ii <= "${NMEM_ENS}"; ii++)); do
     MEMDIR_ARRAY+=("mem$(printf "%03d" "${ii}")")
   done
 else
@@ -30,7 +30,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   # Stage the FV3 initial conditions to ROTDIR (cold start)
   YMD=${PDY} HH=${cyc} generate_com COM_ATMOS_INPUT
   [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
-  src="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${MEMDIR}/atmos/gfs_ctrl.nc"
+  src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
   tgt="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
   ${NCP} "${src}" "${tgt}"
   rc=$?
@@ -38,7 +38,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   err=$((err + rc))
   for ftype in gfs_data sfc_data; do
     for tt in $(seq 1 6); do
-      src="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
+      src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
       tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
       ${NCP} "${src}" "${tgt}"
       rc=$?
@@ -86,7 +86,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   if [[ "${DO_ICE:-}" = "YES" ]]; then
     YMD=${gPDY} HH=${gcyc} generate_com COM_ICE_RESTART
     [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
-    src="${BASE_CPLIC}/${CPL_ATMIC}/${YMD}${HH}/${MEMDIR}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
+    src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
     tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
     ${NCP} "${src}" "${tgt}"
     rc=$?
