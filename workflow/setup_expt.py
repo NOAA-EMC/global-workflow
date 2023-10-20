@@ -219,7 +219,7 @@ def fill_COMROT_cycled(host, inputs):
     src_dir = os.path.join(inputs.icsdir, current_cycle_dir, src_atm_anl_dir)
     dst_dir = os.path.join(comrot, current_cycle_dir, dst_atm_anl_dir)
     makedirs_if_missing(dst_dir)
-    for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat']:
+    for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat', 'atminc.nc']:
         fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
         src_file = os.path.join(src_dir, fname)
         if os.path.exists(src_file):

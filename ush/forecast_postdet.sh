@@ -678,12 +678,21 @@ MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
   # Copy MOM6 ICs
-  ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+  if [[ "${DOIAU}" = "YES" ]]; then
+    sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
+    sPDY="${sCDATE:0:8}"
+    scyc="${sCDATE:8:2}"
+  else
+    sPDY=${PDY}
+    scyc=${cyc} 
+  fi
+
+  ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
   case ${OCNRES} in
     "025")
       for nn in $(seq 1 4); do
-        if [[ -f "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
-          ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
+        if [[ -f "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res_${nn}.nc" ]]; then
+          ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
         fi
       done
     ;;
@@ -904,7 +913,15 @@ CICE_postdet() {
 
   # Copy CICE ICs
   echo "Link CICE ICs"
-  cice_restart_file="${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc"
+  if [[ "${DOIAU}" = "YES" ]]; then
+    sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
+    sPDY="${sCDATE:0:8}"
+    scyc="${sCDATE:8:2}"
+    cice_restart_file="${COM_ICE_RESTART_PREV}/${sPDY}.${scyc}0000.cice_model.res.nc"
+  else
+    cice_restart_file="${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc"
+  fi
+
   if [[ ! -f "${cice_restart_file}" ]]; then
     echo "FATAL ERROR: CICE restart file not found at '${cice_restart_file}', ABORT!"
     exit 112

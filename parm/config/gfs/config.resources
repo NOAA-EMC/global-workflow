@@ -381,10 +381,11 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
    case ${CASE} in
       C384)
         npes=480
-        export memory_ocnanalchkpt="2.8TB"
+        memory_ocnanalrun="128GB"
         ;;
       C48)
         npes=16
+        memory_ocnanalrun="64GB"
         ;;
       *)
           echo "FATAL: Resolution not supported'"
@@ -393,10 +394,11 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
 
     export wtime_ocnanalrun="00:15:00"
     export npe_ocnanalrun=${npes}
-    export nth_ocnanalrun=1
+    export nth_ocnanalrun=2
     export is_exclusive=True
     npe_node_ocnanalrun=$(echo "${npe_node_max} / ${nth_ocnanalrun}" | bc)
     export npe_node_ocnanalrun
+    export memory_ocnanalrun
 
 elif [[ "${step}" = "ocnanalchkpt" ]]; then
 

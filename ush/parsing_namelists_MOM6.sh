@@ -75,6 +75,8 @@ sed -e "s/@\[DT_THERM_MOM6\]/${DT_THERM_MOM6}/g" \
     -e "s/@\[CHLCLIM\]/${CHLCLIM}/g" \
     -e "s/@\[DO_OCN_SPPT\]/${OCN_SPPT}/g" \
     -e "s/@\[PERT_EPBL\]/${PERT_EPBL}/g" \
+    -e "s/@\[MOM6_DIAG_COORD_DEF_Z_FILE\]/${MOM6_DIAG_COORD_DEF_Z_FILE}/g" \
+    -e "s/@\[MOM6_DIAG_MISVAL\]/${MOM6_DIAG_MISVAL}/g" \
     -e "s/@\[ODA_INCUPD_NHOURS\]/${ODA_INCUPD_NHOURS}/g" \
     -e "s/@\[ODA_INCUPD\]/${ODA_INCUPD}/g" "${DATA}/INPUT/MOM_input_template_${OCNRES}" > "${DATA}/INPUT/MOM_input"
 rm "${DATA}/INPUT/MOM_input_template_${OCNRES}"

@@ -256,6 +256,8 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="4.0e-1"
+      MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
+      MOM6_DIAG_MISVAL="0.0"
       ;;
     "100")
       ntasks_mom6=20
@@ -295,6 +297,13 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
+      if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      fi
       ;;
     *)
       echo "FATAL ERROR: Unsupported MOM6 resolution = ${mom6_res}, ABORT!"
@@ -311,6 +320,8 @@ if [[ "${skip_mom6}" == "false" ]]; then
   export MOM6_RIVER_RUNOFF
   export MOM6_RESTART_SETTING
   export eps_imesh
+  export MOM6_DIAG_COORD_DEF_Z_FILE
+  export MOM6_DIAG_MISVAL
 fi
 
 # CICE6 specific settings
