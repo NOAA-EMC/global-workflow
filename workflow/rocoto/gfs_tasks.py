@@ -948,7 +948,7 @@ class GFSTasks(Tasks):
     def cleanup(self):
         deps = []
         if 'enkf' in self.cdump:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdaseamn'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}eamn'}
             deps.append(rocoto.add_dependency(dep_dict))
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}arch'}
