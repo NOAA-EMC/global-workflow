@@ -202,8 +202,10 @@ elif [[ "${step}" = "atmanlrun" ]]; then
     export layout_x=1
     export layout_y=1
 
-    export layout_gsib_x=$(echo "${layout_x} * 3" | bc)
-    export layout_gsib_y=$(echo "${layout_y} * 2" | bc)
+    layout_gsib_x=$(echo "${layout_x} * 3" | bc)
+    export layout_gsib_x
+    layout_gsib_y=$(echo "${layout_y} * 2" | bc)
+    export layout_gsib_y
 
     export wtime_atmanlrun="00:30:00"
     npe_atmanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
