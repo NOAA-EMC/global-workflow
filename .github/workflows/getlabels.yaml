@@ -54,4 +54,7 @@ jobs:
              fi
           done
           echo "state=$DONE"
-          echo "state=$DONE" >> ${GITHUB_OUPUT}
+          var file = Environment.GetEnvironmentVariable("GITHUB_OUTPUT");
+          var content = System.IO.File.ReadAllText(file);
+          System.IO.File.WriteAllText(file, content + "state=${DONE}" + "\n");
+          # echo "state=$DONE" >> ${GITHUB_OUPUT}
