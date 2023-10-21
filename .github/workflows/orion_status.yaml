@@ -36,7 +36,7 @@ jobs:
   get_Building:       
     uses: ./.github/workflows/getlabels.yaml
     with:
-      pr_number: inputs.pr_number
+      pr_number: ${{ inputs.pr_number }}
       max_runtime: 40
       stage: "Building"
     secrets: inherit
@@ -54,7 +54,7 @@ jobs:
   get_Running:
     uses: ./.github/workflows/getlabels.yaml
     with:
-      pr_number: inputs.pr_number
+      pr_number: ${{ inputs.pr_number }}
       max_runtime: 60
       stage: "Running"
     secrets: inherit
