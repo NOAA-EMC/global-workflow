@@ -39,7 +39,7 @@ jobs:
           count=0
           until false
           do
-             echo "$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name'"
+             echo "gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name'"
              LABELS1="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
              LABELS=$(echo "$LABELS1" | tr '\n' ' ')
              check_label="CI-Orion-${STAGE}"
