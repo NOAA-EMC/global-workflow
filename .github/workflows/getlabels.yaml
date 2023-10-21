@@ -17,6 +17,10 @@ on:
             required: true
             type: string
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
 
  getlabels:
@@ -54,4 +58,4 @@ jobs:
              fi
           done
           echo "state=${DONE}"
-          echo "state=${DONE}" >> $env:GITHUB_OUTPUT
+          echo "state=${DONE}" >> $GITHUB_OUTPUT
