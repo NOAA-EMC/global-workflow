@@ -18,9 +18,6 @@ on:
             description: "The return state of Stage (true/false)"
             value: ${{ jobs.getlabels.outputs.state }}
 
-      secrets:
-        token:
-            required: true      
 jobs:
 
  getlabels:
