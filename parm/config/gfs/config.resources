@@ -799,6 +799,10 @@ elif [[ ${step} = "stage_ic" ]]; then
 
 elif [[ "${step}" = "atmensanlinit" ]]; then
 
+    # make below case dependent later
+    export layout_x=1
+    export layout_y=1
+
     export wtime_atmensanlinit="00:10:00"
     export npe_atmensanlinit=1
     export nth_atmensanlinit=1
