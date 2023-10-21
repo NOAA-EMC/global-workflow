@@ -35,12 +35,23 @@ jobs:
           STAGE: ${{ inputs.stage }}
           MAX_TIME: ${{ inputs.max_runtime }}
         run: |
-          echo "gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name'"
-          LABELS1="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
-          LABELS=$(echo "$LABELS1" | tr '\n' ' ')
-          check_label="CI-Orion-${STAGE}"
-          if [[ "${LABELS}" == *"${check_label}"* ]]; then
-              DONE=true
-              break
-          fi   
+          DONE=false
+          count=0
+          until false
+          do
+             echo "$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name'"
+             LABELS1="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
+             LABELS=$(echo "$LABELS1" | tr '\n' ' ')
+             check_label="CI-Orion-${STAGE}"
+             if [[ "${LABELS}" == *"${check_label}"* ]]; then
+                DONE=true
+                break
+             fi   
+             sleep 10m
+             count=$((count+10))
+             if [[ ${count} -gt ${MAX_TIME} ]]; then
+                DONE=false
+                break
+             fi
+          done
           echo "state=$DONE" >> $GITHUB_OUPUT   
