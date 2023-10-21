@@ -25,10 +25,10 @@ jobs:
     needs: get_Ready
     steps:
      - run:  |
-         if [[ "${{ needs.get_Ready.outputs.state }}" == "false"  ]]; then
+         if [[ ${{ needs.get_Ready.outputs.state }} == "false"  ]]; then
            echo "Ready Timmed out"
            exit 1
-         elif [[ "${{ needs.get_Ready.outputs.state }}" == "true"  ]]; then
+         elif [[ ${{ needs.get_Ready.outputs.state }} == "true"  ]]; then
            echo "Ready Set"
          fi  
 
