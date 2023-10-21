@@ -54,4 +54,4 @@ jobs:
              fi
           done
           echo "state=$DONE"
-          echo "state=$DONE" >> "${GITHUB_OUPUT}"
+          echo "state=$DONE" >> ${GITHUB_OUPUT}
