@@ -1,0 +1,57 @@
+name: Get Labels
+
+on:
+  workflow_call:
+      outputs:
+        state:
+            description: "The return state of Stage (true/false)"
+            value: ${{ jobs.getlabels.outputs.state }}
+      inputs:
+         pr_number:
+            required: true
+            type: string
+         max_runtime:
+            required: false
+            type: string
+         stage: 
+            required: true
+            type: string
+
+jobs:
+
+ getlabels:
+    runs-on: ubuntu-latest
+    outputs:
+      state: ${{ steps.id.outputs.state }}
+    steps:
+      - name: Get Label Steps
+        id: id
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ inputs.pr_number }}
+          STAGE: ${{ inputs.stage }}
+          MAX_TIME: ${{ inputs.max_runtime }}
+        run: |
+          DONE=false
+          count=0
+          until false
+          do
+             echo "gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name'"
+             LABELS1="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
+             LABELS=$(echo "$LABELS1" | tr '\n' ' ')
+             check_label="CI-Orion-${STAGE}"
+             if [[ "${LABELS}" == *"${check_label}"* ]]; then
+                DONE=true
+                break
+             fi   
+             sleep 10m
+             count=$((count+10))
+             if [[ ${count} -gt ${MAX_TIME} ]]; then
+                DONE=false
+                break
+             fi
+          done
+          echo "state=${DONE}"
+          echo "state=${DONE}" >> ${GITHUB_OUPUT}
