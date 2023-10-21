@@ -2,6 +2,10 @@ name: Get Labels
 
 on:
   workflow_call:
+      outputs:
+        state:
+            description: "The return state of Stage (true/false)"
+            value: ${{ jobs.getlabels.outputs.state }}
       inputs:
          pr_number:
             required: true
@@ -12,11 +16,6 @@ on:
          stage: 
             required: true
             type: string
-
-      outputs:
-        state:
-            description: "The return state of Stage (true/false)"
-            value: ${{ jobs.getlabels.outputs.state }}
 
 jobs:
 
