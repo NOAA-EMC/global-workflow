@@ -16,7 +16,7 @@ on:
 jobs:
 
   get_Ready:
-    uses: ./.github/workflows/getlabels.yaml
+    uses: ./.github/workflows/getlabels.yml
     with:
       pr_number: ${{ inputs.pr_number }}
       max_runtime: 20
@@ -28,9 +28,11 @@ jobs:
     needs: get_Ready
     steps:
      - run:  |
-         if [[ ${{ needs.get_Ready.outputs.state }}  ]]; then
-           echo "Waiting for Ready State timmed out"
+         if [[ "${{ needs.get_Ready.outputs.state }}" == "false"  ]]; then
+           echo "Ready Timmed out"
            exit 1
+         elif [[ "${{ needs.get_Ready.outputs.state }}" == "true"  ]]; then
+           echo "Ready Set"
          fi  
 
   get_Building:    
@@ -47,10 +49,12 @@ jobs:
     needs:  get_Building
     steps:
       - run: |
-         if [[ ${{ needs.get_Building.outputs.state }}  ]]; then
-           echo "Waiting for Ready State timmed out"
+         if [[ "${{ needs.get_Building.outputs.state }}" == "false"  ]]; then
+           echo "Building Timmed out"
            exit 1
-         fi
+         elif [[ "${{ needs.get_Building.outputs.state }}" == "true"  ]]; then
+           echo "Building Set"
+         fi  
 
   get_Running:
     uses: ./.github/workflows/getlabels.yaml
@@ -66,7 +70,9 @@ jobs:
     needs:  get_Running
     steps:
       - run: |
-         if [[ ${{ needs.get_Running.outputs.state }}  ]]; then
-           echo "Waiting for Ready State timmed out"
+         if [[ "${{ needs.get_Running.outputs.state }}" == "false"  ]]; then
+           echo "Running Timmed out"
            exit 1
+         elif [[ "${{ needs.get_Running.outputs.state }}" == "true"  ]]; then
+           echo "Running Set"
          fi  
