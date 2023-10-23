@@ -9,6 +9,5 @@ echo "BEGIN: config.waveawipsbulls"
 . $EXPDIR/config.resources waveawipsbulls
 
 export DBNROOT=/dev/null
-export SENDCOM="YES"
 
 echo "END: config.waveawipsbulls"

@@ -14,7 +14,6 @@ export cdate10=${PDY}${cyc}
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="$HOMEgfs/scripts/exglobal_atmos_tropcy_qc_reloc.sh"
-export SENDCOM=YES
 
 export COMINtcvital=${COMINtcvital:-${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos}
 export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}

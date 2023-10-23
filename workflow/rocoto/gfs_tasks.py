@@ -944,6 +944,23 @@ class GFSTasks(Tasks):
 
         return task
 
+    # Cleanup
+    def cleanup(self):
+        deps = []
+        if 'enkf' in self.cdump:
+            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}eamn'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}arch'}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('cleanup')
+        task = create_wf_task('cleanup', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     # Start of ensemble tasks
     def eobs(self):
         deps = []
