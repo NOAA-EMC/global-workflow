@@ -61,13 +61,13 @@ fi
 if [[ ${DO_OCN} == "YES" ]]; then
   YMD=${PDY} HH=${cyc} generate_com -rx COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT \
     COM_OCEAN_HISTORY COM_OCEAN_ANALYSIS
-  RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
+  RUN=${CDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
     COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
 fi
 
 if [[ ${DO_ICE} == "YES" ]]; then
   YMD=${PDY} HH=${cyc} generate_com -rx COM_ICE_HISTORY COM_ICE_INPUT COM_ICE_RESTART
-  RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
+  RUN=${CDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
     COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
 fi
 
