@@ -190,7 +190,7 @@ global-workflow execution may be loaded as follows.
 
    user@host:$ module unuse /opt/cray/craype/default/modulefiles
    user@host:$ module unuse /opt/cray/modulefiles
-   user@host:$ module use /contrib/global-workflow/spack-stack/miniconda/modulefiles/miniconda
+   user@host:$ module use /contrib/emc_static/spack-stack/miniconda/modulefiles/miniconda
    user@host:$ module load py39_4.12.0
    user@host:$ module load rocoto/1.3.3
 
