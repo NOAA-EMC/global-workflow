@@ -10,7 +10,6 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
-
 export job="waveprep"
 export jobid="${job}.$$"
 
