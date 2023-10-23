@@ -20,7 +20,7 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
     module load cfp
     module load libjpeg
   else
-     module load prod-util
+    module load prod-util
   fi
   module load wgrib2
   export WGRIB2=wgrib2
