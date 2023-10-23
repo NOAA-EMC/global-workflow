@@ -35,10 +35,6 @@ _top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "INFO"), colored_log=True)
 
 
-# Setup the logger
-logger = Logger(level='DEBUG', colored_log=True)
-
-
 @logit(logger)
 def input_args():
     """
