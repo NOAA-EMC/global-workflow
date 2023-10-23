@@ -150,8 +150,10 @@ source "${topdir}/../workflow/gw_setup.sh"
 
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
+# Checkout UFS submodules in parallel
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-4d05445}" "8" ; errs=$((errs + $?))
 
+# Run all other checkouts simultaneously with just 1 core each to handle submodules.
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab" "1" &
 checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "a283262" "1" &
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471" "1" &
@@ -170,6 +172,7 @@ if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
   checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "45783e3" "1" &
 fi
 
+# Go through each PID and verify no errors were reported.
 for checkout_pid in $(jobs -p); do
   wait "${checkout_pid}" || errs=$((errs + $?))
 done
