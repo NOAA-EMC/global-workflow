@@ -22,7 +22,8 @@ class Tasks:
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
-                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
+                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
+                   'atmanlpost']
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
 
@@ -60,7 +61,7 @@ class Tasks:
     @staticmethod
     def _get_hybgroups(nens: int, nmem_per_group: int, start_index: int = 1):
         ngrps = nens / nmem_per_group
-        groups = ' '.join([f'{x:02d}' for x in range(start_index, int(ngrps) + 1)])
+        group = [f'{x:02d}' for x in range(start_index, int(ngrps) + 1)])
         return groups
 
     def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:

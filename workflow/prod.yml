@@ -87,6 +87,10 @@ suites:
                   FHRLST: 'f( )'
                   FHR: 'f( )'
                   HR: '( )'
+              # TODO: No description; is this for production only
+              # (i.e., operations); I am going to need explicit
+              # documentation, in particular `template`.
+              # jgfs_atmosanl_post_f( 384 ):
           post_processing:
             bufr_sounding:
               tasks:
