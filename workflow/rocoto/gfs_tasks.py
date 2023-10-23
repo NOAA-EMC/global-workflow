@@ -366,7 +366,8 @@ class GFSTasks(Tasks):
 
     def ocnanalprep(self):
 
-        ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"])
+        ocean_hist_path = self._template_to_rocoto_cycstring(
+            self._base["COM_OCEAN_HISTORY_TMPL"])
 
         deps = []
         data = f'{ocean_hist_path}/gdas.t@Hz.ocnf009.nc'
@@ -375,11 +376,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ocnanalprep')
-        task = create_wf_task('ocnanalprep',
-                              resources,
-                              cdump=self.cdump,
-                              envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('ocnanalprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -391,11 +388,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ocnanalbmat')
-        task = create_wf_task('ocnanalbmat',
-                              resources,
-                              cdump=self.cdump,
-                              envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('ocnanalbmat', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -407,11 +400,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ocnanalrun')
-        task = create_wf_task('ocnanalrun',
-                              resources,
-                              cdump=self.cdump,
-                              envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('ocnanalrun', resources,cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -427,11 +416,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalchkpt')
-        task = create_wf_task('ocnanalchkpt',
-                              resources,
-                              cdump=self.cdump,
-                              envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('ocnanalchkpt', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -443,11 +428,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalpost')
-        task = create_wf_task('ocnanalpost',
-                              resources,
-                              cdump=self.cdump,
-                              envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('ocnanalpost', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -459,11 +440,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalvrfy')
-        task = create_wf_task('ocnanalvrfy',
-                              resources,
-                              cdump=self.cdump,
-                              envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('ocnanalvrfy', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -503,14 +480,18 @@ class GFSTasks(Tasks):
             deps = []
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aerosol_init'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
+            dep_dict = {'type': 'cycleexist',
+                        'condition': 'not', 'offset': offset}
             deps.append(rocoto.add_dependency(dep_dict))
-            dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
+            dependencies.append(rocoto.create_dependency(
+                dep_condition='or', dep=deps))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
+        dependencies = rocoto.create_dependency(
+            dep_condition='and', dep=dependencies)
 
         resources = self.get_resource('fcst')
-        task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('fcst', resources, cdump=self.cdump,
+                              envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -546,27 +527,36 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
         resources = self.get_resource('fcst')
-        task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
 
     def post(self):
         add_anl_to_post = False
         if self.app_config.mode in ['cycled']:
-            add_anl_to_post = True
+            # TODO: Setting to `False` since it should do nothing.
+            add_anl_to_post = False
 
         return self._post_task('post', add_anl_to_post=add_anl_to_post)
 
     def ocnpost(self):
-        if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
+        # TODO: fix ocnpost in cycled mode
+        if self.app_config.mode in ['forecast-only']:
             return self._post_task('ocnpost', add_anl_to_post=False)
 
+    def atmanlpost(self):
+        if self.app_config.mode in ['cycled']:
+            return self._post_task('atmanlpost')
+
     def _post_task(self, task_name, add_anl_to_post=False):
-        if task_name not in ['post', 'ocnpost']:
+        if task_name not in ['atmanlpost', 'post', 'ocnpost']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
 
+        # TODO: These blocks can be removed since the only task
+        # that will use `anl` is the `atmanlpost` task.
         if task_name in ['ocnpost']:
+            add_anl_to_post = False
+        if task_name in ['atmanlpost']:
             add_anl_to_post = False
 
         def _get_postgroups(cdump, config, add_anl=False):
@@ -594,10 +584,12 @@ class GFSTasks(Tasks):
             fhrs = [f'f{fhr:03d}' for fhr in fhrs]
             fhrs = np.array_split(fhrs, ngrps)
             fhrs = [fhr.tolist() for fhr in fhrs]
-            if add_anl:
-                fhrs.insert(0, ['anl'])
+            # TODO: Commenting out for now.
+            # TODO: if add_anl:
+            # TODO:   fhrs.insert(0, ['anl'])
 
-            grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
+            grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr)
+                           > 1 else f'_{fhr[0]}' for fhr in fhrs)
             dep = ' '.join([fhr[-1] for fhr in fhrs])
             lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
 
@@ -605,9 +597,10 @@ class GFSTasks(Tasks):
 
         deps = []
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
-        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm.log#dep#.txt'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
+        # TODO: Removing `atm` task dependency.
+        # data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm.log#dep#.txt'
+        # dep_dict = {'type': 'data', 'data': data}
+        # deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
@@ -623,7 +616,12 @@ class GFSTasks(Tasks):
         varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name], add_anl=add_anl_to_post)
         vardict = {varname2: varval2, varname3: varval3}
 
-        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+        if task_name != "atmanlpost":
+            cycles = 'gdas_half, gdas'
+        else:
+            cycles = 'gdas_half'  # TODO: Currently only used for the
+            # `atmanlpost` task.
+        cycledef = cycles if self.cdump in ['gdas'] else self.cdump
 
         resources = self.get_resource(task_name)
         task = create_wf_task(task_name, resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
@@ -641,7 +639,8 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('wavepostsbs')
-        task = create_wf_task('wavepostsbs', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('wavepostsbs', resources, cdump=self.cdump,
+                              envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -658,15 +657,15 @@ class GFSTasks(Tasks):
 
     def wavepostbndpntbll(self):
         deps = []
-        atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
+        atmos_hist_path = self._template_to_rocoto_cycstring(
+            self._base["COM_ATMOS_HISTORY_TMPL"])
         data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wavepostbndpntbll')
-        task = create_wf_task('wavepostbndpntbll', resources, cdump=self.cdump, envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('wavepostbndpntbll', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -715,8 +714,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('waveawipsgridded')
-        task = create_wf_task('waveawipsgridded', resources, cdump=self.cdump, envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('waveawipsgridded', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -736,7 +734,8 @@ class GFSTasks(Tasks):
         if task_name not in ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25']:
             raise KeyError(f'Invalid WAFS task: {task_name}')
 
-        wafs_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_WAFS_TMPL"])
+        wafs_path = self._template_to_rocoto_cycstring(
+            self._base["COM_ATMOS_WAFS_TMPL"])
 
         deps = []
         fhrlst = [6] + [*range(12, 36 + 3, 3)]
@@ -769,8 +768,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wafsblending0p25')
-        task = create_wf_task('wafsblending0p25', resources, cdump=self.cdump, envar=self.envars,
-                              dependency=dependencies)
+        task = create_wf_task('wafsblending0p25', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -808,7 +806,8 @@ class GFSTasks(Tasks):
                 if fhmax_hf > 240:
                     fhmax_hf = 240
                 fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-                fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+                fhrs = fhrs_hf + \
+                    list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
             nawipsgrp = config['NAWIPSGRP']
             ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
@@ -866,8 +865,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
         resources = self.get_resource('vrfy')
-        task = create_wf_task('vrfy', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        task = create_wf_task('vrfy', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
 
@@ -880,8 +878,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
         resources = self.get_resource('fit2obs')
-        task = create_wf_task('fit2obs', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        task = create_wf_task('fit2obs', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
 
@@ -893,9 +890,11 @@ class GFSTasks(Tasks):
 
         metpenvars = self.envars.copy()
         if self.app_config.mode in ['cycled']:
-            metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS').strftime("%Y%m%d%H")}
+            metpenvar_dict = {'SDATE_GFS': self._base.get(
+                'SDATE_GFS').strftime("%Y%m%d%H")}
         elif self.app_config.mode in ['forecast-only']:
-            metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE').strftime("%Y%m%d%H")}
+            metpenvar_dict = {'SDATE_GFS': self._base.get(
+                'SDATE').strftime("%Y%m%d%H")}
         metpenvar_dict['METPCASE'] = '#metpcase#'
         for key, value in metpenvar_dict.items():
             metpenvars.append(rocoto.create_envar(name=key, value=str(value)))
@@ -904,8 +903,7 @@ class GFSTasks(Tasks):
         varval1 = 'g2g1 g2o1 pcp1'
 
         resources = self.get_resource('metp')
-        task = create_wf_task('metp', resources, cdump=self.cdump, envar=metpenvars, dependency=dependencies,
-                              metatask='metp', varname=varname1, varval=varval1)
+        task = create_wf_task('metp', resources, cdump=self.cdump, envar=metpenvars, dependency=dependencies, metatask='metp', varname=varname1, varval=varval1)
 
         return task
 
@@ -926,7 +924,8 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
-            if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
+            # TODO: fix ocnpost to run in cycled mode
+            if self.app_config.mode in ['forecast-only']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # If all verification and ocean/wave coupling is off, add the gdas/gfs post metatask as a dependency
@@ -939,8 +938,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
         resources = self.get_resource('arch')
-        task = create_wf_task('arch', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        task = create_wf_task('arch', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
 
@@ -987,8 +985,7 @@ class GFSTasks(Tasks):
         groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['eobs']['NMEM_EOMGGRP'])
 
         resources = self.get_resource('eomg')
-        task = create_wf_task('eomg', resources, cdump=self.cdump, envar=eomgenvars, dependency=dependencies,
-                              metatask='eomn', varname='grp', varval=groups)
+        task = create_wf_task('eomg', resources, cdump=self.cdump, envar=eomgenvars, dependency=dependencies, metatask='eomn', varname='grp', varval=groups)
 
         return task
 
@@ -1027,8 +1024,7 @@ class GFSTasks(Tasks):
 
         cycledef = "gdas"
         resources = self.get_resource('atmensanlinit')
-        task = create_wf_task('atmensanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        task = create_wf_task('atmensanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
 
@@ -1094,8 +1090,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         ecenenvars = self.envars.copy()
-        ecenenvar_dict = {'FHRGRP': '#grp#',
-                          'FHRLST': '#lst#'}
+        ecenenvar_dict = {'FHRGRP': '#grp#', 'FHRLST': '#lst#'}
         for key, value in ecenenvar_dict.items():
             ecenenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
