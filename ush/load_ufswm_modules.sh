@@ -10,7 +10,6 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 source "${HOMEgfs}/ush/detect_machine.sh"
-set +x
 source "${HOMEgfs}/ush/module-setup.sh"
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
@@ -21,7 +20,7 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
     module load cfp
     module load libjpeg
   else
-     module load prod-util
+    module load prod-util
   fi
   module load wgrib2
   export WGRIB2=wgrib2
