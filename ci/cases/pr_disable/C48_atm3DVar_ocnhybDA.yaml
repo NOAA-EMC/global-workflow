@@ -3,11 +3,11 @@ experiment:
   mode: cycled
 
 arguments:
-  pslot: ${pslot}
+  pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdet: 48
-  comrot: ${RUNTESTS}/COMROT
-  expdir: ${RUNTESTS}/EXPDIR
+  comrot: {{ 'RUNTESTS' | getenv }}/COMROT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   # icsdir: ${ICSDIR_ROOT}/C48cpldDA
   icsdir: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/ICSDIR/C48O500" # TODO: make platform agnostic
   idate: 2021032312
@@ -15,4 +15,4 @@ arguments:
   nens: 0
   gfs_cyc: 0
   start: warm
-  yaml: ${HOMEgfs}/ci/platforms/soca_gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/platforms/soca_gfs_defaults_ci.yaml
