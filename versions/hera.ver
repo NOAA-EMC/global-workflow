@@ -2,7 +2,7 @@ export hpc_ver=1.2.0
 export hpc_intel_ver=18.0.5.274
 export hpc_impi_ver=2018.0.4
 
-export obsproc_run_ver=1.2.0
+export obsproc_run_ver=1.1.2
 export prepobs_run_ver=1.0.1
 
 export hpss_ver=hpss

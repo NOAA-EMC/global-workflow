@@ -54,10 +54,7 @@ VERSION FILE CHANGES
 --------------------
 
 * `versions/build.ver` - change `crtm_ver=2.4.0.1`
-* `versions/run.ver` - change `version=v16.3.11`, `gfs_ver=v16.3.11`, `obsproc_ver=v1.2` and `crtm_ver=2.4.0.1`
-* `versions/hera.ver` - change `obsproc_run_ver=1.2.0`
-* `versions/orion.ver` - change `obsproc_run_ver=1.2.0`
-* `versions/wcoss2.ver` - change `obsproc_run_ver=1.2.0`
+* `versions/run.ver` - change `version=v16.3.11`, `gfs_ver=v16.3.11`, and `crtm_ver=2.4.0.1`
 
 SORC CHANGES
 ------------
@@ -132,6 +129,5 @@ PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
 Andrew.Collard@noaa.gov
-Iliana.Genkova@noaa.gov
 Wen.Meng@noaa.gov
 Jun.Wang@noaa.gov
