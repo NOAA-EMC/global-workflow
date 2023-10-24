@@ -3,6 +3,9 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
+# Restart conditions for GFS cycle come from GDAS
+rCDUMP=${CDUMP}
+[[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
 
 # Execute the Script
 "${HOMEgfs}/scripts/exglobal_stage_ic.sh"

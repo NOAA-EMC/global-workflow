@@ -40,7 +40,7 @@ done
 
 # Stage ocean initial conditions to ROTDIR (warm start)
 if [[ "${DO_OCN:-}" = "YES" ]]; then
-  YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
+  RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com -r COM_OCEAN_RESTART
   [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
   source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res.nc"
   target="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res.nc"
@@ -73,7 +73,7 @@ fi
 
 # Stage ice initial conditions to ROTDIR (warm start)
 if [[ "${DO_ICE:-}" = "YES" ]]; then
-  YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
+  RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com -r COM_ICE_RESTART
   [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
   ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
   source="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/ice/${ICERES}/cice5_model_${ICERESdec}.res_${PDY}${cyc}.nc"
