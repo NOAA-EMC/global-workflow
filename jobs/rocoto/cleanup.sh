@@ -8,12 +8,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="arch"
+export job="cleanup"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGLOBAL_ARCHIVE
+"${HOMEgfs}"/jobs/JGLOBAL_CLEANUP
 status=$?
 
 exit "${status}"
