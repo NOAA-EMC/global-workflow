@@ -112,7 +112,8 @@ if [ "${ENSGRP}" -eq 0 ]; then
         fi
 
         set +e
-        ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")
+        tar_fl=${ATARDIR}/${PDY}${cyc}/${RUN}.tar
+        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${ARCH_LIST}/${RUN}.txt")
         status=$?
 
         # Check if the newly created tarball has rstprod data in it
@@ -129,13 +130,22 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
         # If rstprod was found, change the group of the tarball
         if [[ "${has_rstprod}" == "YES" ]]; then
-            ${HSICMD} chgrp rstprod "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
-            ${HSICMD} chmod 640 "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
+            ${HSICMD} chgrp rstprod "${tar_fl}"
+            stat_chgrp=$?
+            ${HSICMD} chmod 640 "${tar_fl}"
+            stat_chgrp=$((stat_chgrp+$?))
+            if [ "${stat_chgrp}" -gt 0 ]; then
+                echo "FATAL ERROR: Unable to properly restrict ${tar_fl}!"
+                echo "Attempting to delete ${tar_fl}"
+                ${HSICMD} rm "${tar_fl}"
+                echo "Please verify that ${tar_fl} was deleted!"
+                exit ${stat_chgrp}
+            fi
         fi
 
         # For safety, test if the htar/tar command failed after changing groups
         if (( status != 0 && ${PDY}${cyc} >= firstday )); then
-            echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}.tar failed"
+            echo "FATAL ERROR: ${TARCMD} ${tar_fl} failed"
             exit "${status}"
         fi
         set_strict

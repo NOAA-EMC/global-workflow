@@ -262,7 +262,8 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
     shopt -s extglob
     for targrp in ${targrp_list}; do
         set +e
-        ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${targrp}.tar" $(cat "${ARCH_LIST}/${targrp}.txt")
+        tar_fl="${ATARDIR}/${PDY}${cyc}/${targrp}.tar"
+        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${ARCH_LIST}/${targrp}.txt")
         status=$?
 
         # Test gdas.tas and gdas_restarta.tar for rstprod and change group if so
@@ -282,8 +283,17 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
                 # Change group to rstprod if it was found
                 if [[ "${has_rstprod}" == "YES" ]]; then
-                    ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${targrp}.tar"
-                    ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${targrp}.tar"
+                    ${HSICMD} chgrp rstprod "${tar_fl}"
+                    stat_chgrp=$?
+                    ${HSICMD} chmod 640 "${tar_fl}"
+                    stat_chgrp=$((stat_chgrp+$?))
+                    if [ "${stat_chgrp}" -gt 0 ]; then
+                        echo "FATAL ERROR: Unable to properly restrict ${tar_fl}!"
+                        echo "Attempting to delete ${tar_fl}"
+                        ${HSICMD} rm "${tar_fl}"
+                        echo "Please verify that ${tar_fl} was deleted!"
+                        exit ${stat_chgrp}
+                    fi
                 fi
                 ;;
             *) ;;
