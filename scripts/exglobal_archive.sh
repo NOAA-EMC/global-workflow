@@ -292,7 +292,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
                         echo "Attempting to delete ${tar_fl}"
                         ${HSICMD} rm "${tar_fl}"
                         echo "Please verify that ${tar_fl} was deleted!"
-                        exit ${stat_chgrp}
+                        exit "${stat_chgrp}"
                     fi
                 fi
                 ;;
@@ -300,8 +300,8 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
         esac
 
         # For safety, test if the htar/tar command failed after changing groups
-        if [ "${status}" -ne 0 ] && [ "${PDY}${cyc}" -ge "${firstday}" ]; then
-            echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${targrp}.tar failed"
+        if [[ "${status}" -ne 0 ]] && [[ "${PDY}${cyc}" -ge "${firstday}" ]]; then
+            echo "FATAL ERROR: ${TARCMD} ${tar_fl} failed"
             exit "${status}"
         fi
         set_strict
