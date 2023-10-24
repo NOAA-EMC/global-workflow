@@ -16,11 +16,7 @@ status=$?
 export job="post"
 export jobid="${job}.$$"
 
-if [ ${FHRGRP} = 'anl' ]; then
-    fhrlst="anl"
-else
-    fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
-fi
+fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 #---------------------------------------------------------------
 for fhr in ${fhrlst}; do
