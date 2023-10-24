@@ -114,8 +114,26 @@ if [ "${ENSGRP}" -eq 0 ]; then
         set +e
         ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")
         status=$?
-        ${HSICMD} chgrp rstprod "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
-        ${HSICMD} chmod 640 "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
+
+        # Check if the newly created tarball has rstprod data in it
+        has_rstprod="NO"
+        while IFS= read -r file; do
+            if [[ -f ${file} ]]; then
+                group=$( stat -c "%G" "${file}" )
+                if [[ "${group}" == "rstprod" ]]; then
+                    has_rstprod="YES"
+                    break
+                fi
+            fi
+        done < "${ARCH_LIST}/${RUN}.txt"
+
+        # If rstprod was found, change the group of the tarball
+        if [[ "${has_rstprod}" == "YES" ]]; then
+            ${HSICMD} chgrp rstprod "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
+            ${HSICMD} chmod 640 "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
+        fi
+
+        # For safety, test if the htar/tar command failed after changing groups
         if (( status != 0 && ${PDY}${cyc} >= firstday )); then
             echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}.tar failed"
             exit "${status}"

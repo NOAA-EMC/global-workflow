@@ -264,13 +264,32 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
         set +e
         ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${targrp}.tar" $(cat "${ARCH_LIST}/${targrp}.txt")
         status=$?
+
+        # Test gdas.tas and gdas_restarta.tar for rstprod and change group if so
         case ${targrp} in
             'gdas'|'gdas_restarta')
-                ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${targrp}.tar"
-                ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${targrp}.tar"
+                has_rstprod="NO"
+                # Test for rstprod in each archived file
+                while IFS= read -r file; do
+                    if [[ -f ${file} ]]; then
+                        group=$( stat -c "%G" "${file}" )
+                        if [[ "${group}" == "rstprod" ]]; then
+                            has_rstprod="YES"
+                            break
+                        fi
+                    fi
+                done < "${ARCH_LIST}/${targrp}.txt"
+
+                # Change group to rstprod if it was found
+                if [[ "${has_rstprod}" == "YES" ]]; then
+                    ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${targrp}.tar"
+                    ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${targrp}.tar"
+                fi
                 ;;
             *) ;;
         esac
+
+        # For safety, test if the htar/tar command failed after changing groups
         if [ "${status}" -ne 0 ] && [ "${PDY}${cyc}" -ge "${firstday}" ]; then
             echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${targrp}.tar failed"
             exit "${status}"
