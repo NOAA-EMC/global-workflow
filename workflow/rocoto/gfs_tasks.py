@@ -554,16 +554,36 @@ class GFSTasks(Tasks):
     def post(self):
         add_anl_to_post = False
         if self.app_config.mode in ['cycled']:
-            add_anl_to_post = True
+            add_anl_to_post = False
 
         return self._post_task('post', add_anl_to_post=add_anl_to_post)
+
+    def postanl(self):
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHRGRP': 'anl',
+                          'FHRLST': 'anl',
+                          'ROTDIR': self._base.get('ROTDIR')}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        deps = []
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm.loganl.txt'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        resources = self.get_resource('post')
+        task = create_wf_task('postanl', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              cycledef=self.cdump)
+
+        return task
 
     def ocnpost(self):
         if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
             return self._post_task('ocnpost', add_anl_to_post=False)
 
     def _post_task(self, task_name, add_anl_to_post=False):
-        if task_name not in ['post', 'ocnpost']:
+        if task_name not in ['post', 'ocnpost', 'postanl']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
 
         if task_name in ['ocnpost']:
@@ -620,7 +640,7 @@ class GFSTasks(Tasks):
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name], add_anl=add_anl_to_post)
+        varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name], add_anl=False)
         vardict = {varname2: varval2, varname3: varval3}
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
