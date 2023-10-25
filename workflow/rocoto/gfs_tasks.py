@@ -560,9 +560,6 @@ class GFSTasks(Tasks):
 
     def postanl(self):
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRGRP': 'anl',
-                          'FHRLST': 'anl',
-                          'ROTDIR': self._base.get('ROTDIR')}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -583,7 +580,7 @@ class GFSTasks(Tasks):
             return self._post_task('ocnpost', add_anl_to_post=False)
 
     def _post_task(self, task_name, add_anl_to_post=False):
-        if task_name not in ['post', 'ocnpost', 'postanl']:
+        if task_name not in ['postanl', 'post', 'ocnpost']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
 
         if task_name in ['ocnpost']:
