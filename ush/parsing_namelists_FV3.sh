@@ -269,11 +269,11 @@ EOF
   do_ugwp      = ${do_ugwp:-".false."}
   do_tofd      = ${do_tofd:-".false."}
   gwd_opt      = ${gwd_opt:-"2"}
-  do_ugwp_v0   = ${do_ugwp_v0:-".true."}
-  do_ugwp_v1   = ${do_ugwp_v1:-".false."}
+  do_ugwp_v0   = ${do_ugwp_v0:-".false."}
+  do_ugwp_v1   = ${do_ugwp_v1:-".true."}
   do_ugwp_v0_orog_only = ${do_ugwp_v0_orog_only:-".false."}
   do_ugwp_v0_nst_only  = ${do_ugwp_v0_nst_only:-".false."}
-  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".false."}
+  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
   do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
   do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
   do_ugwp_v1_orog_only = ${do_ugwp_v1_orog_only:-".false."}
