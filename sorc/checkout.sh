@@ -34,7 +34,7 @@ function checkout() {
   #   logdir [default: $(pwd)]: where you want logfiles written
   #   CLEAN [default: NO]:      whether to delete existing directories and create a fresh clone
   #
-  # Usage: checkout <dir> <remote> <version>
+  # Usage: checkout <dir> <remote> <version> <cpus> <reccursive>
   #
   #   Arguments
   #     dir:     Directory for the clone
@@ -48,7 +48,8 @@ function checkout() {
   dir="$1"
   remote="$2"
   version="$3"
-  recursive=${4:-"YES"}
+  cpus="${4:-1}"  # Default 1 thread
+  recursive=${5:-"YES"}
 
   name=$(echo "${dir}" | cut -d '.' -f 1)
   echo "Performing checkout of ${name}"
@@ -90,7 +91,7 @@ function checkout() {
   fi
   if [[ "${recursive}" == "YES" ]]; then
     echo "|-- Updating submodules (if any)"
-    git submodule update --init --recursive >> "${logfile}" 2>&1
+    git submodule update --init --recursive -j "${cpus}" >> "${logfile}" 2>&1
     status=$?
     if ((status > 0)); then
       echo "    WARNING: Error while updating submodules of ${name}"
@@ -149,24 +150,32 @@ source "${topdir}/../workflow/gw_setup.sh"
 
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
-checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab"                    ; errs=$((errs + $?))
-checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "a283262"                    ; errs=$((errs + $?))
-checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471"                    ; errs=$((errs + $?))
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-4d05445}" ; errs=$((errs + $?))
-checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
+# Checkout UFS submodules in parallel
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-4d05445}" "8" ; errs=$((errs + $?))
+
+# Run all other checkouts simultaneously with just 1 core each to handle submodules.
+checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab" &
+checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "a283262" &
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471" &
+checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780" &
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "accb07e" "NO"; errs=$((errs + $?))
+  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "ca19008" "1" "NO" &
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "d347d22"; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "d347d22" &
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
-  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
-  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "45783e3"; errs=$((errs + $?))
+  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b" &
+  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "45783e3" &
 fi
+
+# Go through each PID and verify no errors were reported.
+for checkout_pid in $(jobs -p); do
+  wait "${checkout_pid}" || errs=$((errs + $?))
+done
 
 if (( errs > 0 )); then
   echo "WARNING: One or more errors encountered during checkout process, please check logs before building"

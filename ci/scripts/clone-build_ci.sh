@@ -9,8 +9,8 @@ usage() {
   echo
   echo "Usage: $0 -p <PR#> -d <directory> -o <output> -h"
   echo
-  echo "  -p  PR nunber to clone and build"
-  echo "  -d  Full path of <directory> of were to clone and build PR"
+  echo "  -p  PR number to clone and build"
+  echo "  -d  Full path of <directory> of where to clone and build PR"
   echo "  -o  Full path to output message file detailing results of CI tests"
   echo "  -h  display this message and quit"
   echo
@@ -79,7 +79,7 @@ echo "${commit}" > "../commit"
 cd sorc || exit 1
 set +e
 # TODO enable -u later when GDASApp tests are added
-./checkout.sh -c -g >> log.checkout 2>&1
+./checkout.sh -c -g -u >> log.checkout 2>&1
 checkout_status=$?
 if [[ ${checkout_status} != 0 ]]; then
   {

@@ -3,13 +3,13 @@ set -eux
 
 #####################################################################################
 #
-# Script description: BASH script for checking for cases in a given PR and 
+# Script description: BASH script for checking for cases in a given PR and
 #                     simply running rocotorun on each.  This script is intended
 #                     to run from within a cron job in the CI Managers account
 # Abstract TODO
 #####################################################################################
 
-HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
+ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
@@ -18,11 +18,11 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source "${HOMEgfs}/ush/detect_machine.sh"
+source "${ROOT_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
    echo "Running Automated Testing on ${MACHINE_ID}"
-   source "${HOMEgfs}/ci/platforms/${MACHINE_ID}.sh"
+   source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
    ;;
  *)
    echo "Unsupported platform. Exiting with error."
@@ -30,8 +30,8 @@ case ${MACHINE_ID} in
    ;;
 esac
 set +x
-source "${HOMEgfs}/ush/module-setup.sh"
-module use "${HOMEgfs}/modulefiles"
+source "${ROOT_DIR}/ush/module-setup.sh"
+module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
 set -eux
@@ -47,7 +47,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --dbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Running | awk '{print $1}' | head -"${max_concurrent_pr}") || true
+  pr_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display --dbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Running | awk '{print $1}' | head -"${max_concurrent_pr}") || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no open and built PRs that are ready for the cases to advance with rocotorun .. exiting"

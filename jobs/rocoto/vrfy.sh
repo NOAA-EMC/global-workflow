@@ -91,7 +91,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN MINMON ==============="
-if [[ "${VRFYMINMON}" == "YES" && "${PDY}${cyc}" != "${SDATE}" ]]; then
+if [[ "${VRFYMINMON}" == "YES" && "${PDY}${cyc}" != "${SDATE}" && "${MODE}" = "cycled" ]]; then
 
     export M_TANKverfM0="${M_TANKverf}/stats/${PSLOT}/${RUN}.${PDY}/${cyc}"
     export M_TANKverfM1="${M_TANKverf}/stats/${PSLOT}/${RUN}.${PDYm1c}/${pcyc}"

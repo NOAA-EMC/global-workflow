@@ -71,7 +71,15 @@ def fill_COMROT_cycled(host, inputs):
     rdatestr = datetime_to_YMDH(inputs.idate - to_timedelta('T06H'))
     idatestr = datetime_to_YMDH(inputs.idate)
 
-    if os.path.isdir(os.path.join(inputs.icsdir, f'{inputs.cdump}.{rdatestr[:8]}', rdatestr[8:], 'model_data', 'atmos')):
+    # Test if we are using the new COM structure or the old flat one for ICs
+    if inputs.start in ['warm']:
+        pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{rdatestr[:8]}',
+                               rdatestr[8:], 'model_data', 'atmos')
+    else:
+        pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{idatestr[:8]}',
+                               idatestr[8:], 'model_data', 'atmos')
+
+    if os.path.isdir(pathstr):
         flat_structure = False
     else:
         flat_structure = True
@@ -334,10 +342,6 @@ def edit_baseconfig(host, inputs, yaml_dict):
             "@DOHYBVAR@": "YES" if inputs.nens > 0 else "NO",
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
-
-    # All apps and modes now use the same physics and CCPP suite by default
-    extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     try:
         tmpl_dict = dict(tmpl_dict, **get_template_dict(yaml_dict['base']))

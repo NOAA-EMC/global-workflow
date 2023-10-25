@@ -1,18 +1,13 @@
 experiment:
   system: gfs
-  mode: cycled
+  mode: forecast-only
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: ATM
+  app: S2SWA
   resdet: 384
-  resens: 192
   comrot: {{ 'RUNTESTS' | getenv }}/COMROT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C384C192
-  idate: 2023040118
-  edate: 2023040200
-  nens: 2
-  gfs_cyc: 1
-  start: cold
+  idate: 2016070100
+  edate: 2016070100
   yaml: {{ HOMEgfs }}/ci/platforms/gfs_defaults_ci.yaml

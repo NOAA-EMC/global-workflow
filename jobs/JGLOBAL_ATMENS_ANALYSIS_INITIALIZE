@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlinit" -c "base atmensanl atm
 # Set variables used in the script
 ##############################################
 # shellcheck disable=SC2153
-GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 GDUMP="gdas"
@@ -20,7 +20,7 @@ GDUMP="gdas"
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
-    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL 
+    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
 
 ###############################################################
 # Run relevant script

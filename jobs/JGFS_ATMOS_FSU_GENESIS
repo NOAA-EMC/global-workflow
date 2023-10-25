@@ -14,10 +14,8 @@ export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 
 
 ####################################
-# SENDCOM  - Copy Files From TMPDIR to $COMOUT
 # SENDDBN  - Issue DBNet Client Calls
 ####################################
-export SENDCOM=YES
 export SENDDBN=${SENDDBN:-NO}
 export SENDECF=${SENDECF:-NO}
 

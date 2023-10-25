@@ -10,7 +10,6 @@ export errchk=${errchk:-err_chk}
 # Set COM Paths
 ###################################
 export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
-export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 

@@ -422,6 +422,11 @@ if [[ ${DO_LAND_PERT:-"NO"} = "YES" ]]; then
 EOF
 fi
 
+# Close &gfs_physics_nml section
+cat >> input.nml << EOF
+/
+EOF
+
 if [[ ${knob_ugwp_version} -eq 0 ]]; then
   cat >> input.nml << EOF
 &cires_ugwp_nml
