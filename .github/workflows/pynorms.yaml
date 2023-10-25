@@ -1,5 +1,5 @@
 name: pynorms
-on: [pull_request] # TODO [push, pull_request]
+on: [push, pull_request]
 
 jobs:
   check_norms:
