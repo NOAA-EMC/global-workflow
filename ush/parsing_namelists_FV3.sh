@@ -60,7 +60,7 @@ else
 fi
 
 # set resolution dependent variables
-if [ $do_gsl_drag_ls_bl == ".true." ]; then
+if [[ ${do_gsl_drag_ls_bl:-.true.} == ".true." ]]; then
    export cdmbgwd=$cdmbgwd_gsl
 fi
 

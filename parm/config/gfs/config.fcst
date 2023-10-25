@@ -142,8 +142,8 @@ export d2_bg_k2=0.04
 export dz_min=6
 export n_sponge=42
 if (( LEVS == 128 )) && [[ "${CDUMP}" =~ "gdas" ]]; then
-   export tau=0.
-   export rf_cutoff=10.
+   export tau=5.0
+   export rf_cutoff=1.0e3
    export d2_bg_k1=0.20
    export d2_bg_k2=0.0
 fi
