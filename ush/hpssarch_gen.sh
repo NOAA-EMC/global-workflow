@@ -130,6 +130,17 @@ if [[ ${type} = "gfs" ]]; then
     for file in "${genesis_files[@]}"; do
       [[ -s ${COM_ATMOS_GENESIS}/${file} ]] && echo "${COM_ATMOS_GENESIS/${ROTDIR}\//}/${file}"
     done
+
+    # GSI Monitor job output
+
+    if [[ ${DO_VMINMON} = "YES" ]]; then
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.costs.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.cost_terms.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.gnorms.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.reduction.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/gnorm_data.txt"
+    fi
+
   } >> gfsa.txt
 
   {
@@ -350,7 +361,7 @@ if [[ ${type} == "gdas" ]]; then
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat"
     fi
-    for fstep in prep anal fcst vrfy radmon minmon oznmon; do
+    for fstep in prep anal fcst vrfy vminmon verfozn verfrad; do
       if [[ -s "${ROTDIR}/logs/${PDY}${cyc}/gdas${fstep}.log" ]]; then
         echo "./logs/${PDY}${cyc}/gdas${fstep}.log"
       fi
@@ -379,6 +390,49 @@ if [[ ${type} == "gdas" ]]; then
         echo "${file}.idx"
       fi
     done
+
+    # GSI Monitor jobs output
+
+    if [[ ${DO_VMINMON} = "YES" ]]; then
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.costs.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.cost_terms.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.gnorms.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.reduction.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/gnorm_data.txt"
+    fi
+
+    if [[ ${DO_VERFOZN} = "YES" ]]; then
+      for type in horiz time; do
+        if [[ ${type} = "horiz" ]]; then
+          suffix=".gz"
+        elif [[ ${type} = "time" ]]; then
+          suffix=""
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/bad_cnt.${PDY}${cyc}"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/bad_diag.${PDY}${cyc}"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/bad_pen.${PDY}${cyc}"
+        fi
+        subtyplist="gome_metop-b omi_aura ompslp_npp ompsnp_n20 ompsnp_npp ompstc8_n20 ompstc8_npp sbuv2_n19"
+        for subtype in ${subtyplist}; do
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.${PDY}${cyc}.ieee_d${suffix}"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.ctl"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.${PDY}${cyc}.ieee_d${suffix}"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.ctl"
+        done
+        echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/stdout.${type}.tar.gz"
+      done
+    fi
+
+    if [[ ${DO_VERFRAD} = "YES" ]]; then
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/bad_diag.${PDY}${cyc}"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/bad_pen.${PDY}${cyc}"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/low_count.${PDY}${cyc}"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_angle.tar.gz"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_bcoef.tar.gz"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_bcor.tar.gz"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_time.tar.gz"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/warning.${PDY}${cyc}"
+    fi
+
   } >> gdas.txt
 
   #..................
