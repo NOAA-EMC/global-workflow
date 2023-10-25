@@ -189,6 +189,15 @@ elif [[ ${step} = "waveawipsgridded" ]]; then
 
 elif [[ "${step}" = "atmanlinit" ]]; then
 
+    # make below case dependent later
+    export layout_x=1
+    export layout_y=1
+
+    layout_gsib_x=$(echo "${layout_x} * 3" | bc)
+    export layout_gsib_x
+    layout_gsib_y=$(echo "${layout_y} * 2" | bc)
+    export layout_gsib_y
+
     export wtime_atmanlinit="00:10:00"
     export npe_atmanlinit=1
     export nth_atmanlinit=1
@@ -789,6 +798,10 @@ elif [[ ${step} = "stage_ic" ]]; then
     export is_exclusive=True
 
 elif [[ "${step}" = "atmensanlinit" ]]; then
+
+    # make below case dependent later
+    export layout_x=1
+    export layout_y=1
 
     export wtime_atmensanlinit="00:10:00"
     export npe_atmensanlinit=1

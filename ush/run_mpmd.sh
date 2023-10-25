@@ -4,6 +4,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD mode"}
 
+# Determine the number of MPMD processes from incoming ${cmdfile}
+nprocs=$(wc -l < "${cmdfile}")
+
 # Local MPMD file containing instructions to run in CFP
 mpmd_cmdfile="${DATA:-}/mpmd_cmdfile"
 if [[ -s "${mpmd_cmdfile}" ]]; then rm -f "${mpmd_cmdfile}"; fi
@@ -19,7 +22,6 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then  #  srun-based system e.g. Hera, Orion
     ((nm=nm+1))
   done < "${cmdfile}"
 
-  nprocs=$(wc -l < "${mpmd_cmdfile}")
   set +e
   # shellcheck disable=SC2086
   ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${mpmd_cmdfile}"
@@ -42,7 +44,8 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
   done < "${cmdfile}"
 
   chmod 755 "${mpmd_cmdfile}"
-  ${launcher:-} "${mpmd_cmdfile}"
+  # shellcheck disable=SC2086
+  ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
   rc=$?
   if (( rc == 0 )); then
     out_files=$(find . -name 'mpmd.*.out')
