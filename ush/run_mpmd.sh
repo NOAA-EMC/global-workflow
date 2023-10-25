@@ -41,7 +41,6 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
     ((nm=nm+1))
   done < "${cmdfile}"
 
-  launcher=${APRUN_DWN}
   chmod 755 "${mpmd_cmdfile}"
   ${launcher:-} "${mpmd_cmdfile}"
   rc=$?
