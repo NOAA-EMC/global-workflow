@@ -1,14 +1,15 @@
 name: Build and Deploy Documentation
 on:
-  push:
-    branches:
-      - develop
-      - feature/*
-      - main/*
-      - bugfix/*
-      - release/*
-    paths:
-      - docs/**
+# TODO
+#  push:
+#    branches:
+#      - develop
+#      - feature/*
+#      - main/*
+#      - bugfix/*
+#      - release/*
+#    paths:
+#      - docs/**
   pull_request_target:
     types: [issues, opened, reopened, synchronize]
     paths:
