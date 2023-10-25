@@ -45,7 +45,7 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
 
   chmod 755 "${mpmd_cmdfile}"
   # shellcheck disable=SC2086
-  ${launcher:-} -np ${nprocs} ${mpmd_out:-} "${mpmd_cmdfile}"
+  ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
   rc=$?
   if (( rc == 0 )); then
     out_files=$(find . -name 'mpmd.*.out')
