@@ -112,11 +112,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
         fi
 
         set +e
-        tar_fl=${ATARDIR}/${PDY}${cyc}/${RUN}.tar
-        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${ARCH_LIST}/${RUN}.txt")
-        status=$?
-
-        # Check if the newly created tarball has rstprod data in it
+        # Check if the tarball will have rstprod in it
         has_rstprod="NO"
         while IFS= read -r file; do
             if [[ -f ${file} ]]; then
@@ -127,6 +123,11 @@ if [ "${ENSGRP}" -eq 0 ]; then
                 fi
             fi
         done < "${ARCH_LIST}/${RUN}.txt"
+
+        # Create the tarball
+        tar_fl=${ATARDIR}/${PDY}${cyc}/${RUN}.tar
+        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${ARCH_LIST}/${RUN}.txt")
+        status=$?
 
         # If rstprod was found, change the group of the tarball
         if [[ "${has_rstprod}" == "YES" ]]; then
@@ -143,7 +144,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
             fi
         fi
 
-        # For safety, test if the htar/tar command failed after changing groups
+        # For safety, test if the htar/tar command failed only after changing groups
         if (( status != 0 && ${PDY}${cyc} >= firstday )); then
             echo "FATAL ERROR: ${TARCMD} ${tar_fl} failed"
             exit "${status}"
