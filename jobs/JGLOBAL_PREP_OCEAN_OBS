@@ -1,6 +1,5 @@
 #!/bin/bash
 source "${HOMEgfs}/ush/preamble.sh"
-#source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base ocnanal prepoceanobs"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
 
 
