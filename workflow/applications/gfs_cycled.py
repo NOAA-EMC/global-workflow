@@ -47,7 +47,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean:
             configs += ['ocnpost']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch']
+        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -115,7 +115,7 @@ class GFSCycledAppConfig(AppConfig):
         #    gdas_gfs_common_tasks_after_fcst += ['ocnpost']
         gdas_gfs_common_tasks_after_fcst += ['vrfy']
 
-        gdas_gfs_common_cleanup_tasks = ['arch']
+        gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
 
         if self.do_jediatmvar:
             gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal']
@@ -146,7 +146,7 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-            hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
+            hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
