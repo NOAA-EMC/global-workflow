@@ -57,9 +57,9 @@ export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
 export DO_VRFY="YES"       # VRFY step
+export DO_VMINMON="YES"    # GSI minimization monitoring
 export DO_VERFOZN="YES"    # Ozone data assimilation monitoring
 export DO_VERFRAD="YES"    # Radiance data assimilation monitoring
-export DO_VMINMON="YES"    # GSI minimization monitoring
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
