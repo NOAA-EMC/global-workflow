@@ -52,13 +52,15 @@ export p_cyc=${pdate:8:2}
 # COMOUT - WHERE GSI OUTPUT RESIDES
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-export TANKverf=${TANKverf:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export TANKverf_rad=${TANKverf_rad:-${TANKverf}/${RUN}.${PDY}/${cyc}/atmos/radmon}
-export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/${RUN}.${P_PDY}/${p_cyc}/atmos/radmon}
-
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RADMON
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
 
-mkdir -p -m 775 ${TANKverf_rad}
+export TANKverf_rad=${TANKverf_rad:-${COM_ATMOS_RADMON}}
+export TANKverf_radM1=${TANKverf_radM1:-${COM_ATMOS_RADMON_PREV}}
+
+if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p -m 775 ${TANKverf_rad} ; fi
+if [[ ! -d ${TANKverf_radM1} ]]; then mkdir -p -m 775 ${TANKverf_radM1} ; fi
 
 ########################################
 # Set necessary environment variables

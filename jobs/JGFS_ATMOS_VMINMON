@@ -39,12 +39,15 @@ export p_cyc=${pdate:8:2}
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
-YMD=${P_PDY} HH=${p_cyc} generate_com -rx COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_MINMON
+YMD=${P_PDY} HH=${p_cyc} generate_com -rx COM_ATMOS_MINMON_PREV:COM_ATMOS_MINMON_TMPL
 
-M_TANKverf=${M_TANKverf:-${COM_ATMOS_ANALYSIS}/minmon}
-export M_TANKverfM1=${M_TANKverfM1:-${COM_ATMOS_ANALYSIS_PREV}/minmon}
+export M_TANKverf=${M_TANKverf:-${COM_ATMOS_MINMON}}
+export M_TANKverfM1=${M_TANKverfM1:-${COM_ATMOS_MINMON_PREV}}
 
-mkdir -p -m 775 ${M_TANKverf}
+if [[ ! -d ${M_TANKverf} ]]; then mkdir -p -m 775 ${M_TANKverf} ; fi
+if [[ ! -d ${M_TANKverfM1} ]]; then mkdir -p -m 775 ${M_TANKverfM1} ; fi
+
 
 ########################################
 # Set necessary environment variables

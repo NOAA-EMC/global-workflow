@@ -6,14 +6,4 @@ echo "BEGIN: config.verfrad"
 # Get task specific resources
 . "${EXPDIR}/config.resources" verfrad
 
-CDATEm1c=$(${NDATE} -06 "${PDY}${cyc}")
-PDYm1c=${CDATEm1c:0:8}
-pcyc=${CDATEm1c:8:2}
-
-export RADMON_SUFFIX=${PSLOT}
-
-export TANKverf="${NOSCRUB}/monitor/radmon"
-export TANKverf_rad="${TANKverf}/stats/${PSLOT}/${RUN}.${PDY}/${cyc}"
-export TANKverf_radM1="${TANKverf}/stats/${PSLOT}/${RUN}.${PDYm1c}/${pcyc}"
-
 echo "END: config.verfrad"
