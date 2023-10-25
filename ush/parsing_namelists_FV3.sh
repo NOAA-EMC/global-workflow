@@ -59,6 +59,11 @@ else
   ${NCP} "${FIELD_TABLE}" field_table
 fi
 
+# set resolution dependent variables
+if [ $do_gsl_drag_ls_bl == ".true." ]; then
+   export cdmbgwd=$cdmbgwd_gsl
+fi
+
 cat > input.nml <<EOF
 &atmos_model_nml
   blocksize = ${blocksize}
@@ -143,6 +148,7 @@ cat > input.nml <<EOF
   dry_mass=${dry_mass:-98320.0}
   consv_te = ${consv_te}
   do_sat_adj = ${do_sat_adj:-".false."}
+  fast_tau_w_sec = ${fast_tau_w_sec:-"0.2"}
   consv_am = .false.
   fill = .true.
   dwind_2d = .false.
