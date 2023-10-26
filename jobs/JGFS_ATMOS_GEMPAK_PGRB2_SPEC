@@ -39,9 +39,7 @@ export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${NET}.${PDY})/${cyc}/
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-if [ ${SENDCOM} = YES ] ; then
-  mkdir -m 775 -p ${COMOUT}
-fi
+mkdir -m 775 -p ${COMOUT}
 
 
 # TODO - Assess what is going on with overwriting $DATA here (#1224)

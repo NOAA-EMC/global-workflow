@@ -334,10 +334,6 @@ def edit_baseconfig(host, inputs, yaml_dict):
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    # All apps and modes now use the same physics and CCPP suite by default
-    extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
-
     try:
         tmpl_dict = dict(tmpl_dict, **get_template_dict(yaml_dict['base']))
     except KeyError:
