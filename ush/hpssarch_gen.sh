@@ -393,14 +393,6 @@ if [[ ${type} == "gdas" ]]; then
 
     # GSI Monitor jobs output
 
-    if [[ ${DO_VMINMON} = "YES" ]]; then
-      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.costs.txt"
-      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.cost_terms.txt"
-      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.gnorms.ieee_d"
-      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.reduction.ieee_d"
-      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/gnorm_data.txt"
-    fi
-
     if [[ ${DO_VERFOZN} = "YES" ]]; then
       for type in horiz time; do
         if [[ ${type} = "horiz" ]]; then
@@ -431,6 +423,14 @@ if [[ ${type} == "gdas" ]]; then
       echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_bcor.tar.gz"
       echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_time.tar.gz"
       echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/warning.${PDY}${cyc}"
+    fi
+
+    if [[ ${DO_VMINMON} = "YES" ]]; then
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.costs.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.cost_terms.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.gnorms.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.reduction.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/gnorm_data.txt"
     fi
 
   } >> gdas.txt

@@ -20,7 +20,7 @@ class Tasks:
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'preplandobs', 'landanl',
                    'fcst', 'post', 'ocnpost',
-                   'vminmon', 'verfozn', 'verfrad', 'vrfy', 'metp',
+                   'verfozn', 'verfrad', 'vminmon', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
