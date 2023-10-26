@@ -54,40 +54,19 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   if [[ "${DO_OCN:-}" = "YES" ]]; then
     YMD=${gPDY} HH=${gcyc} generate_com COM_OCEAN_RESTART
     [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
-    src="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/${MEMDIR}/ocean/${OCNRES}/MOM.res.nc"
+    src="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.MOM.res.nc"
     tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res.nc"
     ${NCP} "${src}" "${tgt}"
     rc=$?
     [[ ${rc} -ne 0 ]] && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
-    case "${OCNRES}" in
-      "500" | "100") # Only 5 degree or 1 degree ocean does not have MOM.res_[1-4].nc files
-        ;;
-      "025") # Only 1/4 degree ocean has MOM.res_[1-4].nc files
-        for ((nn = 1; nn <= 4; nn++)); do
-          src="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/${MEMDIR}/ocean/${OCNRES}/MOM.res_${nn}.nc"
-          if [[ -f "${src}" ]]; then
-            tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
-            ${NCP} "${src}" "${tgt}"
-            rc=$?
-            [[ ${rc} -ne 0 ]] && error_message "${src}" "${tgt}" "${rc}"
-            err=$((err + rc))
-          fi
-        done
-        ;;
-      *)
-        echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
-        rc=1
-        err=$((err + rc))
-        ;;
-    esac
   fi
   # Stage ice initial conditions to ROTDIR (warm start)
   if [[ "${DO_ICE:-}" = "YES" ]]; then
     YMD=${gPDY} HH=${gcyc} generate_com COM_ICE_RESTART
     [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
-    src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
-    tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
+    src="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/${MEMDIR}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
+    tgt="${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
     ${NCP} "${src}" "${tgt}"
     rc=$?
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
@@ -99,7 +78,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     YMD=${PDY} HH=${cyc} generate_com COM_WAVE_RESTART
     [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
     for grdID in ${waveGRD}; do # TODO: check if this is a bash array; if so adjust
-      src="${BASE_CPLIC}/${CPL_WAVIC}/${PDY}${cyc}/${MEMDIR}/wave/${grdID}/${PDY}.${cyc}0000.restart.${grdID}"
+      src="${BASE_CPLIC}/${CPL_WAVIC}/${PDY}${cyc}/${MEMDIR}/wave/${PDY}.${cyc}0000.restart.${grdID}"
       tgt="${COM_WAVE_RESTART}/${PDY}.${cyc}0000.restart.${grdID}"
       ${NCP} "${src}" "${tgt}"
       rc=$?
