@@ -56,7 +56,9 @@ if [[ "${cplflx}" = ".true." ]]; then
   local CPLMODE="${cplmode}"
   local coupling_interval_fast_sec="${CPL_FAST}"
   local RESTART_N="${restart_interval}"
+  local ocean_albedo_limit=0.06
   local ATMTILESIZE="${CASE:1}"
+  local ocean_albedo_limit=0.06
 fi
 
 if [[ "${cplice}" = ".true." ]]; then

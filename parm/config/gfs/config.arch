@@ -12,13 +12,4 @@ export ARCH_GAUSSIAN="YES"
 export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS}
 export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS}
 
-#--online archive of nemsio files for fit2obs verification
-export FITSARC="YES"
-export FHMAX_FITS=132
-[[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
-
-#--starting and ending hours of previous cycles to be removed from rotating directory
-export RMOLDSTD=144
-export RMOLDEND=24
-
 echo "END: config.arch"
