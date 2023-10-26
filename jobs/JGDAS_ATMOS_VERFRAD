@@ -87,3 +87,5 @@ fi
 # Remove the Working Directory
 ################################
 [[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
+
+exit 0
