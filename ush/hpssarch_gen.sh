@@ -361,7 +361,7 @@ if [[ ${type} == "gdas" ]]; then
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat"
     fi
-    for fstep in prep anal fcst vrfy vminmon verfozn verfrad; do
+    for fstep in prep anal fcst vrfy verfozn verfrad vminmon; do
       if [[ -s "${ROTDIR}/logs/${PDY}${cyc}/gdas${fstep}.log" ]]; then
         echo "./logs/${PDY}${cyc}/gdas${fstep}.log"
       fi
