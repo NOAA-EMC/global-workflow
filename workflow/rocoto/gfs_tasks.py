@@ -553,9 +553,6 @@ class GFSTasks(Tasks):
 
     def post(self):
         add_anl_to_post = False
-        if self.app_config.mode in ['cycled']:
-            add_anl_to_post = False
-
         return self._post_task('post', add_anl_to_post=add_anl_to_post)
 
     def postanl(self):
