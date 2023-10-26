@@ -68,10 +68,6 @@ err=$?
 ################################
 # Remove the Working Directory
 ################################
-KEEPDATA=${KEEPDATA:-NO}
-cd ${DATAROOT}
-if [ ${KEEPDATA} = NO ] ; then
-  rm -rf ${DATA}
-fi
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0

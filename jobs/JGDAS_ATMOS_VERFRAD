@@ -8,13 +8,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 
 export COMPONENT="atmos"
 
-export RAD_DATA_IN=${DATA}
-
 export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
 export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
-
-mkdir -p ${RAD_DATA_IN}
-cd ${RAD_DATA_IN}
 
 ##############################################
 # Specify Execution Areas
@@ -91,9 +86,4 @@ fi
 ################################
 # Remove the Working Directory
 ################################
-KEEPDATA=${KEEPDATA:-YES}
-cd ${DATAROOT}
-if [ ${KEEPDATA} = NO ] ; then
-  rm -rf ${RAD_DATA_IN}
-fi
-
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
