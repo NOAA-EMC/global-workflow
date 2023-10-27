@@ -259,6 +259,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
       MOM6_DIAG_MISVAL="0.0"
       MOM6_ALLOW_LANDMASK_CHANGES='False'
+      TOPOEDITS=""
       ;;
     "100")
       ntasks_mom6=20
@@ -273,11 +274,16 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="2.5e-1"
       TOPOEDITS="ufs.topo_edits_011818.nc"
-      MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-      MOM6_DIAG_MISVAL="0.0"
+      if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      fi
       MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
-    "50")
+    "050")
       ntasks_mom6=60
       OCNTIM=3600
       NX_GLB=720
@@ -289,6 +295,15 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='True'
       eps_imesh="1.0e-1"
+      if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      fi
+      MOM6_ALLOW_LANDMASK_CHANGES='False'
+      TOPOEDITS=""
       ;;
     "025")
       ntasks_mom6=220
@@ -302,6 +317,15 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
+      if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      fi
+      MOM6_ALLOW_LANDMASK_CHANGES='False'
+      TOPOEDITS=""
       ;;
     *)
       echo "FATAL ERROR: Unsupported MOM6 resolution = ${mom6_res}, ABORT!"

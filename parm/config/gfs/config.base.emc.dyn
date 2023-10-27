@@ -166,7 +166,7 @@ case "${CASE}" in
         export waveGRD='glo_500'
         ;;
     "C96")
-        export OCNRES=100
+        export OCNRES=500
         export waveGRD='glo_200'
         ;;
     "C192")
