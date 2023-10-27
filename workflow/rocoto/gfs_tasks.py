@@ -581,7 +581,7 @@ class GFSTasks(Tasks):
             return self._post_task('ocnpost')
 
     def _post_task(self, task_name):
-        if task_name not in ['postanl', 'post', 'ocnpost']:
+        if task_name not in ['post', 'ocnpost']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
 
         if task_name in ['ocnpost']:
