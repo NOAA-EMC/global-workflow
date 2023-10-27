@@ -178,7 +178,6 @@ class GFSCycledAppConfig(AppConfig):
             gdas_tasks += ['vminmon']
 
         gdas_tasks += gdas_gfs_common_cleanup_tasks
-        gdas_tasks += gdas_gfs_common_cleanup_tasks
 
         # Collect "gfs" cycle tasks
         gfs_tasks = gdas_gfs_common_tasks_before_fcst
