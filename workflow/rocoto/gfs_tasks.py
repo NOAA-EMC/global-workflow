@@ -553,10 +553,14 @@ class GFSTasks(Tasks):
 
     def post(self):
         add_anl_to_post = False
-        return self._post_task('post', add_anl_to_post=add_anl_to_post)
+        return self._post_task('post')
 
     def postanl(self):
         postenvars = self.envars.copy()
+        postenvar_dict = {'FHRGRP': 'anl',
+                          'FHRLST': 'anl',
+                          'ROTDIR': self._base.get('ROTDIR')}
+
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -574,9 +578,9 @@ class GFSTasks(Tasks):
 
     def ocnpost(self):
         if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
-            return self._post_task('ocnpost', add_anl_to_post=False)
+            return self._post_task('ocnpost')
 
-    def _post_task(self, task_name, add_anl_to_post=False):
+    def _post_task(self, task_name):
         if task_name not in ['postanl', 'post', 'ocnpost']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
 
@@ -634,7 +638,7 @@ class GFSTasks(Tasks):
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name], add_anl=False)
+        varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name])
         vardict = {varname2: varval2, varname3: varval3}
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
