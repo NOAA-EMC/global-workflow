@@ -58,7 +58,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res.nc"
     ${NCP} "${src}" "${tgt}"
     rc=$?
-    [[ ${rc} -ne 0 ]] && error_message "${src}" "${tgt}" "${rc}"
+    ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
   fi
   # Stage ice initial conditions to ROTDIR (warm start)
