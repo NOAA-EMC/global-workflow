@@ -10,25 +10,28 @@
 # echo "                    data on the CCS is properly protected."
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh" "${2}"
+source "${HOMEgfs}/ush/preamble.sh" "${2}"
 
 #### If EMC GFS PARA runs hourly file are not available, The ILPOST
 #### will set to 3 hour in EMC GFS PARA.
 #### Note:  ILPOST default set to 1
 export ILPOST=${ILPOST:-1}
 
-cd $DATA
+cd "${DATA}" || exit 1
 RUN2=$1
 fend=$2
 DBN_ALERT_TYPE=$3
-destination=${4}
+destination=$4
 
-DATA_RUN=$DATA/$RUN2
-mkdir -p $DATA_RUN
-cd $DATA_RUN
+DATA_RUN="${DATA}/${RUN2}"
+mkdir -p "${DATA_RUN}"
+cd "${DATA_RUN}" || exit 1
+
+# "Import" functions used in this script
+source "${HOMEgfs}/ush/product_functions.sh"
 
 #
-NAGRIB=$GEMEXE/nagrib2
+NAGRIB="${GEMEXE}/nagrib2"
 #
 
 cpyfil=gds
@@ -42,19 +45,19 @@ output=T
 pdsext=no
 
 maxtries=360
-fhcnt=$fstart
-while [ $fhcnt -le $fend ] ; do
+fhcnt=${fstart}
+while (( fhcnt <= fend )) ; do
 
   if mkdir "lock.${fhcnt}" ; then
-    cd lock.$fhcnt
-    cp $FIXgempak/g2varswmo2.tbl g2varswmo2.tbl
-    cp $FIXgempak/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
-    cp $FIXgempak/g2varsncep1.tbl g2varsncep1.tbl
-    cp $FIXgempak/g2vcrdncep1.tbl g2vcrdncep1.tbl
+    cd "lock.${fhcnt}" || exit 1
+    cp "${FIXgempak}/g2varswmo2.tbl" "g2varswmo2.tbl"
+    cp "${FIXgempak}/g2vcrdwmo2.tbl" "g2vcrdwmo2.tbl"
+    cp "${FIXgempak}/g2varsncep1.tbl" "g2varsncep1.tbl"
+    cp "${FIXgempak}/g2vcrdncep1.tbl" "g2vcrdncep1.tbl"
 
     fhr=$(printf "%03d" "${fhcnt}")
 
-    GEMGRD=${RUN2}_${PDY}${cyc}f${fhr}
+    GEMGRD="${RUN2}_${PDY}${cyc}f${fhr}"
 
     # Set type of Interpolation for WGRIB2
     export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -67,7 +70,6 @@ while [ $fhcnt -le $fend ] ; do
     export opt26=' -set_grib_max_bits 25 -fi -if '
     export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
     export opt28=' -new_grid_interpolation budget -fi '
-    export TRIMRH=$HOMEgfs/ush/trim_rh.sh
 
     case ${RUN2} in
       # TODO: Why aren't we interpolating from the 0p25 grids for 35-km and 40-km?
@@ -80,99 +82,92 @@ while [ $fhcnt -le $fend ] ; do
     GRIBIN_chk="${!source_var}/${model}.${cycle}.pgrb2.${res}.f${fhr}.idx"
 
     icnt=1
-    while [ $icnt -lt 1000 ]; do
-      if [ -r $GRIBIN_chk ] ; then
+    while (( icnt < 1000 )); do
+      if [[ -r "${GRIBIN_chk}" ]] ; then
+        # File available, wait 5 seconds then proceed
         sleep 5
         break
       else
+        # File not available yet, wait 10 seconds and try again
         echo "The process is waiting ... ${GRIBIN_chk} file to proceed."
         sleep 10
-        let "icnt=icnt+1"
+        icnt=$((icnt+1))
       fi
-      if [ $icnt -ge $maxtries ]; then
-        echo "ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
+      if (( icnt >= maxtries )); then
+        echo "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr} to end."
         export err=7 ; err_chk
-        exit $err
+        exit "${err}"
       fi
     done
 
-    case $RUN2 in
+    case "${RUN2}" in
       gfs35_pac)
-        #   $COPYGB2 -g "0 6 0 0 0 0 0 0 416 186 0 0 75125000 130000000 48 17000000 260000000 312000 312000 0" -x $GRIBIN grib$fhr
-        #   NEW define gfs35_pac="0 6 0 0 0 0 0 0 416 186 0 -1 75125000 130000000 48 17405000 259480000 312000 312000 0"
-        #   $COPYGB2 -g "0 6 0 0 0 0 0 0 416 186 0 -1 75125000 130000000 48 17405000 259480000 312000 312000 0" -x $GRIBIN grib$fhr
-
         export gfs35_pac='latlon 130.0:416:0.312 75.125:186:-0.312'
-        $WGRIB2  $GRIBIN $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid ${gfs35_pac} grib$fhr
-        $TRIMRH grib$fhr
+        # shellcheck disable=SC2086,SC2248
+        "${WGRIB2}" "${GRIBIN}" ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} ${opt27} ${opt28} -new_grid ${gfs35_pac} "grib${fhr}"
+        trim_rh "grib${fhr}"
         ;;
       gfs35_atl)
-        #    $COPYGB2 -g "0 6 0 0 0 0 0 0 480 242 0 0 75125000 230000000 48 -500000 20000000 312000 312000 0" -x $GRIBIN grib$fhr
-        # NEW  define gfs35_atl="0 6 0 0 0 0 0 0 480 242 0 -1 75125000 230000000 48  -67000 19448000 312000 312000 0"
-        #   $COPYGB2 -g "0 6 0 0 0 0 0 0 480 242 0 -1 75125000 230000000 48  -67000 19448000 312000 312000 0" -x $GRIBIN grib$fhr
-
         export gfs35_atl='latlon 230.0:480:0.312 75.125:242:-0.312'
-        $WGRIB2  $GRIBIN $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid ${gfs35_atl} grib$fhr
-        $TRIMRH grib$fhr
+        # shellcheck disable=SC2086,SC2248
+        "${WGRIB2}" "${GRIBIN}" ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} ${opt27} ${opt28} -new_grid ${gfs35_atl} "grib${fhr}"
+        trim_rh "grib${fhr}"
         ;;
       gfs40)
-        #   $COPYGB2 -g "30 6 0 0 0 0 0 0 185 129 12190000 226541000 8 25000000 265000000 40635000 40635000 0 64 25000000 25000000 0 0" -x $GRIBIN grib$fhr
-
         export gfs40='lambert:265.0:25.0:25.0 226.541:185:40635.0 12.19:129:40635.0'
-        $WGRIB2  $GRIBIN $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid ${gfs40} grib$fhr
-        $TRIMRH grib$fhr
+        # shellcheck disable=SC2086,SC2248
+        "${WGRIB2}" "${GRIBIN}" ${opt1uv} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} ${opt27} ${opt28} -new_grid ${gfs40} "grib${fhr}"
+        trim_rh "grib${fhr}"
         ;;
      *)
-        cp $GRIBIN grib$fhr
+        cp "${GRIBIN}" "grib${fhr}"
     esac
 
-    export pgm="nagrib2 F$fhr"
+    export pgm="nagrib2 F${fhr}"
     startmsg
 
-    $NAGRIB << EOF
-    GBFILE   = grib$fhr
-    INDXFL   = 
-    GDOUTF   = $GEMGRD
-    PROJ     = $proj
-    GRDAREA  = $grdarea
-    KXKY     = $kxky
-    MAXGRD   = $maxgrd
-    CPYFIL   = $cpyfil
-    GAREA    = $garea
-    OUTPUT   = $output
-    GBTBLS   = $gbtbls
-    GBDIAG   = 
-    PDSEXT   = $pdsext
-    l
-    r
+    ${NAGRIB} << EOF
+GBFILE   = grib${fhr}
+INDXFL   = 
+GDOUTF   = ${GEMGRD}
+PROJ     = ${proj}
+GRDAREA  = ${grdarea}
+KXKY     = ${kxky}
+MAXGRD   = ${maxgrd}
+CPYFIL   = ${cpyfil}
+GAREA    = ${garea}
+OUTPUT   = ${output}
+GBTBLS   = ${gbtbls}
+GBDIAG   = 
+PDSEXT   = ${pdsext}
+l
+r
 EOF
     export err=$?;err_chk
 
-    if [[ ${SENDCOM} == "YES" ]] ; then
-       cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
-       if [[ ${SENDDBN} == "YES" ]] ; then
-           "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-             "${destination}/${GEMGRD}"
-       fi
+    cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
+    if [[ ${SENDDBN} == "YES" ]] ; then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+				   "${destination}/${GEMGRD}"
     fi
-    cd $DATA_RUN
+    cd "${DATA_RUN}" || exit 1
   else
-    if [ $fhcnt -ge 240 ] ; then
-    	if [ $fhcnt -lt 276 -a $RUN2 = "gfs_0p50" ] ; then
-    	    let fhcnt=fhcnt+6
+    if (( fhcnt <= 240 )) ; then
+    	if (( fhcnt < 276 )) && [[ "${RUN2}" = "gfs_0p50" ]] ; then
+    	    fhcnt=$((fhcnt+6))
     	else
-    	    let fhcnt=fhcnt+12
+    	    fhcnt=$((fhcnt+12))
     	fi
-    elif [ $fhcnt -lt 120 -a $RUN2 = "gfs_0p25" ] ; then
+    elif ((fhcnt < 120)) && [[ "${RUN2}" = "gfs_0p25" ]] ; then
       ####    let fhcnt=fhcnt+1
-    	let fhcnt=fhcnt+$ILPOST
+    	fhcnt=$((hcnt + ILPOST))
     else
       fhcnt=$((ILPOST > finc ? fhcnt+ILPOST : fhcnt+finc ))
     fi
   fi
 done
 
-$GEMEXE/gpend
+"${GEMEXE}/gpend"
 #####################################################################
 
 

@@ -5,22 +5,15 @@
 
 echo "BEGIN: config.efcs"
 
-# TODO: Possibly need OCNRES_ENKF, ICERES_ENKF, WAVRES_ENKF too
-if [[ ${DO_OCN} == "YES" ]]; then
-  case "${CASE_ENS}" in
-    "C48") export OCNRES=500;;
-    "C96") export OCNRES=100;;
-    "C192") export OCNRES=050;;
-    "C384") export OCNRES=025;;
-    "C768") export OCNRES=025;;
-    *) export OCNRES=025;;
-  esac
-fi
-[[ ${DO_ICE} == "YES" ]] && export ICERES=${OCNRES}
-[[ ${DO_WAVE} == "YES" ]] && export waveGRD=${waveGRD_ENKF:-${waveGRD}}  # TODO: will we run waves with a different resolution in the ensemble?
+# Turn off components in ensemble via _ENKF, or use setting from deterministic
+export DO_AERO=${DO_AERO_ENKF:-${DO_AERO:-"NO"}}
+export DO_OCN=${DO_OCN_ENKF:-${DO_OCN:-"NO"}}
+export DO_ICE=${DO_ICE_ENKF:-${DO_ICE:-"NO"}}
+export DO_WAVE=${DO_WAVE_ENKF:-${DO_WAVE:-"NO"}}
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE_ENS}"
+# Ocean/Ice/Waves ensemble configurations are identical to deterministic member
 [[ ${DO_OCN} == "YES" ]] && string="${string} --mom6 ${OCNRES}"
 [[ ${DO_ICE} == "YES" ]] && string="${string} --cice6 ${ICERES}"
 [[ ${DO_WAVE} == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"

@@ -18,9 +18,7 @@ export EXECwave=${EXECwave:-${HOMEgfs}/exec}
 # Set COM Paths
 YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP
 
-if [ ${SENDCOM} = YES ]; then
-  mkdir -m 775 -p ${COM_WAVE_PREP}
-fi
+mkdir -m 775 -p ${COM_WAVE_PREP}
 
 # Set mpi serial command
 export wavempexec=${wavempexec:-"mpirun -n"}

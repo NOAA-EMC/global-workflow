@@ -33,6 +33,7 @@ source "${HOMEgfs}/ush/file_utils.sh"
 
 [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
 nb_copy "${COM_ATMOS_ANALYSIS}/${APREFIX}gsistat" "${ARCDIR}/gsistat.${RUN}.${PDY}${cyc}"
+nb_copy "${COM_CHEM_ANALYSIS}/${APREFIX}aerostat" "${ARCDIR}/aerostat.${RUN}.${PDY}${cyc}"
 nb_copy "${COM_ATMOS_GRIB_1p00}/${APREFIX}pgrb2.1p00.anl" "${ARCDIR}/pgbanl.${RUN}.${PDY}${cyc}.grib2"
 
 # Archive 1 degree forecast GRIB2 files for verification
@@ -261,17 +262,49 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
     shopt -s extglob
     for targrp in ${targrp_list}; do
         set +e
-        ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${targrp}.tar" $(cat "${ARCH_LIST}/${targrp}.txt")
-        status=$?
+
+        # Test whether gdas.tar or gdas_restarta.tar will have rstprod data
+        has_rstprod="NO"
         case ${targrp} in
             'gdas'|'gdas_restarta')
-                ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${targrp}.tar"
-                ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${targrp}.tar"
+                # Test for rstprod in each archived file
+                while IFS= read -r file; do
+                    if [[ -f ${file} ]]; then
+                        group=$( stat -c "%G" "${file}" )
+                        if [[ "${group}" == "rstprod" ]]; then
+                            has_rstprod="YES"
+                            break
+                        fi
+                    fi
+                done < "${ARCH_LIST}/${targrp}.txt"
+
                 ;;
             *) ;;
         esac
-        if [ "${status}" -ne 0 ] && [ "${PDY}${cyc}" -ge "${firstday}" ]; then
-            echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${targrp}.tar failed"
+
+        # Create the tarball
+        tar_fl="${ATARDIR}/${PDY}${cyc}/${targrp}.tar"
+        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${ARCH_LIST}/${targrp}.txt")
+        status=$?
+
+        # Change group to rstprod if it was found even if htar/tar failed in case of partial creation
+        if [[ "${has_rstprod}" == "YES" ]]; then
+            ${HSICMD} chgrp rstprod "${tar_fl}"
+            stat_chgrp=$?
+            ${HSICMD} chmod 640 "${tar_fl}"
+            stat_chgrp=$((stat_chgrp+$?))
+            if [ "${stat_chgrp}" -gt 0 ]; then
+                echo "FATAL ERROR: Unable to properly restrict ${tar_fl}!"
+                echo "Attempting to delete ${tar_fl}"
+                ${HSICMD} rm "${tar_fl}"
+                echo "Please verify that ${tar_fl} was deleted!"
+                exit "${stat_chgrp}"
+            fi
+        fi
+
+        # For safety, test if the htar/tar command failed after changing groups
+        if [[ "${status}" -ne 0 ]] && [[ "${PDY}${cyc}" -ge "${firstday}" ]]; then
+            echo "FATAL ERROR: ${TARCMD} ${tar_fl} failed"
             exit "${status}"
         fi
         set_strict
@@ -282,194 +315,5 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 ###############################################################
 fi  ##end of HPSS archive
 ###############################################################
-
-
-
-###############################################################
-# Clean up previous cycles; various depths
-# PRIOR CYCLE: Leave the prior cycle alone
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-
-# PREVIOUS to the PRIOR CYCLE
-GDATE=$(${NDATE} -"${assim_freq}" "${GDATE}")
-gPDY="${GDATE:0:8}"
-gcyc="${GDATE:8:2}"
-
-# Remove the TMPDIR directory
-# TODO Only prepbufr is currently using this directory, and all jobs should be
-#   cleaning up after themselves anyway
-COMIN="${DATAROOT}/${GDATE}"
-[[ -d ${COMIN} ]] && rm -rf "${COMIN}"
-
-if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
-    exit 0
-fi
-
-# Step back every assim_freq hours and remove old rotating directories
-# for successful cycles (defaults from 24h to 120h).
-# Retain files needed by Fit2Obs
-# TODO: This whole section needs to be revamped to remove marine component
-#  directories and not look at the rocoto log.
-GDATEEND=$(${NDATE} -"${RMOLDEND:-24}"  "${PDY}${cyc}")
-GDATE=$(${NDATE} -"${RMOLDSTD:-120}" "${PDY}${cyc}")
-RTOFS_DATE=$(${NDATE} -48 "${PDY}${cyc}")
-function remove_files() {
-    # TODO: move this to a new location
-    local directory=$1
-    shift
-    if [[ ! -d ${directory} ]]; then
-        echo "No directory ${directory} to remove files from, skiping"
-        return
-    fi
-    local exclude_list=""
-    if (($# > 0)); then
-        exclude_list=$*
-    fi
-    local file_list
-    declare -a file_list
-    readarray -t file_list < <(find -L "${directory}" -type f)
-    if (( ${#file_list[@]} == 0 )); then return; fi
-    # echo "Number of files to remove before exclusions: ${#file_list[@]}"
-    for exclude in ${exclude_list}; do
-        echo "Excluding ${exclude}"
-        declare -a file_list_old=("${file_list[@]}")
-        readarray file_list < <(printf -- '%s\n' "${file_list_old[@]}" | grep -v "${exclude}")
-        # echo "Number of files to remove after exclusion: ${#file_list[@]}"
-        if (( ${#file_list[@]} == 0 )); then return; fi
-    done
-    # echo "Number of files to remove after exclusions: ${#file_list[@]}"
-
-    for file in "${file_list[@]}"; do
-        rm -f "${file}"
-    done
-    # Remove directory if empty
-    rmdir "${directory}" || true
-}
-
-while [ "${GDATE}" -le "${GDATEEND}" ]; do
-    gPDY="${GDATE:0:8}"
-    gcyc="${GDATE:8:2}"
-    COMINrtofs="${ROTDIR}/rtofs.${gPDY}"
-    if [ -d "${COM_TOP}" ]; then
-        rocotolog="${EXPDIR}/logs/${GDATE}.log"
-        if [ -f "${rocotolog}" ]; then
-            set +e
-            testend=$(tail -n 1 "${rocotolog}" | grep "This cycle is complete: Success")
-            rc=$?
-            set_strict
-
-            if [ "${rc}" -eq 0 ]; then
-                # Obs
-                exclude_list="prepbufr"
-                templates="COM_OBS"
-                for template in ${templates}; do
-                    YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                    remove_files "${directory}" "${exclude_list[@]}"
-                done
-
-                # Atmos
-                exclude_list="cnvstat atmanl.nc"
-                templates=$(compgen -A variable | grep 'COM_ATMOS_.*_TMPL')
-                for template in ${templates}; do
-                    YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                    remove_files "${directory}" "${exclude_list[@]}"
-                done
-
-                # Wave
-                exclude_list=""
-                templates=$(compgen -A variable | grep 'COM_WAVE_.*_TMPL')
-                for template in ${templates}; do
-                    YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                    remove_files "${directory}" "${exclude_list[@]}"
-                done
-
-                # Ocean
-                exclude_list=""
-                templates=$(compgen -A variable | grep 'COM_OCEAN_.*_TMPL')
-                for template in ${templates}; do
-                    YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                    remove_files "${directory}" "${exclude_list[@]}"
-                done
-
-                # Ice
-                exclude_list=""
-                templates=$(compgen -A variable | grep 'COM_ICE_.*_TMPL')
-                for template in ${templates}; do
-                    YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                    remove_files "${directory}" "${exclude_list[@]}"
-                done
-
-                # Aerosols (GOCART)
-                exclude_list=""
-                templates=$(compgen -A variable | grep 'COM_CHEM_.*_TMPL')
-                for template in ${templates}; do
-                    YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                    remove_files "${directory}" "${exclude_list[@]}"
-                done
-
-                # Mediator
-                exclude_list=""
-                templates=$(compgen -A variable | grep 'COM_MED_.*_TMPL')
-                for template in ${templates}; do
-                    YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
-                    remove_files "${directory}" "${exclude_list[@]}"
-                done
-
-                if [ -d "${COMINrtofs}" ] && [ "${GDATE}" -lt "${RTOFS_DATE}" ]; then rm -rf "${COMINrtofs}" ; fi
-            fi
-        fi
-    fi
-
-    # Remove mdl gfsmos directory
-    if [ "${RUN}" = "gfs" ]; then
-        COMIN="${ROTDIR}/gfsmos.${gPDY}"
-        if [ -d "${COMIN}" ] && [ "${GDATE}" -lt "${CDATE_MOS}" ]; then rm -rf "${COMIN}" ; fi
-    fi
-
-    # Remove any empty directories
-    target_dir="${ROTDIR:?}/${RUN}.${gPDY}/${gcyc}/"
-    if [[ -d ${target_dir} ]]; then
-        find "${target_dir}" -empty -type d -delete
-    fi
-
-    GDATE=$(${NDATE} +"${assim_freq}" "${GDATE}")
-done
-
-# Remove archived gaussian files used for Fit2Obs in $VFYARC that are
-# $FHMAX_FITS plus a delta before $CDATE.  Touch existing archived
-# gaussian files to prevent the files from being removed by automatic
-# scrubber present on some machines.
-
-if [ "${RUN}" = "gfs" ]; then
-    fhmax=$((FHMAX_FITS+36))
-    RDATE=$(${NDATE} -"${fhmax}" "${PDY}${cyc}")
-    rPDY=$(echo "${RDATE}" | cut -c1-8)
-    COMIN="${VFYARC}/${RUN}.${rPDY}"
-    [[ -d ${COMIN} ]] && rm -rf "${COMIN}"
-
-    TDATE=$(${NDATE} -"${FHMAX_FITS}" "${PDY}${cyc}")
-    while [ "${TDATE}" -lt "${PDY}${cyc}" ]; do
-        tPDY=$(echo "${TDATE}" | cut -c1-8)
-        tcyc=$(echo "${TDATE}" | cut -c9-10)
-        TDIR=${VFYARC}/${RUN}.${tPDY}/${tcyc}
-        [[ -d ${TDIR} ]] && touch "${TDIR}"/*
-        TDATE=$(${NDATE} +6 "${TDATE}")
-    done
-fi
-
-# Remove $RUN.$rPDY for the older of GDATE or RDATE
-GDATE=$(${NDATE} -"${RMOLDSTD:-120}" "${PDY}${cyc}")
-fhmax=${FHMAX_GFS}
-RDATE=$(${NDATE} -"${fhmax}" "${PDY}${cyc}")
-if [ "${GDATE}" -lt "${RDATE}" ]; then
-    RDATE=${GDATE}
-fi
-rPDY=$(echo "${RDATE}" | cut -c1-8)
-COMIN="${ROTDIR}/${RUN}.${rPDY}"
-[[ -d ${COMIN} ]] && rm -rf "${COMIN}"
-
-
-###############################################################
-
 
 exit 0
