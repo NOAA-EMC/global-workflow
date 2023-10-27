@@ -557,8 +557,7 @@ class GFSTasks(Tasks):
 
     def postanl(self):
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRGRP': 'anl',
-                          'FHRLST': 'anl',
+        postenvar_dict = {'FHRLST': 'anl',
                           'ROTDIR': self._base.get('ROTDIR')}
 
         for key, value in postenvar_dict.items():
