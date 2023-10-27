@@ -49,7 +49,7 @@ export p_cyc=${pdate:8:2}
 #############################################
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RADMON
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
+YMD=${P_PDY} HH=${p_cyc} generate_com -rx COM_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
 
 export TANKverf_rad=${TANKverf_rad:-${COM_ATMOS_RADMON}}
 export TANKverf_radM1=${TANKverf_radM1:-${COM_ATMOS_RADMON_PREV}}
