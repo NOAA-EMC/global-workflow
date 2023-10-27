@@ -73,7 +73,6 @@ class GEFSTasks(Tasks):
         return task
 
     def efcs(self):
-        # TODO: Add real dependencies
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
