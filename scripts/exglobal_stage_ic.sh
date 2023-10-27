@@ -37,7 +37,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
   err=$((err + rc))
   for ftype in gfs_data sfc_data; do
-    for tt in $(seq 1 6); do
+    for ((tt = 1; tt <= 6; tt++)); do
       src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
       tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
       ${NCP} "${src}" "${tgt}"
