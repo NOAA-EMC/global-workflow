@@ -267,7 +267,8 @@ while [[ ${#build_jobs[@]} -gt 0 ]]; do
       # Test if each job is complete and if so, notify and remove from the array
       if [[ -n "${build_ids[${build}]+0}" ]]; then
          if ! ps -p "${build_ids[${build}]}" > /dev/null; then
-            wait "${build_ids[${build}]}" && build_stat=$?
+            wait "${build_ids[${build}]}"
+            build_stat=$?
             errs=$((errs+build_stat))
             if [[ ${build_stat} == 0 ]]; then
                echo "${build} completed successfully!"
