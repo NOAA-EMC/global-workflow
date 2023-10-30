@@ -72,7 +72,7 @@ def input_args():
 if __name__ == '__main__':
 
     user_inputs = input_args()
-    
+
     # Create a dictionary to pass to parse_j2yaml for parsing the yaml file
     data = AttrDict(HOMEgfs=_top)
     data.update(os.environ)
