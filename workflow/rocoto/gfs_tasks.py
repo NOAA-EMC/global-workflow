@@ -579,7 +579,7 @@ class GFSTasks(Tasks):
         if task_name not in ['post', 'ocnpost']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
 
-        def _get_postgroups(cdump, config, add_anl=False):
+        def _get_postgroups(cdump, config):
 
             fhmin = config['FHMIN']
             fhmax = config['FHMAX']
@@ -604,8 +604,6 @@ class GFSTasks(Tasks):
             fhrs = [f'f{fhr:03d}' for fhr in fhrs]
             fhrs = np.array_split(fhrs, ngrps)
             fhrs = [fhr.tolist() for fhr in fhrs]
-            if add_anl:
-                fhrs.insert(0, ['anl'])
 
             grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
             dep = ' '.join([fhr[-1] for fhr in fhrs])
