@@ -549,7 +549,6 @@ class GFSTasks(Tasks):
         return task
 
     def post(self):
-        add_anl_to_post = False
         return self._post_task('post')
 
     def postanl(self):
@@ -579,9 +578,6 @@ class GFSTasks(Tasks):
     def _post_task(self, task_name):
         if task_name not in ['post', 'ocnpost']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
-
-        if task_name in ['ocnpost']:
-            add_anl_to_post = False
 
         def _get_postgroups(cdump, config, add_anl=False):
 
@@ -627,8 +623,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRGRP': '#grp#',
-                          'FHRLST': '#lst#',
+        postenvar_dict = {'FHRLST': '#lst#',
                           'ROTDIR': self._base.get('ROTDIR')}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
