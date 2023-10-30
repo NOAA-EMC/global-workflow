@@ -27,10 +27,6 @@ if [[ ${type} = "gfs" ]]; then
   FHMAX_HF_GFS=${FHMAX_HF_GFS:-120}
   FHOUT_HF_GFS=${FHOUT_HF_GFS:-1}
 
-  # Implemented to prevent edge-case failures.
-  if [[ ! -d "${DATA}" ]]; then
-      mkdir -p "${DATA}"
-  fi
   rm -f "${DATA}/gfsa.txt"
   rm -f "${DATA}/gfsb.txt"
   rm -f "${DATA}/gfs_restarta.txt"
