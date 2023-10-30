@@ -340,6 +340,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
   export MOM6_RIVER_RUNOFF
   export MOM6_RESTART_SETTING
   export eps_imesh
+  export TOPOEDITS
+  export MOM6_DIAG_COORD_DEF_Z_FILE
+  export MOM6_DIAG_MISVAL
+  export MOM6_ALLOW_LANDMASK_CHANGES
 fi
 
 # CICE6 specific settings
