@@ -135,9 +135,16 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   fi
   err_chk
 
-  # We are in a loop over downset, save output from mpmd into nset specific output
-  cat mpmd.out  # so we capture output into the main logfile
-  mv mpmd.out "mpmd_${nset}.out"
+  # We are in a loop over downset, save output from mpmd into nset
+  # specific output; this if-block is necessary for the NOAA CSP AWS
+  # platform; AWS uses `mpiexec` (PBS) as it's parallel executable
+  # launcher rather than `srun` which can use the `MPMD` style; PBS
+  # can also handle similar situations but the implementation is more
+  # complicated to implement and this check is sufficient for now.
+  if [[ -f "mpmd.out" ]]; then
+    cat mpmd.out  # so we capture output into the main logfile
+    mv mpmd.out "mpmd_${nset}.out"
+  fi
 
   # Concatenate grib files from each processor into a single one
   # and clean-up as you go
