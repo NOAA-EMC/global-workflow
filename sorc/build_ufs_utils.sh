@@ -5,7 +5,6 @@ OPTIND=1
 while getopts ":j:dv" option; do
   case "${option}" in
     j) export BUILD_JOBS="${OPTARG}";;
-    o) _ops="YES";;
     v) export BUILD_VERBOSE="YES";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
