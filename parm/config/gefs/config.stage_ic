@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+########## config.stage_ic ##########
+
+echo "BEGIN: config.stage_ic"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" stage_ic
+
+case "${CASE}" in
+  "C48")
+    export CPL_ATMIC="gefs_test"
+    export CPL_ICEIC="gefs_test"
+    export CPL_OCNIC="gefs_test"
+    export CPL_WAVIC="gefs_test"
+    ;;
+  *)
+    echo "FATAL ERROR Unrecognized resolution: ${CASE}"
+    exit 1
+    ;;
+esac
+
+echo "END: config.stage_ic"
