@@ -160,7 +160,7 @@ builds_started=0
 # Now start looping through all of the remaining jobs until everything is done
 while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
    if [[ ${procs_in_use} -lt ${_build_job_max} ]]; then
-      if [[ -n "${build_jobs[gdas]+0}" && ! -n "${build_ids[gdas]+0}" ]]; then
+      if [[ -n "${build_jobs[gdas]+0}" && -z "${build_ids[gdas]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['gdas'] + procs_in_use )) ]]; then
             ./build_gdas.sh -j "${build_jobs[gdas]}" "${_verbose_opt}" > \
                "${logs_dir}/build_gdas.log" 2>&1 &
@@ -169,7 +169,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
             procs_in_use=$(( procs_in_use + build_jobs['gdas'] ))
          fi
       fi
-      if [[ -n "${build_jobs[ufs_model]+0}" && ! -n "${build_ids[ufs_model]+0}" ]]; then
+      if [[ -n "${build_jobs[ufs_model]+0}" && -z "${build_ids[ufs_model]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['ufs_model'] + procs_in_use )) ]]; then
             ./build_ufs.sh -j "${build_jobs[ufs_model]}" "${_verbose_opt}" "${_build_ufs_opt}" > \
                "${logs_dir}/build_ufs.log" 2>&1 &
@@ -178,7 +178,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
             procs_in_use=$(( procs_in_use + build_jobs['ufs_model'] ))
          fi
       fi
-      if [[ -n "${build_jobs[gsi_enkf]+0}" && ! -n "${build_ids[gsi_enkf]+0}" ]]; then
+      if [[ -n "${build_jobs[gsi_enkf]+0}" && -z "${build_ids[gsi_enkf]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['gsi_enkf'] + procs_in_use )) ]]; then
             ./build_gsi_enkf.sh -j "${build_jobs[gsi_enkf]}" "${_verbose_opt}" > \
                "${logs_dir}/build_gsi_enkf.log" 2>&1 &
@@ -187,7 +187,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
             procs_in_use=$(( procs_in_use + build_jobs['gsi_enkf'] ))
          fi
       fi
-      if [[ -n "${build_jobs[ufs_utils]+0}" && ! -n "${build_ids[ufs_utils]+0}" ]]; then
+      if [[ -n "${build_jobs[ufs_utils]+0}" && -z "${build_ids[ufs_utils]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['ufs_utils'] + procs_in_use )) ]]; then
             ./build_ufs_utils.sh -j "${build_jobs[ufs_utils]}" "${_verbose_opt}" > \
                "${logs_dir}/build_ufs_utils.log" 2>&1 &
@@ -196,7 +196,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
             procs_in_use=$(( procs_in_use + build_jobs['ufs_utils'] ))
          fi
       fi
-      if [[ -n "${build_jobs[gsi_utils]+0}" && ! -n "${build_ids[gsi_utils]+0}" ]]; then
+      if [[ -n "${build_jobs[gsi_utils]+0}" && -z "${build_ids[gsi_utils]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['gsi_utils'] + procs_in_use )) ]]; then
             ./build_gsi_utils.sh -j "${build_jobs[gsi_utils]}" "${_verbose_opt}" > \
                "${logs_dir}/build_gsi_utils.log" 2>&1 &
@@ -205,7 +205,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
             procs_in_use=$(( procs_in_use + build_jobs['gsi_utils'] ))
          fi
       fi
-      if [[ -n "${build_jobs[upp]+0}" && ! -n "${build_ids[upp]+0}" ]]; then
+      if [[ -n "${build_jobs[upp]+0}" && -z "${build_ids[upp]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['upp'] + procs_in_use )) ]]; then
             ./build_upp.sh "${_verbose_opt}" > \
                "${logs_dir}/build_upp.log" 2>&1 &
@@ -214,7 +214,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
             procs_in_use=$(( procs_in_use + build_jobs['upp'] ))
          fi
       fi
-      if [[ -n "${build_jobs[ww3prepost]+0}" && ! -n "${build_ids[ww3prepost]+0}" ]]; then
+      if [[ -n "${build_jobs[ww3prepost]+0}" && -z "${build_ids[ww3prepost]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['ww3prepost'] + procs_in_use )) ]]; then
             ./build_ww3prepost.sh -j "${build_jobs[ww3prepost]}" "${_verbose_opt}" "${_build_ufs_opt}" > \
                "${logs_dir}/build_ww3prepost.log" 2>&1 &
@@ -223,7 +223,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
             procs_in_use=$(( procs_in_use + build_jobs['ww3prepost'] ))
          fi
       fi
-      if [[ -n "${build_jobs[gsi_monitor]+0}" && ! -n "${build_ids[gsi_monitor]+0}" ]]; then
+      if [[ -n "${build_jobs[gsi_monitor]+0}" && -z "${build_ids[gsi_monitor]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['gsi_monitor'] + procs_in_use )) ]]; then
             ./build_gsi_monitor.sh -j "${build_jobs[gsi_monitor]}" "${_verbose_opt}" > \
                "${logs_dir}/build_gsi_monitor.log" 2>&1 &
@@ -232,7 +232,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
             procs_in_use=$(( procs_in_use + build_jobs['gsi_monitor'] ))
          fi
       fi
-      if [[ -n "${build_jobs[gfs_utils]+0}" && ! -n "${build_ids[gfs_utils]+0}" ]]; then
+      if [[ -n "${build_jobs[gfs_utils]+0}" && -z "${build_ids[gfs_utils]+0}" ]]; then
          if [[ ${_build_job_max} -ge $(( build_jobs['gfs_utils'] + procs_in_use )) ]]; then
             ./build_gfs_utils.sh -j "${build_jobs[gfs_utils]}" "${_verbose_opt}" > \
                "${logs_dir}/build_gfs_utils.log" 2>&1 &
