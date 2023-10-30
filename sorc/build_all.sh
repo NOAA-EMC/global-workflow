@@ -16,13 +16,15 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-v]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -c build_config:
     Selectively build based on the provided config instead of the default config
   -h:
     print this help message and exit
+  -j:
+    Specify maximum number of build jobs (n)
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
 EOF
@@ -33,25 +35,25 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 cd "${script_dir}" || exit 1
 
 _build_ufs_opt=""
-_ops_opt=""
 _verbose_opt=""
 _partial_opt=""
+_build_job_max=20
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:c:hov" option; do
+while getopts ":a:c:j:hv" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     c) _partial_opt+="-c ${OPTARG} ";;
     h) _usage;;
-    o) _ops_opt+="-o";;
+    j) _build_job_max="${OPTARG} ";;
     v) _verbose_opt="-v";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-      usage
+      _usage
       ;;
     *)
       echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-      usage
+      _usage
       ;;
   esac
 done
@@ -105,170 +107,189 @@ ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 # shellcheck disable=
 err=0
 
-#------------------------------------
-# build gfs_utils
-#------------------------------------
-if [[ ${Build_gfs_utils} == 'true' ]]; then
-  echo " .... Building gfs_utils .... "
-    # shellcheck disable=SC2086,SC2248
-  ./build_gfs_utils.sh ${_verbose_opt} > "${logs_dir}/build_gfs_utils.log" 2>&1
-    # shellcheck disable=
-  rc=$?
-  if (( rc != 0 )) ; then
-    echo "Fatal error in building gfs_utils."
-    echo "The log file is in ${logs_dir}/build_gfs_utils.log"
-  fi
-  err=$((err + rc))
-fi
+declare -A build_jobs
 
 #------------------------------------
-# build WW3 pre & post execs
+# Check which builds to do and assign # of build jobs
 #------------------------------------
-if [[ ${Build_ww3_prepost} == "true" ]]; then
-  echo " .... Building WW3 pre and post execs .... "
-  # shellcheck disable=SC2086,SC2248
-  ./build_ww3prepost.sh ${_verbose_opt} ${_build_ufs_opt} > "${logs_dir}/build_ww3_prepost.log" 2>&1
-  # shellcheck disable=
-  rc=$?
-  if (( rc != 0 )) ; then
-    echo "Fatal error in building WW3 pre/post processing."
-    echo "The log file is in ${logs_dir}/build_ww3_prepost.log"
-  fi
-  err=$((err + rc))
+
+# Mandatory builds, unless otherwise specified, for the UFS
+big_jobs=0
+[[ ${Build_ufs_model} == 'true' ]] && build_jobs["ufs_model"]=8 && big_jobs=$((big_jobs+1))
+# The UPP is hardcoded to use 6 cores
+[[ ${Build_upp} == 'true' ]] && build_jobs["upp"]=6
+[[ ${Build_ufs_utils} == 'true' ]] && build_jobs["ufs_utils"]=3
+[[ ${Build_gfs_utils} == 'true' ]] && build_jobs["gfs_utils"]=16
+[[ ${Build_ww3prepost} == "true" ]] && build_jobs["ww3prepost"]=2
+
+# Optional DA builds
+[[ -d gdas.cd ]] && build_jobs["gdas"]=16 && big_jobs=$((big_jobs+1))
+[[ -d gsi_enkf.fd ]] && build_jobs["gsi_enkf"]=8 && big_jobs=$((big_jobs+1))
+[[ -d gsi_utils.fd ]] && build_jobs["gsi_utils"]=2
+[[ -d gsi_monitor.fd ]] && build_jobs["gsi_monitor"]=1
+
+# Go through all builds and adjust CPU counts down if necessary
+requested_cpus=0
+build_list=""
+for build in "${!build_jobs[@]}"; do
+   [[ -z "${build_list}" ]] && build_list="${build}" || build_list="${build_list}, ${build}"
+   if [[ ${build_jobs[${build}]} -gt ${_build_job_max} ]]; then
+      build_jobs[${build}]=${_build_job_max}
+   fi
+   requested_cpus=$(( requested_cpus + build_jobs[${build}] ))
+done
+
+echo "Building ${build_list}"
+
+# Go through all builds and adjust CPU counts up if possible
+if [[ ${requested_cpus} -lt ${_build_job_max} && ${big_jobs} -gt 0 ]]; then
+   # Add cores to the gdas, ufs, and gsi build jobs
+   extra_cores=$(( _build_job_max - requested_cpus ))
+   extra_cores=$(( extra_cores / big_jobs ))
+   for build in "${!build_jobs[@]}"; do
+      if [[ "${build}" == "gdas" || "${build}" == "ufs_model" || "${build}" == "gsi_enkf" ]]; then
+         build_jobs[${build}]=$(( build_jobs[${build}] + extra_cores ))
+      fi
+   done
 fi
 
-#------------------------------------
-# build forecast model
-#------------------------------------
-if [[ ${Build_ufs_model} == 'true' ]]; then
-  echo " .... Building forecast model .... "
-  # shellcheck disable=SC2086,SC2248
-  ./build_ufs.sh ${_verbose_opt} ${_build_ufs_opt} > "${logs_dir}/build_ufs.log" 2>&1
-  # shellcheck disable=
-  rc=$?
-  if (( rc != 0 )) ; then
-    echo "Fatal error in building UFS model."
-    echo "The log file is in ${logs_dir}/build_ufs.log"
-  fi
-  err=$((err + rc))
-fi
+procs_in_use=0
+declare -A build_ids
 
-#------------------------------------
-# build GSI and EnKF - optional checkout
-#------------------------------------
-if [[ -d gsi_enkf.fd ]]; then
-  if [[ ${Build_gsi_enkf} == 'true' ]]; then
-    echo " .... Building gsi and enkf .... "
-    # shellcheck disable=SC2086,SC2248
-    ./build_gsi_enkf.sh ${_ops_opt} ${_verbose_opt} > "${logs_dir}/build_gsi_enkf.log" 2>&1
-    # shellcheck disable=
-    rc=$?
-    if (( rc != 0 )) ; then
-      echo "Fatal error in building gsi_enkf."
-      echo "The log file is in ${logs_dir}/build_gsi_enkf.log"
-    fi
-    err=$((err + rc))
-  fi
-else
-  echo " .... Skip building gsi and enkf .... "
-fi
+builds_started=0
+# Now start looping through all of the remaining jobs until everything is done
+while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
+   if [[ ${procs_in_use} -lt ${_build_job_max} ]]; then
+      if [[ "${build_jobs[gdas]+0}" && ! "${build_ids[gdas]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['gdas'] + procs_in_use )) ]]; then
+            ./build_gdas.sh -j "${build_jobs[gdas]}" "${_verbose_opt}" > \
+               "${logs_dir}/build_gdas.log" 2>&1 &
+            build_ids["gdas"]=$!
+            echo "Starting build_gdas.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['gdas'] ))
+         fi
+      fi
+      if [[ "${build_jobs[ufs_model]+0}" && ! "${build_ids[ufs_model]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['ufs_model'] + procs_in_use )) ]]; then
+            ./build_ufs.sh -j "${build_jobs[ufs_model]}" "${_verbose_opt}" "${_build_ufs_opt}" > \
+               "${logs_dir}/build_ufs.log" 2>&1 &
+            build_ids["ufs_model"]=$!
+            echo "Starting build_ufs.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['ufs_model'] ))
+         fi
+      fi
+      if [[ "${build_jobs[gsi_enkf]+0}" && ! "${build_ids[gsi_enkf]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['gsi_enkf'] + procs_in_use )) ]]; then
+            ./build_gsi_enkf.sh -j "${build_jobs[gsi_enkf]}" "${_verbose_opt}" > \
+               "${logs_dir}/build_gsi_enkf.log" 2>&1 &
+            build_ids["gsi_enkf"]=$!
+            echo "Starting build_gsi_enkf.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['gsi_enkf'] ))
+         fi
+      fi
+      if [[ "${build_jobs[ufs_utils]+0}" && ! "${build_ids[ufs_utils]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['ufs_utils'] + procs_in_use )) ]]; then
+            ./build_ufs_utils.sh -j "${build_jobs[ufs_utils]}" "${_verbose_opt}" > \
+               "${logs_dir}/build_ufs_utils.log" 2>&1 &
+            build_ids["ufs_utils"]=$!
+            echo "Starting build_ufs_utils.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['ufs_utils'] ))
+         fi
+      fi
+      if [[ "${build_jobs[gsi_utils]+0}" && ! "${build_ids[gsi_utils]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['gsi_utils'] + procs_in_use )) ]]; then
+            ./build_gsi_utils.sh -j "${build_jobs[gsi_utils]}" "${_verbose_opt}" > \
+               "${logs_dir}/build_gsi_utils.log" 2>&1 &
+            build_ids["gsi_utils"]=$!
+            echo "Starting build_gsi_utils.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['gsi_utils'] ))
+         fi
+      fi
+      if [[ "${build_jobs[upp]+0}" && ! "${build_ids[upp]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['upp'] + procs_in_use )) ]]; then
+            ./build_upp.sh "${_verbose_opt}" > \
+               "${logs_dir}/build_upp.log" 2>&1 &
+            build_ids["upp"]=$!
+            echo "Starting build_upp.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['upp'] ))
+         fi
+      fi
+      if [[ "${build_jobs[ww3prepost]+0}" && ! "${build_ids[ww3prepost]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['ww3prepost'] + procs_in_use )) ]]; then
+            ./build_ww3prepost.sh -j "${build_jobs[ww3prepost]}" "${_verbose_opt}" "${_build_ufs_opt}" > \
+               "${logs_dir}/build_ww3prepost.log" 2>&1 &
+            build_ids["ww3prepost"]=$!
+            echo "Starting build_ww3prepost.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['ww3prepost'] ))
+         fi
+      fi
+      if [[ "${build_jobs[gsi_monitor]+0}" && ! "${build_ids[gsi_monitor]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['gsi_monitor'] + procs_in_use )) ]]; then
+            ./build_gsi_monitor.sh -j "${build_jobs[gsi_monitor]}" "${_verbose_opt}" > \
+               "${logs_dir}/build_gsi_monitor.log" 2>&1 &
+            build_ids["gsi_monitor"]=$!
+            echo "Starting build_gsi_monitor.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['gsi_monitor'] ))
+         fi
+      fi
+      if [[ "${build_jobs[gfs_utils]+0}" && ! "${build_ids[gfs_utils]+0}" ]]; then
+         if [[ ${_build_job_max} -ge $(( build_jobs['gfs_utils'] + procs_in_use )) ]]; then
+            ./build_gfs_utils.sh -j "${build_jobs[gfs_utils]}" "${_verbose_opt}" > \
+               "${logs_dir}/build_gfs_utils.log" 2>&1 &
+            build_ids["gfs_utils"]=$!
+            echo "Starting build_gfs_utils.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['gfs_utils'] ))
+         fi
+      fi
+   fi
 
-#------------------------------------
-# build gsi utilities
-#------------------------------------
-if [[ -d gsi_utils.fd ]]; then
-  if [[ ${Build_gsi_utils} == 'true' ]]; then
-    echo " .... Building gsi utilities .... "
-    # shellcheck disable=SC2086,SC2248
-    ./build_gsi_utils.sh ${_ops_opt} ${_verbose_opt} > "${logs_dir}/build_gsi_utils.log" 2>&1
-    # shellcheck disable=
-    rc=$?
-    if (( rc != 0 )) ; then
-      echo "Fatal error in building gsi utilities."
-      echo "The log file is in ${logs_dir}/build_gsi_utils.log"
-    fi
-    err=$((err + rc))
-  fi
-else
-  echo " .... Skip building gsi utilities .... "
-fi
+   # Check if all builds have completed
+   # Also recalculate how many processors are in use to account for completed builds
+   builds_started=0
+   procs_in_use=0
+   for build in "${!build_jobs[@]}"; do
+      if [[ "${build_ids[${build}]+0}" ]]; then
+         builds_started=$(( builds_started + 1))
+         # Calculate how many processors are in use
+         if ps -p "${build_ids[${build}]}" > /dev/null; then
+            procs_in_use=$(( procs_in_use + build_jobs["${build}"] ))
+         fi
+      fi
+   done
 
-#------------------------------------
-# build gdas - optional checkout
-#------------------------------------
-if [[ -d gdas.cd ]]; then
-  if [[ ${Build_gdas} == 'true' ]]; then
-    echo " .... Building GDASApp  .... "
-    # shellcheck disable=SC2086,SC2248
-    ./build_gdas.sh ${_verbose_opt} > "${logs_dir}/build_gdas.log" 2>&1
-    # shellcheck disable=
-    rc=$?
-    if (( rc != 0 )) ; then
-      echo "Fatal error in building GDASApp."
-      echo "The log file is in ${logs_dir}/build_gdas.log"
-    fi
-    err=$((err + rc))
-  fi
-else
-  echo " .... Skip building GDASApp  .... "
-fi
+   sleep 5s
+done
 
-#------------------------------------
-# build gsi monitor
-#------------------------------------
-if [[ -d gsi_monitor.fd ]]; then
-  if [[ ${Build_gsi_monitor} == 'true' ]]; then
-    echo " .... Building gsi monitor .... "
-    # shellcheck disable=SC2086,SC2248
-    ./build_gsi_monitor.sh ${_ops_opt} ${_verbose_opt} > "${logs_dir}/build_gsi_monitor.log" 2>&1
-    # shellcheck disable=
-    rc=$?
-    if (( rc != 0 )) ; then
-      echo "Fatal error in building gsi monitor."
-      echo "The log file is in ${logs_dir}/build_gsi_monitor.log"
-    fi
-    err=$((err + rc))
-  fi
-else
-  echo " .... Skip building gsi monitor .... "
-fi
+# Wait for all jobs to complete and check return statuses
+errs=0
+while [[ ${#build_jobs[@]} -gt 0 ]]; do
+   for build in "${!build_jobs[@]}"; do
+      # Test if each job is complete and if so, notify and remove from the array
+      if [[ "${build_ids[${build}]+0}" ]]; then
+         if ! ps -p "${build_ids[${build}]}" > /dev/null; then
+            wait "${build_ids[${build}]}" && build_stat=$?
+            errs=$((errs+build_stat))
+            if [[ ${build_stat} == 0 ]]; then
+               echo "${build} completed successfully!"
+            else
+               echo "${build} failed with status ${build_stat}!"
+            fi
 
-#------------------------------------
-# build UPP
-#------------------------------------
-if [[ ${Build_upp} == 'true' ]]; then
-  echo " .... Building UPP .... "
-  # shellcheck disable=SC2086,SC2248
-  ./build_upp.sh ${_ops_opt} ${_verbose_opt} > "${logs_dir}/build_upp.log" 2>&1
-  # shellcheck disable=
-  rc=$?
-  if (( rc != 0 )) ; then
-    echo "Fatal error in building UPP."
-    echo "The log file is in ${logs_dir}/build_upp.log"
-  fi
-  err=$((err + rc))
-fi
+            # Remove the completed build from the list of PIDs
+            unset 'build_ids[${build}]'
+            unset 'build_jobs[${build}]'
+            break
+         fi
+      fi
+   done
 
-#------------------------------------
-# build ufs_utils
-#------------------------------------
-if [[ ${Build_ufs_utils} == 'true' ]]; then
-  echo " .... Building ufs_utils .... "
-  # shellcheck disable=SC2086,SC2248
-  ./build_ufs_utils.sh ${_verbose_opt} > "${logs_dir}/build_ufs_utils.log" 2>&1
-  # shellcheck disable=
-  rc=$?
-  if (( rc != 0 )) ; then
-    echo "Fatal error in building ufs_utils."
-    echo "The log file is in ${logs_dir}/build_ufs_utils.log"
-  fi
-  err=$((err + rc))
-fi
+   sleep 5s
+done
 
 #------------------------------------
 # Exception Handling
 #------------------------------------
-if (( err != 0 )); then
+if (( errs != 0 )); then
   cat << EOF
 BUILD ERROR: One or more components failed to build
   Check the associated build log(s) for details.

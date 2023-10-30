@@ -7,9 +7,10 @@ cd "${script_dir}" || exit 1
 # Default settings
 APP="S2SWA"
 
-while getopts "a:v" option; do
+while getopts ":j:a:v" option; do
   case "${option}" in
-    a) APP="${OPTARG}" ;;
+    a) APP="${OPTARG}";;
+    j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -85,7 +86,7 @@ if (( rc != 0 )); then
   echo "Fatal error in cmake."
   exit "${rc}"
 fi
-make -j 8
+make -j "${BUILD_JOBS:-8}"
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in make."
