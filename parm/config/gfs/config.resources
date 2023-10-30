@@ -445,8 +445,8 @@ elif [[ "${step}" = "ocnanalvrfy" ]]; then
 
 elif [[ ${step} = "anal" ]]; then
 
-    export wtime_anal="00:50:00"
-    export wtime_anal_gfs="00:40:00"
+    export wtime_anal="01:10:00"
+    export wtime_anal_gfs="01:00:00"
     export npe_anal=780
     export nth_anal=5
     export npe_anal_gfs=825
