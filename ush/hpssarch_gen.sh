@@ -454,6 +454,8 @@ if [[ ${type} == "gdas" ]]; then
     touch gdasocean.txt
     rm -rf gdasocean_restart.txt
     touch gdasocean_restart.txt
+    rm -rf gdasocean_analysis.txt
+    touch gdasocean_analysis.txt
 
     head="gdas.t${cyc}z."
 
@@ -467,6 +469,13 @@ if [[ ${type} == "gdas" ]]; then
       echo "${COM_OCEAN_RESTART/${ROTDIR}\//}/*"
       echo "${COM_MED_RESTART/${ROTDIR}\//}/*"
     } >> gdasocean_restart.txt
+
+    {
+      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/${head}*"
+      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/gdas.t??z.ocngrid.nc"
+      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/diags"
+      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/yaml"
+    } >> gdasocean_analysis.txt
 
   fi
 
