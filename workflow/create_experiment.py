@@ -18,6 +18,7 @@ with an error code of 0 upon success.
 """
 
 import os
+import sys
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path
@@ -26,6 +27,8 @@ from wxflow import AttrDict, parse_j2yaml, Logger, logit
 
 import setup_expt
 import setup_xml
+
+from hosts import Host
 
 
 _here = os.path.dirname(__file__)
@@ -69,11 +72,17 @@ def input_args():
 if __name__ == '__main__':
 
     user_inputs = input_args()
-
+    
     # Create a dictionary to pass to parse_j2yaml for parsing the yaml file
     data = AttrDict(HOMEgfs=_top)
     data.update(os.environ)
     testconf = parse_j2yaml(path=user_inputs.yaml, data=data)
+
+    if 'exclude' in testconf:
+        host = Host()
+        if host.machine.lower() in testconf.exclude:
+            logger.info(f'Skipping creation of case: {testconf.arguments.pslot} on {host.machine.capitalize()}')
+            sys.exit(0)
 
     # Create a list of arguments to setup_expt.py
     setup_expt_args = [testconf.experiment.system, testconf.experiment.mode]
