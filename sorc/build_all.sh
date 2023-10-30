@@ -108,6 +108,7 @@ ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 err=0
 
 declare -A build_jobs
+declare -A build_opts
 
 #------------------------------------
 # Check which builds to do and assign # of build jobs
@@ -115,24 +116,58 @@ declare -A build_jobs
 
 # Mandatory builds, unless otherwise specified, for the UFS
 big_jobs=0
-[[ ${Build_ufs_model} == 'true' ]] && build_jobs["ufs_model"]=8 && big_jobs=$((big_jobs+1))
+if [[ ${Build_ufs_model} == 'true' ]]; then
+   build_jobs["ufs"]=8
+   big_jobs=$((big_jobs+1))
+   build_opts["ufs"]="${_verbose_opt} ${_build_ufs_opt}"
+fi
 # The UPP is hardcoded to use 6 cores
-[[ ${Build_upp} == 'true' ]] && build_jobs["upp"]=6
-[[ ${Build_ufs_utils} == 'true' ]] && build_jobs["ufs_utils"]=3
-[[ ${Build_gfs_utils} == 'true' ]] && build_jobs["gfs_utils"]=1
-[[ ${Build_ww3prepost} == "true" ]] && build_jobs["ww3prepost"]=2
+if [[ ${Build_upp} == 'true' ]]; then
+   build_jobs["upp"]=6
+   build_opts["upp"]=""
+fi
+if [[ ${Build_ufs_utils} == 'true' ]]; then
+   build_jobs["ufs_utils"]=3
+   build_opts["ufs_utils"]="${_verbose_opt}"
+fi
+if [[ ${Build_gfs_utils} == 'true' ]]; then
+   build_jobs["gfs_utils"]=1
+   build_opts["gfs_utils"]="${_verbose_opt}"
+fi
+if [[ ${Build_ww3prepost} == "true" ]]; then
+   build_jobs["ww3prepost"]=3
+   build_opts["ww3prepost"]="${_verbose_opt} ${_build_ufs_opt}"
+fi
 
 # Optional DA builds
-[[ -d gdas.cd ]] && build_jobs["gdas"]=16 && big_jobs=$((big_jobs+1))
-[[ -d gsi_enkf.fd ]] && build_jobs["gsi_enkf"]=8 && big_jobs=$((big_jobs+1))
-[[ -d gsi_utils.fd ]] && build_jobs["gsi_utils"]=2
-[[ -d gsi_monitor.fd ]] && build_jobs["gsi_monitor"]=1
+if [[ -d gdas.cd ]]; then
+   build_jobs["gdas"]=16
+   big_jobs=$((big_jobs+1))
+   build_opts["gfs_utils"]="${_verbose_opt}"
+fi
+if [[ -d gsi_enkf.fd ]]; then
+   build_jobs["gsi_enkf"]=8
+   big_jobs=$((big_jobs+1))
+   build_opts["gsi_enkf"]="${_verbose_opt}"
+fi
+if [[ -d gsi_utils.fd ]]; then
+   build_jobs["gsi_utils"]=2
+   build_opts["gsi_utils"]="${_verbose_opt}"
+fi
+if [[ -d gsi_monitor.fd ]]; then
+   build_jobs["gsi_monitor"]=1
+   build_opts["gsi_monitor"]="${_verbose_opt}"
+fi
 
 # Go through all builds and adjust CPU counts down if necessary
 requested_cpus=0
 build_list=""
 for build in "${!build_jobs[@]}"; do
-   [[ -z "${build_list}" ]] && build_list="${build}" || build_list="${build_list}, ${build}"
+   if [[ -z "${build_list}" ]]; then
+      build_list="${build}"
+   else
+      build_list="${build_list}, ${build}"
+   fi
    if [[ ${build_jobs[${build}]} -gt ${_build_job_max} ]]; then
       build_jobs[${build}]=${_build_job_max}
    fi
@@ -147,7 +182,7 @@ if [[ ${requested_cpus} -lt ${_build_job_max} && ${big_jobs} -gt 0 ]]; then
    extra_cores=$(( _build_job_max - requested_cpus ))
    extra_cores=$(( extra_cores / big_jobs ))
    for build in "${!build_jobs[@]}"; do
-      if [[ "${build}" == "gdas" || "${build}" == "ufs_model" || "${build}" == "gsi_enkf" ]]; then
+      if [[ "${build}" == "gdas" || "${build}" == "ufs" || "${build}" == "gsi_enkf" ]]; then
          build_jobs[${build}]=$(( build_jobs[${build}] + extra_cores ))
       fi
    done
@@ -157,100 +192,37 @@ procs_in_use=0
 declare -A build_ids
 
 builds_started=0
-# Now start looping through all of the remaining jobs until everything is done
+# Now start looping through all of the jobs until everything is done
 while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
-   if [[ ${procs_in_use} -lt ${_build_job_max} ]]; then
-      if [[ -n "${build_jobs[gdas]+0}" && -z "${build_ids[gdas]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['gdas'] + procs_in_use )) ]]; then
-            ./build_gdas.sh -j "${build_jobs[gdas]}" "${_verbose_opt}" > \
-               "${logs_dir}/build_gdas.log" 2>&1 &
-            build_ids["gdas"]=$!
-            echo "Starting build_gdas.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['gdas'] ))
+   for build in ${!build_jobs[@]}; do
+      # Has the job started?
+      if [[ -n "${build_jobs[${build}]+0}" && -z "${build_ids[${build}]+0}" ]]; then
+         # Do we have enough processors to run it?
+         if [[ ${_build_job_max} -ge $(( build_jobs[build] + procs_in_use )) ]]; then
+            if [[ "${build}" != "upp" ]]; then
+               ./build_${build}.sh -j "${build_jobs[${build}]}" "${build_opts[${build}]}" > \
+                  "${logs_dir}/build_${build}.log" 2>&1 &
+            else
+               ./build_${build}.sh "${build_opts[${build}]}" > \
+                  "${logs_dir}/build_${build}.log" 2>&1 &
+            fi
+            build_ids["${build}"]=$!
+            echo "Starting build_${build}.sh"
+            procs_in_use=$(( procs_in_use + build_jobs['${build}'] ))
          fi
       fi
-      if [[ -n "${build_jobs[ufs_model]+0}" && -z "${build_ids[ufs_model]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['ufs_model'] + procs_in_use )) ]]; then
-            ./build_ufs.sh -j "${build_jobs[ufs_model]}" "${_verbose_opt}" "${_build_ufs_opt}" > \
-               "${logs_dir}/build_ufs.log" 2>&1 &
-            build_ids["ufs_model"]=$!
-            echo "Starting build_ufs.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['ufs_model'] ))
-         fi
-      fi
-      if [[ -n "${build_jobs[gsi_enkf]+0}" && -z "${build_ids[gsi_enkf]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['gsi_enkf'] + procs_in_use )) ]]; then
-            ./build_gsi_enkf.sh -j "${build_jobs[gsi_enkf]}" "${_verbose_opt}" > \
-               "${logs_dir}/build_gsi_enkf.log" 2>&1 &
-            build_ids["gsi_enkf"]=$!
-            echo "Starting build_gsi_enkf.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['gsi_enkf'] ))
-         fi
-      fi
-      if [[ -n "${build_jobs[ufs_utils]+0}" && -z "${build_ids[ufs_utils]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['ufs_utils'] + procs_in_use )) ]]; then
-            ./build_ufs_utils.sh -j "${build_jobs[ufs_utils]}" "${_verbose_opt}" > \
-               "${logs_dir}/build_ufs_utils.log" 2>&1 &
-            build_ids["ufs_utils"]=$!
-            echo "Starting build_ufs_utils.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['ufs_utils'] ))
-         fi
-      fi
-      if [[ -n "${build_jobs[gsi_utils]+0}" && -z "${build_ids[gsi_utils]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['gsi_utils'] + procs_in_use )) ]]; then
-            ./build_gsi_utils.sh -j "${build_jobs[gsi_utils]}" "${_verbose_opt}" > \
-               "${logs_dir}/build_gsi_utils.log" 2>&1 &
-            build_ids["gsi_utils"]=$!
-            echo "Starting build_gsi_utils.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['gsi_utils'] ))
-         fi
-      fi
-      if [[ -n "${build_jobs[upp]+0}" && -z "${build_ids[upp]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['upp'] + procs_in_use )) ]]; then
-            ./build_upp.sh "${_verbose_opt}" > \
-               "${logs_dir}/build_upp.log" 2>&1 &
-            build_ids["upp"]=$!
-            echo "Starting build_upp.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['upp'] ))
-         fi
-      fi
-      if [[ -n "${build_jobs[ww3prepost]+0}" && -z "${build_ids[ww3prepost]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['ww3prepost'] + procs_in_use )) ]]; then
-            ./build_ww3prepost.sh -j "${build_jobs[ww3prepost]}" "${_verbose_opt}" "${_build_ufs_opt}" > \
-               "${logs_dir}/build_ww3prepost.log" 2>&1 &
-            build_ids["ww3prepost"]=$!
-            echo "Starting build_ww3prepost.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['ww3prepost'] ))
-         fi
-      fi
-      if [[ -n "${build_jobs[gsi_monitor]+0}" && -z "${build_ids[gsi_monitor]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['gsi_monitor'] + procs_in_use )) ]]; then
-            ./build_gsi_monitor.sh -j "${build_jobs[gsi_monitor]}" "${_verbose_opt}" > \
-               "${logs_dir}/build_gsi_monitor.log" 2>&1 &
-            build_ids["gsi_monitor"]=$!
-            echo "Starting build_gsi_monitor.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['gsi_monitor'] ))
-         fi
-      fi
-      if [[ -n "${build_jobs[gfs_utils]+0}" && -z "${build_ids[gfs_utils]+0}" ]]; then
-         if [[ ${_build_job_max} -ge $(( build_jobs['gfs_utils'] + procs_in_use )) ]]; then
-            ./build_gfs_utils.sh -j "${build_jobs[gfs_utils]}" "${_verbose_opt}" > \
-               "${logs_dir}/build_gfs_utils.log" 2>&1 &
-            build_ids["gfs_utils"]=$!
-            echo "Starting build_gfs_utils.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['gfs_utils'] ))
-         fi
-      fi
-   fi
+   done
 
    # Check if all builds have completed
    # Also recalculate how many processors are in use to account for completed builds
    builds_started=0
    procs_in_use=0
    for build in "${!build_jobs[@]}"; do
+      # Has the build started?
       if [[ -n "${build_ids[${build}]+0}" ]]; then
          builds_started=$(( builds_started + 1))
          # Calculate how many processors are in use
+         # Is the build still running?
          if ps -p "${build_ids[${build}]}" > /dev/null; then
             procs_in_use=$(( procs_in_use + build_jobs["${build}"] ))
          fi
@@ -271,15 +243,14 @@ while [[ ${#build_jobs[@]} -gt 0 ]]; do
             build_stat=$?
             errs=$((errs+build_stat))
             if [[ ${build_stat} == 0 ]]; then
-               echo "${build} completed successfully!"
+               echo "build_${build}.sh completed successfully!"
             else
-               echo "${build} failed with status ${build_stat}!"
+               echo "build_${build}.sh failed with status ${build_stat}!"
             fi
 
             # Remove the completed build from the list of PIDs
             unset 'build_ids[${build}]'
             unset 'build_jobs[${build}]'
-            break
          fi
       fi
    done
