@@ -156,7 +156,6 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
 
     [[ -d ${DATA} ]] && rm -rf "${DATA}"
-    mkdir -p "${DATA}"
     cd "${DATA}" || exit 2
 
     "${HOMEgfs}/ush/hpssarch_gen.sh" "${RUN}"
