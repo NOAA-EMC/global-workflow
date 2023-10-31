@@ -371,6 +371,9 @@ elif [[ "${step}" = "ocnanalbmat" ]]; then
       C384)
         npes=480
         ;;
+      C96)
+        npes=16
+        ;;
       C48)
         npes=16
         ;;
@@ -392,6 +395,9 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
       C384)
         npes=480
         export memory_ocnanalchkpt="2.8TB"
+        ;;
+      C96)
+        npes=16
         ;;
       C48)
         npes=16
@@ -418,6 +424,9 @@ elif [[ "${step}" = "ocnanalchkpt" ]]; then
    case ${CASE} in
       C384)
         export memory_ocnanalchkpt="128GB"
+        ;;
+      C96)
+        export memory_ocnanalchkpt="32GB"
         ;;
       C48)
         export memory_ocnanalchkpt="32GB"
