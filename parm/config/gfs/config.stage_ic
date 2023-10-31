@@ -9,22 +9,22 @@ source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
   "C48" | "C96")
-    export CPL_ATMIC=workflowtest
-    export CPL_ICEIC=workflowtest
-    export CPL_OCNIC=workflowtest
-    export CPL_WAVIC=workflowtest
+    export CPL_ATMIC="workflow_${CASE}_refactored"
+    export CPL_ICEIC="workflow_${CASE}_refactored"
+    export CPL_OCNIC="workflow_${CASE}_refactored"
+    export CPL_WAVIC="workflow_${CASE}_refactored"
     ;;
   "C384")
-    export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
-    export CPL_ICEIC=CPC
-    export CPL_OCNIC=CPC3Dvar
-    export CPL_WAVIC=GEFSwave20210528v2
+    export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c_refactored
+    export CPL_ICEIC=CPC_refactored
+    export CPL_OCNIC=CPC3Dvar_refactored
+    export CPL_WAVIC=GEFSwave20210528v2_refactored
     ;;
   "C768")
-    export CPL_ATMIC=HR2
-    export CPL_ICEIC=HR1
-    export CPL_OCNIC=HR1
-    export CPL_WAVIC=HR1
+    export CPL_ATMIC=HR2_refactored
+    export CPL_ICEIC=HR1_refactored
+    export CPL_OCNIC=HR1_refactored
+    export CPL_WAVIC=HR1_refactored
     ;;
   *)
     echo "FATAL ERROR Unrecognized resolution: ${CASE}"

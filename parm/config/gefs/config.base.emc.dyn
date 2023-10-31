@@ -40,6 +40,7 @@ export FIXreg2grb2=${HOMEgfs}/fix/reg2grb2
 export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
+export BASE_CPLIC="@BASE_CPLIC@"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -82,7 +83,7 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
-export NCDUMP="${NETCDF}/bin/ncdump"
+export NCDUMP="${NETCDF:-}/bin/ncdump"
 export NCLEN="${HOMEgfs}/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts

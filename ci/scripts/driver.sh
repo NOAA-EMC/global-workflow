@@ -154,6 +154,7 @@ for pr in ${pr_list}; do
       export pslot="${case}_${pr_sha}"
       rm -Rf "${STMP}/RUNDIRS/${pslot}"
       set +e
+      export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
       "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml"
       ci_status=$?
       set -e
@@ -169,7 +170,7 @@ for pr in ${pr_list}; do
           echo "Failed to create experiment:  *FAIL* ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
           echo ""
-          cat "${HOMEgfs}/ci/scripts/"setup_*.std*
+          cat "${LOGFILE_PATH}"
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
         "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"

@@ -238,7 +238,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
         #gdasocean
         if [ "${DO_OCN}" = "YES" ]; then
-            targrp_list="${targrp_list} gdasocean"
+            targrp_list="${targrp_list} gdasocean gdasocean_analysis"
         fi
 
         #gdasice
@@ -262,17 +262,49 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
     shopt -s extglob
     for targrp in ${targrp_list}; do
         set +e
-        ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${targrp}.tar" $(cat "${ARCH_LIST}/${targrp}.txt")
-        status=$?
+
+        # Test whether gdas.tar or gdas_restarta.tar will have rstprod data
+        has_rstprod="NO"
         case ${targrp} in
             'gdas'|'gdas_restarta')
-                ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${targrp}.tar"
-                ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${targrp}.tar"
+                # Test for rstprod in each archived file
+                while IFS= read -r file; do
+                    if [[ -f ${file} ]]; then
+                        group=$( stat -c "%G" "${file}" )
+                        if [[ "${group}" == "rstprod" ]]; then
+                            has_rstprod="YES"
+                            break
+                        fi
+                    fi
+                done < "${ARCH_LIST}/${targrp}.txt"
+
                 ;;
             *) ;;
         esac
-        if [ "${status}" -ne 0 ] && [ "${PDY}${cyc}" -ge "${firstday}" ]; then
-            echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${targrp}.tar failed"
+
+        # Create the tarball
+        tar_fl="${ATARDIR}/${PDY}${cyc}/${targrp}.tar"
+        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${ARCH_LIST}/${targrp}.txt")
+        status=$?
+
+        # Change group to rstprod if it was found even if htar/tar failed in case of partial creation
+        if [[ "${has_rstprod}" == "YES" ]]; then
+            ${HSICMD} chgrp rstprod "${tar_fl}"
+            stat_chgrp=$?
+            ${HSICMD} chmod 640 "${tar_fl}"
+            stat_chgrp=$((stat_chgrp+$?))
+            if [ "${stat_chgrp}" -gt 0 ]; then
+                echo "FATAL ERROR: Unable to properly restrict ${tar_fl}!"
+                echo "Attempting to delete ${tar_fl}"
+                ${HSICMD} rm "${tar_fl}"
+                echo "Please verify that ${tar_fl} was deleted!"
+                exit "${stat_chgrp}"
+            fi
+        fi
+
+        # For safety, test if the htar/tar command failed after changing groups
+        if [[ "${status}" -ne 0 ]] && [[ "${PDY}${cyc}" -ge "${firstday}" ]]; then
+            echo "FATAL ERROR: ${TARCMD} ${tar_fl} failed"
             exit "${status}"
         fi
         set_strict
