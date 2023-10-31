@@ -941,6 +941,15 @@ class GFSTasks(Tasks):
 
     def arch(self):
         deps = []
+        if self.cdump in ['gdas'] and self.app_config.do_verfozn:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}verfozn'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.cdump in ['gdas'] and self.app_config.do_verfrad:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}verfrad'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.mode in ['cycled'] and self.app_config.do_vminmon:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
