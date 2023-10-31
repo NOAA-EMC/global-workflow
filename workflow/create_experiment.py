@@ -34,7 +34,7 @@ _here = os.path.dirname(__file__)
 _top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
 
 # Setup the logger
-logger = Logger(level=os.environ.get("LOGGING_LEVEL", "INFO"), colored_log=True)
+logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"), level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
 
 @logit(logger)
