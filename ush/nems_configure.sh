@@ -89,7 +89,7 @@ if [[ "${cplchm}" = ".true." ]]; then
 fi
 
 # Ensure the template exists
-template="${HOMEgfs}/parm/ufs/nems.configure.${confignamevarfornems}.IN"
+template="${HOMEgfs}/parm/ufs/${ufs_configure_template}"
 if [[ ! -f ${template} ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
@@ -103,6 +103,6 @@ cat nems.configure
 
 ${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_nems.yaml" fd_nems.yaml
 
-echo "SUB ${FUNCNAME[0]}: nems.configure.sh ends for ${confignamevarfornems}"
+echo "SUB ${FUNCNAME[0]}: nems.configure.sh ends for ${ufs_configure_template}"
 
 }

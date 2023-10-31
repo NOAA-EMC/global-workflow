@@ -151,10 +151,8 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
-export CCPP_SUITE="FV3_GFS_v17_p8_ugwpv1"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
-export cplwav2atm=".false."
 export FRAC_GRID=".true."
 
 # Set operational resolution
@@ -196,17 +194,14 @@ export ICERES=${OCNRES}
 
 case "${APP}" in
   ATM)
-    export confignamevarfornems="atm"
     ;;
   ATMA)
     export DO_AERO="YES"
-    export confignamevarfornems="atm_aero"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
-    export confignamevarfornems="leapfrog_atm_wav"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -217,21 +212,15 @@ case "${APP}" in
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8 on L149
-    export confignamevarfornems="cpld"
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export confignamevarfornems="${confignamevarfornems}_aero"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"
-        export cplwav2atm=".true."
-        export confignamevarfornems="${confignamevarfornems}_outerwave"
     fi
-
     ;;
   *)
     echo "Unrecognized APP: '${APP}'"
