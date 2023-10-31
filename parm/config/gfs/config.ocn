@@ -11,7 +11,6 @@ export DO_OCN_PERT_EPBL="NO"  # In MOM_input, this variable determines PERT_EPBL
 # Templated variables in MOM_input_template
 export MOM6_USE_LI2016="True" # set to False for restart reproducibility
 export MOM6_THERMO_SPAN="False"
-export MOM6_ALLOW_LANDMASK_CHANGES="False"
 
 if [[ "${DO_JEDIOCNVAR}" == "YES" ]]; then
   export ODA_INCUPD="True"
