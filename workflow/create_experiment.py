@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
     if 'exclude' in testconf:
         host = Host()
-        if host.machine.lower() in testconf.exclude:
+        if host.machine.lower() in [ excluded_host.lower() for excluded_host in testconf.exclude ]:
             logger.info(f'Skipping creation of case: {testconf.arguments.pslot} on {host.machine.capitalize()}')
             sys.exit(0)
 
