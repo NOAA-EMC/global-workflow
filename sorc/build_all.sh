@@ -143,7 +143,7 @@ fi
 if [[ -d gdas.cd ]]; then
    build_jobs["gdas"]=16
    big_jobs=$((big_jobs+1))
-   build_opts["gfs_utils"]="${_verbose_opt}"
+   build_opts["gdas"]="${_verbose_opt}"
 fi
 if [[ -d gsi_enkf.fd ]]; then
    build_jobs["gsi_enkf"]=8
@@ -200,7 +200,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
          # Do we have enough processors to run it?
          if [[ ${_build_job_max} -ge $(( build_jobs[build] + procs_in_use )) ]]; then
             if [[ "${build}" != "upp" ]]; then
-               "./build_${build}.sh" -j "${build_jobs[${build}]}" "${build_opts[${build}]}" > \
+               "./build_${build}.sh" -j "${build_jobs[${build}]}" "${build_opts[${build}]:-}" > \
                   "${logs_dir}/build_${build}.log" 2>&1 &
             else
                "./build_${build}.sh" "${build_opts[${build}]}" > \
