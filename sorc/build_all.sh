@@ -194,21 +194,21 @@ declare -A build_ids
 builds_started=0
 # Now start looping through all of the jobs until everything is done
 while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
-   for build in ${!build_jobs[@]}; do
+   for build in "${!build_jobs[@]}"; do
       # Has the job started?
       if [[ -n "${build_jobs[${build}]+0}" && -z "${build_ids[${build}]+0}" ]]; then
          # Do we have enough processors to run it?
          if [[ ${_build_job_max} -ge $(( build_jobs[build] + procs_in_use )) ]]; then
             if [[ "${build}" != "upp" ]]; then
-               ./build_${build}.sh -j "${build_jobs[${build}]}" "${build_opts[${build}]}" > \
+               "./build_${build}.sh" -j "${build_jobs[${build}]}" "${build_opts[${build}]}" > \
                   "${logs_dir}/build_${build}.log" 2>&1 &
             else
-               ./build_${build}.sh "${build_opts[${build}]}" > \
+               "./build_${build}.sh" "${build_opts[${build}]}" > \
                   "${logs_dir}/build_${build}.log" 2>&1 &
             fi
             build_ids["${build}"]=$!
             echo "Starting build_${build}.sh"
-            procs_in_use=$(( procs_in_use + build_jobs['${build}'] ))
+            procs_in_use=$(( procs_in_use + build_jobs[${build}] ))
          fi
       fi
    done

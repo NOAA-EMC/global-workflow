@@ -59,6 +59,7 @@ post_exes="ww3_outp ww3_outf ww3_outp ww3_gint ww3_ounf ww3_ounp ww3_grib"
 
 #create build directory:
 path_build="${WW3_DIR}/build_SHRD"
+[[ -d "${path_build}" ]] && rm -rf "${path_build}"
 mkdir -p "${path_build}" || exit 1
 cd "${path_build}" || exit 1
 echo "Forcing a SHRD build"
