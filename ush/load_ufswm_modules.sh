@@ -14,22 +14,16 @@ source "${HOMEgfs}/ush/module-setup.sh"
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
   module load modules.ufs_model.lua
+  module load prod_util
   if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-    module load prod_util
     module load cray-pals
     module load cfp
     module load libjpeg
   else
-    module load prod-util
     export UTILROOT=${prod_util_ROOT}
   fi
   module load wgrib2
   export WGRIB2=wgrib2
-fi
-if [[ "${MACHINE_ID}" = "hera" ]]; then
-  module use "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/modulefiles/core"
-  module load "miniconda3/4.6.14"
-  module load "gfs_workflow/1.0.0"
 fi
 if [[ "${MACHINE_ID}" == "noaacloud" ]]; then
    if [[ "${PW_CSP:-}" = "aws" ]]; then
