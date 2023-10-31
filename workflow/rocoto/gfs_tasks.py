@@ -23,13 +23,12 @@ class GFSTasks(Tasks):
 
         # Atm ICs
         if self.app_config.do_atm:
-            atm_res = self._base.get('CASE', 'C384')
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/{self.cdump}"
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
             for file in ['gfs_ctrl.nc'] + \
                         [f'{datatype}_data.tile{tile}.nc'
                          for datatype in ['gfs', 'sfc']
                          for tile in range(1, self.n_tiles + 1)]:
-                data = f"{prefix}/{atm_res}/INPUT/{file}"
+                data = f"{prefix}/{file}"
                 dep_dict = {'type': 'data', 'data': data}
                 deps.append(rocoto.add_dependency(dep_dict))
         else:  # data-atmosphere
@@ -42,31 +41,29 @@ class GFSTasks(Tasks):
         # Ocean ICs
         if self.app_config.do_ocean:
             ocn_res = f"{self._base.get('OCNRES', '025'):03d}"
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/ocn"
-            data = f"{prefix}/{ocn_res}/MOM.res.nc"
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/ocean"
+            data = f"{prefix}/@Y@m@d.@H0000.MOM.res.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
             if ocn_res in ['025']:
                 # 0.25 degree ocean model also has these additional restarts
                 for res in [f'res_{res_index}' for res_index in range(1, 4)]:
-                    data = f"{prefix}/{ocn_res}/MOM.{res}.nc"
+                    data = f"{prefix}/@Y@m@d.@H0000.MOM.{res}.nc"
                     dep_dict = {'type': 'data', 'data': data}
                     deps.append(rocoto.add_dependency(dep_dict))
 
         # Ice ICs
         if self.app_config.do_ice:
-            ice_res = f"{self._base.get('ICERES', '025'):03d}"
-            ice_res_dec = f'{float(ice_res) / 100:.2f}'
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ICEIC']}/@Y@m@d@H/ice"
-            data = f"{prefix}/{ice_res}/cice5_model_{ice_res_dec}.res_@Y@m@d@H.nc"
+            data = f"{prefix}/@Y@m@d.@H0000.cice_model.res.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
         # Wave ICs
         if self.app_config.do_wave:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/wav"
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/wave"
             for wave_grid in self._configs['waveinit']['waveGRD'].split():
-                data = f"{prefix}/{wave_grid}/@Y@m@d.@H0000.restart.{wave_grid}"
+                data = f"{prefix}/@Y@m@d.@H0000.restart.{wave_grid}"
                 dep_dict = {'type': 'data', 'data': data}
                 deps.append(rocoto.add_dependency(dep_dict))
 
@@ -366,7 +363,7 @@ class GFSTasks(Tasks):
 
     def ocnanalprep(self):
 
-        ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"])
+        ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
 
         deps = []
         data = f'{ocean_hist_path}/gdas.t@Hz.ocnf009.nc'
