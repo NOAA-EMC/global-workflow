@@ -30,7 +30,6 @@ import setup_xml
 
 from hosts import Host
 
-
 _here = os.path.dirname(__file__)
 _top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
 
