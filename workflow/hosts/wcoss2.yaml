@@ -1,6 +1,6 @@
 BASE_GIT: '/lfs/h2/emc/global/save/emc.global/git'
 DMPDIR: '/lfs/h2/emc/dump/noscrub/dump'
-BASE_CPLIC: '/lfs/h2/emc/couple/noscrub/Jiande.Wang/IC'
+BASE_CPLIC: '/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/prototype_ICs'
 PACKAGEROOT: '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
 COMROOT: '${COMROOT:-"/lfs/h1/ops/prod/com"}'
 COMINsyn: '${COMROOT}/gfs/v16.3/syndat'
