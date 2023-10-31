@@ -16,3 +16,5 @@ arguments:
   gfs_cyc: 0
   start: warm
   yaml: {{ HOMEgfs }}/ci/platforms/soca_gfs_defaults_ci.yaml
+
+exclude: ['orion', 'wcoss2']
