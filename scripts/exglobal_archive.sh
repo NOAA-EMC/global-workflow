@@ -154,8 +154,6 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
     mod=$((nday % ARCH_FCSTICFREQ))
     if [[ "${mod}" -eq 0 ]] || [[ "${PDY}${cyc}" -eq "${firstday}" ]]; then SAVEFCSTIC="YES" ; fi
 
-
-    [[ -d ${DATA} ]] && rm -rf "${DATA}"
     cd "${DATA}" || exit 2
 
     "${HOMEgfs}/ush/hpssarch_gen.sh" "${RUN}"
