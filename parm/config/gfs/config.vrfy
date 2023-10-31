@@ -66,6 +66,8 @@ fi
 # Cyclone genesis and cyclone track verification
 #-------------------------------------------------
 
+export SENDCOM="YES" # Needed by tracker/genesis scripts still
+
 export HOMEens_tracker=$BASE_GIT/TC_tracker/${tracker_ver}
 
 if [[ "${VRFYTRAK}" = "YES" ]]; then

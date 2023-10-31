@@ -29,7 +29,7 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_HISTORY COM_OCEAN_2D COM_OCEAN_3
   COM_OCEAN_XSECT COM_ICE_HISTORY
 
 for grid in "0p50" "0p25"; do
-  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_OCEAN_GRIB_${grid}:COM_OCEAN_GRIB_TMPL"
+  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_OCEAN_GRIB_${grid}:COM_OCEAN_GRIB_GRID_TMPL"
 done
 
 for outdir in COM_OCEAN_2D COM_OCEAN_3D COM_OCEAN_XSECT COM_OCEAN_GRIB_0p25 COM_OCEAN_GRIB_0p50; do

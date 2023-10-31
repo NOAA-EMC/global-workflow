@@ -14,14 +14,13 @@ status=$?
 wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src:${HOMEgfs}/ush/python/pygfs"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
 export PYTHONPATH
+###############################################################
 
 export job="fcst"
 export jobid="${job}.$$"
 
-###############################################################
 # Execute the JJOB
 ${HOMEgfs}/jobs/JGLOBAL_FORECAST
 status=$?
-
 
 exit ${status}

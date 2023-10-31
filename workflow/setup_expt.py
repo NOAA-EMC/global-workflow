@@ -232,16 +232,7 @@ def fill_COMROT_forecasts(host, inputs):
     """
     Implementation of 'fill_COMROT' for forecast-only mode
     """
-    if inputs.system in ['gfs']:
-        print('forecast-only mode treats ICs differently and cannot be staged here')
-    elif inputs.system in ['gefs']:  # Temporarily copy ICs from icsdir into COM for      testing
-        print('temporary hack to stage gefs ICs for testing')
-        comrot = os.path.join(inputs.comrot, inputs.pslot)
-        idatestr = datetime_to_YMDH(inputs.idate)
-        current_cycle_dir = f"gefs.{idatestr[:8]}"
-        cmd = f"cp -as {inputs.icsdir}/{current_cycle_dir} {comrot}/{current_cycle_dir}"
-        os.system(cmd)
-    return
+    print('forecast-only mode treats ICs differently and cannot be staged here')
 
 
 def fill_EXPDIR(inputs):
