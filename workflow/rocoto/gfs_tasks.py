@@ -130,9 +130,9 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('waveprep')
-        task = create_wf_task('waveprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('waveprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
 
