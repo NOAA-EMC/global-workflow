@@ -86,6 +86,10 @@ cat > input.nml <<EOF
   ${fms_nml:-}
 /
 
+&fms2_io_nml
+  netcdf_default_format = "netcdf4"
+/
+
 &fv_core_nml
   layout = ${layout_x},${layout_y}
   io_layout = ${io_layout}
@@ -339,7 +343,7 @@ cat >> input.nml <<EOF
   iopt_tbot    = ${iopt_tbot:-"2"}
   iopt_stc     = ${iopt_stc:-"1"}
   iopt_trs     = ${iopt_trs:-"2"}
-  iopt_diag    = ${iopt_diag:-"3"}
+  iopt_diag    = ${iopt_diag:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = ${nstf_name}
   nst_anl      = ${nst_anl}
@@ -453,6 +457,7 @@ if [[ ${knob_ugwp_version} -eq 1 ]]; then
   knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
   knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-2}
   knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-4}
+  knob_ugwp_version = ${knob_ugwp_version:-1}
   knob_ugwp_palaunch = ${knob_ugwp_palaunch:-275.0e2}
   knob_ugwp_nslope   = ${knob_ugwp_nslope:-1}
   knob_ugwp_lzmax    = ${knob_ugwp_lzmax:-15.750e3}
