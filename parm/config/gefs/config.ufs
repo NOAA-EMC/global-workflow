@@ -270,6 +270,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="4.0e-1"
+      MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
+      MOM6_DIAG_MISVAL="0.0"
+      MOM6_ALLOW_LANDMASK_CHANGES='False'
+      TOPOEDITS=""
       ;;
     "100")
       ntasks_mom6=20
@@ -283,8 +287,15 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="2.5e-1"
+      if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      fi
       ;;
-    "50")
+    "050")
       ntasks_mom6=60
       OCNTIM=3600
       NX_GLB=720
@@ -296,6 +307,15 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='True'
       eps_imesh="1.0e-1"
+      TOPOEDITS="ufs.topo_edits_011818.nc"
+      if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      fi
+      MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
     "025")
       ntasks_mom6=220
@@ -309,6 +329,15 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
+      TOPOEDITS=""
+      if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      fi
+      MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
     *)
       echo "FATAL ERROR: Unsupported MOM6 resolution = ${mom6_res}, ABORT!"
@@ -325,6 +354,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
   export MOM6_RIVER_RUNOFF
   export MOM6_RESTART_SETTING
   export eps_imesh
+  export TOPOEDITS
+  export MOM6_DIAG_COORD_DEF_Z_FILE
+  export MOM6_DIAG_MISVAL
+  export MOM6_ALLOW_LANDMASK_CHANGES
 fi
 
 # CICE6 specific settings

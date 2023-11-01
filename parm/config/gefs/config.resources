@@ -8,7 +8,7 @@ if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "coupled_ic aerosol_init"
+    echo "stage_ic aerosol_init"
     echo "sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch echgres"
     echo "ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
@@ -416,12 +416,12 @@ elif [[ ${step} = "arch" || ${step} = "earc" ]]; then
       eval "export memory_${step}=50GB"
     fi
 
-elif [[ ${step} = "coupled_ic" ]]; then
+elif [[ ${step} = "stage_ic" ]]; then
 
-    export wtime_coupled_ic="00:15:00"
-    export npe_coupled_ic=1
-    export npe_node_coupled_ic=1
-    export nth_coupled_ic=1
+    export wtime_stage_ic="00:15:00"
+    export npe_stage_ic=1
+    export npe_node_stage_ic=1
+    export nth_stage_ic=1
     export is_exclusive=True
 
 elif [[ ${step} = "ecen" ]]; then
