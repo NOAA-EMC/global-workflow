@@ -4,7 +4,17 @@ GFS V16.3.11 RELEASE NOTES
 PRELUDE
 -------
 
-Update to the WAFS package.
+At GFS v16.3 implementation, UPP and WAFS package were updated to be ready to produce high resolution WAFS output to meet 2023 ICAO milestone with one switch. The switch was turned off at GFS v16.3. Now that UKMO has started to produce their corresponding high resolution WAFS output, EMC will work with NCO to turn on the switch.
+
+Additionally, EMC is updating WAFS ecf definition file to 1)trigger WAFS blending job 5 min later 
+from 4:25 to 4:30 to compensate for 5-10 min delay in receiving UKMO high resolution data;
+2)stop producing blended 1.25 deg WAFS file per ICAO milestone. 
+Both sides agreed that we sill stop waiting for data from the other side at T+4:45.
+
+Finally, NESDIS informed EMC that they will implement new global satellite composite data in Jan 2024. 
+This data set is used by one of WAFS packages. NESDIS provided a sample data set which Yali used to 
+develop an updated config file that works with current ops and to-be-implemented satellite data. 
+This updated config file will be implemented too.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -29,7 +39,7 @@ The checkout script extracts the following GFS components:
 | GSI       | gfsda.v16.3.8 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.2.0 | Wen.Meng@noaa.gov |
-| WAFS      | gfs_wafs.v6.3.1 | Yali.Mao@noaa.gov |
+| WAFS      | gfs_wafs.v6.3.2 | Yali.Mao@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash
@@ -66,17 +76,22 @@ JOBS CHANGES
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.10
+* parm/wafs/wafs_gcip_gfs.cfg config file was updated
+* Change Externals.cfg to tag = "gfs_wafs.v6.3.2"
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.10
+* update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_blending_0p25.ecf to ICAO2023=yes
+* update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2.ecf to ICAO2023=yes
+* update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2_0p25.ecf to ICAO2023=yes
+* update ecf/scripts/gfs/atmos/post_processing/jgfs_atmos_wafs_gcip.ecf to ICAO2023=yes
+* In ecf/defs/gfs_v16_3.def, remove jgfs_atmos_wafs_blending task, delay trigger time of jgfs_atmos_wafs_blending_0p25 by 5 minutes
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.10
+*  No changes from GFS v16.3.10 
 
 MODULE CHANGES
 --------------
@@ -86,7 +101,8 @@ MODULE CHANGES
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes from GFS v16.3.10
+* There will be file size increases.  Please see page 2 of the following Google slide:
+https://docs.google.com/presentation/d/1VtPhyYXTe_PS9gXZGMrMPlQ32ELl-JJem-Vq8vO4j_U/edit#slide=id.g134dd9cf8ea_0_107
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
@@ -125,3 +141,4 @@ PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
 Yali.Mao@noaa.gov
+Hui-Ya.Chuang@noaa.gov
