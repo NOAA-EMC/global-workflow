@@ -114,7 +114,7 @@ for pr in ${pr_list}; do
   "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  #rm -Rf "${pr_dir}"
+  rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
@@ -122,7 +122,6 @@ for pr in ${pr_list}; do
   output_ci="${pr_dir}/output_${id}"
   rm -f "${output_ci}"
   "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${output_ci}"
-  #echo "SKIPPING: ${ROOT_DIR}/ci/scripts/clone-build_ci.sh"
   ci_status=$?
   ##################################################################
   # Checking for special case when Ready label was updated
