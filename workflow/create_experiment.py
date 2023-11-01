@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
     if 'skip_ci_on_hosts' in testconf:
         host = Host()
-        if host.machine.lower() in testconf.skip_ci_on_hosts:
+        if host.machine.lower() in testconf.skip_ci_on_hosts.lower():
             logger.info(f'Skipping creation of case: {testconf.arguments.pslot} on {host.machine.capitalize()}')
             sys.exit(0)
 
