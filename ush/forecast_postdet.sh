@@ -1055,7 +1055,26 @@ GOCART_postdet() {
       rm -f "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
     fi
 
-    ${NLN} "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-           "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
+    #To Do: Temporarily removing this as this will crash gocart, adding copy statement at the end 
+    #${NLN} "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
+    #       "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
   done
 }
+
+GOCART_out() {
+  echo "SUB ${FUNCNAME[0]}: Copying output data for GOCART"
+
+  # Copy gocart.inst_aod after the forecast is run (and successfull)
+  # TO DO: this should be linked but there were issues where gocart was crashing if it was linked
+  local fhr 
+  local vdate 
+  for fhr in ${FV3_OUTPUT_FH}; do
+    if (( fhr == 0 )); then continue; fi
+    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+    ${NCP} "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
+      "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
+  done
+
+
+}
+

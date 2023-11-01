@@ -74,18 +74,6 @@ cat > input.nml <<EOF
   ${diag_manager_nml:-}
 /
 
-&fms_io_nml
-  checksum_required = .false.
-  max_files_r = 100
-  max_files_w = 100
-  ${fms_io_nml:-}
-/
-
-&mpp_io_nml
-  shuffle=${shuffle:-1}
-  deflate_level=${deflate_level:-1}
-/
-
 &fms_nml
   clock_grain = 'ROUTINE'
   domains_stack_size = ${domains_stack_size:-3000000}
