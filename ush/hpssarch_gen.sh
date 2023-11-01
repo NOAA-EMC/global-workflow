@@ -473,7 +473,7 @@ if [[ ${type} == "gdas" ]]; then
       echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/gdas.t??z.ocngrid.nc"
       echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/diags"
       echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/yaml"
-    } >> gdasocean_analysis.txt
+    } >> "${DATA}/gdasocean_analysis.txt"
 
   fi
 
