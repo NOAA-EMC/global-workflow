@@ -917,11 +917,12 @@ CICE_postdet() {
     sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
     sPDY="${sCDATE:0:8}"
     scyc="${sCDATE:8:2}"
-    cice_restart_file="${COM_ICE_RESTART_PREV}/${sPDY}.${scyc}0000.cice_model.res.nc"
   else
-    cice_restart_file="${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc"
+    sPDY=${PDY}
+    scyc=${cyc}
   fi
-
+  
+  cice_restart_file="${COM_ICE_RESTART_PREV}/${sPDY}.${scyc}0000.cice_model.res.nc"
   if [[ ! -f "${cice_restart_file}" ]]; then
     echo "FATAL ERROR: CICE restart file not found at '${cice_restart_file}', ABORT!"
     exit 112
