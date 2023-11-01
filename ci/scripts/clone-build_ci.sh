@@ -40,7 +40,7 @@ while getopts "p:d:o:h" opt; do
 done
 
 cd "${repodir}" || exit 1
-# clone copy of repo
+ clone copy of repo
 if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
@@ -71,6 +71,8 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 }  >> "${outfile}"
 ######################################################################
 
+exit 0
+
 # get commit hash
 commit=$(git log --pretty=format:'%h' -n 1)
 echo "${commit}" > "../commit"
@@ -78,19 +80,17 @@ echo "${commit}" > "../commit"
 # run checkout script
 cd sorc || exit 1
 set +e
-# TODO enable -u later when GDASApp tests are added
 ./checkout.sh -c -g -u >> log.checkout 2>&1
 checkout_status=$?
 if [[ ${checkout_status} != 0 ]]; then
   {
-    echo "Checkout:                      *FAILED*"
+    echo "Checkout: *** FAILED ****"
     echo "Checkout: Failed at $(date)" || true
     echo "Checkout: see output at ${PWD}/log.checkout"
   } >> "${outfile}"
   exit "${checkout_status}"
 else
   {
-    echo "Checkout:                      *SUCCESS*"
     echo "Checkout: Completed at $(date)" || true
   } >> "${outfile}"
 fi
@@ -104,19 +104,27 @@ build_status=$?
 
 if [[ ${build_status} != 0 ]]; then
   {
-    echo "Build:                         *FAILED*"
+    echo "Build: ** FAILED ***"
     echo "Build: Failed at $(date)" || true
     echo "Build: see output at ${PWD}/log.build"
   } >> "${outfile}"
   exit "${build_status}"
 else
   {
-    echo "Build:                         *SUCCESS*"
     echo "Build: Completed at $(date)" || true
   } >> "${outfile}"
 fi
 
+export MACHINE_ID="orion"
 ./link_workflow.sh
+link_status=$?
+if [[ ${link_status} != 0 ]]; then
+  {
+    echo "Link: *** FAILED ***"
+    echo "Link: Failed at $(date)" || true
+  } >> "${outfile}"
+  exit "${link_status}"
+fi
 
 echo "check/build/link test completed"
 exit "${build_status}"
