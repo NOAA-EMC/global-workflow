@@ -3,11 +3,10 @@
 # define the array of the name of build program
 #
 declare -a Build_prg=("Build_ufs_model" \
-                      "Build_ww3_prepost" \
+                      "Build_ww3prepost" \
                       "Build_gsi_enkf" \
                       "Build_gsi_utils" \
                       "Build_gsi_monitor" \
-                      "Build_ww3_prepost" \
                       "Build_gdas" \
                       "Build_upp" \
                       "Build_ufs_utils" \

@@ -2,9 +2,10 @@
 set -eux
 
 OPTIND=1
-while getopts ":dov" option; do
+while getopts ":j:dv" option; do
   case "${option}" in
     d) export BUILD_TYPE="DEBUG";;
+    j) export BUILD_JOBS=${OPTARG};;
     v) export BUILD_VERBOSE="YES";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
