@@ -48,9 +48,9 @@ esac
 # setup runtime env for correct python install and git
 ######################################################
 set +x
-#source "${ROOT_DIR}/ush/module-setup.sh"
-#module use "${ROOT_DIR}/modulefiles"
-#module load "module_gwsetup.${MACHINE_ID}"
+source "${ROOT_DIR}/ush/module-setup.sh"
+module use "${ROOT_DIR}/modulefiles"
+module load "module_gwsetup.${MACHINE_ID}"
 set -x
 
 ############################################################
@@ -114,12 +114,15 @@ for pr in ${pr_list}; do
   "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  rm -Rf "${pr_dir}"
+  #rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   set +e
-  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  output_ci="${pr_dir}/output_${id}"
+  rm -f "${output_ci}"
+  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${output_ci}"
+  #echo "SKIPPING: ${ROOT_DIR}/ci/scripts/clone-build_ci.sh"
   ci_status=$?
   ##################################################################
   # Checking for special case when Ready label was updated
@@ -138,7 +141,7 @@ for pr in ${pr_list}; do
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
-    #rm -Rf "${pr_dir:?}/RUNTESTS/"*
+    rm -Rf "${pr_dir:?}/RUNTESTS/"*
 
     #############################################################
     # loop over every yaml file in the PR's ci/cases
@@ -155,38 +158,42 @@ for pr in ${pr_list}; do
       rm -Rf "${STMP}/RUNDIRS/${pslot}"
       set +e
       export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
-      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml"
+      rm -f "${LOGFILE_PATH}"
+      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" >& "${LOGFILE_PATH}"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
         {
-          echo "Created experiment:            *SUCCESS*"
           echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
-        } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-        "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
-        "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running
+        } >> "${output_ci}"
       else
         {
-          echo "Failed to create experiment:  *FAIL* ${pslot}"
+          echo "Failed to create experiment:  *** FAIL **** ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
           echo ""
           cat "${LOGFILE_PATH}"
-        } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+        } >> "${output_ci}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
         "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+        "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
+        exit 1
       fi
     done
+
+    "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
+    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running
+    "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
 
   else
     {
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
-    } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+    } >> "${output_ci}"
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
     "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
   fi
-  sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-  "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+  sed -i "s/\`\`\`//2g" "${output_ci}"
+  "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
 
 done # looping over each open and labeled PR
 

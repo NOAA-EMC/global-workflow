@@ -40,7 +40,6 @@ while getopts "p:d:o:h" opt; do
 done
 
 cd "${repodir}" || exit 1
- clone copy of repo
 if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
@@ -70,8 +69,6 @@ source "${HOMEgfs}/ush/detect_machine.sh"
  echo "---------------------------------------------------"
 }  >> "${outfile}"
 ######################################################################
-
-exit 0
 
 # get commit hash
 commit=$(git log --pretty=format:'%h' -n 1)
