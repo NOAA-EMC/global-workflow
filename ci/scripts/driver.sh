@@ -48,9 +48,9 @@ esac
 # setup runtime env for correct python install and git
 ######################################################
 set +x
-source "${ROOT_DIR}/ush/module-setup.sh"
-module use "${ROOT_DIR}/modulefiles"
-module load "module_gwsetup.${MACHINE_ID}"
+#source "${ROOT_DIR}/ush/module-setup.sh"
+#module use "${ROOT_DIR}/modulefiles"
+#module load "module_gwsetup.${MACHINE_ID}"
 set -x
 
 ############################################################
@@ -179,7 +179,6 @@ for pr in ${pr_list}; do
 
   else
     {
-      echo '```'
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
     } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
