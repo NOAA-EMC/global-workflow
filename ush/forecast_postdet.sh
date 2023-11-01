@@ -678,15 +678,6 @@ MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
   # Copy MOM6 ICs
-  if [[ "${DOIAU}" = "YES" ]]; then
-    sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
-    sPDY="${sCDATE:0:8}"
-    scyc="${sCDATE:8:2}"
-  else
-    sPDY=${PDY}
-    scyc=${cyc} 
-  fi
-
   ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
   case ${OCNRES} in
     "025")
@@ -913,15 +904,6 @@ CICE_postdet() {
 
   # Copy CICE ICs
   echo "Link CICE ICs"
-  if [[ "${DOIAU}" = "YES" ]]; then
-    sCDATE=$(date -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
-    sPDY="${sCDATE:0:8}"
-    scyc="${sCDATE:8:2}"
-  else
-    sPDY=${PDY}
-    scyc=${cyc}
-  fi
-  
   cice_restart_file="${COM_ICE_RESTART_PREV}/${sPDY}.${scyc}0000.cice_model.res.nc"
   if [[ ! -f "${cice_restart_file}" ]]; then
     echo "FATAL ERROR: CICE restart file not found at '${cice_restart_file}', ABORT!"
@@ -1056,7 +1038,7 @@ GOCART_postdet() {
       rm -f "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
     fi
 
-    #To Do: Temporarily removing this as this will crash gocart, adding copy statement at the end 
+    #To Do: Temporarily removing this as this will crash gocart, adding copy statement at the end
     #${NLN} "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
     #       "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
   done
@@ -1067,8 +1049,8 @@ GOCART_out() {
 
   # Copy gocart.inst_aod after the forecast is run (and successfull)
   # TO DO: this should be linked but there were issues where gocart was crashing if it was linked
-  local fhr 
-  local vdate 
+  local fhr
+  local vdate
   for fhr in ${FV3_OUTPUT_FH}; do
     if (( fhr == 0 )); then continue; fi
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
@@ -1078,4 +1060,3 @@ GOCART_out() {
 
 
 }
-

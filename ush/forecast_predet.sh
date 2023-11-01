@@ -54,6 +54,20 @@ common_predet(){
   CDATE=${CDATE:-2017032500}
   ENSMEM=${ENSMEM:-000}
 
+  if [[ "${DOIAU}" = "YES" ]]; then
+    sCDATE=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
+    sPDY="${sCDATE:0:8}"
+    scyc="${sCDATE:8:2}"
+    tPDY=${previous_cycle:0:8}
+    tcyc=${previous_cycle:8:2}
+  else
+    sCDATE=${current_cycle}
+    sPDY=${current_cycle:0:8}
+    scyc=${current_cycle:8:2}
+    tPDY=${sPDY}
+    tcyc=${scyc}
+  fi
+
   FCSTEXECDIR=${FCSTEXECDIR:-${HOMEgfs}/exec}
   FCSTEXEC=${FCSTEXEC:-ufs_model.x}
 
@@ -214,20 +228,6 @@ FV3_predet(){
     done
   else
     mkdir -p "${DATA}/RESTART"
-  fi
-
-  if [[ "${DOIAU}" = "YES" ]]; then
-    sCDATE=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
-    sPDY="${sCDATE:0:8}"
-    scyc="${sCDATE:8:2}"
-    tPDY=${previous_cycle:0:8}
-    tcyc=${previous_cycle:8:2}
-  else
-    sCDATE=${current_cycle}
-    sPDY=${current_cycle:0:8}
-    scyc=${current_cycle:8:2}
-    tPDY=${sPDY}
-    tcyc=${scyc}
   fi
 
   echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
