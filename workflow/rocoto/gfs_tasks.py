@@ -986,7 +986,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep = deps + dependencies)
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps + dependencies)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
