@@ -181,6 +181,10 @@ case "${CASE}" in
         export OCNRES=025
         export waveGRD='mx025'
         ;;
+    "C1152")
+        export OCNRES=025
+        export waveGRD='mx025'
+        ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
         exit 1
