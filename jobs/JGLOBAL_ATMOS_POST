@@ -17,18 +17,6 @@ export g2tmpl_ver=${g2tmpl_ver:-v1.5.0}
 ##############################################
 export CDUMP=${RUN/enkf}
 
-
-##############################################
-# TODO: Remove this egregious HACK
-##############################################
-if [[ "${SDATE:-}" = "${PDY}${cyc}" ]]; then
-  if [[ ${post_times} = "anl" ]]; then
-    echo "No offline post-processing in the first half cycle for analysis"
-    exit 0
-  fi
-fi
-
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################

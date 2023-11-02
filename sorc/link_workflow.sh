@@ -205,6 +205,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/jediinc2fv3.py"                     .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/exglobal_prep_ocean_obs.py"           .
 fi
 
 

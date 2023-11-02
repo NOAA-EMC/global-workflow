@@ -4,17 +4,12 @@
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 
 export COMPONENT="atmos"
 
-export RAD_DATA_IN=${DATA}
-
 export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
 export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
-
-mkdir -p ${RAD_DATA_IN}
-cd ${RAD_DATA_IN}
 
 ##############################################
 # Specify Execution Areas
@@ -52,13 +47,15 @@ export p_cyc=${pdate:8:2}
 # COMOUT - WHERE GSI OUTPUT RESIDES
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-export TANKverf=${TANKverf:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export TANKverf_rad=${TANKverf_rad:-${TANKverf}/${RUN}.${PDY}/${cyc}/atmos/radmon}
-export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/${RUN}.${P_PDY}/${p_cyc}/atmos/radmon}
-
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RADMON
+YMD=${P_PDY} HH=${p_cyc} generate_com -rx COM_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
 
-mkdir -p -m 775 ${TANKverf_rad}
+export TANKverf_rad=${TANKverf_rad:-${COM_ATMOS_RADMON}}
+export TANKverf_radM1=${TANKverf_radM1:-${COM_ATMOS_RADMON_PREV}}
+
+if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p -m 775 ${TANKverf_rad} ; fi
+if [[ ! -d ${TANKverf_radM1} ]]; then mkdir -p -m 775 ${TANKverf_radM1} ; fi
 
 ########################################
 # Set necessary environment variables
@@ -89,9 +86,6 @@ fi
 ################################
 # Remove the Working Directory
 ################################
-KEEPDATA=${KEEPDATA:-YES}
-cd ${DATAROOT}
-if [ ${KEEPDATA} = NO ] ; then
-  rm -rf ${RAD_DATA_IN}
-fi
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
+exit 0
