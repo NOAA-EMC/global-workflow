@@ -165,8 +165,8 @@ if [[ ${type} = "gfs" ]]; then
         echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.f${fhr}"
         echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.f${fhr}.idx"
         if [[ -s "${COM_ATMOS_GRIB_1p00}/${head}pgrb2b.1p00.f${fhr}" ]]; then
-           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.f${fhr}"
-           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.f${fhr}.idx"
+           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/{head}pgrb2b.1p00.f${fhr}"
+           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/{head}pgrb2b.1p00.f${fhr}.idx"
         fi
       } >> "${DATA}/gfs_pgrb2b.txt"
     fi
