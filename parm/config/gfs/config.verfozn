@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+########## config.verfozn ##########
+echo "BEGIN: config.verfozn"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" verfozn
+
+echo "END: config.verfozn"

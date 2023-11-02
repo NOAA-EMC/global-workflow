@@ -4,7 +4,7 @@
 # GDAS Minimization Monitor (MinMon) job
 ###########################################################
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "vminmon" -c "base vminmon"
 
 ###########################################################
 # obtain unique process id (pid) and make temp directories
@@ -40,12 +40,15 @@ export p_cyc=${pdate:8:2}
 #############################################
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-export M_TANKverf=${M_TANKverf:-${COM_IN}/${RUN}.${PDY}/${cyc}/atmos/minmon}
-export M_TANKverfM1=${M_TANKverfM1:-${COM_IN}/${RUN}.${P_PDY}/${p_cyc}/atmos/minmon}
-
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_MINMON
+YMD=${P_PDY} HH=${p_cyc} generate_com -rx COM_ATMOS_MINMON_PREV:COM_ATMOS_MINMON_TMPL
 
-mkdir -p -m 775 ${M_TANKverf}
+export M_TANKverf=${M_TANKverf:-${COM_ATMOS_MINMON}}
+export M_TANKverfM1=${M_TANKverfM1:-${COM_ATMOS_MINMON_PREV}}
+
+if [[ ! -d ${M_TANKverf} ]]; then mkdir -p -m 775 ${M_TANKverf} ; fi
+if [[ ! -d ${M_TANKverfM1} ]]; then mkdir -p -m 775 ${M_TANKverfM1} ; fi
 
 
 ########################################
@@ -65,10 +68,6 @@ err=$?
 ################################
 # Remove the Working Directory
 ################################
-KEEPDATA=${KEEPDATA:-NO}
-cd ${DATAROOT}
-if [ ${KEEPDATA} = NO ] ; then
-  rm -rf ${DATA}
-fi
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
