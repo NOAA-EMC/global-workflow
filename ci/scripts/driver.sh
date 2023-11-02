@@ -159,11 +159,11 @@ for pr in ${pr_list}; do
       set +e
       export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
       rm -f "${LOGFILE_PATH}"
-      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" 2>&1 | tee "${LOGFILE_PATH}"
+      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" 2>&1 "${LOGFILE_PATH}"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
-        last_line=$(tail -1 ${LOGFILE_PATH})
+        last_line=$(tail -1 "${LOGFILE_PATH}")
         if [[ "${last_line}" == *"Skipping creation"* ]]; then
           action="Skipped"
         else
