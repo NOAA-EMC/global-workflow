@@ -15,6 +15,3 @@ arguments:
   gfs_cyc: 1
   start: cold
   yaml: {{ HOMEgfs }}/ci/platforms/gfs_defaults_ci.yaml
-
-skip_ci_on_hosts:
-  orion

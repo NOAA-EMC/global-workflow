@@ -85,8 +85,8 @@ for pr in ${pr_list}; do
   # shellcheck disable=SC2312
   if [[ -z $(ls -A "${pr_dir}/RUNTESTS/EXPDIR") ]] ; then
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
-    sed -i '1 i\\`\`\`' "${output_ci}"
-    sed -i '1 i\All CI Test Cases Passed:' "${output_ci}"
+    sed -i "1 i\`\`\`" "${output_ci}"
+    sed -i "1 i\All CI Test Cases Passed:" "${output_ci}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
     "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
@@ -136,7 +136,7 @@ for pr in ${pr_list}; do
        echo "Error logs:"
        echo "${error_logs}"
       } >> "${output_ci}"
-      sed -i '1 i\\`\`\`' "${output_ci}"
+      sed -i "1 i\`\`\`" "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
       "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
