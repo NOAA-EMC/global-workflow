@@ -941,15 +941,28 @@ class GFSTasks(Tasks):
 
     def arch(self):
         deps = []
-        if self.cdump in ['gdas'] and self.app_config.do_verfozn:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}verfozn'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.cdump in ['gdas'] and self.app_config.do_verfrad:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}verfrad'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.mode in ['cycled'] and self.app_config.do_vminmon:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
-            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = []
+        if self.app_config.do_verfozn or self.app_config.do_verfrad or self.app_config.do_vminmon:
+            if self.app_config.mode in ['cycled']:
+                if self.cdump in ['gfs']:
+                    if self.app_config.do_vminmon:
+                        dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                elif self.cdump in ['gdas']:
+                    deps2 = []
+                    if self.app_config.do_verfozn:
+                        dep_dict = {'type': 'task', 'name': f'{self.cdump}verfozn'}
+                        deps2.append(rocoto.add_dependency(dep_dict))
+                    if self.app_config.do_verfrad:
+                        dep_dict = {'type': 'task', 'name': f'{self.cdump}verfrad'}
+                        deps2.append(rocoto.add_dependency(dep_dict))
+                    if self.app_config.do_vminmon:
+                        dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
+                        deps2.append(rocoto.add_dependency(dep_dict))
+                    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps2)
+                    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+                    dependencies.append(rocoto.add_dependency(dep_dict))
+                    dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -973,7 +986,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps+dependencies)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
