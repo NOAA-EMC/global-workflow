@@ -63,6 +63,8 @@ declare -rx COM_ATMOS_GENESIS_TMPL=${COM_BASE}'/products/atmos/cyclone/genesis_v
 declare -rx COM_ATMOS_TRACK_TMPL=${COM_BASE}'/products/atmos/cyclone/tracks'
 declare -rx COM_ATMOS_GOES_TMPL=${COM_BASE}'/products/atmos/goes_sim'
 declare -rx COM_ATMOS_IMAGERY_TMPL=${COM_BASE}'/products/atmos/imagery'
+declare -rx COM_ATMOS_OZNMON_TMPL=${COM_BASE}'/products/atmos/oznmon'
+declare -rx COM_ATMOS_RADMON_TMPL=${COM_BASE}'/products/atmos/radmon'
 declare -rx COM_ATMOS_MINMON_TMPL=${COM_BASE}'/products/atmos/minmon'
 declare -rx COM_ATMOS_WMO_TMPL=${COM_BASE}'/products/atmos/wmo'
 

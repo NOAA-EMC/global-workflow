@@ -22,11 +22,6 @@ CDATEm1=$(${NDATE} -24 "${PDY}${cyc}")
 export CDATEm1
 export PDYm1=${CDATEm1:0:8}
 
-CDATEm1c=$(${NDATE} -06 "${PDY}${cyc}")
-PDYm1c=${CDATEm1c:0:8}
-pcyc=${CDATEm1c:8:2}
-
-
 ###############################################################
 # TODO: We can likely drop support for these dev-only grib1 precip files
 echo
@@ -54,51 +49,6 @@ echo
 echo "=============== START TO RUN MOS ==============="
 if [[ "${RUNMOS}" == "YES" && "${CDUMP}" == "gfs" ]]; then
     ${RUNGFSMOSSH} "${PDY}${cyc}"
-fi
-
-
-###############################################################
-echo
-echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
-
-if [[ "${VRFYRAD}" == "YES" && "${CDUMP}" == "${CDFNL}" && "${PDY}${cyc}" != "${SDATE}" ]]; then
-
-    export EXP=${PSLOT}
-    export TANKverf_rad="${TANKverf}/stats/${PSLOT}/${RUN}.${PDY}/${cyc}"
-    export TANKverf_radM1="${TANKverf}/stats/${PSLOT}/${RUN}.${PDYm1c}/${pcyc}"
-    export MY_MACHINE=${machine}
-
-    ${VRFYRADSH}
-
-fi
-
-
-###############################################################
-echo
-echo "=============== START TO RUN OZMON DATA EXTRACTION ==============="
-if [[ "${VRFYOZN}" == "YES" && "${CDUMP}" == "${CDFNL}" && "${PDY}${cyc}" != "${SDATE}" ]]; then
-
-    export EXP=${PSLOT}
-    export TANKverf_ozn="${TANKverf_ozn}/stats/${PSLOT}/${RUN}.${PDY}/${cyc}"
-    export TANKverf_oznM1="${TANKverf_ozn}/stats/${PSLOT}/${RUN}.${PDYm1c}/${pcyc}"
-    export MY_MACHINE=${machine}
-
-    ${VRFYOZNSH}
-
-fi
-
-
-###############################################################
-echo
-echo "=============== START TO RUN MINMON ==============="
-if [[ "${VRFYMINMON}" == "YES" && "${PDY}${cyc}" != "${SDATE}" && "${MODE}" = "cycled" ]]; then
-
-    export M_TANKverfM0="${M_TANKverf}/stats/${PSLOT}/${RUN}.${PDY}/${cyc}"
-    export M_TANKverfM1="${M_TANKverf}/stats/${PSLOT}/${RUN}.${PDYm1c}/${pcyc}"
-    export MY_MACHINE=${machine}
-
-    ${VRFYMINSH}
-
 fi
 
 
