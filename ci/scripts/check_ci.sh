@@ -124,7 +124,7 @@ for pr in ${pr_list}; do
     rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
     num_cycles=$(echo "${rocoto_stat_output}" | wc -l) || true
     num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
-    num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED) || true
+    # num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED) || true
     echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_done}" || true
     num_failed=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD') || true
     if [[ ${num_failed} -ne 0 ]]; then
