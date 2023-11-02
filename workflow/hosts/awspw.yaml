@@ -21,4 +21,4 @@ LOCALARCH: 'NO'
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}' # TODO: This will not yet work from AWS.
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-SUPPORTED_RESOLUTIONS: ['C48'] # TODO: Test and support all cubed-sphere resolutions.
+SUPPORTED_RESOLUTIONS: ['C48', 'C96'] # TODO: Test and support all cubed-sphere resolutions.

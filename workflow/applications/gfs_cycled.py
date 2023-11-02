@@ -101,7 +101,7 @@ class GFSCycledAppConfig(AppConfig):
         """
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
-        gdas_gfs_common_tasks_after_fcst = ['post']
+        gdas_gfs_common_tasks_after_fcst = ['postanl', 'post']
         # if self.do_ocean:  # TODO: uncomment when ocnpost is fixed in cycled mode
         #    gdas_gfs_common_tasks_after_fcst += ['ocnpost']
         gdas_gfs_common_tasks_after_fcst += ['vrfy']
