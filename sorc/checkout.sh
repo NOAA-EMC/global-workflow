@@ -87,7 +87,7 @@ if [[ ${checkout_wafs} == "YES" ]] ; then
   echo EMC_gfs_wafs checkout ...
   if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
-    git clone --recursive --branch gfs_wafs.v6.3.2 https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
+    git clone --recursive --branch gfs_wafs.v6.3.1 https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd ${topdir}
   else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
