@@ -94,7 +94,7 @@ build_status=$?
 
 if [[ ${build_status} != 0 ]]; then
   {
-    echo "Build: ** FAILED ***"
+    echo "Build: *** FAILED ***"
     echo "Build: Failed at $(date)" || true
     echo "Build: see output at ${PWD}/log.build"
   } >> "${outfile}"
