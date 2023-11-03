@@ -105,7 +105,6 @@ else
   } >> "${outfile}"
 fi
 
-export MACHINE_ID="orion"
 ./link_workflow.sh
 link_status=$?
 if [[ ${link_status} != 0 ]]; then
