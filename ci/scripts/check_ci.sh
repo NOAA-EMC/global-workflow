@@ -152,8 +152,8 @@ for pr in ${pr_list}; do
       rm -f "${output_ci_single}"
       echo "\`\`\`" > "${output_ci_single}"
       DATE=$(date)
-      echo "Experiment ${pslot} Completed Successfully at ${DATE}" >> "${output_ci_single}"
-      echo "Experiment ${pslot} Completed Successfully at ${DATE}" >> "${output_ci}"
+      echo "Experiment ${pslot} **SUCCESS** ${DATE}" >> "${output_ci_single}"
+      echo "Experiment ${pslot} **SUCCESS** at ${DATE}" >> "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
 
     fi
