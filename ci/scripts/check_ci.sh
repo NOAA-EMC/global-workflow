@@ -131,7 +131,7 @@ for pr in ${pr_list}; do
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       {
-       echo "Experiment ${pslot} Terminated: **FAILED**"
+       echo "Experiment ${pslot} Terminated: *** FAILED ***"
        echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
        echo "Error logs:"
        echo "${error_logs}"
@@ -150,7 +150,7 @@ for pr in ${pr_list}; do
       rm -Rf "${pslot_dir}"
       rm -Rf "${pr_dir}/RUNTESTS/COMROT/${pslot}"
       rm -f "${output_ci_single}"
-      echo "\`\`\`" > "${output_ci_single}"
+      # echo "\`\`\`" > "${output_ci_single}"
       DATE=$(date)
       echo "Experiment ${pslot} **SUCCESS** ${DATE}" >> "${output_ci_single}"
       echo "Experiment ${pslot} **SUCCESS** at ${DATE}" >> "${output_ci}"
