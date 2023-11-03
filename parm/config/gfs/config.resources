@@ -14,7 +14,8 @@ if [[ $# -ne 1 ]]; then
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch cleanup echgres"
+    echo "anal sfcanl analcalc analdiag fcst post echgres"
+    echo "verfozn verfrad vminmon vrfy fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -719,6 +720,34 @@ elif [[ ${step} = "post" ]]; then
     if [[ "${npe_node_post}" -gt "${npe_node_max}" ]]; then export npe_node_post=${npe_node_max} ; fi
     if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
     export is_exclusive=True
+
+elif [[ ${step} = "verfozn" ]]; then
+
+    export wtime_verfozn="00:05:00"
+    export npe_verfozn=1
+    export nth_verfozn=1
+    export npe_node_verfozn=1
+    export memory_verfozn="1G"
+
+elif [[ ${step} = "verfrad" ]]; then
+
+    export wtime_verfrad="00:20:00"
+    export npe_verfrad=1
+    export nth_verfrad=1
+    export npe_node_verfrad=1
+    export memory_verfrad="5G"
+
+elif [[ ${step} = "vminmon" ]]; then
+
+    export wtime_vminmon="00:05:00"
+    export npe_vminmon=1
+    export nth_vminmon=1
+    export npe_node_vminmon=1
+    export wtime_vminmon_gfs="00:05:00"
+    export npe_vminmon_gfs=1
+    export nth_vminmon_gfs=1
+    export npe_node_vminmon_gfs=1
+    export memory_vminmon="1G"
 
 elif [[ ${step} = "vrfy" ]]; then
 

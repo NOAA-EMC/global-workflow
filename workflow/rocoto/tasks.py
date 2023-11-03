@@ -19,7 +19,8 @@ class Tasks:
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'preplandobs', 'landanl',
-                   'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
+                   'fcst', 'post', 'ocnpost',
+                   'verfozn', 'verfrad', 'vminmon', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']

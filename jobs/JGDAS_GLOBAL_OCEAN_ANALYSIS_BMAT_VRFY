@@ -19,7 +19,7 @@ export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_bmat_vrfy.sh}
+EXSCRIPT=${GDASOCNMBATVRFYSH:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_bmat_vrfy.sh}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
