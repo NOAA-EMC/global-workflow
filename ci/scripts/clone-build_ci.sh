@@ -74,7 +74,7 @@ set +e
 checkout_status=$?
 if [[ ${checkout_status} != 0 ]]; then
   {
-    echo "Checkout: *** FAILED ****"
+    echo "Checkout: *** FAILED ***"
     echo "Checkout: Failed at $(date)" || true
     echo "Checkout: see output at ${PWD}/log.checkout"
   } >> "${outfile}"
