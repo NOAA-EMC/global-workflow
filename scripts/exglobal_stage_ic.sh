@@ -31,11 +31,11 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   # Stage atmosphere initial conditions to ROTDIR
   if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
     # Stage the FV3 restarts to ROTDIR (warm start)
-    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_ATMOS_RESTART
-    [[ ! -d "${COM_ATMOS_RESTART}" ]] && mkdir -p "${COM_ATMOS_RESTART}"
+    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+    [[ ! -d "${COM_ATMOS_RESTART_PREV}" ]] && mkdir -p "${COM_ATMOS_RESTART_PREV}"
     for ftype in coupler.res fv_core.res.nc; do
       src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.${ftype}"
-      tgt="${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.${ftype}"
+      tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.${ftype}"
       ${NCP} "${src}" "${tgt}"
       rc=$?
       ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
@@ -44,10 +44,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     for ftype in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
       for ((tt = 1; tt <= 6; tt++)); do
         src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}.${ftype}.tile${tt}.nc"
-        tgt="${COM_ATMOS_RESTART}/${ftype}.tile${tt}.nc"
-        ${NCP} "${src}" "${tgt}"
-        rc=$?
-        tgt="${COM_ATMOS_RESTART}/${PDY}.${cyc}.${ftype}.tile${tt}.nc"
+        tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}.${ftype}.tile${tt}.nc"
         ${NCP} "${src}" "${tgt}"
         rc=$?
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
@@ -70,9 +67,6 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
         tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
         ${NCP} "${src}" "${tgt}"
         rc=$?
-        tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
-        ${NCP} "${src}" "${tgt}"
-        rc=$?
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
         err=$((err + rc))
       done
@@ -81,10 +75,10 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
   # Stage ocean initial conditions to ROTDIR (warm start)
   if [[ "${DO_OCN:-}" = "YES" ]]; then
-    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_OCEAN_RESTART
-    [[ ! -d "${COM_OCEAN_RESTART}" ]] && mkdir -p "${COM_OCEAN_RESTART}"
+    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+    [[ ! -d "${COM_OCEAN_RESTART_PREV}" ]] && mkdir -p "${COM_OCEAN_RESTART_PREV}"
     src="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.MOM.res.nc"
-    tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res.nc"
+    tgt="${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res.nc"
     ${NCP} "${src}" "${tgt}"
     rc=$?
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
@@ -93,10 +87,10 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
   # Stage ice initial conditions to ROTDIR (warm start)
   if [[ "${DO_ICE:-}" = "YES" ]]; then
-    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_ICE_RESTART
-    [[ ! -d "${COM_ICE_RESTART}" ]] && mkdir -p "${COM_ICE_RESTART}"
+    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+    [[ ! -d "${COM_ICE_RESTART_PREV}" ]] && mkdir -p "${COM_ICE_RESTART_PREV}"
     src="${BASE_CPLIC}/${CPL_ICEIC}/${PDY}${cyc}/${MEMDIR}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
-    tgt="${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc"
+    tgt="${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc"
     ${NCP} "${src}" "${tgt}"
     rc=$?
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
