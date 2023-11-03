@@ -34,7 +34,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ATMOS_HISTORY_PREV:COM_
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_chkpt.sh}
+EXSCRIPT=${GDASOCNCHKPTSH:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_chkpt.sh}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
