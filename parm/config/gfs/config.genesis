@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.genesis ##########
+echo "BEGIN: config.genesis"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" genesis
+
+export SENDCOM="YES" # Needed by genesis scripts still
+
+echo "END: config.genesis"

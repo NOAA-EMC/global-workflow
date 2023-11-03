@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.genesis_fsu ##########
+echo "BEGIN: config.genesis_fsu"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" genesis_fsu
+
+export SENDCOM="YES" # Needed by genesis scripts still
+
+echo "END: config.genesis_fsu"
