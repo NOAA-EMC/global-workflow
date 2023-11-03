@@ -9,9 +9,9 @@ gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
 MEMDIR_ARRAY=()
-if [[ "${RUN}" == "gefs" ]]; then
+if [[ "${RUN:-}" = "gefs" ]]; then
   # Populate the member_dirs array based on the value of NMEM_ENS
-  for ((ii = 0; ii <= "${NMEM_ENS}"; ii++)); do
+  for ((ii = 0; ii <= "${NMEM_ENS:-0}"; ii++)); do
     MEMDIR_ARRAY+=("mem$(printf "%03d" "${ii}")")
   done
 else
@@ -27,28 +27,57 @@ error_message() {
 
 ###############################################################
 for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
-  # Stage the FV3 initial conditions to ROTDIR (cold start)
-  YMD=${PDY} HH=${cyc} generate_com COM_ATMOS_INPUT
-  [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
-  src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
-  tgt="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
-  ${NCP} "${src}" "${tgt}"
-  rc=$?
-  ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
-  err=$((err + rc))
-  for ftype in gfs_data sfc_data; do
-    for ((tt = 1; tt <= 6; tt++)); do
-      src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
-      tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
-      ${NCP} "${src}" "${tgt}"
-      rc=$?
-      tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
+
+  # Stage atmosphere initial conditions to ROTDIR
+  if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
+    # Stage the FV3 restarts to ROTDIR (warm start)
+    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_ATMOS_RESTART
+    [[ ! -d "${COM_ATMOS_RESTART}" ]] && mkdir -p "${COM_ATMOS_RESTART}"
+    for ftype in coupler.res fv_core.res.nc; do
+      src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.${ftype}"
+      tgt="${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.${ftype}"
       ${NCP} "${src}" "${tgt}"
       rc=$?
       ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
       err=$((err + rc))
     done
-  done
+    for ftype in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
+      for ((tt = 1; tt <= 6; tt++)); do
+        src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}.${ftype}.tile${tt}.nc"
+        tgt="${COM_ATMOS_RESTART}/${ftype}.tile${tt}.nc"
+        ${NCP} "${src}" "${tgt}"
+        rc=$?
+        tgt="${COM_ATMOS_RESTART}/${PDY}.${cyc}.${ftype}.tile${tt}.nc"
+        ${NCP} "${src}" "${tgt}"
+        rc=$?
+        ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+        err=$((err + rc))
+      done
+    done
+  else
+    # Stage the FV3 cold-start initial conditions to ROTDIR
+    YMD=${PDY} HH=${cyc} generate_com COM_ATMOS_INPUT
+    [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
+    src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
+    tgt="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
+    ${NCP} "${src}" "${tgt}"
+    rc=$?
+    ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+    err=$((err + rc))
+    for ftype in gfs_data sfc_data; do
+      for ((tt = 1; tt <= 6; tt++)); do
+        src="${BASE_CPLIC}/${CPL_ATMIC}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
+        tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
+        ${NCP} "${src}" "${tgt}"
+        rc=$?
+        tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
+        ${NCP} "${src}" "${tgt}"
+        rc=$?
+        ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+        err=$((err + rc))
+      done
+    done
+  fi
 
   # Stage ocean initial conditions to ROTDIR (warm start)
   if [[ "${DO_OCN:-}" = "YES" ]]; then
@@ -61,6 +90,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
   fi
+
   # Stage ice initial conditions to ROTDIR (warm start)
   if [[ "${DO_ICE:-}" = "YES" ]]; then
     RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_ICE_RESTART
@@ -88,6 +118,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   fi
 
 done # for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
+
 ###############################################################
 # Check for errors and exit if any of the above failed
 if [[ "${err}" -ne 0 ]]; then
