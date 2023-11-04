@@ -17,6 +17,7 @@ class GFSCycledAppConfig(AppConfig):
         self.do_jediatmens = self._base.get('DO_JEDIATMENS', False)
         self.do_jediocnvar = self._base.get('DO_JEDIOCNVAR', False)
         self.do_jedilandda = self._base.get('DO_JEDILANDDA', False)
+        self.do_jedilandens = self._base.get('DO_JEDILANDENS', False)
         self.do_mergensst = self._base.get('DO_MERGENSST', False)
 
         self.lobsdiag_forenkf = False
@@ -54,6 +55,8 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
+            if self.do_jedilandens:
+                configs += ['landensanl']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
         if self.do_verfozn:
@@ -93,7 +96,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
-            configs += ['preplandobs', 'landanl']
+            configs += ['preplandobs', 'landanl', 'landensanl']
 
         return configs
 
@@ -132,7 +135,7 @@ class GFSCycledAppConfig(AppConfig):
             gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
-            gdas_gfs_common_tasks_before_fcst += ['preplandobs', 'landanl']
+            gdas_gfs_common_tasks_before_fcst += ['preplandobs', 'landanl', 'landensanl']
 
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']

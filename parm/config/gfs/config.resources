@@ -12,7 +12,7 @@ if [[ $# -ne 1 ]]; then
     echo "prep preplandobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanl"
+    echo "landanl landensanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst post echgres"
     echo "verfozn verfrad vminmon vrfy fit2obs metp arch cleanup"
@@ -872,6 +872,22 @@ elif [[ "${step}" = "atmensanlfinal" ]]; then
     export nth_atmensanlfinal=1
     npe_node_atmensanlfinal=$(echo "${npe_node_max} / ${nth_atmensanlfinal}" | bc)
     export npe_node_atmensanlfinal
+    export is_exclusive=True
+
+elif [[ "${step}" = "landensanl" ]]; then
+
+    export layout_x=1
+    export layout_y=1
+
+    export wtime_landensanl="00:15:00"
+    npe_landensanl=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_landensanl
+    npe_landensanl_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_landensanl_gfs
+    export nth_landensanl=1
+    export nth_landensanl_gfs=${nth_landensanl}
+    npe_node_landensanl=$(echo "${npe_node_max} / ${nth_landensanl}" | bc)
+    export npe_node_landensanl
     export is_exclusive=True
 
 elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
