@@ -83,6 +83,26 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     rc=$?
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
+    case "${OCNRES}" in
+      "500" | "100")
+        # Nothing more to do for these resolutions
+        ;;
+      "025" )
+        for nn in $(seq 1 3); do
+          src="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
+          tgt="${COM_OCEAN_RESTART}/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
+          ${NCP} "${src}" "${tgt}"
+          rc=$?
+          ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+          err=$((err + rc))
+        done
+        ;;
+      *)
+        echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
+        rc=1
+        err=$((err + rc))
+        ;;
+    esac
   fi
 
   # Stage ice initial conditions to ROTDIR (warm start)
