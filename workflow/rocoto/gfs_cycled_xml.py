@@ -14,7 +14,7 @@ class GFSCycledRocotoXML(RocotoXML):
     def get_cycledefs(self):
         sdate = self._base['SDATE']
         edate = self._base['EDATE']
-        interval = self._base.get('INTERVAL', '06:00:00')
+        interval='{h:02n}:00:00'.format(h=self._base["assim_freq"])
         strings = []
         strings.append(f'\t<cycledef group="gdas_half">{sdate.strftime("%Y%m%d%H%M")} {sdate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
         sdate = sdate + to_timedelta(interval)
