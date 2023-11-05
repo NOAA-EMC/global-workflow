@@ -86,10 +86,11 @@ class GFSTasks(Tasks):
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
+        myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': myoffset}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        dep_dict = {'type': 'data', 'data': data, 'offset': myoffset}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dump_path}/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
@@ -114,7 +115,8 @@ class GFSTasks(Tasks):
             deps = []
             dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': myoffset}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -179,7 +181,8 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+            myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': myoffset}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
@@ -221,7 +224,8 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar and self.cdump in ['gdas']:
-            dep_dict = {'type': 'task', 'name': 'enkfgdasechgres', 'offset': '-06:00:00'}
+            myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+            dep_dict = {'type': 'task', 'name': 'enkfgdasechgres', 'offset': myoffset}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -260,7 +264,8 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+            myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': myoffset}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
@@ -367,7 +372,8 @@ class GFSTasks(Tasks):
 
         deps = []
         data = f'{ocean_hist_path}/gdas.t@Hz.ocnf009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+        dep_dict = {'type': 'data', 'data': data, 'offset': myoffset}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -536,7 +542,8 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         if self.cdump in ['gdas']:
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': myoffset}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
@@ -1028,7 +1035,8 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+        myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': myoffset}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1083,7 +1091,8 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+        myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': myoffset}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1099,7 +1108,8 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+        myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': myoffset}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1197,7 +1207,8 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+        myoffset='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
+        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': myoffset}
         dependencies.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
