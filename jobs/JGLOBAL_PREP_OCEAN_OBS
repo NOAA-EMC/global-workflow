@@ -19,7 +19,7 @@ export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/soca:${PYTHONPATH}
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/ush/exglobal_prep_ocean_obs.py}
+EXSCRIPT=${GDASPREPOCNOBSPY:-${HOMEgfs}/ush/exglobal_prep_ocean_obs.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

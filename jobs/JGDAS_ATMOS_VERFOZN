@@ -4,7 +4,7 @@
 # Set up environment for GDAS Ozone Monitor job
 #############################################################
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
 
 export OZNMON_SUFFIX=${OZNMON_SUFFIX:-${NET}}
 
@@ -42,15 +42,12 @@ export p_cyc=${pdate:8:2}
 #---------------------------------------------
 # OZN_TANKDIR - WHERE OUTPUT DATA WILL RESIDE
 #
-export OZN_TANKDIR=${OZN_TANKDIR:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export TANKverf_ozn=${TANKverf_ozn:-${OZN_TANKDIR}/${RUN}.${PDY}/${cyc}/atmos/oznmon}
-export TANKverf_oznM1=${TANKverf_oznM1:-${OZN_TANKDIR}/${RUN}.${P_PDY}/${p_cyc}/atmos/oznmon}
-
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_OZNMON
 
-if [[ ! -d ${TANKverf_ozn} ]]; then
-   mkdir -p -m 775 ${TANKverf_ozn}
-fi
+export TANKverf_ozn=${TANKverf_ozn:-${COM_ATMOS_OZNMON}}
+
+if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p -m 775 ${TANKverf_ozn} ; fi
 
 #---------------------------------------
 #  set up validation file
@@ -77,10 +74,6 @@ err=$?
 ################################
 # Remove the Working Directory
 ################################
-KEEPDATA=${KEEPDATA:-NO}
-cd ${DATAROOT}
-if [ ${KEEPDATA} = NO ] ; then
-  rm -rf ${DATA}
-fi
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
