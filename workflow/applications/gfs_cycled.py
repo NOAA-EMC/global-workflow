@@ -135,7 +135,7 @@ class GFSCycledAppConfig(AppConfig):
             gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
-            gdas_gfs_common_tasks_before_fcst += ['preplandobs', 'landanl', 'landensanl']
+            gdas_gfs_common_tasks_before_fcst += ['preplandobs', 'landanl']
 
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
@@ -149,6 +149,8 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            if self.do_jedilandens:
+                hybrid_tasks += ['landensanl']
             hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks

@@ -1123,12 +1123,17 @@ class GFSTasks(Tasks):
     def landensanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}preplandobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}preplandobs'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}echgres'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump
+
         resources = self.get_resource('landensanl')
-        task = create_wf_task('landensanl', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('landensanl', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
 
         return task
 

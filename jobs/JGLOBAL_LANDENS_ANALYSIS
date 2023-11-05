@@ -19,12 +19,12 @@ GDUMP="enkfgdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_LAND_ANALYSIS
+YMD=${PDY} HH=${cyc} generate_com -rx COM_LANDENS_ANALYSIS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-mkdir -m 775 -p "${COM_LAND_ANALYSIS}"
+mkdir -m 775 -p "${COM_LANDENS_ANALYSIS}"
 
 ###############################################################
 # Run relevant script

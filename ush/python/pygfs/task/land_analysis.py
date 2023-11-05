@@ -34,6 +34,7 @@ class LandAnalysis(Analysis):
 
         _res = int(self.config['CASE'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
+        _window_begin = add_to_datetime(_window_begin, -to_timedelta(f"1S"))
         _letkfoi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
@@ -44,7 +45,7 @@ class LandAnalysis(Analysis):
                 'npz_ges': self.config.LEVS - 1,
                 'npz': self.config.LEVS - 1,
                 'LAND_WINDOW_BEGIN': _window_begin,
-                'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
+                'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H1S",
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'jedi_yaml': _letkfoi_yaml
