@@ -261,6 +261,16 @@ case ${fv3_res} in
 esac
 export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
 
+# cpl defaults
+export cpl=".false."
+export cplflx=".false."
+export cplice=".false."
+export cplchm=".false."
+export cplwav=".false."
+export cplwav2atm=".false."
+export CCPP_SUITE="FV3_GFS_v17_p8_ugwpv1"
+model_list="atm"
+
 # Mediator specific settings
 if [[ "${skip_mediator}" == "false" ]]; then
   export cpl=".true."
