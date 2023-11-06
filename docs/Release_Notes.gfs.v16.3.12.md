@@ -1,4 +1,4 @@
-GFS V16.3.11 RELEASE NOTES
+GFS V16.3.12 RELEASE NOTES
 
 -------
 PRELUDE
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub .com are u
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.11
-cd gfs.v16.3.11
-git clone -b EMC-v16.3.11 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.12
+cd gfs.v16.3.12
+git clone -b EMC-v16.3.12 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -54,22 +54,22 @@ VERSION FILE CHANGES
 --------------------
 
 * `versions/build.ver` - change `crtm_ver=2.4.0.1`
-* `versions/run.ver` - change `version=v16.3.11`, `gfs_ver=v16.3.11`, and `crtm_ver=2.4.0.1`
+* `versions/run.ver` - change `version=v16.3.12`, `gfs_ver=v16.3.12`, and `crtm_ver=2.4.0.1`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 SCRIPT CHANGES
 --------------
@@ -85,17 +85,17 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -108,22 +108,22 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.11
 
 PREPARED BY
 -----------
