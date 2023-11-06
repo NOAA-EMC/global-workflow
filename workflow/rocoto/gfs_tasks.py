@@ -113,14 +113,16 @@ class GFSTasks(Tasks):
         cycledef = None
         if self.app_config.mode in ['cycled']:
             deps = []
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
-            deps.append(rocoto.add_dependency(dep_dict))
+# TODO: Cleanup for PR
+#            dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
+#            deps.append(rocoto.add_dependency(dep_dict))
 #            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
 #            deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
             cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
             
         task = create_wf_task('waveinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
+
 
         return task
 
@@ -129,8 +131,6 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        #dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-        #deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('waveprep')
@@ -525,9 +525,10 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+        # TODO: Cleanup for PR.
+        #if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
+        #    dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
+        #    dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_aero:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
