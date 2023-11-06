@@ -19,6 +19,8 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
     module load cray-pals
     module load cfp
     module load libjpeg
+    module load craype-network-ucx
+    module load cray-mpich-ucx
   else
     module load prod-util
     export UTILROOT=${prod_util_ROOT}
