@@ -133,16 +133,17 @@ EOF
   #--------------------------------------------------------------------------
   # Grid and orography data
 
+  OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}"}
+  FIX_SFC=${FIX_SFC:-"${OROFIX}/sfc"}
+
   if [[ ${cplflx} = ".false." ]] ; then
-    ${NLN} "${FIX_DIR}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+    ${NLN} "${OROFIX}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
   else
-    ${NLN} "${FIX_DIR}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+    ${NLN} "${OROFIX}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
   fi
 
-  OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}.mx${OCNRES}_frac"}
-  FIX_SFC=${FIX_SFC:-"${OROFIX}/sfc"}
   for n in $(seq 1 "${ntiles}"); do
-    ${NLN} "${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc" "${DATA}/INPUT/oro_data.tile${n}.nc"
+    ${NLN} "${OROFIX}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/INPUT/oro_data.tile${n}.nc"
     ${NLN} "${OROFIX}/${CASE}_grid.tile${n}.nc"     "${DATA}/INPUT/${CASE}_grid.tile${n}.nc"
   done
 
