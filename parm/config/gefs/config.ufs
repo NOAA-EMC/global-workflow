@@ -474,22 +474,22 @@ fi
 # Set the name of the UFS (previously nems) configure template to use
 case "${model_list}" in
   atm)
-    export ufs_configure_template="nems.configure.atm.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.atm.IN"
     ;;
   atm.aero)
-    export ufs_configure_template="nems.configure.atm_aero.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.atm_aero.IN"
     ;;
   atm.wave)
-    export ufs_configure_template="nems.configure.leapfrog_atm_wav.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.leapfrog_atm_wav.IN"
     ;;
   atm.ocean.ice)
-    export ufs_configure_template="nems.configure.cpld.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld.IN"
     ;;
   atm.ocean.ice.aero)
-    export ufs_configure_template="nems.configure.cpld_aero.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld_aero.IN"
     ;;
   atm.ocean.ice.wave.aero)
-    export ufs_configure_template="nems.configure.cpld_aero_outerwave.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld_aero_outerwave.IN"
     ;;
   *)
     echo "FATAL ERROR: Unable to determine appropriate UFS configure template for ${model_list}"

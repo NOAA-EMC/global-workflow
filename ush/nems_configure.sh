@@ -89,15 +89,14 @@ if [[ "${cplchm}" = ".true." ]]; then
 fi
 
 # Ensure the template exists
-template="${HOMEgfs}/parm/ufs/${ufs_configure_template}"
-if [[ ! -f ${template} ]]; then
-  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+if [[ ! -r "${ufs_configure_template}" ]]; then
+  echo "FATAL ERROR: template '${ufs_configure_template}' does not exist, ABORT!"
   exit 1
 fi
 
 source "${HOMEgfs}/ush/atparse.bash"
 rm -f "${DATA}/nems.configure"
-atparse < "${template}" >> "${DATA}/nems.configure"
+atparse < "${ufs_configure_template}" >> "${DATA}/nems.configure"
 echo "Rendered nems.configure:"
 cat nems.configure
 
