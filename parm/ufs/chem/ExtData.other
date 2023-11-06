@@ -8,12 +8,12 @@ TROPP            'Pa'    Y       N                  -            0.0      1.0   
 
 #====== Dust Imports =================================================
 # FENGSHA input files. Note: regridding should be N or E - Use files with _FillValue != NaN 
-DU_CLAY           '1'  Y E           -           none none clayfrac    /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
-DU_SAND           '1'  Y E           -           none none sandfrac    /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_CLAY           '1'  Y E           -           none none clayfrac    ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_SAND           '1'  Y E           -           none none sandfrac    ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
 DU_SILT           '1'  Y E           -           none none siltfrac    /dev/null
-DU_SSM            '1'  Y E           -           none none sep         /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
-DU_RDRAG          '1'  Y E %y4-%m2-%d2t12:00:00  none none albedo_drag /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
-DU_UTHRES         '1'  Y E           -           none none uthres      /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_SSM            '1'  Y E           -           none none sep         ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_RDRAG          '1'  Y E %y4-%m2-%d2t12:00:00  none none albedo_drag ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_UTHRES         '1'  Y E           -           none none uthres      ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
 
 #====== Sulfate Sources =================================================
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
