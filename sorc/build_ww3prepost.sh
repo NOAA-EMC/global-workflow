@@ -7,9 +7,10 @@ cd "${script_dir}" || exit 1
 # Default settings
 APP="S2SWA"
 
-while getopts "a:v" option; do
+while getopts ":j:a:v" option; do
   case "${option}" in
-    a) APP="${OPTARG}" ;;
+    a) APP="${OPTARG}";;
+    j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -58,6 +59,7 @@ post_exes="ww3_outp ww3_outf ww3_outp ww3_gint ww3_ounf ww3_ounp ww3_grib"
 
 #create build directory:
 path_build="${WW3_DIR}/build_SHRD"
+[[ -d "${path_build}" ]] && rm -rf "${path_build}"
 mkdir -p "${path_build}" || exit 1
 cd "${path_build}" || exit 1
 echo "Forcing a SHRD build"
@@ -85,7 +87,7 @@ if (( rc != 0 )); then
   echo "Fatal error in cmake."
   exit "${rc}"
 fi
-make -j 8
+make -j "${BUILD_JOBS:-8}"
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in make."

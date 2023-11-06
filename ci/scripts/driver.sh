@@ -119,7 +119,10 @@ for pr in ${pr_list}; do
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   set +e
-  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  output_ci="${pr_dir}/output_build_${id}"
+  rm -f "${output_ci}"
+  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${output_ci}"
+  #echo "SKIPPING: ${ROOT_DIR}/ci/scripts/clone-build_ci.sh"
   ci_status=$?
   ##################################################################
   # Checking for special case when Ready label was updated
@@ -138,7 +141,7 @@ for pr in ${pr_list}; do
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
-    #rm -Rf "${pr_dir:?}/RUNTESTS/"*
+    rm -Rf "${pr_dir:?}/RUNTESTS/"*
 
     #############################################################
     # loop over every yaml file in the PR's ci/cases
@@ -154,39 +157,47 @@ for pr in ${pr_list}; do
       export pslot="${case}_${pr_sha}"
       rm -Rf "${STMP}/RUNDIRS/${pslot}"
       set +e
-      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml"
+      export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
+      rm -f "${LOGFILE_PATH}"
+      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" 2>&1 "${LOGFILE_PATH}"
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
+        last_line=$(tail -1 "${LOGFILE_PATH}")
+        if [[ "${last_line}" == *"Skipping creation"* ]]; then
+          action="Skipped"
+        else
+          action="Completed"
+        fi
         {
-          echo "Created experiment:            *SUCCESS*"
-          echo "Case setup: Completed at $(date) for experiment ${pslot}" || true
-        } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-        "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
-        "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running
+          echo "Case setup: ${action} for experiment ${pslot}" || true
+        } >> "${output_ci}"
       else
         {
-          echo "Failed to create experiment:  *FAIL* ${pslot}"
-          echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
+          echo "*** Failed *** to create experiment: ${pslot}"
           echo ""
-          cat "${HOMEgfs}/ci/scripts/"setup_*.std*
-        } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+          cat "${LOGFILE_PATH}"
+        } >> "${output_ci}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
         "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+        "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
+        exit 1
       fi
     done
 
+    "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
+    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running
+    "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
+
   else
     {
-      echo '```'
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
-    } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+    } >> "${output_ci}"
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
     "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
   fi
-  sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-  "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
 
 done # looping over each open and labeled PR
 
