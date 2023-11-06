@@ -507,4 +507,9 @@ case "${model_list}" in
     ;;
 esac
 
+if [[ ! -r ${ufs_configure_template} ]]; then
+  echo "FATAL ERROR: ${ufs_configure_template} either doesn't exist or is not readable."
+  exit 17
+fi
+
 echo "END: config.ufs"
