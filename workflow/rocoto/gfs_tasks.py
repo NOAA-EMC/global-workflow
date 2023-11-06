@@ -113,11 +113,10 @@ class GFSTasks(Tasks):
         cycledef = None
         if self.app_config.mode in ['cycled']:
             deps = []
-# TODO: Cleanup for PR
-#            dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
-#            deps.append(rocoto.add_dependency(dep_dict))
-#            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-#            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
             cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
             
@@ -492,6 +491,8 @@ class GFSTasks(Tasks):
             wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
             dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_aero:
             # Calculate offset based on CDUMP = gfs | gdas
@@ -525,11 +526,6 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        # TODO: Cleanup for PR.
-        #if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
-        #    dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
-        #    dependencies.append(rocoto.add_dependency(dep_dict))
-
         if self.app_config.do_aero:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
@@ -544,6 +540,12 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+            dependencies = rocoto.create_dependency(dep=dependencies)
+
+        if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=dependencies)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
