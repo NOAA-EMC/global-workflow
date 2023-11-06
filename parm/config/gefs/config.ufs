@@ -8,7 +8,7 @@
 
 echo "BEGIN: config.ufs"
 
-if [ $# -le 1 ]; then
+if (( $# <- 1 )); then
 
     echo "Must specify an input resolution argument to set variables!"
     echo "argument can be any one of the following:"
@@ -28,7 +28,7 @@ skip_ww3=true
 skip_mediator=true
 
 # Loop through named arguments
-while [[ $# -gt 0 ]]; do
+while (( $# > 0 )); do
   key="$1"
   case "${key}" in
     "--fv3")
@@ -59,6 +59,14 @@ done
 if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${skip_ww3}" == "false" ]]; then
   skip_mediator=false
 fi
+
+# Source component configs if necessary
+for component in WAVE OCN ICE AERO; do
+  control="DO_${component}"
+  if [[ ${!control} == "YES" ]]; then
+    source "${EXPDIR}/config.${component,,}"
+  fi
+done
 
 case "${machine}" in
   "WCOSS2")
@@ -97,6 +105,10 @@ case "${machine}" in
         exit 1
         ;;
     esac
+    ;;
+  *)
+    echo "FATAL ERROR: Unrecognized machine ${machine}"
+    exit 14
     ;;
 esac
 export npe_node_max
@@ -251,11 +263,15 @@ export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
 
 # Mediator specific settings
 if [[ "${skip_mediator}" == "false" ]]; then
+  export cpl=".true."
   export nthreads_mediator=${nthreads_fv3}  # Use same threads as FV3
+  export CCPP_SUITE="FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8?
 fi
 
 # MOM6 specific settings
 if [[ "${skip_mom6}" == "false" ]]; then
+  export cplflx=".true."
+  model_list="${model_list}.ocean"
   nthreads_mom6=1
   case "${mom6_res}" in
     "500")
@@ -362,6 +378,8 @@ fi
 
 # CICE6 specific settings
 if [[ "${skip_cice6}" == "false" ]]; then
+  export cplice=".true."
+  model_list="${model_list}.ice"
   # Ensure we sourced the MOM6 section
   if [[ "${skip_mom6}" == "true" ]]; then
     echo "FATAL ERROR: CICE6 cannot be configured without MOM6, ABORT!"
@@ -398,6 +416,9 @@ fi
 
 # WW3 specific settings
 if [[ "${skip_ww3}" == "false" ]]; then
+  export cplwav=".true."
+  export cplwav2atm=".true."
+  model_list="${model_list}.wave"
   nthreads_ww3=2
   case "${ww3_res}" in
     "gnh_10m;aoc_9km;gsh_15m")
@@ -427,5 +448,43 @@ if [[ "${skip_ww3}" == "false" ]]; then
   esac
   export ntasks_ww3 nthreads_ww3
 fi
+
+# GOCART specific settings
+if [[ "${DO_AERO}" = "YES" ]]; then # temporary settings for aerosol coupling
+    export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-${HOMEgfs}/parm/ufs/fv3/diag_table.aero}"
+    export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-${HOMEgfs}/parm/ufs/fv3/field_table.aero}"
+    AERO_EMIS_FIRE="${AERO_EMIS_FIRE:-none}"
+    export AERO_EMIS_FIRE=${AERO_EMIS_FIRE,,}
+    export AERO_CONFIG_DIR="${AERO_CONFIG_DIR:-${HOMEgfs}/parm/ufs/chem}"
+    export AERO_INPUTS_DIR="${AERO_INPUTS_DIR:-}"
+    export fscav_aero="${aero_conv_scav_factors:-${fscav_aero}}"
+    export dnats_aero="${aero_diag_tracers:-0}"
+fi
+
+# Set the name of the UFS (previously nems) configure template to use
+case "${model_list}" in
+  atm)
+    export ufs_configure_template="nems.configure.atm.IN"
+    ;;
+  atm.aero)
+    export ufs_configure_template="nems.configure.atm_aero.IN"
+    ;;
+  atm.wave)
+    export ufs_configure_template="nems.configure.leapfrog_atm_wav.IN"
+    ;;
+  atm.ocean.ice)
+    export ufs_configure_template="nems.configure.cpld.IN"
+    ;;
+  atm.ocean.ice.aero)
+    export ufs_configure_template="nems.configure.cpld_aero.IN"
+    ;;
+  atm.ocean.ice.wave.aero)
+    export ufs_configure_template="nems.configure.cpld_aero_outerwave.IN"
+    ;;
+  *)
+    echo "FATAL ERROR: Unable to determine appropriate UFS configure template for ${model_list}"
+    exit 16
+    ;;
+esac
 
 echo "END: config.ufs"

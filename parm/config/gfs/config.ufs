@@ -394,6 +394,7 @@ fi
 
 # CICE6 specific settings
 if [[ "${skip_cice6}" == "false" ]]; then
+  export cplice=".true."
   model_list="${model_list}.ice"
   # Ensure we sourced the MOM6 section
   if [[ "${skip_mom6}" == "true" ]]; then
@@ -401,7 +402,6 @@ if [[ "${skip_cice6}" == "false" ]]; then
     exit 1
   fi
 
-  export cplice=".true."
   nthreads_cice6=${nthreads_mom6}  # CICE6 needs to run on same threads as MOM6
   case "${cice6_res}" in
     "500")
