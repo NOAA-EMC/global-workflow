@@ -6,6 +6,7 @@ echo "BEGIN: config.genesis"
 # Get task specific resources
 . "${EXPDIR}/config.resources" genesis
 
-export SENDCOM="YES" # Needed by genesis scripts still
+# Get tropcy settings
+. "${EXPDIR}/config.tropcy"
 
 echo "END: config.genesis"

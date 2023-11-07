@@ -6,17 +6,7 @@ echo "BEGIN: config.tracker"
 # Get task specific resources
 . "${EXPDIR}/config.resources" tracker
 
-export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
-
-export SENDCOM="YES" # Needed by tracker scripts still
-
-if [[ "${RUN}" = "gdas" ]]; then
-    export FHOUT_CYCLONE=3
-    export FHMAX_CYCLONE=${FHMAX}
-else
-    export FHOUT_CYCLONE=6
-    FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
-    export FHMAX_CYCLONE
-fi
+# Get tropcy settings
+. "${EXPDIR}/config.tropcy"
 
 echo "END: config.tracker"
