@@ -141,7 +141,7 @@ fi
 
 # Optional DA builds
 if [[ -d gdas.cd ]]; then
-   build_jobs["gdas"]=16
+   build_jobs["gdas"]=8
    big_jobs=$((big_jobs+1))
    build_opts["gdas"]="${_verbose_opt}"
 fi

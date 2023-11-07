@@ -151,7 +151,7 @@ source "${topdir}/../workflow/gw_setup.sh"
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 # Checkout UFS submodules in parallel
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-3182954}" "8" &
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-63a43d9}" "8" &
 
 # Run all other checkouts simultaneously with just 1 core each to handle submodules.
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab" &

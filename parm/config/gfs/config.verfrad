@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+########## config.verfrad ##########
+echo "BEGIN: config.verfrad"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" verfrad
+
+echo "END: config.verfrad"

@@ -61,7 +61,7 @@ fi
 
 # set resolution dependent variables
 if [[ ${do_gsl_drag_ls_bl:-.true.} == ".true." ]]; then
-   export cdmbgwd=$cdmbgwd_gsl
+   export cdmbgwd=${cdmbgwd_gsl}
 fi
 
 cat > input.nml <<EOF
