@@ -19,10 +19,10 @@
 "gfs_dyn",     "seas3",       "seas3",     "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "seas4",       "seas4",     "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "seas5",       "seas5",     "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "nh3",         "nh3",       "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "nh4a",        "nh4a",      "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "no3an1",      "no3an1",    "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "no3an2",      "no3an2",    "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "no3an3",      "no3an3",    "fv3_history",    "all",  .false.,  "none",  2
+# "gfs_dyn",     "nh3",         "nh3",       "fv3_history",    "all",  .false.,  "none",  2
+# "gfs_dyn",     "nh4a",        "nh4a",      "fv3_history",    "all",  .false.,  "none",  2
+# "gfs_dyn",     "no3an1",      "no3an1",    "fv3_history",    "all",  .false.,  "none",  2
+# "gfs_dyn",     "no3an2",      "no3an2",    "fv3_history",    "all",  .false.,  "none",  2
+# "gfs_dyn",     "no3an3",      "no3an3",    "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "pm25",        "pm25",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "pm10",        "pm10",      "fv3_history",    "all",  .false.,  "none",  2

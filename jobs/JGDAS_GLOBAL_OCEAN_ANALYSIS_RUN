@@ -17,7 +17,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalr
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_run.sh}
+EXSCRIPT=${GDASOCNRUNSH:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_run.sh}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

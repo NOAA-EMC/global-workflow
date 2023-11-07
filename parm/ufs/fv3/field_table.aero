@@ -89,31 +89,31 @@
            "units",        "ug/kg"
        "tracer_usage", "chemistry"
        "profile_type", "fixed", "surface_value=0.0" /
- "TRACER", "atmos_mod", "nh3"
-           "longname",     "primary NH3 mixing ratio"
-           "units",        "ug/kg"
-       "tracer_usage", "chemistry"
-       "profile_type", "fixed", "surface_value=0.0" /
- "TRACER", "atmos_mod", "nh4a"
-           "longname",     "primary NH4a mixing ratio"
-           "units",        "ug/kg"
-       "tracer_usage", "chemistry"
-       "profile_type", "fixed", "surface_value=0.0" /
- "TRACER", "atmos_mod", "no3an1"
-           "longname",     "primary NO3an1 mixing ratio"
-           "units",        "ug/kg"
-       "tracer_usage", "chemistry"
-       "profile_type", "fixed", "surface_value=0.0" /
- "TRACER", "atmos_mod", "no3an2"
-           "longname",     "primary NO3an2 mixing ratio"
-           "units",        "ug/kg"
-       "tracer_usage", "chemistry"
-       "profile_type", "fixed", "surface_value=0.0" /
- "TRACER", "atmos_mod", "no3an3"
-           "longname",     "primary NO3an3 mixing ratio"
-           "units",        "ug/kg"
-       "tracer_usage", "chemistry"
-       "profile_type", "fixed", "surface_value=0.0" /
+# "TRACER", "atmos_mod", "nh3"
+#           "longname",     "primary NH3 mixing ratio"
+#           "units",        "ug/kg"
+#       "tracer_usage", "chemistry"
+#       "profile_type", "fixed", "surface_value=0.0" /
+# "TRACER", "atmos_mod", "nh4a"
+#           "longname",     "primary NH4a mixing ratio"
+#           "units",        "ug/kg"
+#       "tracer_usage", "chemistry"
+#       "profile_type", "fixed", "surface_value=0.0" /
+# "TRACER", "atmos_mod", "no3an1"
+#           "longname",     "primary NO3an1 mixing ratio"
+#           "units",        "ug/kg"
+#       "tracer_usage", "chemistry"
+#       "profile_type", "fixed", "surface_value=0.0" /
+# "TRACER", "atmos_mod", "no3an2"
+#           "longname",     "primary NO3an2 mixing ratio"
+#           "units",        "ug/kg"
+#       "tracer_usage", "chemistry"
+#       "profile_type", "fixed", "surface_value=0.0" /
+# "TRACER", "atmos_mod", "no3an3"
+#           "longname",     "primary NO3an3 mixing ratio"
+#           "units",        "ug/kg"
+#       "tracer_usage", "chemistry"
+#       "profile_type", "fixed", "surface_value=0.0" /
 # diagnostic PM tracers
  "TRACER", "atmos_mod", "pm25"
            "longname",     "primary PM25 mixing ratio"
