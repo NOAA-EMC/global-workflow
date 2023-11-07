@@ -777,17 +777,13 @@ elif [[ ${step} = "genesis_fsu" ]]; then
 
 elif [[ ${step} = "vrfy" ]]; then
 
-    export wtime_vrfy="03:00:00"
-    export wtime_vrfy_gfs="06:00:00"
-    export npe_vrfy=3
+    export wtime_vrfy="00:10:00"
+    export wtime_vrfy_gfs="00:10:00"
+    export npe_vrfy=1
     export nth_vrfy=1
     export npe_node_vrfy=1
     export npe_vrfy_gfs=1
     export npe_node_vrfy_gfs=1
-    if [[ ${machine} == "HERA" ]]; then
-      export memory_vrfy="16384M"
-    fi
-    export is_exclusive=True
 
 elif [[ "${step}" = "fit2obs" ]]; then
 
