@@ -70,6 +70,8 @@ fi
 
 for pr in ${pr_list}; do
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
+  output_ci="${GFS_CI_ROOT}/PR/${pr}/output_runtime_${id}"
+  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_runtime_single.log"
   echo "Processing Pull Request #${pr} and looking for cases"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
 
@@ -83,15 +85,16 @@ for pr in ${pr_list}; do
   # shellcheck disable=SC2312
   if [[ -z $(ls -A "${pr_dir}/RUNTESTS/EXPDIR") ]] ; then
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
-    sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-    "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+    sed -i "1 i\`\`\`" "${output_ci}"
+    sed -i "1 i\All CI Test Cases Passed:" "${output_ci}"
+    "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
     "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
     weekly_labels=$(${GH} pr view "${pr}" --repo "${REPO_URL}"  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci")) | .labels[].name ') || true
     if [[ -n "${weekly_labels}" ]]; then
-      num_platforms=$(find ../platforms -type f -name "config.*" | wc -l)
+      num_platforms=$(find "${ROOT_DIR}/ci/platforms" -type f -name "config.*" | wc -l)
       passed=0
-      for platforms in ../platforms/config.*; do
+      for platforms in "${ROOT_DIR}"/ci/platforms/config.*; do
         machine=$(basename "${platforms}" | cut -d. -f2)
         if [[ "${weekly_labels}" == *"CI-${machine^}-Passed"* ]]; then
           ((passed=passed+1))
@@ -121,22 +124,20 @@ for pr in ${pr_list}; do
     rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
     num_cycles=$(echo "${rocoto_stat_output}" | wc -l) || true
     num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
-    num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED) || true
+    # num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED) || true
     echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_done}" || true
     num_failed=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD') || true
     if [[ ${num_failed} -ne 0 ]]; then
-      {
-        echo "Experiment ${pslot} Terminated: *FAILED*"
-        echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
-      } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
+      error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       {
+       echo "Experiment ${pslot} Terminated: *** FAILED ***"
+       echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
        echo "Error logs:"
        echo "${error_logs}"
-      } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+      } >> "${output_ci}"
+      sed -i "1 i\`\`\`" "${output_ci}"
+      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
       "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
          pslot=$(basename "${kill_cases}")
@@ -145,16 +146,16 @@ for pr in ${pr_list}; do
       break
     fi
     if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
-      {
-        echo "Experiment ${pslot} completed: *SUCCESS*"
-        echo "Experiment ${pslot} Completed at $(date)" || true
-        echo "with ${num_succeeded} successfully completed jobs" || true
-      } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      sed -i "s/\`\`\`//2g" "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       #Remove Experment cases that completed successfully
       rm -Rf "${pslot_dir}"
       rm -Rf "${pr_dir}/RUNTESTS/COMROT/${pslot}"
+      rm -f "${output_ci_single}"
+      # echo "\`\`\`" > "${output_ci_single}"
+      DATE=$(date)
+      echo "Experiment ${pslot} **SUCCESS** ${DATE}" >> "${output_ci_single}"
+      echo "Experiment ${pslot} **SUCCESS** at ${DATE}" >> "${output_ci}"
+      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
+
     fi
   done
 done

@@ -40,20 +40,12 @@ while getopts "p:d:o:h" opt; do
 done
 
 cd "${repodir}" || exit 1
-# clone copy of repo
 if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
 
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
-
-pr_state=$("${GH}" pr view "${PR}" --json state --jq '.state')
-if [[ "${pr_state}" != "OPEN" ]]; then
-  title=$("${GH}" pr view "${PR}" --json title --jq '.title')
-  echo "PR ${title} is no longer open, state is ${pr_state} ... quitting"
-  exit 1
-fi
 
 # checkout pull request
 "${GH}" pr checkout "${PR}" --repo "${REPO_URL}"
@@ -78,19 +70,17 @@ echo "${commit}" > "../commit"
 # run checkout script
 cd sorc || exit 1
 set +e
-# TODO enable -u later when GDASApp tests are added
-./checkout.sh -c -g >> log.checkout 2>&1
+./checkout.sh -c -g -u >> log.checkout 2>&1
 checkout_status=$?
 if [[ ${checkout_status} != 0 ]]; then
   {
-    echo "Checkout:                      *FAILED*"
+    echo "Checkout: *** FAILED ***"
     echo "Checkout: Failed at $(date)" || true
     echo "Checkout: see output at ${PWD}/log.checkout"
   } >> "${outfile}"
   exit "${checkout_status}"
 else
   {
-    echo "Checkout:                      *SUCCESS*"
     echo "Checkout: Completed at $(date)" || true
   } >> "${outfile}"
 fi
@@ -104,19 +94,26 @@ build_status=$?
 
 if [[ ${build_status} != 0 ]]; then
   {
-    echo "Build:                         *FAILED*"
+    echo "Build: *** FAILED ***"
     echo "Build: Failed at $(date)" || true
     echo "Build: see output at ${PWD}/log.build"
   } >> "${outfile}"
   exit "${build_status}"
 else
   {
-    echo "Build:                         *SUCCESS*"
     echo "Build: Completed at $(date)" || true
   } >> "${outfile}"
 fi
 
 ./link_workflow.sh
+link_status=$?
+if [[ ${link_status} != 0 ]]; then
+  {
+    echo "Link: *** FAILED ***"
+    echo "Link: Failed at $(date)" || true
+  } >> "${outfile}"
+  exit "${link_status}"
+fi
 
 echo "check/build/link test completed"
 exit "${build_status}"

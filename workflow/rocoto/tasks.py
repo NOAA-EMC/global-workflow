@@ -11,7 +11,7 @@ __all__ = ['Tasks', 'create_wf_task']
 class Tasks:
     SERVICE_TASKS = ['arch', 'earc']
     VALID_TASKS = ['aerosol_init', 'stage_ic',
-                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch',
+                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
@@ -19,7 +19,8 @@ class Tasks:
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'preplandobs', 'landanl',
-                   'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
+                   'fcst', 'post', 'ocnpost',
+                   'verfozn', 'verfrad', 'vminmon', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']

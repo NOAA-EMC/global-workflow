@@ -47,7 +47,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean:
             configs += ['ocnpost']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch']
+        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -55,6 +55,15 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+
+        if self.do_verfozn:
+            configs += ['verfozn']
+
+        if self.do_verfrad:
+            configs += ['verfrad']
+
+        if self.do_vminmon:
+            configs += ['vminmon']
 
         if self.do_metp:
             configs += ['metp']
@@ -101,12 +110,12 @@ class GFSCycledAppConfig(AppConfig):
         """
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
-        gdas_gfs_common_tasks_after_fcst = ['post']
+        gdas_gfs_common_tasks_after_fcst = ['postanl', 'post']
         # if self.do_ocean:  # TODO: uncomment when ocnpost is fixed in cycled mode
         #    gdas_gfs_common_tasks_after_fcst += ['ocnpost']
         gdas_gfs_common_tasks_after_fcst += ['vrfy']
 
-        gdas_gfs_common_cleanup_tasks = ['arch']
+        gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
 
         if self.do_jediatmvar:
             gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal']
@@ -137,7 +146,7 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-            hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
+            hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
@@ -159,6 +168,15 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_fit2obs:
             gdas_tasks += ['fit2obs']
 
+        if self.do_verfozn:
+            gdas_tasks += ['verfozn']
+
+        if self.do_verfrad:
+            gdas_tasks += ['verfrad']
+
+        if self.do_vminmon:
+            gdas_tasks += ['vminmon']
+
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
         # Collect "gfs" cycle tasks
@@ -170,6 +188,9 @@ class GFSCycledAppConfig(AppConfig):
         gfs_tasks += ['fcst']
 
         gfs_tasks += gdas_gfs_common_tasks_after_fcst
+
+        if self.do_vminmon:
+            gfs_tasks += ['vminmon']
 
         if self.do_metp:
             gfs_tasks += ['metp']

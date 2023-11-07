@@ -258,6 +258,15 @@ Z_INIT_ALE_REMAPPING = True     !   [Boolean] default = False
                                 ! If True, then remap straight to model coordinate from file.
 
 ! === module MOM_diag_mediator ===
+NUM_DIAG_COORDS = 1
+                                ! The number of diagnostic vertical coordinates to use.
+                                ! For each coordinate, an entry in DIAG_COORDS must be provided.
+DIAG_COORDS = "z Z ZSTAR"
+                                ! A list of string tuples associating diag_table modules to
+                                ! a coordinate definition used for diagnostics. Each string
+                                ! is of the form "MODULE_SUFFIX,PARAMETER_SUFFIX,COORDINATE_NAME".
+DIAG_COORD_DEF_Z="FILE:@[MOM6_DIAG_COORD_DEF_Z_FILE],interfaces=zw"
+DIAG_MISVAL = @[MOM6_DIAG_MISVAL]
 
 ! === module MOM_MEKE ===
 USE_MEKE = True                 !   [Boolean] default = False

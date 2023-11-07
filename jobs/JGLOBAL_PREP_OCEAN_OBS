@@ -7,15 +7,23 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
 # Set variables used in the script
 ##############################################
 
+export COMIN_OBS="${DATA}"
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
+# Add prep_marine_obs.py to PYTHONPATH
+export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/soca:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script
 
-# the relevant script goes here
+EXSCRIPT=${GDASPREPOCNOBSPY:-${HOMEgfs}/ush/exglobal_prep_ocean_obs.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
 
 ##############################################
 # End JOB SPECIFIC work

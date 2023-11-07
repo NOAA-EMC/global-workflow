@@ -10,61 +10,16 @@ echo "BEGIN: config.vrfy"
 
 export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
-export VRFYRAD="YES"              # Radiance data assimilation monitoring
-export VRFYOZN="YES"              # Ozone data assimilation monitoring
-export VRFYMINMON="YES"           # GSI minimization monitoring
 export VRFYTRAK="YES"             # Hurricane track verification
 export VRFYGENESIS="YES"          # Cyclone genesis verification
 export VRFYFSU="NO"               # Cyclone genesis verification (FSU)
 export RUNMOS="NO"                # whether to run entire MOS package
 
-#----------------------------------------------------------
-# Minimization, Radiance and Ozone Monitoring
-#----------------------------------------------------------
-
-if [[ ${VRFYRAD} = "YES" || ${VRFYMINMON} = "YES" || ${VRFYOZN} = "YES" ]]; then
-
-    export envir="para"
-    export COM_IN=${ROTDIR}
-
-    # Radiance Monitoring
-    if [[ "${VRFYRAD}" == "YES" && "${RUN}" == "${CDFNL}" ]] ; then
-
-        export RADMON_SUFFIX=${PSLOT}
-        export TANKverf="${NOSCRUB}/monitor/radmon"
-        export VRFYRADSH="${HOMEgfs}/jobs/JGDAS_ATMOS_VERFRAD"
-
-    fi
-
-    # Minimization Monitoring
-    if [[ "${VRFYMINMON}" = "YES" ]] ; then
-
-        export MINMON_SUFFIX=${PSLOT}
-        export M_TANKverf="${NOSCRUB}/monitor/minmon"
-        if [[ "${RUN}" = "gdas" ]] ; then
-            export VRFYMINSH="${HOMEgfs}/jobs/JGDAS_ATMOS_VMINMON"
-        elif [[ "${RUN}" = "gfs" ]] ; then
-            export VRFYMINSH="${HOMEgfs}/jobs/JGFS_ATMOS_VMINMON"
-        fi
-
-    fi
-
-    # Ozone Monitoring
-    if [[ "${VRFYOZN}" == "YES" && "${RUN}" == "${CDFNL}" ]] ; then
-
-        export HOMEgfs_ozn="${HOMEgfs}"
-        export OZNMON_SUFFIX=${PSLOT}
-        export TANKverf_ozn="${NOSCRUB}/monitor/oznmon"
-        export VRFYOZNSH="${HOMEgfs}/jobs/JGDAS_ATMOS_VERFOZN"
-
-    fi
-
-fi
-
-
 #-------------------------------------------------
 # Cyclone genesis and cyclone track verification
 #-------------------------------------------------
+
+export SENDCOM="YES" # Needed by tracker/genesis scripts still
 
 export HOMEens_tracker=$BASE_GIT/TC_tracker/${tracker_ver}
 
