@@ -897,6 +897,39 @@ class GFSTasks(Tasks):
 
         return task
 
+    def tracker(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('tracker')
+        task = create_wf_task('tracker', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def genesis(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('genesis')
+        task = create_wf_task('genesis', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def genesis_fsu(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('genesis_fsu')
+        task = create_wf_task('genesis_fsu', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def vrfy(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
@@ -973,6 +1006,15 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
                     dependencies.append(rocoto.add_dependency(dep_dict))
                     dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+        if self.cdump in ['gfs'] and self.app_config.do_tracker:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}tracker'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.cdump in ['gfs'] and self.app_config.do_genesis:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.cdump in ['gfs'] and self.app_config.do_genesis_fsu:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis_fsu'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))

@@ -65,6 +65,15 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_vminmon:
             configs += ['vminmon']
 
+        if self.do_tracker:
+            configs += ['tracker']
+
+        if self.do_genesis:
+            configs += ['genesis']
+
+        if self.do_genesis_fsu:
+            configs += ['genesis_fsu']
+
         if self.do_metp:
             configs += ['metp']
 
@@ -191,6 +200,15 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_vminmon:
             gfs_tasks += ['vminmon']
+
+        if self.do_tracker:
+            gfs_tasks += ['tracker']
+
+        if self.do_genesis:
+            gfs_tasks += ['genesis']
+
+        if self.do_genesis_fsu:
+            gfs_tasks += ['genesis_fsu']
 
         if self.do_metp:
             gfs_tasks += ['metp']
