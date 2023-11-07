@@ -33,6 +33,7 @@ class Tasks:
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._configs = self.app_config.configs
         self._base = self._configs['base']
+        self._base['minus_cycle_interval']='-{h:02n}:00:00'.format(h=self._base["assim_freq"])
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 
