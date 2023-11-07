@@ -244,47 +244,45 @@ class GFSCycledAppConfig(AppConfig):
 
         base_out = base.copy()
 
-        gfs_cyc = base['gfs_cyc']
         sdate = base['SDATE']
         edate = base['EDATE']
-        base_out['INTERVAL'] = '06:00:00'  # Cycled interval is 6 hours
-
-        interval_gfs = AppConfig.get_gfs_interval(gfs_cyc)
+        base_out['INTERVAL'] = to_timedelta(f"{base[assim_freq]}H")
 
         # Set GFS cycling dates
-        hrinc = 0
-        hrdet = 0
-        if gfs_cyc == 0:
-            return base_out
-        elif gfs_cyc == 1:
-            hrinc = 24 - sdate.hour
-            hrdet = edate.hour
-        elif gfs_cyc == 2:
-            if sdate.hour in [0, 12]:
-                hrinc = 12
-            elif sdate.hour in [6, 18]:
+        gfs_cyc = base['gfs_cyc']
+        if gfs_cyc != 0:
+            interval_gfs = AppConfig.get_gfs_interval(gfs_cyc)
+            hrinc = 0
+            hrdet = 0
+            if gfs_cyc == 1:
+                hrinc = 24 - sdate.hour
+                hrdet = edate.hour
+            elif gfs_cyc == 2:
+                if sdate.hour in [0, 12]:
+                    hrinc = 12
+                elif sdate.hour in [6, 18]:
+                    hrinc = 6
+                if edate.hour in [6, 18]:
+                    hrdet = 6
+            elif gfs_cyc == 4:
                 hrinc = 6
-            if edate.hour in [6, 18]:
-                hrdet = 6
-        elif gfs_cyc == 4:
-            hrinc = 6
-        sdate_gfs = sdate + timedelta(hours=hrinc)
-        edate_gfs = edate - timedelta(hours=hrdet)
-        if sdate_gfs > edate:
-            print('W A R N I N G!')
-            print('Starting date for GFS cycles is after Ending date of experiment')
-            print(f'SDATE = {sdate.strftime("%Y%m%d%H")},     EDATE = {edate.strftime("%Y%m%d%H")}')
-            print(f'SDATE_GFS = {sdate_gfs.strftime("%Y%m%d%H")}, EDATE_GFS = {edate_gfs.strftime("%Y%m%d%H")}')
-            gfs_cyc = 0
+            sdate_gfs = sdate + timedelta(hours=hrinc)
+            edate_gfs = edate - timedelta(hours=hrdet)
+            if sdate_gfs > edate:
+                print('W A R N I N G!')
+                print('Starting date for GFS cycles is after Ending date of experiment')
+                print(f'SDATE = {sdate.strftime("%Y%m%d%H")},     EDATE = {edate.strftime("%Y%m%d%H")}')
+                print(f'SDATE_GFS = {sdate_gfs.strftime("%Y%m%d%H")}, EDATE_GFS = {edate_gfs.strftime("%Y%m%d%H")}')
+                gfs_cyc = 0
 
-        base_out['gfs_cyc'] = gfs_cyc
-        base_out['SDATE_GFS'] = sdate_gfs
-        base_out['EDATE_GFS'] = edate_gfs
-        base_out['INTERVAL_GFS'] = interval_gfs
+            base_out['gfs_cyc'] = gfs_cyc
+            base_out['SDATE_GFS'] = sdate_gfs
+            base_out['EDATE_GFS'] = edate_gfs
+            base_out['INTERVAL_GFS'] = interval_gfs
 
-        fhmax_gfs = {}
-        for hh in ['00', '06', '12', '18']:
-            fhmax_gfs[hh] = base.get(f'FHMAX_GFS_{hh}', base.get('FHMAX_GFS_00', 120))
-        base_out['FHMAX_GFS'] = fhmax_gfs
+            fhmax_gfs = {}
+            for hh in ['00', '06', '12', '18']:
+                fhmax_gfs[hh] = base.get(f'FHMAX_GFS_{hh}', base.get('FHMAX_GFS_00', 120))
+            base_out['FHMAX_GFS'] = fhmax_gfs
 
         return base_out

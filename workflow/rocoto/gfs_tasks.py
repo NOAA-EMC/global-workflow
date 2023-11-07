@@ -154,7 +154,7 @@ class GFSTasks(Tasks):
             interval = self._base['INTERVAL_GFS']
         elif self.cdump in ['gdas']:
             interval = self._base['INTERVAL']
-        offset = f'-{interval}'
+        offset = f'-{timedelta_to_HMS(interval)}'
 
         # Files from previous cycle
         files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
