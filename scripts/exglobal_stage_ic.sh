@@ -43,8 +43,8 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     done
     for ftype in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
       for ((tt = 1; tt <= 6; tt++)); do
-        src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}.${ftype}.tile${tt}.nc"
-        tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}.${ftype}.tile${tt}.nc"
+        src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.${ftype}.tile${tt}.nc"
+        tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.${ftype}.tile${tt}.nc"
         ${NCP} "${src}" "${tgt}"
         rc=$?
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
