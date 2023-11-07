@@ -3,7 +3,8 @@
 ########## config.tropcy ##########
 echo "BEGIN: config.tropcy"
 
-export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
+# Tracker/genesis package location
+export HOMEens_tracker=${BASE_GIT}/TC_tracker/${ens_tracker_ver}
 
 export SENDCOM="YES" # Needed by tracker scripts still
 

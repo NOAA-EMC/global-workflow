@@ -385,9 +385,6 @@ export INCVARS_EFOLD="5"
 export netcdf_diag=".true."
 export binary_diag=".false."
 
-# Tracker/genesis package location
-export HOMEens_tracker=${BASE_GIT}/TC_tracker/${ens_tracker_ver:-}
-
 # Verification options
 export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
