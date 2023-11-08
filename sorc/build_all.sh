@@ -123,7 +123,7 @@ big_jobs=0
 if [[ ${Build_ufs_model} == 'true' ]]; then
    build_jobs["ufs"]=8
    big_jobs=$((big_jobs+1))
-   build_opts["ufs"]="${_verbose_opt} ${_build_ufs_opt} ${_wave_unst}"
+   build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 fi
 # The UPP is hardcoded to use 6 cores
 if [[ ${Build_upp} == 'true' ]]; then
@@ -140,7 +140,7 @@ if [[ ${Build_gfs_utils} == 'true' ]]; then
 fi
 if [[ ${Build_ww3prepost} == "true" ]]; then
    build_jobs["ww3prepost"]=3
-   build_opts["ww3prepost"]="${_verbose_opt} ${_build_ufs_opt} ${_wave_unst}"
+   build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 fi
 
 # Optional DA builds
