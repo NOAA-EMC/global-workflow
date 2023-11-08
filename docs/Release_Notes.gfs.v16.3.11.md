@@ -44,7 +44,7 @@ The checkout script extracts the following GFS components:
 | GSI       | gfsda.v16.3.10 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
-| WAFS      | gfs_wafs.v6.3.1 | Yali.Mao@noaa.gov |
+| WAFS      | gfs_wafs.v6.3.2 | Yali.Mao@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash
@@ -96,6 +96,7 @@ SCRIPT CHANGES
 * Update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2_0p25.ecf to ICAO2023=yes
 * Update ecf/scripts/gfs/atmos/post_processing/jgfs_atmos_wafs_gcip.ecf to ICAO2023=yes
 * In ecf/defs/gfs_v16_3.def, remove jgfs_atmos_wafs_blending task, delay trigger time of jgfs_atmos_wafs_blending_0p25 by 5 minutes
+* Update scripts/exgfs_atmos_wafs_grib2_0p25.sh to add forecast hour window to dbn_alert for awf and WAFS unblended hazard data
 
 FIX CHANGES
 -----------
