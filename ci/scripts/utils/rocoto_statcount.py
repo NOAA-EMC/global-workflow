@@ -39,6 +39,11 @@ if __name__ == '__main__':
     xml_file_path = os.path.abspath(args.xml)
     db_file_path = os.path.abspath(args.db)
 
-    rocotostat.add_default_args(['-w',xml_file_path,'-d',db_file_path,'-s'])
+    rocotostat.add_default_arg(['-w',xml_file_path,'-d',db_file_path,'-s'])
     rocotostat_output = rocotostat(output=str)
-    print(rocotostat_output)
+    rocotostat_output = rocotostat_output.splitlines()[1:]
+
+    num_cycles = len(rocotostat_output))
+
+    for rocoto_lines in rocotostat_output:
+       print(rocoto_lines.split()[0:2])
