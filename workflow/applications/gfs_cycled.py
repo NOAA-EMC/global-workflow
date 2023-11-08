@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from applications.applications import AppConfig
-from wxflow import Configuration
+from wxflow import Configuration, to_timedelta
 from datetime import timedelta
 
 
@@ -246,7 +246,7 @@ class GFSCycledAppConfig(AppConfig):
 
         sdate = base['SDATE']
         edate = base['EDATE']
-        base_out['INTERVAL'] = to_timedelta(f"{base[assim_freq]}H")
+        base_out['INTERVAL'] = to_timedelta(f"{base['assim_freq']}H")
 
         # Set GFS cycling dates
         gfs_cyc = base['gfs_cyc']
