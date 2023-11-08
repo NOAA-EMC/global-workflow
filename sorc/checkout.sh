@@ -177,6 +177,13 @@ for checkout_pid in $(jobs -p); do
   wait "${checkout_pid}" || errs=$((errs + $?))
 done
 
+# Temporary hack to check out a UPP verison that works on Orion
+# This can be removed once the UFS UPP version advances to or beyond 78f369b
+cd "${topdir}/ufs_model.fd/FV3/upp" || exit 1
+git checkout 78f369b
+cd "${topdir}" || exit 1
+# End hack
+
 if (( errs > 0 )); then
   echo "WARNING: One or more errors encountered during checkout process, please check logs before building"
 fi
