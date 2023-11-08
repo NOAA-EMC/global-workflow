@@ -151,9 +151,6 @@ if (( LEVS == 128 )) && [[ "${CDUMP}" =~ "gdas" ]]; then
    export d2_bg_k2=0.0
 fi
 
-# n_split adjustment
-export n_split=5
-
 # PBL/turbulance schemes
 export hybedmf=".false."
 export satmedmf=".true."
