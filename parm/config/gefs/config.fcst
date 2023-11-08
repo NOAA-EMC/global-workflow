@@ -132,6 +132,9 @@ if (( gwd_opt == 2 )); then
     export do_ugwp_v1_orog_only=".false."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
+    if [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
+       export cdmbgwd=${cdmbgwd_gsl}
+    fi
 fi
 
 # Sponge layer settings

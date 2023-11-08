@@ -59,11 +59,6 @@ else
   ${NCP} "${FIELD_TABLE}" field_table
 fi
 
-# set resolution dependent variables
-if [[ ${do_gsl_drag_ls_bl:-.true.} == ".true." ]]; then
-   export cdmbgwd=${cdmbgwd_gsl}
-fi
-
 cat > input.nml <<EOF
 &atmos_model_nml
   blocksize = ${blocksize}
