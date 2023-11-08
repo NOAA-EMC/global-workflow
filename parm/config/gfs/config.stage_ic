@@ -26,6 +26,12 @@ case "${CASE}" in
     export CPL_OCNIC=HR1_refactored
     export CPL_WAVIC=HR1_refactored
     ;;
+  "C1152")
+    export CPL_ATMIC=HR2_C1152_refactored
+    export CPL_ICEIC=HR3_refactored
+    export CPL_OCNIC=HR3_refactored
+    export CPL_WAVIC=HR1_refactored
+    ;;
   *)
     echo "FATAL ERROR Unrecognized resolution: ${CASE}"
     exit 1
