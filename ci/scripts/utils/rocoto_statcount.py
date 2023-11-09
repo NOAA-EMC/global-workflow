@@ -55,14 +55,12 @@ def rocoto_statcount():
 
     rocoto_status = {
        'Cycles' : len(rocotostat_output),
-       'Done_Cycles' :  sum([ sublist.count('Done') for sublist in rocotostat_output ]),
-       'SUCCEEDED' : sum([ sublist.count('SUCCEEDED') for sublist in rocotostat_output_all ]),
-       'FAIL' : sum([ sublist.count('FAIL') for sublist in rocotostat_output_all ]),
-       'DEAD' : sum([ sublist.count('DEAD') for sublist in rocotostat_output_all ]),
-       'RUNNING' : sum([ sublist.count('RUNNING') for sublist in rocotostat_output_all ]),
-       'PENDING' : sum([ sublist.count('PENDING') for sublist in rocotostat_output_all ]),
-       'QUEUED' : sum([ sublist.count('QUEUED') for sublist in rocotostat_output_all ])
+       'Done_Cycles' :  sum([ sublist.count('Done') for sublist in rocotostat_output ])
     }
+    
+    status_cases = [ 'SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'PENDING', 'QUEUED']
+    for case in status_cases:
+        rocoto_status[case] = sum([ sublist.count(case) for sublist in rocotostat_output_all ])
 
     return rocoto_status
 
