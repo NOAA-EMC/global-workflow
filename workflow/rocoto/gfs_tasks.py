@@ -119,7 +119,7 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-            cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump 
+            cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         task = create_wf_task('waveinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
