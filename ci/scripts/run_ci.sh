@@ -83,7 +83,7 @@ for pr in ${pr_list}; do
     pslot=$(basename "${pslot_dir}")
     xml="${pslot_dir}/${pslot}.xml"
     db="${pslot_dir}/${pslot}.db"
-    ${ROOT_DIR}/ci/scripts/utils/rocoto_statcount.py -d "{db}" -w "${xml}" --check_stalled
+    "${ROOT_DIR}/ci/scripts/utils/rocoto_statcount.py" -d "{db}" -w "${xml}" --check_stalled
     rc=$?
     if [[ "${rc}" -ne 0 ]]; then
       output_ci="${pr_dir}/output_runtime_single.log"
