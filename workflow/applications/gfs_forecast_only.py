@@ -26,6 +26,15 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if self.do_ocean or self.do_ice:
             configs += ['ocnpost']
 
+        if self.do_atm and self.do_tracker:
+            configs += ['tracker']
+
+        if self.do_atm and self.do_genesis:
+            configs += ['genesis']
+
+        if self.do_atm and self.do_genesis_fsu:
+            configs += ['genesis_fsu']
+
         if self.do_atm and self.do_metp:
             configs += ['metp']
 
@@ -84,6 +93,15 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         if self.do_atm:
             tasks += ['vrfy']
+
+        if self.do_atm and self.do_tracker:
+            tasks += ['tracker']
+
+        if self.do_atm and self.do_genesis:
+            tasks += ['genesis']
+
+        if self.do_atm and self.do_genesis_fsu:
+            tasks += ['genesis_fsu']
 
         if self.do_atm and self.do_metp:
             tasks += ['metp']
