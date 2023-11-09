@@ -90,7 +90,7 @@ for pr in ${pr_list}; do
       output_ci="${pr_dir}/output_runtime_single.log"
       {
         echo "${pslot} has *** STALLED **** on ${MACHINE_ID^}"
-        echo "A jobs in expermint ${pslot} in ${pslot_dir}"
+        echo "A job in expermint ${pslot} in ${pslot_dir}"
         echo "may have depenencies that are not being met"
       } >> "${output_ci}"
       sed -i "1 i\`\`\`" "${output_ci}"
