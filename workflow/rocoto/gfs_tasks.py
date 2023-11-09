@@ -123,7 +123,6 @@ class GFSTasks(Tasks):
             
         task = create_wf_task('waveinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
-
         return task
 
     def waveprep(self):
