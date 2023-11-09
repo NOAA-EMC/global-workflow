@@ -117,7 +117,7 @@ https://docs.google.com/presentation/d/1VtPhyYXTe_PS9gXZGMrMPlQ32ELl-JJem-Vq8vO4
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.10
+* jgfs_atmos_wafs_grib2_0p25.ecf changes from mpiprocs=11:ompthreads=1:ncpus=11:mem=80GB to mpiprocs=39:ompthreads=1:ncpus=39:mem=200GB because there will be 39 forecast hours and each forecast hour uses one processor through MPMD.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
