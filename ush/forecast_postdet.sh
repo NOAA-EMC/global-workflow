@@ -514,7 +514,7 @@ FV3_out() {
     done
   else
     # No need to copy FV3 restart files when RUN=gfs or gefs
-    ${NCP} "${DATA}/input.nml" "${COM_ATMOS_HISTORY}/input.nml"
+    ${NCP} "${DATA}/input.nml" "${COM_CONF}/input.nml"
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
