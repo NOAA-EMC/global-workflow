@@ -15,14 +15,15 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
-module load orion
+module load "${MACHINE_ID}"
 if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
     module load prod_util
     module load cray-pals
     module load cfp
 else
     module load prod-util
-    export UTILROOT=${prod_util_ROOT}
+    # shellcheck disable=SC2154
+    export UTILROOT="${prod_util_ROOT}"
 fi
 module load grib-util
 module load wgrib2
