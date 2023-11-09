@@ -949,12 +949,12 @@ class GFSTasks(Tasks):
     def arch(self):
         deps = []
         dependencies = []
-        if self.app_config.mode in ['cycled']:  # Block for handling half cycle dependencies
+        if self.app_config.mode in ['cycled']:
             if self.cdump in ['gfs']:
                 if self.app_config.do_vminmon:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
-            elif self.cdump in ['gdas']:
+            elif self.cdump in ['gdas']:  # Block for handling half cycle dependencies
                 deps2 = []
                 if self.app_config.do_fit2obs:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
