@@ -20,11 +20,11 @@ def input_args():
     """
 
     description = """
-        Using rocotostat that lists the status of all jobs this scripts
+        Using rocotostat to get the status of all jobs this scripts
         determines rocoto_state: if all cycles are done, then rocoto_state is Done.
         If all cycles are not done, then rocoto_state is Running.
-        If the check_stalled is used then rocotorun is then issued and
-        rocotostat is run again and if all jobs do not advanced, then
+        If the check_stalled is used then rocotorun is issued and
+        rocotostat is run again and checks if all jobs have not advanced, then
         rocoto_state is Stalled and the script exits with -1.
         """
 
