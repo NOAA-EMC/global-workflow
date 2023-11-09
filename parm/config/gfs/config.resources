@@ -722,7 +722,6 @@ elif [[ ${step} = "post" ]]; then
     if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
     export is_exclusive=True
 
-
 elif [[ ${step} = "verfozn" ]]; then
 
     export wtime_verfozn="00:05:00"
