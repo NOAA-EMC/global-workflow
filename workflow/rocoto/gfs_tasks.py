@@ -546,7 +546,6 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
-            dependencies = rocoto.create_dependency(dep=dependencies)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
