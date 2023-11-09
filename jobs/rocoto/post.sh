@@ -16,12 +16,11 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
 module load "${MACHINE_ID}"
+module load prod_util
 if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-    module load prod_util
     module load cray-pals
     module load cfp
 else
-    module load prod-util
     # shellcheck disable=SC2154
     export UTILROOT="${prod_util_ROOT}"
 fi
