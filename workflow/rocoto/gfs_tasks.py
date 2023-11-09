@@ -549,24 +549,37 @@ class GFSTasks(Tasks):
         return task
 
     def post(self):
-        add_anl_to_post = False
-        if self.app_config.mode in ['cycled']:
-            add_anl_to_post = True
+        return self._post_task('post')
 
-        return self._post_task('post', add_anl_to_post=add_anl_to_post)
+    def postanl(self):
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHRLST': 'anl',
+                          'ROTDIR': self._base.get('ROTDIR')}
+
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        deps = []
+        atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
+        data = f'{atm_anl_path}/{self.cdump}.t@Hz.loganl.txt'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        resources = self.get_resource('post')
+        task = create_wf_task('postanl', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              cycledef=self.cdump)
+
+        return task
 
     def ocnpost(self):
         if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
-            return self._post_task('ocnpost', add_anl_to_post=False)
+            return self._post_task('ocnpost')
 
-    def _post_task(self, task_name, add_anl_to_post=False):
+    def _post_task(self, task_name):
         if task_name not in ['post', 'ocnpost']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
 
-        if task_name in ['ocnpost']:
-            add_anl_to_post = False
-
-        def _get_postgroups(cdump, config, add_anl=False):
+        def _get_postgroups(cdump, config):
 
             fhmin = config['FHMIN']
             fhmax = config['FHMAX']
@@ -591,8 +604,6 @@ class GFSTasks(Tasks):
             fhrs = [f'f{fhr:03d}' for fhr in fhrs]
             fhrs = np.array_split(fhrs, ngrps)
             fhrs = [fhr.tolist() for fhr in fhrs]
-            if add_anl:
-                fhrs.insert(0, ['anl'])
 
             grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
             dep = ' '.join([fhr[-1] for fhr in fhrs])
@@ -610,14 +621,13 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRGRP': '#grp#',
-                          'FHRLST': '#lst#',
+        postenvar_dict = {'FHRLST': '#lst#',
                           'ROTDIR': self._base.get('ROTDIR')}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name], add_anl=add_anl_to_post)
+        varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name])
         vardict = {varname2: varval2, varname3: varval3}
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
@@ -854,6 +864,39 @@ class GFSTasks(Tasks):
 
         return task
 
+    def verfozn(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}analdiag'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('verfozn')
+        task = create_wf_task('verfozn', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def verfrad(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}analdiag'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('verfrad')
+        task = create_wf_task('verfrad', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def vminmon(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('vminmon')
+        task = create_wf_task('vminmon', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def vrfy(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
@@ -908,6 +951,28 @@ class GFSTasks(Tasks):
 
     def arch(self):
         deps = []
+        dependencies = []
+        if self.app_config.do_verfozn or self.app_config.do_verfrad or self.app_config.do_vminmon:
+            if self.app_config.mode in ['cycled']:
+                if self.cdump in ['gfs']:
+                    if self.app_config.do_vminmon:
+                        dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                elif self.cdump in ['gdas']:
+                    deps2 = []
+                    if self.app_config.do_verfozn:
+                        dep_dict = {'type': 'task', 'name': f'{self.cdump}verfozn'}
+                        deps2.append(rocoto.add_dependency(dep_dict))
+                    if self.app_config.do_verfrad:
+                        dep_dict = {'type': 'task', 'name': f'{self.cdump}verfrad'}
+                        deps2.append(rocoto.add_dependency(dep_dict))
+                    if self.app_config.do_vminmon:
+                        dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
+                        deps2.append(rocoto.add_dependency(dep_dict))
+                    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps2)
+                    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+                    dependencies.append(rocoto.add_dependency(dep_dict))
+                    dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -931,7 +996,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps + dependencies)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 

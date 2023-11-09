@@ -27,30 +27,30 @@ if [[ ${type} = "gfs" ]]; then
   FHMAX_HF_GFS=${FHMAX_HF_GFS:-120}
   FHOUT_HF_GFS=${FHOUT_HF_GFS:-1}
 
-  rm -f gfsa.txt
-  rm -f gfsb.txt
-  rm -f gfs_restarta.txt
-  touch gfsa.txt
-  touch gfsb.txt
-  touch gfs_restarta.txt
+  rm -f "${DATA}/gfsa.txt"
+  rm -f "${DATA}/gfsb.txt"
+  rm -f "${DATA}/gfs_restarta.txt"
+  touch "${DATA}/gfsa.txt"
+  touch "${DATA}/gfsb.txt"
+  touch "${DATA}/gfs_restarta.txt"
 
   if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
-    rm -f gfs_pgrb2b.txt
-    rm -f gfs_netcdfb.txt
-    rm -f gfs_flux.txt
-    touch gfs_pgrb2b.txt
-    touch gfs_netcdfb.txt
-    touch gfs_flux.txt
+    rm -f "${DATA}/gfs_pgrb2b.txt"
+    rm -f "${DATA}/gfs_netcdfb.txt"
+    rm -f "${DATA}/gfs_flux.txt"
+    touch "${DATA}/gfs_pgrb2b.txt"
+    touch "${DATA}/gfs_netcdfb.txt"
+    touch "${DATA}/gfs_flux.txt"
 
     if [[ ${MODE} = "cycled" ]]; then
-      rm -f gfs_netcdfa.txt
-      touch gfs_netcdfa.txt
+      rm -f "${DATA}/gfs_netcdfa.txt"
+      touch "${DATA}/gfs_netcdfa.txt"
     fi
   fi
 
   if [[ ${DO_DOWN} = "YES" ]]; then
-    rm -f gfs_downstream.txt
-    touch gfs_downstream.txt
+    rm -f "${DATA}/gfs_downstream.txt"
+    touch "${DATA}/gfs_downstream.txt"
   fi
 
   head="gfs.t${cyc}z."
@@ -61,7 +61,7 @@ if [[ ${type} = "gfs" ]]; then
       echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.anl.idx"
       echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.anl"
       echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.anl.idx"
-    } >> gfs_pgrb2b.txt
+    } >> "${DATA}/gfs_pgrb2b.txt"
 
     if [[ ${MODE} = "cycled" ]]; then
       {
@@ -73,7 +73,7 @@ if [[ ${type} = "gfs" ]]; then
         for file in "${gsida_files[@]}"; do
           [[ -s ${COM_ATMOS_ANALYSIS}/${head}${file} ]] && echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}${file}"
         done
-      } >> gfs_netcdfa.txt
+      } >> "${DATA}/gfs_netcdfa.txt"
     fi
 
     fh=0
@@ -82,7 +82,7 @@ if [[ ${type} = "gfs" ]]; then
       {
         echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}atmf${fhr}.nc"
         echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}sfcf${fhr}.nc"
-      } >> gfs_netcdfb.txt
+      } >> "${DATA}/gfs_netcdfb.txt"
       fh=$((fh+ARCH_GAUSSIAN_FHINC))
     done
   fi
@@ -130,7 +130,18 @@ if [[ ${type} = "gfs" ]]; then
     for file in "${genesis_files[@]}"; do
       [[ -s ${COM_ATMOS_GENESIS}/${file} ]] && echo "${COM_ATMOS_GENESIS/${ROTDIR}\//}/${file}"
     done
-  } >> gfsa.txt
+
+    # GSI Monitor job output
+
+    if [[ ${DO_VMINMON} = "YES" ]]; then
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.costs.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.cost_terms.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.gnorms.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.reduction.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/gnorm_data.txt"
+    fi
+
+  } >> "${DATA}/gfsa.txt"
 
   {
     if [[ ${DO_DOWN} = "YES" ]]; then
@@ -142,14 +153,14 @@ if [[ ${type} = "gfs" ]]; then
         echo "${COM_ATMOS_BUFR/${ROTDIR}\//}/gfs.t${cyc}z.bufrsnd.tar.gz"
       fi
     fi
-  } >> gfs_downstream.txt
+  } >> "${DATA}/gfs_downstream.txt"
 
   {
     echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.anl"
     echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.anl.idx"
     echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl"
     echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl.idx"
-  } >> gfsb.txt
+  } >> "${DATA}/gfsb.txt"
 
 
   fh=0
@@ -159,23 +170,23 @@ if [[ ${type} = "gfs" ]]; then
       {
         echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2"
         echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
-      } >> gfs_flux.txt
+      } >> "${DATA}/gfs_flux.txt"
 
       {
         echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.f${fhr}"
         echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.f${fhr}.idx"
         if [[ -s "${COM_ATMOS_GRIB_1p00}/${head}pgrb2b.1p00.f${fhr}" ]]; then
-           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/{head}pgrb2b.1p00.f${fhr}"
-           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/{head}pgrb2b.1p00.f${fhr}.idx"
+           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.f${fhr}"
+           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.f${fhr}.idx"
         fi
-      } >> gfs_pgrb2b.txt
+      } >> "${DATA}/gfs_pgrb2b.txt"
     fi
 
     {
       echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}"
       echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.idx"
       echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}atm.logf${fhr}.txt"
-    } >> gfsa.txt
+    } >> "${DATA}/gfsa.txt"
 
 
     {
@@ -187,7 +198,7 @@ if [[ ${type} = "gfs" ]]; then
          echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}"
          echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}.idx"
       fi
-    } >> gfsb.txt
+    } >> "${DATA}/gfsb.txt"
 
     inc=${FHOUT_GFS}
     if (( FHMAX_HF_GFS > 0 && FHOUT_HF_GFS > 0 && fh < FHMAX_HF_GFS )); then
@@ -221,14 +232,14 @@ if [[ ${type} = "gfs" ]]; then
       echo "${COM_ATMOS_INPUT/${ROTDIR}\//}/sfc_data.tile5.nc"
       echo "${COM_ATMOS_INPUT/${ROTDIR}\//}/sfc_data.tile6.nc"
     fi
-  } >> gfs_restarta.txt
+  } >> "${DATA}/gfs_restarta.txt"
 
 
   #..................
   if [[ ${DO_WAVE} = "YES" ]]; then
 
-    rm -rf gfswave.txt
-    touch gfswave.txt
+    rm -rf "${DATA}/gfswave.txt"
+    touch "${DATA}/gfswave.txt"
 
     head="gfswave.t${cyc}z."
 
@@ -237,60 +248,60 @@ if [[ ${type} = "gfs" ]]; then
       echo "${COM_WAVE_HISTORY/${ROTDIR}\//}/ww3_multi*"
       echo "${COM_WAVE_GRID/${ROTDIR}\//}/${head}*"
       echo "${COM_WAVE_STATION/${ROTDIR}\//}/${head}*"
-    } >> gfswave.txt
+    } >> "${DATA}/gfswave.txt"
   fi
 
   if [[ ${DO_OCN} = "YES" ]]; then
 
     head="gfs.t${cyc}z."
 
-    rm -f gfs_flux_1p00.txt
-    rm -f ocn_ice_grib2_0p5.txt
-    rm -f ocn_ice_grib2_0p25.txt
-    rm -f ocn_2D.txt
-    rm -f ocn_3D.txt
-    rm -f ocn_xsect.txt
-    rm -f ocn_daily.txt
-    touch gfs_flux_1p00.txt
-    touch ocn_ice_grib2_0p5.txt
-    touch ocn_ice_grib2_0p25.txt
-    touch ocn_2D.txt
-    touch ocn_3D.txt
-    touch ocn_xsect.txt
-    touch ocn_daily.txt
-    echo "${COM_OCEAN_INPUT/${ROTDIR}\//}/MOM_input" >> ocn_2D.txt
-    echo "${COM_OCEAN_2D/${ROTDIR}\//}/ocn_2D*" >> ocn_2D.txt
-    echo "${COM_OCEAN_3D/${ROTDIR}\//}/ocn_3D*" >> ocn_3D.txt
-    echo "${COM_OCEAN_XSECT/${ROTDIR}\//}/ocn*EQ*" >> ocn_xsect.txt
-    echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/ocn_daily*" >> ocn_daily.txt
-    echo "${COM_OCEAN_GRIB_0p50/${ROTDIR}\//}/ocn_ice*0p5x0p5.grb2" >> ocn_ice_grib2_0p5.txt
-    echo "${COM_OCEAN_GRIB_0p25/${ROTDIR}\//}/ocn_ice*0p25x0p25.grb2" >> ocn_ice_grib2_0p25.txt
+    rm -f "${DATA}/gfs_flux_1p00.txt"
+    rm -f "${DATA}/ocn_ice_grib2_0p5.txt"
+    rm -f "${DATA}/ocn_ice_grib2_0p25.txt"
+    rm -f "${DATA}/ocn_2D.txt"
+    rm -f "${DATA}/ocn_3D.txt"
+    rm -f "${DATA}/ocn_xsect.txt"
+    rm -f "${DATA}/ocn_daily.txt"
+    touch "${DATA}/gfs_flux_1p00.txt"
+    touch "${DATA}/ocn_ice_grib2_0p5.txt"
+    touch "${DATA}/ocn_ice_grib2_0p25.txt"
+    touch "${DATA}/ocn_2D.txt"
+    touch "${DATA}/ocn_3D.txt"
+    touch "${DATA}/ocn_xsect.txt"
+    touch "${DATA}/ocn_daily.txt"
+    echo "${COM_OCEAN_INPUT/${ROTDIR}\//}/MOM_input" >> "${DATA}/ocn_2D.txt"
+    echo "${COM_OCEAN_2D/${ROTDIR}\//}/ocn_2D*" >> "${DATA}/ocn_2D.txt"
+    echo "${COM_OCEAN_3D/${ROTDIR}\//}/ocn_3D*" >> "${DATA}/ocn_3D.txt"
+    echo "${COM_OCEAN_XSECT/${ROTDIR}\//}/ocn*EQ*" >> "${DATA}/ocn_xsect.txt"
+    echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/ocn_daily*" >> "${DATA}/ocn_daily.txt"
+    echo "${COM_OCEAN_GRIB_0p50/${ROTDIR}\//}/ocn_ice*0p5x0p5.grb2" >> "${DATA}/ocn_ice_grib2_0p5.txt"
+    echo "${COM_OCEAN_GRIB_0p25/${ROTDIR}\//}/ocn_ice*0p25x0p25.grb2" >> "${DATA}/ocn_ice_grib2_0p25.txt"
 
     # Also save fluxes from atmosphere
     {
       echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}flux.1p00.f???"
       echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}flux.1p00.f???.idx"
-    } >> gfs_flux_1p00.txt
+    } >> "${DATA}/gfs_flux_1p00.txt"
   fi
 
   if [[ ${DO_ICE} = "YES" ]]; then
     head="gfs.t${cyc}z."
 
-    rm -f ice.txt
-    touch ice.txt
+    rm -f "${DATA}/ice.txt"
+    touch "${DATA}/ice.txt"
     {
       echo "${COM_ICE_INPUT/${ROTDIR}\//}/ice_in"
       echo "${COM_ICE_HISTORY/${ROTDIR}\//}/ice*nc"
-    } >> ice.txt
+    } >> "${DATA}/ice.txt"
   fi
 
   if [[ ${DO_AERO} = "YES" ]]; then
     head="gocart"
 
-    rm -f chem.txt
-    touch chem.txt
+    rm -f "${DATA}/chem.txt"
+    touch "${DATA}/chem.txt"
 
-    echo "${COM_CHEM_HISTORY/${ROTDIR}\//}/${head}*" >> chem.txt
+    echo "${COM_CHEM_HISTORY/${ROTDIR}\//}/${head}*" >> "${DATA}/chem.txt"
   fi
 
 #-----------------------------------------------------
@@ -303,12 +314,12 @@ fi   ##end of gfs
 if [[ ${type} == "gdas" ]]; then
 #-----------------------------------------------------
 
-  rm -f gdas.txt
-  rm -f gdas_restarta.txt
-  rm -f gdas_restartb.txt
-  touch gdas.txt
-  touch gdas_restarta.txt
-  touch gdas_restartb.txt
+  rm -f "${DATA}/gdas.txt"
+  rm -f "${DATA}/gdas_restarta.txt"
+  rm -f "${DATA}/gdas_restartb.txt"
+  touch "${DATA}/gdas.txt"
+  touch "${DATA}/gdas_restarta.txt"
+  touch "${DATA}/gdas_restartb.txt"
 
   head="gdas.t${cyc}z."
 
@@ -350,7 +361,7 @@ if [[ ${type} == "gdas" ]]; then
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat"
     fi
-    for fstep in prep anal fcst vrfy radmon minmon oznmon; do
+    for fstep in prep anal fcst vrfy verfozn verfrad vminmon; do
       if [[ -s "${ROTDIR}/logs/${PDY}${cyc}/gdas${fstep}.log" ]]; then
         echo "./logs/${PDY}${cyc}/gdas${fstep}.log"
       fi
@@ -379,14 +390,57 @@ if [[ ${type} == "gdas" ]]; then
         echo "${file}.idx"
       fi
     done
-  } >> gdas.txt
+
+    # GSI Monitor jobs output
+
+    if [[ ${DO_VERFOZN} = "YES" ]]; then
+      for type in horiz time; do
+        if [[ ${type} = "horiz" ]]; then
+          suffix=".gz"
+        elif [[ ${type} = "time" ]]; then
+          suffix=""
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/bad_cnt.${PDY}${cyc}"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/bad_diag.${PDY}${cyc}"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/bad_pen.${PDY}${cyc}"
+        fi
+        subtyplist="gome_metop-b omi_aura ompslp_npp ompsnp_n20 ompsnp_npp ompstc8_n20 ompstc8_npp sbuv2_n19"
+        for subtype in ${subtyplist}; do
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.${PDY}${cyc}.ieee_d${suffix}"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.ctl"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.${PDY}${cyc}.ieee_d${suffix}"
+          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.ctl"
+        done
+        echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/stdout.${type}.tar.gz"
+      done
+    fi
+
+    if [[ ${DO_VERFRAD} = "YES" ]]; then
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/bad_diag.${PDY}${cyc}"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/bad_pen.${PDY}${cyc}"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/low_count.${PDY}${cyc}"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_angle.tar.gz"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_bcoef.tar.gz"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_bcor.tar.gz"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/radmon_time.tar.gz"
+      echo "${COM_ATMOS_RADMON/${ROTDIR}\//}/warning.${PDY}${cyc}"
+    fi
+
+    if [[ ${DO_VMINMON} = "YES" ]]; then
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.costs.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.cost_terms.txt"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.gnorms.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/${PDY}${cyc}.reduction.ieee_d"
+      echo "${COM_ATMOS_MINMON/${ROTDIR}\//}/gnorm_data.txt"
+    fi
+
+  } >> "${DATA}/gdas.txt"
 
   #..................
   if [[ -s "${COM_ATMOS_ANALYSIS}/${head}cnvstat" ]]; then
-     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}cnvstat" >> gdas_restarta.txt
+     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}cnvstat" >> "${DATA}/gdas_restarta.txt"
   fi
   if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
-     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat" >> gdas_restarta.txt
+     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat" >> "${DATA}/gdas_restarta.txt"
   fi
 
   {
@@ -422,18 +476,18 @@ if [[ ${type} == "gdas" ]]; then
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile4.nc"
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile5.nc"
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile6.nc"
-  } >> gdas_restarta.txt
+  } >> "${DATA}/gdas_restarta.txt"
 
   #..................
-  echo "${COM_ATMOS_RESTART/${ROTDIR}\//}" >> gdas_restartb.txt
+  echo "${COM_ATMOS_RESTART/${ROTDIR}\//}" >> "${DATA}/gdas_restartb.txt"
 
   #..................
   if [[ ${DO_WAVE} = "YES" ]]; then
 
-    rm -rf gdaswave.txt
-    touch gdaswave.txt
-    rm -rf gdaswave_restart.txt
-    touch gdaswave_restart.txt
+    rm -rf "${DATA}/gdaswave.txt"
+    touch "${DATA}/gdaswave.txt"
+    rm -rf "${DATA}/gdaswave_restart.txt"
+    touch "${DATA}/gdaswave_restart.txt"
 
     head="gdaswave.t${cyc}z."
 
@@ -441,19 +495,19 @@ if [[ ${type} == "gdas" ]]; then
     {
       echo "${COM_WAVE_GRID/${ROTDIR}\//}/${head}*"
       echo "${COM_WAVE_STATION/${ROTDIR}\//}/${head}*"
-    } >> gdaswave.txt
+    } >> "${DATA}/gdaswave.txt"
 
-    echo "${COM_WAVE_RESTART/${ROTDIR}\//}/*" >> gdaswave_restart.txt
+    echo "${COM_WAVE_RESTART/${ROTDIR}\//}/*" >> "${DATA}/gdaswave_restart.txt"
 
   fi
 
   #..................
   if [[ ${DO_OCN} = "YES" ]]; then
 
-    rm -rf gdasocean.txt
-    touch gdasocean.txt
-    rm -rf gdasocean_restart.txt
-    touch gdasocean_restart.txt
+    rm -rf "${DATA}/gdasocean.txt"
+    touch "${DATA}/gdasocean.txt"
+    rm -rf "${DATA}/gdasocean_restart.txt"
+    touch "${DATA}/gdasocean_restart.txt"
 
     head="gdas.t${cyc}z."
 
@@ -461,21 +515,28 @@ if [[ ${type} == "gdas" ]]; then
     {
       echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/${head}*"
       echo "${COM_OCEAN_INPUT/${ROTDIR}\//}"
-    } >> gdasocean.txt
+    } >> "${DATA}/gdasocean.txt"
 
     {
       echo "${COM_OCEAN_RESTART/${ROTDIR}\//}/*"
       echo "${COM_MED_RESTART/${ROTDIR}\//}/*"
-    } >> gdasocean_restart.txt
+    } >> "${DATA}/gdasocean_restart.txt"
+
+    {
+      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/${head}*"
+      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/gdas.t??z.ocngrid.nc"
+      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/diags"
+      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/yaml"
+    } >> "${DATA}/gdasocean_analysis.txt"
 
   fi
 
   if [[ ${DO_ICE} = "YES" ]]; then
 
-    rm -rf gdasice.txt
-    touch gdasice.txt
-    rm -rf gdasice_restart.txt
-    touch gdasice_restart.txt
+    rm -rf "${DATA}/gdasice.txt"
+    touch "${DATA}/gdasice.txt"
+    rm -rf "${DATA}/gdasice_restart.txt"
+    touch "${DATA}/gdasice_restart.txt"
 
     head="gdas.t${cyc}z."
 
@@ -483,9 +544,9 @@ if [[ ${type} == "gdas" ]]; then
     {
       echo "${COM_ICE_HISTORY/${ROTDIR}\//}/${head}*"
       echo "${COM_ICE_INPUT/${ROTDIR}\//}/ice_in"
-    } >> gdasice.txt
+    } >> "${DATA}/gdasice.txt"
 
-    echo "${COM_ICE_RESTART/${ROTDIR}\//}/*" >> gdasice_restart.txt
+    echo "${COM_ICE_RESTART/${ROTDIR}\//}/*" >> "${DATA}/gdasice_restart.txt"
 
  fi
 
@@ -513,8 +574,8 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
   head="${RUN}.t${cyc}z."
 
   #..................
-  rm -f "${RUN}.txt"
-  touch "${RUN}.txt"
+  rm -f "${DATA}/${RUN}.txt"
+  touch "${DATA}/${RUN}.txt"
 
   {
     gsida_files=("enkfstat"
@@ -572,19 +633,19 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
         fi
         fh=$((fh+3))
     done
-  } >> "${RUN}.txt"
+  } >> "${DATA}/${RUN}.txt"
 
   #...........................
   n=1
   while (( n <= NTARS )); do
     #...........................
 
-    rm -f "${RUN}_grp${n}.txt"
-    rm -f "${RUN}_restarta_grp${n}.txt"
-    rm -f "${RUN}_restartb_grp${n}.txt"
-    touch "${RUN}_grp${n}.txt"
-    touch "${RUN}_restarta_grp${n}.txt"
-    touch "${RUN}_restartb_grp${n}.txt"
+    rm -f "${DATA}/${RUN}_grp${n}.txt"
+    rm -f "${DATA}/${RUN}_restarta_grp${n}.txt"
+    rm -f "${DATA}/${RUN}_restartb_grp${n}.txt"
+    touch "${DATA}/${RUN}_grp${n}.txt"
+    touch "${DATA}/${RUN}_restarta_grp${n}.txt"
+    touch "${DATA}/${RUN}_restartb_grp${n}.txt"
 
     m=1
     while (( m <= NMEM_EARCGRP )); do
@@ -609,11 +670,11 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
                     echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}ratminc.nc"
                 fi
             fi
-          } >> "${RUN}_grp${n}.txt"
+          } >> "${DATA}/${RUN}_grp${n}.txt"
 
           if [[ -s "${COM_ATMOS_ANALYSIS_MEM}/${head}ratminc.nc" ]] ; then
             echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}ratminc.nc" \
-              >> "${RUN}_restarta_grp${n}.txt"
+              >> "${DATA}/${RUN}_restarta_grp${n}.txt"
           fi
 
         else
@@ -626,10 +687,10 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
                 echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}ratmi00${FHR}.nc"
               fi
              fi
-          } >> "${RUN}_grp${n}.txt"
+          } >> "${DATA}/${RUN}_grp${n}.txt"
           if [[ -s "${COM_ATMOS_ANALYSIS_MEM}/${head}ratmi00${FHR}.nc" ]] ; then
             echo "${COM_ATMOS_ANALYSIS_MEM/${ROTDIR}\//}/${head}ratmi00${FHR}.nc" \
-              >> "${RUN}_restarta_grp${n}.txt"
+              >> "${DATA}/${RUN}_restarta_grp${n}.txt"
           fi
         fi
         {
@@ -637,7 +698,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
           if (( FHR == 6 )); then
             echo "${COM_ATMOS_HISTORY_MEM/${ROTDIR}\//}/${head}sfcf00${FHR}.nc"
           fi
-        } >> "${RUN}_grp${n}.txt"
+        } >> "${DATA}/${RUN}_grp${n}.txt"
       done # loop over FHR
 
       if [[ ${lobsdiag_forenkf} == ".false." ]] ; then
@@ -646,7 +707,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
           if [[ -s "${COM_ATMOS_RESTART_MEM}/${head}cnvstat" ]] ; then
             echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}/${head}cnvstat"
           fi
-        } >> "${RUN}_grp${n}.txt"
+        } >> "${DATA}/${RUN}_grp${n}.txt"
 
         {
            if [[ -s "${COM_ATMOS_RESTART_MEM}/${head}radstat" ]]; then
@@ -659,7 +720,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
            echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}/${head}abias_air"
            echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}/${head}abias_int"
            echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}/${head}abias_pc"
-        } >> "${RUN}_restarta_grp${n}.txt"
+        } >> "${DATA}/${RUN}_restarta_grp${n}.txt"
       fi
       #---
       {
@@ -669,9 +730,9 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
         echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}/*0000.sfcanl_data.tile4.nc"
         echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}/*0000.sfcanl_data.tile5.nc"
         echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}/*0000.sfcanl_data.tile6.nc"
-      } >> "${RUN}_restarta_grp${n}.txt"
+      } >> "${DATA}/${RUN}_restarta_grp${n}.txt"
       #---
-      echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}" >> "${RUN}_restartb_grp${n}.txt"
+      echo "${COM_ATMOS_RESTART_MEM/${ROTDIR}\//}" >> "${DATA}/${RUN}_restartb_grp${n}.txt"
 
       m=$((m+1))
     done

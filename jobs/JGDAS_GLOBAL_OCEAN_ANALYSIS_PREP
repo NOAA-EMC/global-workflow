@@ -41,7 +41,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_prep.py}
+EXSCRIPT=${GDASOCNPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_prep.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

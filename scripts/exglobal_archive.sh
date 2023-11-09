@@ -154,11 +154,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
     mod=$((nday % ARCH_FCSTICFREQ))
     if [[ "${mod}" -eq 0 ]] || [[ "${PDY}${cyc}" -eq "${firstday}" ]]; then SAVEFCSTIC="YES" ; fi
 
-
-    ARCH_LIST="${DATA}/archlist"
-    [[ -d ${ARCH_LIST} ]] && rm -rf "${ARCH_LIST}"
-    mkdir -p "${ARCH_LIST}"
-    cd "${ARCH_LIST}" || exit 2
+    cd "${DATA}" || exit 2
 
     "${HOMEgfs}/ush/hpssarch_gen.sh" "${RUN}"
     status=$?
@@ -196,7 +192,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
         if [ "${DO_AERO}" = "YES" ]; then
             for targrp in chem; do
                 # TODO: Why is this tar being done here instead of being added to the list?
-                ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${targrp}.tar" $(cat "${ARCH_LIST}/${targrp}.txt")
+                ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${targrp}.tar" $(cat "${DATA}/${targrp}.txt")
                 status=$?
                 if [[ "${status}" -ne 0 ]] && [[ "${PDY}${cyc}" -ge "${firstday}" ]]; then
                     echo "HTAR ${PDY}${cyc} ${targrp}.tar failed"
@@ -238,7 +234,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
         #gdasocean
         if [ "${DO_OCN}" = "YES" ]; then
-            targrp_list="${targrp_list} gdasocean"
+            targrp_list="${targrp_list} gdasocean gdasocean_analysis"
         fi
 
         #gdasice
@@ -276,7 +272,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
                             break
                         fi
                     fi
-                done < "${ARCH_LIST}/${targrp}.txt"
+                done < "${DATA}/${targrp}.txt"
 
                 ;;
             *) ;;
@@ -284,7 +280,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
         # Create the tarball
         tar_fl="${ATARDIR}/${PDY}${cyc}/${targrp}.tar"
-        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${ARCH_LIST}/${targrp}.txt")
+        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${DATA}/${targrp}.txt")
         status=$?
 
         # Change group to rstprod if it was found even if htar/tar failed in case of partial creation

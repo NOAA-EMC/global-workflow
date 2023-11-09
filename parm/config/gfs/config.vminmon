@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+########## config.vminmon ##########
+echo "BEGIN: config.vminmon"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" vminmon
+
+echo "END: config.vminmon"
