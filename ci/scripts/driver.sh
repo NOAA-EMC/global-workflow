@@ -159,7 +159,7 @@ for pr in ${pr_list}; do
       set +e
       export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
       rm -f "${LOGFILE_PATH}"
-      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" 2>&1 "${LOGFILE_PATH}"
+      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" > "${LOGFILE_PATH}" 2>&1
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
@@ -174,8 +174,7 @@ for pr in ${pr_list}; do
         } >> "${output_ci}"
       else
         {
-          echo "*** Failed *** to create experiment: ${pslot}"
-          echo ""
+          echo "*** Failed *** to create experiment: ${pslot} on ${MACHINE_ID^} for PR #${pr}"
           cat "${LOGFILE_PATH}"
         } >> "${output_ci}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
