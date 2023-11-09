@@ -11,10 +11,21 @@ logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=Fals
 
 def input_args():
     """
-    Method to collect user arguments 
+    Parse command-line arguments.
+
+    Returns
+    -------
+    args : Namespace
+        The parsed command-line arguments.
     """
 
     description = """
+        Using rocotostat that lists the status of all jobs this scripts
+        determines rocoto_state: if all cycles are done, then rocoto_state is Done.
+        If all cycles are not done, then rocoto_state is Running.
+        If the check_stalled is used then rocotorun is then issued and
+        rocotostat is run again and if all jobs do not advanced, then
+        rocoto_state is Stalled and the script exits with -1.
         """
 
     parser = ArgumentParser(description=description,
@@ -29,6 +40,9 @@ def input_args():
     return args
 
 def rocoto_statcount():
+    """
+    Run rocotostat and process its output.
+    """
 
     args = input_args()
 

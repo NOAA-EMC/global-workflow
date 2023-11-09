@@ -13,6 +13,8 @@ ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
+GH=${HOME}/bin/gh
+REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
@@ -81,7 +83,19 @@ for pr in ${pr_list}; do
     pslot=$(basename "${pslot_dir}")
     xml="${pslot_dir}/${pslot}.xml"
     db="${pslot_dir}/${pslot}.db"
-    echo "Running: ${rocotorun} -v 10 -w ${xml} -d ${db}"
-    "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
+    ${ROOT_DIR}/ci/scripts/utils/rocoto_statcount.py -d "{db}" -w "${xml}" --check_stalled
+    rc=$?
+    if [[ "${rc}" -ne 0 ]]; then
+      output_ci="${pr_dir}/output_runtime_single.log"
+      {
+        echo "${pslot} has *** STALLED **** on ${MACHINE_ID^}"
+        echo "A jobs in expermint ${pslot} in ${pslot_dir}"
+        echo "may have depenencies that are not being met"
+      } >> "${output_ci}"
+      sed -i "1 i\`\`\`" "${output_ci}"
+      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
+      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
+      "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    fi
   done
 done
