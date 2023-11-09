@@ -82,9 +82,9 @@ if __name__ == '__main__':
             rocoto_run()
             rocoto_status2 = rocoto_statcount()
             if rocoto_status2 == rocoto_status:
-                rocoto_status = 'Stalled'
-                print(f'Rocoto State : {rocoto_status}')
+                rocoto_state = 'Stalled'
+                print(f'Rocoto State : {rocoto_state}')
                 sys.exit(-1)
-        else:
-            rocoto_status = 'Done'
+            else:
+                rocoto_state = 'Running'
     print(f'Rocoto State : {rocoto_state}')        
