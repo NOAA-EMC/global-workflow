@@ -174,6 +174,14 @@ done
 #  [[ -s "${file}" ]] && rm -f "${file}"
 #  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 #done
+# Link these templates from ufs-weather-model
+cd "${HOMEgfs}/parm/ufs" || exit 1
+declare -a ufs_templates=("ice_template_in")
+for file in "${ufs_templates[@]}"; do
+  [[ -s "${file}" ]] && rm -f "${file}"
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
+done
+
 
 cd "${HOMEgfs}/ush" || exit 1
 [[ -s "atparse.bash" ]] && rm -f "atparse.bash"
