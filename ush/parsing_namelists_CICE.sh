@@ -2,6 +2,7 @@
 
 # parsing namelist of CICE
 
+# shellcheck disable=SC2034
 CICE_namelists(){
 
 # "warm_start" here refers to whether CICE model is warm starting or not.

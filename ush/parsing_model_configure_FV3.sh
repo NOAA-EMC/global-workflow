@@ -2,6 +2,7 @@
 
 # parsing model_configure for UFSWM FV3
 
+# shellcheck disable=SC2034
 FV3_model_configure(){
 
 local restile=${CASE:1}

@@ -84,7 +84,7 @@ source "${HOMEgfs}/ush/cplvalidate.sh"	# validation of cpl*
 source "${HOMEgfs}/ush/forecast_predet.sh"	# include functions for variable definition
 source "${HOMEgfs}/ush/forecast_det.sh"  # include functions for run type determination
 source "${HOMEgfs}/ush/forecast_postdet.sh"	# include functions for variables after run type determination
-source "${HOMEgfs}/ush/nems_configure.sh"	# include functions for nems_configure processing
+source "${HOMEgfs}/ush/parsing_nems_configure.sh"	# include functions for nems_configure processing
 source "${HOMEgfs}/ush/parsing_model_configure_FV3.sh"
 
 # Compset string. For nems.configure.* template selection. Default ATM only
