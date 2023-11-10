@@ -176,13 +176,14 @@ done
 #done
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
-declare -a ufs_templates=("ice_template_in")
+declare -a ufs_templates=("model_configure.IN" \
+                          "ice_template_in")
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
 
-
+# Link the script from ufs-weather-model that parses the templates
 cd "${HOMEgfs}/ush" || exit 1
 [[ -s "atparse.bash" ]] && rm -f "atparse.bash"
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .

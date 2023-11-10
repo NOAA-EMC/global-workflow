@@ -103,6 +103,6 @@ source "${HOMEgfs}/ush/atparse.bash"
 rm -f "${DATA}/ice_in"
 atparse < "${template}" >> "${DATA}/ice_in"
 echo "Rendered ice_in:"
-cat ice_in
+cat "${DATA}/ice_in"
 
 }
