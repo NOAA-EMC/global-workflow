@@ -33,7 +33,6 @@ def input_args():
 
     parser.add_argument('-w', help='workflow_document', type=str)
     parser.add_argument('-d', help='database_file', type=str)
-    parser.add_argument('--check_stalled', help='check if any jobs do not advance (stalled)', action='store_true', required=False)
 
     args = parser.parse_args()
 
@@ -88,7 +87,10 @@ if __name__ == '__main__':
         print(f'Number of {status} : {rocoto_status[status]}')
     if rocoto_status['Cycles'] == rocoto_status['Done_Cycles']:
         rocoto_state = 'Done'
-    elif any(x in rocoto_status for x in ['RUNNING', 'SUBMITTING', 'QUEUED']):
+    elif 'UNKNOWN' in rocoto_status:
+        rocoto_state = 'Unknown'
+        print(f'Rocoto State : {rocoto_state}')
+    elif rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
         rocoto_state = 'Stalled'
         print(f'Rocoto State : {rocoto_state}')
         sys.exit(-1)
