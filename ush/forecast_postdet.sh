@@ -500,6 +500,7 @@ FV3_nml(){
 
 FV3_out() {
   echo "SUB ${FUNCNAME[0]}: copying output data for FV3"
+  mkdir -p "${COM_CONF}"
 
   # Copy FV3 restart files
   if [[ ${RUN} =~ "gdas" ]]; then
@@ -515,6 +516,9 @@ FV3_out() {
   else
     # No need to copy FV3 restart files when RUN=gfs or gefs
     ${NCP} "${DATA}/input.nml" "${COM_CONF}/input.nml"
+    ${NCP} "${DATA}/model_configure" "${COM_CONF}/model_configure"
+    ${NCP} "${DATA}/nems.configure" "${COM_CONF}/nems.configure"
+    ${NCP} "${DATA}/diag_table" "${COM_CONF}/diag_table"  
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
@@ -663,14 +667,17 @@ WW3_nml() {
 }
 
 WW3_out() {
+  mkdir -p "${COM_CONF}"
   echo "SUB ${FUNCNAME[0]}: Copying output data for WW3"
 }
 
 
 CPL_out() {
+  mkdir -p "${COM_CONF}"
   echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
   if [[ "${esmf_profile:-}" = ".true." ]]; then
-    ${NCP} "${DATA}/ESMF_Profile.summary" "${COM_ATMOS_HISTORY}/ESMF_Profile.summary"
+    ${NCP} "${DATA}/ESMF_Profile.summary" "${COM_ATMOS_HISTORY}/ESMF_Profile.summary" # TODO: I don't think this is needed for cycling.
+    ${NCP} "${DATA}/ESMF_Profile.summary" "${COM_CONF}/ESMF_Profile.summary"
   fi
 }
 
@@ -850,10 +857,12 @@ MOM6_nml() {
 
 MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
+  mkdir -p "${COM_CONF}"
 
   # Copy MOM_input from DATA to COM_OCEAN_INPUT after the forecast is run (and successfull)
   if [[ ! -d ${COM_OCEAN_INPUT} ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
-  ${NCP} "${DATA}/INPUT/MOM_input" "${COM_OCEAN_INPUT}/"
+  ${NCP} "${DATA}/INPUT/MOM_input" "${COM_OCEAN_INPUT}/" # TODO: Are both needed?
+  ${NCP} "${DATA}/INPUT/MOM_input" "${COM_CONF}/"
 
   # TODO: mediator should have its own CMEPS_out() function
   # Copy mediator restarts from DATA to COM
@@ -988,10 +997,11 @@ CICE_nml() {
 
 CICE_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
+  mkdir -p "${COM_CONF}"
 
   # Copy ice_in namelist from DATA to COMOUTice after the forecast is run (and successfull)
   if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
-  ${NCP} "${DATA}/ice_in" "${COM_ICE_INPUT}/ice_in"
+  ${NCP} "${DATA}/ice_in" "${COM_CONF}/ice_in"
 }
 
 GOCART_rc() {
