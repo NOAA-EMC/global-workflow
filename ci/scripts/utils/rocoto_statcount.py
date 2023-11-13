@@ -70,14 +70,15 @@ def rocoto_statcount():
 
     rocoto_status = {
         'Cycles': len(rocotostat_output),
-        'Done_Cycles':  sum([ sublist.count('Done') for sublist in rocotostat_output ])
+        'Done_Cycles': sum([sublist.count('Done') for sublist in rocotostat_output])
     }
 
     status_cases = [ 'SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED']
     for case in status_cases:
-        rocoto_status[case] = sum([ sublist.count(case) for sublist in rocotostat_output_all ])
+        rocoto_status[case] = sum([sublist.count(case) for sublist in rocotostat_output_all])
 
     return rocoto_status
+
 
 if __name__ == '__main__':
 
