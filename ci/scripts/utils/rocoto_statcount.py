@@ -54,7 +54,7 @@ def rocoto_statcount():
     xml_file_path = os.path.abspath(args.w)
     db_file_path = os.path.abspath(args.d)
 
-    rocotostat_all = rocotostat
+    rocotostat_all = which("rocotostat")
     rocotostat.add_default_arg(['-w',xml_file_path,'-d',db_file_path,'-s'])
     rocotostat_all.add_default_arg(['-w',xml_file_path,'-d',db_file_path,'-a'])
 
