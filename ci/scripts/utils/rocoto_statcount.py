@@ -50,6 +50,11 @@ def rocoto_statcount():
     if not rocotostat:
         logger.exception("rocotostat not found in PATH")
         sys.exit(-1)
+    try:
+        rocotostat = which("rocotostat")
+    except CommandNotFoundError:
+        logger.exception("rocotostat not found in PATH")
+        raise CommandNotFoundError("rocotostat not found in PATH")
 
     xml_file_path = os.path.abspath(args.w)
     db_file_path = os.path.abspath(args.d)
