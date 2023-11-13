@@ -38,6 +38,7 @@ def input_args():
 
     return args
 
+
 def rocoto_statcount():
     """
     Run rocotostat and process its output.
@@ -55,8 +56,8 @@ def rocoto_statcount():
     db_file_path = os.path.abspath(args.d)
 
     rocotostat_all = which("rocotostat")
-    rocotostat.add_default_arg(['-w',xml_file_path,'-d',db_file_path,'-s'])
-    rocotostat_all.add_default_arg(['-w',xml_file_path,'-d',db_file_path,'-a'])
+    rocotostat.add_default_arg(['-w', xml_file_path, '-d', db_file_path, '-s'])
+    rocotostat_all.add_default_arg(['-w', xml_file_path, '-d', db_file_path, '-a'])
 
     rocotostat_output = rocotostat(output=str)
     rocotostat_output = rocotostat_output.splitlines()[1:]
@@ -71,7 +72,7 @@ def rocoto_statcount():
        'Cycles' : len(rocotostat_output),
        'Done_Cycles' :  sum([ sublist.count('Done') for sublist in rocotostat_output ])
     }
-    
+
     status_cases = [ 'SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED']
     for case in status_cases:
         rocoto_status[case] = sum([ sublist.count(case) for sublist in rocotostat_output_all ])
@@ -96,4 +97,4 @@ if __name__ == '__main__':
         sys.exit(-1)
     else:
         rocoto_state = 'Running'
-    print(f'Rocoto State : {rocoto_state}')        
+    print(f'Rocoto State : {rocoto_state}')
