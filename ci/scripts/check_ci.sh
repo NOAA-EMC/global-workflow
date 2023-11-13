@@ -131,7 +131,7 @@ for pr in ${pr_list}; do
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       {
-       echo "Experiment ${pslot} Terminated: *** FAILED *** on ${MACHIND_ID^}"
+       echo "Experiment ${pslot} Terminated: *** FAILED *** on ${MACHINE_ID^}"
        echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
        echo "Error logs:"
        echo "${error_logs}"
@@ -152,8 +152,8 @@ for pr in ${pr_list}; do
       rm -f "${output_ci_single}"
       # echo "\`\`\`" > "${output_ci_single}"
       DATE=$(date)
-      echo "Experiment ${pslot} **SUCCESS** ${DATE +%Y%m%d} on ${MACHINE_ID^}" >> "${output_ci_single}"
-      echo "Experiment ${pslot} **SUCCESS** at ${DATE +%Y%m%d} on ${MACHIND_ID^}" >> "${output_ci}"
+      echo "Experiment ${pslot} **SUCCESS** $(date +'%A %b %d, %Y') on ${MACHINE_ID^}" >> "${output_ci_single}"
+      echo "Experiment ${pslot} **SUCCESS** at $(date +'%A %b %d, %Y') on ${MACHINE_ID^}" >> "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
 
     fi
