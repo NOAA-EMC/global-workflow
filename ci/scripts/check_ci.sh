@@ -151,7 +151,6 @@ for pr in ${pr_list}; do
       rm -Rf "${pr_dir}/RUNTESTS/COMROT/${pslot}"
       rm -f "${output_ci_single}"
       # echo "\`\`\`" > "${output_ci_single}"
-      DATE=$(date)
       echo "Experiment ${pslot} **SUCCESS** $(date +'%A %b %d, %Y') on ${MACHINE_ID^}" || true >> "${output_ci_single}"
       echo "Experiment ${pslot} **SUCCESS** at $(date +'%A %b %d, %Y') on ${MACHINE_ID^}" || true >> "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
