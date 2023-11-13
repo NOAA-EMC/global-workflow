@@ -517,6 +517,7 @@ FV3_out() {
     ${NCP} "${DATA}/input.nml" "${COM_CONF}/ufs.input.nml"
     ${NCP} "${DATA}/model_configure" "${COM_CONF}/ufs.model_configure"
     ${NCP} "${DATA}/nems.configure" "${COM_CONF}/ufs.nems.configure"
+    ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"  
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
