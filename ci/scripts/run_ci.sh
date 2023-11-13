@@ -86,7 +86,7 @@ for pr in ${pr_list}; do
     echo "Running: ${rocotorun} -v 10 -w ${xml} -d ${db}"
     "${rocotorun}" -v 10 -w "${xml}" -d "${db}"
     set +e
-    "${ROOT_DIR}/ci/scripts/utils/rocoto_statcount.py" -d "${db}" -w "${xml}"
+    "${ROOT_DIR}"/ci/scripts/utils/rocoto_statcount.py -d "${db}" -w "${xml}"
     rc=$?
     
     if [[ "${rc}" -ne 0 ]]; then
