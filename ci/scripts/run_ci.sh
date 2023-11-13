@@ -88,6 +88,7 @@ for pr in ${pr_list}; do
     set +e
     "${ROOT_DIR}/ci/scripts/utils/rocoto_statcount.py" -d "${db}" -w "${xml}"
     rc=$?
+    
     if [[ "${rc}" -ne 0 ]]; then
       output_ci="${pr_dir}/output_runtime_single.log"
       {
