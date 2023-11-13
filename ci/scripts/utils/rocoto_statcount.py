@@ -85,20 +85,10 @@ if __name__ == '__main__':
     rocoto_status = rocoto_statcount()
     for status in rocoto_status:
         print(f'Number of {status} : {rocoto_status[status]}')
-    rocoto_state = 'Running'
     if rocoto_status['Cycles'] == rocoto_status['Done_Cycles']:
         rocoto_state = 'Done'
-
-    if args.check_stalled:
-        if rocoto_state != 'Done':
-            rocoto_run = which("rocotorun")
-            rocoto_run.add_default_arg(['-w',args.w,'-d',args.d])
-            rocoto_run()
-            rocoto_status2 = rocoto_statcount()
-            if rocoto_status2 == rocoto_status:
-                rocoto_state = 'Stalled'
-                print(f'Rocoto State : {rocoto_state}')
-                sys.exit(-1)
-            else:
-                rocoto_state = 'Running'
+    elif rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
+        rocoto_state = 'Stalled'
+    else:
+        rocoto_state = 'Running'
     print(f'Rocoto State : {rocoto_state}')        
