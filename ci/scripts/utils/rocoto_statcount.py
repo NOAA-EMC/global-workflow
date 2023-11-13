@@ -46,10 +46,6 @@ def rocoto_statcount():
 
     args = input_args()
 
-    rocotostat = which("rocotostat")
-    if not rocotostat:
-        logger.exception("rocotostat not found in PATH")
-        sys.exit(-1)
     try:
         rocotostat = which("rocotostat")
     except CommandNotFoundError:
@@ -59,7 +55,7 @@ def rocoto_statcount():
     xml_file_path = os.path.abspath(args.w)
     db_file_path = os.path.abspath(args.d)
 
-    rocotostat_all = which("rocotostat")
+    rocotostat_all = rocotostat
     rocotostat.add_default_arg(['-w',xml_file_path,'-d',db_file_path,'-s'])
     rocotostat_all.add_default_arg(['-w',xml_file_path,'-d',db_file_path,'-a'])
 
@@ -94,6 +90,8 @@ if __name__ == '__main__':
         rocoto_state = 'Done'
     elif any(x in rocoto_status for x in ['RUNNING', 'SUBMITTING', 'QUEUED']):
         rocoto_state = 'Stalled'
+        print(f'Rocoto State : {rocoto_state}')
+        sys.exit(-1)
     else:
         rocoto_state = 'Running'
     print(f'Rocoto State : {rocoto_state}')        
