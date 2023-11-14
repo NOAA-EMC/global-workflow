@@ -47,6 +47,7 @@ num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             ${OUTPUT_GRID}
 output_file:             '${OUTPUT_FILETYPE_ATM}' '${OUTPUT_FILETYPE_SFC}'
+zstandard_level:         0
 ichunk2d:                ${ichunk2d:-0}
 jchunk2d:                ${jchunk2d:-0}
 ichunk3d:                ${ichunk3d:-0}
