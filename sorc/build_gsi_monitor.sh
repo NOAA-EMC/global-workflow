@@ -4,10 +4,10 @@ set -eux
 cwd=$(pwd)
 
 OPTIND=1
-while getopts ":dov" option; do
+while getopts ":j:dv" option; do
   case "${option}" in
     d) export BUILD_TYPE="DEBUG";;
-    o) _ops="YES";;
+    j) export BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -23,6 +23,7 @@ shift $((OPTIND-1))
 
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
+BUILD_JOBS=${BUILD_JOBS:-8} \
 "${cwd}/gsi_monitor.fd/ush/build.sh"
 
 exit

@@ -151,11 +151,11 @@ source "${topdir}/../workflow/gw_setup.sh"
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 # Checkout UFS submodules in parallel
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-68050e5}" "8" ; errs=$((errs + $?))
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-63a43d9}" "8" &
 
 # Run all other checkouts simultaneously with just 1 core each to handle submodules.
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab" &
-checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "a283262" &
+checkout "gfs_utils.fd"    "https://github.com/davidhuber-noaa/gfs-utils"       "feature/spack-stack" &
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471" &
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780" &
 
@@ -168,8 +168,8 @@ if [[ ${checkout_gdas} == "YES" ]]; then
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
-  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b" &
-  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "45783e3" &
+  checkout "gsi_utils.fd"    "https://github.com/davidhuber-noaa/GSI-Utils.git"   "feature/spack-stack" &
+  checkout "gsi_monitor.fd"  "https://github.com/davidhuber-noaa/GSI-Monitor.git" "spack-stack" &
 fi
 
 # Go through each PID and verify no errors were reported.
