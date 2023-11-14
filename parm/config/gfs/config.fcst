@@ -249,9 +249,9 @@ export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
 export DO_CA=${DO_CA:-"YES"}
 
 #coupling settings
-export cplmode="nems_frac"
+export cplmode="ufs.frac"
 if [[ "${FRAC_GRID:-".true."}" == ".false." ]]; then
-  export cplmode="nems_orig"
+  export cplmode="ufs.nfrac"
 fi
 export psm_bc="1"
 
