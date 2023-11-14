@@ -989,11 +989,15 @@ class GFSTasks(Tasks):
         dependencies = []
         if self.app_config.mode in ['cycled']:
             if self.cdump in ['gfs']:
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+                deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_vminmon:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.cdump in ['gdas']:  # Block for handling half cycle dependencies
                 deps2 = []
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+                deps2.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_fit2obs:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
                     deps2.append(rocoto.add_dependency(dep_dict))
@@ -1022,6 +1026,9 @@ class GFSTasks(Tasks):
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
+        # Post job dependencies
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -1034,10 +1041,6 @@ class GFSTasks(Tasks):
             if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
                 dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        # If all verification and ocean/wave coupling is off, add the gdas/gfs post metatask as a dependency
-        if len(deps) == 0:
-            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
-            deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps + dependencies)
 
