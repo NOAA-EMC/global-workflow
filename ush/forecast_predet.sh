@@ -88,7 +88,7 @@ common_predet(){
     tcyc=${scyc}
   fi
 
-
+  mkdir -p "${COM_CONF}"
   cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
 
