@@ -33,4 +33,4 @@ export gfsio_ver=1.4.1
 export sfcio_ver=1.4.1
 export ncio_ver=1.0.0
 
-export upp_ver=8.2.0
+export upp_ver=8.3.0

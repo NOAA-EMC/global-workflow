@@ -69,7 +69,7 @@ https://docs.google.com/document/d/18bUYWmsN7FuweyA2CQTBW1rk3FNRMHKPlYHZlbS8ODs/
 VERSION FILE CHANGES
 --------------------
 
-* `versions/build.ver` - change `crtm_ver=2.4.0.1`
+* `versions/build.ver` - change `crtm_ver=2.4.0.1` and `upp_ver=8.3.0`
 * `versions/run.ver` - change `version=v16.3.11`, `gfs_ver=v16.3.11` and `crtm_ver=2.4.0.1`
 
 SORC CHANGES
