@@ -52,34 +52,6 @@ if [[ "${RUNMOS}" == "YES" && "${CDUMP}" == "gfs" ]]; then
 fi
 
 
-################################################################################
-echo
-echo "=============== START TO RUN CYCLONE TRACK VERIFICATION ==============="
-if [[ ${VRFYTRAK} = "YES" ]]; then
-
-    COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
-    export COMINsyn
-
-    ${TRACKERSH}
-fi
-
-
-################################################################################
-echo
-echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION ==============="
-if [[ ${VRFYGENESIS} = "YES" && "${CDUMP}" = "gfs" ]]; then
-    ${GENESISSH}
-fi
-
-
-################################################################################
-echo
-echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION (FSU) ==============="
-if [[ ${VRFYFSU} = "YES" && "${CDUMP}" = "gfs" ]]; then
-    ${GENESISFSU}
-fi
-
-
 ###############################################################
 # Force Exit out cleanly
 cd "${DATAROOT}"

@@ -47,7 +47,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean:
             configs += ['ocnpost']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch', 'cleanup']
+        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -55,6 +55,9 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+
+        if self.do_fit2obs:
+            configs += ['fit2obs']
 
         if self.do_verfozn:
             configs += ['verfozn']
@@ -64,6 +67,15 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_vminmon:
             configs += ['vminmon']
+
+        if self.do_tracker:
+            configs += ['tracker']
+
+        if self.do_genesis:
+            configs += ['genesis']
+
+        if self.do_genesis_fsu:
+            configs += ['genesis_fsu']
 
         if self.do_metp:
             configs += ['metp']
@@ -191,6 +203,15 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_vminmon:
             gfs_tasks += ['vminmon']
+
+        if self.do_tracker:
+            gfs_tasks += ['tracker']
+
+        if self.do_genesis:
+            gfs_tasks += ['genesis']
+
+        if self.do_genesis_fsu:
+            gfs_tasks += ['genesis_fsu']
 
         if self.do_metp:
             gfs_tasks += ['metp']

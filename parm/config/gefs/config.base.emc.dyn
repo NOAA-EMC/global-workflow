@@ -282,11 +282,16 @@ export NMEM_ENS=@NMEM_ENS@
 export ENSMEM="000"
 export MEMDIR="mem${ENSMEM}"
 
+export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
 if [[ "${EXP_WARM_START}" = ".false." ]]; then
-    export IAU_FHROT=0
+  export IAU_FHROT=0
 else
+  if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
+  else
+    export IAU_FHROT=0
+  fi
 fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
