@@ -22,10 +22,8 @@ def input_args():
     description = """
         Using rocotostat to get the status of all jobs this scripts
         determines rocoto_state: if all cycles are done, then rocoto_state is Done.
-        If all cycles are not done, then rocoto_state is Running.
-        If the check_stalled is used then rocotorun is issued and
-        rocotostat is run again and checks if all jobs have not advanced, then
-        rocoto_state is Stalled and the script exits with -1.
+        Assuming rocotorun had just been run, and the rocoto_state is not Done, then
+        rocoto_state is Stalled if there are no jobs that are RUNNING, SUBMITTING, or QUEUED.
         """
 
     parser = ArgumentParser(description=description,
