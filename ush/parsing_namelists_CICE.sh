@@ -67,9 +67,9 @@ local INCOND_DIR="./CICE_OUTPUT/"  # TBT [UFSWM sets to './history/']
 # grid_nml section
 local CICEGRID="${ice_grid_file}"
 local CICEMASK="${ice_kmt_file}"
-local GRIDATM="???"  # What are the global-workflow definitions for these? What are CICE defaults
-local GRIDOCN="???"  # What are the global-workflow definitions for these? What are CICE defaults
-local GRIDICE="???"  # What are the global-workflow definitions for these? What are CICE defaults
+local GRIDATM="A"  # A-grid for atmosphere (FV3)
+local GRIDOCN="A"  # A-grid for ocean (MOM6)
+local GRIDICE="B"  # B-grid for seaice (CICE6)
 # tracer_nml section
 local TR_POND_LVL=${tr_pond_lvl}  # TBT [UFSWM sets to '.true.']
 local RESTART_POND_LVL=${restart_pond_lvl}  # TBT [UFSWM sets to '.false.']
@@ -84,12 +84,12 @@ local KTHERM=${ktherm}
 # snow_nml section
 # NONE
 # forcing_nml section
-local FRAZIL_FWSALT=${FRAZIL_FWSALT}
+#local FRAZIL_FWSALT=${FRAZIL_FWSALT}
 local TFREEZE_OPTION=${tfrz_option}
 # domain_nml section
 local NPROC_ICE=${ntasks_cice6}
 #local NX_GLB=${NX_GLB}
-#ocal NY_GLB=${NY_GLB}
+#local NY_GLB=${NY_GLB}
 local BLCKX=${block_size_x}
 local BLCKY=${block_size_y}
 local CICE_DECOMP=${processor_shape}
