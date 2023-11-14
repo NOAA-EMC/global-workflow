@@ -111,15 +111,17 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('waveinit')
         dependencies = None
+        cycledef = None
         if self.app_config.mode in ['cycled']:
             deps = []
             dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
-            deps.append(rocoto.add_dependency(dep_dict))
+            if self.cdump in ['gdas']:
+                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+                deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-
-        task = create_wf_task('waveinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+            cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+        task = create_wf_task('waveinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
 
@@ -129,9 +131,9 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('waveprep')
-        task = create_wf_task('waveprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('waveprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies, cycledef=cycledef)
 
         return task
 
@@ -489,6 +491,8 @@ class GFSTasks(Tasks):
             wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
             dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_aero:
             # Calculate offset based on CDUMP = gfs | gdas
@@ -522,10 +526,6 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
         if self.app_config.do_aero:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
@@ -540,6 +540,11 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+
+        if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
@@ -918,11 +923,8 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
-
         resources = self.get_resource('fit2obs')
-        task = create_wf_task('fit2obs', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        task = create_wf_task('fit2obs', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -953,32 +955,31 @@ class GFSTasks(Tasks):
     def arch(self):
         deps = []
         dependencies = []
-        if self.app_config.do_verfozn or self.app_config.do_verfrad or self.app_config.do_vminmon:
-            if self.app_config.mode in ['cycled']:
-                if self.cdump in ['gfs']:
-                    if self.app_config.do_vminmon:
-                        dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
-                        deps.append(rocoto.add_dependency(dep_dict))
-                elif self.cdump in ['gdas']:
-                    deps2 = []
-                    if self.app_config.do_verfozn:
-                        dep_dict = {'type': 'task', 'name': f'{self.cdump}verfozn'}
-                        deps2.append(rocoto.add_dependency(dep_dict))
-                    if self.app_config.do_verfrad:
-                        dep_dict = {'type': 'task', 'name': f'{self.cdump}verfrad'}
-                        deps2.append(rocoto.add_dependency(dep_dict))
-                    if self.app_config.do_vminmon:
-                        dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
-                        deps2.append(rocoto.add_dependency(dep_dict))
-                    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps2)
-                    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-                    dependencies.append(rocoto.add_dependency(dep_dict))
-                    dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+        if self.app_config.mode in ['cycled']:
+            if self.cdump in ['gfs']:
+                if self.app_config.do_vminmon:
+                    dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+            elif self.cdump in ['gdas']:  # Block for handling half cycle dependencies
+                deps2 = []
+                if self.app_config.do_fit2obs:
+                    dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
+                    deps2.append(rocoto.add_dependency(dep_dict))
+                if self.app_config.do_verfozn:
+                    dep_dict = {'type': 'task', 'name': f'{self.cdump}verfozn'}
+                    deps2.append(rocoto.add_dependency(dep_dict))
+                if self.app_config.do_verfrad:
+                    dep_dict = {'type': 'task', 'name': f'{self.cdump}verfrad'}
+                    deps2.append(rocoto.add_dependency(dep_dict))
+                if self.app_config.do_vminmon:
+                    dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
+                    deps2.append(rocoto.add_dependency(dep_dict))
+                dependencies = rocoto.create_dependency(dep_condition='and', dep=deps2)
+                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+                dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.cdump in ['gdas'] and self.app_config.do_fit2obs:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostsbs'}
