@@ -47,7 +47,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean:
             configs += ['ocnpost']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch', 'cleanup']
+        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -55,6 +55,9 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+
+        if self.do_fit2obs:
+            configs += ['fit2obs']
 
         if self.do_verfozn:
             configs += ['verfozn']
