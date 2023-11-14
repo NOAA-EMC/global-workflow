@@ -15,7 +15,7 @@ export CDUMP=${RUN/enkf}
 
 export CASE=${CASE_ENS}
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_TOP COM_CONF
+YMD=${PDY} HH=${cyc} generate_com -rx COM_TOP 
 
 
 # Forecast length for EnKF forecast
