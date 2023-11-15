@@ -67,7 +67,7 @@ ulimit -S -s "${ulimit_s}"
 unset ulimit_s
 
 # If this function exists in the environment, run it; else do not
-ftype=$(type -t set_trace)
+ftype=$(type -t set_trace || echo "")
 if [[ "${ftype}" == "function" ]]; then
   set_trace
 fi

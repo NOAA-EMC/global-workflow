@@ -119,7 +119,7 @@ else
 fi
 
 # If this function exists in the environment, run it; else do not
-ftype=$(type -t set_strict)
+ftype=$(type -t set_strict || echo "")
 if [[ "${ftype}" == "function" ]]; then
   set_strict
 else
