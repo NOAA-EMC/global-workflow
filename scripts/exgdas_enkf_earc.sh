@@ -122,6 +122,10 @@ if [ "${ENSGRP}" -eq 0 ]; then
         tar_fl=${ATARDIR}/${PDY}${cyc}/${RUN}.tar
         ${TARCMD} -P -cvf "${tar_fl}" $(cat "${DATA}/${RUN}.txt")
         status=$?
+        if [ "${status}" -ne 0 ]; then
+            echo "FATAL ERROR: Tarring of ${tar_fl} failed"
+            exit "${status}"
+        fi
 
         # If rstprod was found, change the group of the tarball
         if [[ "${has_rstprod}" == "YES" ]]; then
