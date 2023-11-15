@@ -8,18 +8,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 export n=$((10#${ENSGRP}))
 export CDUMP_ENKF="${EUPD_CYC:-"gdas"}"
 
-export ARCH_LIST="${COM_TOP}/earc${ENSGRP}"
-
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=${ARCH_CYC}
 EARCICS_CYC=$((ARCH_CYC-assim_freq))
 if [ "${EARCICS_CYC}" -lt 0 ]; then
   EARCICS_CYC=$((EARCICS_CYC+24))
 fi
-
-[[ -d ${ARCH_LIST} ]] && rm -rf "${ARCH_LIST}"
-mkdir -p "${ARCH_LIST}"
-cd "${ARCH_LIST}" || exit 2
 
 "${HOMEgfs}/ush/hpssarch_gen.sh" "${RUN}"
 status=$?
@@ -66,7 +60,7 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
 
    if [ "${PDY}${cyc}" -gt "${SDATE}" ]; then # Don't run for first half cycle
 
-     ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_grp${n}.txt")
+     ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_grp${ENSGRP}.tar" $(cat "${DATA}/${RUN}_grp${n}.txt")
      status=$?
      if [ "${status}" -ne 0 ] && [ "${PDY}${cyc}" -ge "${firstday}" ]; then
          echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}_grp${ENSGRP}.tar failed"
@@ -74,7 +68,7 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
      fi
 
      if [ "${SAVEWARMICA}" = "YES" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then
-       ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_restarta_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restarta_grp${n}.txt")
+       ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_restarta_grp${ENSGRP}.tar" $(cat "${DATA}/${RUN}_restarta_grp${n}.txt")
        status=$?
        if [ "${status}" -ne 0 ]; then
            echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}_restarta_grp${ENSGRP}.tar failed"
@@ -83,7 +77,7 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
      fi
 
      if [ "${SAVEWARMICB}" = "YES" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then
-       ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_restartb_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restartb_grp${n}.txt")
+       ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_restartb_grp${ENSGRP}.tar" $(cat "${DATA}/${RUN}_restartb_grp${n}.txt")
        status=$?
        if [ "${status}" -ne 0 ]; then
            echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}_restartb_grp${ENSGRP}.tar failed"
@@ -122,11 +116,11 @@ if [ "${ENSGRP}" -eq 0 ]; then
                     break
                 fi
             fi
-        done < "${ARCH_LIST}/${RUN}.txt"
+        done < "${DATA}/${RUN}.txt"
 
         # Create the tarball
         tar_fl=${ATARDIR}/${PDY}${cyc}/${RUN}.tar
-        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${ARCH_LIST}/${RUN}.txt")
+        ${TARCMD} -P -cvf "${tar_fl}" $(cat "${DATA}/${RUN}.txt")
         status=$?
 
         # If rstprod was found, change the group of the tarball
