@@ -381,7 +381,7 @@ EOF
 
   # time step parameters in FV3
   k_split=${k_split:-2}
-  n_split=${n_split:-6}
+  n_split=${n_split:-5}
 
   if [[ "${MONO:0:4}" = "mono" ]]; then # monotonic options
     d_con=${d_con_mono:-"0."}

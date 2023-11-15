@@ -81,6 +81,10 @@ cat > input.nml <<EOF
   ${fms_nml:-}
 /
 
+&fms2_io_nml
+  netcdf_default_format = "netcdf4"
+/
+
 &fv_core_nml
   layout = ${layout_x},${layout_y}
   io_layout = ${io_layout}
@@ -143,6 +147,7 @@ cat > input.nml <<EOF
   dry_mass=${dry_mass:-98320.0}
   consv_te = ${consv_te}
   do_sat_adj = ${do_sat_adj:-".false."}
+  fast_tau_w_sec = ${fast_tau_w_sec:-"0.2"}
   consv_am = .false.
   fill = .true.
   dwind_2d = .false.
@@ -263,11 +268,11 @@ EOF
   do_ugwp      = ${do_ugwp:-".false."}
   do_tofd      = ${do_tofd:-".false."}
   gwd_opt      = ${gwd_opt:-"2"}
-  do_ugwp_v0   = ${do_ugwp_v0:-".true."}
-  do_ugwp_v1   = ${do_ugwp_v1:-".false."}
+  do_ugwp_v0   = ${do_ugwp_v0:-".false."}
+  do_ugwp_v1   = ${do_ugwp_v1:-".true."}
   do_ugwp_v0_orog_only = ${do_ugwp_v0_orog_only:-".false."}
   do_ugwp_v0_nst_only  = ${do_ugwp_v0_nst_only:-".false."}
-  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".false."}
+  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
   do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
   do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
   do_ugwp_v1_orog_only = ${do_ugwp_v1_orog_only:-".false."}
@@ -333,7 +338,7 @@ cat >> input.nml <<EOF
   iopt_tbot    = ${iopt_tbot:-"2"}
   iopt_stc     = ${iopt_stc:-"1"}
   iopt_trs     = ${iopt_trs:-"2"}
-  iopt_diag    = ${iopt_diag:-"3"}
+  iopt_diag    = ${iopt_diag:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = ${nstf_name}
   nst_anl      = ${nst_anl}
@@ -447,6 +452,7 @@ if [[ ${knob_ugwp_version} -eq 1 ]]; then
   knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
   knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-2}
   knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-4}
+  knob_ugwp_version = ${knob_ugwp_version:-1}
   knob_ugwp_palaunch = ${knob_ugwp_palaunch:-275.0e2}
   knob_ugwp_nslope   = ${knob_ugwp_nslope:-1}
   knob_ugwp_lzmax    = ${knob_ugwp_lzmax:-15.750e3}
