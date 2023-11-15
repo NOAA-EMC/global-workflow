@@ -14,9 +14,8 @@ source "${HOMEgfs}/ush/module-setup.sh"
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
   module load modules.ufs_model.lua
-  module load prod-util
+  module load prod_util
   if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-    module load prod_util
     module load cray-pals
     module load cfp
     module load libjpeg
