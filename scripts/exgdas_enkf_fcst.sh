@@ -131,7 +131,7 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
    # Construct COM variables from templates (see config.com)
    # Can't make these read-only because we are looping over members
    MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
-     COM_ATMOS_HISTORY COM_ATMOS_MASTER
+     COM_ATMOS_HISTORY COM_ATMOS_MASTER COM_CONF
 
    MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
