@@ -469,16 +469,7 @@ fi
 # GOCART specific settings
 if [[ "${DO_AERO}" = "YES" ]]; then # temporary settings for aerosol coupling
   export cplchm=".true."
-
-  model_list="${model_list}.aero"  
-  export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-${HOMEgfs}/parm/ufs/fv3/diag_table.aero}"
-  export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-${HOMEgfs}/parm/ufs/fv3/field_table.aero}"
-  AERO_EMIS_FIRE="${AERO_EMIS_FIRE:-none}"
-  export AERO_EMIS_FIRE=${AERO_EMIS_FIRE,,}
-  export AERO_CONFIG_DIR="${AERO_CONFIG_DIR:-${HOMEgfs}/parm/ufs/chem}"
-  export AERO_INPUTS_DIR="${AERO_INPUTS_DIR:-}"
-  export fscav_aero="${aero_conv_scav_factors:-${fscav_aero}}"
-  export dnats_aero="${aero_diag_tracers:-0}"
+  model_list="${model_list}.aero"
 fi
 
 # Set the name of the UFS (previously nems) configure template to use
