@@ -886,9 +886,9 @@ CICE_postdet() {
   dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 
   if [[ "${RUN}" =~ "gdas" ]]; then
-    cice_hist_avg=".false."   # DA needs instantaneous
+    cice_hist_avg=".false., .false., .false., .false., .false."   # DA needs instantaneous
   else
-    cice_hist_avg=".true."    # P8 wants averaged over histfreq_n
+    cice_hist_avg=".true., .true., .true., .true., .true."    # P8 wants averaged over histfreq_n
   fi
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
