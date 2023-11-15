@@ -218,7 +218,7 @@ case "${APP}" in
     export DO_OCN="YES"
     export DO_ICE="YES"
     export CCPP_SUITE="FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8 on L149
-    export confignamevarfornems="cpld"
+    export confignamevarforufs="cpld"
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
