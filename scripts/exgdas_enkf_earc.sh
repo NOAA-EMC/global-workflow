@@ -122,7 +122,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
         tar_fl=${ATARDIR}/${PDY}${cyc}/${RUN}.tar
         ${TARCMD} -P -cvf "${tar_fl}" $(cat "${DATA}/${RUN}.txt")
         status=$?
-        if [ "${status}" -ne 0 ]; then
+        if [[ "${status}" -ne 0 ]]; then
             echo "FATAL ERROR: Tarring of ${tar_fl} failed"
             exit "${status}"
         fi
