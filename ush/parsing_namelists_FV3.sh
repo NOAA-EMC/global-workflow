@@ -313,6 +313,9 @@ cat >> input.nml <<EOF
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
   progsigma    = ${progsigma:-".true."}
+  betascu      = ${betascu:-"8.0"}
+  betamcu      = ${betamcu:-"1.0"}
+  betadcu      = ${betadcu:-"2.0"}
   ras          = ${ras:-".false."}
   cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
   prslrd0      = ${prslrd0:-"0."}
