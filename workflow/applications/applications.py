@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 from typing import Dict, List, Any
+from datetime import timedelta
 from hosts import Host
-from wxflow import Configuration
+from wxflow import Configuration, to_timedelta
 from abc import ABC, ABCMeta, abstractmethod
 
 __all__ = ['AppConfig']
@@ -170,14 +171,14 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         pass
 
     @staticmethod
-    def get_gfs_interval(gfs_cyc: int) -> str:
+    def get_gfs_interval(gfs_cyc: int) -> timedelta:
         """
         return interval in hours based on gfs_cyc
         """
 
-        gfs_internal_map = {'0': None, '1': '24:00:00', '2': '12:00:00', '4': '06:00:00'}
+        gfs_internal_map = {'1': '24H', '2': '12H', '4': '6H'}
 
         try:
-            return gfs_internal_map[str(gfs_cyc)]
+            return to_timedelta(gfs_internal_map[str(gfs_cyc)])
         except KeyError:
             raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')

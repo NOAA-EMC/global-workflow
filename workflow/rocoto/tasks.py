@@ -3,7 +3,7 @@
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
-from wxflow import Template, TemplateConstants
+from wxflow import Template, TemplateConstants, to_timedelta
 
 __all__ = ['Tasks', 'create_wf_task']
 
@@ -34,6 +34,7 @@ class Tasks:
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._configs = self.app_config.configs
         self._base = self._configs['base']
+        self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 
