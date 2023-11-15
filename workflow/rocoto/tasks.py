@@ -21,6 +21,7 @@ class Tasks:
                    'preplandobs', 'landanl',
                    'fcst', 'post', 'ocnpost',
                    'verfozn', 'verfrad', 'vminmon', 'vrfy', 'metp',
+                   'tracker', 'genesis', 'genesis_fsu',
                    'postsnd', 'awips', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
