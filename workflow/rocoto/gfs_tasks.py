@@ -902,6 +902,39 @@ class GFSTasks(Tasks):
 
         return task
 
+    def tracker(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('tracker')
+        task = create_wf_task('tracker', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def genesis(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('genesis')
+        task = create_wf_task('genesis', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def genesis_fsu(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('genesis_fsu')
+        task = create_wf_task('genesis_fsu', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def vrfy(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
@@ -956,11 +989,15 @@ class GFSTasks(Tasks):
         dependencies = []
         if self.app_config.mode in ['cycled']:
             if self.cdump in ['gfs']:
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+                deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_vminmon:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.cdump in ['gdas']:  # Block for handling half cycle dependencies
                 deps2 = []
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+                deps2.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_fit2obs:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
                     deps2.append(rocoto.add_dependency(dep_dict))
@@ -977,9 +1014,21 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
                 dependencies.append(rocoto.add_dependency(dep_dict))
                 dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+        if self.cdump in ['gfs'] and self.app_config.do_tracker:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}tracker'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.cdump in ['gfs'] and self.app_config.do_genesis:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.cdump in ['gfs'] and self.app_config.do_genesis_fsu:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis_fsu'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
+        # Post job dependencies
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -992,10 +1041,6 @@ class GFSTasks(Tasks):
             if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
                 dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        # If all verification and ocean/wave coupling is off, add the gdas/gfs post metatask as a dependency
-        if len(deps) == 0:
-            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
-            deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps + dependencies)
 
