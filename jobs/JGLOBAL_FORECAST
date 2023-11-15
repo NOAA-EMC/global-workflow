@@ -46,7 +46,7 @@ declare -rx gcyc="${GDATE:8:2}"
 
 # Construct COM variables from templates (see config.com)
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
-  COM_ATMOS_HISTORY COM_ATMOS_MASTER COM_TOP
+  COM_ATMOS_HISTORY COM_ATMOS_MASTER COM_TOP COM_CONF
 
 RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -rx \
   COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL

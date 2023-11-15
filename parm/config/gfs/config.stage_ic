@@ -18,7 +18,7 @@ case "${CASE}" in
     export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c_refactored
     export CPL_ICEIC=CPC_refactored
     export CPL_OCNIC=CPC3Dvar_refactored
-    export CPL_WAVIC=GEFSwave20210528v2_refactored
+    export CPL_WAVIC=workflow_C384_refactored
     ;;
   "C768")
     export CPL_ATMIC=TestHR23_768

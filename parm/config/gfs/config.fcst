@@ -119,24 +119,27 @@ if (( gwd_opt == 2 )); then
     #export  do_ugwp_v1_orog_only=".false."
 
     #--used for UFS p8
-    export knob_ugwp_version=0
+    export knob_ugwp_version=1
     export do_ugwp=".false."
     export do_tofd=".false."
-    export do_ugwp_v0=".true."
-    export do_ugwp_v1=".false."
+    export do_ugwp_v0=".false."
+    export do_ugwp_v1=".true."
     export do_ugwp_v0_orog_only=".false."
     export do_ugwp_v0_nst_only=".false."
-    export do_gsl_drag_ls_bl=".false."
+    export do_gsl_drag_ls_bl=".true."
     export do_gsl_drag_ss=".true."
-    export do_gsl_drag_tofd=".false."
+    export do_gsl_drag_tofd=".true."
     export do_ugwp_v1_orog_only=".false."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
+    if [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
+       export cdmbgwd=${cdmbgwd_gsl}
+    fi
 fi
 
 # Sponge layer settings
-export tau=10.0
-export rf_cutoff=7.5e2
+export tau=0.
+export rf_cutoff=10.
 export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
