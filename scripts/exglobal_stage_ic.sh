@@ -100,10 +100,10 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     for grdID in ${waveGRD}; do # TODO: check if this is a bash array; if so adjust
       src="${BASE_CPLIC}/${CPL_WAVIC}/${PDY}${cyc}/${MEMDIR}/wave/${PDY}.${cyc}0000.restart.${grdID}"
       tgt="${COM_WAVE_RESTART}/${PDY}.${cyc}0000.restart.${grdID}"
-      ${NCP} "${src}" "${tgt}"
-      rc=$?
-      ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
-      err=$((err + rc))
+      #${NCP} "${src}" "${tgt}"
+      #rc=$?
+      #((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+      #err=$((err + rc))
     done
   fi
 

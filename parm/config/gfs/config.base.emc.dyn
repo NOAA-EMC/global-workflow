@@ -41,7 +41,8 @@ export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
-export BASE_CPLIC="@BASE_CPLIC@"
+#export BASE_CPLIC="@BASE_CPLIC@"
+export BASE_CPLIC="/lfs/h2/emc/couple/noscrub/jessica.meixner/HR3/IC"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -184,6 +185,7 @@ case "${CASE}" in
     "C768" | "C1152")
         export OCNRES=025
         export waveGRD='mx025'
+	export waveGRD='uglo_20km'
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
@@ -265,7 +267,7 @@ export FHMAX_GFS_12=120
 export FHMAX_GFS_18=120
 current_fhmax_var=FHMAX_GFS_${cyc}; declare -x FHMAX_GFS=${!current_fhmax_var}
 
-export FHOUT_GFS=6 # Must be 6 for S2S until #1629 is addressed; 3 for ops
+export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 if (( gfs_cyc != 0 )); then
