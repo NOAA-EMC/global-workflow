@@ -30,8 +30,8 @@ case ${machine} in
 esac
 export AERO_INPUTS_DIR
 
-export AERO_DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table.aero}"
-export AERO_FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table.aero}"
+export AERO_DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table.aero"
+export AERO_FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table.aero"
 # Biomass burning emission dataset. Choose from: gbbepx, qfed, none
 export AERO_EMIS_FIRE="qfed"
 # Directory containing GOCART configuration files
