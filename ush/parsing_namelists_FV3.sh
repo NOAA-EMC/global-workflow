@@ -54,7 +54,7 @@ if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
     tail -n $(( nrec - prec )) "${FIELD_TABLE}" ; \
   } > field_table
   # add non-prognostic tracers from additional table
-  dnats=$(( dnats + ${dnats_aero:0} ))
+  dnats=$(( dnats + dnats_aero ))
 else
   ${NCP} "${FIELD_TABLE}" field_table
 fi
