@@ -489,6 +489,9 @@ case "${model_list}" in
   atm.ocean.ice.aero)
     export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld_aero.IN"
     ;;
+  atm.ocean.ice.wave)
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld_outerwave.IN"
+    ;;
   atm.ocean.ice.wave.aero)
     export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld_aero_outerwave.IN"
     ;;
