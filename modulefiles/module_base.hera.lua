@@ -2,13 +2,13 @@ help([[
 Load environment to run GFS on Hera
 ]])
 
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/Alexander.Richert/spack-stack-1.4.1-gw/envs/gw/install/modulefiles/Core")
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
+spack_stack_ver=(os.getenv("spack_stack_ver") or "None")
+spack_env=(os.getenv("spack_env") or "None")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-" .. spack_stack_ver .. "/envs/" .. spack_env .. "/install/modulefiles/Core")
 
 load(pathJoin("stack-intel", os.getenv("stack_intel_ver")))
 load(pathJoin("stack-intel-oneapi-mpi", os.getenv("stack_impi_ver")))
-load(pathJoin("stack-python", os.getenv("stack_python_ver")))
-load(pathJoin("miniconda", os.getenv("miniconda_ver")))
+load(pathJoin("python", os.getenv("python_ver")))
 
 load(pathJoin("hpss", os.getenv("hpss_ver")))
 load(pathJoin("gempak", os.getenv("gempak_ver")))
@@ -23,7 +23,7 @@ load(pathJoin("netcdf-c", os.getenv("netcdf_c_ver")))
 load(pathJoin("netcdf-fortran", os.getenv("netcdf_fortran_ver")))
 
 load(pathJoin("nco", os.getenv("nco_ver")))
-load(pathJoin("prod-util", os.getenv("prod_util_ver")))
+load(pathJoin("prod_util", os.getenv("prod_util_ver")))
 load(pathJoin("grib-util", os.getenv("grib_util_ver")))
 load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
 load(pathJoin("gsi-ncdiag", os.getenv("gsi_ncdiag_ver")))

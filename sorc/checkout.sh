@@ -156,11 +156,11 @@ checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" 
 # Run all other checkouts simultaneously with just 1 core each to handle submodules.
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab" &
 checkout "gfs_utils.fd"    "https://github.com/davidhuber-noaa/gfs-utils"       "feature/spack-stack" &
-checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471" &
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "892b693" &
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780" &
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "ca19008" "1" "NO" &
+  checkout "gsi_enkf.fd" "https://github.com/DavidHuber-NOAA/GSI.git" "spack-stack" "1" "NO" &
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then

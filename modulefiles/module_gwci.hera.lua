@@ -2,8 +2,7 @@ help([[
 Load environment to run GFS workflow setup scripts on Hera
 ]])
 
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/Alexander.Richert/spack-stack-1.4.1-gw/envs/gw/install/modulefiles/Core")
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
 load(pathJoin("stack-intel", os.getenv("2021.5.0")))
 load(pathJoin("stack-intel-oneapi-mpi", os.getenv("2021.5.1")))
