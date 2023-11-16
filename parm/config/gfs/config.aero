@@ -5,8 +5,6 @@
 # Turn off warnings about unused variables
 # shellcheck disable=SC2034
 
-# Directory containing GOCART configuration files. Defaults to parm/ufs/chem if unset.
-AERO_CONFIG_DIR=${HOMEgfs}/parm/ufs/chem
 
 # Path to the input data tree
 case ${machine} in
@@ -30,16 +28,14 @@ case ${machine} in
     exit 2
     ;;
 esac
+export AERO_INPUTS_DIR
 
-# Biomass burning emission dataset. Choose from: GBBEPx, QFED, NONE (default)
-AERO_EMIS_FIRE=QFED
-
-export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-${HOMEgfs}/parm/ufs/fv3/diag_table.aero}"
-export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-${HOMEgfs}/parm/ufs/fv3/field_table.aero}"
-AERO_EMIS_FIRE="${AERO_EMIS_FIRE:-none}"
-export AERO_EMIS_FIRE=${AERO_EMIS_FIRE,,}
-export AERO_CONFIG_DIR="${AERO_CONFIG_DIR:-${HOMEgfs}/parm/ufs/chem}"
-export AERO_INPUTS_DIR="${AERO_INPUTS_DIR:-}"
+export AERO_DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table.aero}"
+export AERO_FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table.aero}"
+# Biomass burning emission dataset. Choose from: gbbepx, qfed, none
+export AERO_EMIS_FIRE="qfed"
+# Directory containing GOCART configuration files
+export AERO_CONFIG_DIR="${HOMEgfs}/parm/ufs/chem"
 
 # Aerosol convective scavenging factors (list of string array elements)
 # Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers
