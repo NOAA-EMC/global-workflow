@@ -5,7 +5,7 @@ cwd=$(pwd)
 
 # Default settings
 APP="S2SWA"
-CCPP_SUITES="FV3_GFS_v17_p8,FV3_GFS_v17_coupled_p8"  # TODO: does the g-w need to build with all these CCPP_SUITES?
+CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: does the g-w need to build with all these CCPP_SUITES?
 
 while getopts ":da:j:v" option; do
   case "${option}" in
