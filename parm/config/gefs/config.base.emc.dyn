@@ -138,7 +138,7 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
-export CCPP_SUITE="FV3_GFS_v17_p8"
+export CCPP_SUITE="FV3_GFS_v17_p8_ugwpv1"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
@@ -204,7 +204,7 @@ case "${APP}" in
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8 on L141
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8 on L141
     export confignamevarfornems="cpld"
 
     if [[ "${APP}" =~ A$ ]]; then
@@ -282,11 +282,16 @@ export NMEM_ENS=@NMEM_ENS@
 export ENSMEM="000"
 export MEMDIR="mem${ENSMEM}"
 
+export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
 if [[ "${EXP_WARM_START}" = ".false." ]]; then
-    export IAU_FHROT=0
+  export IAU_FHROT=0
 else
+  if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
+  else
+    export IAU_FHROT=0
+  fi
 fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
