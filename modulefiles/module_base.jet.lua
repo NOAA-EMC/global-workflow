@@ -2,11 +2,13 @@ help([[
 Load environment to run GFS on Jet
 ]])
 
-prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/role.epic/hpc-stack/libs/intel-18.0.5.274/modulefiles/stack")
+prepend_path("MODULEPATH", "/mnt/lfs4/HFIP/hfv3gfs/role.epic/spack-stack/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
-load(pathJoin("hpc", os.getenv("hpc_ver")))
-load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
-load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
+local stack_python_ver=os.getenv("stack_python_ver") or "3.10.8"
+local stack_intel_ver=os.getenv("stack_intel_ver") or "2021.5.0"
+local stack_impi_ver=os.getenv("stack_impi_ver") or "2021.5.1"
+local cmake_ver=os.getenv("cmake_ver") or "3.23.1"
+local prod_util_ver=os.getenv("prod_util_ver") or "1.2.2"
 
 load("hpss")
 load(pathJoin("gempak", os.getenv("gempak_ver")))
@@ -26,9 +28,6 @@ load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
 load(pathJoin("ncdiag", os.getenv("ncdiag_ver")))
 load(pathJoin("crtm", os.getenv("crtm_ver")))
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
-
-prepend_path("MODULEPATH", "/contrib/anaconda/modulefiles")
-load(pathJoin("anaconda", os.getenv("anaconda_ver")))
 
 --prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
 prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))

@@ -2,11 +2,13 @@ help([[
 Load environment to run GFS on Orion
 ]])
 
-prepend_path("MODULEPATH", "/apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/stack")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
-load(pathJoin("hpc", os.getenv("hpc_ver")))
-load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
-load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
+local stack_python_ver=os.getenv("stack_python_ver") or "3.10.8"
+local stack_intel_ver=os.getenv("stack_intel_ver") or "2022.0.2"
+local stack_impi_ver=os.getenv("stack_impi_ver") or "2021.5.1"
+local cmake_ver=os.getenv("cmake_ver") or "3.23.1"
+local prod_util_ver=os.getenv("prod_util_ver") or "1.2.2"
 
 load(pathJoin("gempak", os.getenv("gempak_ver")))
 load(pathJoin("ncl", os.getenv("ncl_ver")))
@@ -34,13 +36,8 @@ load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/Fit2Obs/v" .. os.getenv("fit2obs_ver"), "modulefiles"))
 load(pathJoin("fit2obs", os.getenv("fit2obs_ver")))
 
--- Temporary until official hpc-stack is updated
-prepend_path("MODULEPATH", "/work2/noaa/global/wkolczyn/save/hpc-stack/modulefiles/stack")
-load(pathJoin("hpc", "1.2.0"))
-load(pathJoin("hpc-intel", "2018.4"))
-load(pathJoin("hpc-miniconda3", "4.6.14"))
-load(pathJoin("gfs_workflow", "1.0.0"))
-load(pathJoin("met", "9.1"))
-load(pathJoin("metplus", "3.1"))
+-- Disabled verif-global until met/metplus are included in spack-stack
+--load(pathJoin("met", "9.1"))
+--load(pathJoin("metplus", "3.1"))
 
 whatis("Description: GFS run environment")
