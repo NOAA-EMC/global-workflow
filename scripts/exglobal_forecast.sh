@@ -142,9 +142,9 @@ FV3_nml
 FV3_model_configure
 echo "MAIN: Name lists and model configuration written"
 
-echo "MAIN: Writing NEMS Configure file"
+echo "MAIN: Writing UFS Configure file"
 writing_ufs_configure
-echo "MAIN: NEMS configured"
+echo "MAIN: UFS configured"
 
 #------------------------------------------------------------------
 # run the executable
