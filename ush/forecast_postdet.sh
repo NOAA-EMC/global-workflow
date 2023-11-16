@@ -381,7 +381,7 @@ EOF
 
   # time step parameters in FV3
   k_split=${k_split:-2}
-  n_split=${n_split:-6}
+  n_split=${n_split:-5}
 
   if [[ "${MONO:0:4}" = "mono" ]]; then # monotonic options
     d_con=${d_con_mono:-"0."}
@@ -886,9 +886,9 @@ CICE_postdet() {
   dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 
   if [[ "${RUN}" =~ "gdas" ]]; then
-    cice_hist_avg=".false."   # DA needs instantaneous
+    cice_hist_avg=".false., .false., .false., .false., .false."   # DA needs instantaneous
   else
-    cice_hist_avg=".true."    # P8 wants averaged over histfreq_n
+    cice_hist_avg=".true., .true., .true., .true., .true."    # P8 wants averaged over histfreq_n
   fi
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
