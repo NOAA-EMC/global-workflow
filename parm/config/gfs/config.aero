@@ -35,7 +35,7 @@ export AERO_FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table.aero}"
 # Biomass burning emission dataset. Choose from: gbbepx, qfed, none
 export AERO_EMIS_FIRE="qfed"
 # Directory containing GOCART configuration files
-export AERO_CONFIG_DIR="${HOMEgfs}/parm/ufs/chem"
+export AERO_CONFIG_DIR="${HOMEgfs}/parm/ufs/gocart"
 
 # Aerosol convective scavenging factors (list of string array elements)
 # Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers
