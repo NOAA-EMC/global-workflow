@@ -156,7 +156,7 @@ class GFSTasks(Tasks):
             interval = self._base['INTERVAL_GFS']
         elif self.cdump in ['gdas']:
             interval = self._base['INTERVAL']
-        offset = f'-{timedelta_to_HMS(interval)}'
+        offset = timedelta_to_HMS(-interval)
 
         # Files from previous cycle
         files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
@@ -491,8 +491,6 @@ class GFSTasks(Tasks):
             wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
             dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_aero:
             # Calculate offset based on CDUMP = gfs | gdas
@@ -501,7 +499,7 @@ class GFSTasks(Tasks):
                 interval = self._base['INTERVAL_GFS']
             elif self.cdump in ['gdas']:
                 interval = self._base['INTERVAL']
-            offset = f'-{interval}'
+            offset = timedelta_to_HMS(-interval)
             deps = []
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aerosol_init'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -1012,7 +1010,7 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
                     deps2.append(rocoto.add_dependency(dep_dict))
                 dependencies = rocoto.create_dependency(dep_condition='and', dep=deps2)
-                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
                 dependencies.append(rocoto.add_dependency(dep_dict))
                 dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
         if self.cdump in ['gfs'] and self.app_config.do_tracker:
