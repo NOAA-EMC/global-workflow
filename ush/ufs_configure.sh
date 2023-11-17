@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
 #####
-## This script writes nems.configure file
+## This script writes ufs.configure file
 ## first, select a "*.IN" templates based on
-## $confignamevarfornems and parse values based on
+## $confignamevarforufs and parse values based on
 ## $cpl** switches.
 ##
 ## This is a child script of modular
@@ -12,11 +12,11 @@
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034
-writing_nems_configure() {
+writing_ufs_configure() {
 
-echo "SUB ${FUNCNAME[0]}: nems.configure.sh begins"
+echo "SUB ${FUNCNAME[0]}: ufs.configure.sh begins"
 
-# Setup nems.configure
+# Setup ufs.configure
 local DumpFields=${NEMSDumpFields:-false}
 local cap_dbug_flag=${cap_dbug_flag:-0}
 # Determine "cmeps_run_type" based on the availability of the mediator restart file
@@ -95,13 +95,13 @@ if [[ ! -r "${ufs_configure_template}" ]]; then
 fi
 
 source "${HOMEgfs}/ush/atparse.bash"
-rm -f "${DATA}/nems.configure"
-atparse < "${ufs_configure_template}" >> "${DATA}/nems.configure"
-echo "Rendered nems.configure:"
-cat nems.configure
+rm -f "${DATA}/ufs.configure"
+atparse < "${ufs_configure_template}" >> "${DATA}/ufs.configure"
+echo "Rendered ufs.configure:"
+cat ufs.configure
 
-${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_nems.yaml" fd_nems.yaml
+${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" fd_ufs.yaml
 
-echo "SUB ${FUNCNAME[0]}: nems.configure.sh ends for ${ufs_configure_template}"
+echo "SUB ${FUNCNAME[0]}: ufs.configure.sh ends for ${ufs_configure_template}"
 
 }

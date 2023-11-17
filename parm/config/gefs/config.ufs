@@ -468,25 +468,25 @@ fi
 # Set the name of the UFS (previously nems) configure template to use
 case "${model_list}" in
   atm)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.atm.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atm.IN"
     ;;
   atm.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.atm_aero.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atm_aero.IN"
     ;;
   atm.wave)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.leapfrog_atm_wav.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav.IN"
     ;;
   atm.ocean.ice)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld.IN"
     ;;
   atm.ocean.ice.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld_aero.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero.IN"
     ;;
   atm.ocean.ice.wave)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld_outerwave.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_outerwave.IN"
     ;;
   atm.ocean.ice.wave.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/nems.configure.cpld_aero_outerwave.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero_outerwave.IN"
     ;;
   *)
     echo "FATAL ERROR: Unable to determine appropriate UFS configure template for ${model_list}"
@@ -494,7 +494,7 @@ case "${model_list}" in
     ;;
 esac
 
-if [[ ! -r ${ufs_configure_template} ]]; then
+if [[ ! -r "${ufs_configure_template}" ]]; then
   echo "FATAL ERROR: ${ufs_configure_template} either doesn't exist or is not readable."
   exit 17
 fi

@@ -2,7 +2,7 @@
 
 ################################################################################
 ## UNIX Script Documentation Block
-## Script name:         exglobal_fcst_nemsfv3gfs.sh
+## Script name:         exglobal_forecast.sh
 ## Script description:  Runs a global FV3GFS model forecast
 ##
 ## Author:   Fanglin Yang       Organization: NCEP/EMC       Date: 2016-11-15
@@ -70,7 +70,7 @@
 ##
 ## Namelist input, in RUNDIR,
 ##	1. diag_table
-##	2. nems.configure
+##	2. ufs.configure
 ##	3. model_configure
 ##	4. input.nml
 #######################
@@ -83,7 +83,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/forecast_predet.sh"	# include functions for variable definition
 source "${HOMEgfs}/ush/forecast_det.sh"  # include functions for run type determination
 source "${HOMEgfs}/ush/forecast_postdet.sh"	# include functions for variables after run type determination
-source "${HOMEgfs}/ush/nems_configure.sh"	# include functions for nems_configure processing
+source "${HOMEgfs}/ush/ufs_configure.sh"	# include functions for ufs.configure processing
 source "${HOMEgfs}/ush/parsing_model_configure_FV3.sh"
 
 # Coupling control switches, for coupling purpose, off by default
@@ -134,9 +134,9 @@ FV3_nml
 FV3_model_configure
 echo "MAIN: Name lists and model configuration written"
 
-echo "MAIN: Writing NEMS Configure file"
-writing_nems_configure
-echo "MAIN: NEMS configured"
+echo "MAIN: Writing UFS Configure file"
+writing_ufs_configure
+echo "MAIN: UFS configured"
 
 #------------------------------------------------------------------
 # run the executable
