@@ -9,7 +9,7 @@ if [[ $# -ne 1 ]]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init"
-    echo "sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch echgres"
+    echo "sfcanl analcalc analdiag fcst post fit2obs metp arch echgres"
     echo "ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -345,20 +345,6 @@ elif [[ ${step} = "post" ]]; then
     export npe_node_dwn=${npe_node_max}
     if [[ "${npe_node_post}" -gt "${npe_node_max}" ]]; then export npe_node_post=${npe_node_max} ; fi
     if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
-    export is_exclusive=True
-
-elif [[ ${step} = "vrfy" ]]; then
-
-    export wtime_vrfy="03:00:00"
-    export wtime_vrfy_gfs="06:00:00"
-    export npe_vrfy=3
-    export nth_vrfy=1
-    export npe_node_vrfy=1
-    export npe_vrfy_gfs=1
-    export npe_node_vrfy_gfs=1
-    if [[ ${machine} == "HERA" ]]; then
-      export memory_vrfy="16384M"
-    fi
     export is_exclusive=True
 
 elif [[ "${step}" = "fit2obs" ]]; then
