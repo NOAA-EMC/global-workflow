@@ -879,7 +879,7 @@ class GFSTasks(Tasks):
         task = create_wf_task('fbwinds', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
- 
+
     def verfozn(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analdiag'}
