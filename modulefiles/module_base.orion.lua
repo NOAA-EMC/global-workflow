@@ -13,7 +13,6 @@ local prod_util_ver=os.getenv("prod_util_ver") or "1.2.2"
 load(pathJoin("gempak", os.getenv("gempak_ver")))
 load(pathJoin("ncl", os.getenv("ncl_ver")))
 load(pathJoin("jasper", os.getenv("jasper_ver")))
-load(pathJoin("zlib", os.getenv("zlib_ver")))
 load(pathJoin("png", os.getenv("libpng_ver")))
 load(pathJoin("cdo", os.getenv("cdo_ver")))
 

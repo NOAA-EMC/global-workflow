@@ -49,8 +49,13 @@ machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 #------------------------------
 #--Set up build.ver and run.ver
 #------------------------------
-cp "${HOMEgfs}/versions/build.${machine}.ver" "${HOMEgfs}/versions/build.ver"
-cp "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/run.ver"
+if [[ "${machine}" == "wcoss2" ]]; then
+   cp "${HOMEgfs}/versions/build.${machine}.ver" "${HOMEgfs}/versions/build.ver"
+   cp "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/run.ver"
+else
+   cp "${HOMEgfs}/versions/build.spack.ver" "${HOMEgfs}/versions/build.ver"
+   cp "${HOMEgfs}/versions/run.spack.ver" "${HOMEgfs}/versions/run.ver"
+fi
 
 #------------------------------
 #--model fix fields
