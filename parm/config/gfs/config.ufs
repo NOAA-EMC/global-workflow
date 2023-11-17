@@ -471,7 +471,7 @@ fi
 
 # GOCART specific settings
 if [[ "${skip_gocart}" == "false" ]]; then
-  source "${EXPDIR}/config.ww3"
+  source "${EXPDIR}/config.aero"
   export cplchm=".true."
   model_list="${model_list}.aero"
 fi
