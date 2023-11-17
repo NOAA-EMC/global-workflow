@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 #####
-## This script validates $confignamevarfornems
+## This script validates $confignamevarforufs
 ## against cpl** switches to check consistency
 ##
 ## This is a child script of modular
@@ -9,9 +9,9 @@
 #####
 
 cplvalidate(){
-echo "SUB cplvalidate: validating cpl** switches for ${confignamevarfornems}"
+echo "SUB cplvalidate: validating cpl** switches for ${confignamevarforufs}"
 return  # TODO: Why are we returning right here?
-case ${confignamevarfornems} in
+case ${confignamevarforufs} in
   'atm') combination=.false..false..false..false..false.;;
   'datm') combination=.true..true..false..false..false.;;
   'atm_aero') combination=.true..false..false..false..true.;;
