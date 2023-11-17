@@ -80,15 +80,11 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 # include all subroutines. Executions later.
-source "${HOMEgfs}/ush/cplvalidate.sh"	# validation of cpl*
 source "${HOMEgfs}/ush/forecast_predet.sh"	# include functions for variable definition
 source "${HOMEgfs}/ush/forecast_det.sh"  # include functions for run type determination
 source "${HOMEgfs}/ush/forecast_postdet.sh"	# include functions for variables after run type determination
 source "${HOMEgfs}/ush/ufs_configure.sh"	# include functions for ufs.configure processing
 source "${HOMEgfs}/ush/parsing_model_configure_FV3.sh"
-
-# Compset string. For ufs.configure.* template selection. Default ATM only
-confignamevarforufs=${confignamevarforufs:-'atm'}
 
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
@@ -103,10 +99,6 @@ ICETIM=${DELTIM}
 
 CPL_SLOW=${CPL_SLOW:-${OCNTIM}}
 CPL_FAST=${CPL_FAST:-${ICETIM}}
-
-echo "MAIN: Validating '${confignamevarforufs}' with cpl switches"
-cplvalidate
-echo "MAIN: '${confignamevarforufs}' validated, continue"
 
 echo "MAIN: Loading common variables before determination of run type"
 common_predet
