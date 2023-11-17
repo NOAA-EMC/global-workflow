@@ -382,7 +382,7 @@ EOF
 
   # time step parameters in FV3
   k_split=${k_split:-2}
-  n_split=${n_split:-6}
+  n_split=${n_split:-5}
 
   if [[ "${MONO:0:4}" = "mono" ]]; then # monotonic options
     d_con=${d_con_mono:-"0."}
@@ -517,7 +517,7 @@ FV3_out() {
     # No need to copy FV3 restart files when RUN=gfs or gefs
     ${NCP} "${DATA}/input.nml" "${COM_CONF}/ufs.input.nml"
     ${NCP} "${DATA}/model_configure" "${COM_CONF}/ufs.model_configure"
-    ${NCP} "${DATA}/nems.configure" "${COM_CONF}/ufs.nems.configure"
+    ${NCP} "${DATA}/ufs.configure" "${COM_CONF}/ufs.ufs.configure"
     ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"  
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
@@ -883,13 +883,13 @@ CICE_postdet() {
 
   # TODO:  These settings should be elevated to config.ice
   histfreq_n=${histfreq_n:-6}
-  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by nems.configure
+  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
   dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 
   if [[ "${RUN}" =~ "gdas" ]]; then
-    cice_hist_avg=".false."   # DA needs instantaneous
+    cice_hist_avg=".false., .false., .false., .false., .false."   # DA needs instantaneous
   else
-    cice_hist_avg=".true."    # P8 wants averaged over histfreq_n
+    cice_hist_avg=".true., .true., .true., .true., .true."    # P8 wants averaged over histfreq_n
   fi
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
