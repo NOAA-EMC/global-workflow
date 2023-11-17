@@ -516,7 +516,7 @@ FV3_out() {
     # No need to copy FV3 restart files when RUN=gfs or gefs
     ${NCP} "${DATA}/input.nml" "${COM_CONF}/ufs.input.nml"
     ${NCP} "${DATA}/model_configure" "${COM_CONF}/ufs.model_configure"
-    ${NCP} "${DATA}/nems.configure" "${COM_CONF}/ufs.nems.configure"
+    ${NCP} "${DATA}/ufs.configure" "${COM_CONF}/ufs.ufs.configure"
     ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"  
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
@@ -882,7 +882,7 @@ CICE_postdet() {
 
   # TODO:  These settings should be elevated to config.ice
   histfreq_n=${histfreq_n:-6}
-  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by nems.configure
+  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
   dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 
   if [[ "${RUN}" =~ "gdas" ]]; then
