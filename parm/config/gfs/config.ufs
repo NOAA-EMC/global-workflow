@@ -16,6 +16,7 @@ if (( $# <= 1 )); then
     echo "--mom6 500|100|025"
     echo "--cice6 500|100|025"
     echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_200|glo_500|mx025"
+    echo "--gocart"
 
     exit 1
 
@@ -25,6 +26,7 @@ fi
 skip_mom6=true
 skip_cice6=true
 skip_ww3=true
+skip_gocart=true
 skip_mediator=true
 
 # Loop through named arguments
@@ -33,18 +35,25 @@ while (( $# > 0 )); do
   case "${key}" in
     "--fv3")
       fv3_res="$2"
+      shift
       ;;
     "--mom6")
       mom6_res="$2"
       skip_mom6=false
+      shift
       ;;
     "--cice6")
       cice6_res="$2"
       skip_cice6=false
+      shift
       ;;
     "--ww3")
       ww3_res="$2"
       skip_ww3=false
+      shift
+      ;;
+    "--gocart")
+      skip_gocart=false
       ;;
     *)    # unknown option
       echo "FATAL ERROR: Unknown option: ${key}, ABORT!"
@@ -52,21 +61,12 @@ while (( $# > 0 )); do
       ;;
   esac
   shift
-  shift
 done
 
 # Mediator is required if any of the non-ATM components are used
 if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${skip_ww3}" == "false" ]]; then
   skip_mediator=false
 fi
-
-# Source component configs if necessary
-for component in WAVE OCN ICE AERO; do
-  control="DO_${component}"
-  if [[ ${!control} == "YES" ]]; then
-    source "${EXPDIR}/config.${component,,}"
-  fi
-done
 
 case "${machine}" in
   "WCOSS2")
@@ -125,7 +125,7 @@ case "${fv3_res}" in
         export nthreads_fv3_gfs=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="40.0,1.77,1.0,1.0"   # settings for GSL drag suite
-        export knob_ugwp_tauamp=6.0e-3      # setting for UGWPv1 non-stationary GWD 
+        export knob_ugwp_tauamp=6.0e-3      # setting for UGWPv1 non-stationary GWD
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
         export WRITE_GROUP_GFS=1
@@ -284,6 +284,7 @@ fi
 
 # MOM6 specific settings
 if [[ "${skip_mom6}" == "false" ]]; then
+  source "${EXPDIR}/config.ocn"
   export cplflx=".true."
   model_list="${model_list}.ocean"
   nthreads_mom6=1
@@ -394,6 +395,7 @@ fi
 
 # CICE6 specific settings
 if [[ "${skip_cice6}" == "false" ]]; then
+  source "${EXPDIR}/config.ice"
   export cplice=".true."
   model_list="${model_list}.ice"
   # Ensure we sourced the MOM6 section
@@ -433,6 +435,7 @@ fi
 
 # WW3 specific settings
 if [[ "${skip_ww3}" == "false" ]]; then
+  source "${EXPDIR}/config.wave"
   export cplwav=".true."
   export cplwav2atm=".true."
   model_list="${model_list}.wave"
@@ -467,7 +470,8 @@ if [[ "${skip_ww3}" == "false" ]]; then
 fi
 
 # GOCART specific settings
-if [[ "${DO_AERO}" = "YES" ]]; then # temporary settings for aerosol coupling
+if [[ "${skip_gocart}" == "false" ]]; then
+  source "${EXPDIR}/config.ww3"
   export cplchm=".true."
   model_list="${model_list}.aero"
 fi
@@ -505,5 +509,7 @@ if [[ ! -r "${ufs_configure_template}" ]]; then
   echo "FATAL ERROR: ${ufs_configure_template} either doesn't exist or is not readable."
   exit 17
 fi
+
+unset model_list
 
 echo "END: config.ufs"
