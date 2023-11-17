@@ -183,17 +183,17 @@ export ICERES=${OCNRES}
 
 case "${APP}" in
   ATM)
-    export confignamevarfornems="atm"
+    export confignamevarforufs="atm"
     ;;
   ATMA)
     export DO_AERO="YES"
-    export confignamevarfornems="atm_aero"
+    export confignamevarforufs="atm_aero"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
-    export confignamevarfornems="leapfrog_atm_wav"
+    export confignamevarforufs="leapfrog_atm_wav"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -205,18 +205,18 @@ case "${APP}" in
     export DO_OCN="YES"
     export DO_ICE="YES"
     export CCPP_SUITE="FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8 on L141
-    export confignamevarfornems="cpld"
+    export confignamevarforufs="cpld"
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export confignamevarfornems="${confignamevarfornems}_aero"
+        export confignamevarforufs="${confignamevarforufs}_aero"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"
         export cplwav2atm=".true."
-        export confignamevarfornems="${confignamevarfornems}_outerwave"
+        export confignamevarforufs="${confignamevarforufs}_outerwave"
     fi
     ;;
   *)
