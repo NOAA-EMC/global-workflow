@@ -14,10 +14,10 @@ export DO_WAVE=${DO_WAVE_ENKF:-${DO_WAVE:-"NO"}}
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE_ENS}"
 # Ocean/Ice/Waves ensemble configurations are identical to deterministic member
-[[ ${DO_OCN} == "YES" ]] && string="${string} --mom6 ${OCNRES}"
-[[ ${DO_ICE} == "YES" ]] && string="${string} --cice6 ${ICERES}"
-[[ ${DO_WAVE} == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
-[[ "${DO_AERO}" = "YES" ]] && string="${string} --gocart"
+[[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
+[[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
+[[ "${DO_WAVE}" == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
+[[ "${DO_AERO}" == "YES" ]] && string="${string} --gocart"
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
 
