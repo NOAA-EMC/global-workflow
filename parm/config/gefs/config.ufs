@@ -8,7 +8,7 @@
 
 echo "BEGIN: config.ufs"
 
-if (( $# <- 1 )); then
+if (( $# <= 1 )); then
 
     echo "Must specify an input resolution argument to set variables!"
     echo "argument can be any one of the following:"
