@@ -55,12 +55,11 @@ export BASE_GIT="@BASE_GIT@"
 export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
-export DO_VRFY="NO"       # VRFY step
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
 #  if want MOS written to HPSS.   Should update arch.sh to
-#  use RUNMOS flag (currently in config.vrfy)
+#  use RUNMOS flag
 export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
