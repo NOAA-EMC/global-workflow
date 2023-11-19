@@ -7,7 +7,7 @@ echo "BEGIN: config.landensanl"
 
 # Get task specific resources
 . "${EXPDIR}/config.resources" landensanl
-
+export NMEM_ELDAGRP=10
 obs_list_name=gdas_land_gts_only.yaml
 if [[ "${cyc}" = "18" ]]; then
     obs_list_name=gdas_land_prototype.yaml

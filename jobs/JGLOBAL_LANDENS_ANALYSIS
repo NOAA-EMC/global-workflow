@@ -3,25 +3,107 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "landensanl" -c "base landensanl"
 
+# Re-run failed members, or entire group
+RERUN_ELDAGRP=${RERUN_ELDAGRP:-"YES"}
+
 ##############################################
 # Set variables used in the script
 ##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
+GDUMP="enkfgdas"
+
+export CDUMP="gdas"
+export CASE=${CASE_ENS}
+YMD=${PDY} HH=${cyc} generate_com -rx COM_TOP
+################################################################################
+# Preprocessing
+cd "${DATA}" || exit 99
+DATATOP=${DATA}
+
+################################################################################
+# Set output data
+ELDAGRP="${COM_TOP}/elda.grp${ENSGRP}"
+if [[ -f ${ELDAGRP} ]]; then
+   if [[ ${RERUN_ELDAGRP} = "YES" ]]; then
+      rm -f "${ELDAGRP}"
+   else
+      echo "RERUN_ELDAGRP = ${RERUN_ELDAGRP}, will re-run FAILED members only!"
+      ${NMV} "${ELDAGRP}" "${ELDAGRP}.fail"
+   fi
+fi
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# Get ENSBEG/ENSEND from ENSGRP and NMEM_ELDAGRP
+export ENSEND=$((NMEM_ELDAGRP * 10#${ENSGRP}))
+export ENSBEG=$((ENSEND - NMEM_ELDAGRP + 1))
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${LANDENSANLPY:-${HOMEgfs}/scripts/exglobal_landens_analysis.py}
-${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+EXSCRIPT=${LANDANLPY:-${HOMEgfs}/scripts/exglobal_land_analysis.py}
 
+rc=0
+for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
+
+   cd "${DATATOP}"
+
+   ENSMEM=$(printf %03i "${imem}")
+   export ENSMEM
+   memchar="mem${ENSMEM}"
+
+   echo "Processing MEMBER: ${ENSMEM}"
+
+   ra=0
+
+   skip_mem="NO"
+   if [[ -f ${ELDAGRP}.fail ]]; then
+      set +e
+      memstat=$(grep "MEMBER ${ENSMEM}" "${ELDAGRP}.fail" | grep -c "PASS")
+      set_strict
+      [[ ${memstat} -eq 1 ]] && skip_mem="YES"
+   fi
+
+   # Construct COM variables from templates (see config.com)
+   # Can't make these read-only because we are looping over members
+   RUN="gdas" YMD=${PDY} HH=${cyc} generate_com -x COM_OBS
+   RUN="${GDUMP}" MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_LAND_ANALYSIS COM_CONF
+
+   RUN="${GDUMP}" MEMDIR="${memchar}" YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+   mkdir -m 775 -p "${COM_LAND_ANALYSIS}" "${COM_CONF}"
+
+   if [[ ${skip_mem} = "NO" ]]; then
+
+      ra=0
+
+      export MEMBER=${imem}
+      export DATA="${DATATOP}/${memchar}"
+      if [[ -d ${DATA} ]]; then rm -rf "${DATA}"; fi
+      mkdir -p "${DATA}"
+      ${EXSCRIPT}
+      ra=$?
+
+      # Notify a member forecast failed and abort
+      if [[ ${ra} -ne 0 ]]; then
+         err_exit "FATAL ERROR:  forecast of member ${ENSMEM} FAILED.  Aborting job"
+      fi
+
+      rc=$((rc+ra))
+
+   fi
+
+done
 ##############################################
 # End JOB SPECIFIC work
 ##############################################
+# If any members failed, error out
+export err=${rc}; err_chk
 
 ##############################################
 # Final processing

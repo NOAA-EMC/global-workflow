@@ -1125,15 +1125,18 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}preplandobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}echgres'}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump
+        landensanlenvars = self.envars.copy()
+        landensanlenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
+        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['landensanl']['NMEM_ELDAGRP'])
 
         resources = self.get_resource('landensanl')
-        task = create_wf_task('landensanl', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        task = create_wf_task('landensanl', resources, cdump=self.cdump, envar=landensanlenvars, dependency=dependencies,
+                              metatask='landensanl', varname='grp', varval=groups)
 
         return task
 
@@ -1199,12 +1202,13 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jedilandens:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}landensanl'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        else:
-            dependencies = rocoto.create_dependency(dep=deps)
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        # if self.app_config.do_jedilandens:
+        #     dep_dict = {'type': 'metatask', 'name': f'{self.cdump}landensanl'}
+        #     deps.append(rocoto.add_dependency(dep_dict))
+        #     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        # else:
+        #     dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('esfc')
         task = create_wf_task('esfc', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
