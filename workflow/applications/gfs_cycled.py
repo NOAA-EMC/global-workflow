@@ -17,7 +17,6 @@ class GFSCycledAppConfig(AppConfig):
         self.do_jediatmens = self._base.get('DO_JEDIATMENS', False)
         self.do_jediocnvar = self._base.get('DO_JEDIOCNVAR', False)
         self.do_jedilandda = self._base.get('DO_JEDILANDDA', False)
-        self.do_jedilandens = self._base.get('DO_JEDILANDENS', False)
         self.do_mergensst = self._base.get('DO_MERGENSST', False)
 
         self.lobsdiag_forenkf = False
@@ -55,7 +54,7 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
-            if self.do_jedilandens:
+            if self.do_jedilandda:
                 configs += ['landensanl']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
@@ -149,7 +148,7 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-            if self.do_jedilandens:
+            if self.do_jedilandda:
                 hybrid_tasks += ['landensanl']
             hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 

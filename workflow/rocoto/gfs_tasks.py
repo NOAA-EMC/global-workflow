@@ -1203,12 +1203,12 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        # if self.app_config.do_jedilandens:
-        #     dep_dict = {'type': 'metatask', 'name': f'{self.cdump}landensanl'}
-        #     deps.append(rocoto.add_dependency(dep_dict))
-        #     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        # else:
-        #     dependencies = rocoto.create_dependency(dep=deps)
+        if self.app_config.do_jedilandda:
+            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}landensanl'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        else:
+            dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('esfc')
         task = create_wf_task('esfc', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)

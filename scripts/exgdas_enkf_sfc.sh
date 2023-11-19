@@ -185,7 +185,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
 
-            if [[ ${DO_JEDILANDENS:-"NO"} = "YES" ]]; then
+            if [[ ${DO_JEDILANDDA:-"NO"} = "YES" ]]; then
                 ${NCP} "${COM_LAND_MEM_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
                     "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
             else
