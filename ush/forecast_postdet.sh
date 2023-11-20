@@ -381,7 +381,7 @@ EOF
 
   # time step parameters in FV3
   k_split=${k_split:-2}
-  n_split=${n_split:-6}
+  n_split=${n_split:-5}
 
   if [[ "${MONO:0:4}" = "mono" ]]; then # monotonic options
     d_con=${d_con_mono:-"0."}
@@ -514,7 +514,10 @@ FV3_out() {
     done
   else
     # No need to copy FV3 restart files when RUN=gfs or gefs
-    ${NCP} "${DATA}/input.nml" "${COM_ATMOS_HISTORY}/input.nml"
+    ${NCP} "${DATA}/input.nml" "${COM_CONF}/ufs.input.nml"
+    ${NCP} "${DATA}/model_configure" "${COM_CONF}/ufs.model_configure"
+    ${NCP} "${DATA}/ufs.configure" "${COM_CONF}/ufs.ufs.configure"
+    ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"  
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
@@ -678,12 +681,12 @@ MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
   # Copy MOM6 ICs
-  ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+  ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
   case ${OCNRES} in
     "025")
       for nn in $(seq 1 4); do
-        if [[ -f "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
-          ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
+        if [[ -f "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res_${nn}.nc" ]]; then
+          ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
         fi
       done
     ;;
@@ -853,7 +856,7 @@ MOM6_out() {
 
   # Copy MOM_input from DATA to COM_OCEAN_INPUT after the forecast is run (and successfull)
   if [[ ! -d ${COM_OCEAN_INPUT} ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
-  ${NCP} "${DATA}/INPUT/MOM_input" "${COM_OCEAN_INPUT}/"
+  ${NCP} "${DATA}/INPUT/MOM_input" "${COM_CONF}/ufs.MOM_input"
 
   # TODO: mediator should have its own CMEPS_out() function
   # Copy mediator restarts from DATA to COM
@@ -879,13 +882,13 @@ CICE_postdet() {
 
   # TODO:  These settings should be elevated to config.ice
   histfreq_n=${histfreq_n:-6}
-  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by nems.configure
+  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
   dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 
   if [[ "${RUN}" =~ "gdas" ]]; then
-    cice_hist_avg=".false."   # DA needs instantaneous
+    cice_hist_avg=".false., .false., .false., .false., .false."   # DA needs instantaneous
   else
-    cice_hist_avg=".true."    # P8 wants averaged over histfreq_n
+    cice_hist_avg=".true., .true., .true., .true., .true."    # P8 wants averaged over histfreq_n
   fi
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
@@ -904,7 +907,7 @@ CICE_postdet() {
 
   # Copy CICE ICs
   echo "Link CICE ICs"
-  cice_restart_file="${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc"
+  cice_restart_file="${COM_ICE_RESTART_PREV}/${sPDY}.${scyc}0000.cice_model.res.nc"
   if [[ ! -f "${cice_restart_file}" ]]; then
     echo "FATAL ERROR: CICE restart file not found at '${cice_restart_file}', ABORT!"
     exit 112
@@ -991,7 +994,7 @@ CICE_out() {
 
   # Copy ice_in namelist from DATA to COMOUTice after the forecast is run (and successfull)
   if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
-  ${NCP} "${DATA}/ice_in" "${COM_ICE_INPUT}/ice_in"
+  ${NCP} "${DATA}/ice_in" "${COM_CONF}/ufs.ice_in"
 }
 
 GOCART_rc() {
@@ -1038,7 +1041,7 @@ GOCART_postdet() {
       rm -f "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
     fi
 
-    #To Do: Temporarily removing this as this will crash gocart, adding copy statement at the end 
+    #To Do: Temporarily removing this as this will crash gocart, adding copy statement at the end
     #${NLN} "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
     #       "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
   done
@@ -1049,8 +1052,8 @@ GOCART_out() {
 
   # Copy gocart.inst_aod after the forecast is run (and successfull)
   # TO DO: this should be linked but there were issues where gocart was crashing if it was linked
-  local fhr 
-  local vdate 
+  local fhr
+  local vdate
   for fhr in ${FV3_OUTPUT_FH}; do
     if (( fhr == 0 )); then continue; fi
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
@@ -1060,4 +1063,3 @@ GOCART_out() {
 
 
 }
-

@@ -16,7 +16,7 @@ export netcdf_ver=4.7.4
 export nco_ver=4.9.1
 export prod_util_ver=1.2.2
 export grib_util_ver=1.2.2
-export g2tmpl_ver=1.10.0
+export g2tmpl_ver=1.10.2
 export ncdiag_ver=1.0.0
 export crtm_ver=2.4.0
 export wgrib2_ver=2.0.8
@@ -26,5 +26,5 @@ export anaconda_ver=5.3.1
 export obsproc_run_ver=1.1.2
 export prepobs_run_ver=1.0.1
 
-export tracker_ver=feature-GFSv17_com_reorg
+export ens_tracker_ver=feature-GFSv17_com_reorg
 export fit2obs_ver=1.0.0

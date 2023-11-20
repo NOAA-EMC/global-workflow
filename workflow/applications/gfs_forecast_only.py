@@ -18,13 +18,22 @@ class GFSForecastOnlyAppConfig(AppConfig):
         configs = ['stage_ic', 'fcst', 'arch', 'cleanup']
 
         if self.do_atm:
-            configs += ['post', 'vrfy']
+            configs += ['post']
 
         if self.do_aero:
             configs += ['aerosol_init']
 
         if self.do_ocean or self.do_ice:
             configs += ['ocnpost']
+
+        if self.do_atm and self.do_tracker:
+            configs += ['tracker']
+
+        if self.do_atm and self.do_genesis:
+            configs += ['genesis']
+
+        if self.do_atm and self.do_genesis_fsu:
+            configs += ['genesis_fsu']
 
         if self.do_atm and self.do_metp:
             configs += ['metp']
@@ -82,8 +91,14 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if self.do_ocean:
             tasks += ['ocnpost']
 
-        if self.do_atm:
-            tasks += ['vrfy']
+        if self.do_atm and self.do_tracker:
+            tasks += ['tracker']
+
+        if self.do_atm and self.do_genesis:
+            tasks += ['genesis']
+
+        if self.do_atm and self.do_genesis_fsu:
+            tasks += ['genesis_fsu']
 
         if self.do_atm and self.do_metp:
             tasks += ['metp']

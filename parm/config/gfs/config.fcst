@@ -13,20 +13,14 @@ esac
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
-[[ ${DO_OCN} == "YES" ]] && string="${string} --mom6 ${OCNRES}"
-[[ ${DO_ICE} == "YES" ]] && string="${string} --cice6 ${ICERES}"
-[[ ${DO_WAVE} == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
+[[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
+[[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
+[[ "${DO_WAVE}" == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
+[[ "${DO_AERO}" == "YES" ]] && string="${string} --gocart"
 # We are counting on $string being multiple arguments
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
 
-# Source component configs if necessary
-for component in WAVE OCN ICE AERO; do
-  control="DO_${component}"
-  if [[ ${!control} == "YES" ]]; then
-    source "${EXPDIR}/config.${component,,}"
-  fi
-done
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
@@ -40,35 +34,6 @@ fi
 export esmf_profile=".false."
 export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
-
-#######################################################################
-# COUPLING COMPONENTS
-
-# cpl defaults
-export cpl=".false."
-export cplflx=".false."
-export cplice=".false."
-export cplchm=".false."
-export cplwav=".false."
-
-# cpl changes based on APP
-
-if [[ "${DO_COUPLED}" == "YES" ]]; then
-  export cpl=".true."
-fi
-if [[ "${DO_AERO}" == "YES" ]]; then
-  export cplchm=".true."
-fi
-if [[ "${DO_ICE}" == "YES" ]]; then
-  export cplice=".true."
-  export cplflx=".true."
-fi
-if [[ "${DO_OCN}" == "YES" ]]; then
-  export cplflx=".true."
-fi
-if [[ "${DO_WAVE}" == "YES" ]]; then
-  export cplwav=".true."
-fi
 
 #######################################################################
 
@@ -119,24 +84,27 @@ if (( gwd_opt == 2 )); then
     #export  do_ugwp_v1_orog_only=".false."
 
     #--used for UFS p8
-    export knob_ugwp_version=0
+    export knob_ugwp_version=1
     export do_ugwp=".false."
     export do_tofd=".false."
-    export do_ugwp_v0=".true."
-    export do_ugwp_v1=".false."
+    export do_ugwp_v0=".false."
+    export do_ugwp_v1=".true."
     export do_ugwp_v0_orog_only=".false."
     export do_ugwp_v0_nst_only=".false."
-    export do_gsl_drag_ls_bl=".false."
+    export do_gsl_drag_ls_bl=".true."
     export do_gsl_drag_ss=".true."
-    export do_gsl_drag_tofd=".false."
+    export do_gsl_drag_tofd=".true."
     export do_ugwp_v1_orog_only=".false."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
+    if [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
+       export cdmbgwd=${cdmbgwd_gsl}
+    fi
 fi
 
 # Sponge layer settings
-export tau=10.0
-export rf_cutoff=7.5e2
+export tau=0.
+export rf_cutoff=10.
 export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
@@ -249,9 +217,9 @@ export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
 export DO_CA=${DO_CA:-"YES"}
 
 #coupling settings
-export cplmode="nems_frac"
+export cplmode="ufs.frac"
 if [[ "${FRAC_GRID:-".true."}" == ".false." ]]; then
-  export cplmode="nems_orig"
+  export cplmode="ufs.nfrac"
 fi
 export psm_bc="1"
 
@@ -282,15 +250,11 @@ if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
     # Variables used in DA cycling
     export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table_da"
 
-
     if [[ "${DOIAU}" == "YES" ]]; then
       export restart_interval="3"
     else
       export restart_interval="6"
     fi
-
-    # Choose coupling with wave
-    if [[ "${DO_WAVE}" == "YES" ]]; then export cplwav=".true." ; fi
 
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
@@ -303,11 +267,6 @@ elif [[ "${CDUMP}" =~ "gfs" ]] ; then # GFS cycle specific parameters
     # Write gfs restart files to rerun fcst from any break point
     export restart_interval=${restart_interval_gfs:-12}
 
-    # Choose coupling with wave
-    if [[ "${DO_WAVE}" = "YES" && "${WAVE_CDUMP}" != "gdas" ]]; then
-        export cplwav=".true."
-    fi
-
     # Turn off dry mass adjustment in GFS
     export adjust_dry_mass=".false."
 
@@ -318,17 +277,6 @@ elif [[ "${CDUMP}" =~ "gfs" ]] ; then # GFS cycle specific parameters
       export io_layout="1,1"
     fi
 
-fi
-
-if [[ "${DO_AERO}" = "YES" ]]; then # temporary settings for aerosol coupling
-    export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-${HOMEgfs}/parm/ufs/fv3/diag_table.aero}"
-    export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-${HOMEgfs}/parm/ufs/fv3/field_table.aero}"
-    AERO_EMIS_FIRE="${AERO_EMIS_FIRE:-none}"
-    export AERO_EMIS_FIRE=${AERO_EMIS_FIRE,,}
-    export AERO_CONFIG_DIR="${AERO_CONFIG_DIR:-${HOMEgfs}/parm/ufs/chem}"
-    export AERO_INPUTS_DIR="${AERO_INPUTS_DIR:-}"
-    export fscav_aero="${aero_conv_scav_factors:-${fscav_aero}}"
-    export dnats_aero="${aero_diag_tracers:-0}"
 fi
 
 # Remember config.efcs will over-ride these values for ensemble forecasts

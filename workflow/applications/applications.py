@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 from typing import Dict, List, Any
+from datetime import timedelta
 from hosts import Host
-from wxflow import Configuration
+from wxflow import Configuration, to_timedelta
 from abc import ABC, ABCMeta, abstractmethod
 
 __all__ = ['AppConfig']
@@ -54,10 +55,12 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_gempak = _base.get('DO_GEMPAK', False)
         self.do_awips = _base.get('DO_AWIPS', False)
         self.do_wafs = _base.get('WAFSF', False)
-        self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_verfozn = _base.get('DO_VERFOZN', True)
         self.do_verfrad = _base.get('DO_VERFRAD', True)
         self.do_vminmon = _base.get('DO_VMINMON', True)
+        self.do_tracker = _base.get('DO_TRACKER', True)
+        self.do_genesis = _base.get('DO_GENESIS', True)
+        self.do_genesis_fsu = _base.get('DO_GENESIS_FSU', False)
         self.do_metp = _base.get('DO_METP', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
@@ -167,14 +170,14 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         pass
 
     @staticmethod
-    def get_gfs_interval(gfs_cyc: int) -> str:
+    def get_gfs_interval(gfs_cyc: int) -> timedelta:
         """
         return interval in hours based on gfs_cyc
         """
 
-        gfs_internal_map = {'0': None, '1': '24:00:00', '2': '12:00:00', '4': '06:00:00'}
+        gfs_internal_map = {'1': '24H', '2': '12H', '4': '6H'}
 
         try:
-            return gfs_internal_map[str(gfs_cyc)]
+            return to_timedelta(gfs_internal_map[str(gfs_cyc)])
         except KeyError:
             raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
