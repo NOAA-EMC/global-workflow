@@ -5,10 +5,10 @@
 
 echo "BEGIN: config.landensanl"
 
+source "${EXPDIR}/config.landanl"
+
 # Get task specific resources
 . "${EXPDIR}/config.resources" landensanl
-
-source "${EXPDIR}/config.landanl"
 
 export NMEM_ELDAGRP=10
 
