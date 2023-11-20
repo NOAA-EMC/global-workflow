@@ -232,6 +232,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_awips:
             gfs_tasks += ['awips']
+            gfs_tasks += ['fbwinds']
 
         if self.do_wafs:
             gfs_tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
