@@ -55,6 +55,8 @@ if [[ "${machine}" == "wcoss2" ]]; then
 else
    cp "${HOMEgfs}/versions/build.spack.ver" "${HOMEgfs}/versions/build.ver"
    cp "${HOMEgfs}/versions/run.spack.ver" "${HOMEgfs}/versions/run.ver"
+   cat "${HOMEgfs}/versions/build.${machine}.ver" >> "${HOMEgfs}/versions/build.ver"
+   cat "${HOMEgfs}/versions/run.${machine}.ver" >> "${HOMEgfs}/versions/run.ver"
 fi
 
 #------------------------------

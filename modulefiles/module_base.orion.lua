@@ -35,8 +35,4 @@ load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/Fit2Obs/v" .. os.getenv("fit2obs_ver"), "modulefiles"))
 load(pathJoin("fit2obs", os.getenv("fit2obs_ver")))
 
--- Disabled verif-global until met/metplus are included in spack-stack
---load(pathJoin("met", "9.1"))
---load(pathJoin("metplus", "3.1"))
-
 whatis("Description: GFS run environment")
