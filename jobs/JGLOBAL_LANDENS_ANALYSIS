@@ -51,7 +51,7 @@ EXSCRIPT=${LANDANLPY:-${HOMEgfs}/scripts/exglobal_land_analysis.py}
 rc=0
 for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
 
-   cd "${DATATOP}"
+   cd "${DATATOP}" || exit 99
 
    ENSMEM=$(printf %03i "${imem}")
    export ENSMEM
@@ -64,7 +64,7 @@ for imem in $(seq "${ENSBEG}" "${ENSEND}"); do
    skip_mem="NO"
    if [[ -f ${ELDAGRP}.fail ]]; then
       set +e
-      memstat=$(grep "MEMBER ${ENSMEM}" "${ELDAGRP}.fail" | grep -c "PASS")
+      memstat=$(grep "MEMBER ${ENSMEM}" "${ELDAGRP}.fail" | grep -c "PASS") || true
       set_strict
       [[ ${memstat} -eq 1 ]] && skip_mem="YES"
    fi
