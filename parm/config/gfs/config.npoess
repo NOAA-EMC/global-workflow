@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.gempak ##########
+# GFS gempak step specific
+
+echo "BEGIN: config.npoess"
+
+# Get task specific resources
+. $EXPDIR/config.resources npoess
+
+echo "END: config.npoess"
