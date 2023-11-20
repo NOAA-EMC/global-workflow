@@ -89,20 +89,19 @@ if [[ "${cplchm}" = ".true." ]]; then
 fi
 
 # Ensure the template exists
-template="${HOMEgfs}/parm/ufs/ufs.configure.${confignamevarforufs}.IN"
-if [[ ! -f ${template} ]]; then
-  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+if [[ ! -r "${ufs_configure_template}" ]]; then
+  echo "FATAL ERROR: template '${ufs_configure_template}' does not exist, ABORT!"
   exit 1
 fi
 
 source "${HOMEgfs}/ush/atparse.bash"
 rm -f "${DATA}/ufs.configure"
-atparse < "${template}" >> "${DATA}/ufs.configure"
+atparse < "${ufs_configure_template}" >> "${DATA}/ufs.configure"
 echo "Rendered ufs.configure:"
 cat ufs.configure
 
 ${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" fd_ufs.yaml
 
-echo "SUB ${FUNCNAME[0]}: ufs.configure.sh ends for ${confignamevarforufs}"
+echo "SUB ${FUNCNAME[0]}: ufs.configure.sh ends for ${ufs_configure_template}"
 
 }

@@ -946,20 +946,6 @@ class GFSTasks(Tasks):
 
         return task
 
-    def vrfy(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
-
-        resources = self.get_resource('vrfy')
-        task = create_wf_task('vrfy', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
-
-        return task
-
     def fit2obs(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
@@ -1033,9 +1019,6 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         if self.cdump in ['gfs'] and self.app_config.do_genesis_fsu:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis_fsu'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_vrfy:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
