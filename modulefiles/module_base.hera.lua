@@ -38,9 +38,9 @@ load(pathJoin("met", os.getenv("met_ver")))
 load(pathJoin("metplus", os.getenv("metplus_ver")))
 
 setenv("WGRIB2","wgrib2")
-setenv("UTILROOT",os.getenv("prod_util_ROOT"))
+setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
---prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+--prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 

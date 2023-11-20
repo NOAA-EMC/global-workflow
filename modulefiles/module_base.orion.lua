@@ -33,12 +33,13 @@ load(pathJoin("py-pyyaml", os.getenv("py_pyyaml_ver")))
 load(pathJoin("py-jinja2", os.getenv("py_jinja2_ver")))
 
 setenv("WGRIB2","wgrib2")
+setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
---prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+--prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 
-prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/Fit2Obs/v" .. os.getenv("fit2obs_ver"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", os.getenv("fit2obs_ver")))
 
 whatis("Description: GFS run environment")
