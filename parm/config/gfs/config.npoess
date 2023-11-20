@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-########## config.gempak ##########
+########## config.npoess ##########
 # GFS NPOESS step specific
 
 echo "BEGIN: config.npoess"
