@@ -91,7 +91,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_npoess:
             configs += ['npoess']
-            
+
         if self.do_wave:
             configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
             if self.do_wave_bnd:
