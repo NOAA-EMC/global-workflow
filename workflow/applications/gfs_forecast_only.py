@@ -126,7 +126,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         if self.do_npoess:
             tasks += ['npoess']
-        
+
         if self.do_wafs:
             tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
 
