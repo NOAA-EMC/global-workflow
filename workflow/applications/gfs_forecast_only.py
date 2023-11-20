@@ -120,6 +120,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         if self.do_awips:
             tasks += ['awips']
+            tasks += ['fbwinds']
 
         if self.do_wafs:
             tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
