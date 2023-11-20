@@ -47,9 +47,6 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if self.do_awips:
             configs += ['awips']
 
-        if self.do_npoess:
-            configs += ['npoess']
-
         if self.do_wave:
             configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
             if self.do_wave_bnd:
@@ -123,9 +120,6 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         if self.do_awips:
             tasks += ['awips']
-
-        if self.do_npoess:
-            tasks += ['npoess']
 
         if self.do_wafs:
             tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
