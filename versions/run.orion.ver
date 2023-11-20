@@ -2,4 +2,4 @@ export stack_intel_ver=2022.0.2
 export stack_impi_ver=2021.5.1
 
 export ncl_ver=6.6.2
-export gempak_ver=7.4.1
+export gempak_ver=7.5.1
