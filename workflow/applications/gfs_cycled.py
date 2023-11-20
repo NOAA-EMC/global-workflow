@@ -236,7 +236,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_awips:
             gfs_tasks += ['awips']
 
-        if self.do_npoesss:
+        if self.do_npoess:
             gfs_tasks += ['npoess']
 
         if self.do_wafs:
