@@ -804,7 +804,7 @@ class GFSTasks(Tasks):
             fhmax = config['FHMAX']
             fhout = config['FHOUT']
 
-            # Get a list of all forecast hours                                                                                                                  
+            # Get a list of all forecast hours
             fhrs = []
             if cdump in ['gdas']:
                 fhrs = range(fhmin, fhmax + fhout, fhout)
