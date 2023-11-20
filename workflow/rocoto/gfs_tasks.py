@@ -871,7 +871,7 @@ class GFSTasks(Tasks):
     def npoess(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}postanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
