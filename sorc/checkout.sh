@@ -155,7 +155,7 @@ checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" 
 
 # Run all other checkouts simultaneously with just 1 core each to handle submodules.
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab" &
-checkout "gfs_utils.fd"    "https://github.com/davidhuber-noaa/gfs-utils"       "feature/spack-stack" &
+checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "427d467" &
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "892b693" &
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780" &
 
