@@ -798,7 +798,7 @@ class GFSTasks(Tasks):
 
     def fbwinds(self):
 
-        atmos_prod_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_GRIB_GRID_TMPL"], {'RUN': self.cdump, 'GRID': '0p25'}) 
+        atmos_prod_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_GRIB_GRID_TMPL"], {'RUN': self.cdump, 'GRID': '0p25'})
         deps = []
         data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f006'
         dep_dict = {'type': 'data', 'data': data}
@@ -808,7 +808,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f024'
         dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict)) 
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('awips')
