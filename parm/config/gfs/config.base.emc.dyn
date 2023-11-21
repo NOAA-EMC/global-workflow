@@ -386,7 +386,7 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
 export DO_FIT2OBS="YES"      # Run fit to observations package
 
 # Archiving options
