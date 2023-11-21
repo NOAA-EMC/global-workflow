@@ -798,61 +798,23 @@ class GFSTasks(Tasks):
 
     def fbwinds(self):
 
-        def _get_fbwindsgroups(cdump, config):
-
-            fhmin = config['FHMIN']
-            fhmax = config['FHMAX']
-            fhout = config['FHOUT']
-
-            # Get a list of all forecast hours
-            fhrs = []
-            if cdump in ['gdas']:
-                fhrs = range(fhmin, fhmax + fhout, fhout)
-            elif cdump in ['gfs']:
-                fhmax = np.max(
-                    [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
-                fhout = config['FHOUT_GFS']
-                fhmax_hf = config['FHMAX_HF_GFS']
-                fhout_hf = config['FHOUT_HF_GFS']
-                if fhmax > 240:
-                    fhmax = 240
-                if fhmax_hf > 240:
-                    fhmax_hf = 240
-                fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-                fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
-
-            nfbwindsgrp = config['NAWIPSGRP']
-            ngrps = nfbwindsgrp if len(fhrs) > nfbwindsgrp else len(fhrs)
-
-            fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-            fhrs = np.array_split(fhrs, ngrps)
-            fhrs = [fhr.tolist() for fhr in fhrs]
-
-            grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-            dep = ' '.join([fhr[-1] for fhr in fhrs])
-            lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
-
-            return grp, dep, lst
-
+        atmos_prod_path  = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_GRIB_GRID_TMPL"], {'RUN': self.cdump, 'GRID': '0p25'})
+        
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f006'
+        dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        fbwindsenvars = self.envars.copy()
-        fbwindsenvar_dict = {'FHRGRP': '#grp#',
-                             'FHRLST': '#lst#',
-                             'ROTDIR': self._base.get('ROTDIR')}
-        for key, value in fbwindsenvar_dict.items():
-            fbwindsenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_fbwindsgroups(self.cdump, self._configs['awips'])
-        vardict = {varname2: varval2, varname3: varval3}
+        data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f012'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f024'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('awips')
-        task = create_wf_task('fbwinds', resources, cdump=self.cdump, envar=fbwindsenvars, dependency=dependencies,
-                              metatask='fbwinds', varname=varname1, varval=varval1, vardict=vardict)
+        task = create_wf_task('fbwinds', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
