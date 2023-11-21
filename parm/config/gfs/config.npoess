@@ -6,6 +6,6 @@
 echo "BEGIN: config.npoess"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources npoess"
+. "${EXPDIR}/config.resources" npoess
 
 echo "END: config.npoess"
