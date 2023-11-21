@@ -812,6 +812,15 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('awips')
+
+        # TODO: It would be better to use task dependencies on the
+        # individual post jobs rather than data dependencies to avoid
+        # prematurely starting with partial files. Unfortunately, the
+        # ability to "group" post would make this more convoluted than
+        # it should be and not worth the complexity. One possible
+        # solution would be to add an age to the data dependency to
+        # make sure it hasn't been written to in a few minutes, but
+        # create_dependency() does not support that yet.
         task = create_wf_task('fbwinds', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
