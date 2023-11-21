@@ -8,26 +8,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 ###############################################################
 
 # Source FV3GFS workflow modules
-# . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
-# status=$?
-# [[ ${status} -ne 0 ]] && exit ${status}
-# Temporarily load modules from UPP
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
-module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
-module load "${MACHINE_ID}"
-module load prod_util
-if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-    module load cray-pals
-    module load cfp
-else
-    # shellcheck disable=SC2154
-    export UTILROOT="${prod_util_ROOT}"
-fi
-module load grib-util
-module load wgrib2
-export WGRIB2=wgrib2
-# End hack
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
+status=$?
+[[ ${status} -ne 0 ]] && exit ${status}
 
 export job="post"
 export jobid="${job}.$$"
