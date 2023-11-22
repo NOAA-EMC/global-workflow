@@ -817,10 +817,7 @@ class GFSTasks(Tasks):
         # individual post jobs rather than data dependencies to avoid
         # prematurely starting with partial files. Unfortunately, the
         # ability to "group" post would make this more convoluted than
-        # it should be and not worth the complexity. One possible
-        # solution would be to add an age to the data dependency to
-        # make sure it hasn't been written to in a few minutes, but
-        # create_dependency() does not support that yet.
+        # it should be and not worth the complexity.
         task = create_wf_task('fbwinds', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
