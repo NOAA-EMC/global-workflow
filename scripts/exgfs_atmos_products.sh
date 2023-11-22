@@ -12,6 +12,8 @@ export GFSDWNSH=${GFSDWNSH:-${USHgfs}/fv3gfs_dwn_nems.sh}
 GFSDOWNSHF=${GFSDOWNSHF:-${USHgfs}/inter_flux.sh}
 FLXGF=${FLXGF:-"YES"}
 
+# post_times is either "anl" or "000", "003", "006", etc.
+# It is not a loop.
 # Process analysis when post_times is 00
 stime="$(echo "${post_times}" | cut -c1-3)"
 if [[ "${stime}" = "anl" ]]; then
@@ -27,21 +29,22 @@ if [[ "${stime}" = "anl" ]]; then
     if [[ "${SENDDBN}" = 'YES' ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_MSC_sfcanl "${job}" "${COM_ATMOS_ANALYSIS}/${PREFIX}sfcanl.nc"
         "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_SA "${job}" "${COM_ATMOS_ANALYSIS}/${PREFIX}atmanl.nc"
-        if [[ "${PGBF}" = 'YES' ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl.idx"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2B_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2B_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl.idx"
 
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl.idx"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2B_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2B_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl.idx"
+        if [[ "${PGBF}" == "YES" ]]; then
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25" "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX" "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25" "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl.idx"
 
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl.idx"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2B_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl"
-            "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_PGB2B_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5" "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5_WIDX" "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5" "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5_WIDX" "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl.idx"
+
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0_WIDX" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0_WIDX" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl.idx"
         fi
     fi
 
@@ -86,8 +89,8 @@ else   ## not_anl if_stime
       fi
 
       if [[ -s "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2" ]]; then
-      "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_SGB_GB2 "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2"
-      "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_SGB_GB2_WIDX "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2.idx"
+        "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_SGB_GB2 "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_SGB_GB2_WIDX "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2.idx"
       fi
 
       "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_SF "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhr3}.nc"
