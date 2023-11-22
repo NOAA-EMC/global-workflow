@@ -56,6 +56,7 @@ export BASE_GIT="@BASE_GIT@"
 export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
+export DO_NPOESS="NO"       # NPOESS products
 export DO_TRACKER="YES"    # Hurricane track verification
 export DO_GENESIS="YES"    # Cyclone genesis verification
 export DO_GENESIS_FSU="NO" # Cyclone genesis verification (FSU)

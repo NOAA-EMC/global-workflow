@@ -868,6 +868,18 @@ class GFSTasks(Tasks):
 
         return task
 
+    def npoess(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('npoess')
+        task = create_wf_task('npoess', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def verfozn(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analdiag'}
