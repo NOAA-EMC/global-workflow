@@ -1,0 +1,51 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Construct COM variables from templates
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+
+for grid in '0p25' '0p50' '1p00'; do
+  prod_dir="COM_ATMOS_GRIB_${grid}"
+  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+  if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
+done
+
+# TODO: Why is this here and not in a config file?
+if [ "${RUN}" == "gdas" ];then
+  export FHOUT_PGB=${FHOUT_GFS:-1}  # Output frequency of gfs pgb file at 1.0 and 0.5 deg.
+elif [ "${RUN}" == "gfs" ]; then
+  export FHOUT_PGB=${FHOUT:-3}  # Output frequency of gfs pgb file at 1.0 and 0.5 deg.
+fi
+
+###############################################################
+# Run exglobal script
+"${HOMEgfs}/scripts/exglobal_atmos_products.sh"
+status=$?
+(( status != 0 )) && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "${pgmout}" ]; then
+  cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+[[ "${KEEPDATA:-NO}" = "NO" ]] && rm -rf "${DATA}"
+
+
+exit 0
