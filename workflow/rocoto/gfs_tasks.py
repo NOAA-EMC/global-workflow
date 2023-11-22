@@ -804,7 +804,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f012'
-        dep_dict = {'type': 'data', 'data': data}
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f024'
         dep_dict = {'type': 'data', 'data': data}
