@@ -1,56 +1,51 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh" "$FH"
+# This script takes in a master flux file and creates interpolated flux files at various interpolated resolutions
+# Generate 0.25 / 0.5 / 1 degree interpolated grib2 flux files for each input sflux grib2 file
 
-#-----------------------------------------------------------------------
-#-Wen Meng, 03/2019:  First version.
-#  This scripts is for interpolating flux file from model native grid
-#  into lat-lon grids.
-#-----------------------------------------------------------------------
+# TODO:  The output files are not properly named and will need to be resolved before PR is merged
 
-export CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
-export COPYGB2=${COPYGB2:-${grib_util_ROOT}/bin/copygb}
-export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-export GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
-export RUN=${RUN:-"gfs"}
-export cycn=$(echo $CDATE |cut -c 9-10)
-export TCYC=${TCYC:-".t${cycn}z."}
-export PREFIX=${PREFIX:-${RUN}${TCYC}}
-export PGB1F=${PGB1F:-"NO"}
+source "${HOMEgfs}/ush/preamble.sh"
 
-#--wgrib2 regrid parameters
-export option1=' -set_grib_type same -new_grid_winds earth '
-export option21=' -new_grid_interpolation bilinear  -if '
-export option22=":(LAND|CRAIN|CICEP|CFRZR|CSNOW|ICSEV):"
-export option23=' -new_grid_interpolation neighbor -fi '
-export option24=' -set_bitmap 1 -set_grib_max_bits 16 -if '
-export option25=":(APCP|ACPCP|PRATE|CPRAT):"
-export option26=' -set_grib_max_bits 25 -fi -if '
-export option27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
-export option28=' -new_grid_interpolation budget -fi '
-export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
-export grid0p5="latlon 0:720:0.5 90:361:-0.5"
-export grid1p0="latlon 0:360:1.0 90:181:-1.0"
-export grid2p5="latlon 0:144:2.5 90:73:-2.5"
+input_file=${1:-"sfluxfile_in"}  # Input sflux grib2 file
+output_file_prefix=${2:-"sfluxfile_out"}  # Prefix for output sflux grib2 file; the prefix is appended by resolution e.g. _0p25
+grid_string=${3:-"1p00"}  # Target grids; e.g. "0p25" or "0p25:0p50"; If multiple, they need to be ":" seperated
 
+WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 
-if [ $FH -eq 0 ] ; then
-  export fhr3=000
-else
-  export fhr3=$(expr $FH + 0 )
-  if [ $fhr3 -lt 100 ]; then export fhr3="0$fhr3"; fi
-  if [ $fhr3 -lt 10 ];  then export fhr3="0$fhr3"; fi
-fi
+# wgrib2 options for regridding
+defaults="-set_grib_type same -set_bitmap 1 -set_grib_max_bits 16"
+interp_winds="-new_grid_winds earth"
+interp_bilinear="-new_grid_interpolation bilinear"
+interp_neighbor="-if :(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV): -new_grid_interpolation neighbor -fi"
+interp_budget="-if :(APCP|ACPCP|PRATE|CPRAT|DZDT): -new_grid_interpolation budget -fi"
+increased_bits="-if :(APCP|ACPCP|PRATE|CPRAT): -set_grib_max_bits 25 -fi"
 
-#---------------------------------------------------------------
-  ${WGRIB2} "${COM_ATMOS_MASTER}/${FLUXFL}" ${option1} ${option21} ${option22} ${option23} \
-    ${option24} ${option25} ${option26} ${option27} ${option28} \
-    -new_grid ${grid1p0} fluxfile_${fhr3}_1p00
-  export err=$?; err_chk
+# interpolated target grids
+# shellcheck disable=SC2034
+grid0p25="latlon 0:1440:0.25 90:721:-0.25"
+# shellcheck disable=SC2034
+grid0p50="latlon 0:720:0.5 90:361:-0.5"
+# shellcheck disable=SC2034
+grid1p00="latlon 0:360:1.0 90:181:-1.0"
 
-  ${WGRIB2} -s "fluxfile_${fhr3}_1p00" > "${COM_ATMOS_GRIB_1p00}/${PREFIX}flux.1p00.f${fhr3}.idx"
-  cp "fluxfile_${fhr3}_1p00" "${COM_ATMOS_GRIB_1p00}/${PREFIX}flux.1p00.f${fhr3}"
-#---------------------------------------------------------------
+# Transform the input ${grid_string} into an array for processing
+IFS=':' read -ra grids <<< "${grid_string}"
 
+output_grids=""
+for grid in "${grids[@]}"; do
+  gridopt="grid${grid}"
+  output_grids="${output_grids} -new_grid ${!gridopt} ${output_file_prefix}_${grid}"
+done
+
+#shellcheck disable=SC2086
+${WGRIB2} "${input_file}" ${defaults} \
+                          ${interp_winds} \
+                          ${interp_bilinear} \
+                          ${interp_neighbor} \
+                          ${interp_budget} \
+                          ${increased_bits} \
+                          ${output_grids}
+export err=$?; err_chk
 
 exit 0

@@ -2,7 +2,7 @@
 
 #####################################################################
 # echo "-----------------------------------------------------"
-# echo " Script: gfs_transfer.sh" 
+# echo " Script: gfs_transfer.sh"
 # echo " "
 # echo " Purpose - Copy GFS Posts to /nwges and /com"
 # echo "           Alert posted files to DBNet"
@@ -19,15 +19,14 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 if [[ "${SENDDBN}" = 'YES' && "${RUN}" = 'gfs' ]]; then
   fhr3=$(printf "%03d" "${fhr}")
-  "${DBNROOT}/bin/dbn_alert" MODEL GFS_SF "${job}" "${COMOUT}/${RUN}.t${cyc}z.atmf${fhr3}.nc"
- 
-  if (( fhr > 0  && fhr <= 84 )); then
-     "${DBNROOT}/bin/dbn_alert" MODEL GFS_BF "${job}" "${COMOUT}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
+  "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_SF "${job}" "${COMOUT}/${RUN}.t${cyc}z.atmf${fhr3}.nc"
+
+  if (( fhr > 0 && fhr <= 84 )); then
+     "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_BF "${job}" "${COMOUT}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
   fi
   if (( fhr == 120 )); then
-     "${DBNROOT}/bin/dbn_alert" MODEL GFS_BF "${job}" "${COMOUT}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
+     "${DBNROOT}/bin/dbn_alert" MODEL ${RUN^^}_BF "${job}" "${COMOUT}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
   fi
 fi
 
 exit 0
-
