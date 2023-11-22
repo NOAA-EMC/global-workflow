@@ -24,7 +24,8 @@ class Tasks:
                    'tracker', 'genesis', 'genesis_fsu',
                    'postsnd', 'awips', 'fbwinds', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
-                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
+                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
+                   'npoess']
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
 

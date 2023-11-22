@@ -21,7 +21,7 @@ if [[ $# -ne 1 ]]; then
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
-    echo "postsnd awips gempak"
+    echo "postsnd awips gempak npoess"
     echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
@@ -1012,6 +1012,14 @@ elif [[ ${step} = "awips" ]]; then
     export npe_node_awips=1
     export nth_awips=1
     export memory_awips="3GB"
+
+elif [[ ${step} = "npoess" ]]; then
+
+    export wtime_npoess="03:30:00"
+    export npe_npoess=1
+    export npe_node_npoess=1
+    export nth_npoess=1
+    export memory_npoess="3GB"
 
 elif [[ ${step} = "gempak" ]]; then
 
