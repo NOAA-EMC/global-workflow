@@ -22,7 +22,7 @@ class Tasks:
                    'fcst', 'post', 'ocnpost',
                    'verfozn', 'verfrad', 'vminmon', 'metp',
                    'tracker', 'genesis', 'genesis_fsu',
-                   'postsnd', 'awips', 'gempak',
+                   'postsnd', 'awips', 'fbwinds', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
                    'npoess']

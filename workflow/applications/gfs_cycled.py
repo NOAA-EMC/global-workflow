@@ -235,6 +235,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_awips:
             gfs_tasks += ['awips']
+            gfs_tasks += ['fbwinds']
 
         if self.do_npoess:
             gfs_tasks += ['npoess']
