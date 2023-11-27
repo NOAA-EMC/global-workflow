@@ -55,12 +55,11 @@ export BASE_GIT="@BASE_GIT@"
 export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
-export DO_VRFY="NO"       # VRFY step
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
 #  if want MOS written to HPSS.   Should update arch.sh to
-#  use RUNMOS flag (currently in config.vrfy)
+#  use RUNMOS flag
 export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
@@ -138,10 +137,8 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
-export CCPP_SUITE="FV3_GFS_v17_p8_ugwpv1"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
-export cplwav2atm=".false."
 export FRAC_GRID=".true."
 
 # Set operational resolution
@@ -183,17 +180,14 @@ export ICERES=${OCNRES}
 
 case "${APP}" in
   ATM)
-    export confignamevarforufs="atm"
     ;;
   ATMA)
     export DO_AERO="YES"
-    export confignamevarforufs="atm_aero"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
-    export confignamevarforufs="leapfrog_atm_wav"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -204,19 +198,15 @@ case "${APP}" in
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8 on L141
-    export confignamevarforufs="cpld"
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export confignamevarforufs="${confignamevarforufs}_aero"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"
         export cplwav2atm=".true."
-        export confignamevarforufs="${confignamevarforufs}_outerwave"
     fi
     ;;
   *)
