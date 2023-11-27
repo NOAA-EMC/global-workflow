@@ -16,7 +16,7 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN MINMON ==============="
 
-"${HOMEgfs}/jobs/J${RUN^^}_ATMOS_VMINMON"
+"${HOMEgfs}/jobs/JGLOBAL_ATMOS_VMINMON"
 status=$?
 
 exit "${status}"

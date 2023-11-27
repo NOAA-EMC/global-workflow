@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_vrfminmon.sh
+# Script name:         exglobal_atmos_vminmon.sh
 # Script description:  Runs data extract/validation for GSI normalization diag data
 #
 # Author:        Ed Safford       Org: NP23         Date: 2015-04-10
@@ -19,39 +19,13 @@ source "$HOMEgfs/ush/preamble.sh"
 #
 ################################################################################
 
+########################################
+#  Command line arguments
+########################################
+export PDY=${1:-${PDY:?}}
+export cyc=${2:-${cyc:?}}
 
-########################################
-#  Set environment
-########################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
-export envir=${envir:-prod}
-
-########################################
-#  Directories
-########################################
-export DATA=${DATA:-$(pwd)}
-
-
-########################################
-#  Filenames
-########################################
-gsistat=${gsistat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.gsistat}
-export mm_gnormfile=${gnormfile:-${M_FIXgdas}/gdas_minmon_gnorm.txt}
-export mm_costfile=${costfile:-${M_FIXgdas}/gdas_minmon_cost.txt}
-
-########################################
-#  Other variables
-########################################
-export MINMON_SUFFIX=${MINMON_SUFFIX:-GDAS}
-export PDATE=${PDY}${cyc}
-export NCP=${NCP:-/bin/cp}
-export pgm=exgdas_vrfminmon.sh
-
-if [[ ! -d ${DATA} ]]; then
-   mkdir $DATA
-fi
-cd $DATA
+cd "${DATA}" || exit 1
 
 ######################################################################
 
@@ -71,9 +45,9 @@ if [[ -s ${gsistat} ]]; then
    #  data into ${cyc} subdirectories (elif condition).
    #-----------------------------------------------------------------------
    if [[ -s ${M_TANKverf}/gnorm_data.txt ]]; then
-      $NCP ${M_TANKverf}/gnorm_data.txt gnorm_data.txt
+      ${NCP} ${M_TANKverf}/gnorm_data.txt gnorm_data.txt
    elif [[ -s ${M_TANKverfM1}/gnorm_data.txt ]]; then
-      $NCP ${M_TANKverfM1}/gnorm_data.txt gnorm_data.txt
+      ${NCP} ${M_TANKverfM1}/gnorm_data.txt gnorm_data.txt
    fi
 
 
