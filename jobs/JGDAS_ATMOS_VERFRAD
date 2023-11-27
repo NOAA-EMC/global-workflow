@@ -6,10 +6,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 
-export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
-export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
-export VERBOSE=${VERBOSE:-YES}
-
 ##############################################
 # Specify Execution Areas
 ##############################################
@@ -33,9 +29,9 @@ parm_file=${parm_file:-${PARMmon}/da_mon.parm}
 #############################################
 #  determine PDY and cyc for previous cycle
 #############################################
-pdate=$(${NDATE} -6 ${PDY}${cyc})
-export P_PDY=${pdate:0:8}
-export p_cyc=${pdate:8:2}
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
 
 #############################################
 # COMOUT - WHERE GSI OUTPUT RESIDES
@@ -43,7 +39,7 @@ export p_cyc=${pdate:8:2}
 #############################################
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RADMON
-YMD=${P_PDY} HH=${p_cyc} generate_com -rx COM_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
+YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
 
 export TANKverf_rad=${TANKverf_rad:-${COM_ATMOS_RADMON}}
 export TANKverf_radM1=${TANKverf_radM1:-${COM_ATMOS_RADMON_PREV}}
@@ -65,6 +61,10 @@ export USE_ANL=${USE_ANL:-1}
 export PDATE=${PDY}${cyc}
 export DO_DIAG_RPT=${DO_DIAG_RPT:-1}
 export DO_DATA_RPT=${DO_DATA_RPT:-1}
+
+export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
+export CYCLE_INTERVAL=${assim_freq:-6}
+export VERBOSE=${VERBOSE:-YES}
 
 ########################################################
 # Execute the script.

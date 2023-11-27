@@ -25,9 +25,9 @@ export USHoznmon=${USHoznmon:-${HOMEoznmon}/ush}
 #############################################
 #  determine PDY and cyc for previous cycle
 #############################################
-pdate=$(${NDATE} -6 ${PDY}${cyc})
-export P_PDY=${pdate:0:8}
-export p_cyc=${pdate:8:2}
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
 
 #---------------------------------------------
 # OZN_TANKDIR - WHERE OUTPUT DATA WILL RESIDE
