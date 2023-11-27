@@ -18,7 +18,8 @@ set -eux
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
-export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+#export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+export REPO_URL=git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging
@@ -48,7 +49,7 @@ esac
 # setup runtime env for correct python install and git
 ######################################################
 set +x
-source "${ROOT_DIR}/ci/scipts/ci_utils.sh"
+source "${ROOT_DIR}/ci/scripts/utils/ci_utils.sh"
 source "${ROOT_DIR}/ush/module-setup.sh"
 module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
@@ -98,7 +99,6 @@ for pr in ${pr_list}; do
           echo "Driver PID: ${driver_PID} on ${driver_HOST} is no longer running this test"
           echo "Driver_PID: has restarted as {$$} on ${driver_HOST}"
         } >> "${output_ci_single}"
-        }
       fi
     fi
 
@@ -141,6 +141,7 @@ for pr in ${pr_list}; do
   if [[ -z "${pr_building+x}" ]]; then
       continue
   fi
+  id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   output_ci="${pr_dir}/output_build_${id}"
   output_ci_single="${pr_dir}/output_driver_single.log"
@@ -150,7 +151,6 @@ for pr in ${pr_list}; do
   "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building "${driver_build_PID}:${driver_build_HOST}"
   rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
-  id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   {
     echo "Cloning and building global-workflow PR: ${pr}"
     echo "CI on ${MACHINE_ID^} started at $(date +'%A %b %Y') for repo ${REPO_URL}" || true
