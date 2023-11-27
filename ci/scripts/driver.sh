@@ -48,6 +48,7 @@ esac
 # setup runtime env for correct python install and git
 ######################################################
 set +x
+source "${ROOT_DIR}/ci/scipts/ci_utils.sh"
 source "${ROOT_DIR}/ush/module-setup.sh"
 module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
@@ -68,24 +69,54 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   db_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
-  pr_id=0
+  output_ci="${pr_dir}/output_build_${id}"
+  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_driver_single.log"
   #############################################################
   # Check if a Ready labeled PR has changed back from once set
   # and in that case remove all previous jobs in scheduler and
   # and remove PR from filesystem to start clean
   #############################################################
   if [[ "${db_list}" == *"already is in list"* ]]; then
-    pr_id=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
-    pr_id=$((pr_id+1))
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Ready "${pr_id}"
-    for cases in "${pr_dir}/RUNTESTS/"*; do
-      if [[ -z "${cases+x}" ]]; then
-         break
+    driver_ID=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
+    driver_PID=$(echo "${driver_ID}" | cut -d":" -f1) || true
+    driver_HOST=$(echo "${driver_ID}" | cut -d":" -f2) || true
+    host_name=$(hostname -s)
+
+    {
+      echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests on $(date +'%A %b %Y')" || true
+    } >> "${output_ci_single}"
+
+    if [[ "${driver_PID}" -ne 0 ]]; then
+      if [[ "${driver_PID}" -ne "$$" ]]; then
+        echo "Driver PID: ${driver_PID} no longer running this build having it killed"
+        if [[ "${driver_HOST}" == "${host_name}"  ]]; then
+          kill -9 "${driver_PID}"
+        else
+          ssh "${driver_HOST}" kill -9 "${driver_PID}"
+        fi
+        {
+          echo "Driver PID: ${driver_PID} on ${driver_HOST} is no longer running this test"
+          echo "Driver_PID: has restarted as {$$} on ${driver_HOST}"
+        } >> "${output_ci_single}"
+        }
       fi
-      pslot=$(basename "${cases}")
-      sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
-    done
+    fi
+
+    experiments=$(find "${pr_dir}/RUNTESTS/EXPDIR" -mindepth 1 -maxdepth 1 -type d) || true
+    if [[ -z "${experiments}" ]]; then
+       echo "No current experiments to cancel in PR: ${pr} on ${MACHINE_ID^}" >> "${output_ci_single}"
+    else
+      for cases in ${experiments}; do
+        case_name=$(basename "${cases}")
+        cancel_slurm_jobs "${case_name}"
+        {
+          echo "Canceled all jobs for experiment ${case_name} in PR:${pr} on ${MACHINE_ID^}"
+        } >> "${output_ci_single}"
+      done
+    fi
     rm -Rf "${pr_dir}"
+    sed -i "1 i\`\`\`" "${output_ci_single}"
+    "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
   fi
 done
 
@@ -110,28 +141,35 @@ for pr in ${pr_list}; do
   if [[ -z "${pr_building+x}" ]]; then
       continue
   fi
-  "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
-  "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building
-  echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+  output_ci="${pr_dir}/output_build_${id}"
+  output_ci_single="${pr_dir}/output_driver_single.log"
+  driver_build_PID=$$
+  driver_build_HOST=$(hostname -s)
+  "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
+  "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building "${driver_build_PID}:${driver_build_HOST}"
   rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
-  # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
+  {
+    echo "Cloning and building global-workflow PR: ${pr}"
+    echo "CI on ${MACHINE_ID^} started at $(date +'%A %b %Y') for repo ${REPO_URL}" || true
+    echo "with PID: ${driver_build_PID} on host: ${driver_build_HOST}"
+    echo ""
+  } >> "${output_ci}"
   set +e
-  output_ci="${pr_dir}/output_build_${id}"
-  rm -f "${output_ci}"
-  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${output_ci}"
-  #echo "SKIPPING: ${ROOT_DIR}/ci/scripts/clone-build_ci.sh"
+  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   ##################################################################
   # Checking for special case when Ready label was updated
-  # that cause a running driver exit fail because was currently
-  # building so we force and exit 0 instead to does not get relabled
+  # but a race condtion caused the clone-build_ci.sh to start
+  # and this instance fails before it was killed.  In th case we
+  # we need to exit this instance of the driver script
   #################################################################
   if [[ ${ci_status} -ne 0 ]]; then
-     pr_id_check=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display "{pr}" --dbfile "${pr_list_dbfile}" | awk '{print $4}') || true
-     if [[ "${pr_id}" -ne "${pr_id_check}" ]]; then
+     build_PID_check=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display "{pr}" --dbfile "${pr_list_dbfile}" | awk '{print $4}' | cut -d":" -f1) || true
+     if [[ "${build_PID_check}" -ne "$$" ]]; then
+        echo "Driver build PID: ${build_PID_check} no longer running this build ... exiting"
         exit 0
      fi
   fi
@@ -159,7 +197,7 @@ for pr in ${pr_list}; do
       set +e
       export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
       rm -f "${LOGFILE_PATH}"
-      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" 2>&1 "${LOGFILE_PATH}"
+      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml"  > "${LOGFILE_PATH}" 2>&1
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
