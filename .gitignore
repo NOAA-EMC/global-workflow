@@ -30,11 +30,11 @@ fix/chem
 fix/cice
 fix/cpl
 fix/datm
-fix/gdas
 fix/gldas
 fix/gsi
 fix/lut
 fix/mom6
+fix/mon
 fix/orog
 fix/reg2grb2
 fix/sfc_climo
