@@ -9,7 +9,7 @@ echo "BEGIN: config.atmos_products"
 . "${EXPDIR}/config.resources" atmos_products
 
 # No. of forecast hours to process in a single job
-export NATMOSPRODUCTSGRP=3  # TODO: find a better name
+export NPOSTPROCGRP=3  # TODO: find a better name
 
 # Scripts used by this job
 export GFSDOWNSH="${HOMEgfs}/ush/fv3gfs_downstream_nems.sh"
