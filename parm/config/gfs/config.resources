@@ -16,12 +16,12 @@ if [[ $# -ne 1 ]]; then
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst post echgres"
     echo "tracker genesis genesis_fsu"
-    echo "verfozn verfrad vminmon vrfy fit2obs metp arch cleanup"
+    echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
-    echo "postsnd awips gempak"
+    echo "postsnd awips gempak npoess"
     echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
@@ -774,16 +774,6 @@ elif [[ ${step} = "genesis_fsu" ]]; then
     export npe_node_genesis_fsu=1
     export memory_genesis_fsu="4G"
 
-elif [[ ${step} = "vrfy" ]]; then
-
-    export wtime_vrfy="00:10:00"
-    export wtime_vrfy_gfs="00:10:00"
-    export npe_vrfy=1
-    export nth_vrfy=1
-    export npe_node_vrfy=1
-    export npe_vrfy_gfs=1
-    export npe_node_vrfy_gfs=1
-
 elif [[ "${step}" = "fit2obs" ]]; then
 
     export wtime_fit2obs="00:20:00"
@@ -1022,6 +1012,14 @@ elif [[ ${step} = "awips" ]]; then
     export npe_node_awips=1
     export nth_awips=1
     export memory_awips="3GB"
+
+elif [[ ${step} = "npoess" ]]; then
+
+    export wtime_npoess="03:30:00"
+    export npe_npoess=1
+    export npe_node_npoess=1
+    export nth_npoess=1
+    export memory_npoess="3GB"
 
 elif [[ ${step} = "gempak" ]]; then
 

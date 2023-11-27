@@ -69,8 +69,8 @@ temp_file=".diff.nc"
 coord_file="${coord_file:-./coordinates.lst}"
 
 # Input files
-files="data_table diag_table fd_nems.yaml field_table ice_in input.nml med_modelio.nml \
-		model_configure nems.configure pio_in ww3_multi.inp ww3_shel.inp"
+files="data_table diag_table fd_ufs.yaml field_table ice_in input.nml med_modelio.nml \
+		model_configure ufs.configure pio_in ww3_multi.inp ww3_shel.inp"
 
 for file in $files; do
 	echo "=== ${file} ==="

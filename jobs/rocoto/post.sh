@@ -20,11 +20,13 @@ module load prod_util
 if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
     module load cray-pals
     module load cfp
+    module load libjpeg
+    module load grib_util
 else
     # shellcheck disable=SC2154
     export UTILROOT="${prod_util_ROOT}"
+    module load grib-util
 fi
-module load grib-util
 module load wgrib2
 export WGRIB2=wgrib2
 # End hack
