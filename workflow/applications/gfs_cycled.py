@@ -89,6 +89,9 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_awips:
             configs += ['awips']
 
+        if self.do_npoess:
+            configs += ['npoess']
+
         if self.do_wave:
             configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
             if self.do_wave_bnd:
@@ -227,6 +230,10 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_awips:
             gfs_tasks += ['awips']
+            gfs_tasks += ['fbwinds']
+
+        if self.do_npoess:
+            gfs_tasks += ['npoess']
 
         gfs_tasks += gdas_gfs_common_cleanup_tasks
 

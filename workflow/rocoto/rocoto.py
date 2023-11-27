@@ -193,6 +193,7 @@ def _add_data_tag(dep_dict: Dict[str, Any]) -> str:
     dep_type = dep_dict.get('type', None)
     dep_data = dep_dict.get('data', None)
     dep_offset = dep_dict.get('offset', None)
+    dep_age = dep_dict.get('age', None)
 
     if dep_data is None:
         msg = f'a data value is necessary for {dep_type} dependency'
@@ -206,7 +207,10 @@ def _add_data_tag(dep_dict: Dict[str, Any]) -> str:
 
     assert len(dep_data) == len(dep_offset)
 
-    strings = ['<datadep>']
+    if dep_age is None:
+        strings = ['<datadep>']
+    else:
+        strings = [f'<datadep age="{dep_age}">']
     for data, offset in zip(dep_data, dep_offset):
         if '@' in data:
             offset_str = '' if offset in [None, ''] else f' offset="{offset}"'

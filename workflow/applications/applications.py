@@ -61,6 +61,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_genesis = _base.get('DO_GENESIS', True)
         self.do_genesis_fsu = _base.get('DO_GENESIS_FSU', False)
         self.do_metp = _base.get('DO_METP', False)
+        self.do_npoess = _base.get('DO_NPOESS', False)
         self.do_upp = not _base.get('WRITE_DOPOST', True)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
