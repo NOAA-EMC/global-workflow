@@ -17,7 +17,7 @@ export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export SCRgfs=${SCRgfs:-${HOMEgfs}/scripts}
 
-export FIXgdas=${FIXgdas:-${HOMEgfs}/fix/gdas}
+export FIXgdas=${FIXgdas:-${HOMEgfs}/fix/mon}
 export PARMmon=${PARMmon:-${HOMEgfs}/parm/mon}
 
 export HOMEradmon=${HOMEradmon:-${HOMEgfs}}

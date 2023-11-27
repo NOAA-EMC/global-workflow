@@ -15,7 +15,7 @@ export HOMEgfs_ozn=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export HOMEgdas_ozn=${HOMEgfs_ozn:-${NWROOT}/gfs.${gfs_ver}}
 export PARMgdas_ozn=${PARMgfs_ozn:-${HOMEgfs_ozn}/parm/mon}
 export SCRgdas_ozn=${SCRgfs_ozn:-${HOMEgfs_ozn}/scripts}
-export FIXgdas_ozn=${FIXgfs_ozn:-${HOMEgfs_ozn}/fix/gdas}
+export FIXgdas_ozn=${FIXgfs_ozn:-${HOMEgfs_ozn}/fix/mon}
 
 export HOMEoznmon=${HOMEoznmon:-${HOMEgfs_ozn}}
 export EXECoznmon=${EXECoznmon:-${HOMEoznmon}/exec}
