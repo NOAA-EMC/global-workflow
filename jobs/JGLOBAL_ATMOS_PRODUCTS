@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products" -c "base atmos_products"
 
 
 ##############################################
@@ -17,12 +17,8 @@ for grid in '0p25' '0p50' '1p00'; do
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
 done
 
-# TODO: Why is this here and not in a config file?
-if [ "${RUN}" == "gdas" ];then
-  export FHOUT_PGB=${FHOUT_GFS:-1}  # Output frequency of gfs pgb file at 1.0 and 0.5 deg.
-elif [ "${RUN}" == "gfs" ]; then
-  export FHOUT_PGB=${FHOUT:-3}  # Output frequency of gfs pgb file at 1.0 and 0.5 deg.
-fi
+# Variables used in this job
+export PREFIX="${RUN}.t${cyc}z."
 
 ###############################################################
 # Run exglobal script

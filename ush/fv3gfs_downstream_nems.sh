@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh" "${FH}"
+source "${HOMEgfs}/ush/preamble.sh"
 
 # Programs used
 export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
@@ -11,60 +11,40 @@ GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
 GFSDWNSH=${GFSDWNSH:-"${HOMEgfs}/ush/fv3gfs_dwn_nems.sh"}
 
 # variables used here and in $GFSDWNSH
-PGBOUT2=${PGBOUT2:-"master.grib2"}  # grib2 file from UPP
-FH=$(( ${FH:-0} ))  # Forecast hour to process
-FHOUT_PGB=${FHOUT_PGB:-3}  # Output frequency of GFS PGB file at 1-degree and 0.5 degree
-npe_dwn=${npe_dwn:-24}
+MASTER_FILE=${MASTER_FILE:-"master.grib2"}  # grib2 file from UPP
 downset=${downset:-1}
-PREFIX=${PREFIX:-"${RUN:-gfs}.t${cyc}z."}
+npe_atmos_products=${npe_atmos_products:-8}  # no. of processors available to process each downset
 PGBS=${PGBS:-"NO"}  # YES - generate 1 and 1/2-degree grib2 data
 PGB1F=${PGB1F:-"NO"}  # YES - generate 1-degree grib1 data
+PREFIX=${PREFIX:-"${RUN:-gfs}.t${cyc}z."}
 
-# Files used
-if (( FH == -1 )); then
-  fhr3="anl"
-  PGBS="YES"
-  paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2.anl"}
-elif (( FH == 0 )); then
-  fhr3="f000"
-  PGBS="YES"
-  paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2.f000"}
-else
-  fhr3=$(printf "f%03d" "${FH}")
-  if (( FH%FHOUT_PGB == 0 )); then
-    PGBS="YES"
-  fi
-  paramlista=${paramlist:-"${HOMEgfs}/parm/post/global_1x1_paramlist_g2"}
-fi
-paramlistb=${paramlistb:-"${HOMEgfs}/parm/post/global_master-catchup_parmlist_g2"}
-
-# Get inventory from ${PGBOUT2} that matches patterns from ${paramlista}
-# Extract this inventory from ${PGBOUT2} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
+# Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
+# Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
 # shellcheck disable=SC2312
-${WGRIB2} "${PGBOUT2}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${PGBOUT2}"
+${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}"
 export err=$?; err_chk
 # Do the same as above for ${paramlistb}
-if (( downset = 2 )); then
+if (( downset == 2 )); then
   # shellcheck disable=SC2312
-  ${WGRIB2} "${PGBOUT2}" | grep -F -f "${paramlistb}" | ${WGRIB2} -i -grib "tmpfileb_${fhr3}" "${PGBOUT2}"
+  ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlistb}" | ${WGRIB2} -i -grib "tmpfileb_${fhr3}" "${MASTER_FILE}"
   export err=$?; err_chk
 fi
 
 # Determine grids once and save them as a string and an array for processing
 grid_string="0p25"
-if [[ "${PGBS}" = "YES" ]]; then
+if [[ "${PGBS}" == "YES" ]]; then
   grid_string="${grid_string}:0p50:1p00"
 fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
 
 #-----------------------------------------------------
-nproc=${nproc:-${npe_dwn}}
-
-#..............................................
 for (( nset=1 ; nset <= downset ; nset++ )); do
 
   echo "Begin processing nset = ${nset}"
+
+  # Number of processors available to process $nset
+  nproc=${npe_atmos_products}
 
   # Each set represents a group of files
   if (( nset == 1 )); then
@@ -79,9 +59,8 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   # shellcheck disable=SC2312
   ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
   if (( nproc > ncount )); then
-    echo "FATAL ERROR: Total number of records in ${tmpfile} is not right"  # No, the no. of records < no. of processors
-    export err=8
-    err_chk
+    echo "WARNING: Total no. of available processors '${nproc}' exceeds no. of records '${ncount}' in ${tmpfile}"
+    echo "Reset nproc=${ncount}"
   fi
   inv=$(( ncount / nproc ))
   rm -f "${DATA}/poescript"
@@ -161,8 +140,8 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   # Create supplemental 1-degree grib1 output TODO: who needs 1-degree grib1 product?
   # move to COM and index it
   if (( nset == 1 )); then
-    if [[ "${PGBS}" = "YES" ]]; then
-      if [[ "${PGB1F}" = "YES" ]]; then
+    if [[ "${PGBS}" == "YES" ]]; then
+      if [[ "${PGB1F}" == "YES" ]]; then
         ${CNVGRIB} -g21 "pgb2${grp}file_${fhr3}_1p00" "pgb${grp}file_${fhr3}_1p00"
         export err=$?; err_chk
         ${NCP} "pgb${grp}file_${fhr3}_1p00" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}"

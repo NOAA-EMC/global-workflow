@@ -15,6 +15,7 @@ if [[ $# -ne 1 ]]; then
     echo "landanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst post echgres"
+    echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -721,6 +722,17 @@ elif [[ ${step} = "post" ]]; then
     if [[ "${npe_node_post}" -gt "${npe_node_max}" ]]; then export npe_node_post=${npe_node_max} ; fi
     if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
     export is_exclusive=True
+
+elif [[ ${step} = "atmos_products" ]]; then
+
+    export wtime_atmos_products="00:15:00"
+    export npe_atmos_products=24
+    export nth_atmos_products=1
+    export npe_node_atmos_products=1
+    export wtime_atmos_products_gfs="${wtime_atmos_products}"
+    export npe_atmos_products_gfs="${npe_atmos_products}"
+    export nth_atmos_products_gfs="${nth_atmos_products}"
+    export npe_node_atmos_products_gfs="${npe_node_atmos_products}"
 
 elif [[ ${step} = "verfozn" ]]; then
 
