@@ -42,7 +42,7 @@ export CYCLE_INTERVAL=6
 ########################################
 #  Filenames
 ########################################
-gsistat=${gsistat:-${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat}
+export gsistat=${gsistat:-${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat}
 export mm_gnormfile=${gnormfile:-${M_FIX}/${RUN}_minmon_gnorm.txt}
 export mm_costfile=${costfile:-${M_FIX}/${RUN}_minmon_cost.txt}
 
