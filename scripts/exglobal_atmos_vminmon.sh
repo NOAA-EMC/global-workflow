@@ -25,8 +25,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 export PDY=${1:-${PDY:?}}
 export cyc=${2:-${cyc:?}}
 
-cd "${DATA}" || exit 1
-
 ######################################################################
 
 data_available=0

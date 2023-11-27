@@ -22,20 +22,10 @@ export EXECoznmon=${EXECoznmon:-${HOMEoznmon}/exec}
 export FIXoznmon=${FIXoznmon:-${HOMEoznmon}/fix}
 export USHoznmon=${USHoznmon:-${HOMEoznmon}/ush}
 
-
-#-----------------------------------
-# source the parm file
-#
-.  ${PARMgdas_ozn}/gdas_oznmon.parm
-
-
 #############################################
 #  determine PDY and cyc for previous cycle
 #############################################
-
 pdate=$(${NDATE} -6 ${PDY}${cyc})
-echo "pdate = ${pdate}"
-
 export P_PDY=${pdate:0:8}
 export p_cyc=${pdate:8:2}
 
@@ -49,19 +39,26 @@ export TANKverf_ozn=${TANKverf_ozn:-${COM_ATMOS_OZNMON}}
 
 if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p -m 775 ${TANKverf_ozn} ; fi
 
+#-----------------------------------
+# Other variables
+#
+export OZN_AREA=${OZN_AREA:-glb}
+export oznstat=${oznstat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.oznstat}
+export SATYPE_FILE=${SATYPE_FILE:-${FIXgdas_ozn}/gdas_oznmon_satype.txt}
+export PDATE=${PDY}${cyc}
+export DO_DATA_RPT=${DO_DATA_RPT:-1}
+
+#-----------------------------------
+# source the parm file
+#
+.  ${PARMgdas_ozn}/gdas_oznmon.parm
+
 #---------------------------------------
-#  set up validation file
+# Set up validation file
 #
 if [[ ${VALIDATE_DATA} -eq 1 ]]; then
    export ozn_val_file=${ozn_val_file:-${FIXgdas_ozn}/gdas_oznmon_base.tar}
 fi
-
-#---------------------------------------
-# Set necessary environment variables
-#
-export OZN_AREA=${OZN_AREA:-glb}
-export oznstat=${oznstat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.oznstat}
-
 
 #-------------------------------------------------------
 # Execute the script.

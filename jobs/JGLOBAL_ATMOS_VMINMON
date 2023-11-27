@@ -46,7 +46,6 @@ export gsistat=${gsistat:-${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat}
 export mm_gnormfile=${gnormfile:-${M_FIX}/${RUN}_minmon_gnorm.txt}
 export mm_costfile=${costfile:-${M_FIX}/${RUN}_minmon_cost.txt}
 
-
 ########################################################
 # Execute the script.
 ${GMONSH:-${SCRgfs}/exglobal_atmos_vminmon.sh} ${PDY} ${cyc}

@@ -5,7 +5,7 @@ source "$HOMEgfs/ush/preamble.sh"
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_vrfyrad.sh
+# Script name:         exgdas_atmos_verfrad.sh
 # Script description:  Runs data extract/validation for global radiance diag data
 #
 # Author:        Ed Safford       Org: NP23         Date: 2012-01-18
@@ -19,45 +19,8 @@ source "$HOMEgfs/ush/preamble.sh"
 #
 ################################################################################
 
-export VERBOSE=${VERBOSE:-YES}
-
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
-export envir=${envir:-prod}
-
-#  Filenames
-biascr=${biascr:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias}
-radstat=${radstat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat}
-satype_file=${satype_file:-${FIXgdas}/gdas_radmon_satype.txt}
-
-#  Other variables
-export RAD_AREA=${RAD_AREA:-glb}
-export MAKE_CTL=${MAKE_CTL:-1}
-export MAKE_DATA=${MAKE_DATA:-1}
-export USE_ANL=${USE_ANL:-1}
-export PDATE=${PDY}${cyc}
-export DO_DIAG_RPT=${DO_DIAG_RPT:-1}
-export DO_DATA_RPT=${DO_DATA_RPT:-1}
-export NCP=${NCP:-/bin/cp}
-
-###########################################################################
-# ensure TANK dir exists, verify radstat and biascr are available
-#
-if [[ ! -d ${TANKverf_rad} ]]; then
-   mkdir -p $TANKverf_rad
-fi
-
-if [[ "$VERBOSE" = "YES" ]]; then
-   if [[ -s ${radstat} ]]; then
-      echo ${radstat} is available
-   fi
-   if [[ -s ${biascr} ]]; then
-      echo ${biascr} is available
-   fi
-fi
-#####################################################################
-
 data_available=0
+
 if [[ -s ${radstat} && -s ${biascr} ]]; then
    data_available=1
 

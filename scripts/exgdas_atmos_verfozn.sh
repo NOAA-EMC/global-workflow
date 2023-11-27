@@ -3,47 +3,13 @@
 source "$HOMEgfs/ush/preamble.sh"
 
 ################################################################################
-# exgdas_vrfyozn.sh
+# exgdas_atmos_verfozn.sh
 #
 # This script runs the data extract/validation portion of the Ozone Monitor
 # (OznMon) DA package.
 #
 ################################################################################
 err=0
-
-#-------------------------------------------------------------------------------
-#  Set environment
-#
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
-export envir=${envir:-prod}
-
-#  Other variables
-export SATYPE_FILE=${SATYPE_FILE:-$FIXgdas_ozn/gdas_oznmon_satype.txt}
-export PDATE=${PDY}${cyc}
-export DO_DATA_RPT=${DO_DATA_RPT:-1}
-export NCP=${NCP:-/bin/cp}
-
-
-#-----------------------------------------------------------------
-# ensure work and TANK dirs exist, verify oznstat is available
-#
-export OZN_WORK_DIR=${OZN_WORK_DIR:-$(pwd)}
-
-if [[ ! -d ${OZN_WORK_DIR} ]]; then
-   mkdir $OZN_WORK_DIR
-fi
-cd $OZN_WORK_DIR
-
-if [[ ! -d ${TANKverf_ozn} ]]; then
-   mkdir -p $TANKverf_ozn
-fi
-
-if [[ -s ${oznstat} ]]; then
-   echo ${oznstat} is available
-fi
-
-
 
 data_available=0
 
