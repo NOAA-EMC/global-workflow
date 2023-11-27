@@ -18,7 +18,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         configs = ['stage_ic', 'fcst', 'arch', 'cleanup']
 
         if self.do_atm:
-            configs += ['post', 'vrfy']
+            configs += ['post']
 
         if self.do_aero:
             configs += ['aerosol_init']
@@ -91,9 +91,6 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if self.do_ocean:
             tasks += ['ocnpost']
 
-        if self.do_atm:
-            tasks += ['vrfy']
-
         if self.do_atm and self.do_tracker:
             tasks += ['tracker']
 
@@ -123,6 +120,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         if self.do_awips:
             tasks += ['awips']
+            tasks += ['fbwinds']
 
         if self.do_wafs:
             tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']

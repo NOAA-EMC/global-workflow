@@ -20,11 +20,12 @@ class Tasks:
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'preplandobs', 'landanl',
                    'fcst', 'post', 'ocnpost',
-                   'verfozn', 'verfrad', 'vminmon', 'vrfy', 'metp',
+                   'verfozn', 'verfrad', 'vminmon', 'metp',
                    'tracker', 'genesis', 'genesis_fsu',
-                   'postsnd', 'awips', 'gempak',
+                   'postsnd', 'awips', 'fbwinds', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
-                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
+                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
+                   'npoess']
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
 
