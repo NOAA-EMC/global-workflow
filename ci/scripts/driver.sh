@@ -70,8 +70,7 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   db_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
-  output_ci="${pr_dir}/output_build_${id}"
-  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_driver_single.log"
+  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_single.log"
   #############################################################
   # Check if a Ready labeled PR has changed back from once set
   # and in that case remove all previous jobs in scheduler and
@@ -82,24 +81,23 @@ for pr in ${pr_list}; do
     driver_PID=$(echo "${driver_ID}" | cut -d":" -f1) || true
     driver_HOST=$(echo "${driver_ID}" | cut -d":" -f2) || true
     host_name=$(hostname -s)
-
+    rm -f "${output_ci_single}"
     {
       echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests on $(date +'%A %b %Y')" || true
     } >> "${output_ci_single}"
-
     if [[ "${driver_PID}" -ne 0 ]]; then
-      if [[ "${driver_PID}" -ne "$$" ]]; then
-        echo "Driver PID: ${driver_PID} no longer running this build having it killed"
-        if [[ "${driver_HOST}" == "${host_name}"  ]]; then
-          kill -9 "${driver_PID}"
-        else
-          ssh "${driver_HOST}" kill -9 "${driver_PID}"
-        fi
-        {
-          echo "Driver PID: ${driver_PID} on ${driver_HOST} is no longer running this test"
-          echo "Driver_PID: has restarted as {$$} on ${driver_HOST}"
-        } >> "${output_ci_single}"
+      echo "Driver PID: ${driver_PID} no longer running this build having it killed"
+      if [[ "${driver_HOST}" == "${host_name}"  ]]; then
+        kill -- -$(ps -o pgid= "${driver_PID}" | grep -o [0-9]*)
+        sleep 60
+      else
+        ssh "${driver_HOST}" kill -- -$(ps -o pgid= "${driver_PID}" | grep -o [0-9]*)
+        sleep 60
       fi
+      {
+        echo "Driver PID: ${driver_PID} on ${driver_HOST} is no longer running this test"
+        echo "Driver_PID: has restarted as $$ on ${host_name}"
+      } >> "${output_ci_single}"
     fi
 
     experiments=$(find "${pr_dir}/RUNTESTS/EXPDIR" -mindepth 1 -maxdepth 1 -type d) || true
@@ -114,9 +112,10 @@ for pr in ${pr_list}; do
         } >> "${output_ci_single}"
       done
     fi
-    rm -Rf "${pr_dir}"
     sed -i "1 i\`\`\`" "${output_ci_single}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
+    db_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}")
+    db_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
   fi
 done
 
@@ -143,8 +142,8 @@ for pr in ${pr_list}; do
   fi
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  output_ci="${pr_dir}/output_build_${id}"
-  output_ci_single="${pr_dir}/output_driver_single.log"
+  output_ci="${pr_dir}/output_ci_${id}"
+  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_single.log"
   driver_build_PID=$$
   driver_build_HOST=$(hostname -s)
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
@@ -152,13 +151,15 @@ for pr in ${pr_list}; do
   rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
   {
-    echo "Cloning and building global-workflow PR: ${pr}"
-    echo "CI on ${MACHINE_ID^} started at $(date +'%A %b %Y') for repo ${REPO_URL}" || true
+    echo "CI stated Cloning and Building global-workflow PR: ${pr}"
+    echo "on ${MACHINE_ID^} started at $(date +'%A %b %Y')" || true
     echo "with PID: ${driver_build_PID} on host: ${driver_build_HOST}"
     echo ""
-  } >> "${output_ci}"
+  } >> "${output_ci_single}"
+  sed -i "1 i\`\`\`" "${output_ci_single}"
+  "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
   set +e
-  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${output_ci}"
   ci_status=$?
   ##################################################################
   # Checking for special case when Ready label was updated
