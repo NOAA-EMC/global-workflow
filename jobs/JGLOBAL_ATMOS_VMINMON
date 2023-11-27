@@ -48,7 +48,7 @@ export mm_costfile=${costfile:-${M_FIX}/${RUN}_minmon_cost.txt}
 
 ########################################################
 # Execute the script.
-${GMONSH:-${SCRgfs}/exglobal_atmos_vminmon.sh} ${PDY} ${cyc}
+"${GMONSH:-${SCRgfs}/exglobal_atmos_vminmon.sh}" "${PDY}" "${cyc}"
 err=$?
 [[ ${err} -ne 0 ]] && exit ${err}
 

@@ -43,9 +43,9 @@ if [[ -s ${gsistat} ]]; then
    #  data into ${cyc} subdirectories (elif condition).
    #-----------------------------------------------------------------------
    if [[ -s ${M_TANKverf}/gnorm_data.txt ]]; then
-      ${NCP} ${M_TANKverf}/gnorm_data.txt gnorm_data.txt
+      ${NCP} "${M_TANKverf}/gnorm_data.txt" gnorm_data.txt
    elif [[ -s ${M_TANKverfM1}/gnorm_data.txt ]]; then
-      ${NCP} ${M_TANKverfM1}/gnorm_data.txt gnorm_data.txt
+      ${NCP} "${M_TANKverfM1}/gnorm_data.txt" gnorm_data.txt
    fi
 
 
