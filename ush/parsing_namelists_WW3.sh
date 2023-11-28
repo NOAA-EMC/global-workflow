@@ -79,8 +79,8 @@ WW3_namelists(){
 
   if [ $waveMULTIGRID = ".true." ]; then
     # ww3_multi template
-    if [ -f $PARMwave/ww3_multi.${NET}.inp.tmpl ]; then
-      cp $PARMwave/ww3_multi.${NET}.inp.tmpl ww3_multi.inp.tmpl
+    if [ -f $PARMwave/ww3_multi.inp.tmpl ]; then
+      cp $PARMwave/ww3_multi.inp.tmpl ww3_multi.inp.tmpl
     fi
     if [ ! -f ww3_multi.inp.tmpl ]; then
       echo "ABNORMAL EXIT: NO TEMPLATE FOR WW3 MULTI INPUT FILE" 
@@ -88,8 +88,8 @@ WW3_namelists(){
     fi
   else 
     # ww3_multi template
-    if [ -f $PARMwave/ww3_shel.${NET}.inp.tmpl ]; then
-      cp $PARMwave/ww3_shel.${NET}.inp.tmpl ww3_shel.inp.tmpl
+    if [ -f $PARMwave/ww3_shel.inp.tmpl ]; then
+      cp $PARMwave/ww3_shel.inp.tmpl ww3_shel.inp.tmpl
     fi
     if [ ! -f ww3_shel.inp.tmpl ]; then
       echo "ABNORMAL EXIT: NO TEMPLATE FOR WW3 SHEL INPUT FILE" 
