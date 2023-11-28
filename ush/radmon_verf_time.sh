@@ -131,11 +131,10 @@ if [[ ! -s ./${time_exec} ]]; then
    err=8
 fi
 
-iyy=$(echo "${PDY}" | cut -c1-4)
-imm=$(echo "${PDY}" | cut -c5-6)
-idd=$(echo "${PDY}" | cut -c7-8)
+iyy="${PDY:0:4}"
+imm="${PDY:4:2}"
+idd="${PDY:6:2}"
 ihh=${cyc}
-CYCLE=${cyc}
 
 local_base="local_base"
 if [[ ${DO_DATA_RPT} -eq 1 ]]; then

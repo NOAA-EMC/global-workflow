@@ -97,7 +97,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       fi
 
       if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_ges.${PDY}${cyc}*.${Z}" | wc -l) -gt 0 ]]; then
-        mv "diag_${type}_ges.${PDY}${cyc}*.${Z}" "${type}.${Z}"
+        mv diag_${type}_ges.${PDY}${cyc}*.${Z} "${type}.${Z}"
         ${UNCOMPRESS} "./${type}.${Z}"
       else
         echo "WARNING: diag_${type}_ges.${PDY}${cyc}*.${Z} not available, skipping"
@@ -105,7 +105,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
       if [[ $USE_ANL -eq 1 ]]; then
         if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_anl.${PDY}${cyc}*.${Z}" | wc -l) -gt 0 ]]; then
-          mv "diag_${type}_anl.${PDY}${cyc}*.${Z}" "${type}_anl.${Z}"
+          mv diag_${type}_anl.${PDY}${cyc}*.${Z} "${type}_anl.${Z}"
           ${UNCOMPRESS} "./${type}_anl.${Z}"
         else
           echo "WARNING: diag_${type}_anl.${PDY}${cyc}*.${Z} not available, skipping"

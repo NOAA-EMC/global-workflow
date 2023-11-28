@@ -200,7 +200,7 @@ EOF
    done    # for type in ${SATYPE} loop
 
 
-   "${USHgfs}"/rstprod.sh
+   "${USHgfs}/rstprod.sh"
 
    tar_file=radmon_angle.tar
    if compgen -G "angle*.ieee_d*" > /dev/null || compgen -G "angle*.ctl*" > /dev/null; then
