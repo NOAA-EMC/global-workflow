@@ -20,17 +20,17 @@ source "$HOMEgfs/ush/preamble.sh"
 #            other supporting files into a temporary working directory.
 #
 #
-# Usage:  radmon_verf_angle.sh PDATE
+# Usage:  radmon_verf_angle.sh
 #
 #   Input script positional parameters:
-#     PDATE             processing date
+#     PDYcyc            processing date
 #                       yyyymmddcc format; required
 #
 #   Imported Shell Variables:
 #     RADMON_SUFFIX     data source suffix
 #                       defauls to opr
-#     EXECradmon        executable directory
-#                       defaults to current directory
+#     EXECgfs           executable directory
+#     PARMmonitor       parm directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
 #     TANKverf_rad      data repository
@@ -72,8 +72,6 @@ REGIONAL_RR=${REGIONAL_RR:-0}	# rapid refresh model flag
 rgnHH=${rgnHH:-}
 rgnTM=${rgnTM:-}
 
-export PDATE=${1:-${PDATE:?}}
-
 echo " REGIONAL_RR, rgnHH, rgnTM = $REGIONAL_RR, $rgnHH, $rgnTM"
 netcdf_boolean=".false."
 if [[ $RADMON_NETCDF -eq 1 ]]; then
@@ -83,11 +81,6 @@ echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, $netcdf_boolean"
 
 which prep_step
 which startmsg
-
-# Directories
-FIXgdas=${FIXgdas:-$(pwd)}
-EXECradmon=${EXECradmon:-$(pwd)}
-TANKverf_rad=${TANKverf_rad:-$(pwd)}
 
 # File names
 export pgmout=${pgmout:-${jlogfile}}
@@ -108,13 +101,13 @@ fi
 
 err=0
 angle_exec=radmon_angle.x
-shared_scaninfo=${shared_scaninfo:-$FIXgdas/gdas_radmon_scaninfo.txt}
+shared_scaninfo=${shared_scaninfo:-${PARMmonitor}/gdas_radmon_scaninfo.txt}
 scaninfo=scaninfo.txt
 
 #--------------------------------------------------------------------
 #   Copy extraction program and supporting files to working directory
 
-$NCP ${EXECradmon}/${angle_exec}  ./
+$NCP ${EXECgfs}/${angle_exec}  ./
 $NCP $shared_scaninfo  ./${scaninfo}
 
 if [[ ! -s ./${angle_exec} || ! -s ./${scaninfo} ]]; then
@@ -125,10 +118,10 @@ else
 
    export pgm=${angle_exec}
 
-   iyy=$(echo $PDATE | cut -c1-4)
-   imm=$(echo $PDATE | cut -c5-6)
-   idd=$(echo $PDATE | cut -c7-8)
-   ihh=$(echo $PDATE | cut -c9-10)
+   iyy=$(echo ${PDY} | cut -c1-4)
+   imm=$(echo ${PDY} | cut -c5-6)
+   idd=$(echo ${PDY} | cut -c7-8)
+   ihh=${cyc}
 
    ctr=0
    fail=0
@@ -150,11 +143,11 @@ else
          ctr=$(expr $ctr + 1)
 
          if [[ $dtype == "anl" ]]; then
-            data_file=${type}_anl.${PDATE}.ieee_d
+            data_file=${type}_anl.${PDY}${cyc}.ieee_d
             ctl_file=${type}_anl.ctl
             angl_ctl=angle.${ctl_file}
          else
-            data_file=${type}.${PDATE}.ieee_d
+            data_file=${type}.${PDY}${cyc}.ieee_d
             ctl_file=${type}.ctl
             angl_ctl=angle.${ctl_file}
          fi
@@ -207,7 +200,7 @@ EOF
    done    # for type in ${SATYPE} loop
 
 
-   ${USHradmon}/rstprod.sh
+   ${USHgfs}/rstprod.sh
 
    tar_file=radmon_angle.tar
    if compgen -G "angle*.ieee_d*" > /dev/null || compgen -G "angle*.ctl*" > /dev/null; then

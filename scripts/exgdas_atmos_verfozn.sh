@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 # exgdas_atmos_verfozn.sh
@@ -21,10 +21,10 @@ if [[ -s ${oznstat} ]]; then
    #  Untar oznstat file.
    #------------------------------------------------------------------
 
-   $NCP $oznstat ./oznstat.$PDATE
+   $NCP $oznstat ./oznstat.${PDY}${cyc}
 
-   tar -xvf oznstat.$PDATE
-   rm oznstat.$PDATE
+   tar -xvf oznstat.${PDY}${cyc}
+   rm oznstat.${PDY}${cyc}
 
    netcdf=0
    count=$(ls diag* | grep ".nc4" | wc -l)
@@ -38,7 +38,7 @@ if [[ -s ${oznstat} ]]; then
 
    export OZNMON_NETCDF=${netcdf}
 
-   ${HOMEoznmon}/ush/ozn_xtrct.sh
+   ${USHgfs}/ozn_xtrct.sh
    err=$?
 
 else

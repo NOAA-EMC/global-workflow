@@ -11,9 +11,9 @@ source "$HOMEgfs/ush/preamble.sh"
 #  $TANKverf_ozn.  
 #
 #  Calling scripts must define: 
-#	$TANKverf_ozn
-#	$HOMEoznmon
-#	$PDATE
+#       $TANKverf_ozn
+#       $PDY
+#       $cyc
 #
 #  Return values are 
 #	0 = normal 
@@ -28,7 +28,7 @@ source "$HOMEgfs/ush/preamble.sh"
 #  gdas_oznmon_satype.txt to $avail_satype which is
 #  determined by the contents of the oznstat file.
 #  Report any missing diag files in a file named
-#  bad_diag.$PDATE
+#  bad_diag.$PDY$cyc
 #
 check_diag_files() {
    pdate=$1
@@ -107,7 +107,7 @@ avail_satype=$(ls -1 d*ges* | sed -e 's/_/ /g;s/\./ /' | gawk '{ print $2 "_" $3
 if [[ ${DO_DATA_RPT} -eq 1 ]]; then
    if [[ -e ${SATYPE_FILE} ]]; then
       satype=$(cat ${SATYPE_FILE})
-      check_diag_files ${PDATE} "${satype}" "${avail_satype}"
+      check_diag_files "${PDY}${cyc}" "${satype}" "${avail_satype}"
    else
       echo "WARNING:  missing ${SATYPE_FILE}"
    fi
@@ -132,12 +132,12 @@ else
    #--------------------------------------------------------------------
    #   Copy extraction programs to working directory
    #
-   ${NCP} ${HOMEoznmon}/exec/oznmon_time.x   ./oznmon_time.x
+   ${NCP} ${HOMEgfs}/exec/oznmon_time.x   ./oznmon_time.x
    if [[ ! -e oznmon_time.x ]]; then
       iret=2
       exit ${iret}
    fi
-   ${NCP} ${HOMEoznmon}/exec/oznmon_horiz.x  ./oznmon_horiz.x
+   ${NCP} ${HOMEgfs}/exec/oznmon_horiz.x  ./oznmon_horiz.x
    if [[ ! -e oznmon_horiz.x ]]; then
       iret=3
       exit ${iret}
@@ -149,14 +149,14 @@ else
    #
    for ptype in ${ozn_ptype}; do
 
-      iyy=$(echo ${PDATE} | cut -c1-4)
-      imm=$(echo ${PDATE} | cut -c5-6)
-      idd=$(echo ${PDATE} | cut -c7-8)
-      ihh=$(echo ${PDATE} | cut -c9-10)
+      iyy=$(echo ${PDY} | cut -c1-4)
+      imm=$(echo ${PDY} | cut -c5-6)
+      idd=$(echo ${PDY} | cut -c7-8)
+      ihh=${cyc}
  
       for type in ${avail_satype}; do
-         if [[ -f "diag_${type}_${ptype}.${PDATE}.gz" ]]; then
-            mv diag_${type}_${ptype}.${PDATE}.gz ${type}.${ptype}.gz
+         if [[ -f "diag_${type}_${ptype}.${PDY}${cyc}.gz" ]]; then
+            mv diag_${type}_${ptype}.${PDY}${cyc}.gz ${type}.${ptype}.gz
             gunzip ./${type}.${ptype}.gz
 
             echo "processing ptype, type:  ${ptype}, ${type}"
@@ -196,7 +196,7 @@ EOF
                mkdir -p ${TANKverf_ozn}/time
             fi
             $NCP ${type}.${ptype}.ctl             	  ${TANKverf_ozn}/time/
-            $NCP ${type}.${ptype}.${PDATE}.ieee_d 	  ${TANKverf_ozn}/time/
+            $NCP ${type}.${ptype}.${PDY}${cyc}.ieee_d 	  ${TANKverf_ozn}/time/
    
             $NCP bad*                                ${TANKverf_ozn}/time/
    
@@ -228,8 +228,8 @@ EOF
             fi
             $NCP ${type}.${ptype}.ctl                  ${TANKverf_ozn}/horiz/
 
-            $COMPRESS ${type}.${ptype}.${PDATE}.ieee_d
-            $NCP ${type}.${ptype}.${PDATE}.ieee_d.${Z} ${TANKverf_ozn}/horiz/
+            $COMPRESS ${type}.${ptype}.${PDY}${cyc}.ieee_d
+            $NCP ${type}.${ptype}.${PDY}${cyc}.ieee_d.${Z} ${TANKverf_ozn}/horiz/
       
 
             echo "finished processing ptype, type:  ${ptype}, ${type}"
@@ -255,7 +255,7 @@ fi
 # Conditionally remove data files older than 40 days
 #
 if [[ ${CLEAN_TANKDIR:-0} -eq 1 ]]; then
-   ${HOMEoznmon}/ush/clean_tankdir.sh glb 40
+   ${HOMEgfs}/ush/clean_tankdir.sh glb 40
 fi 
 
 exit ${iret}

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -29,11 +29,11 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  Untar radstat file.
    #------------------------------------------------------------------
 
-   $NCP $biascr  ./biascr.$PDATE
-   $NCP $radstat ./radstat.$PDATE
+   $NCP $biascr  ./biascr.${PDY}${cyc}
+   $NCP $radstat ./radstat.${PDY}${cyc}
 
-   tar -xvf radstat.$PDATE
-   rm radstat.$PDATE
+   tar -xvf radstat.${PDY}${cyc}
+   rm radstat.${PDY}${cyc}
 
    #------------------------------------------------------------------
    #  SATYPE is the list of expected satellite/instrument sources
@@ -92,23 +92,23 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    for type in ${SATYPE}; do
 
-      if [[ netcdf -eq 0 && -e diag_${type}_ges.${PDATE}.nc4.${Z} ]]; then
+      if [[ netcdf -eq 0 && -e diag_${type}_ges.${PDY}${cyc}.nc4.${Z} ]]; then
          netcdf=1
       fi
 
-      if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_ges.${PDATE}*.${Z}" | wc -l) -gt 0 ]]; then
-        mv diag_${type}_ges.${PDATE}*.${Z} ${type}.${Z}
+      if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_ges.${PDY}${cyc}*.${Z}" | wc -l) -gt 0 ]]; then
+        mv diag_${type}_ges.${PDY}${cyc}*.${Z} ${type}.${Z}
         ${UNCOMPRESS} ./${type}.${Z}
       else
-        echo "WARNING: diag_${type}_ges.${PDATE}*.${Z} not available, skipping"
+        echo "WARNING: diag_${type}_ges.${PDY}${cyc}*.${Z} not available, skipping"
       fi
 
       if [[ $USE_ANL -eq 1 ]]; then
-        if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_anl.${PDATE}*.${Z}" | wc -l) -gt 0 ]]; then
-          mv diag_${type}_anl.${PDATE}*.${Z} ${type}_anl.${Z}
+        if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_anl.${PDY}${cyc}*.${Z}" | wc -l) -gt 0 ]]; then
+          mv diag_${type}_anl.${PDY}${cyc}*.${Z} ${type}_anl.${Z}
           ${UNCOMPRESS} ./${type}_anl.${Z}
         else
-          echo "WARNING: diag_${type}_anl.${PDATE}*.${Z} not available, skipping"
+          echo "WARNING: diag_${type}_anl.${PDY}${cyc}*.${Z} not available, skipping"
         fi
       fi
    done
@@ -117,18 +117,18 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
 
    #------------------------------------------------------------------
-   #   Run the child sccripts.
+   #   Run the child scripts.
    #------------------------------------------------------------------
-    ${USHradmon}/radmon_verf_angle.sh ${PDATE}
+    ${USHgfs}/radmon_verf_angle.sh
     rc_angle=$?
 
-    ${USHradmon}/radmon_verf_bcoef.sh ${PDATE}
+    ${USHgfs}/radmon_verf_bcoef.sh
     rc_bcoef=$?
 
-    ${USHradmon}/radmon_verf_bcor.sh "${PDATE}"
+    ${USHgfs}/radmon_verf_bcor.sh
     rc_bcor=$?
 
-    ${USHradmon}/radmon_verf_time.sh "${PDATE}"
+    ${USHgfs}/radmon_verf_time.sh
     rc_time=$?
 
     #--------------------------------------

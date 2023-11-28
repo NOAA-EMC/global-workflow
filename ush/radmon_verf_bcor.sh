@@ -20,16 +20,16 @@ source "$HOMEgfs/ush/preamble.sh"
 #            other supporting files into a temporary working directory.
 #
 #
-# Usage:  radmon_verf_bcor.sh PDATE
+# Usage:  radmon_verf_bcor.sh
 #
 #   Input script positional parameters:
-#     PDATE             processing date
+#     PDYcyc            processing date
 #                       yyyymmddcc format; required
 #
 #   Imported Shell Variables:
 #     RADMON_SUFFIX     data source suffix
 #                       defauls to opr
-#     EXECradmon        executable directory
+#     EXECgfs           executable directory
 #                       defaults to current directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
@@ -64,13 +64,6 @@ source "$HOMEgfs/ush/preamble.sh"
 #
 ####################################################################
 
-#  Command line arguments.
-export PDATE=${1:-${PDATE:?}}
-
-# Directories
-EXECradmon=${EXECradmon:-$(pwd)}
-TANKverf_rad=${TANKverf_rad:-$(pwd)}
-
 # File names
 pgmout=${pgmout:-${jlogfile}}
 touch $pgmout
@@ -99,7 +92,7 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program to working directory
 
-$NCP ${EXECradmon}/${bcor_exec}  ./${bcor_exec}
+$NCP ${EXECgfs}/${bcor_exec}  ./${bcor_exec}
 
 if [[ ! -s ./${bcor_exec} ]]; then
    err=6
@@ -111,10 +104,10 @@ else
 
    export pgm=${bcor_exec}
 
-   iyy=$(echo $PDATE | cut -c1-4)
-   imm=$(echo $PDATE | cut -c5-6)
-   idd=$(echo $PDATE | cut -c7-8)
-   ihh=$(echo $PDATE | cut -c9-10)
+   iyy=$(echo ${PDY} | cut -c1-4)
+   imm=$(echo ${PDY} | cut -c5-6)
+   idd=$(echo ${PDY} | cut -c7-8)
+   ihh=${cyc}
 
    ctr=0
    fail=0
@@ -129,7 +122,7 @@ else
          ctr=$(expr $ctr + 1)
 
          if [[ $dtype == "anl" ]]; then
-            data_file=${type}_anl.${PDATE}.ieee_d
+            data_file=${type}_anl.${PDY}${cyc}.ieee_d
             bcor_file=bcor.${data_file}
             ctl_file=${type}_anl.ctl
             bcor_ctl=bcor.${ctl_file}
@@ -137,7 +130,7 @@ else
             bcor_stdout=bcor.${stdout_file}
             input_file=${type}_anl
          else
-            data_file=${type}.${PDATE}.ieee_d
+            data_file=${type}.${PDY}${cyc}.ieee_d
             bcor_file=bcor.${data_file}
             ctl_file=${type}.ctl
             bcor_ctl=bcor.${ctl_file}
@@ -197,7 +190,7 @@ EOF
    done     # type in $SATYPE loop
 
 
-   ${USHradmon}/rstprod.sh
+   ${USHgfs}/rstprod.sh
    tar_file=radmon_bcor.tar
 
    if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then

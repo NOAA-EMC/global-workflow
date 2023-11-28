@@ -22,10 +22,10 @@ source "$HOMEgfs/ush/preamble.sh"
 #            other supporting files into a temporary working directory. 
 #
 #
-# Usage:  radmon_verf_time.sh PDATE
+# Usage:  radmon_verf_time.sh ${PDY}${cyc}
 #
 #   Input script positional parameters:
-#     PDATE		processing date
+#     PDYcyc		processing date
 #  			yyyymmddcc format; required 
 #
 #   Imported Shell Variables:
@@ -33,14 +33,11 @@ source "$HOMEgfs/ush/preamble.sh"
 #                       defaults to 1 (on)
 #     RADMON_SUFFIX	data source suffix
 #                       defauls to opr
-#     EXECradmon        executable directory
-#                       defaults to current directory 
-#     FIXgdas           fixed data directory
-#                       defaults to current directory
+#     EXECgfs           executable directory
+#     PARMmonitor       parm data directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
 #     TANKverf_rad	data repository
-#                       defaults to current directory 
 #     SATYPE		list of satellite/instrument sources
 #        		defaults to none
 #     VERBOSE           Verbose flag (YES or NO)
@@ -77,20 +74,12 @@ source "$HOMEgfs/ush/preamble.sh"
 #
 ####################################################################
 
-#  Command line arguments.
-export PDATE=${1:-${PDATE:?}}
-
-# Directories
-FIXgdas=${FIXgdas:-$(pwd)}
-EXECradmon=${EXECradmon:-$(pwd)}
-TANKverf_rad=${TANKverf_rad:-$(pwd)}
-
 # File names
 #pgmout=${pgmout:-${jlogfile}}
 #touch $pgmout
 
-radmon_err_rpt=${radmon_err_rpt:-${USHradmon}/radmon_err_rpt.sh}
-base_file=${base_file:-$FIXgdas/gdas_radmon_base.tar}
+radmon_err_rpt=${radmon_err_rpt:-${USHgfs}/radmon_err_rpt.sh}
+base_file=${base_file:-${PARMmonitor}/gdas_radmon_base.tar}
 report=report.txt
 disclaimer=disclaimer.txt
 
@@ -137,17 +126,16 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program and base files to working directory
 #-------------------------------------------------------------------
-$NCP ${EXECradmon}/${time_exec}  ./
+$NCP ${EXECgfs}/${time_exec}  ./
 if [[ ! -s ./${time_exec} ]]; then
    err=8
 fi
 
-iyy=$(echo $PDATE | cut -c1-4)
-imm=$(echo $PDATE | cut -c5-6)
-idd=$(echo $PDATE | cut -c7-8)
-ihh=$(echo $PDATE | cut -c9-10)
-cyc=$ihh
-CYCLE=$cyc
+iyy=$(echo $PDY | cut -c1-4)
+imm=$(echo $PDY | cut -c5-6)
+idd=$(echo $PDY | cut -c7-8)
+ihh=${cyc}
+CYCLE=${cyc}
 
 local_base="local_base"
 if [[ $DO_DATA_RPT -eq 1 ]]; then
@@ -190,11 +178,11 @@ if [[ $err -eq 0 ]]; then
          if [[ -f input ]]; then rm input; fi
 
          if [[ $dtype == "anl" ]]; then
-            data_file=${type}_anl.${PDATE}.ieee_d
+            data_file=${type}_anl.${PDY}${cyc}.ieee_d
             ctl_file=${type}_anl.ctl
             time_ctl=time.${ctl_file}
          else
-            data_file=${type}.${PDATE}.ieee_d
+            data_file=${type}.${PDY}${cyc}.ieee_d
             ctl_file=${type}.ctl
             time_ctl=time.${ctl_file}
          fi
@@ -250,7 +238,7 @@ EOF
    done
 
 
-   ${USHradmon}/rstprod.sh
+   ${USHgfs}/rstprod.sh
 
    if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
      tar_file=radmon_time.tar
@@ -302,7 +290,7 @@ EOF
 #
    tmp_satype="./tmp_satype.txt"
    echo ${SATYPE} > ${tmp_satype}
-   ${USHradmon}/radmon_diag_ck.sh  --rad ${radstat} --sat ${tmp_satype} --out ${diag}
+   ${USHgfs}/radmon_diag_ck.sh  --rad ${radstat} --sat ${tmp_satype} --out ${diag}
 
    if [[ -s ${diag} ]]; then
       cat << EOF > ${diag_hdr}
@@ -332,7 +320,7 @@ EOF
    
       if [[ $lines -gt 0 ]]; then
          cat ${diag_report}
-         cp ${diag}  ${TANKverf_rad}/bad_diag.${PDATE}
+         cp ${diag}  ${TANKverf_rad}/bad_diag.${PDY}${cyc}
       else
          rm ${diag_report}
       fi
@@ -344,11 +332,11 @@ EOF
    #  Identify bad_pen and bad_chan files for this cycle and 
    #   previous cycle
 
-   bad_pen=bad_pen.${PDATE}
-   bad_chan=bad_chan.${PDATE}
-   low_count=low_count.${PDATE}
+   bad_pen=bad_pen.${PDY}${cyc}
+   bad_chan=bad_chan.${PDY}${cyc}
+   low_count=low_count.${PDY}${cyc}
 
-   qdate=$($NDATE -${CYCLE_INTERVAL} $PDATE)
+   qdate=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
    pday=$(echo $qdate | cut -c1-8)
    
    prev_bad_pen=bad_pen.${qdate}
@@ -419,21 +407,21 @@ EOF
 
          echo "calling radmon_err_rpt for pen"
          ${radmon_err_rpt} ${prev_bad_pen} ${bad_pen} pen ${qdate} \
-		${PDATE} ${diag_report} ${pen_err}
+		${PDY}${cyc} ${diag_report} ${pen_err}
       fi
 
       if [[ $do_chan -eq 1 ]]; then   
 
          echo "calling radmon_err_rpt for chan"
          ${radmon_err_rpt} ${prev_bad_chan} ${bad_chan} chan ${qdate} \
-		${PDATE} ${diag_report} ${chan_err}
+		${PDY}${cyc} ${diag_report} ${chan_err}
       fi
 
       if [[ $do_cnt -eq 1 ]]; then   
 
          echo "calling radmon_err_rpt for cnt"
          ${radmon_err_rpt} ${prev_low_count} ${low_count} cnt ${qdate} \
-		${PDATE} ${diag_report} ${count_err}
+		${PDY}${cyc} ${diag_report} ${count_err}
       fi
 
       #-------------------------------------------------------------------
@@ -450,7 +438,7 @@ Radiance Monitor warning report
  
   Net:   ${RADMON_SUFFIX}
   Run:   ${RUN}
-  Cycle: $PDATE
+  Cycle: ${PDY}${cyc}
 
 EOF
 
@@ -526,7 +514,7 @@ EOF
          if [[ $lines -gt 2 ]]; then
             cat ${report}
 
-            $NCP ${report} ${TANKverf_rad}/warning.${PDATE}
+            $NCP ${report} ${TANKverf_rad}/warning.${PDY}${cyc}
          fi
       fi
 

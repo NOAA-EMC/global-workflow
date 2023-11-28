@@ -6,30 +6,10 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 
-##############################################
-# Specify Execution Areas
-##############################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export SCRgfs=${SCRgfs:-${HOMEgfs}/scripts}
-
-export FIXgdas=${FIXgdas:-${HOMEgfs}/fix/mon}
-export PARMmon=${PARMmon:-${HOMEgfs}/parm/mon}
-
-export HOMEradmon=${HOMEradmon:-${HOMEgfs}}
-export EXECradmon=${EXECradmon:-${HOMEradmon}/exec}
-export FIXradmon=${FIXradmon:-${FIXgfs}}
-export USHradmon=${USHradmon:-${HOMEradmon}/ush}
-
-###################################
-# source the parm file
-###################################
-parm_file=${parm_file:-${PARMmon}/da_mon.parm}
-.  ${parm_file}
-
 #############################################
 #  determine PDY and cyc for previous cycle
 #############################################
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 
@@ -41,34 +21,17 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RADMON
 YMD=${gPDY} HH=${gcyc} generate_com -rx COM_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
 
+export biascr="${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias"
+export radstat="${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat"
 export TANKverf_rad=${TANKverf_rad:-${COM_ATMOS_RADMON}}
 export TANKverf_radM1=${TANKverf_radM1:-${COM_ATMOS_RADMON_PREV}}
 
 if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p -m 775 ${TANKverf_rad} ; fi
 if [[ ! -d ${TANKverf_radM1} ]]; then mkdir -p -m 775 ${TANKverf_radM1} ; fi
 
-#############################################
-#  Filenames
-export biascr=${biascr:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias}
-export radstat=${radstat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat}
-export satype_file=${satype_file:-${FIXgdas}/gdas_radmon_satype.txt}
-
-#  Other variables
-export RAD_AREA=${RAD_AREA:-glb}
-export MAKE_CTL=${MAKE_CTL:-1}
-export MAKE_DATA=${MAKE_DATA:-1}
-export USE_ANL=${USE_ANL:-1}
-export PDATE=${PDY}${cyc}
-export DO_DIAG_RPT=${DO_DIAG_RPT:-1}
-export DO_DATA_RPT=${DO_DATA_RPT:-1}
-
-export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
-export CYCLE_INTERVAL=${assim_freq:-6}
-export VERBOSE=${VERBOSE:-YES}
-
 ########################################################
 # Execute the script.
-${RADMONSH:-${SCRgfs}/exgdas_atmos_verfrad.sh} ${PDY} ${cyc}
+"${SCRgfs}/exgdas_atmos_verfrad.sh"
 err=$?
 if (( err != 0 )); then
     exit "${err}"

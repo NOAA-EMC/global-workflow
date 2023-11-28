@@ -20,23 +20,19 @@ source "$HOMEgfs/ush/preamble.sh"
 #            other supporting files into a temporary working directory.
 #
 #
-# Usage:  radmon_verf_bcoef.sh PDATE
+# Usage:  radmon_verf_bcoef.sh
 #
 #   Input script positional parameters:
-#     PDATE             processing date
+#     PDYcyc            processing date
 #                       yyyymmddcc format; required
 #
 #   Imported Shell Variables:
 #     RADMON_SUFFIX     data source suffix
 #                       defauls to opr
-#     EXECradmon        executable directory
-#                       defaults to current directory
-#     FIXradmon         fixed data directory
-#                       defaults to current directory
+#     EXECgfs           executable directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
 #     TANKverf_rad      data repository
-#                       defaults to current directory
 #     SATYPE            list of satellite/instrument sources
 #                       defaults to none
 #     LITTLE_ENDIAN     flag for LE machine
@@ -65,19 +61,12 @@ source "$HOMEgfs/ush/preamble.sh"
 #     >0 - some problem encountered
 #
 ####################################################################
-#  Command line arguments.
-export PDATE=${1:-${PDATE:?}}
 
 netcdf_boolean=".false."
 if [[ $RADMON_NETCDF -eq 1 ]]; then
    netcdf_boolean=".true."
 fi
 echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, $netcdf_boolean"
-
-# Directories
-FIXgdas=${FIXgdas:-$(pwd)}
-EXECradmon=${EXECradmon:-$(pwd)}
-TANKverf_rad=${TANKverf_rad:-$(pwd)}
 
 # File names
 pgmout=${pgmout:-${jlogfile}}
@@ -105,7 +94,7 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program and supporting files to working directory
 
-$NCP $EXECradmon/${bcoef_exec}              ./${bcoef_exec}
+$NCP $EXECgfs/${bcoef_exec}              ./${bcoef_exec}
 $NCP ${biascr}                              ./biascr.txt
 
 if [[ ! -s ./${bcoef_exec} || ! -s ./biascr.txt ]]; then
@@ -118,10 +107,10 @@ else
 
    export pgm=${bcoef_exec}
 
-   iyy=$(echo $PDATE | cut -c1-4)
-   imm=$(echo $PDATE | cut -c5-6)
-   idd=$(echo $PDATE | cut -c7-8)
-   ihh=$(echo $PDATE | cut -c9-10)
+   iyy=$(echo ${PDY} | cut -c1-4)
+   imm=$(echo ${PDY} | cut -c5-6)
+   idd=$(echo ${PDY} | cut -c7-8)
+   ihh=${cyc}
 
    ctr=0
    fail=0
@@ -143,11 +132,11 @@ else
          ctr=$(expr $ctr + 1)
 
          if [[ $dtype == "anl" ]]; then
-            data_file=${type}_anl.${PDATE}.ieee_d
+            data_file=${type}_anl.${PDY}${cyc}.ieee_d
             ctl_file=${type}_anl.ctl
             bcoef_ctl=bcoef.${ctl_file}
          else
-            data_file=${type}.${PDATE}.ieee_d
+            data_file=${type}.${PDY}${cyc}.ieee_d
             ctl_file=${type}.ctl
             bcoef_ctl=bcoef.${ctl_file}
          fi 
@@ -204,7 +193,7 @@ EOF
    done     # type in $SATYPE loop
 
 
-   ${USHradmon}/rstprod.sh
+   ${USHgfs}/rstprod.sh
 
    if compgen -G "bcoef*.ieee_d*" > /dev/null || compgen -G "bcoef*.ctl*" > /dev/null; then
      tar_file=radmon_bcoef.tar
