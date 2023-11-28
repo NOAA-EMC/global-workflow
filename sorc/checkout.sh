@@ -151,7 +151,7 @@ source "${topdir}/../workflow/gw_setup.sh"
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 # Checkout UFS submodules in parallel
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-812aac5}" "8" &
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-3ba8dff}" "8" &
 
 # Run all other checkouts simultaneously with just 1 core each to handle submodules.
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab" &
@@ -176,13 +176,6 @@ fi
 for checkout_pid in $(jobs -p); do
   wait "${checkout_pid}" || errs=$((errs + $?))
 done
-
-# Temporary hack to check out a UPP verison that works on Orion
-# This can be removed once the UFS UPP version advances to or beyond 78f369b
-cd "${topdir}/ufs_model.fd/FV3/upp" || exit 1
-git checkout 78f369b
-cd "${topdir}" || exit 1
-# End hack
 
 if (( errs > 0 )); then
   echo "WARNING: One or more errors encountered during checkout process, please check logs before building"
