@@ -98,7 +98,7 @@ for pr in ${pr_list}; do
       fi
       {
         echo "Driver PID: ${driver_PID} on ${driver_HOST} is no longer running this test"
-        echo "Driver_PID: has restarted as $$ on ${host_name}"
+        echo "Driver PID: has restarted as $$ on ${host_name}"
       } >> "${output_ci_single}"
     fi
 
