@@ -83,7 +83,9 @@ for pr in ${pr_list}; do
     host_name=$(hostname -s)
     rm -f "${output_ci_single}"
     {
-      echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests on $(date +'%D %r')" || true
+      echo "CI Update on ${MACHINE_ID^} at $(date +'%D %r')" || true
+      echo "================================================="
+      echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests" || true
     } >> "${output_ci_single}"
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
@@ -92,7 +94,7 @@ for pr in ${pr_list}; do
         sleep 30
       else
         ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
-        sleep 60
+        sleep 30
       fi
       {
         echo "Driver PID: ${driver_PID} on ${driver_HOST} is no longer running this test"
@@ -151,7 +153,8 @@ for pr in ${pr_list}; do
   rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
   {
-    echo "CI Started on ${MACHINE_ID^} at $(date +'%D %r')" || true
+    echo "CI Update on ${MACHINE_ID^} at $(date +'%D %r')" || true
+    echo "================================================="
     echo "Cloning and Building global-workflow PR: ${pr}"
     echo "with PID: ${driver_build_PID} on host: ${driver_build_HOST}"
     echo ""
