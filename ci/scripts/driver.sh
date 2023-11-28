@@ -88,10 +88,10 @@ for pr in ${pr_list}; do
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
-        kill -- "-$(ps -o "pgid= ${driver_PID}" | grep -o [0-9]*)" || true
+        kill -- "-$(ps -o "pgid= ${driver_PID}" | grep -o "[0-9]*")" || true
         sleep 60
       else
-        ssh "${driver_HOST}" kill -- "-$(ps -o "pgid= ${driver_PID}" | grep -o [0-9]*)" || true
+        ssh "${driver_HOST}" kill -- "-$(ps -o "pgid= ${driver_PID}" | grep -o "[0-9]*")" || true
         sleep 60
       fi
       {
