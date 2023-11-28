@@ -708,7 +708,7 @@ class GFSTasks(Tasks):
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_ufs_postproc_grps(self.cdump, self._configs[task_name])
+        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs[task_name])
         vardict = {varname2: varval2, varname3: varval3}
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
