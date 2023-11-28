@@ -251,11 +251,4 @@ EOF
    ${NCP} "stdout.time.tar.${Z}" "${TANKverf_ozn}/time/"
 fi
 
-#-------------------------------------------------------
-# Conditionally remove data files older than 40 days
-#
-if [[ ${CLEAN_TANKDIR:-0} -eq 1 ]]; then
-   "${HOMEgfs}/ush/clean_tankdir.sh" glb 40
-fi 
-
 exit ${iret}
