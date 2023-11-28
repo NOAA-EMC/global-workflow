@@ -652,9 +652,10 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data, 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('upp')
         task = create_wf_task('atmupp', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              metatask='atmupp', varname=varname1, varval=varval1, vardict=vardict, cycledef=self.cdump)
+                              metatask='atmupp', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
 
         return task
 
@@ -675,22 +676,26 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('atmos_products')
         task = create_wf_task('atmprod', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              metatask='atmprod', varname=varname1, varval=varval1, vardict=vardict, cycledef=self.cdump)
+                              metatask='atmprod', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
 
         return task
-
-    def post(self):
-        return self._post_task('post')
 
     def ocnpost(self):
         if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
             return self._post_task('ocnpost')
 
-    def _post_task(self, task_name):
-        if task_name not in ['post', 'ocnpost']:
-            raise KeyError(f'Invalid post-processing task: {task_name}')
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs['ocnpost'])
+        vardict = {varname2: varval2, varname3: varval3}
+
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHRLST': '#lst#',
+                          'ROTDIR': self._base.get('ROTDIR')}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         deps = []
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
@@ -700,22 +705,10 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-
-        postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#lst#',
-                          'ROTDIR': self._base.get('ROTDIR')}
-        for key, value in postenvar_dict.items():
-            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs[task_name])
-        vardict = {varname2: varval2, varname3: varval3}
-
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
-
-        resources = self.get_resource(task_name)
-        task = create_wf_task(task_name, resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              metatask=task_name, varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
+        resources = self.get_resource('ocnpost')
+        task = create_wf_task('ocnpost', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              metatask='ocnpost', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
 
         return task
 
@@ -920,7 +913,7 @@ class GFSTasks(Tasks):
     def npoess(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
