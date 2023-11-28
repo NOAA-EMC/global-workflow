@@ -104,9 +104,9 @@ else
 
    export pgm=${bcor_exec}
 
-   iyy=$(echo ${PDY} | cut -c1-4)
-   imm=$(echo ${PDY} | cut -c5-6)
-   idd=$(echo ${PDY} | cut -c7-8)
+   iyy="${PDY:0:4}"
+   imm="${PDY:4:2}"
+   idd="${PDY:6:2}"
    ihh=${cyc}
 
    ctr=0
