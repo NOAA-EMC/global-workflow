@@ -29,11 +29,11 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  Untar radstat file.
    #------------------------------------------------------------------
 
-   $NCP $biascr  ./biascr.${PDY}${cyc}
-   $NCP $radstat ./radstat.${PDY}${cyc}
+   $NCP "$biascr"  "./biascr.${PDY}${cyc}"
+   $NCP "$radstat" "./radstat.${PDY}${cyc}"
 
-   tar -xvf radstat.${PDY}${cyc}
-   rm radstat.${PDY}${cyc}
+   tar -xvf "radstat.${PDY}${cyc}"
+   rm "radstat.${PDY}${cyc}"
 
    #------------------------------------------------------------------
    #  SATYPE is the list of expected satellite/instrument sources
@@ -45,10 +45,10 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    radstat_satype=$(ls d*ges* | awk -F_ '{ print $2 "_" $3 }')
    if [[ "$VERBOSE" = "YES" ]]; then
-      echo $radstat_satype
+      echo "$radstat_satype"
    fi
 
-   echo satype_file = $satype_file
+   echo satype_file = "$satype_file"
 
    #------------------------------------------------------------------
    #  Get previous cycle's date, and look for the satype_file.  Using
@@ -61,8 +61,8 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       use_tankdir=${TANKverf_rad}
    fi
 
-   echo satype_file = $satype_file
-   export SATYPE=$(cat ${satype_file})
+   echo satype_file = "$satype_file"
+   export SATYPE=$(cat "${satype_file}")
 
 
    #-------------------------------------------------------------
@@ -73,7 +73,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    satype_changes=0
    new_satype=$SATYPE
    for type in ${radstat_satype}; do
-      test=$(echo $SATYPE | grep $type | wc -l)
+      test=$(echo "$SATYPE" | grep "$type" | wc -l)
 
       if [[ $test -eq 0 ]]; then
          if [[ "$VERBOSE" = "YES" ]]; then
@@ -97,16 +97,16 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       fi
 
       if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_ges.${PDY}${cyc}*.${Z}" | wc -l) -gt 0 ]]; then
-        mv diag_${type}_ges.${PDY}${cyc}*.${Z} ${type}.${Z}
-        ${UNCOMPRESS} ./${type}.${Z}
+        mv "diag_${type}_ges.${PDY}${cyc}*.${Z}" "${type}.${Z}"
+        ${UNCOMPRESS} "./${type}.${Z}"
       else
         echo "WARNING: diag_${type}_ges.${PDY}${cyc}*.${Z} not available, skipping"
       fi
 
       if [[ $USE_ANL -eq 1 ]]; then
         if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_anl.${PDY}${cyc}*.${Z}" | wc -l) -gt 0 ]]; then
-          mv diag_${type}_anl.${PDY}${cyc}*.${Z} ${type}_anl.${Z}
-          ${UNCOMPRESS} ./${type}_anl.${Z}
+          mv "diag_${type}_anl.${PDY}${cyc}*.${Z}" "${type}_anl.${Z}"
+          ${UNCOMPRESS} "./${type}_anl.${Z}"
         else
           echo "WARNING: diag_${type}_anl.${PDY}${cyc}*.${Z} not available, skipping"
         fi
@@ -119,16 +119,16 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #------------------------------------------------------------------
    #   Run the child scripts.
    #------------------------------------------------------------------
-    ${USHgfs}/radmon_verf_angle.sh
+    "${USHgfs}/radmon_verf_angle.sh"
     rc_angle=$?
 
-    ${USHgfs}/radmon_verf_bcoef.sh
+    "${USHgfs}/radmon_verf_bcoef.sh"
     rc_bcoef=$?
 
-    ${USHgfs}/radmon_verf_bcor.sh
+    "${USHgfs}/radmon_verf_bcor.sh"
     rc_bcor=$?
 
-    ${USHgfs}/radmon_verf_time.sh
+    "${USHgfs}/radmon_verf_time.sh"
     rc_time=$?
 
     #--------------------------------------
@@ -166,7 +166,7 @@ export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 rlist="saphir"
 for rtype in $rlist; do
   if compgen -G "$TANKverf_rad/*${rtype}*" > /dev/null; then
-     ${CHGRP_CMD} "${TANKverf_rad}"/*${rtype}*
+     ${CHGRP_CMD} "${TANKverf_rad}/*${rtype}*"
   fi
 done
 
