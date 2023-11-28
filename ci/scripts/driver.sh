@@ -88,7 +88,7 @@ for pr in ${pr_list}; do
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
-	pids=$(ps -o "pgid= ${driver_PID}")
+	    pids=$(ps -o "pgid= ${driver_PID}")
         kill -- "-$(echo "${pids}" | grep -o "[0-9]*")" || true
         sleep 60
       else
@@ -178,7 +178,7 @@ for pr in ${pr_list}; do
   fi
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built
+    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built "0:0"
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
@@ -227,7 +227,7 @@ for pr in ${pr_list}; do
     done
 
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running
+    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running "0:0"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
 
   else
