@@ -13,8 +13,7 @@ export PARMmonitor=${PARMgfs}/monitor
 export SATYPE_FILE=${PARMmonitor}/gdas_oznmon_satype.txt
 
 # Source the parm file
-export parm_file=${PARMmonitor}/gdas_oznmon.parm
-. "${parm_file}"
+. "${PARMmonitor}/gdas_oznmon.parm"
 
 # Set up validation file
 if [[ ${VALIDATE_DATA} -eq 1 ]]; then

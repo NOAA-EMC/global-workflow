@@ -10,8 +10,7 @@ export PARMmonitor=${PARMgfs}/monitor
 export satype_file=${PARMmonitor}/gdas_radmon_satype.txt
 
 # Source the parm file
-export parm_file=${PARMmonitor}/da_mon.parm
-. "${parm_file}"
+. "${PARMmonitor}/da_mon.parm"
 
 # Other variables
 export RAD_AREA="glb"
