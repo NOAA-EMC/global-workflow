@@ -72,5 +72,5 @@ elif [[ ${rc_reduct} -ne 0 ]]; then
    err=${rc_reduct}
 fi
 
-exit ${err}
+exit "${err}"
 
