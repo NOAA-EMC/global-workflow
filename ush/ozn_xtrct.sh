@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 #------------------------------------------------------------------
 #  ozn_xtrct.sh
@@ -58,13 +58,13 @@ nregion=${nregion:-6}
 DO_DATA_RPT=${DO_DATA_RPT:-0}
 
 netcdf_boolean=".false."
-if [[ $OZNMON_NETCDF -eq 1 ]]; then
+if [[ ${OZNMON_NETCDF} -eq 1 ]]; then
    netcdf_boolean=".true."
 fi
 
 OZNMON_NEW_HDR=${OZNMON_NEW_HDR:-0}
 new_hdr="F"
-if [[ $OZNMON_NEW_HDR -eq 1 ]]; then
+if [[ ${OZNMON_NEW_HDR} -eq 1 ]]; then
    new_hdr="T"
 fi
 
@@ -72,19 +72,19 @@ fi
 # if VALIDATE_DATA then locate and untar base file
 #
 validate=".FALSE."
-if [[ $VALIDATE_DATA -eq 1 ]]; then
-   if [[ ! -e $ozn_val_file && ! -h $ozn_val_file ]]; then
-      echo "WARNING:  VALIDATE_DATA set to 1, but unable to locate $ozn_val_file"
+if [[ ${VALIDATE_DATA} -eq 1 ]]; then
+   if [[ ! -e ${ozn_val_file} && ! -h ${ozn_val_file} ]]; then
+      echo "WARNING:  VALIDATE_DATA set to 1, but unable to locate ${ozn_val_file}"
       echo "          Setting VALIDATE_DATA to 0/OFF"
       VALIDATE_DATA=0
    else
       validate=".TRUE."
       val_file=$(basename "${ozn_val_file}")
-      ${NCP} "$ozn_val_file" "$val_file"
-      tar -xvf "$val_file"
+      ${NCP} "${ozn_val_file}" "${val_file}"
+      tar -xvf "${val_file}"
    fi
 fi
-echo "VALIDATE_DATA, validate = $VALIDATE_DATA, $validate "
+echo "VALIDATE_DATA, validate = ${VALIDATE_DATA}, ${validate} "
 
 
 
@@ -149,9 +149,9 @@ else
    #
    for ptype in ${ozn_ptype}; do
 
-      iyy=$(echo "${PDY}" | cut -c1-4)
-      imm=$(echo "${PDY}" | cut -c5-6)
-      idd=$(echo "${PDY}" | cut -c7-8)
+      iyy="${PDY:0:4}"
+      imm="${PDY:4:2}"
+      idd="${PDY:6:2}"
       ihh=${cyc}
  
       for type in ${avail_satype}; do
@@ -195,10 +195,10 @@ EOF
             if [[ ! -d ${TANKverf_ozn}/time ]]; then
                mkdir -p "${TANKverf_ozn}/time"
             fi
-            $NCP "${type}.${ptype}.ctl             	  "${TANKverf_ozn}/time/"
-            $NCP "${type}.${ptype}.${PDY}${cyc}.ieee_d"	  "${TANKverf_ozn}/time/"
+            ${NCP} "${type}.${ptype}.ctl"            	  "${TANKverf_ozn}/time/"
+            ${NCP} "${type}.${ptype}.${PDY}${cyc}.ieee_d"	  "${TANKverf_ozn}/time/"
    
-            $NCP bad*                                     "${TANKverf_ozn}/time/"
+            ${NCP} bad*                                     "${TANKverf_ozn}/time/"
    
             rm -f input
 
@@ -226,10 +226,10 @@ EOF
             if [[ ! -d ${TANKverf_ozn}/horiz ]]; then
                mkdir -p "${TANKverf_ozn}/horiz"
             fi
-            $NCP "${type}.${ptype}.ctl"                   "${TANKverf_ozn}/horiz/"
+            ${NCP} "${type}.${ptype}.ctl"                   "${TANKverf_ozn}/horiz/"
 
-            $COMPRESS "${type}.${ptype}.${PDY}${cyc}.ieee_d"
-            $NCP "${type}.${ptype}.${PDY}${cyc}.ieee_d.${Z}" "${TANKverf_ozn}/horiz/"
+            ${COMPRESS} "${type}.${ptype}.${PDY}${cyc}.ieee_d"
+            ${NCP} "${type}.${ptype}.${PDY}${cyc}.ieee_d.${Z}" "${TANKverf_ozn}/horiz/"
       
 
             echo "finished processing ptype, type:  ${ptype}, ${type}"

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -72,19 +72,19 @@ REGIONAL_RR=${REGIONAL_RR:-0}	# rapid refresh model flag
 rgnHH=${rgnHH:-}
 rgnTM=${rgnTM:-}
 
-echo " REGIONAL_RR, rgnHH, rgnTM = $REGIONAL_RR, $rgnHH, $rgnTM"
+echo " REGIONAL_RR, rgnHH, rgnTM = ${REGIONAL_RR}, ${rgnHH}, ${rgnTM}"
 netcdf_boolean=".false."
-if [[ $RADMON_NETCDF -eq 1 ]]; then
+if [[ ${RADMON_NETCDF} -eq 1 ]]; then
    netcdf_boolean=".true."
 fi  
-echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, $netcdf_boolean"
+echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, ${netcdf_boolean}"
 
 which prep_step
 which startmsg
 
 # File names
 export pgmout=${pgmout:-${jlogfile}}
-touch $pgmout
+touch "${pgmout}"
 
 # Other variables
 SATYPE=${SATYPE:-}
@@ -93,7 +93,7 @@ LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
 USE_ANL=${USE_ANL:-0}
 
 
-if [[ $USE_ANL -eq 1 ]]; then
+if [[ ${USE_ANL} -eq 1 ]]; then
    gesanl="ges anl"
 else
    gesanl="ges"
@@ -107,8 +107,8 @@ scaninfo=scaninfo.txt
 #--------------------------------------------------------------------
 #   Copy extraction program and supporting files to working directory
 
-$NCP ${EXECgfs}/${angle_exec}  ./
-$NCP $shared_scaninfo  ./${scaninfo}
+${NCP} "${EXECgfs}/${angle_exec}" ./
+${NCP} "${shared_scaninfo}"  ./${scaninfo}
 
 if [[ ! -s ./${angle_exec} || ! -s ./${scaninfo} ]]; then
    err=2
@@ -136,13 +136,13 @@ else
 
       for dtype in ${gesanl}; do
 
-         echo "pgm    = $pgm"
-         echo "pgmout = $pgmout"
+         echo "pgm    = ${pgm}"
+         echo "pgmout = ${pgmout}"
          prep_step
 
-         ctr=$(expr $ctr + 1)
+         ctr=$(expr ${ctr} + 1)
 
-         if [[ $dtype == "anl" ]]; then
+         if [[ ${dtype} == "anl" ]]; then
             data_file=${type}_anl.${PDY}${cyc}.ieee_d
             ctl_file=${type}_anl.ctl
             angl_ctl=angle.${ctl_file}
@@ -153,7 +153,7 @@ else
          fi
 
          angl_file=""
-         if [[ $REGIONAL_RR -eq 1 ]]; then
+         if [[ ${REGIONAL_RR} -eq 1 ]]; then
             angl_file=${rgnHH}.${data_file}.${rgnTM}
          fi
 
@@ -180,18 +180,18 @@ cat << EOF > input
 EOF
 
 	 startmsg
-         ./${angle_exec} < input >>   ${pgmout} 2>>errfile
+         ./${angle_exec} < input >>   "${pgmout}" 2>>errfile
          export err=$?; err_chk
-         if [[ $err -ne 0 ]]; then
-             fail=$(expr $fail + 1)
+         if [[ ${err} -ne 0 ]]; then
+             fail=$(expr ${fail} + 1)
          fi
 
          if [[ -s ${angl_file} ]]; then
-            ${COMPRESS} -f ${angl_file}
+            ${COMPRESS} -f "${angl_file}"
          fi
 
          if [[ -s ${angl_ctl} ]]; then
-            ${COMPRESS} -f ${angl_ctl}
+            ${COMPRESS} -f "${angl_ctl}"
          fi 
 
 
@@ -200,24 +200,24 @@ EOF
    done    # for type in ${SATYPE} loop
 
 
-   ${USHgfs}/rstprod.sh
+   "${USHgfs}"/rstprod.sh
 
    tar_file=radmon_angle.tar
    if compgen -G "angle*.ieee_d*" > /dev/null || compgen -G "angle*.ctl*" > /dev/null; then
-      tar -cf $tar_file angle*.ieee_d* angle*.ctl*
+      tar -cf ${tar_file} angle*.ieee_d* angle*.ctl*
       ${COMPRESS} ${tar_file}
-      mv $tar_file.${Z} ${TANKverf_rad}/.
+      mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 
-      if [[ $RAD_AREA = "rgn" ]]; then
+      if [[ ${RAD_AREA} = "rgn" ]]; then
          cwd=$(pwd)
-         cd ${TANKverf_rad}
-         tar -xf ${tar_file}.${Z}
-         rm ${tar_file}.${Z}
-         cd ${cwd}
+         cd "${TANKverf_rad}"
+         tar -xf "${tar_file}.${Z}"
+         rm "${tar_file}.${Z}"
+         cd "${cwd}"
       fi
    fi
 
-   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr ]]; then
+   if [[ ${ctr} -gt 0 && ${fail} -eq ${ctr} || ${fail} -gt ${ctr} ]]; then
       err=3
    fi
 fi

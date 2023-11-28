@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -66,7 +66,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # File names
 pgmout=${pgmout:-${jlogfile}}
-touch $pgmout
+touch "${pgmout}"
 
 # Other variables
 RAD_AREA=${RAD_AREA:-glb}
@@ -78,11 +78,11 @@ bcor_exec=radmon_bcor.x
 err=0
 
 netcdf_boolean=".false."
-if [[ $RADMON_NETCDF -eq 1 ]]; then
+if [[ ${RADMON_NETCDF} -eq 1 ]]; then
    netcdf_boolean=".true."
 fi
 
-if [[ $USE_ANL -eq 1 ]]; then
+if [[ ${USE_ANL} -eq 1 ]]; then
    gesanl="ges anl"
 else
    gesanl="ges"
@@ -92,7 +92,7 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program to working directory
 
-$NCP ${EXECgfs}/${bcor_exec}  ./${bcor_exec}
+${NCP} "${EXECgfs}/${bcor_exec}" ./${bcor_exec}
 
 if [[ ! -s ./${bcor_exec} ]]; then
    err=6
@@ -119,9 +119,9 @@ else
 
          prep_step
 
-         ctr=$(expr $ctr + 1)
+         ctr=$(expr ${ctr} + 1)
 
-         if [[ $dtype == "anl" ]]; then
+         if [[ ${dtype} == "anl" ]]; then
             data_file=${type}_anl.${PDY}${cyc}.ieee_d
             bcor_file=bcor.${data_file}
             ctl_file=${type}_anl.ctl
@@ -144,7 +144,7 @@ else
       # Check for 0 length input file here and avoid running 
       # the executable if $input_file doesn't exist or is 0 bytes
       #
-         if [[ -s $input_file ]]; then
+         if [[ -s ${input_file} ]]; then
             nchanl=-999
 
 cat << EOF > input
@@ -166,10 +166,10 @@ cat << EOF > input
 EOF
    
             startmsg
-            ./${bcor_exec} < input >> ${pgmout} 2>>errfile
+            ./${bcor_exec} < input >> "${pgmout}" 2>>errfile
             export err=$?; err_chk
             if [[ $? -ne 0 ]]; then
-               fail=$(expr $fail + 1)
+               fail=$(expr ${fail} + 1)
             fi
  
 
@@ -178,11 +178,11 @@ EOF
 #
 
             if [[ -s ${bcor_file} ]]; then
-               ${COMPRESS} ${bcor_file}
+               ${COMPRESS} "${bcor_file}"
             fi
 
             if [[ -s ${bcor_ctl} ]]; then
-               ${COMPRESS} ${bcor_ctl}
+               ${COMPRESS} "${bcor_ctl}"
             fi
 
          fi
@@ -190,24 +190,24 @@ EOF
    done     # type in $SATYPE loop
 
 
-   ${USHgfs}/rstprod.sh
+   "${USHgfs}/rstprod.sh"
    tar_file=radmon_bcor.tar
 
    if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then
-     tar -cf $tar_file bcor*.ieee_d* bcor*.ctl*
+     tar -cf ${tar_file} bcor*.ieee_d* bcor*.ctl*
      ${COMPRESS} ${tar_file}
-     mv $tar_file.${Z} ${TANKverf_rad}/.
+     mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 
-     if [[ $RAD_AREA = "rgn" ]]; then
+     if [[ ${RAD_AREA} = "rgn" ]]; then
         cwd=$(pwd)
-        cd ${TANKverf_rad}
-        tar -xf ${tar_file}.${Z}
-        rm ${tar_file}.${Z}
-        cd ${cwd}
+        cd "${TANKverf_rad}"
+        tar -xf "${tar_file}.${Z}"
+        rm "${tar_file}.${Z}"
+        cd "${cwd}"
      fi
    fi
 
-   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr ]]; then
+   if [[ ${ctr} -gt 0 && ${fail} -eq ${ctr} || ${fail} -gt ${ctr} ]]; then
       err=7
    fi
 fi
