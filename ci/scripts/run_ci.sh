@@ -89,7 +89,7 @@ for pr in ${pr_list}; do
     rc=$?
     
     if [[ "${rc}" -ne 0 ]]; then
-      output_ci="${pr_dir}"/output_runtime_single.log
+      output_ci="${pr_dir}/output_runtime_single.log"
       {
         echo "${pslot} has *** STALLED **** on ${MACHINE_ID^}"
         echo "A job in experiment ${pslot} in ${pslot_dir}"
