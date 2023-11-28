@@ -40,10 +40,10 @@ check_diag_files() {
    echo ""; echo ""; echo "--> check_diag_files"
 
    for type in ${found_satype}; do
-      len_check=$(echo ${avail_satype} | grep ${type} | wc -c)
+      len_check=$(echo "${avail_satype}" | grep "${type}" | wc -c)
 
       if [[ ${len_check} -le 1 ]]; then
-         echo "missing diag file -- diag_${type}_ges.${pdate}.gz not found " >> ./${out_file}   
+         echo "missing diag file -- diag_${type}_ges.${pdate}.gz not found" >> "./${out_file}"
       fi
    done
 
@@ -79,9 +79,9 @@ if [[ $VALIDATE_DATA -eq 1 ]]; then
       VALIDATE_DATA=0
    else
       validate=".TRUE."
-      val_file=$(basename ${ozn_val_file})
-      ${NCP} $ozn_val_file $val_file 
-      tar -xvf $val_file
+      val_file=$(basename "${ozn_val_file}")
+      ${NCP} "$ozn_val_file" "$val_file"
+      tar -xvf "$val_file"
    fi
 fi
 echo "VALIDATE_DATA, validate = $VALIDATE_DATA, $validate "
@@ -106,7 +106,7 @@ avail_satype=$(ls -1 d*ges* | sed -e 's/_/ /g;s/\./ /' | gawk '{ print $2 "_" $3
 
 if [[ ${DO_DATA_RPT} -eq 1 ]]; then
    if [[ -e ${SATYPE_FILE} ]]; then
-      satype=$(cat ${SATYPE_FILE})
+      satype=$(cat "${SATYPE_FILE}")
       check_diag_files "${PDY}${cyc}" "${satype}" "${avail_satype}"
    else
       echo "WARNING:  missing ${SATYPE_FILE}"
@@ -119,7 +119,7 @@ if [[ ${len_satype} -le 1 ]]; then
    satype=${avail_satype}
 fi
 
-echo ${satype}
+echo "${satype}"
 
 
 len_satype=$(echo -n "${satype}" | wc -c)
@@ -132,12 +132,12 @@ else
    #--------------------------------------------------------------------
    #   Copy extraction programs to working directory
    #
-   ${NCP} ${HOMEgfs}/exec/oznmon_time.x   ./oznmon_time.x
+   ${NCP} "${HOMEgfs}/exec/oznmon_time.x" ./oznmon_time.x
    if [[ ! -e oznmon_time.x ]]; then
       iret=2
       exit ${iret}
    fi
-   ${NCP} ${HOMEgfs}/exec/oznmon_horiz.x  ./oznmon_horiz.x
+   ${NCP} "${HOMEgfs}/exec/oznmon_horiz.x" ./oznmon_horiz.x
    if [[ ! -e oznmon_horiz.x ]]; then
       iret=3
       exit ${iret}
@@ -149,15 +149,15 @@ else
    #
    for ptype in ${ozn_ptype}; do
 
-      iyy=$(echo ${PDY} | cut -c1-4)
-      imm=$(echo ${PDY} | cut -c5-6)
-      idd=$(echo ${PDY} | cut -c7-8)
+      iyy=$(echo "${PDY}" | cut -c1-4)
+      imm=$(echo "${PDY}" | cut -c5-6)
+      idd=$(echo "${PDY}" | cut -c7-8)
       ihh=${cyc}
  
       for type in ${avail_satype}; do
          if [[ -f "diag_${type}_${ptype}.${PDY}${cyc}.gz" ]]; then
-            mv diag_${type}_${ptype}.${PDY}${cyc}.gz ${type}.${ptype}.gz
-            gunzip ./${type}.${ptype}.gz
+            mv "diag_${type}_${ptype}.${PDY}${cyc}.gz" "${type}.${ptype}.gz"
+            gunzip "./${type}.${ptype}.gz"
 
             echo "processing ptype, type:  ${ptype}, ${type}"
             rm -f input
@@ -188,17 +188,17 @@ EOF
 
             echo "oznmon_time.x HAS STARTED ${type}"
    
-            ./oznmon_time.x < input >   stdout.time.${type}.${ptype}
+            ./oznmon_time.x < input > "stdout.time.${type}.${ptype}"
 
             echo "oznmon_time.x HAS ENDED ${type}"
 
             if [[ ! -d ${TANKverf_ozn}/time ]]; then
-               mkdir -p ${TANKverf_ozn}/time
+               mkdir -p "${TANKverf_ozn}/time"
             fi
-            $NCP ${type}.${ptype}.ctl             	  ${TANKverf_ozn}/time/
-            $NCP ${type}.${ptype}.${PDY}${cyc}.ieee_d 	  ${TANKverf_ozn}/time/
+            $NCP "${type}.${ptype}.ctl             	  "${TANKverf_ozn}/time/"
+            $NCP "${type}.${ptype}.${PDY}${cyc}.ieee_d"	  "${TANKverf_ozn}/time/"
    
-            $NCP bad*                                ${TANKverf_ozn}/time/
+            $NCP bad*                                     "${TANKverf_ozn}/time/"
    
             rm -f input
 
@@ -219,17 +219,17 @@ EOF
 
             echo "oznmon_horiz.x HAS STARTED ${type}"
    
-            ./oznmon_horiz.x < input >   stdout.horiz.${type}.${ptype}
+            ./oznmon_horiz.x < input > "stdout.horiz.${type}.${ptype}"
 
             echo "oznmon_horiz.x HAS ENDED ${type}"
 
             if [[ ! -d ${TANKverf_ozn}/horiz ]]; then
-               mkdir -p ${TANKverf_ozn}/horiz
+               mkdir -p "${TANKverf_ozn}/horiz"
             fi
-            $NCP ${type}.${ptype}.ctl                  ${TANKverf_ozn}/horiz/
+            $NCP "${type}.${ptype}.ctl"                   "${TANKverf_ozn}/horiz/"
 
-            $COMPRESS ${type}.${ptype}.${PDY}${cyc}.ieee_d
-            $NCP ${type}.${ptype}.${PDY}${cyc}.ieee_d.${Z} ${TANKverf_ozn}/horiz/
+            $COMPRESS "${type}.${ptype}.${PDY}${cyc}.ieee_d"
+            $NCP "${type}.${ptype}.${PDY}${cyc}.ieee_d.${Z}" "${TANKverf_ozn}/horiz/"
       
 
             echo "finished processing ptype, type:  ${ptype}, ${type}"
@@ -244,18 +244,18 @@ EOF
 
    tar -cvf stdout.horiz.tar stdout.horiz*
    ${COMPRESS} stdout.horiz.tar
-   ${NCP} stdout.horiz.tar.${Z} ${TANKverf_ozn}/horiz/
+   ${NCP} "stdout.horiz.tar.${Z}" "${TANKverf_ozn}/horiz/"
 
    tar -cvf stdout.time.tar stdout.time*
    ${COMPRESS} stdout.time.tar
-   ${NCP} stdout.time.tar.${Z} ${TANKverf_ozn}/time/
+   ${NCP} "stdout.time.tar.${Z}" "${TANKverf_ozn}/time/"
 fi
 
 #-------------------------------------------------------
 # Conditionally remove data files older than 40 days
 #
 if [[ ${CLEAN_TANKDIR:-0} -eq 1 ]]; then
-   ${HOMEgfs}/ush/clean_tankdir.sh glb 40
+   "${HOMEgfs}/ush/clean_tankdir.sh" glb 40
 fi 
 
 exit ${iret}

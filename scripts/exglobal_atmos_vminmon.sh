@@ -44,17 +44,17 @@ if [[ -s ${gsistat} ]]; then
    #------------------------------------------------------------------
    #   Run the child sccripts.
    #------------------------------------------------------------------
-   ${USHgfs}/minmon_xtrct_costs.pl ${MINMON_SUFFIX} ${PDY} ${cyc} ${gsistat} dummy
+   "${USHgfs}/minmon_xtrct_costs.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
    rc_costs=$?
-   echo "rc_costs = $rc_costs"
+   echo "rc_costs = ${rc_costs}"
 
-   ${USHgfs}/minmon_xtrct_gnorms.pl ${MINMON_SUFFIX} ${PDY} ${cyc} ${gsistat} dummy
+   "${USHgfs}/minmon_xtrct_gnorms.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
    rc_gnorms=$?
-   echo "rc_gnorms = $rc_gnorms"
+   echo "rc_gnorms = ${rc_gnorms}"
 
-   ${USHgfs}/minmon_xtrct_reduct.pl ${MINMON_SUFFIX} ${PDY} ${cyc} ${gsistat} dummy
+   "${USHgfs}/minmon_xtrct_reduct.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
    rc_reduct=$?
-   echo "rc_reduct = $rc_reduct"
+   echo "rc_reduct = ${rc_reduct}"
 
 fi
 
@@ -64,12 +64,12 @@ fi
 err=0
 if [[ ${data_available} -ne 1 ]]; then
    err=1
-elif [[ $rc_costs -ne 0 ]]; then
-   err=$rc_costs
-elif [[ $rc_gnorms -ne 0 ]]; then
-   err=$rc_gnorms
-elif [[ $rc_reduct -ne 0 ]]; then
-   err=$rc_reduct
+elif [[ ${rc_costs} -ne 0 ]]; then
+   err=${rc_costs}
+elif [[ ${rc_gnorms} -ne 0 ]]; then
+   err=${rc_gnorms}
+elif [[ ${rc_reduct} -ne 0 ]]; then
+   err=${rc_reduct}
 fi
 
 exit ${err}
