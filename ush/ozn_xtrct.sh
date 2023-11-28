@@ -195,10 +195,10 @@ EOF
             if [[ ! -d ${TANKverf_ozn}/time ]]; then
                mkdir -p "${TANKverf_ozn}/time"
             fi
-            ${NCP} "${type}.${ptype}.ctl"            	  "${TANKverf_ozn}/time/"
-            ${NCP} "${type}.${ptype}.${PDY}${cyc}.ieee_d"	  "${TANKverf_ozn}/time/"
+            ${NCP} "${type}.${ptype}.ctl"                  "${TANKverf_ozn}/time/"
+            ${NCP} "${type}.${ptype}.${PDY}${cyc}.ieee_d"  "${TANKverf_ozn}/time/"
    
-            ${NCP} bad*                                     "${TANKverf_ozn}/time/"
+            ${NCP} bad* "${TANKverf_ozn}/time/"
    
             rm -f input
 
