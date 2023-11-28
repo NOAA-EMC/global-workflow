@@ -90,7 +90,7 @@ for pr in ${pr_list}; do
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
-        pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill
+        pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill || true
         sleep 30
       else
         ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
@@ -154,7 +154,7 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   {
     echo "CI Update on ${MACHINE_ID^} at $(date +'%D %r')" || true
-    echo "================================================="
+    echo "============================================"
     echo "Cloning and Building global-workflow PR: ${pr}"
     echo "with PID: ${driver_build_PID} on host: ${driver_build_HOST}"
     echo ""
