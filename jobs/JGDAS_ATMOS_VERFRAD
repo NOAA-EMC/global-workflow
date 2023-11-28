@@ -70,7 +70,9 @@ export VERBOSE=${VERBOSE:-YES}
 # Execute the script.
 ${RADMONSH:-${SCRgfs}/exgdas_atmos_verfrad.sh} ${PDY} ${cyc}
 err=$?
-[[ ${err} -ne 0 ]] && exit ${err}
+if (( err != 0 )); then
+    exit "${err}"
+fi
 
 ################################
 # Remove the Working Directory
