@@ -151,8 +151,8 @@ for pr in ${pr_list}; do
   rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
   {
-    echo "CI stated Cloning and Building global-workflow PR: ${pr}"
-    echo "on ${MACHINE_ID^} started at $(date +'%D %r')" || true
+    echo "CI Started on ${MACHINE_ID^} at $(date +'%D %r')" || true
+    echo "Cloning and Building global-workflow PR: ${pr}"
     echo "with PID: ${driver_build_PID} on host: ${driver_build_HOST}"
     echo ""
   } >> "${output_ci_single}"
