@@ -154,7 +154,7 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   {
     echo "CI Update on ${MACHINE_ID^} at $(date +'%D %r')" || true
-    echo "================================================="
+    echo "============================================"
     echo "Cloning and Building global-workflow PR: ${pr}"
     echo "with PID: ${driver_build_PID} on host: ${driver_build_HOST}"
     echo ""
