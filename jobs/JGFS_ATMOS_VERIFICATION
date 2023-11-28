@@ -1,0 +1,43 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
+
+###############################################################
+## Abstract:
+## Inline METplus verification and diagnostics driver script
+## HOMEgfs   : /full/path/to/workflow
+## EXPDIR : /full/path/to/config/files
+## CDATE  : current analysis date (YYYYMMDDHH)
+## CDUMP  : cycle name (gdas / gfs)
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
+## SDATE_GFS  : first date of GFS cycle (YYYYMMDDHHMM)
+## METPCASE : METplus verification use case (g2g1 | g2o1 | pcp1)
+###############################################################
+
+# TODO: This should not be permitted as DATAROOT is set at the job-card level.
+# TODO: DATAROOT is being used as DATA in metp jobs.  This should be rectified in metp.
+# TODO: The temporary directory is DATA and is created at the top of the J-Job.
+# TODO: remove this line
+export DATAROOT=${DATA}
+
+VDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${VRFYBACK_HRS} hours")
+export VDATE
+
+# Since this is currently a one-element list, shellcheck things we would rather run this as a command
+# shellcheck disable=SC2041
+for grid in '1p00'; do
+  prod_dir="COM_ATMOS_GRIB_${grid}"
+  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+done
+
+# TODO: If none of these are on, why are we running this job?
+if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
+    ${VERIF_GLOBALSH}
+    status=$?
+	if (( status != 0 )); then exit "${status}"; fi
+fi
+
+if [[ ${KEEPDATA:-"NO"} = "NO" ]] ; then rm -rf "${DATAROOT}" ; fi  # TODO: This should be $DATA
+
