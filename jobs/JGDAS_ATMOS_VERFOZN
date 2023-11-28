@@ -25,7 +25,7 @@ export USHoznmon=${USHoznmon:-${HOMEoznmon}/ush}
 #############################################
 #  determine PDY and cyc for previous cycle
 #############################################
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 
