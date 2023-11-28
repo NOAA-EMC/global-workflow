@@ -34,7 +34,6 @@ fix/gldas
 fix/gsi
 fix/lut
 fix/mom6
-fix/mon
 fix/orog
 fix/reg2grb2
 fix/sfc_climo
@@ -47,7 +46,7 @@ fix/wafs
 #--------------------------
 parm/config/config.base
 parm/gldas
-parm/mon
+parm/monitor
 parm/post/AEROSOL_LUTS.dat
 parm/post/nam_micro_lookup.dat
 parm/post/optics_luts_DUST.dat
