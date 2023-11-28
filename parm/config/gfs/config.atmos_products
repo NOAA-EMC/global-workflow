@@ -9,7 +9,7 @@ echo "BEGIN: config.atmos_products"
 . "${EXPDIR}/config.resources" atmos_products
 
 # No. of forecast hours to process in a single job
-export NPOSTPROCGRP=3  # TODO: find a better name
+export NFHRS_PER_GROUP=3
 
 # Scripts used by this job
 export GFSDOWNSH="${HOMEgfs}/ush/fv3gfs_downstream_nems.sh"
@@ -18,11 +18,11 @@ export GFSDOWNSHF="${HOMEgfs}/ush/inter_flux.sh"
 
 if [[ "${RUN:-}" == "gdas" ]]; then
   export downset=1
-  export FHOUT_PGB=${FHOUT:-1}  # Output frequency of gfs pgb file at 1.0 and 0.5 deg
+  export FHOUT_PGBS=${FHOUT:-1}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="NO"  # Create interpolated sflux.1p00 file
 elif [[ "${RUN:-}" == "gfs" ]]; then
   export downset=2
-  export FHOUT_PGB=${FHOUT_GFS:-3}  # Output frequency of gfs pgb file at 1.0 and 0.5 deg
+  export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="YES"  # Create interpolated sflux.1p00 file
 fi
 

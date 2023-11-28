@@ -157,15 +157,18 @@ class GFSCycledAppConfig(AppConfig):
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
+
         if not self.do_jediatmvar:
             gdas_tasks += ['analdiag']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks
 
-        gdas_tasks += ['fcst']
+        gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
-        gdas_tasks += ['atmanlupp', 'atmanlprod']
+        if self.do_upp:
+            gdas_tasks += ['atmupp']
+        gdas_tasks += ['atmprod']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -187,12 +190,12 @@ class GFSCycledAppConfig(AppConfig):
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
         # Collect "gfs" cycle tasks
-        gfs_tasks = gdas_gfs_common_tasks_before_fcst
+        gfs_tasks = gdas_gfs_common_tasks_before_fcst.copy()
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             gfs_tasks += wave_prep_tasks
 
-        gfs_tasks += ['fcst']
+        gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
         if self.do_upp:
             gfs_tasks += ['atmupp']

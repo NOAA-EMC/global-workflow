@@ -24,14 +24,10 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-if [[ "${UPP_RUN}" = "analysis" ]]; then
-    unset FHRLST
-    FHRLST="f000"
-fi
 fhrlst=$(echo "${FHRLST}" | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 for fhr in ${fhrlst}; do
-    export FORECAST_HOUR=${fhr}
+    export FORECAST_HOUR=$(( 10#{fhr} ))
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"

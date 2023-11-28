@@ -176,9 +176,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         return interval in hours based on gfs_cyc
         """
 
-        gfs_internal_map = {1: '24H', 2: '12H', 4: '6H'}
+        gfs_internal_map = {'1': '24H', '2': '12H', '4': '6H'}
 
         try:
-            return to_timedelta(gfs_internal_map[gfs_cyc])
+            return to_timedelta(gfs_internal_map[str(gfs_cyc)])
         except KeyError:
             raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')

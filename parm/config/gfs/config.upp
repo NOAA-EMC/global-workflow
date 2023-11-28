@@ -11,6 +11,6 @@ echo "BEGIN: config.upp"
 export UPP_CONFIG="${HOMEgfs}/parm/post/upp.yaml"
 
 # No. of forecast hours to process in a single job
-export NPOSTPROCGRP=3
+export NFHRS_PER_GROUP=3
 
 echo "END: config.upp"

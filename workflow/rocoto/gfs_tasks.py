@@ -554,8 +554,8 @@ class GFSTasks(Tasks):
 
     def atmanlupp(self):
         postenvars = self.envars.copy()
-        postenvar_dict = {'UPP_RUN': 'analysis'}
-
+        postenvar_dict = {'FHRLST': 'f000',
+                          'UPP_RUN': 'analysis'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -579,8 +579,7 @@ class GFSTasks(Tasks):
 
     def atmanlprod(self):
         postenvars = self.envars.copy()
-        postenvar_dict = {'UPP_RUN': 'analysis'}
-
+        postenvar_dict = {'FHRLST': '-f001'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -616,8 +615,8 @@ class GFSTasks(Tasks):
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
-        npostgrp = config['NPOSTPROCGRP']
-        ngrps = npostgrp if len(fhrs) > npostgrp else len(fhrs)
+        nfhrs_per_grp = config.get('NFHRS_PER_GROUP', 1)
+        ngrps = len(fhrs) // nfhrs_per_grp if len(fhrs) % nfhrs_per_grp == 0 else len(fhrs) // nfhrs_per_grp + 1
 
         fhrs = [f'f{fhr:03d}' for fhr in fhrs]
         fhrs = np.array_split(fhrs, ngrps)
@@ -637,7 +636,7 @@ class GFSTasks(Tasks):
 
         postenvars = self.envars.copy()
         postenvar_dict = {'FHRLST': '#lst#',
-                          'ROTDIR': self._base.get('ROTDIR')}
+                          'UPP_RUN': 'forecast'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -666,8 +665,7 @@ class GFSTasks(Tasks):
         vardict = {varname2: varval2, varname3: varval3}
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#lst#',
-                          'ROTDIR': self._base.get('ROTDIR')}
+        postenvar_dict = {'FHRLST': '#lst#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
