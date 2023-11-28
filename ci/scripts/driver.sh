@@ -26,7 +26,7 @@ export REPO_URL=git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git
 ################################################################
 ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
-echo "Begin ${scriptname} at $(date -u)" || true
+echo "Begin ${scriptname} at $(date  +'%D %r')" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 #########################################################################
@@ -83,15 +83,15 @@ for pr in ${pr_list}; do
     host_name=$(hostname -s)
     rm -f "${output_ci_single}"
     {
-      echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests on $(date +'%A %b %Y')" || true
+      echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests on $(date +'%D %r')" || true
     } >> "${output_ci_single}"
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
-        kill -- -$(ps -o pgid= "${driver_PID}" | grep "-o [0-9]*") || true
+        kill -- -$(ps -o "pgid= ${driver_PID}" | grep "-o [0-9]*") || true
         sleep 60
       else
-        ssh "${driver_HOST}" kill -- -$(ps -o pgid= "${driver_PID}" | grep "-o [0-9]*") || true
+        ssh "${driver_HOST}" kill -- -$(ps -o "pgid= ${driver_PID}" | grep "-o [0-9]*") || true
         sleep 60
       fi
       {
@@ -152,7 +152,7 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   {
     echo "CI stated Cloning and Building global-workflow PR: ${pr}"
-    echo "on ${MACHINE_ID^} started at $(date +'%A %b %Y')" || true
+    echo "on ${MACHINE_ID^} started at $(date +'%D %r')" || true
     echo "with PID: ${driver_build_PID} on host: ${driver_build_HOST}"
     echo ""
   } >> "${output_ci_single}"
