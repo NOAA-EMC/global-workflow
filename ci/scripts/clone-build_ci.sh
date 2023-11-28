@@ -72,8 +72,8 @@ cd sorc || exit 1
 set +e
 ./checkout.sh -c -g -u >> log.checkout 2>&1
 checkout_status=$?
+DATE=$(date +'%D %r')
 if [[ ${checkout_status} != 0 ]]; then
-  DATE=$(date +'%D %r')
   {
     echo "Checkout: *** FAILED ***"
     echo "Checkout: Failed at ${DATE}" || true
