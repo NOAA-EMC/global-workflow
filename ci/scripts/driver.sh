@@ -213,7 +213,7 @@ for pr in ${pr_list}; do
         } >> "${output_ci}"
       else
         {
-          echo "*** Failed *** to create experiment: ${pslot}"
+          echo "*** Failed *** to create experiment: ${pslot} on ${MACINE_ID^}"
           echo ""
           cat "${LOGFILE_PATH}"
         } >> "${output_ci}"

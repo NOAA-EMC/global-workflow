@@ -14,7 +14,8 @@ echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 GH=${HOME}/bin/gh
-REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+#REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+REPO_URL=git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
@@ -33,6 +34,7 @@ case ${MACHINE_ID} in
 esac
 set +x
 source "${ROOT_DIR}/ush/module-setup.sh"
+source "${ROOT_DIR}/ci/scripts/ci_utils.h"
 module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
@@ -86,7 +88,7 @@ for pr in ${pr_list}; do
   if [[ -z $(ls -A "${pr_dir}/RUNTESTS/EXPDIR") ]] ; then
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
     sed -i "1 i\`\`\`" "${output_ci}"
-    sed -i "1 i\All CI Test Cases Passed:" "${output_ci}"
+    sed -i "1 i\All CI Test Cases Passed on ${MACHINE_ID^}:" "${output_ci}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
     "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
@@ -131,8 +133,8 @@ for pr in ${pr_list}; do
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       {
-       echo "Experiment ${pslot} Terminated: *** FAILED ***"
-       echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
+       echo "Experiment ${pslot}  *** FAILED *** on ${MACHINE_ID^}"
+       echo "Experiment ${pslot}  with ${num_failed} tasks failed at $(date +'%D %r')" || true
        echo "Error logs:"
        echo "${error_logs}"
       } >> "${output_ci}"
@@ -141,7 +143,7 @@ for pr in ${pr_list}; do
       "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
          pslot=$(basename "${kill_cases}")
-         sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "PR\/${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
+         cancel_slurm_jobs "${pslot}"
       done
       break
     fi
@@ -151,9 +153,9 @@ for pr in ${pr_list}; do
       rm -Rf "${pr_dir}/RUNTESTS/COMROT/${pslot}"
       rm -f "${output_ci_single}"
       # echo "\`\`\`" > "${output_ci_single}"
-      DATE=$(date)
+      DATE=$(date +'%D %r')
       echo "Experiment ${pslot} **SUCCESS** ${DATE}" >> "${output_ci_single}"
-      echo "Experiment ${pslot} **SUCCESS** at ${DATE}" >> "${output_ci}"
+      echo "Experiment ${pslot} *** SUCCESS *** at ${DATE}" >> "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
 
     fi
