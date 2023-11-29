@@ -877,7 +877,7 @@ class GFSTasks(Tasks):
         vardict = {varname2: varval2, varname3: varval3}
 
         resources = self.get_resource('awips')
-        task = create_wf_task('awips', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
+        task = create_wf_task('awips_20sh', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
                               metatask='awips_20sh', varname=varname1, varval=varval1, vardict=vardict)
 
         return task
@@ -937,7 +937,7 @@ class GFSTasks(Tasks):
         vardict = {varname2: varval2, varname3: varval3}
 
         resources = self.get_resource('awips')
-        task = create_wf_task('awips', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
+        task = create_wf_task('awips_g2sh', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
                               metatask='awips_g2sh', varname=varname1, varval=varval1, vardict=vardict)
 
         return task
