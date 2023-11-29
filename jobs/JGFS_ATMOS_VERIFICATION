@@ -23,7 +23,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
 export DATAROOT=${DATA}
 
 VDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${VRFYBACK_HRS} hours")
-export VDATE
+export VDATE=${VDATE:0:8}
 
 # Since this is currently a one-element list, shellcheck things we would rather run this as a command
 # shellcheck disable=SC2041
