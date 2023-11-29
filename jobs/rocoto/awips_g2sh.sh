@@ -26,7 +26,8 @@ export jobid="${job}.$$"
 #   Also, this forces us to call the config files here instead of the j-job
 source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
-fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+# shellcheck disable=SC2153
+fhrlst=$(echo "${FHRLST}" | sed -e "s/_/ /g; s/f/ /g; s/,/ /g")
 
 ###############################################################
 
@@ -34,7 +35,7 @@ fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 echo
 echo "=============== BEGIN AWIPS ==============="
 
-for fhr3 in ${fhrlst}; do
+for fhr3 in "${fhrlst}"; do
     fhr=$(( 10#${fhr3} ))
     if (( fhr > FHMAX_GFS )); then
         echo "Nothing to process for FHR = ${fhr3}, cycle"
@@ -45,7 +46,7 @@ for fhr3 in ${fhrlst}; do
     fhmax=84
     if (( fhr >= fhmin && fhr <= fhmax )); then
         if ((fhr % 6 == 0)); then
-            ${AWIPSG2SH}
+            "${AWIPSG2SH}"
         fi
     fi
 
@@ -53,8 +54,8 @@ for fhr3 in ${fhrlst}; do
     fhmax=240
     if (( fhr >= fhmin && fhr <= fhmax )); then
         if ((fhr % 6 == 0)); then
-            export fcsthrs=${fhr3}
-            ${AWIPSG2SH}
+            export fcsthrs="${fhr3}"
+            "${AWIPSG2SH}"
         fi
     fi
 done
