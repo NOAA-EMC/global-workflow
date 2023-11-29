@@ -29,8 +29,8 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  Untar radstat file.
    #------------------------------------------------------------------
 
-   $NCP "$biascr"  "./biascr.${PDY}${cyc}"
-   $NCP "$radstat" "./radstat.${PDY}${cyc}"
+   $NCP "${biascr}"  "./biascr.${PDY}${cyc}"
+   $NCP "${radstat}" "./radstat.${PDY}${cyc}"
 
    tar -xvf "radstat.${PDY}${cyc}"
    rm "radstat.${PDY}${cyc}"
