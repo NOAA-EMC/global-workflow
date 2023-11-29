@@ -22,8 +22,6 @@ status=$?
 export job="awips_20sh.sh"
 export jobid="${job}.$$"
 
-# TODO (#1228) - This script is doing more than just calling a j-job
-#   Also, this forces us to call the config files here instead of the j-job
 source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
 # shellcheck disable=SC2153
