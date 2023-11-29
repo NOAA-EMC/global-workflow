@@ -96,7 +96,7 @@ for pr in ${pr_list}; do
         sleep 30
       fi
       {
-        echo "Driver PID: ${driver_PID} on ${driver_HOST} is no longer running this test"
+        echo "Driver PID: Requested termination of ${driver_PID} and children on ${driver_HOST}"
         echo "Driver PID: has restarted as $$ on ${host_name}"
       } >> "${output_ci_single}"
     fi
