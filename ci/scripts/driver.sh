@@ -92,6 +92,7 @@ for pr in ${pr_list}; do
         # shellcheck disable=SC2312
         pstree -A -p "${driver_PID}" | grep -Pow "(?<=\()[0-9]+(?=\))" | xargs kill
       else
+        # shellcheck disable=SC2312
         ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
       fi
       {
