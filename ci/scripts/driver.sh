@@ -114,8 +114,8 @@ for pr in ${pr_list}; do
     fi
     sed -i "1 i\`\`\`" "${output_ci_single}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
-    $("${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}")
-    $("${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
+    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
   fi
 done
 
