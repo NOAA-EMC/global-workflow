@@ -89,7 +89,7 @@ for pr in ${pr_list}; do
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
-        # shellcheck disable=SC2312
+        #shellcheck disable=SC2312
         pstree -A -p "${driver_PID}" | grep -Pow "(?<=\()[0-9]+(?=\))" | xargs kill
       else
         # shellcheck disable=SC2312
