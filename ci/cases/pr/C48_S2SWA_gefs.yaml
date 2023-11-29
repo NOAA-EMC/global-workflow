@@ -4,7 +4,7 @@ experiment:
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: S2SA
+  app: S2SWA
   resdet: 48
   resens: 48
   nens: 2

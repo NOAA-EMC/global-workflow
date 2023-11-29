@@ -15,12 +15,13 @@ if [[ $# -ne 1 ]]; then
     echo "landanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst post echgres"
-    echo "verfozn verfrad vminmon vrfy fit2obs metp arch cleanup"
+    echo "tracker genesis genesis_fsu"
+    echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
-    echo "postsnd awips gempak"
+    echo "postsnd awips gempak npoess"
     echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
@@ -749,19 +750,29 @@ elif [[ ${step} = "vminmon" ]]; then
     export npe_node_vminmon_gfs=1
     export memory_vminmon="1G"
 
-elif [[ ${step} = "vrfy" ]]; then
+elif [[ ${step} = "tracker" ]]; then
 
-    export wtime_vrfy="03:00:00"
-    export wtime_vrfy_gfs="06:00:00"
-    export npe_vrfy=3
-    export nth_vrfy=1
-    export npe_node_vrfy=1
-    export npe_vrfy_gfs=1
-    export npe_node_vrfy_gfs=1
-    if [[ ${machine} == "HERA" ]]; then
-      export memory_vrfy="16384M"
-    fi
-    export is_exclusive=True
+    export wtime_tracker="00:10:00"
+    export npe_tracker=1
+    export nth_tracker=1
+    export npe_node_tracker=1
+    export memory_tracker="4G"
+
+elif [[ ${step} = "genesis" ]]; then
+
+    export wtime_genesis="00:25:00"
+    export npe_genesis=1
+    export nth_genesis=1
+    export npe_node_genesis=1
+    export memory_genesis="4G"
+
+elif [[ ${step} = "genesis_fsu" ]]; then
+
+    export wtime_genesis_fsu="00:10:00"
+    export npe_genesis_fsu=1
+    export nth_genesis_fsu=1
+    export npe_node_genesis_fsu=1
+    export memory_genesis_fsu="4G"
 
 elif [[ "${step}" = "fit2obs" ]]; then
 
@@ -1001,6 +1012,14 @@ elif [[ ${step} = "awips" ]]; then
     export npe_node_awips=1
     export nth_awips=1
     export memory_awips="3GB"
+
+elif [[ ${step} = "npoess" ]]; then
+
+    export wtime_npoess="03:30:00"
+    export npe_npoess=1
+    export npe_node_npoess=1
+    export nth_npoess=1
+    export memory_npoess="3GB"
 
 elif [[ ${step} = "gempak" ]]; then
 

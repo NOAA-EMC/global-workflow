@@ -156,21 +156,21 @@ for file in finddate.sh make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/ush/${file}" .
 done
 
-# TODO: Link these nems.configure templates from ufs-weather-model
+# TODO: Link these ufs.configure templates from ufs-weather-model
 #cd "${HOMEgfs}/parm/ufs" || exit 1
-#declare -a nems_configure_files=("nems.configure.atm.IN" \
-#                                 "nems.configure.atm_aero.IN" \
-#                                 "nems.configure.atmw.IN" \
-#                                 "nems.configure.blocked_atm_wav_2way.IN" \
-#                                 "nems.configure.blocked_atm_wav.IN" \
-#                                 "nems.configure.cpld_agrid.IN" \
-#                                 "nems.configure.cpld_esmfthreads.IN" \
-#                                 "nems.configure.cpld.IN" \
-#                                 "nems.configure.cpld_noaero.IN" \
-#                                 "nems.configure.cpld_noaero_nowave.IN" \
-#                                 "nems.configure.cpld_noaero_outwav.IN" \
-#                                 "nems.configure.leapfrog_atm_wav.IN")
-#for file in "${nems_configure_files[@]}"; do
+#declare -a ufs_configure_files=("ufs.configure.atm.IN" \
+#                                 "ufs.configure.atm_aero.IN" \
+#                                 "ufs.configure.atmw.IN" \
+#                                 "ufs.configure.blocked_atm_wav_2way.IN" \
+#                                 "ufs.configure.blocked_atm_wav.IN" \
+#                                 "ufs.configure.cpld_agrid.IN" \
+#                                 "ufs.configure.cpld_esmfthreads.IN" \
+#                                 "ufs.configure.cpld.IN" \
+#                                 "ufs.configure.cpld_noaero.IN" \
+#                                 "ufs.configure.cpld_noaero_nowave.IN" \
+#                                 "ufs.configure.cpld_noaero_outwav.IN" \
+#                                 "ufs.configure.leapfrog_atm_wav.IN")
+#for file in "${ufs_configure_files[@]}"; do
 #  [[ -s "${file}" ]] && rm -f "${file}"
 #  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 #done

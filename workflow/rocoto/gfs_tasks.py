@@ -1,5 +1,6 @@
 from applications.applications import AppConfig
 from rocoto.tasks import Tasks, create_wf_task
+from wxflow import timedelta_to_HMS
 import rocoto.rocoto as rocoto
 import numpy as np
 
@@ -86,10 +87,10 @@ class GFSTasks(Tasks):
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dump_path}/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
@@ -116,7 +117,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.cdump in ['gdas']:
-                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
             cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
@@ -155,7 +156,7 @@ class GFSTasks(Tasks):
             interval = self._base['INTERVAL_GFS']
         elif self.cdump in ['gdas']:
             interval = self._base['INTERVAL']
-        offset = f'-{interval}'
+        offset = timedelta_to_HMS(-interval)
 
         # Files from previous cycle
         files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
@@ -181,7 +182,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
@@ -223,7 +224,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar and self.cdump in ['gdas']:
-            dep_dict = {'type': 'task', 'name': 'enkfgdasechgres', 'offset': '-06:00:00'}
+            dep_dict = {'type': 'task', 'name': 'enkfgdasechgres', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -262,7 +263,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
@@ -369,7 +370,7 @@ class GFSTasks(Tasks):
 
         deps = []
         data = f'{ocean_hist_path}/gdas.t@Hz.ocnf009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -490,8 +491,6 @@ class GFSTasks(Tasks):
             wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
             dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_aero:
             # Calculate offset based on CDUMP = gfs | gdas
@@ -500,7 +499,7 @@ class GFSTasks(Tasks):
                 interval = self._base['INTERVAL_GFS']
             elif self.cdump in ['gdas']:
                 interval = self._base['INTERVAL']
-            offset = f'-{interval}'
+            offset = timedelta_to_HMS(-interval)
             deps = []
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aerosol_init'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -536,7 +535,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         if self.cdump in ['gdas']:
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
@@ -797,6 +796,32 @@ class GFSTasks(Tasks):
 
         return task
 
+    def fbwinds(self):
+
+        atmos_prod_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_GRIB_GRID_TMPL"], {'RUN': self.cdump, 'GRID': '0p25'})
+        deps = []
+        data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f006'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f012'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{atmos_prod_path}/{self.cdump}.t@Hz.pgrb2.0p25.f024'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        resources = self.get_resource('awips')
+
+        # TODO: It would be better to use task dependencies on the
+        # individual post jobs rather than data dependencies to avoid
+        # prematurely starting with partial files. Unfortunately, the
+        # ability to "group" post would make this more convoluted than
+        # it should be and not worth the complexity.
+        task = create_wf_task('fbwinds', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def awips(self):
 
         def _get_awipsgroups(cdump, config):
@@ -869,6 +894,18 @@ class GFSTasks(Tasks):
 
         return task
 
+    def npoess(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('npoess')
+        task = create_wf_task('npoess', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def verfozn(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analdiag'}
@@ -902,17 +939,36 @@ class GFSTasks(Tasks):
 
         return task
 
-    def vrfy(self):
+    def tracker(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+        resources = self.get_resource('tracker')
+        task = create_wf_task('tracker', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
-        resources = self.get_resource('vrfy')
-        task = create_wf_task('vrfy', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        return task
+
+    def genesis(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('genesis')
+        task = create_wf_task('genesis', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def genesis_fsu(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('genesis_fsu')
+        task = create_wf_task('genesis_fsu', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -956,11 +1012,15 @@ class GFSTasks(Tasks):
         dependencies = []
         if self.app_config.mode in ['cycled']:
             if self.cdump in ['gfs']:
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+                deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_vminmon:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.cdump in ['gdas']:  # Block for handling half cycle dependencies
                 deps2 = []
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+                deps2.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_fit2obs:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
                     deps2.append(rocoto.add_dependency(dep_dict))
@@ -974,12 +1034,21 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
                     deps2.append(rocoto.add_dependency(dep_dict))
                 dependencies = rocoto.create_dependency(dep_condition='and', dep=deps2)
-                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
                 dependencies.append(rocoto.add_dependency(dep_dict))
                 dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
-        if self.app_config.do_vrfy:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
+        if self.cdump in ['gfs'] and self.app_config.do_tracker:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}tracker'}
             deps.append(rocoto.add_dependency(dep_dict))
+        if self.cdump in ['gfs'] and self.app_config.do_genesis:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.cdump in ['gfs'] and self.app_config.do_genesis_fsu:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis_fsu'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        # Post job dependencies
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -992,10 +1061,6 @@ class GFSTasks(Tasks):
             if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
                 dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        # If all verification and ocean/wave coupling is off, add the gdas/gfs post metatask as a dependency
-        if len(deps) == 0:
-            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
-            deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps + dependencies)
 
@@ -1029,7 +1094,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1084,7 +1149,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1100,7 +1165,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1198,7 +1263,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         dependencies.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
