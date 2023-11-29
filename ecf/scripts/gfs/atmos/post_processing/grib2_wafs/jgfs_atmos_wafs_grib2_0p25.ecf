@@ -4,7 +4,7 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:30:00
-#PBS -l select=1:mpiprocs=39:ompthreads=1:ncpus=39:mem=200GB
+#PBS -l select=1:mpiprocs=11:ompthreads=1:ncpus=11:mem=80GB
 #PBS -l place=vscatter
 #PBS -l debug=true
 
@@ -38,7 +38,7 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 export USE_CFP=YES
-export ICAO2023=yes
+export ICAO2023=no
 ############################################################
 # CALL executable job script here
 ############################################################

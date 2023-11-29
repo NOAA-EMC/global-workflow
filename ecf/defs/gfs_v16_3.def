@@ -1586,7 +1586,7 @@ suite gfs_v16_3
                     trigger ../../post/jgfs_atmos_post_f036 == complete
                   task jgfs_atmos_wafs_blending_0p25
                     trigger ./jgfs_atmos_wafs_grib2_0p25 == complete
-                    time 04:30
+                    time 04:25
                 endfamily
                 family bufr_sounding
                   task jgfs_atmos_postsnd
@@ -4211,7 +4211,7 @@ suite gfs_v16_3
                     trigger ../../post/jgfs_atmos_post_f036 == complete
                   task jgfs_atmos_wafs_blending_0p25
                     trigger ./jgfs_atmos_wafs_grib2_0p25 == complete
-                    time 10:30
+                    time 10:25
                 endfamily
                 family bufr_sounding
                   task jgfs_atmos_postsnd
@@ -6835,7 +6835,7 @@ suite gfs_v16_3
                     trigger ../../post/jgfs_atmos_post_f036 == complete
                   task jgfs_atmos_wafs_blending_0p25
                     trigger ./jgfs_atmos_wafs_grib2_0p25 == complete
-                    time 16:30
+                    time 16:25
                 endfamily
                 family bufr_sounding
                   task jgfs_atmos_postsnd
@@ -9461,7 +9461,7 @@ suite gfs_v16_3
                     trigger ../../post/jgfs_atmos_post_f036 == complete
                   task jgfs_atmos_wafs_blending_0p25
                     trigger ./jgfs_atmos_wafs_grib2_0p25 == complete
-                    time 22:30
+                    time 22:25
                 endfamily
                 family bufr_sounding
                   task jgfs_atmos_postsnd

@@ -38,7 +38,7 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 export USE_CFP=YES
-export ICAO2023=yes
+export ICAO2023=no
 ############################################################
 # CALL executable job script here
 ############################################################

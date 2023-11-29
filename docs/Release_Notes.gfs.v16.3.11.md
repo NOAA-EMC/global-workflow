@@ -4,22 +4,7 @@ GFS V16.3.11 RELEASE NOTES
 PRELUDE
 -------
 
-This upgrade to the GFS includes updates to both the GSI and WAFS packages:
-
-GSI:
-
-  Enable the monitoring of NOAA-21 and GOES-18 radiances in the GFS. A new version of CRTM with new coefficient files is required and included in this change.
-
-WAFS:
-
-  At GFS v16.3 implementation, UPP and WAFS package were updated to be ready to produce high resolution WAFS output to meet 2023 ICAO milestone with one switch.
-  The switch was turned off at GFS v16.3. Now that UKMO has started to produce their corresponding high resolution WAFS output, EMC will work with NCO to turn on the switch.
-
-  Additionally, EMC is updating WAFS ecf definition file to:
-  1. trigger WAFS blending job 5 min later from 4:25 to 4:30 to compensate for 5-10 min delay in receiving UKMO high resolution data;
-  2. stop producing blended 1.25 deg WAFS file per ICAO milestone.
-
-  Both sides agreed that we sill stop waiting for data from the other side at T+4:45.
+Enable the monitoring of NOAA-21 and GOES-18 radiances in the GFS. A new version of CRTM with new coefficient files is required and included in this change.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -44,7 +29,7 @@ The checkout script extracts the following GFS components:
 | GSI       | gfsda.v16.3.10 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
-| WAFS      | gfs_wafs.v6.3.2 | Yali.Mao@noaa.gov |
+| WAFS      | gfs_wafs.v6.3.1 | Yali.Mao@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash
@@ -91,12 +76,6 @@ SCRIPT CHANGES
 --------------
 
 * Changes to sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh
-* Update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_blending_0p25.ecf to ICAO2023=yes
-* Update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2.ecf to ICAO2023=yes
-* Update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2_0p25.ecf to ICAO2023=yes
-* Update ecf/scripts/gfs/atmos/post_processing/jgfs_atmos_wafs_gcip.ecf to ICAO2023=yes
-* In ecf/defs/gfs_v16_3.def, remove jgfs_atmos_wafs_blending task, delay trigger time of jgfs_atmos_wafs_blending_0p25 by 5 minutes
-* Update scripts/exgfs_atmos_wafs_grib2_0p25.sh to add forecast hour window to dbn_alert for awf and WAFS unblended hazard data
 
 FIX CHANGES
 -----------
@@ -111,19 +90,18 @@ MODULE CHANGES
 CHANGES TO FILE SIZES
 ---------------------
 
-* WAFS - There will be file size increases.  Please see page 2 of the following Google slide:
-https://docs.google.com/presentation/d/1VtPhyYXTe_PS9gXZGMrMPlQ32ELl-JJem-Vq8vO4j_U/edit#slide=id.g134dd9cf8ea_0_107
+* No changes from GFS v16.3.10
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* jgfs_atmos_wafs_grib2_0p25.ecf changes from mpiprocs=11:ompthreads=1:ncpus=11:mem=80GB to mpiprocs=39:ompthreads=1:ncpus=39:mem=200GB because there will be 39 forecast hours and each forecast hour uses one processor through MPMD.
+* No changes from GFS v16.3.10
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * GSI & WAFS
+  * GSI
 * Does this change require a 30-day evaluation?
   * No
 
@@ -153,5 +131,3 @@ Kate.Friedman@noaa.gov
 Andrew.Collard@noaa.gov
 Wen.Meng@noaa.gov
 Jun.Wang@noaa.gov
-Yali.Mao@noaa.gov
-Hui-Ya.Chuang@noaa.gov
