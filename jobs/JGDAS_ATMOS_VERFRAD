@@ -9,6 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 #############################################
 #  determine PDY and cyc for previous cycle
 #############################################
+# shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
