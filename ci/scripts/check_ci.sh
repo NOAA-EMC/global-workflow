@@ -33,7 +33,7 @@ case ${MACHINE_ID} in
 esac
 set +x
 source "${ROOT_DIR}/ush/module-setup.sh"
-source "${ROOT_DIR}/ci/scripts/utils/ci_utils.h"
+source "${ROOT_DIR}/ci/scripts/utils/ci_utils.sh"
 module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
