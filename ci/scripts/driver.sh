@@ -89,11 +89,10 @@ for pr in ${pr_list}; do
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
+        # shellcheck disable=SC2312
         pstree -A -p "${driver_PID}" | grep -Pow "(?<=\()[0-9]+(?=\))" | xargs kill
-        sleep 30
       else
         ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
-        sleep 30
       fi
       {
         echo "Driver PID: Requested termination of ${driver_PID} and children on ${driver_HOST}"
