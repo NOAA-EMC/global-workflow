@@ -35,7 +35,7 @@ fhrlst=$(echo "${FHRLST}" | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 echo
 echo "=============== BEGIN AWIPS ==============="
 
-for fhr3 in "${fhrlst}"; do
+for fhr3 in ${fhrlst}; do
     fhr=$(( 10#${fhr3} ))
     if (( fhr > FHMAX_GFS )); then
         echo "Nothing to process for FHR = ${fhr3}, cycle"
