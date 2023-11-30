@@ -160,16 +160,16 @@ checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780" &
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/DavidHuber-NOAA/GSI.git" "spack-stack" "1" "NO" &
+  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git"                  "c94bc72" "1" "NO" &
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "7659c10" &
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git"                  "7659c10" &
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
-  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "f371890" &
-  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "ae256c0" &
+  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"        "f371890" &
+  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git"      "ae256c0" &
 fi
 
 # Go through each PID and verify no errors were reported.
