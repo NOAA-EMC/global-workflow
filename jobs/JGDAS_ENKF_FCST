@@ -30,6 +30,9 @@ fi
 export ENSEND=$((NMEM_EFCSGRP * 10#${ENSGRP}))
 export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
 
+if [[ ${DO_WAVE} == "YES" ]]; then
+  declare -rx RUNwave="${RUN}wave"
+fi
 
 ###############################################################
 # Run relevant script

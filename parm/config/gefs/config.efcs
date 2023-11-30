@@ -54,6 +54,6 @@ export SPPT_LSCALE=500000.
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 
-export restart_interval=${restart_interval:-6}
+export restart_interval=${restart_interval_gfs}
 
 echo "END: config.efcs"

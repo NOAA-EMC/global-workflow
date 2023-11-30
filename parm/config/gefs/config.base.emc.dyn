@@ -242,7 +242,10 @@ export FHMAX_ENKF=${FHMAX_GFS}
 export FHOUT_ENKF=${FHOUT_GFS}
 
 # GFS restart interval in hours
-export restart_interval_gfs=0
+export restart_interval_gfs=12
+# NOTE: Do not set this to zero.  Instead set it to $FHMAX_GFS
+# TODO: Remove this variable from config.base and reference from config.fcst
+# TODO: rework logic in config.wave and push it to parsing_nameslist_WW3.sh where it is actually used
 
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
