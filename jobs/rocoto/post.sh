@@ -20,9 +20,9 @@ fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 #---------------------------------------------------------------
 for fhr in ${fhrlst}; do
     export post_times=${fhr}
-    ${HOMEgfs}/jobs/JGLOBAL_ATMOS_POST
+    "${HOMEgfs}/jobs/JGLOBAL_ATMOS_POST"
     status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
+    [[ ${status} -ne 0 ]] && exit "${status}"
 done
 
 exit 0
