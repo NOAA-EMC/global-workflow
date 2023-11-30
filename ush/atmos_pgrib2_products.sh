@@ -9,14 +9,21 @@ GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
 
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${HOMEgfs}/ush/interp_atmos_master.sh"}
+INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${HOMEgfs}/ush/interp_atmos_sflux.sh"}
 
-# variables used here and in $GFSDWNSH
-MASTER_FILE=${MASTER_FILE:-"master.grib2"}  # grib2 file from UPP
+# variables used here and in $INTERP_ATMOS_MASTERSH and $INTERP_ATMOS_SFLUXSH
+MASTER_FILE=${MASTER_FILE:-"master.grib2"}  # master grib2 file from UPP
+FLUX_FILE=${FLUX_FILE:-"sfluxgrb.grib2"}  # sflux grib2 file from UPP
+
 downset=${downset:-1}
 npe_atmos_products=${npe_atmos_products:-8}  # no. of processors available to process each downset
 PGBS=${PGBS:-"NO"}  # YES - generate 1 and 1/2-degree grib2 data
 PGB1F=${PGB1F:-"NO"}  # YES - generate 1-degree grib1 data
+FLXGF=${FLXGF:-"NO"}  # YES - generate 1-degree sflux grib2 data
+
 PREFIX=${PREFIX:-"${RUN:-gfs}.t${cyc}z."}
+
+#-----------------------------------------------------
 
 # Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
 # Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
@@ -38,7 +45,6 @@ fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
 
-#-----------------------------------------------------
 for (( nset=1 ; nset <= downset ; nset++ )); do
 
   echo "Begin processing nset = ${nset}"
@@ -53,7 +59,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     grp="b"
   fi
 
-  # process Grib files to run downstream jobs using MPMD
+  # process grib2 chunkfiles to interpolate using MPMD
   tmpfile="tmpfile${grp}_${fhr3}"
 
   # shellcheck disable=SC2312
@@ -120,7 +126,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
   # Concatenate grib files from each processor into a single one
   # and clean-up as you go
-  echo "Concatenating processor specific grib2 files into a single product"
+  echo "Concatenating processor-specific grib2 files into a single product file"
   for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
     for grid in "${grids[@]}"; do
       cat "pgb2${grp}file_${fhr3}_${iproc}_${grid}" >> "pgb2${grp}file_${fhr3}_${grid}"
@@ -152,7 +158,26 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
   echo "Finished processing nset = ${nset}"
 
-
 done  # for (( nset=1 ; nset <= downset ; nset++ ))
+
+#---------------------------------------------------------------
+
+# Create 1-degree sflux grib2 output
+# move to COM and index it
+if [[ "${FLXGF}" == "YES" ]]; then
+  input_file="${FLUX_FILE}"
+  output_file_prefix="sflux_${fhr3}"
+  grid_string="1p00"
+  "${INTERP_ATMOS_SFLUXSH}" "${input_file}" "${output_file_prefix}" "${grid_string}"
+  export err=$?; err_chk
+
+  # Move to COM and index the product grib files
+  IFS=':' read -ra grids <<< "${grid_string}"
+  for grid in "${grids[@]}"; do
+    prod_dir="COM_ATMOS_GRIB_${grid}"
+    ${NCP} "sflux_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}"
+    ${WGRIB2} -s "sflux_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.idx"
+  done
+fi
 
 exit 0
