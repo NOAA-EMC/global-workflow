@@ -12,9 +12,9 @@ echo "BEGIN: config.atmos_products"
 export NFHRS_PER_GROUP=3
 
 # Scripts used by this job
-export GFSDOWNSH="${HOMEgfs}/ush/fv3gfs_downstream_nems.sh"
-export GFSDWNSH="${HOMEgfs}/ush/fv3gfs_dwn_nems.sh"
-export GFSDOWNSHF="${HOMEgfs}/ush/inter_flux.sh"
+export ATMOS_PGRIB2_PRODUCTSSH="${HOMEgfs}/ush/atmos_pgrib2_products.sh"
+export INTERP_ATMOS_MASTERSH="${HOMEgfs}/ush/interp_atmos_master.sh"
+export INTERP_ATMOS_SFLUXSH="${HOMEgfs}/ush/interp_atmos_sflux.sh"
 
 if [[ "${RUN:-}" == "gdas" ]]; then
   export downset=1

@@ -573,7 +573,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         resources = self.get_resource('upp')
         task = create_wf_task('atmanlupp', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              cycledef=self.cdump)
+                              cycledef=self.cdump, command='&JOBS_DIR;/upp.sh')
 
         return task
 
@@ -591,7 +591,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
         resources = self.get_resource('atmos_products')
         task = create_wf_task('atmanlprod', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              cycledef=self.cdump)
+                              cycledef=self.cdump, command='&JOBS_DIR;/atmos_products.sh')
 
         return task
 
@@ -655,7 +655,8 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('upp')
         task = create_wf_task('atmupp', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              metatask='atmupp', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
+                              metatask='atmupp', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef,
+                              command='&JOBS_DIR;/upp.sh')
 
         return task
 
@@ -679,13 +680,12 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('atmos_products')
         task = create_wf_task('atmprod', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              metatask='atmprod', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
+                              metatask='atmprod', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef,
+                              command='&JOBS_DIR;/atmos_products.sh')
 
         return task
 
     def ocnpost(self):
-        if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
-            return self._post_task('ocnpost')
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
         varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs['ocnpost'])

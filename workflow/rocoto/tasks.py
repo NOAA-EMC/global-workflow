@@ -192,7 +192,7 @@ class Tasks:
 def create_wf_task(task_name, resources,
                    cdump='gdas', cycledef=None, envar=None, dependency=None,
                    metatask=None, varname=None, varval=None, vardict=None,
-                   final=False):
+                   final=False, command=None):
     tasknamestr = f'{cdump}{task_name}'
     metatask_dict = None
     if metatask is not None:
@@ -207,7 +207,7 @@ def create_wf_task(task_name, resources,
     task_dict = {'taskname': f'{tasknamestr}',
                  'cycledef': f'{cycledefstr}',
                  'maxtries': '&MAXTRIES;',
-                 'command': f'&JOBS_DIR;/{task_name}.sh',
+                 'command': f'&JOBS_DIR;/{task_name}.sh' if command is None else command,
                  'jobname': f'&PSLOT;_{tasknamestr}_@H',
                  'resources': resources,
                  'log': f'&ROTDIR;/logs/@Y@m@d@H/{tasknamestr}.log',

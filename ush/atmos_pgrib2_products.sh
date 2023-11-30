@@ -8,7 +8,7 @@ CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
 GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
 
 # Scripts used
-GFSDWNSH=${GFSDWNSH:-"${HOMEgfs}/ush/fv3gfs_dwn_nems.sh"}
+INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${HOMEgfs}/ush/interp_atmos_master.sh"}
 
 # variables used here and in $GFSDWNSH
 MASTER_FILE=${MASTER_FILE:-"master.grib2"}  # grib2 file from UPP
@@ -91,7 +91,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     export err=$?; err_chk
     input_file="${tmpfile}_${iproc}"
     output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
-    echo "${GFSDWNSH} ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/poescript"
+    echo "${INTERP_ATMOS_MASTERSH} ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/poescript"
 
     # if at final record and have not reached the final processor then write echo's to
     # poescript for remaining processors

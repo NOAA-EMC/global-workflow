@@ -10,10 +10,10 @@ cd "${DATA}" || exit 1
 if (( FORECAST_HOUR <= 0 )); then
   if (( FORECAST_HOUR < 0 )); then
     export fhr3="anl"
-    export paramlista="paramlista_anl"
-  else
+    export paramlista="${paramlista_anl}"
+  elif (( FORECAST_HOUR == 0 )); then
     export fhr3=$(printf "f%03d" "${FORECAST_HOUR}")
-    export paramlista="paramlista_f000"
+    export paramlista="${paramlista_f000}"
   fi
   export PGBS="YES"
 else
@@ -27,12 +27,12 @@ fi
 export MASTER_FILE="${COM_ATMOS_MASTER}/${PREFIX}master.grb2${fhr3}"
 
 # Call the downstream grib2 interpolated products script
-"${GFSDOWNSH}"
+"${ATMOS_PGRIB2_PRODUCTSSH}"
 export err=$?; err_chk
 
 # Create sflux.1p00 files when desired
 if [[ "${FLXGF:-}" == "YES" ]]; then
-  "${GFSDOWNSHF}" "${COM_ATMOS_MASTER}/${FLUXFL}" "${COM_ATMOS_GRIB_1p00}/${FLUXFL}" "1p00"  # TODO: FLUXFL is not defined; FIXME.
+  "${INTERP_ATMOS_SFLUXSH}" "${COM_ATMOS_MASTER}/${FLUXFL}" "${COM_ATMOS_GRIB_1p00}/${FLUXFL}" "1p00"  # TODO: FLUXFL is not defined; FIXME.
   export err=$?; err_chk
 fi
 
