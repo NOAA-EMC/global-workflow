@@ -567,7 +567,7 @@ class GFSTasks(Tasks):
         data = f'{atm_anl_path}/{self.cdump}.t@Hz.sfcanl.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_anl_path}/{self.cdump}.t@Hz.atm.loganl.txt'
+        data = f'{atm_anl_path}/{self.cdump}.t@Hz.loganl.txt'
         dep_dict = {'type': 'data', 'data': data, 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
