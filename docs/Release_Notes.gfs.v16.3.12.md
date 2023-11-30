@@ -48,9 +48,6 @@ cd ../ecf
 ./setup_ecf_links.sh
 ```
 
-Additional release notes for `upp/8.3.0` installation on WCOSS2:
-https://docs.google.com/document/d/18bUYWmsN7FuweyA2CQTBW1rk3FNRMHKPlYHZlbS8ODs/edit?pli=1
-
 VERSION FILE CHANGES
 --------------------
 * `versions/run.ver` - change `version=v16.3.12` and `gfs_ver=v16.3.12`
