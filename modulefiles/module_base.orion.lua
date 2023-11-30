@@ -32,6 +32,9 @@ load(pathJoin("py-netcdf4", os.getenv("py_netcdf4_ver")))
 load(pathJoin("py-pyyaml", os.getenv("py_pyyaml_ver")))
 load(pathJoin("py-jinja2", os.getenv("py_jinja2_ver")))
 
+load(pathJoin("met", os.getenv("met_ver")))
+load(pathJoin("metplus", os.getenv("metplus_ver")))
+
 setenv("WGRIB2","wgrib2")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
