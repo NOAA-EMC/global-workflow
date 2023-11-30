@@ -21,18 +21,18 @@ cd "${DATA}" || exit 1
 # Determine if supplemental products (PGBS) (1-degree and 1/2-degree) should be generated
 if (( FORECAST_HOUR <= 0 )); then
   if (( FORECAST_HOUR < 0 )); then
-    export fhr3="anl"
-    export paramlista="${paramlista_anl}"
-    export FLXGF="NO"
+    fhr3="anl"
+    paramlista="${paramlista_anl}"
+    FLXGF="NO"
   elif (( FORECAST_HOUR == 0 )); then
-    export fhr3=$(printf "f%03d" "${FORECAST_HOUR}")
-    export paramlista="${paramlista_f000}"
+    fhr3=$(printf "f%03d" "${FORECAST_HOUR}")
+    paramlista="${paramlista_f000}"
   fi
-  export PGBS="YES"
+  PGBS="YES"
 else
-  export fhr3=$(printf "f%03d" "${FORECAST_HOUR}")
+  fhr3=$(printf "f%03d" "${FORECAST_HOUR}")
   if (( FORECAST_HOUR%FHOUT_PGBS == 0 )); then
-    export PGBS="YES"
+    PGBS="YES"
   fi
 fi
 

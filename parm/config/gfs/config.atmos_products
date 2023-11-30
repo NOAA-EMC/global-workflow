@@ -12,7 +12,6 @@ echo "BEGIN: config.atmos_products"
 export NFHRS_PER_GROUP=3
 
 # Scripts used by this job
-export ATMOS_PGRIB2_PRODUCTSSH="${HOMEgfs}/ush/atmos_pgrib2_products.sh"
 export INTERP_ATMOS_MASTERSH="${HOMEgfs}/ush/interp_atmos_master.sh"
 export INTERP_ATMOS_SFLUXSH="${HOMEgfs}/ush/interp_atmos_sflux.sh"
 
@@ -20,10 +19,12 @@ if [[ "${RUN:-}" == "gdas" ]]; then
   export downset=1
   export FHOUT_PGBS=${FHOUT:-1}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="NO"  # Create interpolated sflux.1p00 file
+  export PGB1F="YES"  # Create 1-degree grib1 output # TODO: who needs 1-degree grib1 product?
 elif [[ "${RUN:-}" == "gfs" ]]; then
   export downset=2
   export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="YES"  # Create interpolated sflux.1p00 file
+  export PGB1F="YES"  # Create 1-degree grib1 output # TODO: who needs 1-degree grib1 product?
 fi
 
 # paramlist files for the different forecast hours and downsets
@@ -31,7 +32,5 @@ export paramlista="${HOMEgfs}/parm/post/global_1x1_paramlist_g2"
 export paramlista_anl="${HOMEgfs}/parm/post/global_1x1_paramlist_g2.anl"
 export paramlista_f000="${HOMEgfs}/parm/post/global_1x1_paramlist_g2.f000"
 export paramlistb="${HOMEgfs}/parm/post/global_master-catchup_parmlist_g2"
-
-export FLXGF="NO"  # TODO: RM: Temporarily disable calling inter_flux.sh
 
 echo "END: config.atmos_products"
