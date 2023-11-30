@@ -168,8 +168,8 @@ if [[ ${checkout_gdas} == "YES" ]]; then
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
-  checkout "gsi_utils.fd"    "https://github.com/davidhuber-noaa/GSI-Utils.git"   "feature/spack-stack" &
-  checkout "gsi_monitor.fd"  "https://github.com/davidhuber-noaa/GSI-Monitor.git" "spack-stack" &
+  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "f371890" &
+  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "ae256c0" &
 fi
 
 # Go through each PID and verify no errors were reported.
