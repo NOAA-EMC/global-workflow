@@ -19,7 +19,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-${HOMEgfs}/jobs/JGDAS_ENKF_FCST
+"${HOMEgfs}/jobs/JGDAS_ENKF_FCST"
 status=$?
 
 exit ${status}

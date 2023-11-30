@@ -18,7 +18,7 @@ export job="fcst"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-${HOMEgfs}/jobs/JGLOBAL_FORECAST
+"${HOMEgfs}/jobs/JGLOBAL_FORECAST"
 status=$?
 
 exit ${status}
