@@ -50,7 +50,7 @@ class GEFSTasks(Tasks):
         if self.app_config.do_wave:
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/mem000/wave"
             for wave_grid in self._configs['waveinit']['waveGRD'].split():
-                data = f"{prefix}/{wave_grid}/@Y@m@d.@H0000.restart.{wave_grid}"
+                data = f"{prefix}/@Y@m@d.@H0000.restart.{wave_grid}"
                 dep_dict = {'type': 'data', 'data': data}
                 deps.append(rocoto.add_dependency(dep_dict))
 
@@ -61,11 +61,24 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def waveinit(self):
+
+        resources = self.get_resource('waveinit')
+        task = create_wf_task('waveinit', resources, cdump=self.cdump, envar=self.envars, dependency=None)
+
+        return task
+
     def fcst(self):
         # TODO: Add real dependencies
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_wave:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         resources = self.get_resource('fcst')
         task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
@@ -76,6 +89,12 @@ class GEFSTasks(Tasks):
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_wave:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         efcsenvars = self.envars.copy()
         efcsenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
