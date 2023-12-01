@@ -76,13 +76,13 @@ DATE=$(date +'%D %r')
 if [[ ${checkout_status} != 0 ]]; then
   {
     echo "Checkout: *** FAILED ***"
-    echo "Checkout: Failed at ${DATE}" || true
+    echo "Checkout: Failed at ${DATE}"
     echo "Checkout: see output at ${PWD}/log.checkout"
   } >> "${outfile}"
   exit "${checkout_status}"
 else
   {
-    echo "Checkout: Completed at ${DATE}" || true
+    echo "Checkout: Completed at ${DATE}"
   } >> "${outfile}"
 fi
 
