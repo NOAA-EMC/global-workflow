@@ -336,7 +336,7 @@ EOF
    low_count=low_count.${PDY}${cyc}
 
    qdate=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-   pday=$(echo "${qdate}" | cut -c1-8)
+   pday="${qdate:0:8}"
    
    prev_bad_pen=bad_pen.${qdate}
    prev_bad_chan=bad_chan.${qdate}
