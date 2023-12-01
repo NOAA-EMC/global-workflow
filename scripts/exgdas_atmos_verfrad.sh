@@ -45,10 +45,10 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    radstat_satype=$(ls d*ges* | awk -F_ '{ print $2 "_" $3 }')
    if [[ "$VERBOSE" = "YES" ]]; then
-      echo "$radstat_satype"
+      echo "${radstat_satype}"
    fi
 
-   echo satype_file = "$satype_file"
+   echo satype_file = "${satype_file}"
 
    #------------------------------------------------------------------
    #  Get previous cycle's date, and look for the satype_file.  Using
@@ -61,7 +61,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       use_tankdir=${TANKverf_rad}
    fi
 
-   echo satype_file = "$satype_file"
+   echo satype_file = "${satype_file}"
    export SATYPE=$(cat "${satype_file}")
 
 
@@ -73,9 +73,9 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    satype_changes=0
    new_satype=$SATYPE
    for type in ${radstat_satype}; do
-      test=$(echo "$SATYPE" | grep "$type" | wc -l)
+      type_count=$(echo "${SATYPE}" | grep "${type}" | wc -l)
 
-      if [[ $test -eq 0 ]]; then
+      if (( type_count == 0 )); then
          if [[ "$VERBOSE" = "YES" ]]; then
             echo "Found $type in radstat file but not in SATYPE list.  Adding it now."
          fi
@@ -92,7 +92,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    for type in ${SATYPE}; do
 
-      if [[ netcdf -eq 0 && -e diag_${type}_ges.${PDY}${cyc}.nc4.${Z} ]]; then
+      if (( netcdf == 0 )) && [[ -e "diag_${type}_ges.${PDY}${cyc}.nc4.${Z}" ]]; then
          netcdf=1
       fi
 
@@ -166,7 +166,7 @@ export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 rlist="saphir"
 for rtype in $rlist; do
   if compgen -G "$TANKverf_rad/*${rtype}*" > /dev/null; then
-     ${CHGRP_CMD} "${TANKverf_rad}/*${rtype}*"
+     ${CHGRP_CMD} "${TANKverf_rad}/"*"${rtype}"*
   fi
 done
 

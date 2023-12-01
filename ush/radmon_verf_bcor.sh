@@ -119,10 +119,10 @@ else
 
          prep_step
 
-         ctr=$(expr ${ctr} + 1)
+         ctr=$(( ctr + 1 ))
 
          if [[ ${dtype} == "anl" ]]; then
-            data_file=${type}_anl.${PDY}${cyc}.ieee_d
+            data_file="${type}_anl.${PDY}${cyc}.ieee_d"
             bcor_file=bcor.${data_file}
             ctl_file=${type}_anl.ctl
             bcor_ctl=bcor.${ctl_file}
@@ -130,7 +130,7 @@ else
             bcor_stdout=bcor.${stdout_file}
             input_file=${type}_anl
          else
-            data_file=${type}.${PDY}${cyc}.ieee_d
+            data_file="${type}.${PDY}${cyc}.ieee_d"
             bcor_file=bcor.${data_file}
             ctl_file=${type}.ctl
             bcor_ctl=bcor.${ctl_file}
@@ -144,7 +144,7 @@ else
       # Check for 0 length input file here and avoid running 
       # the executable if $input_file doesn't exist or is 0 bytes
       #
-         if [[ -s ${input_file} ]]; then
+         if [[ -s "${input_file}" ]]; then
             nchanl=-999
 
 cat << EOF > input
@@ -169,7 +169,7 @@ EOF
             ./${bcor_exec} < input >> "${pgmout}" 2>>errfile
             export err=$?; err_chk
             if [[ $? -ne 0 ]]; then
-               fail=$(expr ${fail} + 1)
+               fail=$(( fail + 1 ))
             fi
  
 
@@ -194,7 +194,7 @@ EOF
    tar_file=radmon_bcor.tar
 
    if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then
-     tar -cf ${tar_file} bcor*.ieee_d* bcor*.ctl*
+     tar -cf "${tar_file}" bcor*.ieee_d* bcor*.ctl*
      ${COMPRESS} ${tar_file}
      mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 

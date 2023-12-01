@@ -79,7 +79,7 @@ echo "--> radmon_diag_ck.sh"
    #---------------------------------------------
    #  load contents of satype_file into an array
    #
-   satype_contents=`cat "${satype_file}"`
+   satype_contents=$(cat "${satype_file}")
 
  
    #-------------------------------------------------
@@ -87,9 +87,9 @@ echo "--> radmon_diag_ck.sh"
    #    report anything missing 
    #
    for sat in ${satype_contents}; do
-     test=`echo "${radstat_contents}" | grep "${sat}"`
-     
-     if [[ ${#test} -le 0 ]]; then
+     content_count=$(echo "${radstat_contents}" | grep "${sat}" | wc -l)
+
+     if (( content_count <= 0 )); then
         missing_diag="${missing_diag} ${sat}"
      fi
 

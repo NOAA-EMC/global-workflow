@@ -170,18 +170,18 @@ if [[ ${err} -eq 0 ]]; then
          continue
       fi
 
-      ctr=$(expr ${ctr} + 1)
+      ctr=$(( ctr + 1 ))
 
       for dtype in ${gesanl}; do
 
          if [[ -f input ]]; then rm input; fi
 
          if [[ ${dtype} == "anl" ]]; then
-            data_file=${type}_anl.${PDY}${cyc}.ieee_d
+            data_file="${type}_anl.${PDY}${cyc}.ieee_d"
             ctl_file=${type}_anl.ctl
             time_ctl=time.${ctl_file}
          else
-            data_file=${type}.${PDY}${cyc}.ieee_d
+            data_file="${type}.${PDY}${cyc}.ieee_d"
             ctl_file=${type}.ctl
             time_ctl=time.${ctl_file}
          fi
@@ -217,7 +217,7 @@ EOF
          ./${time_exec} < input >> stdout."${type}" 2>>errfile
          
          if [[ ${err} -ne 0 ]]; then
-            fail=$(expr ${fail} + 1)
+            fail=$(( fail + 1 ))
          fi
 
 #-------------------------------------------------------------------
@@ -241,7 +241,7 @@ EOF
 
    if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
      tar_file=radmon_time.tar
-     tar -cf ${tar_file} time*.ieee_d* time*.ctl*
+     tar -cf "${tar_file}" time*.ieee_d* time*.ctl*
      ${COMPRESS} ${tar_file}
      mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 

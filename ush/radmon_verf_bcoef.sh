@@ -129,14 +129,14 @@ else
 
          prep_step
 
-         ctr=$(expr ${ctr} + 1)
+         ctr=$(( ctr + 1 ))
 
          if [[ ${dtype} == "anl" ]]; then
-            data_file=${type}_anl.${PDY}${cyc}.ieee_d
+            data_file="${type}_anl.${PDY}${cyc}.ieee_d"
             ctl_file=${type}_anl.ctl
             bcoef_ctl=bcoef.${ctl_file}
          else
-            data_file=${type}.${PDY}${cyc}.ieee_d
+            data_file="${type}.${PDY}${cyc}.ieee_d"
             ctl_file=${type}.ctl
             bcoef_ctl=bcoef.${ctl_file}
          fi 
@@ -172,7 +172,7 @@ EOF
          ./${bcoef_exec} < input >>"${pgmout}" 2>>errfile
          export err=$?; err_chk
          if [[ ${err} -ne 0 ]]; then
-            fail=$(expr ${fail} + 1)
+            fail=$(( fail + 1 ))
          fi
 
 

@@ -63,7 +63,7 @@ err=0
 RADMON_SUFFIX=${RADMON_SUFFIX}
 
 have_diag_rpt=0
-if [[ -s ${diag_rpt} ]]; then
+if [[ -s "${diag_rpt}" ]]; then
    have_diag_rpt=1
 else
    err=1
@@ -126,7 +126,7 @@ echo "have_diag_rpt = ${have_diag_rpt}"
          echo match = "${match}"
 
          match_len=$(echo ${#match})
-         if [[ ${match_len} > 0 ]]; then
+         if (( match_len > 0 )); then
             channel2=$(echo "${match}" | gawk '{print $3}')
 
             if [[ ${channel2} != ${channel} ]]; then
@@ -137,7 +137,7 @@ echo "have_diag_rpt = ${have_diag_rpt}"
       fi
       match_len=$(echo ${#match})
          
-      if [[ ${match_len} > 0 ]]; then
+      if (( match_len > 0 )); then
 
          value2=$(echo "${match}" | gawk '{print $7}')
          bound2=$(echo "${match}" | gawk '{print $9}')

@@ -101,7 +101,7 @@ fi
 
 err=0
 angle_exec=radmon_angle.x
-shared_scaninfo=${shared_scaninfo:-${PARMmonitor}/gdas_radmon_scaninfo.txt}
+shared_scaninfo="${shared_scaninfo:-${PARMmonitor}/gdas_radmon_scaninfo.txt}"
 scaninfo=scaninfo.txt
 
 #--------------------------------------------------------------------
@@ -140,14 +140,14 @@ else
          echo "pgmout = ${pgmout}"
          prep_step
 
-         ctr=$(expr ${ctr} + 1)
+         ctr=$((ctr + 1))
 
          if [[ ${dtype} == "anl" ]]; then
-            data_file=${type}_anl.${PDY}${cyc}.ieee_d
+            data_file="${type}_anl.${PDY}${cyc}.ieee_d"
             ctl_file=${type}_anl.ctl
             angl_ctl=angle.${ctl_file}
          else
-            data_file=${type}.${PDY}${cyc}.ieee_d
+            data_file="${type}.${PDY}${cyc}.ieee_d"
             ctl_file=${type}.ctl
             angl_ctl=angle.${ctl_file}
          fi
@@ -180,10 +180,10 @@ cat << EOF > input
 EOF
 
 	 startmsg
-         ./${angle_exec} < input >>   "${pgmout}" 2>>errfile
+         ./${angle_exec} < input >> "${pgmout}" 2>>errfile
          export err=$?; err_chk
          if [[ ${err} -ne 0 ]]; then
-             fail=$(expr ${fail} + 1)
+             fail=$(( fail + 1 ))
          fi
 
          if [[ -s ${angl_file} ]]; then
@@ -204,7 +204,7 @@ EOF
 
    tar_file=radmon_angle.tar
    if compgen -G "angle*.ieee_d*" > /dev/null || compgen -G "angle*.ctl*" > /dev/null; then
-      tar -cf ${tar_file} angle*.ieee_d* angle*.ctl*
+      tar -cf "${tar_file}" angle*.ieee_d* angle*.ctl*
       ${COMPRESS} ${tar_file}
       mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 
