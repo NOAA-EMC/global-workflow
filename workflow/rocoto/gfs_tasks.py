@@ -822,7 +822,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def awips_20km_1p0(self):
+    def awips_20km_1p0deg(self):
 
         def _get_awipsgroups(cdump, config):
 
@@ -877,8 +877,8 @@ class GFSTasks(Tasks):
         vardict = {varname2: varval2, varname3: varval3}
 
         resources = self.get_resource('awips')
-        task = create_wf_task('awips_20km_1p0', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
-                              metatask='awips_20km_1p0', varname=varname1, varval=varval1, vardict=vardict)
+        task = create_wf_task('awips_20km_1p0deg', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
+                              metatask='awips_20km_1p0deg', varname=varname1, varval=varval1, vardict=vardict)
 
         return task
 
