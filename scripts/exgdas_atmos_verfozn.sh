@@ -21,24 +21,24 @@ if [[ -s ${oznstat} ]]; then
    #  Untar oznstat file.
    #------------------------------------------------------------------
 
-   $NCP $oznstat ./oznstat.${PDY}${cyc}
+   ${NCP} "${oznstat}" "./oznstat.${PDY}${cyc}"
 
-   tar -xvf oznstat.${PDY}${cyc}
-   rm oznstat.${PDY}${cyc}
+   tar -xvf "oznstat.${PDY}${cyc}"
+   rm "oznstat.${PDY}${cyc}"
 
    netcdf=0
    count=$(ls diag* | grep ".nc4" | wc -l)
-   if [ $count -gt 0 ] ; then
+   if [ "${count}" -gt 0 ] ; then
       netcdf=1
       for filenc4 in $(ls diag*nc4.gz); do
-         file=$(echo $filenc4 | cut -d'.' -f1-2).gz
-         mv $filenc4 $file
+         file=$(echo "${filenc4}" | cut -d'.' -f1-2).gz
+         mv "${filenc4}" "${file}"
       done
    fi
 
    export OZNMON_NETCDF=${netcdf}
 
-   ${USHgfs}/ozn_xtrct.sh
+   "${USHgfs}/ozn_xtrct.sh"
    err=$?
 
 else
