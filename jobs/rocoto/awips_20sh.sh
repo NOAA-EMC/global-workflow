@@ -19,7 +19,7 @@ source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
 (( status != 0 )) && exit "${status}"
 
-export job="awips_20sh.sh"
+export job="awips_20km"
 export jobid="${job}.$$"
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
