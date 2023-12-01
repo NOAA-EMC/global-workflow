@@ -72,10 +72,13 @@ for pr in ${pr_list}; do
   output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_single.log"
   #############################################################
   # Check if a Ready labeled PR has changed back from once set
-  # and in that case remove all previous jobs in scheduler and
-  # and remove PR from filesystem to start clean
+  # and in that case completely kill the previose driver.sh cron
+  # job and all its decedands as well as  removing all previous
+  # jobs in scheduler and associated files in the PR
   #############################################################
   if [[ "${db_list}" == *"already is in list"* ]]; then
+    # Get the the PID and HOST of the driver.sh cron job
+    # that is stored int he CI database for this PR
     driver_ID=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
     driver_PID=$(echo "${driver_ID}" | cut -d":" -f1) || true
     driver_HOST=$(echo "${driver_ID}" | cut -d":" -f2) || true
