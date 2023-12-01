@@ -4,7 +4,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 ## atmosphere products driver script
-## FHRLST : forecast hour list to post-process (e.g. anl, f000, f000_f001_f002, ...)
+## FHRLST : forecast hour list to post-process (e.g. -f001, f000, f000_f001_f002, ...)
 ###############################################################
 
 # Source FV3GFS workflow modules
