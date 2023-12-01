@@ -25,9 +25,10 @@ export jobid="${job}.$$"
 ###############################################################
 # Execute the JJOB
 fhrlst=$(echo "${FHRLST}" | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+IFS='_' read -ra fhrs <<< "${fhrlst}"
 
-for fhr in ${fhrlst}; do
-    export FORECAST_HOUR=$(( 10#{fhr} ))
+for fhr in ${fhrs[@]}; do
+    export FORECAST_HOUR=$(( 10#${fhr} ))
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
