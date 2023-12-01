@@ -16,7 +16,7 @@ export job="atmos_products"
 export jobid="${job}.$$"
 
 ###############################################################
-# shellcheck disable=SC2153
+# shellcheck disable=SC2153,SC2001
 fhrlst=$(echo "${FHRLST}" | sed -e 's/f//g')  # strip off the 'f' in the forecast hour list
 IFS='_' read -ra fhrs <<< "${fhrlst}"  # convert to array
 
