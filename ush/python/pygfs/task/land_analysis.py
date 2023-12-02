@@ -187,6 +187,7 @@ class LandAnalysis(Analysis):
         os.symlink(exe_src, exe_dest)
 
         # execute CALCFIMSEXE to calculate IMS snowdepth
+        os.chdir(localconf.DATA)
         exe = Executable(self.task_config.APRUN_CALCFIMS)
         exe.add_default_arg(os.path.join(localconf.DATA, os.path.basename(exe_src)))
         logger.info(f"Executing {exe}")
@@ -306,6 +307,10 @@ class LandAnalysis(Analysis):
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
             localconf[key] = self.task_config[key]
+
+        logger.info("Generating IMS snow OBS")
+        if f"{ self.runtime_config.cyc }" == '18':
+            self.prepare_IMS()
 
         logger.info("Creating ensemble")
         self.create_ensemble(localconf.SNOWDEPTHVAR,

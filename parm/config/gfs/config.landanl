@@ -16,6 +16,12 @@ fi
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/config/
 export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/${obs_list_name}
 
+# Prepare IMS snow observations
+export FIMS_NML_TMPL="${HOMEgfs}/sorc/gdas.cd/parm/land/prep/fims.nml.j2"
+export IMS_OBS_LIST="${HOMEgfs}/sorc/gdas.cd/parm/land/prep/prep_ims.yaml"
+export CALCFIMSEXE="${HOMEgfs}/exec/calcfIMS.exe"
+export IMS2IODACONV="${HOMEgfs}/ush/imsfv3_scf2ioda.py"
+
 # Name of the JEDI executable and its yaml template
 export JEDIEXE="${HOMEgfs}/exec/fv3jedi_letkf.x"
 export JEDIYAML="${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml"
