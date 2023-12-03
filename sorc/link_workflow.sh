@@ -55,6 +55,12 @@ COMPILER="intel" source "${HOMEgfs}/sorc/gfs_utils.fd/ush/detect_machine.sh"  # 
 machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 
 #------------------------------
+#--Set up build.ver and run.ver
+#------------------------------
+${LINK_OR_COPY} "${HOMEgfs}/versions/build.${machine}.ver" "${HOMEgfs}/versions/build.ver"
+${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/run.ver"
+
+#------------------------------
 #--model fix fields
 #------------------------------
 case "${machine}" in
@@ -71,12 +77,6 @@ esac
 
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
-
-#------------------------------
-#--Set up build.ver and run.ver
-#------------------------------
-${LINK_OR_COPY} "${HOMEgfs}/versions/build.${machine}.ver" "${HOMEgfs}/versions/build.ver"
-${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/run.ver"
 
 # Link wxflow in ush/python, workflow and ci/scripts
 # TODO: This will be unnecessary when wxflow is part of the virtualenv

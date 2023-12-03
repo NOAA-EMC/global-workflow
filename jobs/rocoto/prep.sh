@@ -94,7 +94,6 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
     fi
 
     export job="j${CDUMP}_prep_${cyc}"
-    export DATAROOT="${RUNDIR}/${CDATE}/${CDUMP}/prepbufr"
     export COMIN=${COM_OBS}
     export COMOUT=${COM_OBS}
     RUN="gdas" YMD=${PDY} HH=${cyc} generate_com -rx COMINgdas:COM_ATMOS_HISTORY_TMPL
