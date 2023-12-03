@@ -12,36 +12,28 @@ source "${HOMEgfs}/ush/preamble.sh"
 #. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 #status=$?
 #if (( status != 0 )); then exit "${status}"; fi
-# Temporarily load modules from UPP
+# Temporarily load modules from UPP on WCOSS2
 source "${HOMEgfs}/ush/detect_machine.sh"
-set +x
-source "${HOMEgfs}/ush/module-setup.sh"
-module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
-module load "${MACHINE_ID}"
-module load prod_util
 if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-    module load cray-pals
-    module load cfp
-    module load libjpeg
-    module load grib_util
+  set +x
+  source "${HOMEgfs}/ush/module-setup.sh"
+  module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
+  module load "${MACHINE_ID}"
+  module load prod_util
+  module load cray-pals
+  module load cfp
+  module load libjpeg
+  module load grib_util/1.2.3
+  module load wgrib2/2.0.8
+  export WGRIB2=wgrib2
+  module load python/3.8.6
+  module laod crtm/2.4.0  # TODO: This is only needed when UPP_RUN=goes.  Is there a better way to handle this?
+  set_trace
 else
-    # shellcheck disable=SC2154
-    export UTILROOT="${prod_util_ROOT}"
-    module load grib-util
-    if [[ "${MACHINE_ID}" = "hera" ]]; then
-        module use "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/hpc-stack/modulefiles/stack"
-    elif [[ "${MACHINE_ID}" = "orion" ]]; then
-        module use "/work2/noaa/global/wkolczyn/save/hpc-stack/modulefiles/stack"
-    fi
-    module load hpc/1.2.0
-    module load hpc-miniconda3/4.6.14
-    module load gfs_workflow/1.0.0
+  . "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+  status=$?
+  if (( status != 0 )); then exit "${status}"; fi
 fi
-module load wgrib2
-export WGRIB2=wgrib2
-module list
-set_trace
-# End hack
 
 ###############################################################
 # setup python path for workflow utilities and tasks
