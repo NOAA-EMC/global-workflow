@@ -174,7 +174,7 @@ for GRID in conus ak prico pac 003; do
    export pgm; prep_step
    startmsg
 
-   if [[ ${GRID} = "003" && $(( fcsthrs % 6 )) == 0 ]]; then
+   if [[ ${GRID} = "003" && $(( 10#${fcsthrs} % 6 )) == 0 ]]; then
       export FORT11="awps_file_f${fcsthrs}_${GRID}"
       export FORT31="awps_file_fi${fcsthrs}_${GRID}"
       export FORT51="grib2.awpgfs${fcsthrs}.${GRID}"
