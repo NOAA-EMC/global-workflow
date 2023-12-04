@@ -122,7 +122,7 @@ if [[ "${SENDDBN}" == 'YES' || "${SENDAWIP}" == 'YES' ]] ; then
     "${DBNROOT}/bin/dbn_alert" "${DBNALERT_TYPE}" "${NET}" "${job}" \
 			       "${COM_ATMOS_WMO}/xtrn.awpgfs${fcsthrs}.${GRID}.${job_name}"
 else
-    echo "File ${output_grb}.${job_name} not posted to db_net."
+    echo "File xtrn.awpgfs${fcsthrs}.${GRID}.${job_name} not posted to db_net."
 fi
 
 if [[ -e "${pgmout}" ]] ; then
