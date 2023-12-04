@@ -274,7 +274,7 @@ elif [ $step = "ediag" ]; then
     export npe_ediag=48
     export nth_ediag=1
     export npe_node_ediag=$npe_node_max
-    export memory_ediag="24GB"
+    export memory_ediag="48GB"
 
 elif [ $step = "eupd" ]; then
 
