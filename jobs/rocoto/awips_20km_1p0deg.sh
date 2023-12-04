@@ -19,7 +19,7 @@ source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
 (( status != 0 )) && exit "${status}"
 
-export job="awips_20km"
+export job="awips_20km_1p0deg"
 export jobid="${job}.$$"
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
@@ -45,7 +45,7 @@ for fhr3 in ${fhrlst}; do
     if (( fhr >= fhmin && fhr <= fhmax )); then
         if ((fhr % 3 == 0)); then
             export fcsthrs="${fhr3}"
-            "${AWIPS20SH}"
+            "${AWIPS20KM1P0DEGSH}"
         fi
     fi
 
@@ -54,7 +54,7 @@ for fhr3 in ${fhrlst}; do
     if (( fhr >= fhmin && fhr <= fhmax )); then
         if ((fhr % 6 == 0)); then
             export fcsthrs="${fhr3}"
-            "${AWIPS20SH}"
+            "${AWIPS20KM1P0DEGSH}"
         fi
     fi
 done

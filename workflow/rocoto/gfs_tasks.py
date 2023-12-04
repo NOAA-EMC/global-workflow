@@ -822,43 +822,44 @@ class GFSTasks(Tasks):
 
         return task
 
+    @staticmethod
+    def _get_awipsgroups(cdump, config):
+
+        fhmin = config['FHMIN']
+        fhmax = config['FHMAX']
+        fhout = config['FHOUT']
+
+        # Get a list of all forecast hours
+        fhrs = []
+        if cdump in ['gdas']:
+            fhrs = range(fhmin, fhmax + fhout, fhout)
+        elif cdump in ['gfs']:
+            fhmax = np.max(
+                [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
+            fhout = config['FHOUT_GFS']
+            fhmax_hf = config['FHMAX_HF_GFS']
+            fhout_hf = config['FHOUT_HF_GFS']
+            if fhmax > 240:
+                fhmax = 240
+            if fhmax_hf > 240:
+                fhmax_hf = 240
+            fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
+            fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+
+        nawipsgrp = config['NAWIPSGRP']
+        ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+
+        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
+        fhrs = np.array_split(fhrs, ngrps)
+        fhrs = [fhr.tolist() for fhr in fhrs]
+
+        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
+        dep = ' '.join([fhr[-1] for fhr in fhrs])
+        lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
+
+        return grp, dep, lst
+
     def awips_20km_1p0deg(self):
-
-        def _get_awipsgroups(cdump, config):
-
-            fhmin = config['FHMIN']
-            fhmax = config['FHMAX']
-            fhout = config['FHOUT']
-
-            # Get a list of all forecast hours
-            fhrs = []
-            if cdump in ['gdas']:
-                fhrs = range(fhmin, fhmax + fhout, fhout)
-            elif cdump in ['gfs']:
-                fhmax = np.max(
-                    [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
-                fhout = config['FHOUT_GFS']
-                fhmax_hf = config['FHMAX_HF_GFS']
-                fhout_hf = config['FHOUT_HF_GFS']
-                if fhmax > 240:
-                    fhmax = 240
-                if fhmax_hf > 240:
-                    fhmax_hf = 240
-                fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-                fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
-
-            nawipsgrp = config['NAWIPSGRP']
-            ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
-
-            fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-            fhrs = np.array_split(fhrs, ngrps)
-            fhrs = [fhr.tolist() for fhr in fhrs]
-
-            grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-            dep = ' '.join([fhr[-1] for fhr in fhrs])
-            lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
-
-            return grp, dep, lst
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
@@ -873,7 +874,7 @@ class GFSTasks(Tasks):
             awipsenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_awipsgroups(self.cdump, self._configs['awips'])
+        varval1, varval2, varval3 = self._get_awipsgroups(self.cdump, self._configs['awips'])
         vardict = {varname2: varval2, varname3: varval3}
 
         resources = self.get_resource('awips')
@@ -884,42 +885,6 @@ class GFSTasks(Tasks):
 
     def awips_g2(self):
 
-        def _get_awipsgroups(cdump, config):
-
-            fhmin = config['FHMIN']
-            fhmax = config['FHMAX']
-            fhout = config['FHOUT']
-
-            # Get a list of all forecast hours
-            fhrs = []
-            if cdump in ['gdas']:
-                fhrs = range(fhmin, fhmax + fhout, fhout)
-            elif cdump in ['gfs']:
-                fhmax = np.max(
-                    [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
-                fhout = config['FHOUT_GFS']
-                fhmax_hf = config['FHMAX_HF_GFS']
-                fhout_hf = config['FHOUT_HF_GFS']
-                if fhmax > 240:
-                    fhmax = 240
-                if fhmax_hf > 240:
-                    fhmax_hf = 240
-                fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-                fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
-
-            nawipsgrp = config['NAWIPSGRP']
-            ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
-
-            fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-            fhrs = np.array_split(fhrs, ngrps)
-            fhrs = [fhr.tolist() for fhr in fhrs]
-
-            grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-            dep = ' '.join([fhr[-1] for fhr in fhrs])
-            lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
-
-            return grp, dep, lst
-
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -933,7 +898,7 @@ class GFSTasks(Tasks):
             awipsenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_awipsgroups(self.cdump, self._configs['awips'])
+        varval1, varval2, varval3 = self._get_awipsgroups(self.cdump, self._configs['awips'])
         vardict = {varname2: varval2, varname3: varval3}
 
         resources = self.get_resource('awips')
