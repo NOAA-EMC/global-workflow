@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -20,23 +20,19 @@ source "$HOMEgfs/ush/preamble.sh"
 #            other supporting files into a temporary working directory.
 #
 #
-# Usage:  radmon_verf_bcoef.sh PDATE
+# Usage:  radmon_verf_bcoef.sh
 #
 #   Input script positional parameters:
-#     PDATE             processing date
+#     PDYcyc            processing date
 #                       yyyymmddcc format; required
 #
 #   Imported Shell Variables:
 #     RADMON_SUFFIX     data source suffix
 #                       defauls to opr
-#     EXECradmon        executable directory
-#                       defaults to current directory
-#     FIXradmon         fixed data directory
-#                       defaults to current directory
+#     EXECgfs           executable directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
 #     TANKverf_rad      data repository
-#                       defaults to current directory
 #     SATYPE            list of satellite/instrument sources
 #                       defaults to none
 #     LITTLE_ENDIAN     flag for LE machine
@@ -65,23 +61,16 @@ source "$HOMEgfs/ush/preamble.sh"
 #     >0 - some problem encountered
 #
 ####################################################################
-#  Command line arguments.
-export PDATE=${1:-${PDATE:?}}
 
 netcdf_boolean=".false."
-if [[ $RADMON_NETCDF -eq 1 ]]; then
+if [[ ${RADMON_NETCDF} -eq 1 ]]; then
    netcdf_boolean=".true."
 fi
-echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, $netcdf_boolean"
-
-# Directories
-FIXgdas=${FIXgdas:-$(pwd)}
-EXECradmon=${EXECradmon:-$(pwd)}
-TANKverf_rad=${TANKverf_rad:-$(pwd)}
+echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, ${netcdf_boolean}"
 
 # File names
 pgmout=${pgmout:-${jlogfile}}
-touch $pgmout
+touch "${pgmout}"
 
 # Other variables
 RAD_AREA=${RAD_AREA:-glb}
@@ -96,7 +85,7 @@ USE_ANL=${USE_ANL:-0}
 err=0
 bcoef_exec=radmon_bcoef.x
 
-if [[ $USE_ANL -eq 1 ]]; then
+if [[ ${USE_ANL} -eq 1 ]]; then
    gesanl="ges anl"
 else
    gesanl="ges"
@@ -105,8 +94,8 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program and supporting files to working directory
 
-$NCP $EXECradmon/${bcoef_exec}              ./${bcoef_exec}
-$NCP ${biascr}                              ./biascr.txt
+${NCP} "${EXECgfs}/${bcoef_exec}" ./${bcoef_exec}
+${NCP} "${biascr}"                ./biascr.txt
 
 if [[ ! -s ./${bcoef_exec} || ! -s ./biascr.txt ]]; then
    err=4
@@ -118,10 +107,10 @@ else
 
    export pgm=${bcoef_exec}
 
-   iyy=$(echo $PDATE | cut -c1-4)
-   imm=$(echo $PDATE | cut -c5-6)
-   idd=$(echo $PDATE | cut -c7-8)
-   ihh=$(echo $PDATE | cut -c9-10)
+   iyy="${PDY:0:4}"
+   imm="${PDY:4:2}"
+   idd="${PDY:6:2}"
+   ihh=${cyc}
 
    ctr=0
    fail=0
@@ -140,19 +129,19 @@ else
 
          prep_step
 
-         ctr=$(expr $ctr + 1)
+         ctr=$(( ctr + 1 ))
 
-         if [[ $dtype == "anl" ]]; then
-            data_file=${type}_anl.${PDATE}.ieee_d
+         if [[ ${dtype} == "anl" ]]; then
+            data_file="${type}_anl.${PDY}${cyc}.ieee_d"
             ctl_file=${type}_anl.ctl
             bcoef_ctl=bcoef.${ctl_file}
          else
-            data_file=${type}.${PDATE}.ieee_d
+            data_file="${type}.${PDY}${cyc}.ieee_d"
             ctl_file=${type}.ctl
             bcoef_ctl=bcoef.${ctl_file}
          fi 
 
-         if [[ $REGIONAL_RR -eq 1 ]]; then
+         if [[ ${REGIONAL_RR} -eq 1 ]]; then
             bcoef_file=${rgnHH}.bcoef.${data_file}.${rgnTM}
          else
             bcoef_file=bcoef.${data_file}
@@ -180,10 +169,10 @@ cat << EOF > input
  /
 EOF
          startmsg
-         ./${bcoef_exec} < input >>${pgmout} 2>>errfile
+         ./${bcoef_exec} < input >>"${pgmout}" 2>>errfile
          export err=$?; err_chk
-         if [[ $err -ne 0 ]]; then
-            fail=$(expr $fail + 1)
+         if [[ ${err} -ne 0 ]]; then
+            fail=$(( fail + 1 ))
          fi
 
 
@@ -192,11 +181,11 @@ EOF
 #
 
          if [[ -s ${bcoef_file} ]]; then
-            ${COMPRESS} ${bcoef_file}
+            ${COMPRESS} "${bcoef_file}"
          fi
 
          if [[ -s ${bcoef_ctl} ]]; then
-            ${COMPRESS} ${bcoef_ctl}
+            ${COMPRESS} "${bcoef_ctl}"
          fi
 
 
@@ -204,24 +193,24 @@ EOF
    done     # type in $SATYPE loop
 
 
-   ${USHradmon}/rstprod.sh
+   "${USHgfs}/rstprod.sh"
 
    if compgen -G "bcoef*.ieee_d*" > /dev/null || compgen -G "bcoef*.ctl*" > /dev/null; then
      tar_file=radmon_bcoef.tar
-     tar -cf $tar_file bcoef*.ieee_d* bcoef*.ctl*
+     tar -cf ${tar_file} bcoef*.ieee_d* bcoef*.ctl*
      ${COMPRESS} ${tar_file}
-     mv $tar_file.${Z} ${TANKverf_rad}
+     mv "${tar_file}.${Z}" "${TANKverf_rad}"
 
-     if [[ $RAD_AREA = "rgn" ]]; then
+     if [[ ${RAD_AREA} = "rgn" ]]; then
         cwd=$(pwd)
-        cd ${TANKverf_rad}
-        tar -xf ${tar_file}.${Z}
-        rm ${tar_file}.${Z}
-        cd ${cwd}
+        cd "${TANKverf_rad}"
+        tar -xf "${tar_file}.${Z}"
+        rm "${tar_file}.${Z}"
+        cd "${cwd}"
      fi
    fi
 
-   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr ]]; then
+   if [[ ${ctr} -gt 0 && ${fail} -eq ${ctr} || ${fail} -gt ${ctr} ]]; then
       err=5
    fi
 fi

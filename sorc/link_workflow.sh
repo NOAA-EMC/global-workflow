@@ -213,20 +213,19 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
 
-  cd "${HOMEgfs}/fix" || exit 1
-  [[ ! -d gdas ]] && ( mkdir -p gdas || exit 1 )
-  cd gdas || exit 1
+  cd "${HOMEgfs}/parm" || exit 1
+  [[ -d monitor ]] && rm -rf monitor
+  mkdir -p monitor
+  cd monitor || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/fix/gfs_minmon_cost.txt" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/fix/gfs_minmon_gnorm.txt" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_satype.txt" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_scaninfo.txt" .
-  cd "${HOMEgfs}/parm" || exit 1
-  [[ -d mon ]] && rm -rf mon
-  mkdir -p mon
-  cd mon || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm" da_mon.parm
   # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/parm/gdas_minmon.parm" .
   # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/parm/gfs_minmon.parm" .
