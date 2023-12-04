@@ -19,12 +19,10 @@ if [[ "${RUN:-}" == "gdas" ]]; then
   export downset=1
   export FHOUT_PGBS=${FHOUT:-1}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="NO"  # Create interpolated sflux.1p00 file
-  export PGB1F="YES"  # Create 1-degree grib1 output # TODO: who needs 1-degree grib1 product?
 elif [[ "${RUN:-}" == "gfs" ]]; then
   export downset=2
   export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="YES"  # Create interpolated sflux.1p00 file
-  export PGB1F="YES"  # Create 1-degree grib1 output # TODO: who needs 1-degree grib1 product?
 fi
 
 # paramlist files for the different forecast hours and downsets

@@ -4,8 +4,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 # Programs used
 export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
-GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
 
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${HOMEgfs}/ush/interp_atmos_master.sh"}
@@ -61,7 +59,6 @@ if [[ "${PGBS:-}" == "YES" ]]; then
 else
   echo "Supplemental product generation is disable for fhr = ${fhr3}"
   PGBS="NO"  # Can't generate supplemental products if PGBS is not YES
-  PGB1F="NO" # Can't generate 1-degree grib1 products if PGBS is not YES
 fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
@@ -163,19 +160,6 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     ${NCP} "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
     ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
   done
-
-  # Create supplemental 1-degree grib1 output TODO: who needs 1-degree grib1 product?
-  # move to COM and index it
-  if (( nset == 1 )); then
-    if [[ "${PGBS:-}" == "YES" ]]; then
-      if [[ "${PGB1F:-}" == "YES" ]]; then
-        ${CNVGRIB} -g21 "pgb2${grp}file_${fhr3}_1p00" "pgb${grp}file_${fhr3}_1p00"
-        export err=$?; err_chk
-        ${NCP} "pgb${grp}file_${fhr3}_1p00" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}"
-        ${GRBINDEX} "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb${grp}.1p00.${fhr3}.idx"
-      fi
-    fi
-  fi
 
   echo "Finished processing nset = ${nset}"
 
