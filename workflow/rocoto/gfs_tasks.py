@@ -902,7 +902,7 @@ class GFSTasks(Tasks):
     def awips_g2(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
