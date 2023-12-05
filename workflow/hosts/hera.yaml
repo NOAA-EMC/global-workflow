@@ -1,6 +1,6 @@
 BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git'
 DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump'
-BASE_CPLIC: '/scratch1/NCEPDEV/climate/role.ufscpara/IC'
+BASE_CPLIC: '/scratch1/NCEPDEV/global/glopara/data/ICSDIR/prototype_ICs'
 PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara'
 COMROOT: '/scratch1/NCEPDEV/global/glopara/com'
 COMINsyn: '${COMROOT}/gfs/prod/syndat'
@@ -22,4 +22,4 @@ LOCALARCH: 'NO'
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-SUPPORTED_RESOLUTIONS: ['C768', 'C384', 'C192', 'C96', 'C48']
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']

@@ -232,16 +232,7 @@ def fill_COMROT_forecasts(host, inputs):
     """
     Implementation of 'fill_COMROT' for forecast-only mode
     """
-    if inputs.system in ['gfs']:
-        print('forecast-only mode treats ICs differently and cannot be staged here')
-    elif inputs.system in ['gefs']:  # Temporarily copy ICs from icsdir into COM for      testing
-        print('temporary hack to stage gefs ICs for testing')
-        comrot = os.path.join(inputs.comrot, inputs.pslot)
-        idatestr = datetime_to_YMDH(inputs.idate)
-        current_cycle_dir = f"gefs.{idatestr[:8]}"
-        cmd = f"cp -as {inputs.icsdir}/{current_cycle_dir} {comrot}/{current_cycle_dir}"
-        os.system(cmd)
-    return
+    print('forecast-only mode treats ICs differently and cannot be staged here')
 
 
 def fill_EXPDIR(inputs):
@@ -343,10 +334,6 @@ def edit_baseconfig(host, inputs, yaml_dict):
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    # All apps and modes now use the same physics and CCPP suite by default
-    extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
-
     try:
         tmpl_dict = dict(tmpl_dict, **get_template_dict(yaml_dict['base']))
     except KeyError:
@@ -445,7 +432,8 @@ def input_args(*argv):
         return parser
 
     def _gefs_args(parser):
-        parser.add_argument('--start', help=SUPPRESS, type=str, required=False, default='cold')
+        parser.add_argument('--start', help='restart mode: warm or cold', type=str,
+                            choices=['warm', 'cold'], required=False, default='cold')
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
                             default=os.path.join(_top, 'parm/config/gefs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,

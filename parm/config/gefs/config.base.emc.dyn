@@ -40,6 +40,7 @@ export FIXreg2grb2=${HOMEgfs}/fix/reg2grb2
 export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
+export BASE_CPLIC="@BASE_CPLIC@"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -54,12 +55,11 @@ export BASE_GIT="@BASE_GIT@"
 export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
-export DO_VRFY="NO"       # VRFY step
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
 #  if want MOS written to HPSS.   Should update arch.sh to
-#  use RUNMOS flag (currently in config.vrfy)
+#  use RUNMOS flag
 export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
@@ -82,7 +82,7 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
-export NCDUMP="${NETCDF}/bin/ncdump"
+export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
 export NCLEN="${HOMEgfs}/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
@@ -122,11 +122,10 @@ export REDOUT="1>"
 export REDERR="2>"
 
 export SENDECF=${SENDECF:-"NO"}
-export SENDCOM=${SENDCOM:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
 # APP settings
 export APP=@APP@
@@ -138,10 +137,8 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
-export CCPP_SUITE="@CCPP_SUITE@"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
-export cplwav2atm=".false."
 export FRAC_GRID=".true."
 
 # Set operational resolution
@@ -183,17 +180,14 @@ export ICERES=${OCNRES}
 
 case "${APP}" in
   ATM)
-    export confignamevarfornems="atm"
     ;;
   ATMA)
     export DO_AERO="YES"
-    export confignamevarfornems="atm_aero"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
-    export confignamevarfornems="leapfrog_atm_wav"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -204,19 +198,15 @@ case "${APP}" in
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
-    export confignamevarfornems="cpld"
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export confignamevarfornems="${confignamevarfornems}_aero"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"
         export cplwav2atm=".true."
-        export confignamevarfornems="${confignamevarfornems}_outerwave"
     fi
     ;;
   *)
@@ -252,7 +242,10 @@ export FHMAX_ENKF=${FHMAX_GFS}
 export FHOUT_ENKF=${FHOUT_GFS}
 
 # GFS restart interval in hours
-export restart_interval_gfs=0
+export restart_interval_gfs=12
+# NOTE: Do not set this to zero.  Instead set it to $FHMAX_GFS
+# TODO: Remove this variable from config.base and reference from config.fcst
+# TODO: rework logic in config.wave and push it to parsing_nameslist_WW3.sh where it is actually used
 
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
@@ -264,7 +257,7 @@ export FLTFILEGFS="${PARMgfs}/post/postxconfig-NT-GEFS.txt"
 export FLTFILEGFSF00="${PARMgfs}/post/postxconfig-NT-GEFS-F00.txt"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=@IMP_PHYSICS@
+export imp_physics=8
 
 # Shared parameters
 # DA engine
@@ -282,11 +275,16 @@ export NMEM_ENS=@NMEM_ENS@
 export ENSMEM="000"
 export MEMDIR="mem${ENSMEM}"
 
+export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
 if [[ "${EXP_WARM_START}" = ".false." ]]; then
-    export IAU_FHROT=0
+  export IAU_FHROT=0
 else
+  if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
+  else
+    export IAU_FHROT=0
+  fi
 fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst

@@ -12,11 +12,9 @@ while getopts ":dv" option; do
 		v) _opts+="-v ";;
 		:)
 			echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-			usage
 			;;
 		*)
 			echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-			usage
 			;;
 	esac
 done

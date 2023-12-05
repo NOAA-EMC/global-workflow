@@ -15,16 +15,25 @@ class GFSForecastOnlyAppConfig(AppConfig):
         Returns the config_files that are involved in the forecast-only app
         """
 
-        configs = ['stage_ic', 'fcst', 'arch']
+        configs = ['stage_ic', 'fcst', 'arch', 'cleanup']
 
         if self.do_atm:
-            configs += ['post', 'vrfy']
+            configs += ['post']
 
         if self.do_aero:
             configs += ['aerosol_init']
 
         if self.do_ocean or self.do_ice:
             configs += ['ocnpost']
+
+        if self.do_atm and self.do_tracker:
+            configs += ['tracker']
+
+        if self.do_atm and self.do_genesis:
+            configs += ['genesis']
+
+        if self.do_atm and self.do_genesis_fsu:
+            configs += ['genesis_fsu']
 
         if self.do_atm and self.do_metp:
             configs += ['metp']
@@ -82,8 +91,14 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if self.do_ocean:
             tasks += ['ocnpost']
 
-        if self.do_atm:
-            tasks += ['vrfy']
+        if self.do_atm and self.do_tracker:
+            tasks += ['tracker']
+
+        if self.do_atm and self.do_genesis:
+            tasks += ['genesis']
+
+        if self.do_atm and self.do_genesis_fsu:
+            tasks += ['genesis_fsu']
 
         if self.do_atm and self.do_metp:
             tasks += ['metp']
@@ -104,11 +119,13 @@ class GFSForecastOnlyAppConfig(AppConfig):
             tasks += ['gempak']
 
         if self.do_awips:
-            tasks += ['awips']
+            tasks += ['awips_20km_1p0deg']
+            tasks += ['awips_g2']
+            tasks += ['fbwinds']
 
         if self.do_wafs:
             tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
 
-        tasks += ['arch']  # arch **must** be the last task
+        tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
 
         return {f"{self._base['CDUMP']}": tasks}

@@ -66,7 +66,7 @@ export machine=${machine:-WCOSS2}
 ###########################
 # Specify Output layers
 ###########################
-export POSTGPVARS="KPO=57,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,15.,10.,7.,5.,3.,2.,1.,0.7,0.4,0.2,0.1,0.07,0.04,0.02,0.01,"
+export POSTGPVARS="KPO=57,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,15.,10.,7.,5.,3.,2.,1.,0.7,0.4,0.2,0.1,0.07,0.04,0.02,0.01,rdaod=.true.,"
 
 ##########################################################
 # Specify variable to directly output pgrb2 files for GDAS/GFS
@@ -128,35 +128,33 @@ if [[ "${stime}" = "anl" ]]; then
       export err=$?; err_chk
     fi
 
-    if [[ "${SENDCOM}" = 'YES' ]]; then
-      export fhr3=anl
-      if [[ "${GRIBVERSION}" = 'grib2' ]]; then
+    export fhr3=anl
+    if [[ "${GRIBVERSION}" = 'grib2' ]]; then
         MASTERANL=${PREFIX}master.grb2${fhr3}
         MASTERANLIDX=${PREFIX}master.grb2i${fhr3}
         cp "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERANL}"
         ${GRB2INDEX} "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERANLIDX}"
-      fi
+    fi
 
-      if [[ "${SENDDBN}" = 'YES' ]]; then
+    if [[ "${SENDDBN}" = 'YES' ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_MSC_sfcanl "${job}" "${COM_ATMOS_ANALYSIS}/${PREFIX}sfcanl.nc"
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_SA "${job}" "${COM_ATMOS_ANALYSIS}/${PREFIX}atmanl.nc"
         if [[ "${PGBF}" = 'YES' ]]; then
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl.idx"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl.idx"
-
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl.idx"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl.idx"
-
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl.idx"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl"
-          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl.idx"
+	    
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl.idx"
+	    
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl.idx"
         fi
-      fi
     fi
     [[ -f pgbfile.grib2 ]] && rm pgbfile.grib2 
     #   ecflow_client --event release_pgrb2_anl
@@ -283,42 +281,40 @@ else   ## not_anl if_stime
       export err=$?; err_chk
     fi
 
-    if [[ "${SENDCOM}" = "YES" ]]; then
-      if [[ "${GRIBVERSION}" = 'grib2' ]]; then
-        if [[ "${INLINE_POST}" = ".false." ]]; then 
-          cp "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERFL}"
-        fi
+    if [[ "${GRIBVERSION}" = 'grib2' ]]; then
+      if [[ "${INLINE_POST}" = ".false." ]]; then 
+        cp "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERFL}"
+      fi
         ${GRB2INDEX} "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERFLIDX}"
-      fi
-
-      if [[ "${SENDDBN}" = 'YES' ]]; then
-        if [[ "${GRIBVERSION}" = 'grib2' ]]; then
-          if [[ "${PGBF}" = 'YES' ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.f${fhr3}"
-            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.f${fhr3}.idx"
-            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.f${fhr3}"
-            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.f${fhr3}.idx"
-
-            if [[ -s "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}" ]]; then
-              "${DBNROOT}/bin/dbn_alert"  MODEL GFS_PGB2_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}"
-              "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}.idx"
-              "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.f${fhr3}"
-              "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.f${fhr3}.idx"
-            fi
-
-            if [[ -s "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}" ]]; then
-              "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}"
-              "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}.idx"
-              "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.f${fhr3}"
-              "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.f${fhr3}.idx"
-            fi
-          fi
-        fi 
-      fi
-
-      export fhr
-      "${USHgfs}/gfs_transfer.sh"
     fi
+
+    if [[ "${SENDDBN}" = 'YES' ]]; then
+      if [[ "${GRIBVERSION}" = 'grib2' ]]; then
+        if [[ "${PGBF}" = 'YES' ]]; then
+          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.f${fhr3}"
+          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.f${fhr3}.idx"
+          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25 "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.f${fhr3}"
+          "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25_WIDX "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.f${fhr3}.idx"
+
+          if [[ -s "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}" ]]; then
+            "${DBNROOT}/bin/dbn_alert"  MODEL GFS_PGB2_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5 "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.f${fhr3}"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5_WIDX "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.f${fhr3}.idx"
+          fi
+
+          if [[ -s "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}" ]]; then
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}.idx"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0 "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.f${fhr3}"
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0_WIDX "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.f${fhr3}.idx"
+          fi
+        fi
+      fi 
+    fi
+    
+    export fhr
+    "${USHgfs}/gfs_transfer.sh"
     [[ -f pgbfile.grib2 ]] && rm pgbfile.grib2
 
 
@@ -396,13 +392,11 @@ else   ## not_anl if_stime
         SPECIALFLIDX="${PREFIX}special.grb2i"
       fi
 
-      if [[ "${SENDCOM}" = "YES" ]]; then
-        mv goesfile "${COM_ATMOS_GOES}/${SPECIALFL}f${fhr3}"
-        mv goesifile "${COM_ATMOS_GOES}/${SPECIALFLIDX}f${fhr3}"
+      mv goesfile "${COM_ATMOS_GOES}/${SPECIALFL}f${fhr3}"
+      mv goesifile "${COM_ATMOS_GOES}/${SPECIALFLIDX}f${fhr3}"
 
-        if [[ "${SENDDBN}" = "YES" ]]; then
+      if [[ "${SENDDBN}" = "YES" ]]; then
           "${DBNROOT}/bin/dbn_alert" MODEL GFS_SPECIAL_GB2 "${job}" "${COM_ATMOS_GOES}/${SPECIALFL}f${fhr3}"
-        fi
       fi
     fi
     # end of satellite processing
@@ -410,8 +404,6 @@ else   ## not_anl if_stime
 
   #----------------------------------
 fi   ## end_if_stime
-
-
 
 exit 0
 

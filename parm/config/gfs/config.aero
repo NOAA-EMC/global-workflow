@@ -5,8 +5,6 @@
 # Turn off warnings about unused variables
 # shellcheck disable=SC2034
 
-# Directory containing GOCART configuration files. Defaults to parm/ufs/chem if unset.
-AERO_CONFIG_DIR=${HOMEgfs}/parm/ufs/chem
 
 # Path to the input data tree
 case ${machine} in
@@ -30,14 +28,19 @@ case ${machine} in
     exit 2
     ;;
 esac
+export AERO_INPUTS_DIR
 
-# Biomass burning emission dataset. Choose from: GBBEPx, QFED, NONE (default)
-AERO_EMIS_FIRE=QFED
+export AERO_DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table.aero"
+export AERO_FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table.aero"
+# Biomass burning emission dataset. Choose from: gbbepx, qfed, none
+export AERO_EMIS_FIRE="qfed"
+# Directory containing GOCART configuration files
+export AERO_CONFIG_DIR="${HOMEgfs}/parm/ufs/gocart"
 
 # Aerosol convective scavenging factors (list of string array elements)
 # Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers
 # Scavenging factors are set to 0 (no scavenging) if unset
-aero_conv_scav_factors="'*:0.3','so2:0.0','msa:0.0','dms:0.0','nh3:0.4','nh4:0.6','bc1:0.6','bc2:0.6','oc1:0.4','oc2:0.4','dust1:0.6','dust2:0.6', 'dust3:0.6','dust4:0.6','dust5:0.6','seas1:0.5','seas2:0.5','seas3:0.5','seas4:0.5','seas5:0.5'"
+export fscav_aero="'*:0.3','so2:0.0','msa:0.0','dms:0.0','nh3:0.4','nh4:0.6','bc1:0.6','bc2:0.6','oc1:0.4','oc2:0.4','dust1:0.6','dust2:0.6', 'dust3:0.6','dust4:0.6','dust5:0.6','seas1:0.5','seas2:0.5','seas3:0.5','seas4:0.5','seas5:0.5'"
 #
 # Number of diagnostic aerosol tracers (default: 0)
-aero_diag_tracers=2
+export dnats_aero=2

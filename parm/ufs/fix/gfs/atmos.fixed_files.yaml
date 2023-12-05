@@ -81,5 +81,5 @@ copy:
   - [$(FIX_lut)/optics_SS.v3_3.dat,  $(DATA)/optics_SS.dat]
   - [$(FIX_lut)/optics_SU.v1_3.dat,  $(DATA)/optics_SU.dat]
 
-  # fd_nems.yaml file
-  - [$(HOMEgfs)/sorc/ufs_model.fd/tests/parm/fd_nems.yaml, $(DATA)/]
+  # fd_ufs.yaml file
+  - [$(HOMEgfs)/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml, $(DATA)/]

@@ -71,6 +71,24 @@ common_predet(){
   next_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
+  # IAU options
+  IAU_OFFSET=${IAU_OFFSET:-0}
+  DOIAU=${DOIAU:-"NO"}
+  if [[ "${DOIAU}" = "YES" ]]; then
+    sCDATE=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
+    sPDY="${sCDATE:0:8}"
+    scyc="${sCDATE:8:2}"
+    tPDY=${previous_cycle:0:8}
+    tcyc=${previous_cycle:8:2}
+  else
+    sCDATE=${current_cycle}
+    sPDY=${current_cycle:0:8}
+    scyc=${current_cycle:8:2}
+    tPDY=${sPDY}
+    tcyc=${scyc}
+  fi
+
+  mkdir -p "${COM_CONF}"
   cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
 
@@ -121,10 +139,8 @@ FV3_predet(){
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options
-  DOIAU=${DOIAU:-"NO"}
   IAUFHRS=${IAUFHRS:-0}
   IAU_DELTHRS=${IAU_DELTHRS:-0}
-  IAU_OFFSET=${IAU_OFFSET:-0}
 
   # Model config options
   ntiles=6
@@ -214,20 +230,6 @@ FV3_predet(){
     done
   else
     mkdir -p "${DATA}/RESTART"
-  fi
-
-  if [[ "${DOIAU}" = "YES" ]]; then
-    sCDATE=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
-    sPDY="${sCDATE:0:8}"
-    scyc="${sCDATE:8:2}"
-    tPDY=${previous_cycle:0:8}
-    tcyc=${previous_cycle:8:2}
-  else
-    sCDATE=${current_cycle}
-    sPDY=${current_cycle:0:8}
-    scyc=${current_cycle:8:2}
-    tPDY=${sPDY}
-    tcyc=${scyc}
   fi
 
   echo "SUB ${FUNCNAME[0]}: pre-determination variables set"

@@ -3,7 +3,7 @@
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
-from wxflow import Template, TemplateConstants
+from wxflow import Template, TemplateConstants, to_timedelta
 
 __all__ = ['Tasks', 'create_wf_task']
 
@@ -11,7 +11,7 @@ __all__ = ['Tasks', 'create_wf_task']
 class Tasks:
     SERVICE_TASKS = ['arch', 'earc']
     VALID_TASKS = ['aerosol_init', 'stage_ic',
-                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch',
+                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
@@ -19,10 +19,13 @@ class Tasks:
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'preplandobs', 'landanl',
-                   'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
-                   'postsnd', 'awips', 'gempak',
+                   'fcst', 'post', 'ocnpost',
+                   'verfozn', 'verfrad', 'vminmon', 'metp',
+                   'tracker', 'genesis', 'genesis_fsu',
+                   'postsnd', 'awips_g2', 'awips_20km_1p0deg', 'fbwinds', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
-                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
+                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
+                   'npoess']
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
 
@@ -32,6 +35,7 @@ class Tasks:
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._configs = self.app_config.configs
         self._base = self._configs['base']
+        self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 

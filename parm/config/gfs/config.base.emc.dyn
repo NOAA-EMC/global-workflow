@@ -56,12 +56,18 @@ export BASE_GIT="@BASE_GIT@"
 export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
-export DO_VRFY="YES"       # VRFY step
+export DO_NPOESS="NO"       # NPOESS products
+export DO_TRACKER="YES"    # Hurricane track verification
+export DO_GENESIS="YES"    # Cyclone genesis verification
+export DO_GENESIS_FSU="NO" # Cyclone genesis verification (FSU)
+export DO_VERFOZN="YES"    # Ozone data assimilation monitoring
+export DO_VERFRAD="YES"    # Radiance data assimilation monitoring
+export DO_VMINMON="YES"    # GSI minimization monitoring
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
 #  if want MOS written to HPSS.   Should update arch.sh to
-#  use RUNMOS flag (currently in config.vrfy)
+#  use RUNMOS flag
 export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
@@ -86,7 +92,7 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
-export NCDUMP="${NETCDF:-}/bin/ncdump"
+export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
 export NCLEN="${HOMEgfs}/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
@@ -130,7 +136,6 @@ export REDOUT="1>"
 export REDERR="2>"
 
 export SENDECF=${SENDECF:-"NO"}
-export SENDCOM=${SENDCOM:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
@@ -146,14 +151,12 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
-export CCPP_SUITE="@CCPP_SUITE@"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
-export cplwav2atm=".false."
 export FRAC_GRID=".true."
 
 # Set operational resolution
-export OPS_RES="C768" # Do not change
+export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it used?
 
 # Resolution specific parameters
 export LEVS=128
@@ -178,7 +181,7 @@ case "${CASE}" in
         export OCNRES=025
         export waveGRD='glo_025'
         ;;
-    "C768")
+    "C768" | "C1152")
         export OCNRES=025
         export waveGRD='mx025'
         ;;
@@ -191,17 +194,14 @@ export ICERES=${OCNRES}
 
 case "${APP}" in
   ATM)
-    export confignamevarfornems="atm"
     ;;
   ATMA)
     export DO_AERO="YES"
-    export confignamevarfornems="atm_aero"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
-    export confignamevarfornems="leapfrog_atm_wav"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -212,21 +212,15 @@ case "${APP}" in
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
-    export confignamevarfornems="cpld"
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export confignamevarfornems="${confignamevarfornems}_aero"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"
-        export cplwav2atm=".true."
-        export confignamevarfornems="${confignamevarfornems}_outerwave"
     fi
-
     ;;
   *)
     echo "Unrecognized APP: '${APP}'"
@@ -284,7 +278,7 @@ export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST
 export WRITE_NSFLIP=".true."
 
 # IAU related parameters
-export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
+export DOIAU="@DOIAU@"        # Enable 4DIAU for control with 3 increments
 export IAUFHRS="3,6,9"
 export IAU_FHROT=${IAUFHRS%%,*}
 export IAU_DELTHRS=6
@@ -302,7 +296,7 @@ export lobsdiag_forenkf=".true."
 # fi
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=@IMP_PHYSICS@
+export imp_physics=8
 
 # Shared parameters
 # DA engine
@@ -376,12 +370,12 @@ export INCVARS_EFOLD="5"
 
 # Swith to generate netcdf or binary diagnostic files.  If not specified,
 # script default to binary diagnostic files.   Set diagnostic file
-# variables here since used in both DA and vrfy jobs
+# variables here since used in DA job
 export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
 export DO_FIT2OBS="YES"      # Run fit to observations package
 
 # Archiving options
@@ -395,6 +389,9 @@ export ARCH_CYC=00           # Archive data at this cycle for warm_start capabil
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
-export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
+#--online archive of nemsio files for fit2obs verification
+export FITSARC="YES"
+export FHMAX_FITS=132
+[[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
 echo "END: config.base"

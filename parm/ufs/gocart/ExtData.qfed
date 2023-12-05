@@ -1,0 +1,8 @@
+#====== BIOMASS BURNING EMISSIONS =======================================
+
+# QFED
+#--------------------------------------------------------------------------------------------------------------------------------
+SU_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 biomass ExtData/nexus/QFED/%y4/%m2/qfed2.emis_so2.006.%y4%m2%d2.nc4
+OC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 biomass ExtData/nexus/QFED/%y4/%m2/qfed2.emis_oc.006.%y4%m2%d2.nc4
+BC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 biomass ExtData/nexus/QFED/%y4/%m2/qfed2.emis_bc.006.%y4%m2%d2.nc4
+# EMI_NH3_BB NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 biomass ExtData/nexus/QFED/%y4/%m2/qfed2.emis_nh3.006.%y4%m2%d2.nc4
