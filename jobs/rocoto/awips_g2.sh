@@ -47,15 +47,6 @@ for fhr3 in ${fhrlst}; do
             "${AWIPSG2SH}"
         fi
     fi
-
-    fhmin=90
-    fhmax=240
-    if (( fhr >= fhmin && fhr <= fhmax )); then
-        if ((fhr % 6 == 0)); then
-            export fcsthrs="${fhr3}"
-            "${AWIPSG2SH}"
-        fi
-    fi
 done
 
 
