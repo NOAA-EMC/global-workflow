@@ -41,6 +41,14 @@ while getopts ":ho" option; do
 done
 shift $((OPTIND-1))
 
+# LINK is always ln, LINK_OR_COPY can be ln or cp depending on RUN_ENVIR being emc or nco, respectively
+LINK="ln -fs"
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+  LINK_OR_COPY="cp -rp"
+else
+  LINK_OR_COPY="ln -fs"
+fi
+
 # shellcheck disable=SC1091
 COMPILER="intel" source "${HOMEgfs}/sorc/gfs_utils.fd/ush/detect_machine.sh"  # (sets MACHINE_ID)
 # shellcheck disable=
@@ -49,15 +57,8 @@ machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 #------------------------------
 #--Set up build.ver and run.ver
 #------------------------------
-if [[ "${machine}" == "wcoss2" ]]; then
-   cp "${HOMEgfs}/versions/build.${machine}.ver" "${HOMEgfs}/versions/build.ver"
-   cp "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/run.ver"
-else
-   cp "${HOMEgfs}/versions/build.spack.ver" "${HOMEgfs}/versions/build.ver"
-   cp "${HOMEgfs}/versions/run.spack.ver" "${HOMEgfs}/versions/run.ver"
-   cat "${HOMEgfs}/versions/build.${machine}.ver" >> "${HOMEgfs}/versions/build.ver"
-   cat "${HOMEgfs}/versions/run.${machine}.ver" >> "${HOMEgfs}/versions/run.ver"
-fi
+${LINK_OR_COPY} "${HOMEgfs}/versions/build.${machine}.ver" "${HOMEgfs}/versions/build.ver"
+${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/run.ver"
 
 #------------------------------
 #--model fix fields
@@ -76,15 +77,6 @@ esac
 
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
-
-# LINK is always ln, LINK_OR_COPY can be ln or cp depending on RUN_EVNVIR being emc or nco, respectively
-LINK="ln -fs"
-if [[ "${RUN_ENVIR}" == "nco" ]]; then
-  LINK_OR_COPY="cp -rp"
-else
-  LINK_OR_COPY="ln -fs"
-fi
-
 
 # Link wxflow in ush/python, workflow and ci/scripts
 # TODO: This will be unnecessary when wxflow is part of the virtualenv
