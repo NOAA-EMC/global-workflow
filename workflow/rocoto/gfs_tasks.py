@@ -963,7 +963,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def npoess(self):
+    def npoess_pgrb2_0p5deg(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
@@ -971,7 +971,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('npoess')
-        task = create_wf_task('npoess', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('npoess_pgrb2_0p5deg', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 

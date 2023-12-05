@@ -26,7 +26,7 @@ class Tasks:
                    'gempakncdcupapgif', 'gempakpgrb2spec',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
-                   'npoess']
+                   'npoess_pgrb2_0p5deg']
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
 
