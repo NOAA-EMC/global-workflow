@@ -41,7 +41,7 @@ for fhr3 in ${fhrlst}; do
     fi
 
     fhmin=0
-    fhmax=84
+    fhmax=240
     if (( fhr >= fhmin && fhr <= fhmax )); then
         if ((fhr % 6 == 0)); then
             "${AWIPSG2SH}"
