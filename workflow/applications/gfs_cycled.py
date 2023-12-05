@@ -89,9 +89,6 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_awips:
             configs += ['awips']
 
-        if self.do_npoess:
-            configs += ['npoess']
-
         if self.do_wave:
             configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
             if self.do_wave_bnd:
@@ -239,14 +236,12 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += ['gempakmeta']
             gfs_tasks += ['gempakncdcupapgif']
             gfs_tasks += ['gempakpgrb2spec']
+            gfs_tasks += ['npoess_pgrb2_0p5deg']
 
         if self.do_awips:
             gfs_tasks += ['awips_20km_1p0deg']
             gfs_tasks += ['awips_g2']
             gfs_tasks += ['fbwinds']
-
-        if self.do_npoess:
-            gfs_tasks += ['npoess']
 
         if self.do_wafs:
             gfs_tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
