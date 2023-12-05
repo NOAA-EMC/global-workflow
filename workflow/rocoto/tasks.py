@@ -25,7 +25,7 @@ class Tasks:
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
                    'tracker', 'genesis', 'genesis_fsu',
-                   'postsnd', 'awips', 'fbwinds', 'gempak',
+                   'postsnd', 'awips_g2', 'awips_20km_1p0deg', 'fbwinds', 'gempak',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
                    'npoess']

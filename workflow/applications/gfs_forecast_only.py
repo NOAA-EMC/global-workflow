@@ -115,7 +115,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['gempak']
 
             if self.do_awips:
-                tasks += ['awips', 'fbwinds']
+                tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwinds']
 
         if self.do_ocean or self.do_ice:
             tasks += ['ocnpost']
