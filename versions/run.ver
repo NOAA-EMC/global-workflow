@@ -1,5 +1,5 @@
-export version=v16.3.10
-export gfs_ver=v16.3.10
+export version=v16.3.11
+export gfs_ver=v16.3.11
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
 export nam_ver=v4.2
@@ -35,7 +35,7 @@ export util_shared_ver=1.4.0
 export grib_util_ver=1.2.3
 export wgrib2_ver=2.0.7
 
-export crtm_ver=2.4.0
+export crtm_ver=2.4.0.1
 
 export g2tmpl_ver=1.9.1
 export bacio_ver=2.4.1
