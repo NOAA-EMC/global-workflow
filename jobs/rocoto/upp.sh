@@ -46,7 +46,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # shellcheck disable=SC2153,SC2001
-IFS='_' read -ra fhrs <<< "${FHRLST//f}}" # strip off the 'f's convert to array
+IFS='_' read -ra fhrs <<< "${FHRLST//f}" # strip off the 'f's convert to array
 
 # Execute the JJOB
 for fhr in "${fhrs[@]}"; do
