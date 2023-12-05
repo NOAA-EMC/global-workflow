@@ -46,12 +46,10 @@ export jobid="${job}.$$"
 
 ###############################################################
 # shellcheck disable=SC2153,SC2001
-fhrlst=$(echo "${FHRLST}" | sed -e 's/f//g')  # strip off the 'f' in the forecast hour list
-IFS='_' read -ra fhrs <<< "${fhrlst}"  # convert to array
+IFS='_' read -ra fhrs <<< "${FHRLST//f}}" # strip off the 'f's convert to array
 
 # Execute the JJOB
-# shellcheck disable=SC2068
-for fhr in ${fhrs[@]}; do
+for fhr in "${fhrs[@]}"; do
     export FORECAST_HOUR=$(( 10#${fhr} ))
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP"
     status=$?

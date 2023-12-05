@@ -84,7 +84,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
   if (( nproc > ncount )); then
     echo "WARNING: Total no. of available processors '${nproc}' exceeds no. of records '${ncount}' in ${tmpfile}"
-    echo "Reset nproc=${ncount}"
+    echo "Reduce nproc to ${ncount} (or less) to not waste resources"
   fi
   inv=$(( ncount / nproc ))
   rm -f "${DATA}/poescript"
