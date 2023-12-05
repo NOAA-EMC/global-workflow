@@ -234,7 +234,8 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += ['gempak']
 
         if self.do_awips:
-            gfs_tasks += ['awips']
+            gfs_tasks += ['awips_20km_1p0deg']
+            gfs_tasks += ['awips_g2']
             gfs_tasks += ['fbwinds']
 
         if self.do_npoess:
