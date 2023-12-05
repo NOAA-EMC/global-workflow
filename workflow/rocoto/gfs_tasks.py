@@ -919,6 +919,48 @@ class GFSTasks(Tasks):
 
         return task
 
+    def gempakmeta(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakmeta', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakmetancdc(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakmetancdc', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakncdcupapgif(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakncdcupapgif', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakpgrb2spec(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakpgrb2spec', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
     def npoess(self):
 
         deps = []
