@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -22,10 +22,10 @@ source "$HOMEgfs/ush/preamble.sh"
 #            other supporting files into a temporary working directory. 
 #
 #
-# Usage:  radmon_verf_time.sh PDATE
+# Usage:  radmon_verf_time.sh ${PDY}${cyc}
 #
 #   Input script positional parameters:
-#     PDATE		processing date
+#     PDYcyc		processing date
 #  			yyyymmddcc format; required 
 #
 #   Imported Shell Variables:
@@ -33,14 +33,11 @@ source "$HOMEgfs/ush/preamble.sh"
 #                       defaults to 1 (on)
 #     RADMON_SUFFIX	data source suffix
 #                       defauls to opr
-#     EXECradmon        executable directory
-#                       defaults to current directory 
-#     FIXgdas           fixed data directory
-#                       defaults to current directory
+#     EXECgfs           executable directory
+#     PARMmonitor       parm data directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
 #     TANKverf_rad	data repository
-#                       defaults to current directory 
 #     SATYPE		list of satellite/instrument sources
 #        		defaults to none
 #     VERBOSE           Verbose flag (YES or NO)
@@ -77,20 +74,12 @@ source "$HOMEgfs/ush/preamble.sh"
 #
 ####################################################################
 
-#  Command line arguments.
-export PDATE=${1:-${PDATE:?}}
-
-# Directories
-FIXgdas=${FIXgdas:-$(pwd)}
-EXECradmon=${EXECradmon:-$(pwd)}
-TANKverf_rad=${TANKverf_rad:-$(pwd)}
-
 # File names
 #pgmout=${pgmout:-${jlogfile}}
 #touch $pgmout
 
-radmon_err_rpt=${radmon_err_rpt:-${USHradmon}/radmon_err_rpt.sh}
-base_file=${base_file:-$FIXgdas/gdas_radmon_base.tar}
+radmon_err_rpt=${radmon_err_rpt:-${USHgfs}/radmon_err_rpt.sh}
+base_file=${base_file:-${PARMmonitor}/gdas_radmon_base.tar}
 report=report.txt
 disclaimer=disclaimer.txt
 
@@ -109,7 +98,7 @@ count_hdr=count_hdr.txt
 count_err=count_err.txt
 
 netcdf_boolean=".false."
-if [[ $RADMON_NETCDF -eq 1 ]]; then
+if [[ ${RADMON_NETCDF} -eq 1 ]]; then
    netcdf_boolean=".true."
 fi
 
@@ -127,7 +116,7 @@ time_exec=radmon_time.x
 USE_ANL=${USE_ANL:-0}
 err=0 
 
-if [[ $USE_ANL -eq 1 ]]; then
+if [[ ${USE_ANL} -eq 1 ]]; then
    gesanl="ges anl"
 else
    gesanl="ges"
@@ -137,26 +126,24 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program and base files to working directory
 #-------------------------------------------------------------------
-$NCP ${EXECradmon}/${time_exec}  ./
+${NCP} "${EXECgfs}/${time_exec}" ./
 if [[ ! -s ./${time_exec} ]]; then
    err=8
 fi
 
-iyy=$(echo $PDATE | cut -c1-4)
-imm=$(echo $PDATE | cut -c5-6)
-idd=$(echo $PDATE | cut -c7-8)
-ihh=$(echo $PDATE | cut -c9-10)
-cyc=$ihh
-CYCLE=$cyc
+iyy="${PDY:0:4}"
+imm="${PDY:4:2}"
+idd="${PDY:6:2}"
+ihh=${cyc}
 
 local_base="local_base"
-if [[ $DO_DATA_RPT -eq 1 ]]; then
+if [[ ${DO_DATA_RPT} -eq 1 ]]; then
 
    if [[ -e ${base_file}.${Z} ]]; then
-      $NCP ${base_file}.${Z}  ./${local_base}.{Z}
-      ${UNCOMPRESS} ${local_base}.${Z}
+      ${NCP} "${base_file}.${Z}" "./${local_base}.${Z}"
+      ${UNCOMPRESS} "${local_base}.${Z}"
    else
-      $NCP ${base_file}  ./${local_base}
+      ${NCP} "${base_file}" ./${local_base}
    fi
 
    if [[ ! -s ./${local_base} ]]; then
@@ -168,7 +155,7 @@ if [[ $DO_DATA_RPT -eq 1 ]]; then
    fi
 fi
 
-if [[ $err -eq 0 ]]; then
+if [[ ${err} -eq 0 ]]; then
    ctr=0
    fail=0
 
@@ -183,23 +170,23 @@ if [[ $err -eq 0 ]]; then
          continue
       fi
 
-      ctr=$(expr $ctr + 1)
+      ctr=$(( ctr + 1 ))
 
       for dtype in ${gesanl}; do
 
          if [[ -f input ]]; then rm input; fi
 
-         if [[ $dtype == "anl" ]]; then
-            data_file=${type}_anl.${PDATE}.ieee_d
+         if [[ ${dtype} == "anl" ]]; then
+            data_file="${type}_anl.${PDY}${cyc}.ieee_d"
             ctl_file=${type}_anl.ctl
             time_ctl=time.${ctl_file}
          else
-            data_file=${type}.${PDATE}.ieee_d
+            data_file="${type}.${PDY}${cyc}.ieee_d"
             ctl_file=${type}.ctl
             time_ctl=time.${ctl_file}
          fi
 
-         if [[ $REGIONAL_RR -eq 1 ]]; then
+         if [[ ${REGIONAL_RR} -eq 1 ]]; then
             time_file=${rgnHH}.time.${data_file}.${rgnTM}
          else
             time_file=time.${data_file}
@@ -227,48 +214,48 @@ cat << EOF > input
  /
 EOF
 
-         ./${time_exec} < input >>   stdout.${type} 2>>errfile
+         ./${time_exec} < input >> stdout."${type}" 2>>errfile
          
-         if [[ $err -ne 0 ]]; then
-            fail=$(expr $fail + 1)
+         if [[ ${err} -ne 0 ]]; then
+            fail=$(( fail + 1 ))
          fi
 
 #-------------------------------------------------------------------
 #  move data, control, and stdout files to $TANKverf_rad and compress
 #-------------------------------------------------------------------
-         cat stdout.${type} >> stdout.time
+         cat "stdout.${type}" >> stdout.time
 
          if [[ -s ${time_file} ]]; then
-            ${COMPRESS} ${time_file}
+            ${COMPRESS} "${time_file}"
          fi
 
          if [[ -s ${time_ctl} ]]; then
-            ${COMPRESS} ${time_ctl}
+            ${COMPRESS} "${time_ctl}"
          fi
          
       done
    done
 
 
-   ${USHradmon}/rstprod.sh
+   "${USHgfs}/rstprod.sh"
 
    if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
      tar_file=radmon_time.tar
-     tar -cf $tar_file time*.ieee_d* time*.ctl*
+     tar -cf "${tar_file}" time*.ieee_d* time*.ctl*
      ${COMPRESS} ${tar_file}
-     mv $tar_file.${Z} ${TANKverf_rad}/.
+     mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 
-     if [[ $RAD_AREA = "rgn" ]]; then
+     if [[ ${RAD_AREA} = "rgn" ]]; then
         cwd=$(pwd)
-        cd ${TANKverf_rad}
-        tar -xf ${tar_file}.${Z}
-        rm ${tar_file}.${Z}
-        cd ${cwd}
+        cd "${TANKverf_rad}"
+        tar -xf "${tar_file}.${Z}"
+        rm "${tar_file}.${Z}"
+        cd "${cwd}"
      fi
    fi
 
-   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr  ]]; then
-      echo "fail, ctr = $fail, $ctr"
+   if [[ ${ctr} -gt 0 && ${fail} -eq ${ctr} || ${fail} -gt ${ctr}  ]]; then
+      echo "fail, ctr = ${fail}, ${ctr}"
       err=10
    fi
 
@@ -282,7 +269,7 @@ fi
 #-------------------------------------------------------------------
 ####################################################################
 
-if [[ $DO_DATA_RPT -eq 1 ]]; then
+if [[ ${DO_DATA_RPT} -eq 1 ]]; then
 
 #---------------------------
 #  build report disclaimer 
@@ -301,8 +288,8 @@ EOF
 #  Check for missing diag files 
 #
    tmp_satype="./tmp_satype.txt"
-   echo ${SATYPE} > ${tmp_satype}
-   ${USHradmon}/radmon_diag_ck.sh  --rad ${radstat} --sat ${tmp_satype} --out ${diag}
+   echo "${SATYPE}" > ${tmp_satype}
+   "${USHgfs}/radmon_diag_ck.sh" --rad "${radstat}" --sat "${tmp_satype}" --out "${diag}"
 
    if [[ -s ${diag} ]]; then
       cat << EOF > ${diag_hdr}
@@ -328,11 +315,11 @@ EOF
 #
    if [[ -s ${diag} ]]; then
       lines=$(wc -l <${diag})
-      echo "lines in diag = $lines"   
+      echo "lines in diag = ${lines}"
    
-      if [[ $lines -gt 0 ]]; then
+      if [[ ${lines} -gt 0 ]]; then
          cat ${diag_report}
-         cp ${diag}  ${TANKverf_rad}/bad_diag.${PDATE}
+         cp ${diag} "${TANKverf_rad}/bad_diag.${PDY}${cyc}"
       else
          rm ${diag_report}
       fi
@@ -344,12 +331,12 @@ EOF
    #  Identify bad_pen and bad_chan files for this cycle and 
    #   previous cycle
 
-   bad_pen=bad_pen.${PDATE}
-   bad_chan=bad_chan.${PDATE}
-   low_count=low_count.${PDATE}
+   bad_pen=bad_pen.${PDY}${cyc}
+   bad_chan=bad_chan.${PDY}${cyc}
+   low_count=low_count.${PDY}${cyc}
 
-   qdate=$($NDATE -${CYCLE_INTERVAL} $PDATE)
-   pday=$(echo $qdate | cut -c1-8)
+   qdate=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+   pday="${qdate:0:8}"
    
    prev_bad_pen=bad_pen.${qdate}
    prev_bad_chan=bad_chan.${qdate}
@@ -359,35 +346,35 @@ EOF
    prev_bad_chan=${TANKverf_radM1}/${prev_bad_chan}
    prev_low_count=${TANKverf_radM1}/${prev_low_count}
 
-   if [[ -s $bad_pen ]]; then
-      echo "pad_pen        = $bad_pen"
+   if [[ -s ${bad_pen} ]]; then
+      echo "pad_pen        = ${bad_pen}"
    fi
-   if [[ -s $prev_bad_pen ]]; then
-      echo "prev_pad_pen   = $prev_bad_pen"
+   if [[ -s ${prev_bad_pen} ]]; then
+      echo "prev_pad_pen   = ${prev_bad_pen}"
    fi
 
-   if [[ -s $bad_chan ]]; then
-      echo "bad_chan       = $bad_chan"
+   if [[ -s ${bad_chan} ]]; then
+      echo "bad_chan       = ${bad_chan}"
    fi
-   if [[ -s $prev_bad_chan ]]; then
-      echo "prev_bad_chan  = $prev_bad_chan"
+   if [[ -s ${prev_bad_chan} ]]; then
+      echo "prev_bad_chan  = ${prev_bad_chan}"
    fi
-   if [[ -s $low_count ]]; then
-      echo "low_count = $low_count"
+   if [[ -s ${low_count} ]]; then
+      echo "low_count = ${low_count}"
    fi 
-   if [[ -s $prev_low_count ]]; then
-      echo "prev_low_count = $prev_low_count"
+   if [[ -s ${prev_low_count} ]]; then
+      echo "prev_low_count = ${prev_low_count}"
    fi 
 
    do_pen=0
    do_chan=0
    do_cnt=0
 
-   if [[ -s $bad_pen && -s $prev_bad_pen ]]; then
+   if [[ -s ${bad_pen} && -s ${prev_bad_pen} ]]; then
       do_pen=1
    fi
 
-   if [[ -s $low_count && -s $prev_low_count ]]; then
+   if [[ -s ${low_count} && -s ${prev_low_count} ]]; then
       do_cnt=1
    fi
 
@@ -395,7 +382,7 @@ EOF
    # avoid doing the bad_chan report for REGIONAL_RR sources -- because
    # they run hourly they often have 0 count channels for off-hour runs.
    #
-   if [[ -s $bad_chan && -s $prev_bad_chan && REGIONAL_RR -eq 0 ]]; then
+   if [[ -s ${bad_chan} && -s ${prev_bad_chan} && REGIONAL_RR -eq 0 ]]; then
       do_chan=1
    fi
 
@@ -403,37 +390,37 @@ EOF
    #  Remove extra spaces in new bad_pen & low_count files
    #
    if [[ -s ${bad_pen} ]]; then
-     gawk '{$1=$1}1' $bad_pen > tmp.bad_pen
-     mv -f tmp.bad_pen $bad_pen
+     gawk '{$1=$1}1' "${bad_pen}" > tmp.bad_pen
+     mv -f tmp.bad_pen "${bad_pen}"
    fi
    if [[ -s ${low_count} ]]; then
-     gawk '{$1=$1}1' $low_count > tmp.low_count
-     mv -f tmp.low_count $low_count
+     gawk '{$1=$1}1' "${low_count}" > tmp.low_count
+     mv -f tmp.low_count "${low_count}"
    fi
 
-   echo " do_pen, do_chan, do_cnt = $do_pen, $do_chan, $do_cnt"
-   echo " diag_report = $diag_report "
-   if [[ $do_pen -eq 1 || $do_chan -eq 1 || $do_cnt -eq 1 || -s ${diag_report} ]]; then
+   echo " do_pen, do_chan, do_cnt = ${do_pen}, ${do_chan}, ${do_cnt}"
+   echo " diag_report = ${diag_report} "
+   if [[ ${do_pen} -eq 1 || ${do_chan} -eq 1 || ${do_cnt} -eq 1 || -s ${diag_report} ]]; then
 
-      if [[ $do_pen -eq 1 ]]; then   
+      if [[ ${do_pen} -eq 1 ]]; then
 
          echo "calling radmon_err_rpt for pen"
-         ${radmon_err_rpt} ${prev_bad_pen} ${bad_pen} pen ${qdate} \
-		${PDATE} ${diag_report} ${pen_err}
+         ${radmon_err_rpt} "${prev_bad_pen}" "${bad_pen}" pen "${qdate}" \
+		"${PDY}${cyc}" ${diag_report} ${pen_err}
       fi
 
-      if [[ $do_chan -eq 1 ]]; then   
+      if [[ ${do_chan} -eq 1 ]]; then
 
          echo "calling radmon_err_rpt for chan"
-         ${radmon_err_rpt} ${prev_bad_chan} ${bad_chan} chan ${qdate} \
-		${PDATE} ${diag_report} ${chan_err}
+         ${radmon_err_rpt} "${prev_bad_chan}" "${bad_chan}" chan "${qdate}" \
+		"${PDY}${cyc}" ${diag_report} ${chan_err}
       fi
 
-      if [[ $do_cnt -eq 1 ]]; then   
+      if [[ ${do_cnt} -eq 1 ]]; then
 
          echo "calling radmon_err_rpt for cnt"
-         ${radmon_err_rpt} ${prev_low_count} ${low_count} cnt ${qdate} \
-		${PDATE} ${diag_report} ${count_err}
+         ${radmon_err_rpt} "${prev_low_count}" "${low_count}" cnt "${qdate}" \
+		"${PDY}${cyc}" ${diag_report} ${count_err}
       fi
 
       #-------------------------------------------------------------------
@@ -445,18 +432,18 @@ EOF
          echo DOING ERROR REPORTING
 
 
-         cat << EOF > $report
+         cat << EOF > ${report}
 Radiance Monitor warning report
  
   Net:   ${RADMON_SUFFIX}
   Run:   ${RUN}
-  Cycle: $PDATE
+  Cycle: ${PDY}${cyc}
 
 EOF
 
          if [[ -s ${diag_report} ]]; then
             echo OUTPUTING DIAG_REPORT
-            cat ${diag_report} >> $report
+            cat ${diag_report} >> ${report}
          fi
 
          if [[ -s ${chan_err} ]]; then
@@ -472,8 +459,8 @@ EOF
 
 EOF
 
-            cat ${chan_hdr} >> $report
-            cat ${chan_err} >> $report
+            cat ${chan_hdr} >> ${report}
+            cat ${chan_err} >> ${report}
  
          fi
 
@@ -490,8 +477,8 @@ Satellite/Instrument              Obs Count          Avg Count
 
 EOF
               
-            cat ${count_hdr} >> $report
-            cat ${count_err} >> $report
+            cat ${count_hdr} >> ${report}
+            cat ${count_err} >> ${report}
          fi
 
 
@@ -507,15 +494,15 @@ EOF
   ============ ======= ======      Cycle                 Penalty          Bound
                                    -----                 -------          -----
 EOF
-            cat ${pen_hdr} >> $report
-            cat ${pen_err} >> $report
+            cat ${pen_hdr} >> ${report}
+            cat ${pen_err} >> ${report}
             rm -f ${pen_hdr} 
             rm -f ${pen_err}
          fi 
 
-         echo  >> $report
-         cat ${disclaimer} >> $report
-         echo  >> $report
+         echo  >> ${report}
+         cat ${disclaimer} >> ${report}
+         echo  >> ${report}
       fi
 
       #-------------------------------------------------------------------
@@ -523,10 +510,10 @@ EOF
       #
       if [[ -s ${report} ]]; then
          lines=$(wc -l <${report})
-         if [[ $lines -gt 2 ]]; then
+         if [[ ${lines} -gt 2 ]]; then
             cat ${report}
 
-            $NCP ${report} ${TANKverf_rad}/warning.${PDATE}
+            ${NCP} ${report} "${TANKverf_rad}/warning.${PDY}${cyc}"
          fi
       fi
 
@@ -537,22 +524,22 @@ EOF
    #  copy new bad_pen, bad_chan, and low_count files to $TANKverf_rad
    #   
    if [[ -s ${bad_chan} ]]; then
-      mv ${bad_chan} ${TANKverf_rad}/.
+      mv "${bad_chan}" "${TANKverf_rad}/."
    fi
 
    if [[ -s ${bad_pen} ]]; then
-      mv ${bad_pen} ${TANKverf_rad}/.
+      mv "${bad_pen}" "${TANKverf_rad}/."
    fi
 
    if [[ -s ${low_count} ]]; then
-      mv ${low_count} ${TANKverf_rad}/.
+      mv "${low_count}" "${TANKverf_rad}/."
    fi
 
 
 fi
 
    for type in ${SATYPE}; do
-      rm -f stdout.${type}
+      rm -f "stdout.${type}"
    done
 
 ################################################################################

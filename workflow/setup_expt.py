@@ -432,7 +432,8 @@ def input_args(*argv):
         return parser
 
     def _gefs_args(parser):
-        parser.add_argument('--start', help=SUPPRESS, type=str, required=False, default='cold')
+        parser.add_argument('--start', help='restart mode: warm or cold', type=str,
+                            choices=['warm', 'cold'], required=False, default='cold')
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
                             default=os.path.join(_top, 'parm/config/gefs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,

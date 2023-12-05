@@ -159,6 +159,7 @@ HGT:PV=2e-06 (Km^2/kg/s) surface
 HGT:surface
 HGT:tropopause
 HINDEX:surface
+HLCY:1000-0 m above ground
 HLCY:3000-0 m above ground
 HPBL:surface
 ICAHT:max wind

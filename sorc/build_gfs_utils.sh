@@ -5,11 +5,13 @@ function usage() {
   cat << EOF
 Builds the GFS utility programs.
 
-Usage: ${BASH_SOURCE[0]} [-d][-h][-v]
+Usage: ${BASH_SOURCE[0]} [-d][-h][-j n][-v]
   -d:
     Build with debug options
   -h:
     Print this help message and exit
+  -j:
+    Build with n build jobs
   -v:
     Turn on verbose output
 EOF
@@ -19,10 +21,11 @@ EOF
 cwd=$(pwd)
 
 OPTIND=1
-while getopts ":dvh" option; do
+while getopts ":j:dvh" option; do
   case "${option}" in
     d) export BUILD_TYPE="DEBUG";;
     v) export BUILD_VERBOSE="YES";;
+    j) export BUILD_JOBS="${OPTARG}";;
     h)
       usage
       ;;
@@ -40,6 +43,7 @@ shift $((OPTIND-1))
 
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
+BUILD_JOBS=${BUILD_JOBS:-8} \
 "${cwd}/gfs_utils.fd/ush/build.sh"
 
 exit

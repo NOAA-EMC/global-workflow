@@ -14,12 +14,14 @@ if [[ $# -ne 1 ]]; then
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag fcst post vrfy fit2obs metp arch cleanup echgres"
+    echo "anal sfcanl analcalc analdiag fcst post echgres"
+    echo "tracker genesis genesis_fsu"
+    echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
-    echo "postsnd awips gempak"
+    echo "postsnd awips gempak npoess"
     echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
@@ -370,6 +372,9 @@ elif [[ "${step}" = "ocnanalbmat" ]]; then
       C384)
         npes=480
         ;;
+      C96)
+        npes=16
+        ;;
       C48)
         npes=16
         ;;
@@ -390,10 +395,14 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
    case ${CASE} in
       C384)
         npes=480
-        export memory_ocnanalchkpt="2.8TB"
+        memory_ocnanalrun="128GB"
+        ;;
+      C96)
+        npes=16
         ;;
       C48)
         npes=16
+        memory_ocnanalrun="64GB"
         ;;
       *)
           echo "FATAL: Resolution not supported'"
@@ -402,10 +411,11 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
 
     export wtime_ocnanalrun="00:15:00"
     export npe_ocnanalrun=${npes}
-    export nth_ocnanalrun=1
+    export nth_ocnanalrun=2
     export is_exclusive=True
     npe_node_ocnanalrun=$(echo "${npe_node_max} / ${nth_ocnanalrun}" | bc)
     export npe_node_ocnanalrun
+    export memory_ocnanalrun
 
 elif [[ "${step}" = "ocnanalchkpt" ]]; then
 
@@ -417,6 +427,9 @@ elif [[ "${step}" = "ocnanalchkpt" ]]; then
    case ${CASE} in
       C384)
         export memory_ocnanalchkpt="128GB"
+        ;;
+      C96)
+        export memory_ocnanalchkpt="32GB"
         ;;
       C48)
         export memory_ocnanalchkpt="32GB"
@@ -638,7 +651,11 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         declare -x "wtime_${step}"="00:30:00"
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
-      "C384" | "C768" | "C1152")
+      "C384")
+        declare -x "wtime_${step}"="00:20:00"
+        declare -x "wtime_${step}_gfs"="06:00:00"
+        ;;
+      "C768" | "C1152")
         declare -x "wtime_${step}"="01:00:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
@@ -705,19 +722,57 @@ elif [[ ${step} = "post" ]]; then
     if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
     export is_exclusive=True
 
-elif [[ ${step} = "vrfy" ]]; then
+elif [[ ${step} = "verfozn" ]]; then
 
-    export wtime_vrfy="03:00:00"
-    export wtime_vrfy_gfs="06:00:00"
-    export npe_vrfy=3
-    export nth_vrfy=1
-    export npe_node_vrfy=1
-    export npe_vrfy_gfs=1
-    export npe_node_vrfy_gfs=1
-    if [[ ${machine} == "HERA" ]]; then
-      export memory_vrfy="16384M"
-    fi
-    export is_exclusive=True
+    export wtime_verfozn="00:05:00"
+    export npe_verfozn=1
+    export nth_verfozn=1
+    export npe_node_verfozn=1
+    export memory_verfozn="1G"
+
+elif [[ ${step} = "verfrad" ]]; then
+
+    export wtime_verfrad="00:20:00"
+    export npe_verfrad=1
+    export nth_verfrad=1
+    export npe_node_verfrad=1
+    export memory_verfrad="5G"
+
+elif [[ ${step} = "vminmon" ]]; then
+
+    export wtime_vminmon="00:05:00"
+    export npe_vminmon=1
+    export nth_vminmon=1
+    export npe_node_vminmon=1
+    export wtime_vminmon_gfs="00:05:00"
+    export npe_vminmon_gfs=1
+    export nth_vminmon_gfs=1
+    export npe_node_vminmon_gfs=1
+    export memory_vminmon="1G"
+
+elif [[ ${step} = "tracker" ]]; then
+
+    export wtime_tracker="00:10:00"
+    export npe_tracker=1
+    export nth_tracker=1
+    export npe_node_tracker=1
+    export memory_tracker="4G"
+
+elif [[ ${step} = "genesis" ]]; then
+
+    export wtime_genesis="00:25:00"
+    export npe_genesis=1
+    export nth_genesis=1
+    export npe_node_genesis=1
+    export memory_genesis="4G"
+
+elif [[ ${step} = "genesis_fsu" ]]; then
+
+    export wtime_genesis_fsu="00:10:00"
+    export npe_genesis_fsu=1
+    export nth_genesis_fsu=1
+    export npe_node_genesis_fsu=1
+    export memory_genesis_fsu="4G"
 
 elif [[ "${step}" = "fit2obs" ]]; then
 
@@ -957,6 +1012,14 @@ elif [[ ${step} = "awips" ]]; then
     export npe_node_awips=1
     export nth_awips=1
     export memory_awips="3GB"
+
+elif [[ ${step} = "npoess" ]]; then
+
+    export wtime_npoess="03:30:00"
+    export npe_npoess=1
+    export npe_node_npoess=1
+    export nth_npoess=1
+    export memory_npoess="3GB"
 
 elif [[ ${step} = "gempak" ]]; then
 
