@@ -191,6 +191,10 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_vminmon:
             gdas_tasks += ['vminmon']
 
+        if self.do_gempak:
+            gdas_tasks += ['gempak']
+            gdas_tasks += ['gempakmetancdc']
+
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
         # Collect "gfs" cycle tasks
@@ -232,6 +236,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_gempak:
             gfs_tasks += ['gempak']
+            gfs_tasks += ['gempakmeta']
+            gfs_tasks += ['gempakncdcupapgif']
+            gfs_tasks += ['gempakpgrb2spec']
 
         if self.do_awips:
             gfs_tasks += ['awips_20km_1p0deg']
