@@ -961,6 +961,8 @@ class GFSTasks(Tasks):
         resources = self.get_resource('gempak')
         task = create_wf_task('gempakpgrb2spec', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
+        return task
+
     def npoess(self):
 
         deps = []
