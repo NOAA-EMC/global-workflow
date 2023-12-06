@@ -40,9 +40,9 @@ class Host:
             machine = 'HERA'
         elif os.path.exists('/work/noaa'):
             if os.path.exists('/apps/other'):
-               machine = 'HERCULES'
+                machine = 'HERCULES'
             else:
-               machine = 'ORION'
+                machine = 'ORION'
         elif os.path.exists('/lfs4/HFIP'):
             machine = 'JET'
         elif os.path.exists('/lfs/f1'):
