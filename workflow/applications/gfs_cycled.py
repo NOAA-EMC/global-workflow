@@ -82,6 +82,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_gempak:
             configs += ['gempak']
+            configs += ['npoess']
 
         if self.do_bufrsnd:
             configs += ['postsnd']
