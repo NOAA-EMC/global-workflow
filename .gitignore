@@ -97,8 +97,8 @@ parm/wafs
 #--------------------------------------------
 sorc/*log
 sorc/logs
-sorc/*.cd
-sorc/*.fd
+# sorc/*.cd
+# sorc/*.fd
 
 # Ignore scripts from externals
 #------------------------------
@@ -150,7 +150,7 @@ versions/build.ver
 versions/run.ver
 
 # wxflow checkout and symlinks
-sorc/wxflow
+# sorc/wxflow
 ush/python/wxflow
 workflow/wxflow
 ci/scripts/wxflow
