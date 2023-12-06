@@ -970,7 +970,7 @@ class GFSTasks(Tasks):
 
     def gempakpgrb2spec(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}npoess_pgrb2_0p5deg'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}npoess_pgrb2_0p5deg'}
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
