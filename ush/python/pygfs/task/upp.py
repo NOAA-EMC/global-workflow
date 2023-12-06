@@ -22,6 +22,8 @@ class UPP(Task):
     """Unified Post Processor Task
     """
 
+    VALID_UPP_RUN = ['analysis', 'forecast', 'goes', 'wafs']
+
     @logit(logger, name="UPP")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the UPP task
@@ -31,6 +33,7 @@ class UPP(Task):
         analysis: process analysis output
         forecast: process UFS-weather-model forecast output
         goes: process UFS-weather-model forecast output for simulated satellite imagery
+        wafs: process UFS-weather-model forecast output for WAFS products
 
         Parameters
         ----------
@@ -42,6 +45,11 @@ class UPP(Task):
         None
         """
         super().__init__(config)
+
+        if self.config.UPP_RUN not in self.VALID_UPP_RUN:
+            raise NotImplementedError(f'{self.config.UPP_RUN} is not a valid UPP run type.\n' +
+                                      'Valid UPP_RUN values are:\n' +
+                                      f'{", ".join(self.VALID_UPP_RUN)}')
 
         valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
 

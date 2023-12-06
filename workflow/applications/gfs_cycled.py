@@ -47,7 +47,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean:
             configs += ['ocnpost']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'arch', 'cleanup']
+        configs += ['sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -101,9 +101,6 @@ class GFSCycledAppConfig(AppConfig):
             if self.do_awips:
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
-        if self.do_wafs:
-            configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
-
         if self.do_aero:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
@@ -125,10 +122,6 @@ class GFSCycledAppConfig(AppConfig):
         """
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
-        gdas_gfs_common_tasks_after_fcst = ['postanl', 'post']
-        # if self.do_ocean:  # TODO: uncomment when ocnpost is fixed in cycled mode
-        #    gdas_gfs_common_tasks_after_fcst += ['ocnpost']
-
         gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
 
         if self.do_jediatmvar:
@@ -164,15 +157,18 @@ class GFSCycledAppConfig(AppConfig):
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
+
         if not self.do_jediatmvar:
             gdas_tasks += ['analdiag']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks
 
-        gdas_tasks += ['fcst']
+        gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
-        gdas_tasks += gdas_gfs_common_tasks_after_fcst
+        if self.do_upp:
+            gdas_tasks += ['atmupp']
+        gdas_tasks += ['atmprod']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -194,14 +190,16 @@ class GFSCycledAppConfig(AppConfig):
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
         # Collect "gfs" cycle tasks
-        gfs_tasks = gdas_gfs_common_tasks_before_fcst
+        gfs_tasks = gdas_gfs_common_tasks_before_fcst.copy()
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             gfs_tasks += wave_prep_tasks
 
-        gfs_tasks += ['fcst']
+        gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
-        gfs_tasks += gdas_gfs_common_tasks_after_fcst
+        if self.do_upp:
+            gfs_tasks += ['atmupp']
+        gfs_tasks += ['atmprod']
 
         if self.do_vminmon:
             gfs_tasks += ['vminmon']
@@ -234,14 +232,10 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += ['gempak']
 
         if self.do_awips:
-            gfs_tasks += ['awips']
-            gfs_tasks += ['fbwinds']
+            gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwinds']
 
         if self.do_npoess:
             gfs_tasks += ['npoess']
-
-        if self.do_wafs:
-            gfs_tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
 
         gfs_tasks += gdas_gfs_common_cleanup_tasks
 
