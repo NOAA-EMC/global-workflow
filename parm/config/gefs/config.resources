@@ -41,7 +41,7 @@ elif [[ ${machine} = "S4" ]]; then
    elif [[ ${PARTITION_BATCH} = "ivy" ]]; then
       export npe_node_max=20
    fi
-elif [[ ${machine} = "ORION" ]]; then
+elif [[ ${machine} = "ORION" | ${machine} = "HERCULES" ]]; then
    export npe_node_max=40
 fi
 

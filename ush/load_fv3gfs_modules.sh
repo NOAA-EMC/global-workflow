@@ -28,8 +28,14 @@ elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
   module load module_base.hera
 elif [[ -d /work ]] ; then
-  # We are on MSU Orion
-  module load module_base.orion
+  # We are on MSU Orion or Hercules
+  if [[ -d /apps/other ]] ; then
+     # Hercules
+     module load module_base.hercules
+  else
+     # Orion
+     module load module_base.orion
+  fi
 elif [[ -d /glade ]] ; then
   # We are on NCAR Yellowstone
   module load module_base.cheyenne

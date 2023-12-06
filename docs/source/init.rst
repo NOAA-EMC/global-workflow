@@ -49,7 +49,7 @@ Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs ar
 ::
 
    Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
-   Orion: /work/noaa/global/glopara/data/ICSDIR/C96C48
+   Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C96C48
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48
 
 Start date = 2021122018
@@ -108,7 +108,7 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 
 ::
 
    Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500
-   Orion: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
+   Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
    Jet: /lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/C48C48mx500
 
@@ -224,7 +224,7 @@ Forecast-only P8 prototype initial conditions are made available to users on sup
 
     WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
     HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
-    ORION: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
+    ORION/Hercules: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
     JET: /mnt/lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/prototype_ICs
     S4: /data/prod/glopara/coupled_ICs
 
@@ -253,7 +253,7 @@ Not yet supported. See :ref:`Manual Generation<manual-generation>` section below
 ---------------------
 Forecast-only coupled
 ---------------------
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, Jet, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion/Hercules, Jet, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
 
 .. _forecastonly-atmonly:
 
@@ -354,7 +354,7 @@ Then switch to a different tag or use the default branch (develop).
 where ``$MACHINE`` is ``wcoss2``, ``hera``, or ``jet``.
 
 .. note::
-   UFS-UTILS builds on Orion but due to the lack of HPSS access on Orion the ``gdas_init`` utility is not supported there.
+   UFS-UTILS builds on Orion/Hercules but due to the lack of HPSS access on Orion/Hercules the ``gdas_init`` utility is not supported there.
 
 3. Configure your conversion:
 
@@ -380,7 +380,7 @@ Most users will want to adjust the following ``config`` settings for the current
 where ``$MACHINE`` is currently ``wcoss2``,  ``hera`` or ``jet``. Additional options will be available as support for other machines expands.
 
 .. note::
-   UFS-UTILS builds on Orion but due to lack of HPSS access there is no ``gdas_init`` driver for Orion nor support to pull initial conditions from HPSS for the ``gdas_init`` utility.
+   UFS-UTILS builds on Orion/Hercules but due to lack of HPSS access there is no ``gdas_init`` driver for Orion/Hercules nor support to pull initial conditions from HPSS for the ``gdas_init`` utility.
 
 Several small jobs will be submitted:
 

@@ -14,7 +14,7 @@ class Host:
     Gather Host specific information.
     """
 
-    SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET',
+    SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET', 'HERCULES',
                        'WCOSS2', 'S4', 'CONTAINER', 'AWSPW']
 
     def __init__(self, host=None):
@@ -39,7 +39,11 @@ class Host:
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
         elif os.path.exists('/work/noaa'):
-            machine = 'ORION'
+            if os.path.exists('/apps/other'):
+               machine = 'HERCULES'
+               print("Hercules")
+            else:
+               machine = 'ORION'
         elif os.path.exists('/lfs4/HFIP'):
             machine = 'JET'
         elif os.path.exists('/lfs/f1'):

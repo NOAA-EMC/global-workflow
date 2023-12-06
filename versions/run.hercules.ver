@@ -1,0 +1,5 @@
+export stack_intel_ver=2021.9.0
+export stack_impi_ver=2021.9.0
+
+export ncl_ver=6.6.2
+export wgrib2_ver=3.1.1
