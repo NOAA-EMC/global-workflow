@@ -41,7 +41,6 @@ class Host:
         elif os.path.exists('/work/noaa'):
             if os.path.exists('/apps/other'):
                machine = 'HERCULES'
-               print("Hercules")
             else:
                machine = 'ORION'
         elif os.path.exists('/lfs4/HFIP'):
