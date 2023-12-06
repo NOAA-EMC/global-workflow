@@ -10,8 +10,10 @@ load(pathJoin("stack-intel", os.getenv("stack_intel_ver")))
 load(pathJoin("stack-intel-oneapi-mpi", os.getenv("stack_impi_ver")))
 load(pathJoin("python", os.getenv("python_ver")))
 
-load(pathJoin("gempak", os.getenv("gempak_ver")))
-load(pathJoin("ncl", os.getenv("ncl_ver")))
+-- TODO load NCL once the SAs remove the 'depends_on' statements within it
+--      NCL is a static installation and does not depend on any libraries
+--      but as is will load, among others, the system netcdf-c/4.9.0 module
+--load(pathJoin("ncl", os.getenv("ncl_ver")))
 load(pathJoin("jasper", os.getenv("jasper_ver")))
 load(pathJoin("libpng", os.getenv("libpng_ver")))
 load(pathJoin("cdo", os.getenv("cdo_ver")))
@@ -32,13 +34,9 @@ load(pathJoin("py-netcdf4", os.getenv("py_netcdf4_ver")))
 load(pathJoin("py-pyyaml", os.getenv("py_pyyaml_ver")))
 load(pathJoin("py-jinja2", os.getenv("py_jinja2_ver")))
 
-load(pathJoin("met", os.getenv("met_ver")))
-load(pathJoin("metplus", os.getenv("metplus_ver")))
-
 setenv("WGRIB2","wgrib2")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
---prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 
