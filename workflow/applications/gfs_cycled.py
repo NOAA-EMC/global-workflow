@@ -185,8 +185,7 @@ class GFSCycledAppConfig(AppConfig):
             gdas_tasks += ['vminmon']
 
         if self.do_gempak:
-            gdas_tasks += ['gempak']
-            gdas_tasks += ['gempakmetancdc']
+            gdas_tasks += ['gempak', 'gempakmetancdc']
 
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
