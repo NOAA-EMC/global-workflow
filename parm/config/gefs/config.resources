@@ -9,7 +9,7 @@ if [[ $# -ne 1 ]]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init"
-    echo "sfcanl analcalc analdiag fcst post fit2obs metp arch echgres"
+    echo "sfcanl analcalc analdiag fcst fit2obs metp arch echgres"
     echo "ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -329,23 +329,6 @@ elif [[ ${step} = "ocnpost" ]]; then
        # so a second node is required to meet the requiremtn
        npe_ocnpost=2
     fi
-
-elif [[ ${step} = "post" ]]; then
-
-    export wtime_post="00:12:00"
-    export wtime_post_gfs="01:00:00"
-    export npe_post=126
-    res=$(echo "${CASE}" | cut -c2-)
-    if (( npe_post > res )); then
-      export npe_post=${res}
-    fi
-    export nth_post=1
-    export npe_node_post=${npe_post}
-    export npe_node_post_gfs=${npe_post}
-    export npe_node_dwn=${npe_node_max}
-    if [[ "${npe_node_post}" -gt "${npe_node_max}" ]]; then export npe_node_post=${npe_node_max} ; fi
-    if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
-    export is_exclusive=True
 
 elif [[ "${step}" = "fit2obs" ]]; then
 

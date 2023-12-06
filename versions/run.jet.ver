@@ -5,3 +5,5 @@ export hpss_ver=
 export ncl_ver=6.6.2
 export R_ver=4.0.2
 export gempak_ver=7.4.2
+
+source "${HOMEgfs:-}/versions/run.spack.ver"

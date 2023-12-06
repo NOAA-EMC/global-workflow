@@ -4,7 +4,6 @@
 # Generate 0.25 / 0.5 / 1 degree interpolated grib2 files for each input grib2 file
 # trim's RH and tweaks sea-ice cover
 
-
 source "${HOMEgfs}/ush/preamble.sh"
 
 input_file=${1:-"pgb2file_in"}  # Input pressure grib2 file
