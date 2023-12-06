@@ -937,7 +937,7 @@ class GFSTasks(Tasks):
 
     def gempakmeta(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -948,7 +948,7 @@ class GFSTasks(Tasks):
 
     def gempakmetancdc(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -959,7 +959,7 @@ class GFSTasks(Tasks):
 
     def gempakncdcupapgif(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
