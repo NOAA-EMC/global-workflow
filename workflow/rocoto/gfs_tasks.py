@@ -935,7 +935,50 @@ class GFSTasks(Tasks):
 
         return task
 
-    def npoess(self):
+    def gempakmeta(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakmeta', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakmetancdc(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakmetancdc', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakncdcupapgif(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakncdcupapgif', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakpgrb2spec(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}npoess_pgrb2_0p5deg'}
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakpgrb2spec', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def npoess_pgrb2_0p5deg(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlprod'}
@@ -943,7 +986,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('npoess')
-        task = create_wf_task('npoess', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('npoess_pgrb2_0p5deg', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
