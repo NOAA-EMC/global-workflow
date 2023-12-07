@@ -7,14 +7,12 @@ pipeline {
         GITHUB_TOKEN = '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'
     }
 
-    node ('DemoJNPL') {
-
     stages {    
-
+       node ('DemoJNPL') {
        stage('Checkout') {
-       steps {
+         steps {
               git branch: "refs/pull/${PR_NUMBER}/head", url: "${REPO_URL}"
-             }
+         }
         }
 
         stage('Build') {
