@@ -46,6 +46,7 @@ class AerosolAnalysis(Analysis):
                 'npz_anl': self.config['LEVS'] - 1,
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
+                'aero_bkg_times': [int(t) for t in self.config['aero_bkg_times'].split(',')],
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
@@ -167,10 +168,10 @@ class AerosolAnalysis(Analysis):
 
         # ---- copy RESTART fv_tracer files for future reference
         if self.task_config.DOIAU:
-            restarttime = self.task_config.AERO_WINDOW_BEGIN
+            bkgtime = self.task_config.AERO_WINDOW_BEGIN
         else:
-            restarttime = self.task_config.current_cycle
-        template = '{}.fv_tracer.res.tile{}.nc'.format(to_fv3time(restarttime), '{tilenum}')
+            bkgtime = self.task_config.current_cycle
+        template = '{}.fv_tracer.res.tile{}.nc'.format(to_fv3time(bkgtime), '{tilenum}')
         bkglist = []
         for itile in range(1, self.task_config.ntiles + 1):
             tracer = template.format(tilenum=itile)
@@ -202,11 +203,11 @@ class AerosolAnalysis(Analysis):
         """This method adds increments to RESTART files to get an analysis
         """
         if self.task_config.DOIAU:
-            restarttime = self.task_config.AERO_WINDOW_BEGIN
+            bkgtime = self.task_config.AERO_WINDOW_BEGIN
         else:
-            restarttime = self.task_config.current_cycle
+            bkgtime = self.task_config.current_cycle
         # only need the fv_tracer files
-        restart_template = f'{to_fv3time(restarttime)}.fv_tracer.res.tile{{tilenum}}.nc'
+        restart_template = f'{to_fv3time(bkgtime)}.fv_tracer.res.tile{{tilenum}}.nc'
         increment_template = f'{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + increment_template)
         bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, restart_template)
@@ -243,14 +244,9 @@ class AerosolAnalysis(Analysis):
 
         # if using IAU, we can use FGAT
         bkgtimes = []
-        if task_config.DOIAU:
-            nowtime = task_config.AERO_WINDOW_BEGIN
-            while nowtime <= add_to_datetime(task_config.current_cycle, to_timedelta(f"{task_config['assim_freq']}H") / 2):
-                bkgtimes.append(nowtime)
-                nowtime = add_to_datetime(nowtime, to_timedelta(f"{task_config['restart_interval']}H"))
-        else:
-            # we only use the center of the window background
-            bkgtimes.append(task_config.current_cycle)
+        begintime = task_config.AERO_WINDOW_BEGIN
+        for fcsthr in task_config.aero_bkg_times:
+            bkgtimes.append(add_to_datetime(begintime, to_timedelta(f"{fcsthr}H")))
 
         # now loop over background times
         for bkgtime in bkgtimes:

@@ -20,10 +20,10 @@ export io_layout_y=@IO_LAYOUT_Y@
 export JEDIEXE=${HOMEgfs}/exec/fv3jedi_var.x
 
 if [[ "${DOIAU}" == "YES" ]]; then
-  export restart_interval="3"
+  export aero_bkg_times="3,6,9"
   export AEROVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/variational/3dvar_fgat_gfs_aero.yaml
 else
-  export restart_interval="6"
+  export aero_bkg_times="6"
   export AEROVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/variational/3dvar_gfs_aero.yaml
 fi
 
