@@ -27,7 +27,6 @@ case $(hostname -f) in
   Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
 
   hercules-login-[1-4].hpc.msstate.edu) MACHINE_ID=hercules ;; ### hercules1-4
-  Hercules-login-[1-4].HPC.MsState.Edu) MACHINE_ID=hercules ;; ### hercules1-4
 
   cheyenne[1-6].cheyenne.ucar.edu)     MACHINE_ID=cheyenne ;; ### cheyenne1-6
   cheyenne[1-6].ib0.cheyenne.ucar.edu) MACHINE_ID=cheyenne ;; ### cheyenne1-6
