@@ -7,6 +7,7 @@ pipeline {
         GITHUB_TOKEN = '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'
     }
 
+    node ('DemoJNPL') {
 
     stage('Checkout') {
        steps {
@@ -19,4 +20,6 @@ pipeline {
                 sh 'touch this_examle'
             }
         }
+    }
+
     }
