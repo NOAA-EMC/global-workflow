@@ -11,7 +11,7 @@ case ${machine} in
   "HERA")
     AERO_INPUTS_DIR="/scratch1/NCEPDEV/global/glopara/data/gocart_emissions"
     ;;
-  "ORION"|"HERCULES")
+  "ORION" | "HERCULES")
     AERO_INPUTS_DIR="/work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions"
     ;;
   "S4")
