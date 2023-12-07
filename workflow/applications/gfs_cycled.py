@@ -81,16 +81,13 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['metp']
 
         if self.do_gempak:
-            configs += ['gempak']
+            configs += ['gempak', 'npoess']
 
         if self.do_bufrsnd:
             configs += ['postsnd']
 
         if self.do_awips:
             configs += ['awips']
-
-        if self.do_npoess:
-            configs += ['npoess']
 
         if self.do_wave:
             configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
@@ -187,6 +184,9 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_vminmon:
             gdas_tasks += ['vminmon']
 
+        if self.do_gempak:
+            gdas_tasks += ['gempak', 'gempakmetancdc']
+
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
         # Collect "gfs" cycle tasks
@@ -230,12 +230,13 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_gempak:
             gfs_tasks += ['gempak']
+            gfs_tasks += ['gempakmeta']
+            gfs_tasks += ['gempakncdcupapgif']
+            gfs_tasks += ['npoess_pgrb2_0p5deg']
+            gfs_tasks += ['gempakpgrb2spec']
 
         if self.do_awips:
             gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwinds']
-
-        if self.do_npoess:
-            gfs_tasks += ['npoess']
 
         gfs_tasks += gdas_gfs_common_cleanup_tasks
 

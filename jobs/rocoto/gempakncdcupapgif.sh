@@ -7,11 +7,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 if (( status != 0 )); then exit "${status}"; fi
 
-export job="npoess_pgrb2_0p5deg"
+export job="gempakncdcupapgif"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS"
+"${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF"
 
 status=$?
 exit "${status}"
