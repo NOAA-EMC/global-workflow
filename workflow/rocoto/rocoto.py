@@ -115,8 +115,6 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
             strings.append(f'\t\t{d}\n')
         strings.append('\t</dependency>\n')
         strings.append('\n')
-    elif taskname != "gfswaveinit":
-        print("WARNING: No dependencies for task " + taskname)
 
     strings.append('</task>\n')
 
