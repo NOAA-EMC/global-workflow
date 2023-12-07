@@ -1,6 +1,5 @@
 pipeline {
-    agent('DemoJNLP') {
-  
+   agent( label 'demoJNLP')
 
     environment {
         REPO_URL = 'https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git'
@@ -10,7 +9,9 @@ pipeline {
 
     node ('DemoJNPL') {
 
-    stage('Checkout') {
+    stages {    
+
+       stage('Checkout') {
        steps {
               git branch: "refs/pull/${PR_NUMBER}/head", url: "${REPO_URL}"
              }
@@ -23,5 +24,4 @@ pipeline {
         }
     }
 
-    }
 }
