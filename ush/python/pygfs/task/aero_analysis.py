@@ -46,7 +46,7 @@ class AerosolAnalysis(Analysis):
                 'npz_anl': self.config['LEVS'] - 1,
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
-                'aero_bkg_times': [int(t) for t in self.config['aero_bkg_times'].split(',')],
+                'aero_bkg_fhr': [int(t) for t in self.config['aero_bkg_times'].split(',')],
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
@@ -244,8 +244,8 @@ class AerosolAnalysis(Analysis):
 
         # if using IAU, we can use FGAT
         bkgtimes = []
-        begintime = task_config.AERO_WINDOW_BEGIN
-        for fcsthr in task_config.aero_bkg_times:
+        begintime = task_config.previous_cycle
+        for fcsthr in task_config.aero_bkg_fhr:
             bkgtimes.append(add_to_datetime(begintime, to_timedelta(f"{fcsthr}H")))
 
         # now loop over background times
