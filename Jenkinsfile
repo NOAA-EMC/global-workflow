@@ -1,5 +1,5 @@
 pipeline {
-   agent( label 'demoJNLP')
+   agent{ label 'demoJNLP'}
 
     environment {
         REPO_URL = 'https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git'
