@@ -133,7 +133,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     export err=$?
   else
     chmod 755 "${DATA}/poescript"
-    bash +x "${DATA}/poescript" 2>&1 mpmd.out
+    bash +x "${DATA}/poescript" > mpmd.out 2>&1
     export err=$?
   fi
   err_chk
