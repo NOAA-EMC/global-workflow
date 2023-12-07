@@ -8,7 +8,6 @@ pipeline {
     }
 
     stages {    
-       node ('DemoJNPL') {
        stage('Checkout') {
          steps {
               git branch: "refs/pull/${PR_NUMBER}/head", url: "${REPO_URL}"
@@ -21,5 +20,4 @@ pipeline {
             }
         }
     }
-   }
 }
