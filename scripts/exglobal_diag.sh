@@ -178,7 +178,7 @@ EOFdiag
       esac
       echo "$(date)" START loop "${string}" >&2 || true
       n=-1
-# shellcheck disable=2116,2012,2003,2002,2108
+      # shellcheck disable=2116,2012,2003
       while [[ $((n+=1)) -le "${ntype}" ]] ;do
          for type in $(echo "${diagtype[n]}"); do
             count=$(ls "${prefix}${type}_${loop}*" 2>/dev/null | wc -l) || true
