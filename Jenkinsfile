@@ -4,7 +4,7 @@ pipeline {
     stages {    
         stage('Checkout Repos') {
             steps {
-                sh './source/checkout.sh -c -g -u'
+                sh './sorc/checkout.sh -c -g -u'
             }
 
         }
