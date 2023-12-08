@@ -6,7 +6,7 @@ pipeline {
             steps {
                 sh './sorc/checkout.sh -c -g -u'
             }
-
+            githubPRAddLabels labelProperty: labels('CI-Orion-Built')
         }
     }
 }
