@@ -5,8 +5,8 @@ pipeline {
         stage('Checkout Repos') {
             steps {
                sh './sorc/checkout.sh -c -g -u'
-               pullRequest.addLabel('CI-Orion-Passed')
             }
+            pullRequest.addLabel('CI-Orion-Passed')
         }
     }
 }
