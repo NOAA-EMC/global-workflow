@@ -4,9 +4,9 @@ pipeline {
     stages {    
         stage('Checkout Repos') {
             steps {
-                sh './sorc/checkout.sh -c -g -u'
+               sh './sorc/checkout.sh -c -g -u'
+               pullRequest.addLabel('CI-Orion-Passed')
             }
-            githubPRAddLabels labelProperty: labels('CI-Orion-Built')
         }
     }
 }
