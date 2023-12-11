@@ -1,5 +1,5 @@
 pipeline {
-    agent{ label 'demoJNLP'}
+    agent{ label 'Sanbox'}
 
     stages {    
         stage('Checkout Repos') {
