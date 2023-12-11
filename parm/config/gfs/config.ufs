@@ -466,15 +466,15 @@ if [[ "${skip_ww3}" == "false" ]]; then
       nthreads_ww3=1
       ;;
     "uglo_20km")
-      ntasks_ww3=500
+      ntasks_ww3=2000
       nthreads_ww3=1
       ;;	    
     "uglo_15km")    
-      ntasks_ww3=900
+      ntasks_ww3=2000
       nthreads_ww3=1
       ;;
     "uglo_m1g16")  
-      ntasks_ww3=900
+      ntasks_ww3=2000
       nthreads_ww3=1
       ;;
     *)
