@@ -245,7 +245,12 @@ class LandAnalysis(Analysis):
             Instance of the LandAnalysis object
         """
 
-        super().initialize()
+        # Stage observations
+        obs_dict = self.get_obs_dict()
+        FileHandler(obs_dict).sync()
+
+        # link jedi executable to run directory
+        self.link_jediexe()
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
@@ -373,6 +378,39 @@ class LandAnalysis(Analysis):
             dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, filename)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
+
+    @logit(logger)
+    def get_obs_dict(self) -> None:
+        """Compile a dictionary of observation files to copy
+
+        This method uses the OBS_LIST configuration variable to generate a dictionary
+        from a list of YAML files that specify what observation files are to be
+        copied to the run directory from the observation input directory
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        obs_dict: Dict
+            a dictionary containing the list of observation files to copy for FileHandler
+        """
+        logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
+        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config)
+        logger.debug(f"obs_list_config: {obs_list_config}")
+        # get observers from master dictionary
+        observers = obs_list_config['observers']
+        copylist = []
+        for ob in observers:
+            obfile = ob['obs space']['obsdatain']['engine']['obsfile']
+            basename = os.path.basename(obfile)
+            if 'ims_snow' not in obfile:
+                copylist.append([os.path.join(self.task_config['COM_OBS'], basename), obfile])
+        obs_dict = {
+            'mkdir': [os.path.join(self.runtime_config['DATA'], 'obs')],
+            'copy': copylist
+        }
+        return obs_dict
 
     @staticmethod
     @logit(logger)
