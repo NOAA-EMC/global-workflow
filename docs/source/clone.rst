@@ -90,6 +90,8 @@ The ``checkout`` command will checkout BRANCH_NAME and switch your clone to that
    * my_branch
    develop
 
+Using ``--recurse-submodules`` is important to ensure you are updating the component versions to match the branch.
+
 ^^^^^^^^^^^^^^^^
 Build components
 ^^^^^^^^^^^^^^^^
