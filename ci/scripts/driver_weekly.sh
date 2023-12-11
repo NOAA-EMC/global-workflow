@@ -68,7 +68,7 @@ mkdir -p "${develop_dir}"
 cd "${develop_dir}" || exit 1
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
-git checkout -b "${branch}"
+git checkout -b "${branch}" --recurse-submodules
 
 ######################################################
 # move yaml files from ci/cases/weekly to ci/cases/pr
