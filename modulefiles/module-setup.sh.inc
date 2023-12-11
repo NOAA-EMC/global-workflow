@@ -35,9 +35,16 @@ elif [[ -d /scratch1 ]] ; then
     fi
     module purge
 elif [[ -d /work ]] ; then
-    # We are on MSU Orion
+    # We are on MSU Orion or Hercules
+    if [[ -d /apps/other ]] ; then
+        # Hercules
+        init_path="/apps/other/lmod/lmod/init/$__ms_shell"
+    else
+        # Orion
+        init_path="/apps/lmod/lmod/init/$__ms_shell"
+    fi
     if ( ! eval module help > /dev/null 2>&1 ) ; then
-        source /apps/lmod/lmod/init/$__ms_shell
+        source "${init_path}"
     fi
     module purge
 elif [[ -d /glade ]] ; then
