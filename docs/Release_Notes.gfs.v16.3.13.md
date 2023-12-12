@@ -1,14 +1,10 @@
-GFS V16.3.11 RELEASE NOTES
+GFS V16.3.13 RELEASE NOTES
 
 -------
 PRELUDE
 -------
 
-This upgrade to the GFS includes updates to both the GSI and WAFS packages:
-
-GSI:
-
-  Enable the monitoring of NOAA-21 and GOES-18 radiances in the GFS. A new version of CRTM with new coefficient files is required and included in this change.
+This upgrade to the GFS includes updates to WAFS
 
 WAFS:
 
@@ -28,9 +24,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub .com are u
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.11
-cd gfs.v16.3.11
-git clone -b EMC-v16.3.11 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.13
+cd gfs.v16.3.13
+git clone -b EMC-v16.3.13 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -41,7 +37,7 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.3.1   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.10 | Andrew.Collard@noaa.gov |
+| GSI       | gfsda.v16.3.12 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
 | WAFS      | gfs_wafs.v6.3.2 | Yali.Mao@noaa.gov |
@@ -62,51 +58,46 @@ Lastly, link the ecf scripts by moving back up to the ecf folder and executing:
 cd ../ecf
 ./setup_ecf_links.sh
 ```
-
-Additional release notes for `upp/8.3.0` installation on WCOSS2:
-https://docs.google.com/document/d/18bUYWmsN7FuweyA2CQTBW1rk3FNRMHKPlYHZlbS8ODs/edit?pli=1
-
 VERSION FILE CHANGES
 --------------------
 
-* `versions/build.ver` - change `crtm_ver=2.4.0.1`
-* `versions/run.ver` - change `version=v16.3.11`, `gfs_ver=v16.3.11` and `crtm_ver=2.4.0.1`
+* `versions/run.ver` - change `version=v16.3.13` and `gfs_ver=v16.3.13`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.12
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.12
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.12
 
 SCRIPT CHANGES
 --------------
 
-* Changes to sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh
 * Update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_blending_0p25.ecf to ICAO2023=yes
 * Update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2.ecf to ICAO2023=yes
 * Update ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2_0p25.ecf to ICAO2023=yes
 * Update ecf/scripts/gfs/atmos/post_processing/jgfs_atmos_wafs_gcip.ecf to ICAO2023=yes
 * In ecf/defs/gfs_v16_3.def, remove jgfs_atmos_wafs_blending task, delay trigger time of jgfs_atmos_wafs_blending_0p25 by 5 minutes
 * Update scripts/exgfs_atmos_wafs_grib2_0p25.sh to add forecast hour window to dbn_alert for awf and WAFS unblended hazard data
+* In scripts/exgfs_atmos_wafs_grib2.sh, add dbn_alert of non-headed non-hazard 1.25 deg data (gfs.tCCz.wafs_grb45fFF.grib2) with subtype GFS_WAFS_1P25_GB2
 
 FIX CHANGES
 -----------
 
-* Changes to `fix/fix_gsi/global_anavinfo.l127.txt`, `fix/fix_gsi/global_satinfo.txt` and add `fix/fix_gsi/Rcov_crisn21`
+* No changes from GFS v16.3.12
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.12
 
 CHANGES TO FILE SIZES
 ---------------------
@@ -117,41 +108,38 @@ https://docs.google.com/presentation/d/1VtPhyYXTe_PS9gXZGMrMPlQ32ELl-JJem-Vq8vO4
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* jgfs_atmos_wafs_grib2_0p25.ecf changes from mpiprocs=11:ompthreads=1:ncpus=11:mem=80GB to mpiprocs=39:ompthreads=1:ncpus=39:mem=200GB because there will be 39 forecast hours and each forecast hour uses one processor through MPMD.
+* jgfs_atmos_wafs_grib2_0p25.ecf changes from "mpiprocs=11:ompthreads=1:ncpus=11:mem=80GB" to "mpiprocs=39:ompthreads=1:ncpus=39:mem=200GB" because there will be 39 forecast hours and each forecast hour uses one processor through MPMD.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * GSI & WAFS
+  * WAFS
 * Does this change require a 30-day evaluation?
   * No
 
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.12
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.12
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.12
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.10
+* No changes from GFS v16.3.12
 
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
-Andrew.Collard@noaa.gov
-Wen.Meng@noaa.gov
-Jun.Wang@noaa.gov
 Yali.Mao@noaa.gov
 Hui-Ya.Chuang@noaa.gov
