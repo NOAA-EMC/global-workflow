@@ -185,7 +185,6 @@ versions/build.ver
 versions/run.ver
 
 # wxflow checkout and symlinks
-# sorc/wxflow
 ush/python/wxflow
 workflow/wxflow
 ci/scripts/wxflow
