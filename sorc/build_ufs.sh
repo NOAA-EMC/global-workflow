@@ -34,8 +34,6 @@ CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
-  # Hack to work around error in UFS because python3 is not defined (see ufs-community/ufs-weather-model #1587)
-  module load intelpython3/2022.1.2
   ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
