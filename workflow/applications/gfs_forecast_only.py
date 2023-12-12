@@ -61,10 +61,10 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
         if self.do_mos:
-            configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep']
-            configs += ['mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst']
-            configs += ['mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen']
-            configs += ['mos_wx_prdgen', 'mos_wx_ext_prdgen']
+            configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                        'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                        'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                        'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         return configs
 
@@ -136,10 +136,10 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['waveawipsbulls', 'waveawipsgridded']
 
         if self.do_mos:
-            tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep']
-            tasks += ['mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst']
-            tasks += ['mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen']
-            tasks += ['mos_wx_prdgen', 'mos_wx_ext_prdgen']
+            tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                      'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                      'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                      'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
 
