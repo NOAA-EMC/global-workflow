@@ -152,8 +152,9 @@ class Tasks:
             threads = task_config[f'nth_{task_name}_gfs']
 
         memory = task_config.get(f'memory_{task_name}', None)
-        if task_config.get('prepost', False):
-            memory += ':prepost=true'
+        if scheduler in ['pbspro']:
+            if task_config.get('prepost', False):
+                memory += ':prepost=true'
 
         native = None
         if scheduler in ['pbspro']:
