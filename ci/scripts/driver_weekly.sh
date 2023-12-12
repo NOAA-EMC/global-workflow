@@ -66,9 +66,9 @@ echo "Creating new branch ${branch} from develop on ${MACHINE_ID} in ${develop_d
 rm -Rf "${develop_dir}"
 mkdir -p "${develop_dir}"
 cd "${develop_dir}" || exit 1
-git clone "${REPO_URL}"
+git clone --recursive "${REPO_URL}"
 cd global-workflow || exit 1
-git checkout -b "${branch}" --recurse-submodules
+git checkout -b "${branch}"
 
 ######################################################
 # move yaml files from ci/cases/weekly to ci/cases/pr
