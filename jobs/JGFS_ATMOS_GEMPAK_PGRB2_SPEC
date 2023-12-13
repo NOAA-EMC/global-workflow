@@ -44,8 +44,7 @@ mkdir -m 775 -p "${COMOUT}"
 #################################################################
 export DATA_SPECIAL="${DATA}/SPECIAL"
 mkdir -p "${DATA_SPECIAL}"
-# shellcheck disable=SC2164
-cd "${DATA_SPECIAL}"
+cd "${DATA_SPECIAL}" || exit
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
 export RUN2=gfs_goessim
@@ -66,8 +65,7 @@ echo "RUNS the Program"
 
 export DATA_SPECIAL221="${DATA}/SPECIAL221"
 mkdir -p "${DATA_SPECIAL221}"
-# shellcheck disable=SC2164
-cd "${DATA_SPECIAL221}"
+cd "${DATA_SPECIAL221}" || exit
 
 export DBN_ALERT_TYPE=GFS_GOESSIM221_GEMPAK
 export RUN2=gfs_goessim221
@@ -86,8 +84,7 @@ export err=$?; err_chk
 ########################################################
 
 echo "end of program"
-# shellcheck disable=SC2164
-cd "${DATA}"
+cd "${DATA}" || exit
 echo "######################################"
 echo "  SPECIAL.OUT "
 echo "######################################"
