@@ -99,6 +99,7 @@
 "gfs_dyn",     "w",           "dzdt",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "ps",          "pressfc",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "hs",          "hgtsfc",       "fv3_history",    "all",  .false.,  "none",  2
+"gfs_phys",    "refl_10cm",   "refl_10cm",    "fv3_history",    "all",  .false.,  "none",  2
 
 "gfs_phys",    "cldfra",        "cldfra",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "frzr",          "frzr",          "fv3_history2d",  "all",  .false.,  "none",  2
@@ -265,7 +266,6 @@
 "gfs_sfc",     "xzts",          "xzts",         "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "d_conv",        "dconv",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "qrain",         "qrain",        "fv3_history2d",  "all",  .false.,  "none",  2
-
 
 #=============================================================================================
 #
