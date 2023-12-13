@@ -173,7 +173,7 @@ case ${imp_physics} in
         export random_clds=".false."
         export effr_in=".true."
         export ltaerosol=".false."
-        export lradar=".false."
+        export lradar=".true."
         export ttendlim="-999"
         export dt_inner=$((DELTIM/2))
         export sedi_semi=.true.
