@@ -40,6 +40,7 @@ body:
         - WCOSS2
         - Hera
         - Orion
+        - Hercules
         - Jet
         - Cloud
     validations:
