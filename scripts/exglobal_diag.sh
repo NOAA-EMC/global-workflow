@@ -178,7 +178,7 @@ EOFdiag
       esac
       echo "$(date)" START loop "${string}" >&2 || true
       n=-1
-      # shellcheck disable=2116,2012,2003
+      # shellcheck disable=SC2116,SC2012,SC2003
       while [[ $((n+=1)) -le "${ntype}" ]] ;do
          for type in $(echo "${diagtype[n]}"); do
             count=$(ls "${prefix}${type}_${loop}*" 2>/dev/null | wc -l) || true
@@ -216,7 +216,7 @@ EOFdiag
    # If requested, compress diagnostic files
    if [[ "${DIAG_COMPRESS}" = "YES" && "${USE_CFP}" = "NO" ]]; then
       echo "$(date)" START "${COMPRESS}" diagnostic files >&2 || true
-      # shellcheck disable=2045 
+      # shellcheck disable=SC2045 
       for file in $(ls "diag_*${CDATE}${DIAG_SUFFIX}"); do
          "${COMPRESS}" "${file}"
       done
@@ -225,12 +225,12 @@ EOFdiag
 
    if [[ "${USE_CFP}" = "YES" ]] ; then
       chmod 755 "${DATA}/mp_diag.sh"
-      # shellcheck disable=2002,2312 
+      # shellcheck disable=SC2002,SC2312 
       ncmd=$(cat "${DATA}/mp_diag.sh" | wc -l)
-      # shellcheck disable=2034
+      # shellcheck disable=SC2034
       if [[ "${ncmd}" -gt 0 ]]; then
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
-	 # shellcheck disable=2086,2250 
+	 # shellcheck disable=SC2086,SC2250 
          APRUNCFP_DIAG=$(eval echo $APRUNCFP)
          "${APRUNCFP_DIAG}" "${DATA}/mp_diag.sh"
          export err=$?; err_chk
@@ -241,7 +241,7 @@ EOFdiag
    rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
    for rtype in ${rlist}; do
       set +e
-      # shellcheck disable=2045,2035,2086 
+      # shellcheck disable=SC2045,SC2035,SC2086 
       for filename in $(ls *${rtype}*); do
 	 if [[ -e "${filename}" ]]; then
 	    "${CHGRP_CMD}" "${filename}"
@@ -260,7 +260,7 @@ EOFdiag
             TAROPTS="-cvf"
          fi
          if [[ "${numfile[n]}" -gt 0 ]]; then
-	    # shellcheck disable=2046
+	    # shellcheck disable=SC2046
             tar "${TAROPTS}" "${diagfile[n]}" $(cat "${diaglist[n]}") || true
             export err=$?; err_chk
          fi
