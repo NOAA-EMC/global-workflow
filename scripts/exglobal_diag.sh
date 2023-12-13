@@ -178,7 +178,9 @@ EOFdiag
       esac
       echo "$(date)" START loop "${string}" >&2 || true
       n=-1
-      # shellcheck disable=SC2116,SC2012,SC2003
+      # shellcheck disable=SC2116
+      # shellcheck disable=SC2012
+      # shellcheck disable=SC2003
       while [[ $((n+=1)) -le "${ntype}" ]] ;do
          for type in $(echo "${diagtype[n]}"); do
             count=$(ls "${prefix}${type}_${loop}*" 2>/dev/null | wc -l) || true
@@ -230,7 +232,7 @@ EOFdiag
       # shellcheck disable=SC2034
       if [[ "${ncmd}" -gt 0 ]]; then
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
-	 # shellcheck disable=SC2086,SC2250 
+         # shellcheck disable=SC2086,SC2250 
          APRUNCFP_DIAG=$(eval echo $APRUNCFP)
          "${APRUNCFP_DIAG}" "${DATA}/mp_diag.sh"
          export err=$?; err_chk
@@ -243,10 +245,10 @@ EOFdiag
       set +e
       # shellcheck disable=SC2045,SC2035,SC2086 
       for filename in $(ls *${rtype}*); do
-	 if [[ -s "${filename}" ]]; then
-	    "${CHGRP_CMD}" "${filename}"
+         if [[ -s "${filename}" ]]; then
+            "${CHGRP_CMD}" "${filename}"
             ${STRICT_ON:-set -e}
-	 fi
+         fi
       done
    done
 
@@ -260,7 +262,7 @@ EOFdiag
             TAROPTS="-cvf"
          fi
          if [[ "${numfile[n]}" -gt 0 ]]; then
-	    # shellcheck disable=SC2046
+            # shellcheck disable=SC2046
             tar "${TAROPTS}" "${diagfile[n]}" $(cat "${diaglist[n]}") || true
             export err=$?; err_chk
          fi
