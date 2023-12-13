@@ -65,7 +65,7 @@ echo "RUNS the Program"
 
 export DATA_SPECIAL221="${DATA}/SPECIAL221"
 mkdir -p "${DATA_SPECIAL221}"
-cd "${DATA_SPECIAL221}" || exit
+cd "${DATA_SPECIAL221}" || exit 1
 
 export DBN_ALERT_TYPE=GFS_GOESSIM221_GEMPAK
 export RUN2=gfs_goessim221
