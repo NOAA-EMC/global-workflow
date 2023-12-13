@@ -243,7 +243,7 @@ EOFdiag
       set +e
       # shellcheck disable=SC2045,SC2035,SC2086 
       for filename in $(ls *${rtype}*); do
-	 if [[ -e "${filename}" ]]; then
+	 if [[ -s "${filename}" ]]; then
 	    "${CHGRP_CMD}" "${filename}"
 	    ${STRICT_ON:-set -e}
 	 fi
