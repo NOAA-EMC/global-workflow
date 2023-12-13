@@ -19,14 +19,13 @@ source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
 (( status != 0 )) && exit "${status}"
 
-export job="awips"
+export job="awips_g2"
 export jobid="${job}.$$"
 
-# TODO (#1228) - This script is doing more than just calling a j-job
-#   Also, this forces us to call the config files here instead of the j-job
 source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
-fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+# shellcheck disable=SC2153
+fhrlst=$(echo "${FHRLST}" | sed -e "s/_/ /g; s/f/ /g; s/,/ /g")
 
 ###############################################################
 
@@ -42,25 +41,10 @@ for fhr3 in ${fhrlst}; do
     fi
 
     fhmin=0
-    fhmax=84
-    if (( fhr >= fhmin && fhr <= fhmax )); then
-        if ((fhr % 3 == 0)); then
-            export fcsthrs=${fhr3}
-            ${AWIPS20SH}
-        fi
-
-        if ((fhr % 6 == 0)); then
-            ${AWIPSG2SH}
-        fi
-    fi
-
-    fhmin=90
     fhmax=240
     if (( fhr >= fhmin && fhr <= fhmax )); then
         if ((fhr % 6 == 0)); then
-            export fcsthrs=${fhr3}
-            ${AWIPS20SH}
-            ${AWIPSG2SH}
+            "${AWIPSG2SH}"
         fi
     fi
 done

@@ -32,7 +32,7 @@ For cycled (w/ data assimilation) use the `-g` option during checkout:
 
 For coupled cycling (include new UFSDA) use the `-gu` options during checkout:
 
-[Currently only available on Hera and Orion]
+[Currently only available on Hera, Orion, and Hercules]
 
 ::
 
@@ -110,7 +110,7 @@ Or with the ``-g`` switch to include data assimilation (GSI) for cycling:
    ./checkout.sh -g
 
 Or also with the ``-u`` swtich to include coupled DA (via UFSDA):
-[Currently only available on Hera and Orion]
+[Currently only available on Hera, Orion, and Hercules]
 
 ::
 

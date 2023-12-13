@@ -72,16 +72,17 @@ cd sorc || exit 1
 set +e
 ./checkout.sh -c -g -u >> log.checkout 2>&1
 checkout_status=$?
+DATE=$(date +'%D %r')
 if [[ ${checkout_status} != 0 ]]; then
   {
     echo "Checkout: *** FAILED ***"
-    echo "Checkout: Failed at $(date)" || true
+    echo "Checkout: Failed at ${DATE}"
     echo "Checkout: see output at ${PWD}/log.checkout"
   } >> "${outfile}"
   exit "${checkout_status}"
 else
   {
-    echo "Checkout: Completed at $(date)" || true
+    echo "Checkout: Completed at ${DATE}"
   } >> "${outfile}"
 fi
 
@@ -92,25 +93,30 @@ rm -rf log.build
 ./build_all.sh  >> log.build 2>&1
 build_status=$?
 
+DATE=$(date +'%D %r')
 if [[ ${build_status} != 0 ]]; then
   {
     echo "Build: *** FAILED ***"
-    echo "Build: Failed at $(date)" || true
-    echo "Build: see output at ${PWD}/log.build"
+    echo "Build: Failed at ${DATE}"
+    cat "${PWD}/log.build"
   } >> "${outfile}"
   exit "${build_status}"
 else
   {
-    echo "Build: Completed at $(date)" || true
+    echo "Build: Completed at ${DATE}"
   } >> "${outfile}"
 fi
 
-./link_workflow.sh
+LINK_LOGFILE_PATH=link_workflow.log
+rm -f "${LINK_LOGFILE_PATH}"
+./link_workflow.sh >> "${LINK_LOGFILE_PATH}" 2>&1
 link_status=$?
 if [[ ${link_status} != 0 ]]; then
+  DATE=$(date +'%D %r')
   {
     echo "Link: *** FAILED ***"
-    echo "Link: Failed at $(date)" || true
+    echo "Link: Failed at ${DATE}"
+    cat "${LINK_LOGFILE_PATH}"
   } >> "${outfile}"
   exit "${link_status}"
 fi

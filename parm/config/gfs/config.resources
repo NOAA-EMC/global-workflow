@@ -14,14 +14,15 @@ if [[ $# -ne 1 ]]; then
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl landensanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag fcst post echgres"
+    echo "anal sfcanl analcalc analdiag fcst echgres"
+    echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
-    echo "postsnd awips gempak"
+    echo "postsnd awips gempak npoess"
     echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
@@ -53,6 +54,8 @@ elif [[ "${machine}" = "AWSPW" ]]; then
      export PARTITION_BATCH="compute"
      export npe_node_max=40
 elif [[ ${machine} = "ORION" ]]; then
+   export npe_node_max=40
+elif [[ ${machine} = "HERCULES" ]]; then
    export npe_node_max=40
 fi
 
@@ -705,21 +708,16 @@ elif [[ "${step}" = "upp" ]]; then
     fi
     export is_exclusive=True
 
-elif [[ ${step} = "post" ]]; then
+elif [[ ${step} = "atmos_products" ]]; then
 
-    export wtime_post="00:12:00"
-    export wtime_post_gfs="01:00:00"
-    export npe_post=126
-    res=$(echo "${CASE}" | cut -c2-)
-    if (( npe_post > res )); then
-      export npe_post=${res}
-    fi
-    export nth_post=1
-    export npe_node_post=${npe_post}
-    export npe_node_post_gfs=${npe_post}
-    export npe_node_dwn=${npe_node_max}
-    if [[ "${npe_node_post}" -gt "${npe_node_max}" ]]; then export npe_node_post=${npe_node_max} ; fi
-    if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
+    export wtime_atmos_products="00:15:00"
+    export npe_atmos_products=24
+    export nth_atmos_products=1
+    export npe_node_atmos_products="${npe_atmos_products}"
+    export wtime_atmos_products_gfs="${wtime_atmos_products}"
+    export npe_atmos_products_gfs="${npe_atmos_products}"
+    export nth_atmos_products_gfs="${nth_atmos_products}"
+    export npe_node_atmos_products_gfs="${npe_node_atmos_products}"
     export is_exclusive=True
 
 elif [[ ${step} = "verfozn" ]]; then
@@ -1028,6 +1026,14 @@ elif [[ ${step} = "awips" ]]; then
     export npe_node_awips=1
     export nth_awips=1
     export memory_awips="3GB"
+
+elif [[ ${step} = "npoess" ]]; then
+
+    export wtime_npoess="03:30:00"
+    export npe_npoess=1
+    export npe_node_npoess=1
+    export nth_npoess=1
+    export memory_npoess="3GB"
 
 elif [[ ${step} = "gempak" ]]; then
 

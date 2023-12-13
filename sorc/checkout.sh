@@ -155,21 +155,21 @@ checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" 
 
 # Run all other checkouts simultaneously with just 1 core each to handle submodules.
 checkout "wxflow"          "https://github.com/NOAA-EMC/wxflow"                 "528f5ab" &
-checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "a283262" &
-checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "72a0471" &
+checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "427d467" &
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "892b693" &
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780" &
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "ca19008" "1" "NO" &
+  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git"                  "c94bc72" "1" "NO" &
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "7659c10" &
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git"                  "f44a6d5" &
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
-  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b" &
-  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "45783e3" &
+  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"        "f371890" &
+  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git"      "ae256c0" &
 fi
 
 # Go through each PID and verify no errors were reported.

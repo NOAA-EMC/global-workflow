@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_vrfminmon.sh
+# Script name:         exglobal_atmos_vminmon.sh
 # Script description:  Runs data extract/validation for GSI normalization diag data
 #
 # Author:        Ed Safford       Org: NP23         Date: 2015-04-10
@@ -18,42 +18,6 @@ source "$HOMEgfs/ush/preamble.sh"
 #      >0 - some problem encountered
 #
 ################################################################################
-
-
-########################################
-#  Set environment
-########################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
-export envir=${envir:-prod}
-
-########################################
-#  Directories
-########################################
-export DATA=${DATA:-$(pwd)}
-
-
-########################################
-#  Filenames
-########################################
-gsistat=${gsistat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.gsistat}
-export mm_gnormfile=${gnormfile:-${M_FIXgdas}/gdas_minmon_gnorm.txt}
-export mm_costfile=${costfile:-${M_FIXgdas}/gdas_minmon_cost.txt}
-
-########################################
-#  Other variables
-########################################
-export MINMON_SUFFIX=${MINMON_SUFFIX:-GDAS}
-export PDATE=${PDY}${cyc}
-export NCP=${NCP:-/bin/cp}
-export pgm=exgdas_vrfminmon.sh
-
-if [[ ! -d ${DATA} ]]; then
-   mkdir $DATA
-fi
-cd $DATA
-
-######################################################################
 
 data_available=0
 
@@ -71,26 +35,26 @@ if [[ -s ${gsistat} ]]; then
    #  data into ${cyc} subdirectories (elif condition).
    #-----------------------------------------------------------------------
    if [[ -s ${M_TANKverf}/gnorm_data.txt ]]; then
-      $NCP ${M_TANKverf}/gnorm_data.txt gnorm_data.txt
+      ${NCP} "${M_TANKverf}/gnorm_data.txt" gnorm_data.txt
    elif [[ -s ${M_TANKverfM1}/gnorm_data.txt ]]; then
-      $NCP ${M_TANKverfM1}/gnorm_data.txt gnorm_data.txt
+      ${NCP} "${M_TANKverfM1}/gnorm_data.txt" gnorm_data.txt
    fi
 
 
    #------------------------------------------------------------------
    #   Run the child sccripts.
    #------------------------------------------------------------------
-   ${USHminmon}/minmon_xtrct_costs.pl ${MINMON_SUFFIX} ${PDY} ${cyc} ${gsistat} dummy
+   "${USHgfs}/minmon_xtrct_costs.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
    rc_costs=$?
-   echo "rc_costs = $rc_costs"
+   echo "rc_costs = ${rc_costs}"
 
-   ${USHminmon}/minmon_xtrct_gnorms.pl ${MINMON_SUFFIX} ${PDY} ${cyc} ${gsistat} dummy
+   "${USHgfs}/minmon_xtrct_gnorms.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
    rc_gnorms=$?
-   echo "rc_gnorms = $rc_gnorms"
+   echo "rc_gnorms = ${rc_gnorms}"
 
-   ${USHminmon}/minmon_xtrct_reduct.pl ${MINMON_SUFFIX} ${PDY} ${cyc} ${gsistat} dummy
+   "${USHgfs}/minmon_xtrct_reduct.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
    rc_reduct=$?
-   echo "rc_reduct = $rc_reduct"
+   echo "rc_reduct = ${rc_reduct}"
 
 fi
 
@@ -100,13 +64,13 @@ fi
 err=0
 if [[ ${data_available} -ne 1 ]]; then
    err=1
-elif [[ $rc_costs -ne 0 ]]; then
-   err=$rc_costs
-elif [[ $rc_gnorms -ne 0 ]]; then
-   err=$rc_gnorms
-elif [[ $rc_reduct -ne 0 ]]; then
-   err=$rc_reduct
+elif [[ ${rc_costs} -ne 0 ]]; then
+   err=${rc_costs}
+elif [[ ${rc_gnorms} -ne 0 ]]; then
+   err=${rc_gnorms}
+elif [[ ${rc_reduct} -ne 0 ]]; then
+   err=${rc_reduct}
 fi
 
-exit ${err}
+exit "${err}"
 

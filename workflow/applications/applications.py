@@ -54,7 +54,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_bufrsnd = _base.get('DO_BUFRSND', False)
         self.do_gempak = _base.get('DO_GEMPAK', False)
         self.do_awips = _base.get('DO_AWIPS', False)
-        self.do_wafs = _base.get('WAFSF', False)
         self.do_verfozn = _base.get('DO_VERFOZN', True)
         self.do_verfrad = _base.get('DO_VERFRAD', True)
         self.do_vminmon = _base.get('DO_VMINMON', True)
@@ -62,6 +61,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_genesis = _base.get('DO_GENESIS', True)
         self.do_genesis_fsu = _base.get('DO_GENESIS_FSU', False)
         self.do_metp = _base.get('DO_METP', False)
+        self.do_upp = not _base.get('WRITE_DOPOST', True)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 

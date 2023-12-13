@@ -34,6 +34,7 @@
 "ocean_model", "ePBL_h_ML",  "ePBL",      "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model", "MLD_003",    "MLD_003",   "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model", "MLD_0125",   "MLD_0125",  "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
+"ocean_model", "tob",        "tob",       "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 
 # Z-Space Fields Provided for CMIP6 (CMOR Names):
 "ocean_model_z", "uo",    "uo",    "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2

@@ -30,7 +30,6 @@ fix/chem
 fix/cice
 fix/cpl
 fix/datm
-fix/gdas
 fix/gldas
 fix/gsi
 fix/lut
@@ -47,7 +46,7 @@ fix/wafs
 #--------------------------
 parm/config/config.base
 parm/gldas
-parm/mon
+parm/monitor
 parm/post/AEROSOL_LUTS.dat
 parm/post/nam_micro_lookup.dat
 parm/post/optics_luts_DUST.dat

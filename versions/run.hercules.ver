@@ -1,0 +1,10 @@
+export stack_intel_ver=2021.9.0
+export stack_impi_ver=2021.9.0
+
+export ncl_ver=6.6.2
+
+source "${HOMEgfs:-}/versions/run.spack.ver"
+
+# wgrib2 and cdo are different on Hercules from all the other systems
+export wgrib2_ver=3.1.1
+export cdo_ver=2.2.0
