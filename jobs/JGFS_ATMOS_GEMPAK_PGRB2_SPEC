@@ -44,7 +44,7 @@ mkdir -m 775 -p "${COMOUT}"
 #################################################################
 export DATA_SPECIAL="${DATA}/SPECIAL"
 mkdir -p "${DATA_SPECIAL}"
-cd "${DATA_SPECIAL}" || exit
+cd "${DATA_SPECIAL}" || exit 1
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
 export RUN2=gfs_goessim
