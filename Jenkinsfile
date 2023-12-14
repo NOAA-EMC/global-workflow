@@ -11,7 +11,7 @@ pipeline {
     post {
         success {
             script {
-                pullRequest.labels.add('CI-Orion-Passed')
+                pullRequest.addLabel(['CI-Orion-Passed'])  
             }
         }
     }
