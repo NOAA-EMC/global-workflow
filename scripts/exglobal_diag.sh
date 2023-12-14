@@ -276,7 +276,7 @@ EOFdiag
       chmod 750 "${RADSTAT}"
       "${CHGRP_CMD}" "${RADSTAT}"
 
-      echo "$(date)" END tar diagnostic files >&2 || true
+      echo "$(date) END tar diagnostic files" >&2 || true
    fi
 fi # End diagnostic file generation block - if [[ ${GENDIAG} = "YES" ]]
 
