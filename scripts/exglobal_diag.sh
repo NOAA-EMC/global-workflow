@@ -251,7 +251,7 @@ EOFdiag
 
    # If requested, create diagnostic file tarballs
    if [[ "${DIAG_TARBALL}" = "YES" ]]; then
-      echo "$(date)" START tar diagnostic files >&2 || true
+      echo "$(date) START tar diagnostic files" >&2 || true
       n=-1
       while [[ $((n+=1)) -le "${ntype}" ]] ;do
          TAROPTS="-uvf"
