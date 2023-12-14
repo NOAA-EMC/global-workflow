@@ -1091,6 +1091,187 @@ class GFSTasks(Tasks):
 
         return task
 
+    def mos_stn_prep(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_stn_prep')
+        task = create_wf_task('mos_stn_prep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_grd_prep(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_grd_prep')
+        task = create_wf_task('mos_grd_prep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_stn_prep(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_ext_stn_prep')
+        task = create_wf_task('mos_ext_stn_prep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_grd_prep(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_ext_grd_prep')
+        task = create_wf_task('mos_ext_grd_prep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_stn_fcst(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_stn_fcst')
+        task = create_wf_task('mos_stn_fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_grd_fcst(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_grd_fcst')
+        task = create_wf_task('mos_grd_fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_stn_fcst(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_stn_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_ext_stn_fcst')
+        task = create_wf_task('mos_ext_stn_fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_grd_fcst(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_stn_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_grd_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_ext_grd_fcst')
+        task = create_wf_task('mos_ext_grd_fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_stn_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_stn_prdgen')
+        task = create_wf_task('mos_stn_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_grd_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_grd_prdgen')
+        task = create_wf_task('mos_grd_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_stn_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_stn_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_ext_stn_prdgen')
+        task = create_wf_task('mos_ext_stn_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_grd_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_grd_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_stn_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_ext_grd_prdgen')
+        task = create_wf_task('mos_ext_grd_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_wx_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_wx_prdgen')
+        task = create_wf_task('mos_wx_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_wx_ext_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_grd_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_wx_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_wx_ext_prdgen')
+        task = create_wf_task('mos_wx_ext_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def arch(self):
         deps = []
         dependencies = []
@@ -1144,6 +1325,15 @@ class GFSTasks(Tasks):
         if self.app_config.do_ocean:
             if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
                 dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
+                deps.append(rocoto.add_dependency(dep_dict))
+        # MOS job dependencies
+        if self.cdump in ['gfs'] and self.app_config.do_mos:
+            mos_jobs = ["stn_prep", "grd_prep", "ext_stn_prep", "ext_grd_prep",
+                        "stn_fcst", "grd_fcst", "ext_stn_fcst", "ext_grd_fcst",
+                        "stn_prdgen", "grd_prdgen", "ext_stn_prdgen", "ext_grd_prdgen",
+                        "wx_prdgen", "wx_ext_prdgen"]
+            for job in mos_jobs:
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_{job}'}
                 deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps + dependencies)
