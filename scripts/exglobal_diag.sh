@@ -244,7 +244,7 @@ EOFdiag
       for filename in $(ls *${rtype}*); do
          if [[ -s "${filename}" ]]; then
             "${CHGRP_CMD}" "${filename}"
-            ${STRICT_ON:-set -e}
+            set_strict
          fi
       done
    done
