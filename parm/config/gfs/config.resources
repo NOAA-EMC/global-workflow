@@ -730,7 +730,7 @@ elif [[ ${step} = "verfozn" ]]; then
 
 elif [[ ${step} = "verfrad" ]]; then
 
-    export wtime_verfrad="00:20:00"
+    export wtime_verfrad="00:40:00"
     export npe_verfrad=1
     export nth_verfrad=1
     export npe_node_verfrad=1
