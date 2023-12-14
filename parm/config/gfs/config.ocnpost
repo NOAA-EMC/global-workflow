@@ -18,7 +18,7 @@ case "${OCNRES}" in
 esac
 
 if [[ "${machine}" = "WCOSS2" ]] || [[ "${machine}" = "HERCULES" ]]; then
-  #Currently the conversion to netcdf uses NCL which is not on WCOSS2
+  #Currently the conversion to netcdf uses NCL which is not on WCOSS2 or HERCULES
   #This should be removed when this is updated
   export MAKE_OCN_GRIB="NO"
 fi
