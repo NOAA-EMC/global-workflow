@@ -202,7 +202,7 @@ EOFdiag
                    "${COMPRESS}" "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                 fi
                 echo "diag_${type}_${string}.${CDATE}"* >> "${diaglist[n]}"
-                numfile[n]=$(expr "${numfile[n]}" + 1)
+                (( numfile[n] += 1 ))
             fi
          done
       done
