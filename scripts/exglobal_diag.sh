@@ -152,7 +152,7 @@ else
    "${CATEXEC}" -o \$file \${prefix}\${type}_\${loop}*
 fi
 if [[ "{\$DIAG_COMPRESS}" = "YES" ]]; then
-   "${COMPRESS}" "{\$file}"
+   "${COMPRESS}" "\${file}"
 fi
 EOFdiag
       chmod 755 "${DATA}/diag.sh"
