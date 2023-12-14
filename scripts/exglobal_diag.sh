@@ -219,7 +219,7 @@ EOFdiag
       for file in diag_*"${CDATE}${DIAG_SUFFIX}"; do
          "${COMPRESS}" "${file}"
       done
-      echo "$(date)" END "${COMPRESS}" diagnostic files >&2 || true
+      echo "$(date) END ${COMPRESS} diagnostic files" >&2 || true
    fi
 
    if [[ "${USE_CFP}" = "YES" ]] ; then
