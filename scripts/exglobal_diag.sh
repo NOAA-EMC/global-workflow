@@ -206,7 +206,7 @@ EOFdiag
             fi
          done
       done
-      echo "$(date)" END loop "${string}" >&2 || true
+      echo "$(date) END loop ${string}" >&2 || true
    done
 
    # We should already be in $DATA, but extra cd to be sure.
