@@ -263,7 +263,7 @@ EOFdiag
          fi
          if [[ "${numfile[n]}" -gt 0 ]]; then
             # shellcheck disable=SC2046
-            tar "${TAROPTS}" "${diagfile[n]}" $(cat "${diaglist[n]}") || true
+            tar ${TAROPTS} "${diagfile[n]}" $(cat "${diaglist[n]}") || true
             export err=$?; err_chk
          fi
       done
