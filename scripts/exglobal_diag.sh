@@ -238,7 +238,6 @@ EOFdiag
    rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
    for rtype in ${rlist}; do
       set +e
-      # shellcheck disable=SC2045,SC2035,SC2086 
       for filename in *"${rtype}"*; do
          if [[ -s "${filename}" ]]; then
             "${CHGRP_CMD}" "${filename}"
