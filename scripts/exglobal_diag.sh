@@ -180,7 +180,7 @@ EOFdiag
       n=-1
       while [[ $((n+=1)) -le "${ntype}" ]] ;do
          for type in ${diagtype[n]}; do
-            count=$(ls "${prefix}${type}_${loop}*" 2>/dev/null | wc -l) || true
+            count=$(ls "${prefix}${type}_${loop}"* 2>/dev/null | wc -l) || true
             if [[ "${count}" -gt 1 ]]; then
                if [[ "${USE_CFP}" = "YES" ]]; then
                   echo "${nm} ${DATA}/diag.sh ${lrun_subdirs} ${binary_diag} ${type} ${loop} ${string} ${CDATE} ${DIAG_COMPRESS} ${DIAG_SUFFIX}" | tee -a "${DATA}/mp_diag.sh"
