@@ -176,7 +176,7 @@ EOFdiag
          03) string=anl;;
           *) string="${loop}";;
       esac
-      echo "$(date)" START loop "${string}" >&2 || true
+      echo "$(date) START loop ${string}" >&2 || true
       n=-1
       # shellcheck disable=SC2116
       # shellcheck disable=SC2012
