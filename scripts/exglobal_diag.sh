@@ -151,7 +151,7 @@ if [ \$binary_diag = ".true." ]; then
 else
    "${CATEXEC}" -o \$file \${prefix}\${type}_\${loop}*
 fi
-if [[ "{\$DIAG_COMPRESS}" = "YES" ]]; then
+if [[ "\${DIAG_COMPRESS}" = "YES" ]]; then
    "${COMPRESS}" "\${file}"
 fi
 EOFdiag
