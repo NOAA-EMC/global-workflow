@@ -15,35 +15,34 @@ Clone the `global-workflow` and `cd` into the `sorc` directory:
 
 ::
 
-   git clone https://github.com/NOAA-EMC/global-workflow
+   git clone --recursive https://github.com/NOAA-EMC/global-workflow
    cd global-workflow/sorc
 
-For forecast-only (coupled or uncoupled) checkout the components:
+For forecast-only (coupled or uncoupled) build of the components:
 
 ::
 
-   ./checkout.sh
+   ./build_all.sh
 
-For cycled (w/ data assimilation) use the `-g` option during checkout:
+For cycled (w/ data assimilation) use the `-g` option during build:
 
 ::
 
-   ./checkout.sh -g
+   ./build_all.sh -g
 
-For coupled cycling (include new UFSDA) use the `-gu` options during checkout:
+For coupled cycling (include new UFSDA) use the `-gu` options during build:
 
 [Currently only available on Hera, Orion, and Hercules]
 
 ::
 
-   ./checkout.sh -gu
+   ./build_all.sh -gu
 
 
 Build workflow components and link workflow artifacts such as executables, etc.
 
 ::
 
-   ./build_all.sh
    ./link_workflow.sh
 
 
@@ -73,7 +72,7 @@ You now have a cloned copy of the global-workflow git repository. To checkout a 
 
 ::
 
-   git checkout BRANCH_NAME
+   git checkout --recurse-submodules BRANCH_NAME
 
 .. note::
    Branch must already exist. If it does not you need to make a new branch using the ``-b`` flag:
@@ -86,62 +85,55 @@ The ``checkout`` command will checkout BRANCH_NAME and switch your clone to that
 
 ::
 
-   git checkout my_branch
+   git checkout --recurse-submodules my_branch
    git branch
    * my_branch
    develop
 
-**********
-Components
-**********
-
-Once you have cloned the workflow repository it's time to checkout/clone its components. The components will be checked out under the ``/sorc`` folder via a script called checkout.sh. Run the script with no arguments for forecast-only:
-
-::
-
-   cd sorc
-   ./checkout.sh
-
-Or with the ``-g`` switch to include data assimilation (GSI) for cycling:
-
-::
-
-   cd sorc
-   ./checkout.sh -g
-
-Or also with the ``-u`` swtich to include coupled DA (via UFSDA):
-[Currently only available on Hera, Orion, and Hercules]
-
-::
-
-   cd sorc
-   ./checkout.sh -gu
-
-Each component cloned via checkout.sh will have a log (``/sorc/logs/checkout-COMPONENT.log``). Check the screen output and logs for clone errors.
+Using ``--recurse-submodules`` is important to ensure you are updating the component versions to match the branch.
 
 ^^^^^^^^^^^^^^^^
 Build components
 ^^^^^^^^^^^^^^^^
 
-Under the ``/sorc`` folder is a script to build all components called ``build_all.sh``. After running checkout.sh run this script to build all components codes:
+Under the ``/sorc`` folder is a script to build all components called ``build_all.sh``. After checking out the branch you wish to use, run this script to build all components codes:
 
 ::
 
-   ./build_all.sh [-a UFS_app][-c build_config][-h][-v]
-   -a UFS_app:
-   Build a specific UFS app instead of the default
-   -c build_config:
-   Selectively build based on the provided config instead of the default config
-   -h:
-   Print usage message and exit
-   -v:
-   Run all scripts in verbose mode
+   ./build_all.sh [-a UFS_app][-g][-h][-u][-v]
+  -a UFS_app:
+    Build a specific UFS app instead of the default
+  -g:
+    Build GSI
+  -h:
+    Print this help message and exit
+  -j:
+    Specify maximum number of build jobs (n)
+  -u:
+    Build UFS-DA
+  -v:
+    Execute all build scripts with -v option to turn on verbose where supported
 
-A partial build option is also available via two methods:
+For forecast-only (coupled or uncoupled) build of the components:
 
-  a) modify gfs_build.cfg config file to disable/enable particular builds and then rerun build_all.sh
+::
 
-  b) run individual build scripts also available in ``/sorc`` folder for each component or group of codes
+   ./build_all.sh
+
+For cycled (w/ data assimilation) use the `-g` option during build:
+
+::
+
+   ./build_all.sh -g
+
+For coupled cycling (include new UFSDA) use the `-gu` options during build:
+
+[Currently only available on Hera, Orion, and Hercules]
+
+::
+
+   ./build_all.sh -gu
+
 
 ^^^^^^^^^^^^^^^
 Link components

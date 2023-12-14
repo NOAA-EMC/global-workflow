@@ -318,12 +318,12 @@ Manual Generation
 
 The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
 
-The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users may clone the develop/HEAD branch or the same version used by global-workflow develop (found in ``sorc/checkout.sh``). The ``chgres_cube`` code/scripts currently support the following GFS inputs:
+The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users may clone the develop/HEAD branch or the same version used by global-workflow develop. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
 
-* pre-GFSv14 
-* GFSv14 
-* GFSv15 
-* GFSv16 
+* pre-GFSv14
+* GFSv14
+* GFSv15
+* GFSv16
 
 Users can use the copy of UFS_UTILS that is already cloned and built within their global-workflow clone or clone/build it separately:
 

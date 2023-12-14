@@ -48,7 +48,7 @@ git clone "${REPO_URL}"
 cd global-workflow || exit 1
 
 # checkout pull request
-"${GH}" pr checkout "${PR}" --repo "${REPO_URL}"
+"${GH}" pr checkout "${PR}" --repo "${REPO_URL}" --recurse-submodules
 HOMEgfs="${PWD}"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
@@ -67,30 +67,14 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 commit=$(git log --pretty=format:'%h' -n 1)
 echo "${commit}" > "../commit"
 
-# run checkout script
+# build full cycle
 cd sorc || exit 1
 set +e
-./checkout.sh -c -g -u >> log.checkout 2>&1
-checkout_status=$?
-DATE=$(date +'%D %r')
-if [[ ${checkout_status} != 0 ]]; then
-  {
-    echo "Checkout: *** FAILED ***"
-    echo "Checkout: Failed at ${DATE}"
-    echo "Checkout: see output at ${PWD}/log.checkout"
-  } >> "${outfile}"
-  exit "${checkout_status}"
-else
-  {
-    echo "Checkout: Completed at ${DATE}"
-  } >> "${outfile}"
-fi
 
-# build full cycle
 source "${HOMEgfs}/ush/module-setup.sh"
 export BUILD_JOBS=8
 rm -rf log.build
-./build_all.sh  >> log.build 2>&1
+./build_all.sh -gu  >> log.build 2>&1
 build_status=$?
 
 DATE=$(date +'%D %r')
