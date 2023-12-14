@@ -201,7 +201,7 @@ EOFdiag
                 if [[ "${DIAG_COMPRESS}" = "YES" ]]; then
                    "${COMPRESS}" "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                 fi
-                echo "diag_${type}_${string}.${CDATE}*" >> "${diaglist[n]}" 
+                echo "diag_${type}_${string}.${CDATE}"* >> "${diaglist[n]}"
                 numfile[n]=$(expr "${numfile[n]}" + 1)
             fi
          done
