@@ -812,7 +812,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def fbwinds(self):
+    def fbwind(self):
 
         atmos_prod_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_GRIB_GRID_TMPL"], {'RUN': self.cdump, 'GRID': '0p25'})
         deps = []
@@ -834,7 +834,7 @@ class GFSTasks(Tasks):
         # prematurely starting with partial files. Unfortunately, the
         # ability to "group" post would make this more convoluted than
         # it should be and not worth the complexity.
-        task = create_wf_task('fbwinds', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('fbwind', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
