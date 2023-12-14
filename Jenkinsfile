@@ -3,8 +3,9 @@ pipeline {
 
     stages {    
         stage('Checkout') {
-        node{ 
-          checkout scm
+            node{ 
+                checkout scm
+            }
         }
     }
     post {
