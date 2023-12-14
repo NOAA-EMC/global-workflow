@@ -199,7 +199,7 @@ fi
 #------------------------------
 #--add GDASApp files
 #------------------------------
-if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   cd "${HOMEgfs}/ush" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda"                              .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/jediinc2fv3.py"                     .
@@ -261,7 +261,7 @@ for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle; do
 done
 
 # GSI
-if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd/install" ]]; then
   for gsiexe in enkf.x gsi.x; do
     [[ -s "${gsiexe}" ]] && rm -f "${gsiexe}"
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_enkf.fd/install/bin/${gsiexe}" .
@@ -269,7 +269,7 @@ if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd" ]]; then
 fi
 
 # GSI Utils
-if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd/install" ]]; then
   for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
     interp_inc.x recentersigp.x
@@ -280,7 +280,7 @@ if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd" ]]; then
 fi
 
 # GSI Monitor
-if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd/install" ]]; then
   for exe in oznmon_horiz.x oznmon_time.x radmon_angle.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x
   do
@@ -290,7 +290,7 @@ if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
 fi
 
 # GDASApp
-if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   declare -a JEDI_EXE=("fv3jedi_addincrement.x" \
                        "fv3jedi_diffstates.x" \
                        "fv3jedi_ensvariance.x" \
