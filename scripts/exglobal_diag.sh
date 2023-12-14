@@ -229,7 +229,7 @@ EOFdiag
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
          # shellcheck disable=SC2086,SC2250 
          APRUNCFP_DIAG=$(eval echo $APRUNCFP)
-         "${APRUNCFP_DIAG}" "${DATA}/mp_diag.sh"
+         ${APRUNCFP_DIAG} "${DATA}/mp_diag.sh"
          export err=$?; err_chk
       fi
    fi
