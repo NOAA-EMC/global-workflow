@@ -192,7 +192,7 @@ EOFdiag
                   fi
                else
                   if [[ "${binary_diag}" = ".true." ]]; then
-                     cat "${prefix}${type}_${loop}*" > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
+                     cat "${prefix}${type}_${loop}"* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                   else
                      "${CATEXEC}" -o "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}" "${prefix}${type}_${loop}*"
                   fi
