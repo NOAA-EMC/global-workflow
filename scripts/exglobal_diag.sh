@@ -224,7 +224,7 @@ EOFdiag
 
    if [[ "${USE_CFP}" = "YES" ]] ; then
       chmod 755 "${DATA}/mp_diag.sh"
-      ncmd=$(cat "${DATA}/mp_diag.sh" | wc -l)
+      ncmd=$(wc -l <"${DATA}/mp_diag.sh")
       # shellcheck disable=SC2034
       if [[ "${ncmd}" -gt 0 ]]; then
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
