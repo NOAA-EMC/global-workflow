@@ -210,7 +210,7 @@ EOFdiag
    done
 
    # We should already be in $DATA, but extra cd to be sure.
-   cd "${DATA}" || exit
+   cd "${DATA}" || exit 1
 
    # If requested, compress diagnostic files
    if [[ "${DIAG_COMPRESS}" = "YES" && "${USE_CFP}" = "NO" ]]; then
