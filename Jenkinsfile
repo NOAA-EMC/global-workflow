@@ -1,11 +1,10 @@
 pipeline {
-    agent{ label 'Sanbox'}
+    agent{ label 'local'}
 
     stages {    
-        stage('Checkout Repos') {
-            steps {
-                sh './sorc/checkout.sh -c -g -u'
-            }
+        stage('Checkout') {
+        node{ 
+          checkout scm
         }
     }
     post {
