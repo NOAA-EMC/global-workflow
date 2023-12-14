@@ -224,7 +224,6 @@ EOFdiag
 
    if [[ "${USE_CFP}" = "YES" ]] ; then
       chmod 755 "${DATA}/mp_diag.sh"
-      # shellcheck disable=SC2002,SC2312 
       ncmd=$(cat "${DATA}/mp_diag.sh" | wc -l)
       # shellcheck disable=SC2034
       if [[ "${ncmd}" -gt 0 ]]; then
