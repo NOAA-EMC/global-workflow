@@ -179,7 +179,7 @@ EOFdiag
       echo "$(date) START loop ${string}" >&2 || true
       n=-1
       while [[ $((n+=1)) -le "${ntype}" ]] ;do
-         for type in $(echo "${diagtype[n]}"); do
+         for type in ${diagtype[n]}; do
             count=$(ls "${prefix}${type}_${loop}*" 2>/dev/null | wc -l) || true
             if [[ "${count}" -gt 1 ]]; then
                if [[ "${USE_CFP}" = "YES" ]]; then
