@@ -121,12 +121,14 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.12
+* SCN23-111: Change to Global Aviation Products related to the World Area Forecast System (WAFS) Product on or about January 17, 2024. A pdf version is posted at:
+https://www.weather.gov/media/notification/pdf_2023_24/scn23-111_wafs_products_change.pdf
+
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.12
+* Increase from 972M to 3G because both the vertical and temporal resolutions increase of both 0.25 unblended and blended hazard WAFS data.
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
