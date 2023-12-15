@@ -47,3 +47,5 @@ export prepobs_run_ver=1.0.1
 
 export ens_tracker_ver=feature-GFSv17_com_reorg
 export fit2obs_ver=1.0.0
+export mos_ver=5.4.3
+export mos_shared_ver=2.7.2
