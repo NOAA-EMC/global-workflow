@@ -195,7 +195,7 @@ EOFdiag
                   fi
                fi
                echo "diag_${type}_${string}.${CDATE}"* >> "${diaglist[n]}"
-               numfile[n]=$(( ${numfile[n]} + 1 ))
+                (( numfile[n] += 1 ))
             elif [[ "${count}" -eq 1 ]]; then
                 cat "${prefix}${type}_${loop}"* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                 if [[ "${DIAG_COMPRESS}" = "YES" ]]; then
