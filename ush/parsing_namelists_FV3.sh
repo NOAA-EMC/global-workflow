@@ -251,7 +251,7 @@ EOF
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
-  lradar       = ${lradar:-".false."}
+  lradar       = ${lradar:-".true."}
   ttendlim     = ${ttendlim:-"-999"}
   dt_inner     = ${dt_inner:-"${default_dt_inner}"}
   sedi_semi    = ${sedi_semi:-".true."}
