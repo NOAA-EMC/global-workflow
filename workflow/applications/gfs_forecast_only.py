@@ -60,6 +60,12 @@ class GFSForecastOnlyAppConfig(AppConfig):
             if self.do_awips:
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
+        if self.do_mos:
+            configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                        'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                        'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                        'mos_wx_prdgen', 'mos_wx_ext_prdgen']
+
         return configs
 
     @staticmethod
@@ -112,10 +118,10 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['postsnd']
 
             if self.do_gempak:
-                tasks += ['gempak', 'gempakmeta', 'gempakncdcupagif', 'gempakpgrb2spec']
+                tasks += ['gempak', 'gempakmeta', 'gempakncdcupapgif', 'gempakpgrb2spec']
 
             if self.do_awips:
-                tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwinds']
+                tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']
 
         if self.do_ocean or self.do_ice:
             tasks += ['ocnpost']
@@ -128,6 +134,12 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['wavegempak']
             if self.do_awips:
                 tasks += ['waveawipsbulls', 'waveawipsgridded']
+
+        if self.do_mos:
+            tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                      'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                      'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                      'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
 
