@@ -10,7 +10,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
-
 ################################
 # Set up the HOME directory
 ################################
@@ -37,47 +36,6 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
 GRID="0p50" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GRIB_0p50:COM_ATMOS_GRIB_GRID_TMPL
 
 mkdir -m 775 -p "${COM_ATMOS_GOES}"
-
-# TODO - This should be in the ex-script (#1226)
-
-####################################
-# Specify Forecast Hour Range
-####################################
-export SHOUR=000
-export FHOUR=180
-export FHINC=003
-
-####################################
-# Specify Timeout Behavior of Post
-#
-# SLEEP_TIME - Amount of time to wait for
-#              a restart file before exiting
-# SLEEP_INT  - Amount of time to wait between
-#              checking for restart files
-####################################
-export SLEEP_TIME=900
-export SLEEP_INT=5
-
-####################################
-# Check if this is a restart
-####################################
-if [[ -f "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb2" ]]; then
-   modelrecvy=$(cat < "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
-   recvy_cyc="${modelrecvy:8:2}"
-   recvy_shour="${modelrecvy:10:13}"
-
-   if [[ ${RERUN} == "NO" ]]; then
-      NEW_SHOUR=$(( recvy_shour + FHINC ))
-      if (( NEW_SHOUR >= SHOUR )); then
-         export SHOUR=${NEW_SHOUR}
-      fi
-      if (( recvy_shour >= FHOUR )); then
-         echo "Forecast Pgrb Generation Already Completed to ${FHOUR}"
-      else
-         echo "Starting: PDY=${PDY} cycle=t${recvy_cyc}z SHOUR=${SHOUR}"
-      fi
-   fi
-fi
 
 #############################################################
 # Execute the script
