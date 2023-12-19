@@ -50,7 +50,6 @@ export opt28=' -new_grid_interpolation budget -fi '
 ####################################
 export SLEEP_TIME=${SLEEP_TIME:-900}
 export SLEEP_INT=${SLEEP_TIME:-5}
-export FHMAX_GFS=${FHMAX_GFS:-180}
 
 SLEEP_LOOP_MAX=$(( SLEEP_TIME / SLEEP_INT ))
 
