@@ -227,7 +227,6 @@ EOFdiag
       ncmd=$(wc -l <"${DATA}/mp_diag.sh")
       if [[ "${ncmd}" -gt 0 ]]; then
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
-         # shellcheck disable=SC2086,SC2250 
          APRUNCFP_DIAG=$(eval echo $APRUNCFP)
          ${APRUNCFP_DIAG} "${DATA}/mp_diag.sh"
          export err=$?; err_chk
