@@ -149,9 +149,6 @@ done
 export SHOUR=000
 export FHOUR=180
 export FHINC=003
-if [[ "${FHOUR}" -lt "${FHMAX_GFS}" ]]; then
-   export FHOUR="${FHMAX_GFS}"
-fi
 
 #################################
 # Process GFS PGRB2_SPECIAL_POST
