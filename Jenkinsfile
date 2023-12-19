@@ -1,5 +1,5 @@
 pipeline {
-    agent{ label 'local'}
+    agent{ label 'orion-emc'}
 
     stages {    
         stage('Checkout') {
