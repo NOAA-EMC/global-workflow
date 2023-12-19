@@ -51,7 +51,7 @@ export opt28=' -new_grid_interpolation budget -fi '
 export SLEEP_TIME=${SLEEP_TIME:-900}
 export SLEEP_INT=${SLEEP_TIME:-5}
 
-SLEEP_LOOP_MAX=$(expr ${SLEEP_TIME} / ${SLEEP_INT})
+SLEEP_LOOP_MAX=$(( SLEEP_TIME / SLEEP_INT ))
 
 # TODO: Does this section do anything? I retained if for clarity of
 # changes/updates, but it does not appear to do anything.
