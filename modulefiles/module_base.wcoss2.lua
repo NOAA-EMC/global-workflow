@@ -38,4 +38,7 @@ load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/Fit2Obs/v" .. os.getenv("fit2obs_ver"), "modulefiles"))
 load(pathJoin("fit2obs", os.getenv("fit2obs_ver")))
 
+append_path("MODULEPATH", pathJoin("/apps/ops/prod/nco/models/modulefiles"))
+load(pathJoin("mos_shared", os.getenv("mos_shared_ver")))
+
 whatis("Description: GFS run environment")

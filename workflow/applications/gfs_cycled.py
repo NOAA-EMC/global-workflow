@@ -104,6 +104,12 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_jedilandda:
             configs += ['preplandobs', 'landanl']
 
+        if self.do_mos:
+            configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                        'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                        'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                        'mos_wx_prdgen', 'mos_wx_ext_prdgen']
+
         return configs
 
     @staticmethod
@@ -236,7 +242,13 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += ['gempakpgrb2spec']
 
         if self.do_awips:
-            gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwinds']
+            gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']
+
+        if self.do_mos:
+            gfs_tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                          'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                          'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                          'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         gfs_tasks += gdas_gfs_common_cleanup_tasks
 
