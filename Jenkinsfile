@@ -32,7 +32,7 @@ pipeline {
                    pr_sha=$(git rev-parse --short HEAD)
                    case=C48_ATM
                    export pslot=${case}_${pr_sha}
-                   workflow/create_experment.py --yaml ci/cases/pr/${case}
+                   workflow/create_experiment.py --yaml ci/cases/pr/${case}
                    '''
                 script {   
                   pullRequest.comment('SUCCESS creating experment C48_ATM on Orion') 
