@@ -8,6 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
 ##############################################
 
 export COMIN_OBS="${DATA}"
+YMD=${PDY} HH=${cyc} generate_com -rx COMOUT_OBS:COM_OBS_TMPL
 
 ##############################################
 # Begin JOB SPECIFIC work
