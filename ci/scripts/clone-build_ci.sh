@@ -74,7 +74,13 @@ set +e
 source "${HOMEgfs}/ush/module-setup.sh"
 export BUILD_JOBS=8
 rm -rf log.build
-./build_all.sh -gu  >> log.build 2>&1
+# TODO until full cycle port on Hercules is complete
+# we only build for FF for now on Hercules
+if [[ "${MACHINE_ID}" == "HERCULES" ]]; then
+  ./build_all.sh  >> log.build 2>&1
+else  
+  ./build_all.sh -gu  >> log.build 2>&1
+fi  
 build_status=$?
 
 DATE=$(date +'%D %r')
