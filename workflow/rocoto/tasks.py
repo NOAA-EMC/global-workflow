@@ -25,11 +25,14 @@ class Tasks:
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
                    'tracker', 'genesis', 'genesis_fsu',
-                   'postsnd', 'awips_g2', 'awips_20km_1p0deg', 'fbwinds',
+                   'postsnd', 'awips_g2', 'awips_20km_1p0deg', 'fbwind',
                    'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg'
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
-                   'npoess']
+                   'npoess',
+                   'mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                   'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                   'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
 
@@ -149,12 +152,18 @@ class Tasks:
             threads = task_config[f'nth_{task_name}_gfs']
 
         memory = task_config.get(f'memory_{task_name}', None)
+        if scheduler in ['pbspro']:
+            if task_config.get('prepost', False):
+                memory += ':prepost=true'
 
         native = None
         if scheduler in ['pbspro']:
             native = '-l debug=true,place=vscatter'
+            # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
             if task_config.get('is_exclusive', False):
                 native += ':exclhost'
+            else:
+                native += ':shared'
         elif scheduler in ['slurm']:
             native = '--export=NONE'
 

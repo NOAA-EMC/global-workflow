@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+########## config.mos ##########
+echo "BEGIN: config.mos"
+
+# MOS package location
+export HOMEgfs_mos=/lfs/h1/ops/prod/packages/gfs_mos.v${mos_ver}
+
+echo "END: config.mos"
