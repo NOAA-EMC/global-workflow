@@ -11,7 +11,7 @@ pipeline {
         stage('Build') {
           steps {
             sh 'sorc/build_all.sh'
-            sh 'sourc/link_workflow.sh'
+            sh 'sorc/link_workflow.sh'
           }
         }
         stage ('Create Experment') {
