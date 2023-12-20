@@ -11,6 +11,7 @@ pipeline {
         stage('Build') {
           steps {
             sh 'sorc/build_all.sh'
+            sh 'sourc/link_workflow.sh'
           }
         }
         stage ('Create Experment') {
@@ -19,7 +20,7 @@ pipeline {
                   export HOMEgfs=$PWD
                   mkdir -p RUNTESTS
                   export RUNTESTS=$PWD/RUNTESTS
-                  source ci/platforms/config.orion.sh
+                  source ci/platforms/config.orion
                   pr_sha=$(git rev-parse --short HEAD)
                   case=C48_ATM
                   export pslot=${case}_${pr_sha}
