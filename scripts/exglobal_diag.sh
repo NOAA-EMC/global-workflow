@@ -91,7 +91,7 @@ if [[ "${GENDIAG}" = "YES" ]] ; then
    if [[ "${lrun_subdirs}" = ".true." ]] ; then
       for pe in "${DIAG_DIR}"/dir.*; do
          pedir=$(basename -- "${pe}")
-         "${NLN}" "${pe}" "${DATA}/${pedir}"
+         ${NLN} "${pe}" "${DATA}/${pedir}"
       done
    else
       err_exit "***FATAL ERROR*** lrun_subdirs must be true.  Abort job"
