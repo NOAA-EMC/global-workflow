@@ -122,12 +122,6 @@ do
 done
 
 
-if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
-  cd "${HOMEgfs}/sorc/ufs_utils.fd/fix" || exit 1
-  ./link_fixdirs.sh "${RUN_ENVIR}" "${machine}" 2> /dev/null
-fi
-
-
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
