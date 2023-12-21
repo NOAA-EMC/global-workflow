@@ -434,18 +434,13 @@ ${NLN} ${OSCATBF}          oscatbufr
 ${NLN} ${RAPIDSCATBF}      rapidscatbufr
 ${NLN} ${GSNDBF}           gsndrbufr
 ${NLN} ${GSNDBF1}          gsnd1bufr
-${NLN} ${B1HRS2}           hirs2bufr
 ${NLN} ${B1MSU}            msubufr
-${NLN} ${B1HRS3}           hirs3bufr
-${NLN} ${B1HRS4}           hirs4bufr
 ${NLN} ${B1AMUA}           amsuabufr
 ${NLN} ${B1AMUB}           amsubbufr
 ${NLN} ${B1MHS}            mhsbufr
-${NLN} ${ESHRS3}           hirs3bufrears
 ${NLN} ${ESAMUA}           amsuabufrears
 ${NLN} ${ESAMUB}           amsubbufrears
 #$NLN $ESMHS            mhsbufrears
-${NLN} ${HRS3DB}           hirs3bufr_db
 ${NLN} ${AMUADB}           amsuabufr_db
 ${NLN} ${AMUBDB}           amsubbufr_db
 #$NLN $MHSDB            mhsbufr_db
@@ -781,8 +776,6 @@ OBS_INPUT::
    sbuvbufr       sbuv2       n16         sbuv8_n16           0.0     0     0
    sbuvbufr       sbuv2       n17         sbuv8_n17           0.0     0     0
    sbuvbufr       sbuv2       n18         sbuv8_n18           0.0     0     0
-   hirs3bufr      hirs3       n17         hirs3_n17           0.0     1     0
-   hirs4bufr      hirs4       metop-a     hirs4_metop-a       0.0     1     1
    gimgrbufr      goes_img    g11         imgr_g11            0.0     1     0
    gimgrbufr      goes_img    g12         imgr_g12            0.0     1     0
    airsbufr       airs        aqua        airs_aqua           0.0     1     1
@@ -816,7 +809,6 @@ OBS_INPUT::
    gomebufr       gome        metop-a     gome_metop-a        0.0     2     0
    omibufr        omi         aura        omi_aura            0.0     2     0
    sbuvbufr       sbuv2       n19         sbuv8_n19           0.0     0     0
-   hirs4bufr      hirs4       n19         hirs4_n19           0.0     1     1
    amsuabufr      amsua       n19         amsua_n19           0.0     1     1
    mhsbufr        mhs         n19         mhs_n19             0.0     1     1
    tcvitl         tcp         null        tcp                 0.0     0     0
@@ -824,9 +816,8 @@ OBS_INPUT::
    seviribufr     seviri      m09         seviri_m09          0.0     1     0
    seviribufr     seviri      m10         seviri_m10          0.0     1     0
    seviribufr     seviri      m11         seviri_m11          0.0     1     0
-   hirs4bufr      hirs4       metop-b     hirs4_metop-b       0.0     1     1
    amsuabufr      amsua       metop-b     amsua_metop-b       0.0     1     1
-   mhsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
+   hsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
    iasibufr       iasi        metop-b     iasi_metop-b        0.0     1     1
    gomebufr       gome        metop-b     gome_metop-b        0.0     2     0
    atmsbufr       atms        npp         atms_npp            0.0     1     1
