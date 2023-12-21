@@ -33,7 +33,7 @@ pipeline {
                    case=C48_ATM
                    export pslot=${case}_${pr_sha}
                    source workflow/gw_setup.sh
-                   workflow/create_experiment.py --yaml ci/cases/pr/${case}
+                   workflow/create_experiment.py --yaml ci/cases/pr/${case}.yaml
                    '''
                 script {   
                   pullRequest.comment('SUCCESS creating experment C48_ATM on Orion') 
