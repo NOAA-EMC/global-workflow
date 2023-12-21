@@ -817,7 +817,7 @@ OBS_INPUT::
    seviribufr     seviri      m10         seviri_m10          0.0     1     0
    seviribufr     seviri      m11         seviri_m11          0.0     1     0
    amsuabufr      amsua       metop-b     amsua_metop-b       0.0     1     1
-   hsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
+   mhsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
    iasibufr       iasi        metop-b     iasi_metop-b        0.0     1     1
    gomebufr       gome        metop-b     gome_metop-b        0.0     2     0
    atmsbufr       atms        npp         atms_npp            0.0     1     1
