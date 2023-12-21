@@ -11,7 +11,7 @@
 #  March-2020 Roberto.Padilla@noaa.gov                                   
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 #export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
 export grids=${grids:-'glo_30m'}  #Native grids
@@ -23,15 +23,15 @@ export FHOUT_WAV=${FHOUT_WAV:-6}
 export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
 export maxtries=${maxtries:-720}
 export cycle=${cycle:-t${cyc}z}
-export GEMwave=${GEMwave:-$HOMEgfs/gempak}
-export FIXwave=${FIXwave:-$HOMEgfs/fix/wave}
+export GEMwave=${GEMwave:-${HOMEgfs}/gempak}
+export FIXwave=${FIXwave:-${HOMEgfs}/fix/wave}
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
-if [ ! -d $DATA ];then
-  mkdir -p $DATA
+if [ ! -d ${DATA} ];then
+  mkdir -p ${DATA}
 fi
 
-cd $DATA
-cp $GEMwave/fix/g2varswmo2.tbl .
+cd ${DATA}
+cp ${GEMwave}/fix/g2varswmo2.tbl .
 
 cpyfil=gds
 garea=dset
@@ -46,11 +46,11 @@ g2tbls=g2varswmo2.tbl
 NAGRIB=nagrib2
 
 maxtries=15
-fhcnt=$fstart
-while [ $fhcnt -le $FHMAX_WAV ]; do
-  fhr=$(printf "%03d" $fhcnt)
-  for grid in $grids;do
-    case $grid in
+fhcnt=${fstart}
+while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
+  fhr=$(printf "%03d" ${fhcnt})
+  for grid in ${grids};do
+    case ${grid} in
       ao_9km)  grdIDin='arctic.9km'
                #grdIDout='gfswaveao9km' ;;
                grdIDout='gfswavearc' ;;
@@ -72,36 +72,36 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                grdIDout= ;;
     esac
     GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
-    GRIBIN_chk=$GRIBIN.idx
+    GRIBIN_chk=${GRIBIN}.idx
 
     icnt=1
-    while [ $icnt -lt 1000 ]; do
-      if [ -r $GRIBIN_chk ] ; then
+    while [ ${icnt} -lt 1000 ]; do
+      if [ -r ${GRIBIN_chk} ] ; then
         break
       else
         let "icnt=icnt+1"
         sleep 20
       fi
-      if [ $icnt -ge $maxtries ]; then
-        msg="ABORTING after 5 minutes of waiting for $GRIBIN."
+      if [ ${icnt} -ge ${maxtries} ]; then
+        msg="ABORTING after 5 minutes of waiting for ${GRIBIN}."
         echo ' '
         echo '**************************** '
         echo '*** ERROR : NO GRIB FILE *** '
         echo '**************************** '
         echo ' '
-        echo $msg
+        echo ${msg}
         set_trace
-        echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
+        echo "${RUNwave} ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB file missing." >> ${wavelog}
         err=1;export err;${errchk} || exit ${err}
       fi
     done
 
     #if [ "$grdIDin" = "global.0p25" && "$grid" = "glo_30m" ]; then
-    if [ "$grdIDin" = "global.0p25" ]; then
-      $WGRIB2 -lola 0:720:0.5 -90:361:0.5 gribfile.$grdIDout.f${fhr}  grib \
-                                          $GRIBIN 1> out 2>&1
+    if [ "${grdIDin}" = "global.0p25" ]; then
+      ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 gribfile.${grdIDout}.f${fhr}  grib \
+                                          ${GRIBIN} 1> out 2>&1
       OK=$?
-      if [ "$OK" != '0' ]; then 
+      if [ "${OK}" != '0' ]; then
         msg="ABNORMAL EXIT: ERROR IN interpolation the global grid"
         #set +x
         echo ' '
@@ -109,66 +109,66 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         echo '*** FATAL ERROR : ERROR IN making  gribfile.$grdID.f${fhr}*** '
         echo '************************************************************* '
         echo ' '
-        echo $msg
+        echo ${msg}
         #set_trace
-        echo "$RUNwave $grdID prdgen $date $cycle : error in grbindex." >> $wavelog
+        echo "${RUNwave} ${grdID} prdgen ${date} ${cycle} : error in grbindex." >> ${wavelog}
         err=2;export err;err_chk
       else
         #cp $GRIBIN gribfile.$grdID.f${fhr}
-        GRIBIN=gribfile.$grdIDout.f${fhr}
+        GRIBIN=gribfile.${grdIDout}.f${fhr}
       fi
     fi
-    echo $GRIBIN  
+    echo ${GRIBIN}
 
     GEMGRD=${grdIDout}_${PDY}${cyc}f${fhr}
 
-    cp $GRIBIN grib_$grid
+    cp ${GRIBIN} grib_${grid}
 
     startmsg
 
-	$NAGRIB <<-EOF
-	GBFILE   = grib_$grid
+	${NAGRIB} <<-EOF
+	GBFILE   = grib_${grid}
 	INDXFL   = 
-	GDOUTF   = $GEMGRD
-	PROJ     = $proj
-	GRDAREA  = $grdarea
-	KXKY     = $kxky
-	MAXGRD   = $maxgrd
-	CPYFIL   = $cpyfil
-	GAREA    = $garea
-	OUTPUT   = $output
-	GBTBLS   = $gbtbls
-	G2TBLS   = $g2tbls
+	GDOUTF   = ${GEMGRD}
+	PROJ     = ${proj}
+	GRDAREA  = ${grdarea}
+	KXKY     = ${kxky}
+	MAXGRD   = ${maxgrd}
+	CPYFIL   = ${cpyfil}
+	GAREA    = ${garea}
+	OUTPUT   = ${output}
+	GBTBLS   = ${gbtbls}
+	G2TBLS   = ${g2tbls}
 	GBDIAG   = 
-	PDSEXT   = $pdsext
+	PDSEXT   = ${pdsext}
 	l
 	r
 	EOF
-    export err=$?;pgm=$NAGRIB;err_chk
+    export err=$?;pgm=${NAGRIB};err_chk
     #####################################################
     # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
     # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
     # FOR THIS CASE HERE.
     #####################################################
-    ls -l $GEMGRD
+    ls -l ${GEMGRD}
     export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
 
-    if [ "$NAGRIB" = "nagrib2" ] ; then
+    if [ "${NAGRIB}" = "nagrib2" ] ; then
       gpend
     fi
 
     cpfs "${GEMGRD}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
-    if [ $SENDDBN = "YES" ] ; then
+    if [ ${SENDDBN} = "YES" ] ; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
     else
         echo "##### DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} ${job} ${COM_WAVE_GEMPAK}/${GEMGRD}#####"
     fi
-    rm grib_$grid
+    rm grib_${grid}
   done
-  if [ $fhcnt -ge $FHMAX_HF_WAV ]; then
-    inc=$FHOUT_WAV
+  if [ ${fhcnt} -ge ${FHMAX_HF_WAV} ]; then
+    inc=${FHOUT_WAV}
   else
-    inc=$FHOUT_HF_WAV
+    inc=${FHOUT_HF_WAV}
   fi
   let fhcnt=fhcnt+inc
 done
