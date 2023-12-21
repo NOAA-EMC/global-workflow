@@ -164,7 +164,7 @@ class GFSTasks(Tasks):
                 [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
 
         for file in files:
-            data = [f'{restart_path}/{file}']
+            data = [f'{restart_path}/', file]
             dep_dict = {'type': 'data', 'data': data, 'offset': [offset, None]}
             deps.append(rocoto.add_dependency(dep_dict))
 
