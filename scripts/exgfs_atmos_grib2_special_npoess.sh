@@ -83,7 +83,7 @@ fi
 export SHOUR=000
 export FHOUR=024
 export FHINC=003
-if [[ "${FHOUR}" -lt "${FHMAX_GFS}" ]]; then
+if [[ "${FHOUR}" -gt "${FHMAX_GFS}" ]]; then
    export FHOUR="${FHMAX_GFS}"
 fi
 
