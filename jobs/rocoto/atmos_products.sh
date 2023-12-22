@@ -25,7 +25,7 @@ for fhr in "${fhrs[@]}"; do
     # The analysis fhr is -001.  Performing math on negative, leading 0 integers is tricky.
     # The negative needs to be in front of "10#", so do some regex magic to make it happen.
     fhr="10#${fhr}"
-    fhr=$( echo "${fhr}" | sed "s/10#-/-10#/" )
+    fhr=${fhr//10#-/-10#}
     export FORECAST_HOUR=$(( fhr ))
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_PRODUCTS"
     status=$?
