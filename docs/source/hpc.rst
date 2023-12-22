@@ -19,6 +19,7 @@ HPC helpdesks
 * WCOSS2: hpc.wcoss2-help@noaa.gov
 * Hera: rdhpcs.hera.help@noaa.gov
 * Orion:  rdhpcs.orion.help@noaa.gov
+* Hercules:  rdhpcs.hercules.help@noaa.gov
 * HPSS: rdhpcs.hpss.help@noaa.gov
 * Gaea: oar.gfdl.help@noaa.gov
 * S4: david.huber@noaa.gov
@@ -72,19 +73,21 @@ Version
 It is advised to use Git v2+ when available. At the time of writing this documentation the default Git clients on the different machines were as noted in the table below. It is recommended that you check the default modules before loading recommended ones:
 
 +---------+----------+---------------------------------------+
-| Machine | Default  | Recommended                           |
+| Machine  | Default  | Recommended                           |
 +---------+----------+---------------------------------------+
-| Hera    | v2.18.0  | default                               |
+| Hera     | v2.18.0  | default                               |
 +---------+----------+---------------------------------------+
-| Orion   | v1.8.3.1 | **module load git/2.28.0**            |
+| Hercules | v2.31.1  | default                               |
 +---------+----------+---------------------------------------+
-| Jet     | v2.18.0  | default                               |
+| Orion    | v1.8.3.1 | **module load git/2.28.0**            |
 +---------+----------+---------------------------------------+
-| WCOSS2  | v2.26.2  | default or **module load git/2.29.0** |
+| Jet      | v2.18.0  | default                               |
 +---------+----------+---------------------------------------+
-| S4      | v1.8.3.1 | **module load git/2.30.0**            |
+| WCOSS2   | v2.26.2  | default or **module load git/2.29.0** |
 +---------+----------+---------------------------------------+
-| AWS PW  | v1.8.3.1 | default
+| S4       | v1.8.3.1 | **module load git/2.30.0**            |
++---------+----------+---------------------------------------+
+| AWS PW   | v1.8.3.1 | default
 +---------+----------+---------------------------------------+
 
 ^^^^^^^^^^^^^
@@ -103,7 +106,7 @@ For the manage_externals utility functioning::
    Fix: git config --global ssh.variant ssh
 
 ========================================
-Stacksize on R&Ds (Hera, Orion, Jet, S4)
+Stacksize on R&Ds (Hera, Orion, Hercules, Jet, S4)
 ========================================
 
 Some GFS components, like the UPP, need an unlimited stacksize. Add the following setting into your appropriate .*rc file to support these components:

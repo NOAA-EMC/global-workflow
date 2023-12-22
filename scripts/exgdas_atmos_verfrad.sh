@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_vrfyrad.sh
+# Script name:         exgdas_atmos_verfrad.sh
 # Script description:  Runs data extract/validation for global radiance diag data
 #
 # Author:        Ed Safford       Org: NP23         Date: 2012-01-18
@@ -19,45 +19,8 @@ source "$HOMEgfs/ush/preamble.sh"
 #
 ################################################################################
 
-export VERBOSE=${VERBOSE:-YES}
-
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
-export envir=${envir:-prod}
-
-#  Filenames
-biascr=${biascr:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias}
-radstat=${radstat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat}
-satype_file=${satype_file:-${FIXgdas}/gdas_radmon_satype.txt}
-
-#  Other variables
-export RAD_AREA=${RAD_AREA:-glb}
-export MAKE_CTL=${MAKE_CTL:-1}
-export MAKE_DATA=${MAKE_DATA:-1}
-export USE_ANL=${USE_ANL:-1}
-export PDATE=${PDY}${cyc}
-export DO_DIAG_RPT=${DO_DIAG_RPT:-1}
-export DO_DATA_RPT=${DO_DATA_RPT:-1}
-export NCP=${NCP:-/bin/cp}
-
-###########################################################################
-# ensure TANK dir exists, verify radstat and biascr are available
-#
-if [[ ! -d ${TANKverf_rad} ]]; then
-   mkdir -p $TANKverf_rad
-fi
-
-if [[ "$VERBOSE" = "YES" ]]; then
-   if [[ -s ${radstat} ]]; then
-      echo ${radstat} is available
-   fi
-   if [[ -s ${biascr} ]]; then
-      echo ${biascr} is available
-   fi
-fi
-#####################################################################
-
 data_available=0
+
 if [[ -s ${radstat} && -s ${biascr} ]]; then
    data_available=1
 
@@ -66,11 +29,11 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  Untar radstat file.
    #------------------------------------------------------------------
 
-   $NCP $biascr  ./biascr.$PDATE
-   $NCP $radstat ./radstat.$PDATE
+   ${NCP} "${biascr}"  "./biascr.${PDY}${cyc}"
+   ${NCP} "${radstat}" "./radstat.${PDY}${cyc}"
 
-   tar -xvf radstat.$PDATE
-   rm radstat.$PDATE
+   tar -xvf "radstat.${PDY}${cyc}"
+   rm "radstat.${PDY}${cyc}"
 
    #------------------------------------------------------------------
    #  SATYPE is the list of expected satellite/instrument sources
@@ -81,25 +44,25 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #------------------------------------------------------------------
 
    radstat_satype=$(ls d*ges* | awk -F_ '{ print $2 "_" $3 }')
-   if [[ "$VERBOSE" = "YES" ]]; then
-      echo $radstat_satype
+   if [[ "${VERBOSE}" = "YES" ]]; then
+      echo "${radstat_satype}"
    fi
 
-   echo satype_file = $satype_file
+   echo satype_file = "${satype_file}"
 
    #------------------------------------------------------------------
    #  Get previous cycle's date, and look for the satype_file.  Using
    #  the previous cycle will get us the previous day's directory if
    #  the cycle being processed is 00z.
    #------------------------------------------------------------------
-   if [[ $cyc = "00" ]]; then
+   if [[ ${cyc} = "00" ]]; then
       use_tankdir=${TANKverf_radM1}
    else
       use_tankdir=${TANKverf_rad}
    fi
 
-   echo satype_file = $satype_file
-   export SATYPE=$(cat ${satype_file})
+   echo satype_file = "${satype_file}"
+   export SATYPE=$(cat "${satype_file}")
 
 
    #-------------------------------------------------------------
@@ -108,16 +71,16 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  to $TANKverf/radmon.$PDY.
    #-------------------------------------------------------------
    satype_changes=0
-   new_satype=$SATYPE
+   new_satype=${SATYPE}
    for type in ${radstat_satype}; do
-      test=$(echo $SATYPE | grep $type | wc -l)
+      type_count=$(echo "${SATYPE}" | grep "${type}" | wc -l)
 
-      if [[ $test -eq 0 ]]; then
-         if [[ "$VERBOSE" = "YES" ]]; then
-            echo "Found $type in radstat file but not in SATYPE list.  Adding it now."
+      if (( type_count == 0 )); then
+         if [[ "${VERBOSE}" = "YES" ]]; then
+            echo "Found ${type} in radstat file but not in SATYPE list.  Adding it now."
          fi
          satype_changes=1
-         new_satype="$new_satype $type"
+         new_satype="${new_satype} ${type}"
       fi
    done
 
@@ -129,43 +92,43 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    for type in ${SATYPE}; do
 
-      if [[ netcdf -eq 0 && -e diag_${type}_ges.${PDATE}.nc4.${Z} ]]; then
+      if (( netcdf == 0 )) && [[ -e "diag_${type}_ges.${PDY}${cyc}.nc4.${Z}" ]]; then
          netcdf=1
       fi
 
-      if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_ges.${PDATE}*.${Z}" | wc -l) -gt 0 ]]; then
-        mv diag_${type}_ges.${PDATE}*.${Z} ${type}.${Z}
-        ${UNCOMPRESS} ./${type}.${Z}
+      if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_ges.${PDY}${cyc}*.${Z}" | wc -l) -gt 0 ]]; then
+        mv "diag_${type}_ges.${PDY}${cyc}"*".${Z}" "${type}.${Z}"
+        ${UNCOMPRESS} "./${type}.${Z}"
       else
-        echo "WARNING: diag_${type}_ges.${PDATE}*.${Z} not available, skipping"
+        echo "WARNING: diag_${type}_ges.${PDY}${cyc}*.${Z} not available, skipping"
       fi
 
-      if [[ $USE_ANL -eq 1 ]]; then
-        if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_anl.${PDATE}*.${Z}" | wc -l) -gt 0 ]]; then
-          mv diag_${type}_anl.${PDATE}*.${Z} ${type}_anl.${Z}
-          ${UNCOMPRESS} ./${type}_anl.${Z}
+      if [[ ${USE_ANL} -eq 1 ]]; then
+        if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_anl.${PDY}${cyc}*.${Z}" | wc -l) -gt 0 ]]; then
+          mv "diag_${type}_anl.${PDY}${cyc}"*".${Z}" "${type}_anl.${Z}"
+          ${UNCOMPRESS} "./${type}_anl.${Z}"
         else
-          echo "WARNING: diag_${type}_anl.${PDATE}*.${Z} not available, skipping"
+          echo "WARNING: diag_${type}_anl.${PDY}${cyc}*.${Z} not available, skipping"
         fi
       fi
    done
 
-   export RADMON_NETCDF=$netcdf
+   export RADMON_NETCDF=${netcdf}
 
 
    #------------------------------------------------------------------
-   #   Run the child sccripts.
+   #   Run the child scripts.
    #------------------------------------------------------------------
-    ${USHradmon}/radmon_verf_angle.sh ${PDATE}
+    "${USHgfs}/radmon_verf_angle.sh"
     rc_angle=$?
 
-    ${USHradmon}/radmon_verf_bcoef.sh ${PDATE}
+    "${USHgfs}/radmon_verf_bcoef.sh"
     rc_bcoef=$?
 
-    ${USHradmon}/radmon_verf_bcor.sh "${PDATE}"
+    "${USHgfs}/radmon_verf_bcor.sh"
     rc_bcor=$?
 
-    ${USHradmon}/radmon_verf_time.sh "${PDATE}"
+    "${USHgfs}/radmon_verf_time.sh"
     rc_time=$?
 
     #--------------------------------------
@@ -174,7 +137,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
     if [[ ${CLEAN_TANKVERF:-0} -eq 1 ]]; then
        "${USHradmon}/clean_tankdir.sh" glb 60
        rc_clean_tankdir=$?
-       echo "rc_clean_tankdir = $rc_clean_tankdir"
+       echo "rc_clean_tankdir = ${rc_clean_tankdir}"
     fi
 
 fi
@@ -187,23 +150,23 @@ fi
 err=0
 if [[ ${data_available} -ne 1 ]]; then
    err=1
-elif [[ $rc_angle -ne 0 ]]; then
-   err=$rc_angle
-elif [[ $rc_bcoef -ne 0 ]]; then
-   err=$rc_bcoef
-elif [[ $rc_bcor -ne 0 ]]; then
-   err=$rc_bcor
-elif [[ $rc_time -ne 0 ]]; then
-   err=$rc_time
+elif [[ ${rc_angle} -ne 0 ]]; then
+   err=${rc_angle}
+elif [[ ${rc_bcoef} -ne 0 ]]; then
+   err=${rc_bcoef}
+elif [[ ${rc_bcor} -ne 0 ]]; then
+   err=${rc_bcor}
+elif [[ ${rc_time} -ne 0 ]]; then
+   err=${rc_time}
 fi
 
 #####################################################################
 # Restrict select sensors and satellites
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 rlist="saphir"
-for rtype in $rlist; do
-  if compgen -G "$TANKverf_rad/*${rtype}*" > /dev/null; then
-     ${CHGRP_CMD} "${TANKverf_rad}"/*${rtype}*
+for rtype in ${rlist}; do
+  if compgen -G "${TANKverf_rad}/"*"${rtype}"* > /dev/null; then
+     ${CHGRP_CMD} "${TANKverf_rad}/"*"${rtype}"*
   fi
 done
 

@@ -26,6 +26,8 @@ case $(hostname -f) in
 
   Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
 
+  [Hh]ercules-login-[1-4].[Hh][Pp][Cc].[Mm]s[Ss]tate.[Ee]du) MACHINE_ID=hercules ;; ### hercules1-4
+
   cheyenne[1-6].cheyenne.ucar.edu)     MACHINE_ID=cheyenne ;; ### cheyenne1-6
   cheyenne[1-6].ib0.cheyenne.ucar.edu) MACHINE_ID=cheyenne ;; ### cheyenne1-6
   chadmin[1-6].ib0.cheyenne.ucar.edu)  MACHINE_ID=cheyenne ;; ### cheyenne1-6
@@ -64,8 +66,13 @@ elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
   MACHINE_ID=hera
 elif [[ -d /work ]] ; then
-  # We are on MSU Orion
-  MACHINE_ID=orion
+  # We are on MSU Orion or Hercules
+  if [[ -d /apps/other ]] ; then
+    # We are on Hercules
+    MACHINE_ID=hercules
+  else
+    MACHINE_ID=orion
+  fi
 elif [[ -d /glade ]] ; then
   # We are on NCAR Yellowstone
   MACHINE_ID=cheyenne

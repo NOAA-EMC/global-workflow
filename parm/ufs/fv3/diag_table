@@ -34,6 +34,7 @@
 "ocean_model", "ePBL_h_ML",  "ePBL",      "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model", "MLD_003",    "MLD_003",   "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model", "MLD_0125",   "MLD_0125",  "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
+"ocean_model", "tob",        "tob",       "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 
 # Z-Space Fields Provided for CMIP6 (CMOR Names):
 "ocean_model_z", "uo",    "uo",    "ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
@@ -98,6 +99,7 @@
 "gfs_dyn",     "w",           "dzdt",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "ps",          "pressfc",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "hs",          "hgtsfc",       "fv3_history",    "all",  .false.,  "none",  2
+"gfs_phys",    "refl_10cm",   "refl_10cm",    "fv3_history",    "all",  .false.,  "none",  2
 
 "gfs_phys",    "cldfra",        "cldfra",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "frzr",          "frzr",          "fv3_history2d",  "all",  .false.,  "none",  2
@@ -264,7 +266,6 @@
 "gfs_sfc",     "xzts",          "xzts",         "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "d_conv",        "dconv",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "qrain",         "qrain",        "fv3_history2d",  "all",  .false.,  "none",  2
-
 
 #=============================================================================================
 #

@@ -14,7 +14,8 @@ if [[ $# -ne 1 ]]; then
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "landanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag fcst post echgres"
+    echo "anal sfcanl analcalc analdiag fcst echgres"
+    echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -53,6 +54,8 @@ elif [[ "${machine}" = "AWSPW" ]]; then
      export PARTITION_BATCH="compute"
      export npe_node_max=40
 elif [[ ${machine} = "ORION" ]]; then
+   export npe_node_max=40
+elif [[ ${machine} = "HERCULES" ]]; then
    export npe_node_max=40
 fi
 
@@ -705,21 +708,16 @@ elif [[ "${step}" = "upp" ]]; then
     fi
     export is_exclusive=True
 
-elif [[ ${step} = "post" ]]; then
+elif [[ ${step} = "atmos_products" ]]; then
 
-    export wtime_post="00:12:00"
-    export wtime_post_gfs="01:00:00"
-    export npe_post=126
-    res=$(echo "${CASE}" | cut -c2-)
-    if (( npe_post > res )); then
-      export npe_post=${res}
-    fi
-    export nth_post=1
-    export npe_node_post=${npe_post}
-    export npe_node_post_gfs=${npe_post}
-    export npe_node_dwn=${npe_node_max}
-    if [[ "${npe_node_post}" -gt "${npe_node_max}" ]]; then export npe_node_post=${npe_node_max} ; fi
-    if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
+    export wtime_atmos_products="00:15:00"
+    export npe_atmos_products=24
+    export nth_atmos_products=1
+    export npe_node_atmos_products="${npe_atmos_products}"
+    export wtime_atmos_products_gfs="${wtime_atmos_products}"
+    export npe_atmos_products_gfs="${npe_atmos_products}"
+    export nth_atmos_products_gfs="${nth_atmos_products}"
+    export npe_node_atmos_products_gfs="${npe_node_atmos_products}"
     export is_exclusive=True
 
 elif [[ ${step} = "verfozn" ]]; then
@@ -732,7 +730,7 @@ elif [[ ${step} = "verfozn" ]]; then
 
 elif [[ ${step} = "verfrad" ]]; then
 
-    export wtime_verfrad="00:20:00"
+    export wtime_verfrad="00:40:00"
     export npe_verfrad=1
     export nth_verfrad=1
     export npe_node_verfrad=1
@@ -1031,6 +1029,153 @@ elif [[ ${step} = "gempak" ]]; then
     export nth_gempak=1
     export memory_gempak="4GB"
     export memory_gempak_gfs="2GB"
+
+elif [[ ${step} = "mos_stn_prep" ]]; then
+
+    export wtime_mos_stn_prep="00:10:00"
+    export npe_mos_stn_prep=3
+    export npe_node_mos_stn_prep=3
+    export nth_mos_stn_prep=1
+    export memory_mos_stn_prep="5GB"
+    export NTASK="${npe_mos_stn_prep}"
+    export PTILE="${npe_node_mos_stn_prep}"
+
+elif [[ ${step} = "mos_grd_prep" ]]; then
+
+    export wtime_mos_grd_prep="00:10:00"
+    export npe_mos_grd_prep=4
+    export npe_node_mos_grd_prep=4
+    export nth_mos_grd_prep=1
+    export memory_mos_grd_prep="16GB"
+    export NTASK="${npe_mos_grd_prep}"
+    export PTILE="${npe_node_mos_grd_prep}"
+
+elif [[ ${step} = "mos_ext_stn_prep" ]]; then
+
+    export wtime_mos_ext_stn_prep="00:15:00"
+    export npe_mos_ext_stn_prep=2
+    export npe_node_mos_ext_stn_prep=2
+    export nth_mos_ext_stn_prep=1
+    export memory_mos_ext_stn_prep="5GB"
+    export NTASK="${npe_mos_ext_stn_prep}"
+    export PTILE="${npe_node_mos_ext_stn_prep}"
+
+elif [[ ${step} = "mos_ext_grd_prep" ]]; then
+
+    export wtime_mos_ext_grd_prep="00:10:00"
+    export npe_mos_ext_grd_prep=7
+    export npe_node_mos_ext_grd_prep=7
+    export nth_mos_ext_grd_prep=1
+    export memory_mos_ext_grd_prep="3GB"
+    export NTASK="${npe_mos_ext_grd_prep}"
+    export PTILE="${npe_node_mos_ext_grd_prep}"
+
+elif [[ ${step} = "mos_stn_fcst" ]]; then
+
+    export wtime_mos_stn_fcst="00:10:00"
+    export npe_mos_stn_fcst=5
+    export npe_node_mos_stn_fcst=5
+    export nth_mos_stn_fcst=1
+    export memory_mos_stn_fcst="40GB"
+    export NTASK="${npe_mos_stn_fcst}"
+    export PTILE="${npe_node_mos_stn_fcst}"
+
+elif [[ ${step} = "mos_grd_fcst" ]]; then
+
+    export wtime_mos_grd_fcst="00:10:00"
+    export npe_mos_grd_fcst=7
+    export npe_node_mos_grd_fcst=7
+    export nth_mos_grd_fcst=1
+    export memory_mos_grd_fcst="50GB"
+    export NTASK="${npe_mos_grd_fcst}"
+    export PTILE="${npe_node_mos_grd_fcst}"
+
+elif [[ ${step} = "mos_ext_stn_fcst" ]]; then
+
+    export wtime_mos_ext_stn_fcst="00:20:00"
+    export npe_mos_ext_stn_fcst=3
+    export npe_node_mos_ext_stn_fcst=3
+    export nth_mos_ext_stn_fcst=1
+    export memory_mos_ext_stn_fcst="50GB"
+    export NTASK="${npe_mos_ext_stn_fcst}"
+    export PTILE="${npe_node_mos_ext_stn_fcst}"
+    export prepost=True
+
+elif [[ ${step} = "mos_ext_grd_fcst" ]]; then
+
+    export wtime_mos_ext_grd_fcst="00:10:00"
+    export npe_mos_ext_grd_fcst=7
+    export npe_node_mos_ext_grd_fcst=7
+    export nth_mos_ext_grd_fcst=1
+    export memory_mos_ext_grd_fcst="50GB"
+    export NTASK="${npe_mos_ext_grd_fcst}"
+    export PTILE="${npe_node_mos_ext_grd_fcst}"
+
+elif [[ ${step} = "mos_stn_prdgen" ]]; then
+
+    export wtime_mos_stn_prdgen="00:10:00"
+    export npe_mos_stn_prdgen=1
+    export npe_node_mos_stn_prdgen=1
+    export nth_mos_stn_prdgen=1
+    export memory_mos_stn_prdgen="15GB"
+    export NTASK="${npe_mos_stn_prdgen}"
+    export PTILE="${npe_node_mos_stn_prdgen}"
+    export prepost=True
+
+elif [[ ${step} = "mos_grd_prdgen" ]]; then
+
+    export wtime_mos_grd_prdgen="00:40:00"
+    export npe_mos_grd_prdgen=72
+    export npe_node_mos_grd_prdgen=18
+    export nth_mos_grd_prdgen=4
+    export memory_mos_grd_prdgen="20GB"
+    export NTASK="${npe_mos_grd_prdgen}"
+    export PTILE="${npe_node_mos_grd_prdgen}"
+    export OMP_NUM_THREADS="${nth_mos_grd_prdgen}"
+
+elif [[ ${step} = "mos_ext_stn_prdgen" ]]; then
+
+    export wtime_mos_ext_stn_prdgen="00:10:00"
+    export npe_mos_ext_stn_prdgen=1
+    export npe_node_mos_ext_stn_prdgen=1
+    export nth_mos_ext_stn_prdgen=1
+    export memory_mos_ext_stn_prdgen="15GB"
+    export NTASK="${npe_mos_ext_stn_prdgen}"
+    export PTILE="${npe_node_mos_ext_stn_prdgen}"
+    export prepost=True
+
+elif [[ ${step} = "mos_ext_grd_prdgen" ]]; then
+
+    export wtime_mos_ext_grd_prdgen="00:30:00"
+    export npe_mos_ext_grd_prdgen=96
+    export npe_node_mos_ext_grd_prdgen=6
+    export nth_mos_ext_grd_prdgen=16
+    export memory_mos_ext_grd_prdgen="30GB"
+    export NTASK="${npe_mos_ext_grd_prdgen}"
+    export PTILE="${npe_node_mos_ext_grd_prdgen}"
+    export OMP_NUM_THREADS="${nth_mos_ext_grd_prdgen}"
+
+elif [[ ${step} = "mos_wx_prdgen" ]]; then
+
+    export wtime_mos_wx_prdgen="00:10:00"
+    export npe_mos_wx_prdgen=4
+    export npe_node_mos_wx_prdgen=2
+    export nth_mos_wx_prdgen=2
+    export memory_mos_wx_prdgen="10GB"
+    export NTASK="${npe_mos_wx_prdgen}"
+    export PTILE="${npe_node_mos_wx_prdgen}"
+    export OMP_NUM_THREADS="${nth_mos_wx_prdgen}"
+
+elif [[ ${step} = "mos_wx_ext_prdgen" ]]; then
+
+    export wtime_mos_wx_ext_prdgen="00:10:00"
+    export npe_mos_wx_ext_prdgen=4
+    export npe_node_mos_wx_ext_prdgen=2
+    export nth_mos_wx_ext_prdgen=2
+    export memory_mos_wx_ext_prdgen="10GB"
+    export NTASK="${npe_mos_wx_ext_prdgen}"
+    export PTILE="${npe_node_mos_wx_ext_prdgen}"
+    export OMP_NUM_THREADS="${nth_mos_wx_ext_prdgen}"
 
 else
 

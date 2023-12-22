@@ -18,34 +18,38 @@ class GFSForecastOnlyAppConfig(AppConfig):
         configs = ['stage_ic', 'fcst', 'arch', 'cleanup']
 
         if self.do_atm:
-            configs += ['post']
 
-        if self.do_aero:
-            configs += ['aerosol_init']
+            if self.do_upp:
+                configs += ['upp']
+
+            configs += ['atmos_products']
+
+            if self.do_aero:
+                configs += ['aerosol_init']
+
+            if self.do_tracker:
+                configs += ['tracker']
+
+            if self.do_genesis:
+                configs += ['genesis']
+
+            if self.do_genesis_fsu:
+                configs += ['genesis_fsu']
+
+            if self.do_metp:
+                configs += ['metp']
+
+            if self.do_bufrsnd:
+                configs += ['postsnd']
+
+            if self.do_gempak:
+                configs += ['gempak']
+
+            if self.do_awips:
+                configs += ['awips']
 
         if self.do_ocean or self.do_ice:
             configs += ['ocnpost']
-
-        if self.do_atm and self.do_tracker:
-            configs += ['tracker']
-
-        if self.do_atm and self.do_genesis:
-            configs += ['genesis']
-
-        if self.do_atm and self.do_genesis_fsu:
-            configs += ['genesis_fsu']
-
-        if self.do_atm and self.do_metp:
-            configs += ['metp']
-
-        if self.do_bufrsnd:
-            configs += ['postsnd']
-
-        if self.do_gempak:
-            configs += ['gempak']
-
-        if self.do_awips:
-            configs += ['awips']
 
         if self.do_wave:
             configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
@@ -55,6 +59,12 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 configs += ['wavegempak']
             if self.do_awips:
                 configs += ['waveawipsbulls', 'waveawipsgridded']
+
+        if self.do_mos:
+            configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                        'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                        'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                        'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         return configs
 
@@ -86,22 +96,35 @@ class GFSForecastOnlyAppConfig(AppConfig):
         tasks += ['fcst']
 
         if self.do_atm:
-            tasks += ['post']
 
-        if self.do_ocean:
+            if self.do_upp:
+                tasks += ['atmupp']
+
+            tasks += ['atmprod']
+
+            if self.do_tracker:
+                tasks += ['tracker']
+
+            if self.do_genesis:
+                tasks += ['genesis']
+
+            if self.do_genesis_fsu:
+                tasks += ['genesis_fsu']
+
+            if self.do_metp:
+                tasks += ['metp']
+
+            if self.do_bufrsnd:
+                tasks += ['postsnd']
+
+            if self.do_gempak:
+                tasks += ['gempak', 'gempakmeta', 'gempakncdcupapgif', 'gempakpgrb2spec']
+
+            if self.do_awips:
+                tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']
+
+        if self.do_ocean or self.do_ice:
             tasks += ['ocnpost']
-
-        if self.do_atm and self.do_tracker:
-            tasks += ['tracker']
-
-        if self.do_atm and self.do_genesis:
-            tasks += ['genesis']
-
-        if self.do_atm and self.do_genesis_fsu:
-            tasks += ['genesis_fsu']
-
-        if self.do_atm and self.do_metp:
-            tasks += ['metp']
 
         if self.do_wave:
             if self.do_wave_bnd:
@@ -112,18 +135,11 @@ class GFSForecastOnlyAppConfig(AppConfig):
             if self.do_awips:
                 tasks += ['waveawipsbulls', 'waveawipsgridded']
 
-        if self.do_bufrsnd:
-            tasks += ['postsnd']
-
-        if self.do_gempak:
-            tasks += ['gempak']
-
-        if self.do_awips:
-            tasks += ['awips']
-            tasks += ['fbwinds']
-
-        if self.do_wafs:
-            tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
+        if self.do_mos:
+            tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                      'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                      'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                      'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
 

@@ -72,7 +72,7 @@ case "${machine}" in
   "WCOSS2")
     npe_node_max=128
     ;;
-  "HERA" | "ORION")
+  "HERA" | "ORION" | "HERCULES")
     npe_node_max=40
     ;;
   "JET")

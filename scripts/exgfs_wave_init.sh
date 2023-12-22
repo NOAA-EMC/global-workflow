@@ -210,6 +210,17 @@ source "${HOMEgfs}/ush/preamble.sh"
     fi
   done
 
+# Copy to other members if needed
+if (( NMEM_ENS > 0 )); then
+  for mem in $(seq -f "%03g" 1 "${NMEM_ENS}"); do
+    MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} generate_com COM_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
+    mkdir -p "${COM_WAVE_PREP_MEM}"
+    for grdID in ${grdALL}; do
+      ${NLN} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "${COM_WAVE_PREP_MEM}/"
+    done
+  done
+fi
+
 # --------------------------------------------------------------------------- #
 # 2.  Ending
 

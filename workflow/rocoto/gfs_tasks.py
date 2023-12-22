@@ -87,7 +87,7 @@ class GFSTasks(Tasks):
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gdasatmprod', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
@@ -164,7 +164,7 @@ class GFSTasks(Tasks):
                 [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
 
         for file in files:
-            data = [f'{restart_path}', file]
+            data = [f'{restart_path}/', file]
             dep_dict = {'type': 'data', 'data': data, 'offset': [offset, None]}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -552,68 +552,150 @@ class GFSTasks(Tasks):
 
         return task
 
-    def post(self):
-        return self._post_task('post')
-
-    def postanl(self):
+    def atmanlupp(self):
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': 'anl',
-                          'ROTDIR': self._base.get('ROTDIR')}
-
+        postenvar_dict = {'FHRLST': 'f000',
+                          'UPP_RUN': 'analysis'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        deps = []
         atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
+        deps = []
+        data = f'{atm_anl_path}/{self.cdump}.t@Hz.atmanl.nc'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{atm_anl_path}/{self.cdump}.t@Hz.sfcanl.nc'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_anl_path}/{self.cdump}.t@Hz.loganl.txt'
-        dep_dict = {'type': 'data', 'data': data}
+        dep_dict = {'type': 'data', 'data': data, 'age': 60}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        resources = self.get_resource('upp')
+        task = create_wf_task('atmanlupp', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              cycledef=self.cdump, command='&JOBS_DIR;/upp.sh')
+
+        return task
+
+    def atmanlprod(self):
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHRLST': '-f001'}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"])
+        deps = []
+        data = f'{atm_master_path}/{self.cdump}.t@Hz.master.grb2anl'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        resources = self.get_resource('post')
-        task = create_wf_task('postanl', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              cycledef=self.cdump)
+        resources = self.get_resource('atmos_products')
+        task = create_wf_task('atmanlprod', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              cycledef=self.cdump, command='&JOBS_DIR;/atmos_products.sh')
+
+        return task
+
+    @staticmethod
+    def _get_ufs_postproc_grps(cdump, config):
+
+        fhmin = config['FHMIN']
+        fhmax = config['FHMAX']
+        fhout = config['FHOUT']
+
+        # Get a list of all forecast hours
+        fhrs = []
+        if cdump in ['gdas']:
+            fhrs = range(fhmin, fhmax + fhout, fhout)
+        elif cdump in ['gfs']:
+            fhmax = np.max(
+                [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
+            fhout = config['FHOUT_GFS']
+            fhmax_hf = config['FHMAX_HF_GFS']
+            fhout_hf = config['FHOUT_HF_GFS']
+            fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
+            fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+
+        nfhrs_per_grp = config.get('NFHRS_PER_GROUP', 1)
+        ngrps = len(fhrs) // nfhrs_per_grp if len(fhrs) % nfhrs_per_grp == 0 else len(fhrs) // nfhrs_per_grp + 1
+
+        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
+        fhrs = np.array_split(fhrs, ngrps)
+        fhrs = [fhr.tolist() for fhr in fhrs]
+
+        grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
+        dep = ' '.join([fhr[-1] for fhr in fhrs])
+        lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
+
+        return grp, dep, lst
+
+    def atmupp(self):
+
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs['upp'])
+        vardict = {varname2: varval2, varname3: varval3}
+
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHRLST': '#lst#',
+                          'UPP_RUN': 'forecast'}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
+        deps = []
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm#dep#.nc'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.sfc#dep#.nc'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm.log#dep#.txt'
+        dep_dict = {'type': 'data', 'data': data, 'age': 60}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+        resources = self.get_resource('upp')
+        task = create_wf_task('atmupp', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              metatask='atmupp', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef,
+                              command='&JOBS_DIR;/upp.sh')
+
+        return task
+
+    def atmprod(self):
+
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs['atmos_products'])
+        vardict = {varname2: varval2, varname3: varval3}
+
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHRLST': '#lst#'}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"])
+        deps = []
+        data = f'{atm_master_path}/{self.cdump}.t@Hz.master.grb2#dep#'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+        resources = self.get_resource('atmos_products')
+        task = create_wf_task('atmprod', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              metatask='atmprod', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef,
+                              command='&JOBS_DIR;/atmos_products.sh')
 
         return task
 
     def ocnpost(self):
-        if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
-            return self._post_task('ocnpost')
 
-    def _post_task(self, task_name):
-        if task_name not in ['post', 'ocnpost']:
-            raise KeyError(f'Invalid post-processing task: {task_name}')
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs['ocnpost'])
+        vardict = {varname2: varval2, varname3: varval3}
 
-        def _get_postgroups(cdump, config):
-
-            fhmin = config['FHMIN']
-            fhmax = config['FHMAX']
-            fhout = config['FHOUT']
-
-            # Get a list of all forecast hours
-            fhrs = []
-            if cdump in ['gdas']:
-                fhrs = range(fhmin, fhmax + fhout, fhout)
-            elif cdump in ['gfs']:
-                fhmax = np.max(
-                    [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
-                fhout = config['FHOUT_GFS']
-                fhmax_hf = config['FHMAX_HF_GFS']
-                fhout_hf = config['FHOUT_HF_GFS']
-                fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
-                fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
-
-            npostgrp = config['NPOSTGRP']
-            ngrps = npostgrp if len(fhrs) > npostgrp else len(fhrs)
-
-            fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-            fhrs = np.array_split(fhrs, ngrps)
-            fhrs = [fhr.tolist() for fhr in fhrs]
-
-            grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
-            dep = ' '.join([fhr[-1] for fhr in fhrs])
-            lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
-
-            return grp, dep, lst
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHRLST': '#lst#',
+                          'ROTDIR': self._base.get('ROTDIR')}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         deps = []
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
@@ -623,22 +705,10 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-
-        postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#lst#',
-                          'ROTDIR': self._base.get('ROTDIR')}
-        for key, value in postenvar_dict.items():
-            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name])
-        vardict = {varname2: varval2, varname3: varval3}
-
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
-
-        resources = self.get_resource(task_name)
-        task = create_wf_task(task_name, resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              metatask=task_name, varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
+        resources = self.get_resource('ocnpost')
+        task = create_wf_task('ocnpost', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              metatask='ocnpost', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
 
         return task
 
@@ -731,60 +801,6 @@ class GFSTasks(Tasks):
 
         return task
 
-    def wafs(self):
-        return self._wafs_task('wafs')
-
-    def wafsgcip(self):
-        return self._wafs_task('wafsgcip')
-
-    def wafsgrib2(self):
-        return self._wafs_task('wafsgrib2')
-
-    def wafsgrib20p25(self):
-        return self._wafs_task('wafsgrib20p25')
-
-    def _wafs_task(self, task_name):
-        if task_name not in ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25']:
-            raise KeyError(f'Invalid WAFS task: {task_name}')
-
-        wafs_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_WAFS_TMPL"])
-
-        deps = []
-        fhrlst = [6] + [*range(12, 36 + 3, 3)]
-        for fhr in fhrlst:
-            data = f'{wafs_path}/{self.cdump}.t@Hz.wafs.grb2if{fhr:03d}'
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource(task_name)
-        task = create_wf_task(task_name, resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def wafsblending(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}wafsgrib2'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('wafsblending')
-        task = create_wf_task('wafsblending', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def wafsblending0p25(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}wafsgrib20p25'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('wafsblending0p25')
-        task = create_wf_task('wafsblending0p25', resources, cdump=self.cdump, envar=self.envars,
-                              dependency=dependencies)
-
-        return task
-
     def postsnd(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
@@ -796,7 +812,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def fbwinds(self):
+    def fbwind(self):
 
         atmos_prod_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_GRIB_GRID_TMPL"], {'RUN': self.cdump, 'GRID': '0p25'})
         deps = []
@@ -818,50 +834,51 @@ class GFSTasks(Tasks):
         # prematurely starting with partial files. Unfortunately, the
         # ability to "group" post would make this more convoluted than
         # it should be and not worth the complexity.
-        task = create_wf_task('fbwinds', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('fbwind', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
-    def awips(self):
+    @staticmethod
+    def _get_awipsgroups(cdump, config):
 
-        def _get_awipsgroups(cdump, config):
+        fhmin = config['FHMIN']
+        fhmax = config['FHMAX']
+        fhout = config['FHOUT']
 
-            fhmin = config['FHMIN']
-            fhmax = config['FHMAX']
-            fhout = config['FHOUT']
+        # Get a list of all forecast hours
+        fhrs = []
+        if cdump in ['gdas']:
+            fhrs = range(fhmin, fhmax + fhout, fhout)
+        elif cdump in ['gfs']:
+            fhmax = np.max(
+                [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
+            fhout = config['FHOUT_GFS']
+            fhmax_hf = config['FHMAX_HF_GFS']
+            fhout_hf = config['FHOUT_HF_GFS']
+            if fhmax > 240:
+                fhmax = 240
+            if fhmax_hf > 240:
+                fhmax_hf = 240
+            fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
+            fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
-            # Get a list of all forecast hours
-            fhrs = []
-            if cdump in ['gdas']:
-                fhrs = range(fhmin, fhmax + fhout, fhout)
-            elif cdump in ['gfs']:
-                fhmax = np.max(
-                    [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
-                fhout = config['FHOUT_GFS']
-                fhmax_hf = config['FHMAX_HF_GFS']
-                fhout_hf = config['FHOUT_HF_GFS']
-                if fhmax > 240:
-                    fhmax = 240
-                if fhmax_hf > 240:
-                    fhmax_hf = 240
-                fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-                fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+        nawipsgrp = config['NAWIPSGRP']
+        ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
 
-            nawipsgrp = config['NAWIPSGRP']
-            ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
+        fhrs = np.array_split(fhrs, ngrps)
+        fhrs = [fhr.tolist() for fhr in fhrs]
 
-            fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-            fhrs = np.array_split(fhrs, ngrps)
-            fhrs = [fhr.tolist() for fhr in fhrs]
+        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
+        dep = ' '.join([fhr[-1] for fhr in fhrs])
+        lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
 
-            grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-            dep = ' '.join([fhr[-1] for fhr in fhrs])
-            lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
+        return grp, dep, lst
 
-            return grp, dep, lst
+    def awips_20km_1p0deg(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -873,19 +890,43 @@ class GFSTasks(Tasks):
             awipsenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = _get_awipsgroups(self.cdump, self._configs['awips'])
+        varval1, varval2, varval3 = self._get_awipsgroups(self.cdump, self._configs['awips'])
         vardict = {varname2: varval2, varname3: varval3}
 
         resources = self.get_resource('awips')
-        task = create_wf_task('awips', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
-                              metatask='awips', varname=varname1, varval=varval1, vardict=vardict)
+        task = create_wf_task('awips_20km_1p0deg', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
+                              metatask='awips_20km_1p0deg', varname=varname1, varval=varval1, vardict=vardict)
+
+        return task
+
+    def awips_g2(self):
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        awipsenvars = self.envars.copy()
+        awipsenvar_dict = {'FHRGRP': '#grp#',
+                           'FHRLST': '#lst#',
+                           'ROTDIR': self._base.get('ROTDIR')}
+        for key, value in awipsenvar_dict.items():
+            awipsenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = self._get_awipsgroups(self.cdump, self._configs['awips'])
+        vardict = {varname2: varval2, varname3: varval3}
+
+        resources = self.get_resource('awips')
+        task = create_wf_task('awips_g2', resources, cdump=self.cdump, envar=awipsenvars, dependency=dependencies,
+                              metatask='awips_g2', varname=varname1, varval=varval1, vardict=vardict)
 
         return task
 
     def gempak(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -894,15 +935,58 @@ class GFSTasks(Tasks):
 
         return task
 
-    def npoess(self):
+    def gempakmeta(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakmeta', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakmetancdc(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakmetancdc', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakncdcupapgif(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakncdcupapgif', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def gempakpgrb2spec(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}npoess_pgrb2_0p5deg'}
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('gempak')
+        task = create_wf_task('gempakpgrb2spec', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def npoess_pgrb2_0p5deg(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('npoess')
-        task = create_wf_task('npoess', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('npoess_pgrb2_0p5deg', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -941,7 +1025,7 @@ class GFSTasks(Tasks):
 
     def tracker(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -952,7 +1036,7 @@ class GFSTasks(Tasks):
 
     def genesis(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -963,7 +1047,7 @@ class GFSTasks(Tasks):
 
     def genesis_fsu(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -974,7 +1058,7 @@ class GFSTasks(Tasks):
 
     def fit2obs(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1007,19 +1091,200 @@ class GFSTasks(Tasks):
 
         return task
 
+    def mos_stn_prep(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_stn_prep')
+        task = create_wf_task('mos_stn_prep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_grd_prep(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_grd_prep')
+        task = create_wf_task('mos_grd_prep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_stn_prep(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_ext_stn_prep')
+        task = create_wf_task('mos_ext_stn_prep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_grd_prep(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_ext_grd_prep')
+        task = create_wf_task('mos_ext_grd_prep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_stn_fcst(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_stn_fcst')
+        task = create_wf_task('mos_stn_fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_grd_fcst(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_grd_fcst')
+        task = create_wf_task('mos_grd_fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_stn_fcst(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_stn_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_ext_stn_fcst')
+        task = create_wf_task('mos_ext_stn_fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_grd_fcst(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_stn_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_grd_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_ext_grd_fcst')
+        task = create_wf_task('mos_ext_grd_fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_stn_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_stn_prdgen')
+        task = create_wf_task('mos_stn_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_grd_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_grd_prdgen')
+        task = create_wf_task('mos_grd_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_stn_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_stn_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_stn_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_ext_stn_prdgen')
+        task = create_wf_task('mos_ext_stn_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_ext_grd_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_grd_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_stn_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_ext_grd_prdgen')
+        task = create_wf_task('mos_ext_grd_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_wx_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_grd_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('mos_wx_prdgen')
+        task = create_wf_task('mos_wx_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def mos_wx_ext_prdgen(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_ext_grd_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_wx_prdgen'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('mos_wx_ext_prdgen')
+        task = create_wf_task('mos_wx_ext_prdgen', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def arch(self):
         deps = []
         dependencies = []
         if self.app_config.mode in ['cycled']:
             if self.cdump in ['gfs']:
-                dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlprod'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_vminmon:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.cdump in ['gdas']:  # Block for handling half cycle dependencies
                 deps2 = []
-                dep_dict = {'type': 'task', 'name': f'{self.cdump}postanl'}
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlprod'}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_fit2obs:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
@@ -1047,7 +1312,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis_fsu'}
             deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmprod'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostsbs'}
@@ -1060,6 +1325,15 @@ class GFSTasks(Tasks):
         if self.app_config.do_ocean:
             if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
                 dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
+                deps.append(rocoto.add_dependency(dep_dict))
+        # MOS job dependencies
+        if self.cdump in ['gfs'] and self.app_config.do_mos:
+            mos_jobs = ["stn_prep", "grd_prep", "ext_stn_prep", "ext_grd_prep",
+                        "stn_fcst", "grd_fcst", "ext_stn_fcst", "ext_grd_fcst",
+                        "stn_prdgen", "grd_prdgen", "ext_stn_prdgen", "ext_grd_prdgen",
+                        "wx_prdgen", "wx_ext_prdgen"]
+            for job in mos_jobs:
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_{job}'}
                 deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps + dependencies)
