@@ -57,14 +57,25 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('stage_ic')
-        task = create_wf_task('stage_ic', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task_dict = {'task_name': 'stage_ic',
+                     'cdump': self.cdump,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars
+                     }
+        task = create_wf_task(task_dict)
 
         return task
 
     def waveinit(self):
 
         resources = self.get_resource('waveinit')
-        task = create_wf_task('waveinit', resources, cdump=self.cdump, envar=self.envars, dependency=None)
+        task_dict = {'task_name': 'waveinit',
+                     'cdump': self.cdump,
+                     'resources': resources,
+                     'envars': self.envars
+                     }
+        task = create_wf_task(task_dict)
 
         return task
 
@@ -81,7 +92,13 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         resources = self.get_resource('fcst')
-        task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task_dict = {'task_name': 'fcst',
+                     'cdump': self.cdump,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars
+                     }
+        task = create_wf_task(task_dict)
 
         return task
 
@@ -100,9 +117,24 @@ class GEFSTasks(Tasks):
         efcsenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['efcs']['NMEM_EFCSGRP'])
+        var_dict = {'grp': groups}
 
         resources = self.get_resource('efcs')
-        task = create_wf_task('efcs', resources, cdump=self.cdump, envar=efcsenvars, dependency=dependencies,
-                              metatask='efmn', varname='grp', varval=groups, cycledef='gefs')
+
+        task_dict = {'task_name': 'efcs',
+                     'cdump': self.cdump,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': efcsenvars,
+                     'cycledef': 'gefs'
+                     }
+
+        metatask_dict = {'task_name': 'efmn',
+                         'cdump': self.cdump,
+                         'var_dict': var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = create_wf_task(metatask_dict)
 
         return task

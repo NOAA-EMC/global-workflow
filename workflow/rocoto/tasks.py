@@ -199,32 +199,38 @@ class Tasks:
                                  f'{", ".join(Tasks.VALID_TASKS)}')
 
 
-def create_wf_task(task_name, resources,
-                   cdump='gdas', cycledef=None, envar=None, dependency=None,
-                   metatask=None, varname=None, varval=None, vardict=None,
-                   final=False, command=None):
-    tasknamestr = f'{cdump}{task_name}'
-    metatask_dict = None
-    if metatask is not None:
-        tasknamestr = f'{tasknamestr}#{varname}#'
-        metatask_dict = {'metataskname': f'{cdump}{metatask}',
-                         'varname': f'{varname}',
-                         'varval': f'{varval}',
-                         'vardict': vardict}
+def create_wf_task(task_dict):
+    """
+    Create XML for a rocoto task or metatask
 
-    cycledefstr = cdump.replace('enkf', '') if cycledef is None else cycledef
+    Creates the XML required to define a task and returns the lines
+    as a list of strings. Tasks can be nested to create metatasks by
+    defining a key 'task_dict' within the task_dict. When including
+    a nested task, you also need to provide a 'var_dict' key that
+    contains a dictionary of variables to loop over.
 
-    task_dict = {'taskname': f'{tasknamestr}',
-                 'cycledef': f'{cycledefstr}',
-                 'maxtries': '&MAXTRIES;',
-                 'command': f'&JOBS_DIR;/{task_name}.sh' if command is None else command,
-                 'jobname': f'&PSLOT;_{tasknamestr}_@H',
-                 'resources': resources,
-                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{tasknamestr}.log',
-                 'envars': envar,
-                 'dependency': dependency,
-                 'final': final}
+    All task dicts must include a 'task_name' and a 'cdump'.
 
-    task = rocoto.create_task(task_dict) if metatask is None else rocoto.create_metatask(task_dict, metatask_dict)
+    Innermost tasks (regular tasks) additionally require a 'resources'
+    key containing a dict of values defining the HPC settings.
+
+    Parameters
+    ----------
+    task_dict: dict
+        Dictionary of task definitions
+
+    Returns
+    -------
+    str
+        The XML code defining the task
+
+    Raises
+    ------
+    KeyError
+        If a required key is missing
+
+    """
+
+    task = rocoto.create_task(task_dict)
 
     return ''.join(task)
