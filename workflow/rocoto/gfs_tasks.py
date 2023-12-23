@@ -712,7 +712,7 @@ class GFSTasks(Tasks):
                      'cdump': self.cdump,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': postenvars,
                      'cycledef': self.cdump,
                      'command': '&JOBS_DIR;/upp.sh'
                      }
@@ -737,7 +737,7 @@ class GFSTasks(Tasks):
                      'cdump': self.cdump,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': postenvars,
                      'cycledef': self.cdump,
                      'command': '&JOBS_DIR;/atmos_products.sh'
                      }
@@ -891,8 +891,7 @@ class GFSTasks(Tasks):
                      'cycledef': cycledef,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': postenvars,
-                     'command': '&JOBS_DIR;/atmos_products.sh'
+                     'envars': postenvars
                      }
 
         metatask_dict = {'task_name': 'ocnpost',
