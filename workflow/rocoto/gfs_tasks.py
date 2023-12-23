@@ -810,7 +810,7 @@ class GFSTasks(Tasks):
                      'cycledef': cycledef,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': postenvars,
                      'command': '&JOBS_DIR;/upp.sh'
                      }
 
@@ -1892,8 +1892,8 @@ class GFSTasks(Tasks):
 
         var_dict = {'grp': groups}
 
-        resources = self.get_resource(f'eomg#grp#')
-        task_dict = {'task_name': 'eomg',
+        resources = self.get_resource('eomg')
+        task_dict = {'task_name': f'eomg#grp#',
                      'cdump': self.cdump,
                      'resources': resources,
                      'dependency': dependencies,
