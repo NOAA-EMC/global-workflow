@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from typing import Union, List, Dict, Any
+import re
 
 '''
     MODULE:
@@ -114,7 +115,7 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     cycledef = task_dict.get('cycledef', cdump.replace('enkf', ''))
     maxtries = task_dict.get('maxtries', '&MAXTRIES;')
     final = task_dict.get('final', False)
-    command = task_dict.get('command', f'&JOBS_DIR;/{base_taskname}.sh')
+    command = task_dict.get('command', f'&JOBS_DIR;/{re.sub("#.+?#", "", base_taskname)}.sh')
     jobname = task_dict.get('jobname', f'&PSLOT;_{taskname}_@H')
     resources_dict = task_dict['resources']
     account = resources_dict.get('account', 'batch')

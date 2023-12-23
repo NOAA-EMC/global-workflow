@@ -125,7 +125,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('waveinit')
         dependencies = None
-        cycledef = None
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         if self.app_config.mode in ['cycled']:
             deps = []
             dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
@@ -134,7 +134,6 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-            cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
         task_dict = {'task_name': 'waveinit',
                      'cdump': self.cdump,
@@ -1894,7 +1893,7 @@ class GFSTasks(Tasks):
 
         var_dict = {'grp': groups}
 
-        resources = self.get_resource('eomg')
+        resources = self.get_resource(f'eomg#grp#')
         task_dict = {'task_name': 'eomg',
                      'cdump': self.cdump,
                      'resources': resources,
@@ -2055,7 +2054,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('ecen')
 
-        task_dict = {'task_name': 'ecen',
+        task_dict = {'task_name': f'ecen#{varname1}#',
                      'cdump': self.cdump,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2120,7 +2119,7 @@ class GFSTasks(Tasks):
 
         var_dict = {'grp': groups}
 
-        task_dict = {'task_name': 'efcs',
+        task_dict = {'task_name': f'efcs#grp#',
                      'cdump': self.cdump,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2207,7 +2206,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('epos')
 
-        task_dict = {'task_name': 'epos',
+        task_dict = {'task_name': f'epos#{varname1}#',
                      'cdump': self.cdump,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2243,7 +2242,7 @@ class GFSTasks(Tasks):
 
         var_dict = {'grp': groups}
 
-        task_dict = {'task_name': 'earc',
+        task_dict = {'task_name': f'earc#grp#',
                      'cdump': self.cdump,
                      'resources': resources,
                      'dependency': dependencies,

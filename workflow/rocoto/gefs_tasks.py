@@ -121,7 +121,7 @@ class GEFSTasks(Tasks):
 
         resources = self.get_resource('efcs')
 
-        task_dict = {'task_name': 'efcs',
+        task_dict = {'task_name': 'efcs#grp#',
                      'cdump': self.cdump,
                      'resources': resources,
                      'dependency': dependencies,
