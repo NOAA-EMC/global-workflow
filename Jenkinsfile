@@ -2,7 +2,7 @@
 def cases="cases"
 //def case_list_output="C48_S2SW C48_S2SWA_gefs C48_ATM"
 pipeline {
-    agent none
+    agent{ label 'orion-emc'}
 
     environment {
         HOMEgfs = "${WORKSPACE}"
