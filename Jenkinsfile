@@ -71,7 +71,6 @@ pipeline {
     }
 
     post {
-    agent{ label 'orion-emc'}
         success {
             script {
                 pullRequest.removeLabel('CI-Orion-Running')
