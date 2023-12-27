@@ -21,6 +21,8 @@ pipeline {
           steps {
             sh 'sorc/build_all.sh'
             sh 'sorc/link_workflow.sh'
+          }
+          steps {
             env.CASE_LIST = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
           }
         }
