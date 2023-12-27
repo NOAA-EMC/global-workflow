@@ -46,7 +46,7 @@ pipeline {
                     cases.each { case_name ->
                         stage("Run ${case_name}") {
                         agent{ label 'orion-emc'}
-                            steps {
+                            //steps {
                               sh '''
                               export HOMEgfs=${env.HOMEgfs}
                               mkdir -p ${env.RUNTESTS}
@@ -61,7 +61,7 @@ pipeline {
                               script {
                               pullRequest.comment("SUCCESS creating ${case_name} on Orion")
                               }
-                            }
+                            //}
                         }
                     }
                 }
