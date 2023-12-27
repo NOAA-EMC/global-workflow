@@ -25,6 +25,7 @@ pipeline {
             sh 'sorc/link_workflow.sh'
             script {
               case_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
+              case_list.removeAt(0)
               cases=case_list.tokenize('\n')
             }
             echo "cases: ${cases}"
@@ -36,7 +37,6 @@ pipeline {
                 script {
                     pullRequest.removeLabel('CI-Orion-Building')
                     pullRequest.addLabel('CI-Orion-Running')
-                    cases.removeAt(0)
                     echo "cases: ${cases}"
                     cases.each { case_name ->
                         stage("Run ${case_name}") {
