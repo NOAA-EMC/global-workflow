@@ -2,7 +2,7 @@
 def cases="cases"
 //def case_list_output="C48_S2SW C48_S2SWA_gefs C48_ATM"
 pipeline {
-    agent{ label 'orion-emc'}
+    agent none
 
     environment {
         HOMEgfs = "${WORKSPACE}"
@@ -11,6 +11,7 @@ pipeline {
 
     stages {    
         stage('Checkout') {
+        agent{ label 'orion-emc'}
             steps {
                 checkout scm
                 script {
@@ -21,6 +22,7 @@ pipeline {
             }
         }
         stage('Build') {
+        agent{ label 'orion-emc'}
           steps {
             // sh 'sorc/build_all.sh'
             sh 'sorc/link_workflow.sh'
@@ -35,6 +37,7 @@ pipeline {
         }
  
         stage('Create Cases') {
+        agent{ label 'orion-emc'}
             steps {
                 script {
                     pullRequest.removeLabel('CI-Orion-Building')
@@ -42,6 +45,8 @@ pipeline {
                     echo "cases: ${cases}"
                     cases.each { case_name ->
                         stage("Run ${case_name}") {
+                        agent{ label 'orion-emc'}
+                            steps {
                               sh '''
                               export HOMEgfs=${env.HOMEgfs}
                               mkdir -p ${env.RUNTESTS}
@@ -56,6 +61,7 @@ pipeline {
                               script {
                               pullRequest.comment("SUCCESS creating ${case_name} on Orion")
                               }
+                            }
                         }
                     }
                 }
@@ -65,6 +71,7 @@ pipeline {
     }
 
     post {
+    agent{ label 'orion-emc'}
         success {
             script {
                 pullRequest.removeLabel('CI-Orion-Running')
