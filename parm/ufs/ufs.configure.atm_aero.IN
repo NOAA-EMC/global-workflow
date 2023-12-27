@@ -9,7 +9,7 @@ globalResourceControl:  true
 # EARTH #
 EARTH_component_list: ATM CHM
 EARTH_attributes::
-  Verbosity = max
+  Verbosity = 0
 ::
 
 # ATM #
@@ -17,7 +17,7 @@ ATM_model:                      @[atm_model]
 ATM_petlist_bounds:             @[atm_petlist_bounds]
 ATM_omp_num_threads:            @[atm_omp_num_threads]
 ATM_attributes::
-  Verbosity = max
+  Verbosity = 0
 ::
 
 # CHM #
@@ -25,7 +25,7 @@ CHM_model:                      @[chm_model]
 CHM_petlist_bounds:             @[chm_petlist_bounds]
 CHM_omp_num_threads:            @[chm_omp_num_threads]
 CHM_attributes::
-  Verbosity = max
+  Verbosity = 0
 ::
 
 # Run Sequence #
@@ -37,14 +37,4 @@ runSeq::
     CHM -> ATM
     ATM phase2
   @
-::
-
-# CMEPS variables
-
-DRIVER_attributes::
-  mediator_read_restart = .false.
-::
-
-ALLCOMP_attributes::
-  start_type = startup
 ::
