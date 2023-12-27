@@ -29,9 +29,11 @@ pipeline {
             }
           }
         }
-
-        cases.each { case_name ->
-            stage("Run ${case_name}") {
+ 
+        stage('Create Cases') {
+          stages {
+            cases.each { case_name ->
+                stage("Run ${case_name}") {
                 steps {
                     sh '''
                        export HOMEgfs=${env.HOMEgfs}
@@ -48,9 +50,10 @@ pipeline {
                         pullRequest.comment("SUCCESS creating ${case_name} on Orion")
                     }
                 }
-            }
-        }
 
+            }
+          }
+        }
     }
 
     post {
