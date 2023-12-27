@@ -48,9 +48,7 @@ pipeline {
                         agent{ label 'orion-emc'}
                             //steps {
                               sh '''
-                              export HOMEgfs=${env.HOMEgfs}
                               mkdir -p ${env.RUNTESTS}
-                              export RUNTESTS=${env.RUNTESTS}
                               source ci/platforms/config.orion
                               pr_sha=$(git rev-parse --short HEAD)
                               case=${case_name}
