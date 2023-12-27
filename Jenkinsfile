@@ -1,6 +1,5 @@
 
 def cases="cases"
-//def case_list_output="C48_S2SW C48_S2SWA_gefs C48_ATM"
 pipeline {
     agent{ label 'orion-emc'}
 
@@ -48,7 +47,7 @@ pipeline {
                         agent{ label 'orion-emc'}
                             //steps {
                               sh '''
-                              mkdir -p ${env.RUNTESTS}
+                              mkdir -p ${RUNTESTS}
                               source ci/platforms/config.orion
                               pr_sha=$(git rev-parse --short HEAD)
                               case=${case_name}
