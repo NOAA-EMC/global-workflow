@@ -22,3 +22,16 @@ function cancel_slurm_jobs() {
     fi
   done
 }
+
+function get_pr_case_list () {
+
+    #############################################################
+    # loop over every yaml file in the PR's ci/cases
+    # and create an run directory for each one for this PR loop
+    #############################################################
+    echo ${HOMEgfs}
+    for yaml_config in "${HOMEgfs}/ci/cases/pr/"*.yaml; do
+      case=$(basename "${yaml_config}" .yaml) || true
+      echo "${case}"
+    done
+}
