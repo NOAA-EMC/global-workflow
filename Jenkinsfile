@@ -50,13 +50,12 @@ pipeline {
                               mkdir -p ${RUNTESTS}
                               source ci/platforms/config.orion
                               pr_sha=$(git rev-parse --short HEAD)
-                              case=${case_name}
-                              export pslot=${case}_${pr_sha}
+                              export pslot=${case_name}_${pr_sha}
                               source workflow/gw_setup.sh
-                              workflow/create_experiment.py --yaml ci/cases/pr/${case}.yaml
+                              workflow/create_experiment.py --yaml ci/cases/pr/${case_name}.yaml
                               '''
                               script {
-                              pullRequest.comment("SUCCESS creating ${case_name} on Orion")
+                               pullRequest.comment("SUCCESS creating ${case_name} on Orion")
                               }
                             //}
                         }
