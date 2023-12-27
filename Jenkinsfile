@@ -25,10 +25,11 @@ pipeline {
             sh 'sorc/link_workflow.sh'
             script {
               case_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
+              case_list.tokenize('\n')
               case_list.removeAt(0)
-              cases=case_list.tokenize('\n')
+              cases=case_list
+              echo "cases: ${cases}"
             }
-            echo "cases: ${cases}"
           }
         }
  
