@@ -21,12 +21,13 @@ pipeline {
         }
         stage('Build') {
           steps {
-            sh 'sorc/build_all.sh'
+            // sh 'sorc/build_all.sh'
             sh 'sorc/link_workflow.sh'
             script {
               case_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
               cases=case_list.tokenize('\n')
             }
+            echo "cases: ${cases}"
           }
         }
  
