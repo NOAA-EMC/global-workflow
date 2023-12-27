@@ -35,7 +35,9 @@ pipeline {
             steps {
                 script {
                     pullRequest.removeLabel('CI-Orion-Building')
-                    pullRequest.addLabel('CI-Orion-Running')  
+                    pullRequest.addLabel('CI-Orion-Running')
+                    case.removeAt(0)
+                    echo "cases: ${cases}"
                     cases.each { case_name ->
                         stage("Run ${case_name}") {
                             steps {
