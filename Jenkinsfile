@@ -1,5 +1,6 @@
 
 def cases="cases"
+def case_list_output="C48_S2SW C48_S2SWA_gefs C48_ATM"
 pipeline {
     agent{ label 'orion-emc'}
 
@@ -24,9 +25,9 @@ pipeline {
             // sh 'sorc/build_all.sh'
             sh 'sorc/link_workflow.sh'
             script {
-              case_list_ouput = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
+              //case_list_ouput = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
               case_list = case_list_ouput.tokenize('\n')
-              case_list.removeAt(0)
+              //case_list.removeAt(0)
               cases=case_list
               echo "cases: ${cases}"
             }
