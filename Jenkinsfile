@@ -44,7 +44,6 @@ pipeline {
                     echo "cases: ${cases}"
                     cases.each { case_name ->
                         stage("Run ${case_name}") {
-                        agent{ label 'orion-emc'}
                             //steps {
                               sh '''
                               mkdir -p ${RUNTESTS}
