@@ -38,16 +38,16 @@ pipeline {
         stage('Create Experiments') {
         agent{ label 'orion-emc'}
             cases.each { case_name ->
-              parallel {
                 stage("Create ${case_name}") {
-                agent{ label 'orion-emc'}
-                    steps {
-                      script { env.case = case_name }
-                      sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
-                    }  
+                   cases[ "${case_name}"] = {
+                        node(label 'orion-emc') {
+                           script { env.case = case_name }
+                           sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
+                        }
+                    }
                 }
-              }
             }
+            parallel cases
             script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
         }
     }
