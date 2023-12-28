@@ -53,6 +53,8 @@ pipeline {
                               pr_sha=$(git rev-parse --short HEAD)
                               export pslot=${case}_${pr_sha}
                               source workflow/gw_setup.sh
+                              unset HOMEgfs
+                              HOMEgfs=${WORKSPACE}
                               workflow/create_experiment.py --yaml ci/cases/pr/${case}.yaml
                               '''
                               script {
