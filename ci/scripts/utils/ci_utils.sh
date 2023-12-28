@@ -34,3 +34,14 @@ function get_pr_case_list () {
       echo "${case}"
     done
 }
+
+function create_experiment () {
+  
+  yaml_config="${1}"
+  source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+  pr_sha=$(git rev-parse --short HEAD)
+  export pslot=${case}_${pr_sha}
+  source "${HOMEgfs}/workflow/gw_setup.sh"
+  "${HOMEgfs}/workflow/create_experiment.py" --yaml "${yaml_config}"
+
+}
