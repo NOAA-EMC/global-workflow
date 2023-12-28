@@ -29,7 +29,6 @@ pipeline {
             script {
               case_list_output = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
               cases = case_list_output.tokenize('\n')
-              echo "cases: ${cases}"
             }
           }
         }
@@ -37,32 +36,17 @@ pipeline {
         stage('Create Experiments') {
         agent{ label 'orion-emc'}
             steps {
-                sh '''
-                   rm -rf ${RUNTESTS}
-                   mkdir -p ${RUNTESTS}
-                   '''
+                sh 'mkdir -p ${RUNTESTS}'
                 script {
                     pullRequest.removeLabel('CI-Orion-Building')
                     pullRequest.addLabel('CI-Orion-Running')
-                    echo "cases: ${cases}"
                     cases.each { case_name ->
                         stage("Create ${case_name}") {
-                            script {
-                                env.case = case_name
-                            }
-                            sh '''
-                               source ci/platforms/config.orion
-                               pr_sha=$(git rev-parse --short HEAD)
-                               export pslot=${case}_${pr_sha}
-                               source workflow/gw_setup.sh
-                                HOMEgfs=${WORKSPACE}
-                                workflow/create_experiment.py --yaml ci/cases/pr/${case}.yaml
-                                '''
-                            script {
-                                  pullRequest.comment("SUCCESS creating ${case_name} on Orion")
-                            }
+                            script { env.case = case_name }
+                            sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                         }
                     }
+                    script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
                 }
             }
         }
