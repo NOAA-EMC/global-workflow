@@ -48,6 +48,7 @@ pipeline {
                                env.case = case_name
                              }
                               sh '''
+                              rm -rf ${RUNTESTS}
                               mkdir -p ${RUNTESTS}
                               source ci/platforms/config.orion
                               pr_sha=$(git rev-parse --short HEAD)
