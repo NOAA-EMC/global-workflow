@@ -49,8 +49,8 @@ pipeline {
                         }
                     }
                     script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
+                    parallel run_cases 
                 }
-               parallel run_cases 
             }
         }
     }    
