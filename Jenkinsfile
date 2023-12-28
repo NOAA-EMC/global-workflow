@@ -48,6 +48,24 @@ pipeline {
                 }
             }
         }
+
+        stage('Run Experiments') {
+        agent{ label 'orion-emc'}
+            steps {
+                script {
+                    experiment_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list", returnStdout: true ).trim()
+                    experiments = experiment_list.tokenize('\n')
+                    experiments.each { experiment_name ->
+                        stage("Run ${experiment_name}") {
+                            agent{ label 'orion-emc'}
+                              script { env.experiment = experiment_name }
+                              sh '${WORKSPACE}/ci/scripts/run-check.sh ${WORKSPACE} ${experiment}'
+                        }
+                    }
+                    script { pullRequest.comment("SUCCESS running experiments: ${experiments} on Orion") }
+                }
+            }
+        }
     }    
 
     post {

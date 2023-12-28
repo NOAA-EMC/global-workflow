@@ -21,7 +21,7 @@ pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this scr
 #     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}
-HOMEgfs="${TEST_DIR}/HOMEgfs"
+HOMEgfs="${TEST_DIR}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 
 # Source modules and setup logging

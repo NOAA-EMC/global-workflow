@@ -43,7 +43,8 @@ function get_pslot_list () {
     # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for pslot in "${RUNTESTS}/EXPDIR/"*; do
+    for pslot_dir in "${RUNTESTS}/EXPDIR/"*; do
+      pslot=$(basename "${plsot_dir}") || true
       echo "${pslot}"
     done
 
