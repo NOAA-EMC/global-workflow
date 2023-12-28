@@ -1,4 +1,6 @@
 
+def run_cases = [:]
+
 pipeline {
     agent{ label 'orion-emc'}
 
@@ -38,7 +40,7 @@ pipeline {
                     case_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
                     cases = case_list.tokenize('\n')
                     cases.each { case_name ->
-                        parallel {
+                        run_cases["${case_name}"] = {
                         stage("Create ${case_name}") {
                             agent{ label 'orion-emc'}
                               script { env.case = case_name }
@@ -48,6 +50,7 @@ pipeline {
                     }
                     script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
                 }
+               parallel run_cases 
             }
         }
     }    
