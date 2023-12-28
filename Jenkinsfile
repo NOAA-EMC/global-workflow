@@ -1,3 +1,4 @@
+define cases_map = [:]
 
 pipeline {
     agent{ label 'orion-emc'}
@@ -37,16 +38,18 @@ pipeline {
  
         stage('Create Experiments') {
         agent{ label 'orion-emc'}
+            script {
             cases.each { case_name ->
                 stage("Create ${case_name}") {
                 agent{ label 'orion-emc'}
-                   cases[ "${case_name}"] = {
+                   cases_map[ "${case_name}"] = {
                         script { env.case = case_name }
                         sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                     }
                 }
             }
-            parallel cases
+            }
+            parallel cases_map
             script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
         }
     }
