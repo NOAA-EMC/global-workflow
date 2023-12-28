@@ -42,8 +42,10 @@ pipeline {
                     cases.each { case_name ->
                         stage("Create ${case_name}") {
                         run_cases["${case_name}"] = {
+                              node('case-creator') {
                               script { env.case = case_name }
                               sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
+                              }
                         }
                         }
                     }
