@@ -44,9 +44,10 @@ pipeline {
                     echo "cases: ${cases}"
                     cases.each { case_name ->
                         stage("Run ${case_name}") {
-                            //steps {
+                            script {
+                               env.case = case_name
+                             }
                               sh '''
-                              case=${env.case_name}
                               mkdir -p ${RUNTESTS}
                               source ci/platforms/config.orion
                               pr_sha=$(git rev-parse --short HEAD)
@@ -57,7 +58,6 @@ pipeline {
                               script {
                                pullRequest.comment("SUCCESS creating ${case_name} on Orion")
                               }
-                            //}
                         }
                     }
                 }
