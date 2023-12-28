@@ -35,6 +35,20 @@ function get_pr_case_list () {
     done
 }
 
+function get_pslot_list () {
+
+    local RUNTESTS="${1}"
+  
+    #############################################################
+    # loop over every yaml file in the PR's ci/cases
+    # and create an run directory for each one for this PR loop
+    #############################################################
+    for pslot in "${RUNTESTS}/EXPDIR/"*; do
+      echo "${pslot}"
+    done
+
+}
+
 function create_experiment () {
   
   yaml_config="${1}"
