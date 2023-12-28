@@ -50,6 +50,7 @@ pipeline {
             }
             script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
         }
+    }
 
     post {
         success {
