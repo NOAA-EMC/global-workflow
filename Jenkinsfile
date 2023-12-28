@@ -23,7 +23,7 @@ pipeline {
         stage('Build') {
         agent{ label 'orion-emc'}
           steps {
-            sh 'sorc/build_all.sh -gu'
+            //sh 'sorc/build_all.sh -gu'
             sh 'sorc/link_workflow.sh'
           }
         }
@@ -53,7 +53,7 @@ pipeline {
         agent{ label 'orion-emc'}
             steps {
                 script {
-                    experiment_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list", returnStdout: true ).trim()
+                    experiment_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list ${RUNTESTS}", returnStdout: true ).trim()
                     experiments = experiment_list.tokenize('\n')
                     experiments.each { experiment_name ->
                         stage("Run ${experiment_name}") {
