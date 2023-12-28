@@ -38,6 +38,7 @@ pipeline {
  
         stage('Create Experiments') {
         agent{ label 'orion-emc'}
+            steps {
             script {
             cases.each { case_name ->
                 stage("Create ${case_name}") {
@@ -47,6 +48,7 @@ pipeline {
                         sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                     }
                 }
+            }
             }
             }
             parallel cases_map
