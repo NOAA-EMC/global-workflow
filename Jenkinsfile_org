@@ -4,11 +4,11 @@ pipeline {
     agent{ label 'orion-emc'}
 
     environment {
-        HOMEgfs = "${WORKSPACE}"
         RUNTESTS = "${WORKSPACE}/RUNTESTS"
     }
 
-    stages {    
+    stages {
+
         stage('Checkout') {
         agent{ label 'orion-emc'}
             steps {
@@ -20,6 +20,7 @@ pipeline {
                 sh 'git submodule update --init --recursive'
             }
         }
+
         stage('Build') {
         agent{ label 'orion-emc'}
           steps {
@@ -27,9 +28,7 @@ pipeline {
             sh 'sorc/link_workflow.sh'
             script {
               case_list_output = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
-              case_list = case_list_output.tokenize('\n')
-              case_list.remove(0)
-              cases=case_list
+              cases = case_list_output.tokenize('\n').remove(0)
               echo "cases: ${cases}"
             }
           }
@@ -38,23 +37,25 @@ pipeline {
         stage('Create Cases') {
         agent{ label 'orion-emc'}
             steps {
-                script {
-                    pullRequest.removeLabel('CI-Orion-Building')
-                    pullRequest.addLabel('CI-Orion-Running')
+                    sh '''
+                       rm -rf ${RUNTESTS}
+                       mkdir -p ${RUNTESTS}
+                       '''
+                    script {
+                      pullRequest.removeLabel('CI-Orion-Building')
+                      pullRequest.addLabel('CI-Orion-Running')
+                    }
                     echo "cases: ${cases}"
                     cases.each { case_name ->
                         stage("Create ${case_name}") {
                             script {
                                env.case = case_name
-                             }
+                              }
                               sh '''
-                              rm -rf ${RUNTESTS}
-                              mkdir -p ${RUNTESTS}
                               source ci/platforms/config.orion
                               pr_sha=$(git rev-parse --short HEAD)
                               export pslot=${case}_${pr_sha}
                               source workflow/gw_setup.sh
-                              unset HOMEgfs
                               HOMEgfs=${WORKSPACE}
                               workflow/create_experiment.py --yaml ci/cases/pr/${case}.yaml
                               '''
