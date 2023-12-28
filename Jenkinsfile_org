@@ -38,8 +38,8 @@ pipeline {
         agent{ label 'orion-emc'}
             steps {
                     sh '''
-                       rm -rf ${RUNTESTS}
-                       mkdir -p ${RUNTESTS}
+                        rm -rf ${RUNTESTS}
+                        mkdir -p ${RUNTESTS}
                        '''
                     script {
                       pullRequest.removeLabel('CI-Orion-Building')
@@ -52,12 +52,12 @@ pipeline {
                                env.case = case_name
                               }
                               sh '''
-                              source ci/platforms/config.orion
-                              pr_sha=$(git rev-parse --short HEAD)
-                              export pslot=${case}_${pr_sha}
-                              source workflow/gw_setup.sh
-                              HOMEgfs=${WORKSPACE}
-                              workflow/create_experiment.py --yaml ci/cases/pr/${case}.yaml
+                                source ci/platforms/config.orion
+                                pr_sha=$(git rev-parse --short HEAD)
+                                export pslot=${case}_${pr_sha}
+                                source workflow/gw_setup.sh
+                                HOMEgfs=${WORKSPACE}
+                                workflow/create_experiment.py --yaml ci/cases/pr/${case}.yaml
                               '''
                               script {
                                pullRequest.comment("SUCCESS creating ${case_name} on Orion")
