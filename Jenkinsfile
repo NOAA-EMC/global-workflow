@@ -23,7 +23,7 @@ pipeline {
         stage('Build') {
         agent{ label 'orion-emc'}
           steps {
-            //sh 'sorc/build_all.sh'
+            sh 'sorc/build_all.sh -gu'
             sh 'sorc/link_workflow.sh'
           }
         }
