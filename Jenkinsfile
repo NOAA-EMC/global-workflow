@@ -25,32 +25,29 @@ pipeline {
           steps {
             //sh 'sorc/build_all.sh'
             sh 'sorc/link_workflow.sh'
+            sh 'mkdir -p ${RUNTESTS}'
+            script {
+                pullRequest.removeLabel('CI-Orion-Building')
+                pullRequest.addLabel('CI-Orion-Running')
+                case_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
+                cases = case_list.tokenize('\n')
+            }
           }
         }
  
         stage('Create Experiments') {
         agent{ label 'orion-emc'}
-            steps {
-                sh 'mkdir -p ${RUNTESTS}'
-                script {
-                    pullRequest.removeLabel('CI-Orion-Building')
-                    pullRequest.addLabel('CI-Orion-Running')
-                    case_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
-                    cases = case_list.tokenize('\n')
-                    cases.each { case_name ->
-                        stage("Create ${case_name}") {
-                            agent{ label 'orion-emc'}
-                            steps {
-                              script { env.case = case_name }
-                              sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
-                            }  
-                        }
-                    }
-                    script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
+            cases.each { case_name ->
+                stage("Create ${case_name}") {
+                agent{ label 'orion-emc'}
+                    steps {
+                      script { env.case = case_name }
+                      sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
+                    }  
                 }
             }
+            script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
         }
-    }    
 
     post {
         success {
