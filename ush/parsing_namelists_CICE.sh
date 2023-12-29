@@ -50,31 +50,38 @@ local SYEAR=${current_cycle:0:4}
 local SMONTH=${current_cycle:4:2}
 local SDAY=${current_cycle:6:2}
 local SECS=${sec}
-local DT_ICE=${ICETIM}
-local NPT=${npt}  # TBT [To be templated in ice_in_template; UFSWM sets to 999]
-local CICERUNTYPE=${runtype}
-local RUNID="unknown"
-local USE_RESTART_TIME=${use_restart_time}
-local RESTART_DIR="./CICE_RESTART/"  # TBT [UFSWM sets to './RESTART/']
-local RESTART_FILE="cice_model.res"  # TBT [UFSWM sets to 'iced']
-local DUMPFREQ=${dumpfreq}
-local DUMPFREQ_N=${dumpfreq_n}
-local DIAG_FREQ=6  # The template variable should be DIAGFREQ, not DIAG_FREQ (it goes against other variable conventions used)
-local HISTFREQ_N="0, 0, ${FHOUT}, 1, 1"  # TBT [UFSWM sets to '0, 0, 6, 1, 1']
-local CICE_HIST_AVG=${cice_hist_avg}
-local HISTORY_DIR="./CICE_OUTPUT/"  # TBT [UFSWM sets to './history/']
-local INCOND_DIR="./CICE_OUTPUT/"  # TBT [UFSWM sets to './history/']
+local DT_CICE=${ICETIM}
+local CICE_NPT=${npt}
+local CICE_RUNTYPE=${runtype}
+local CICE_RUNID="unknown"
+local CICE_USE_RESTART_TIME=${use_restart_time}
+local CICE_RESTART_DIR="./CICE_RESTART/"
+local CICE_RESTART_FILE="cice_model.res"
+local CICE_DUMPFREQ="y"  # "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
+local CICE_DUMPFREQ_N=10000  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
+local CICE_DIAGFREQ=6
+local CICE_HISTFREQ_N="0, 0, ${FHOUT}, 1, 1"
+if [[ "${RUN}" =~ "gdas" ]]; then
+  local CICE_HIST_AVG=".false., .false., .false., .false., .false."   # DA needs instantaneous
+else
+  local CICE_HIST_AVG=".true., .true., .true., .true., .true."    # GFS long forecaset wants averaged over CICE_HISTFREQ_N
+fi
+local CICE_HISTORY_DIR="./CICE_OUTPUT/"
+local CICE_INCOND_DIR="./CICE_OUTPUT/"
 # grid_nml section
-local CICEGRID="${ice_grid_file}"
-local CICEMASK="${ice_kmt_file}"
-local GRIDATM="A"  # A-grid for atmosphere (FV3)
-local GRIDOCN="A"  # A-grid for ocean (MOM6)
-local GRIDICE="B"  # B-grid for seaice (CICE6)
+local CICE_GRID="${ice_grid_file}"
+local CICE_MASK="${ice_kmt_file}"
+local CICE_GRIDATM="A"  # A-grid for atmosphere (FV3)
+local CICE_GRIDOCN="A"  # A-grid for ocean (MOM6)
+local CICE_GRIDICE="B"  # B-grid for seaice (CICE6)
 # tracer_nml section
-local TR_POND_LVL=${tr_pond_lvl}  # TBT [UFSWM sets to '.true.']
-local RESTART_POND_LVL=${restart_pond_lvl}  # TBT [UFSWM sets to '.false.']
+local CICE_TR_POND_LVL=".true."  # Use level melt ponds
+# (if CICE_TR_POND_LVL=true):
+  #   -- if true, initialize the level ponds from restart (if runtype=continue)
+  #   -- if false, re-initialize level ponds to zero (if runtype=initial or continue)
+local CICE_RESTART_POND_LVL=".false."  # Restart level ponds from restart file (if runtype=continue)
 # thermo_nml section
-local KTHERM=${ktherm}
+local CICE_KTHERM=2  # 0=zero-layer thermodynamics, 1=fixed-salinity profile, 2=mushy thermodynamics
 # dynamics_nml section
 # NONE
 # shortwave_nml section
@@ -84,19 +91,19 @@ local KTHERM=${ktherm}
 # snow_nml section
 # NONE
 # forcing_nml section
-#local FRAZIL_FWSALT=${FRAZIL_FWSALT}
-local TFREEZE_OPTION=${tfrz_option}
+local CICE_FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
+local CICE_TFREEZE_OPTION=${tfrz_option:-"mushy"}
 # domain_nml section
-local NPROC_ICE=${ntasks_cice6}
+local CICE_NPROC=${ntasks_cice6}
 #local NX_GLB=${NX_GLB}
 #local NY_GLB=${NY_GLB}
-local BLCKX=${block_size_x}
-local BLCKY=${block_size_y}
+local CICE_BLCKX=${block_size_x}
+local CICE_BLCKY=${block_size_y}
 local CICE_DECOMP=${processor_shape}
 
 # Ensure the template exists
-template="${HOMEgfs}/parm/ufs/ice_in_template"
-if [[ ! -f ${template} ]]; then
+local template=${CICE_TEMPLATE:-"${HOMEgfs}/parm/ufs/ice_in.IN"}
+if [[ ! -f ${tempate} ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi

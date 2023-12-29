@@ -92,7 +92,12 @@ parm/post/postxconfig-NT-gefs-aerosol.txt
 parm/post/postxconfig-NT-gefs-chem.txt
 parm/ufs/noahmptable.tbl
 parm/ufs/model_configure.IN
-parm/ufs/ice_in_template
+parm/ufs/MOM_input_025.IN
+parm/ufs/MOM_input_050.IN
+parm/ufs/MOM_input_100.IN
+parm/ufs/MOM_input_500.IN
+parm/ufs/MOM6_data_table.IN
+parm/ufs/ice_in.IN
 parm/wafs
 
 # Ignore sorc and logs folders from externals

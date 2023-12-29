@@ -4,12 +4,9 @@ MOM6_namelists(){
 
 # MOM6 namelists generation
 
-if [[ "${cplwav}" == ".true." ]] ; then
-  local MOM6_USE_WAVES='True'
-else
-  local MOM6_USE_WAVES='False'
-fi
-
+# ================================================================
+# input.nml
+# ---------
 cat >> input.nml <<EOF
 
 &MOM_input_nml
@@ -26,28 +23,22 @@ EOF
 #  new_lscale=.true.
 #EOF
 
-if [[ ${DO_OCN_SPPT} = "YES" ]]; then
-  local OCN_SPPT="True"
+if [[ "${DO_OCN_SPPT}" == "YES" ]]; then
   cat >> input.nml <<EOF
   OCNSPPT=${OCNSPPT:-1.0}
   OCNSPPT_LSCALE=${OCNSPPT_LSCALE:-500e3}
   OCNSPPT_TAU=${OCNSPPT_TAU:-21600}
   ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
 EOF
-else
-  local OCN_SPPT="False"
 fi
 
-if [[ ${DO_OCN_PERT_EPBL} = "YES" ]]; then
-  local PERT_EPBL="True"
+if [[ "${DO_OCN_PERT_EPBL}" == "YES" ]]; then
   cat >> input.nml <<EOF
   EPBL=${EPBL:-1.0}
   EPBL_LSCALE=${EPBL_LSCALE:-500e3}
   EPBL_TAU=${EPBL_TAU:-21600}
   ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
 EOF
-  else
-    local PERT_EPBL="False"
 fi
 
 #cat >> input.nml <<EOF
@@ -60,32 +51,83 @@ fi
 
 echo "$(cat input.nml)"
 
+# Source functions from this file for filling in templates
+source "${HOMEgfs}/ush/atparse.bash"
 
-#Copy MOM_input and edit:
-${NCP} -pf "${HOMEgfs}/parm/ufs/mom6/MOM_input_template_${OCNRES}" "${DATA}/INPUT/"
-sed -e "s/@\[DT_THERM_MOM6\]/${DT_THERM_MOM6}/g" \
-    -e "s/@\[DT_DYNAM_MOM6\]/${DT_DYNAM_MOM6}/g" \
-    -e "s/@\[MOM6_RIVER_RUNOFF\]/${MOM6_RIVER_RUNOFF}/g" \
-    -e "s/@\[MOM6_THERMO_SPAN\]/${MOM6_THERMO_SPAN}/g" \
-    -e "s/@\[MOM6_USE_LI2016\]/${MOM6_USE_LI2016}/g" \
-    -e "s/@\[MOM6_USE_WAVES\]/${MOM6_USE_WAVES}/g" \
-    -e "s/@\[MOM6_ALLOW_LANDMASK_CHANGES\]/${MOM6_ALLOW_LANDMASK_CHANGES}/g" \
-    -e "s/@\[NX_GLB\]/${NX_GLB}/g" \
-    -e "s/@\[NY_GLB\]/${NY_GLB}/g" \
-    -e "s/@\[CHLCLIM\]/${CHLCLIM}/g" \
-    -e "s/@\[DO_OCN_SPPT\]/${OCN_SPPT}/g" \
-    -e "s/@\[PERT_EPBL\]/${PERT_EPBL}/g" \
-    -e "s/@\[MOM6_DIAG_COORD_DEF_Z_FILE\]/${MOM6_DIAG_COORD_DEF_Z_FILE}/g" \
-    -e "s/@\[TOPOEDITS\]/${TOPOEDITS}/g" \
-    -e "s/@\[MOM6_DIAG_MISVAL\]/${MOM6_DIAG_MISVAL}/g" \
-    -e "s/@\[ODA_INCUPD_NHOURS\]/${ODA_INCUPD_NHOURS}/g" \
-    -e "s/@\[ODA_INCUPD\]/${ODA_INCUPD}/g" "${DATA}/INPUT/MOM_input_template_${OCNRES}" > "${DATA}/INPUT/MOM_input"
-rm "${DATA}/INPUT/MOM_input_template_${OCNRES}"
+# ================================================================
+# MOM_input
+# ---------
+# Prepare local variables for use in MOM_input.IN from UFSWM
+# == MOM_domains section ==
+#local NX_GLB=${NX_GLB}
+#local NY_GLB=${NY_GLB}
+# == MOM section ==
+#local DT_DYNAM_MOM6=${DT_DYNAM_MOM6}
+#local DT_THERM_MOM6=${DT_THERM_MOM6}
+#local MOM6_THERMO_SPAN=${MOM6_THERMO_SPAN}
+# == MOM_grid_init section ==
+local MOM6_TOPOEDITS=${TOPOEDITS}
+#local MOM6_ALLOW_LANDMASK_CHANGES=${MOM6_ALLOW_LANDMASK_CHANGES}
+# == MOM_diag_mediator section ==
+#local MOM6_DIAG_COORD_DEF_Z_FILE=${MOM6_DIAG_COORD_DEF_Z_FILE}
+#local MOM6_DIAG_MISVAL=${MOM6_DIAG_MISVAL}
+# == MOM_diabatic_aux section ==
+local MOM6_CHLCLIM=${CHLCLIM}
+# == MOM_energetic_PBL section ==
+#local MOM6_USE_LI2016=${MOM6_USE_LI2016}
+if [[ "${cplwav}" == ".true." ]] ; then
+  local MOM6_USE_WAVES="True"
+else
+  local MOM6_USE_WAVES="False"
+fi
+# == MOM_oda_incupd section ==
+#local ODAS_INCUPD=${ODA_INCUPD}
+local ODA_TEMPINC_VAR="Temp"
+local ODA_SALTINC_VAR="Salt"
+local ODA_THKINC_VAR="h"
+local ODA_INCUPD_UV="True"
+local ODA_UINC_VAR="u"
+local ODA_VINC_VAR="v"
+#local ODA_INCUPD_NHOURS=${ODA_INCUPD_NHOURS}
+# == MOM_surface_forcing section ==
+#local MOM6_RIVER_RUNOFF=${MOM6_RIVER_RUNOFF}
+# == ocean_stochastics section ==
+if [[ "${DO_OCN_SPPT}" == "YES" ]]; then
+  local DO_OCN_SPPT="True"  # TODO: This is problematic if DO_OCN_SPPT is going to be used elsewhere
+else
+  local DO_OCN_SPPT="False"
+fi
+if [[ "${DO_OCN_PERT_EPBL}" == "YES" ]]; then
+  local PERT_EPBL="True"
+else
+  local PERT_EPBL="False"
+fi
+# Ensure the template exists
+local template=${MOM6_INPUT_TEMPLATE:-"${HOMEgfs}/parm/ufs/MOM_input_${OCNRES}.IN"}
+if [[ ! -f ${tempate} ]]; then
+  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  exit 1
+fi
+rm -f "${DATA}/INPUT/MOM_input"
+atparse < "${template}" >> "${DATA}/INPUT/MOM_input"
+echo "Rendered MOM_input:"
+cat "${DATA}/INPUT/MOM_input"
 
-#data table for runoff:
-DATA_TABLE=${DATA_TABLE:-${HOMEgfs}/parm/ufs/fv3/data_table}
-${NCP} "${DATA_TABLE}" "${DATA}/data_table_template"
-sed -e "s/@\[FRUNOFF\]/${FRUNOFF}/g" "${DATA}/data_table_template" > "${DATA}/data_table"
-rm "${DATA}/data_table_template"
+# ================================================================
+# data_table
+# ----------
+# Prepare local variables for use in MOM6_data_table.IN from UFSWM
+local MOM6_FRUNOFF=${FRUNOFF}
+
+# Ensure the template exists
+local template=${MOM6_DATA_TABLE_TEMPLATE:-"${HOMEgfs}/parm/ufs/MOM6_data_table.IN"}
+if [[ ! -f ${tempate} ]]; then
+  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  exit 1
+fi
+rm -f "${DATA}/data_table"
+atparse < "${template}" >> "${DATA}/data_table"
+echo "Rendered data_table:"
+cat "${DATA}/data_table"
 
 }

@@ -517,7 +517,7 @@ FV3_out() {
     ${NCP} "${DATA}/input.nml" "${COM_CONF}/ufs.input.nml"
     ${NCP} "${DATA}/model_configure" "${COM_CONF}/ufs.model_configure"
     ${NCP} "${DATA}/ufs.configure" "${COM_CONF}/ufs.ufs.configure"
-    ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"  
+    ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
@@ -880,31 +880,6 @@ MOM6_out() {
 CICE_postdet() {
   echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
 
-  # TODO:  These settings should be elevated to config.ice
-  histfreq_n=${histfreq_n:-6}
-  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
-  dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
-
-  if [[ "${RUN}" =~ "gdas" ]]; then
-    cice_hist_avg=".false., .false., .false., .false., .false."   # DA needs instantaneous
-  else
-    cice_hist_avg=".true., .true., .true., .true., .true."    # P8 wants averaged over histfreq_n
-  fi
-
-  FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
-  ktherm=${ktherm:-2}
-  tfrz_option=${tfrz_option:-"'mushy'"}
-  tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
-
-  # restart_pond_lvl (if tr_pond_lvl=true):
-  #   -- if true, initialize the level ponds from restart (if runtype=continue)
-  #   -- if false, re-initialize level ponds to zero (if runtype=initial or continue)
-  restart_pond_lvl=${restart_pond_lvl:-".false."}
-
-  ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
-  ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
-  export MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-
   # Copy CICE ICs
   echo "Link CICE ICs"
   cice_restart_file="${COM_ICE_RESTART_PREV}/${sPDY}.${scyc}0000.cice_model.res.nc"
@@ -918,6 +893,9 @@ CICE_postdet() {
   echo "${DATA}/cice_model.res.nc" > "${DATA}/ice.restart_file"
 
   echo "Link CICE fixed files"
+  ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
+  ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
+  export MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
   ${NLN} "${FIXcice}/${ICERES}/${ice_grid_file}" "${DATA}/"
   ${NLN} "${FIXcice}/${ICERES}/${ice_kmt_file}"  "${DATA}/"
   ${NLN} "${FIXcice}/${ICERES}/${MESH_OCN_ICE}"  "${DATA}/"
@@ -942,7 +920,7 @@ CICE_postdet() {
       if [[ 10#${fhr} -eq 0 ]]; then
         ${NLN} "${COM_ICE_HISTORY}/iceic${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
       else
-        (( interval = fhr - last_fhr ))  # Umm.. isn't this histfreq_n?
+        (( interval = fhr - last_fhr ))  # Umm.. isn't this CICE_HISTFREQ_N in hours (currently set to FHOUT)?
         ${NLN} "${COM_ICE_HISTORY}/ice${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
       fi
       last_fhr=${fhr}

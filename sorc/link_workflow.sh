@@ -150,28 +150,25 @@ for file in finddate.sh make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/ush/${file}" .
 done
 
-# TODO: Link these ufs.configure templates from ufs-weather-model
-#cd "${HOMEgfs}/parm/ufs" || exit 1
-#declare -a ufs_configure_files=("ufs.configure.atm.IN" \
-#                                 "ufs.configure.atm_aero.IN" \
-#                                 "ufs.configure.atmw.IN" \
-#                                 "ufs.configure.blocked_atm_wav_2way.IN" \
-#                                 "ufs.configure.blocked_atm_wav.IN" \
-#                                 "ufs.configure.cpld_agrid.IN" \
-#                                 "ufs.configure.cpld_esmfthreads.IN" \
-#                                 "ufs.configure.cpld.IN" \
-#                                 "ufs.configure.cpld_noaero.IN" \
-#                                 "ufs.configure.cpld_noaero_nowave.IN" \
-#                                 "ufs.configure.cpld_noaero_outwav.IN" \
-#                                 "ufs.configure.leapfrog_atm_wav.IN")
-#for file in "${ufs_configure_files[@]}"; do
-#  [[ -s "${file}" ]] && rm -f "${file}"
-#  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
-#done
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
 declare -a ufs_templates=("model_configure.IN" \
-                          "ice_template_in")
+                          "MOM_input_025.IN" "MOM_input_050.IN" "MOM_input_100.IN" "MOM_input_500.IN" \
+                          "MOM6_data_table.IN" \
+                          "ice_in.IN")
+# TODO: Add these ufs.configure templates to the list above once they are updated
+#                          "ufs.configure.atm.IN" \
+#                          "ufs.configure.atm_aero.IN" \
+#                          "ufs.configure.atmw.IN" \
+#                          "ufs.configure.blocked_atm_wav_2way.IN" \
+#                          "ufs.configure.blocked_atm_wav.IN" \
+#                          "ufs.configure.cpld_agrid.IN" \
+#                          "ufs.configure.cpld_esmfthreads.IN" \
+#                          "ufs.configure.cpld.IN" \
+#                          "ufs.configure.cpld_noaero.IN" \
+#                          "ufs.configure.cpld_noaero_nowave.IN" \
+#                          "ufs.configure.cpld_noaero_outwav.IN" \
+#                          "ufs.configure.leapfrog_atm_wav.IN")
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
