@@ -2,10 +2,6 @@
 pipeline {
     agent{ label 'orion-emc'}
 
-    environment {
-        RUNTESTS = "${WORKSPACE}/RUNTESTS"
-    }
-
     stages {
 
         stage('Checkout') {
@@ -23,7 +19,7 @@ pipeline {
         stage('Build') {
         agent{ label 'orion-emc'}
           steps {
-            //sh 'sorc/build_all.sh -gu'
+            sh 'sorc/build_all.sh -gu'
             sh 'sorc/link_workflow.sh'
           }
         }
@@ -41,7 +37,10 @@ pipeline {
                     cases.each { case_name ->
                         stage("Create ${case_name}") {
                             agent{ label 'orion-emc'}
-                              script { env.case = case_name }
+                              script { 
+                                env.case = case_name
+                                env.RUNTESTS = "${WORKSPCE}/RUNTESTS"
+                              }
                               sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                         }
                     }
@@ -54,7 +53,7 @@ pipeline {
         agent{ label 'orion-emc'}
             steps {
                 script {
-                    experiment_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list ${RUNTESTS}", returnStdout: true ).trim()
+                    experiment_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list ${WORKSPACE}/RUNTESTS", returnStdout: true ).trim()
                     experiments = experiment_list.tokenize('\n')
                     experiments.each { experiment_name ->
                         stage("Run ${experiment_name}") {
