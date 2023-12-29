@@ -2,6 +2,7 @@
 
 # parsing namelist of CICE
 
+# Disable variable not used warnings
 # shellcheck disable=SC2034
 CICE_namelists(){
 

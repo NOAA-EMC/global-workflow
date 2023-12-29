@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+# Disable variable not used warnings
+# shellcheck disable=SC2034
 MOM6_namelists(){
 
 # MOM6 namelists generation
