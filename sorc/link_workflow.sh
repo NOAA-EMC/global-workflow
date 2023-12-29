@@ -41,6 +41,14 @@ while getopts ":ho" option; do
 done
 shift $((OPTIND-1))
 
+# LINK is always ln, LINK_OR_COPY can be ln or cp depending on RUN_ENVIR being emc or nco, respectively
+LINK="ln -fs"
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+  LINK_OR_COPY="cp -rp"
+else
+  LINK_OR_COPY="ln -fs"
+fi
+
 # shellcheck disable=SC1091
 COMPILER="intel" source "${HOMEgfs}/sorc/gfs_utils.fd/ush/detect_machine.sh"  # (sets MACHINE_ID)
 # shellcheck disable=
@@ -49,8 +57,8 @@ machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 #------------------------------
 #--Set up build.ver and run.ver
 #------------------------------
-cp "${HOMEgfs}/versions/build.${machine}.ver" "${HOMEgfs}/versions/build.ver"
-cp "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/run.ver"
+${LINK_OR_COPY} "${HOMEgfs}/versions/build.${machine}.ver" "${HOMEgfs}/versions/build.ver"
+${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/run.ver"
 
 #------------------------------
 #--model fix fields
@@ -59,6 +67,7 @@ case "${machine}" in
   "wcoss2")   FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
   "hera")     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
   "orion")    FIX_DIR="/work/noaa/global/glopara/fix" ;;
+  "hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
   "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
   "s4")       FIX_DIR="/data/prod/glopara/fix" ;;
   *)
@@ -69,15 +78,6 @@ esac
 
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
-
-# LINK is always ln, LINK_OR_COPY can be ln or cp depending on RUN_EVNVIR being emc or nco, respectively
-LINK="ln -fs"
-if [[ "${RUN_ENVIR}" == "nco" ]]; then
-  LINK_OR_COPY="cp -rp"
-else
-  LINK_OR_COPY="ln -fs"
-fi
-
 
 # Link wxflow in ush/python, workflow and ci/scripts
 # TODO: This will be unnecessary when wxflow is part of the virtualenv
@@ -122,12 +122,6 @@ do
 done
 
 
-if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
-  cd "${HOMEgfs}/sorc/ufs_utils.fd/fix" || exit 1
-  ./link_fixdirs.sh "${RUN_ENVIR}" "${machine}" 2> /dev/null
-fi
-
-
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
@@ -156,21 +150,21 @@ for file in finddate.sh make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/ush/${file}" .
 done
 
-# TODO: Link these nems.configure templates from ufs-weather-model
+# TODO: Link these ufs.configure templates from ufs-weather-model
 #cd "${HOMEgfs}/parm/ufs" || exit 1
-#declare -a nems_configure_files=("nems.configure.atm.IN" \
-#                                 "nems.configure.atm_aero.IN" \
-#                                 "nems.configure.atmw.IN" \
-#                                 "nems.configure.blocked_atm_wav_2way.IN" \
-#                                 "nems.configure.blocked_atm_wav.IN" \
-#                                 "nems.configure.cpld_agrid.IN" \
-#                                 "nems.configure.cpld_esmfthreads.IN" \
-#                                 "nems.configure.cpld.IN" \
-#                                 "nems.configure.cpld_noaero.IN" \
-#                                 "nems.configure.cpld_noaero_nowave.IN" \
-#                                 "nems.configure.cpld_noaero_outwav.IN" \
-#                                 "nems.configure.leapfrog_atm_wav.IN")
-#for file in "${nems_configure_files[@]}"; do
+#declare -a ufs_configure_files=("ufs.configure.atm.IN" \
+#                                 "ufs.configure.atm_aero.IN" \
+#                                 "ufs.configure.atmw.IN" \
+#                                 "ufs.configure.blocked_atm_wav_2way.IN" \
+#                                 "ufs.configure.blocked_atm_wav.IN" \
+#                                 "ufs.configure.cpld_agrid.IN" \
+#                                 "ufs.configure.cpld_esmfthreads.IN" \
+#                                 "ufs.configure.cpld.IN" \
+#                                 "ufs.configure.cpld_noaero.IN" \
+#                                 "ufs.configure.cpld_noaero_nowave.IN" \
+#                                 "ufs.configure.cpld_noaero_outwav.IN" \
+#                                 "ufs.configure.leapfrog_atm_wav.IN")
+#for file in "${ufs_configure_files[@]}"; do
 #  [[ -s "${file}" ]] && rm -f "${file}"
 #  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 #done
@@ -208,7 +202,7 @@ fi
 #------------------------------
 #--add GDASApp files
 #------------------------------
-if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   cd "${HOMEgfs}/ush" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda"                              .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/jediinc2fv3.py"                     .
@@ -223,20 +217,19 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
 
-  cd "${HOMEgfs}/fix" || exit 1
-  [[ ! -d gdas ]] && ( mkdir -p gdas || exit 1 )
-  cd gdas || exit 1
+  cd "${HOMEgfs}/parm" || exit 1
+  [[ -d monitor ]] && rm -rf monitor
+  mkdir -p monitor
+  cd monitor || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/fix/gfs_minmon_cost.txt" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/fix/gfs_minmon_gnorm.txt" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_satype.txt" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_scaninfo.txt" .
-  cd "${HOMEgfs}/parm" || exit 1
-  [[ -d mon ]] && rm -rf mon
-  mkdir -p mon
-  cd mon || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm" da_mon.parm
   # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/parm/gdas_minmon.parm" .
   # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/parm/gfs_minmon.parm" .
@@ -271,7 +264,7 @@ for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle; do
 done
 
 # GSI
-if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd/install" ]]; then
   for gsiexe in enkf.x gsi.x; do
     [[ -s "${gsiexe}" ]] && rm -f "${gsiexe}"
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_enkf.fd/install/bin/${gsiexe}" .
@@ -279,7 +272,7 @@ if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd" ]]; then
 fi
 
 # GSI Utils
-if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd/install" ]]; then
   for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
     interp_inc.x recentersigp.x
@@ -290,7 +283,7 @@ if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd" ]]; then
 fi
 
 # GSI Monitor
-if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd/install" ]]; then
   for exe in oznmon_horiz.x oznmon_time.x radmon_angle.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x
   do
@@ -300,7 +293,7 @@ if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
 fi
 
 # GDASApp
-if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   declare -a JEDI_EXE=("fv3jedi_addincrement.x" \
                        "fv3jedi_diffstates.x" \
                        "fv3jedi_ensvariance.x" \

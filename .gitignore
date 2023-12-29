@@ -30,8 +30,8 @@ fix/chem
 fix/cice
 fix/cpl
 fix/datm
-fix/gdas
 fix/gldas
+fix/gdas
 fix/gsi
 fix/lut
 fix/mom6
@@ -41,13 +41,12 @@ fix/sfc_climo
 fix/ugwd
 fix/verif
 fix/wave
-fix/wafs
 
 # Ignore parm file symlinks
 #--------------------------
 parm/config/config.base
 parm/gldas
-parm/mon
+parm/monitor
 parm/post/AEROSOL_LUTS.dat
 parm/post/nam_micro_lookup.dat
 parm/post/optics_luts_DUST.dat
@@ -100,8 +99,42 @@ parm/wafs
 #--------------------------------------------
 sorc/*log
 sorc/logs
-sorc/*.cd
-sorc/*.fd
+sorc/calc_analysis.fd
+sorc/calc_increment_ens.fd
+sorc/calc_increment_ens_ncio.fd
+sorc/emcsfc_ice_blend.fd
+sorc/emcsfc_snow2mdl.fd
+sorc/enkf.fd
+sorc/enkf_chgres_recenter_nc.fd
+sorc/fbwndgfs.fd
+sorc/gaussian_sfcanl.fd
+sorc/getsfcensmeanp.fd
+sorc/getsigensmeanp_smooth.fd
+sorc/getsigensstatp.fd
+sorc/gfs_bufr.fd
+sorc/global_cycle.fd
+sorc/gsi.fd
+sorc/interp_inc.fd
+sorc/mkgfsawps.fd
+sorc/overgridid.fd
+sorc/oznmon_horiz.fd
+sorc/oznmon_time.fd
+sorc/radmon_angle.fd
+sorc/radmon_bcoef.fd
+sorc/radmon_bcor.fd
+sorc/radmon_time.fd
+sorc/rdbfmsua.fd
+sorc/recentersigp.fd
+sorc/reg2grb2.fd
+sorc/supvit.fd
+sorc/syndat_getjtbul.fd
+sorc/syndat_maksynrc.fd
+sorc/syndat_qctropcy.fd
+sorc/tave.fd
+sorc/tocsbufr.fd
+sorc/upp.fd
+sorc/vint.fd
+sorc/webtitle.fd
 
 # Ignore scripts from externals
 #------------------------------
@@ -124,6 +157,7 @@ scripts/exgfs_atmos_wafs_grib2_0p25.sh
 ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
+ush/exglobal_prep_ocean_obs.py
 ush/fix_precip.sh
 ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
@@ -153,7 +187,6 @@ versions/build.ver
 versions/run.ver
 
 # wxflow checkout and symlinks
-sorc/wxflow
 ush/python/wxflow
 workflow/wxflow
 ci/scripts/wxflow

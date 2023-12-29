@@ -19,12 +19,14 @@ Builds all of the global-workflow components by calling the individual build
 Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v]
   -a UFS_app:
     Build a specific UFS app instead of the default
-  -c build_config:
-    Selectively build based on the provided config instead of the default config
+  -g:
+    Build GSI
   -h:
-    print this help message and exit
+    Print this help message and exit
   -j:
     Specify maximum number of build jobs (n)
+  -u:
+    Build UFS-DA
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
 EOF
@@ -35,17 +37,19 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 cd "${script_dir}" || exit 1
 
 _build_ufs_opt=""
+_build_ufsda="NO"
+_build_gsi="NO"
 _verbose_opt=""
-_partial_opt=""
 _build_job_max=20
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:c:j:hv" option; do
+while getopts ":a:ghj:uv" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
-    c) _partial_opt+="-c ${OPTARG} ";;
+    g) _build_gsi="YES" ;;
     h) _usage;;
     j) _build_job_max="${OPTARG} ";;
+    u) _build_ufsda="YES" ;;
     v) _verbose_opt="-v";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -90,22 +94,13 @@ fi
 #source ../versions/build.ver
 
 #------------------------------------
-# INCLUDE PARTIAL BUILD
-#------------------------------------
-# Turn off some shellcheck warnings because we want to have
-#   variables with multiple arguments.
-# shellcheck disable=SC2086,SC2248
-source ./partial_build.sh ${_verbose_opt} ${_partial_opt}
-# shellcheck disable=
-
-#------------------------------------
 # Exception Handling Init
 #------------------------------------
 # Disable shellcheck warning about single quotes not being substituted.
 # shellcheck disable=SC2016
-ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $errs = 0 ]]'}
 # shellcheck disable=
-err=0
+errs=0
 
 declare -A build_jobs
 declare -A build_opts
@@ -116,45 +111,36 @@ declare -A build_opts
 
 # Mandatory builds, unless otherwise specified, for the UFS
 big_jobs=0
-if [[ ${Build_ufs_model} == 'true' ]]; then
-   build_jobs["ufs"]=8
-   big_jobs=$((big_jobs+1))
-   build_opts["ufs"]="${_verbose_opt} ${_build_ufs_opt}"
-fi
-# The UPP is hardcoded to use 6 cores
-if [[ ${Build_upp} == 'true' ]]; then
-   build_jobs["upp"]=6
-   build_opts["upp"]=""
-fi
-if [[ ${Build_ufs_utils} == 'true' ]]; then
-   build_jobs["ufs_utils"]=3
-   build_opts["ufs_utils"]="${_verbose_opt}"
-fi
-if [[ ${Build_gfs_utils} == 'true' ]]; then
-   build_jobs["gfs_utils"]=1
-   build_opts["gfs_utils"]="${_verbose_opt}"
-fi
-if [[ ${Build_ww3prepost} == "true" ]]; then
-   build_jobs["ww3prepost"]=3
-   build_opts["ww3prepost"]="${_verbose_opt} ${_build_ufs_opt}"
-fi
+build_jobs["ufs"]=8
+big_jobs=$((big_jobs+1))
+build_opts["ufs"]="${_verbose_opt} ${_build_ufs_opt}"
+
+build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
+build_opts["upp"]=""
+
+build_jobs["ufs_utils"]=3
+build_opts["ufs_utils"]="${_verbose_opt}"
+
+build_jobs["gfs_utils"]=1
+build_opts["gfs_utils"]="${_verbose_opt}"
+
+build_jobs["ww3prepost"]=3
+build_opts["ww3prepost"]="${_verbose_opt} ${_build_ufs_opt}"
 
 # Optional DA builds
-if [[ -d gdas.cd ]]; then
+if [[ "${_build_ufsda}" == "YES" ]]; then
    build_jobs["gdas"]=8
    big_jobs=$((big_jobs+1))
    build_opts["gdas"]="${_verbose_opt}"
 fi
-if [[ -d gsi_enkf.fd ]]; then
+if [[ "${_build_gsi}" == "YES" ]]; then
    build_jobs["gsi_enkf"]=8
    big_jobs=$((big_jobs+1))
    build_opts["gsi_enkf"]="${_verbose_opt}"
 fi
-if [[ -d gsi_utils.fd ]]; then
+if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then
    build_jobs["gsi_utils"]=2
    build_opts["gsi_utils"]="${_verbose_opt}"
-fi
-if [[ -d gsi_monitor.fd ]]; then
    build_jobs["gsi_monitor"]=1
    build_opts["gsi_monitor"]="${_verbose_opt}"
 fi
@@ -233,7 +219,6 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
 done
 
 # Wait for all jobs to complete and check return statuses
-errs=0
 while [[ ${#build_jobs[@]} -gt 0 ]]; do
    for build in "${!build_jobs[@]}"; do
       # Test if each job is complete and if so, notify and remove from the array
@@ -266,7 +251,7 @@ if (( errs != 0 )); then
 BUILD ERROR: One or more components failed to build
   Check the associated build log(s) for details.
 EOF
-  ${ERRSCRIPT} || exit "${err}"
+  ${ERRSCRIPT} || exit "${errs}"
 fi
 
 echo;echo " .... Build system finished .... "

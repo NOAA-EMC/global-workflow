@@ -31,6 +31,7 @@ local OUTPUT_FILE="'${OUTPUT_FILETYPE_ATM}' '${OUTPUT_FILETYPE_SFC}'"
 local ZSTANDARD_LEVEL=0
 local IDEFLATE=1  # netCDF zlib lossless compression (0-9); 0: no compression
 local NBITS=14  # netCDF lossy compression (0-32); 0: lossless
+local QUANTIZE_NSD=${QUANTIZE_NSD:-0}  # netCDF compression
 local ICHUNK2D=$((4*restile))
 local JCHUNK2D=$((2*restile))
 local ICHUNK3D=$((4*restile))

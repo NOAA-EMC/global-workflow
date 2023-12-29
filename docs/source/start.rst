@@ -23,7 +23,7 @@ Set up your experiment cron
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
-   Orion currently only supports cron on Orion-login-1. Cron support for other login nodes is coming in the future.
+   Orion and Hercules currently only support cron on Orion-login-1 and Hercules-login-1, respectively. Cron support for other login nodes is coming in the future.
 
 ::
 

@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from applications.applications import AppConfig
-from wxflow import Configuration
+from wxflow import Configuration, to_timedelta
 from datetime import timedelta
 
 
@@ -47,7 +47,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean:
             configs += ['ocnpost']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'fit2obs', 'arch', 'cleanup']
+        configs += ['sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -55,6 +55,9 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+
+        if self.do_fit2obs:
+            configs += ['fit2obs']
 
         if self.do_verfozn:
             configs += ['verfozn']
@@ -65,11 +68,20 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_vminmon:
             configs += ['vminmon']
 
+        if self.do_tracker:
+            configs += ['tracker']
+
+        if self.do_genesis:
+            configs += ['genesis']
+
+        if self.do_genesis_fsu:
+            configs += ['genesis_fsu']
+
         if self.do_metp:
             configs += ['metp']
 
         if self.do_gempak:
-            configs += ['gempak']
+            configs += ['gempak', 'npoess']
 
         if self.do_bufrsnd:
             configs += ['postsnd']
@@ -86,14 +98,17 @@ class GFSCycledAppConfig(AppConfig):
             if self.do_awips:
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
-        if self.do_wafs:
-            configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
-
         if self.do_aero:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
             configs += ['preplandobs', 'landanl']
+
+        if self.do_mos:
+            configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                        'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                        'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                        'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         return configs
 
@@ -110,11 +125,6 @@ class GFSCycledAppConfig(AppConfig):
         """
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
-        gdas_gfs_common_tasks_after_fcst = ['postanl', 'post']
-        # if self.do_ocean:  # TODO: uncomment when ocnpost is fixed in cycled mode
-        #    gdas_gfs_common_tasks_after_fcst += ['ocnpost']
-        gdas_gfs_common_tasks_after_fcst += ['vrfy']
-
         gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
 
         if self.do_jediatmvar:
@@ -150,15 +160,18 @@ class GFSCycledAppConfig(AppConfig):
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
+
         if not self.do_jediatmvar:
             gdas_tasks += ['analdiag']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks
 
-        gdas_tasks += ['fcst']
+        gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
-        gdas_tasks += gdas_gfs_common_tasks_after_fcst
+        if self.do_upp:
+            gdas_tasks += ['atmupp']
+        gdas_tasks += ['atmprod']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -177,20 +190,34 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_vminmon:
             gdas_tasks += ['vminmon']
 
+        if self.do_gempak:
+            gdas_tasks += ['gempak', 'gempakmetancdc']
+
         gdas_tasks += gdas_gfs_common_cleanup_tasks
 
         # Collect "gfs" cycle tasks
-        gfs_tasks = gdas_gfs_common_tasks_before_fcst
+        gfs_tasks = gdas_gfs_common_tasks_before_fcst.copy()
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             gfs_tasks += wave_prep_tasks
 
-        gfs_tasks += ['fcst']
+        gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
-        gfs_tasks += gdas_gfs_common_tasks_after_fcst
+        if self.do_upp:
+            gfs_tasks += ['atmupp']
+        gfs_tasks += ['atmprod']
 
         if self.do_vminmon:
             gfs_tasks += ['vminmon']
+
+        if self.do_tracker:
+            gfs_tasks += ['tracker']
+
+        if self.do_genesis:
+            gfs_tasks += ['genesis']
+
+        if self.do_genesis_fsu:
+            gfs_tasks += ['genesis_fsu']
 
         if self.do_metp:
             gfs_tasks += ['metp']
@@ -209,12 +236,19 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_gempak:
             gfs_tasks += ['gempak']
+            gfs_tasks += ['gempakmeta']
+            gfs_tasks += ['gempakncdcupapgif']
+            gfs_tasks += ['npoess_pgrb2_0p5deg']
+            gfs_tasks += ['gempakpgrb2spec']
 
         if self.do_awips:
-            gfs_tasks += ['awips']
+            gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']
 
-        if self.do_wafs:
-            gfs_tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
+        if self.do_mos:
+            gfs_tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                          'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                          'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
+                          'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         gfs_tasks += gdas_gfs_common_cleanup_tasks
 
@@ -244,47 +278,45 @@ class GFSCycledAppConfig(AppConfig):
 
         base_out = base.copy()
 
-        gfs_cyc = base['gfs_cyc']
         sdate = base['SDATE']
         edate = base['EDATE']
-        base_out['INTERVAL'] = '06:00:00'  # Cycled interval is 6 hours
-
-        interval_gfs = AppConfig.get_gfs_interval(gfs_cyc)
+        base_out['INTERVAL'] = to_timedelta(f"{base['assim_freq']}H")
 
         # Set GFS cycling dates
-        hrinc = 0
-        hrdet = 0
-        if gfs_cyc == 0:
-            return base_out
-        elif gfs_cyc == 1:
-            hrinc = 24 - sdate.hour
-            hrdet = edate.hour
-        elif gfs_cyc == 2:
-            if sdate.hour in [0, 12]:
-                hrinc = 12
-            elif sdate.hour in [6, 18]:
+        gfs_cyc = base['gfs_cyc']
+        if gfs_cyc != 0:
+            interval_gfs = AppConfig.get_gfs_interval(gfs_cyc)
+            hrinc = 0
+            hrdet = 0
+            if gfs_cyc == 1:
+                hrinc = 24 - sdate.hour
+                hrdet = edate.hour
+            elif gfs_cyc == 2:
+                if sdate.hour in [0, 12]:
+                    hrinc = 12
+                elif sdate.hour in [6, 18]:
+                    hrinc = 6
+                if edate.hour in [6, 18]:
+                    hrdet = 6
+            elif gfs_cyc == 4:
                 hrinc = 6
-            if edate.hour in [6, 18]:
-                hrdet = 6
-        elif gfs_cyc == 4:
-            hrinc = 6
-        sdate_gfs = sdate + timedelta(hours=hrinc)
-        edate_gfs = edate - timedelta(hours=hrdet)
-        if sdate_gfs > edate:
-            print('W A R N I N G!')
-            print('Starting date for GFS cycles is after Ending date of experiment')
-            print(f'SDATE = {sdate.strftime("%Y%m%d%H")},     EDATE = {edate.strftime("%Y%m%d%H")}')
-            print(f'SDATE_GFS = {sdate_gfs.strftime("%Y%m%d%H")}, EDATE_GFS = {edate_gfs.strftime("%Y%m%d%H")}')
-            gfs_cyc = 0
+            sdate_gfs = sdate + timedelta(hours=hrinc)
+            edate_gfs = edate - timedelta(hours=hrdet)
+            if sdate_gfs > edate:
+                print('W A R N I N G!')
+                print('Starting date for GFS cycles is after Ending date of experiment')
+                print(f'SDATE = {sdate.strftime("%Y%m%d%H")},     EDATE = {edate.strftime("%Y%m%d%H")}')
+                print(f'SDATE_GFS = {sdate_gfs.strftime("%Y%m%d%H")}, EDATE_GFS = {edate_gfs.strftime("%Y%m%d%H")}')
+                gfs_cyc = 0
 
-        base_out['gfs_cyc'] = gfs_cyc
-        base_out['SDATE_GFS'] = sdate_gfs
-        base_out['EDATE_GFS'] = edate_gfs
-        base_out['INTERVAL_GFS'] = interval_gfs
+            base_out['gfs_cyc'] = gfs_cyc
+            base_out['SDATE_GFS'] = sdate_gfs
+            base_out['EDATE_GFS'] = edate_gfs
+            base_out['INTERVAL_GFS'] = interval_gfs
 
-        fhmax_gfs = {}
-        for hh in ['00', '06', '12', '18']:
-            fhmax_gfs[hh] = base.get(f'FHMAX_GFS_{hh}', base.get('FHMAX_GFS_00', 120))
-        base_out['FHMAX_GFS'] = fhmax_gfs
+            fhmax_gfs = {}
+            for hh in ['00', '06', '12', '18']:
+                fhmax_gfs[hh] = base.get(f'FHMAX_GFS_{hh}', base.get('FHMAX_GFS_00', 120))
+            base_out['FHMAX_GFS'] = fhmax_gfs
 
         return base_out

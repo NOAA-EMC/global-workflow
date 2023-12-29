@@ -18,6 +18,7 @@ The `global-workflow` current supports the following tier-1 machines:
 
 * NOAA RDHPCS - Hera
 * MSU HPC - Orion
+* MSU HPC - Hercules
 * NOAA's operational HPC - WCOSS2
 
 Additionally, the following tier-2 machine is supported:

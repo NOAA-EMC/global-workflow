@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+########## config.tropcy ##########
+echo "BEGIN: config.tropcy"
+
+# Tracker/genesis package location
+export HOMEens_tracker=${BASE_GIT}/TC_tracker/${ens_tracker_ver}
+
+export SENDCOM="YES" # Needed by tracker scripts still
+
+export FHOUT_CYCLONE=6
+FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
+export FHMAX_CYCLONE
+
+echo "END: config.tropcy"
