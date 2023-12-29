@@ -358,6 +358,9 @@ if [[ ${type} == "gdas" ]]; then
     if [[ -s "${COM_CHEM_ANALYSIS}/${head}aerostat" ]]; then
        echo "${COM_CHEM_ANALYSIS/${ROTDIR}\//}/${head}aerostat"
     fi
+    if [[ -s "${COM_LAND_ANALYSIS}/${head}landstat.tgz" ]]; then
+       echo "${COM_LAND_ANALYSIS/${ROTDIR}\//}/${head}landstat.tgz"
+    fi
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
        echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}radstat"
     fi
@@ -476,6 +479,15 @@ if [[ ${type} == "gdas" ]]; then
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile4.nc"
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile5.nc"
     echo "${COM_ATMOS_RESTART/${ROTDIR}\//}/*0000.sfcanl_data.tile6.nc"
+
+    [[ -s "${COM_CONF}/${head}letkfoi.yaml" ]] && echo "${COM_CONF/${ROTDIR}\//}/${head}letkfoi.yaml"
+
+    echo "${COM_LAND_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile1.nc"
+    echo "${COM_LAND_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile2.nc"
+    echo "${COM_LAND_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile3.nc"
+    echo "${COM_LAND_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile4.nc"
+    echo "${COM_LAND_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile5.nc"
+    echo "${COM_LAND_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile6.nc"
   } >> "${DATA}/gdas_restarta.txt"
 
   #..................

@@ -34,6 +34,7 @@ source "${HOMEgfs}/ush/file_utils.sh"
 [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
 nb_copy "${COM_ATMOS_ANALYSIS}/${APREFIX}gsistat" "${ARCDIR}/gsistat.${RUN}.${PDY}${cyc}"
 nb_copy "${COM_CHEM_ANALYSIS}/${APREFIX}aerostat" "${ARCDIR}/aerostat.${RUN}.${PDY}${cyc}"
+nb_copy "${COM_LAND_ANALYSIS}/${APREFIX}landstat" "${ARCDIR}/landstat.${RUN}.${PDY}${cyc}"
 nb_copy "${COM_ATMOS_GRIB_1p00}/${APREFIX}pgrb2.1p00.anl" "${ARCDIR}/pgbanl.${RUN}.${PDY}${cyc}.grib2"
 
 # Archive 1 degree forecast GRIB2 files for verification
@@ -240,6 +241,11 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
         #gdasice
         if [ "${DO_ICE}" = "YES" ]; then
             targrp_list="${targrp_list} gdasice"
+        fi
+
+        #gdasland
+        if [ "${DO_JEDILANDDA}" = "YES" ]; then
+            targrp_list="${targrp_list} gdasland"
         fi
 
         if [ "${SAVEWARMICA}" = "YES" ] || [ "${SAVEFCSTIC}" = "YES" ]; then
