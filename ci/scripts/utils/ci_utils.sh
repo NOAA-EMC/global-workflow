@@ -44,7 +44,7 @@ function get_pslot_list () {
     # and create an run directory for each one for this PR loop
     #############################################################
     for pslot_dir in "${RUNTESTS}/EXPDIR/"*; do
-      pslot=$(basename "${plsot_dir}") || true
+      pslot=$(basename "${pslot_dir}") || true
       echo "${pslot}"
     done
 
