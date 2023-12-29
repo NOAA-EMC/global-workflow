@@ -295,7 +295,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
             stat_chgrp=$?
             ${HSICMD} chmod 640 "${tar_fl}"
             stat_chgrp=$((stat_chgrp+$?))
-            if [ "${stat_chgrp}" -gt 0 ]; then
+            if [[ "${stat_chgrp}" -gt 0 ]]; then
                 echo "FATAL ERROR: Unable to properly restrict ${tar_fl}!"
                 echo "Attempting to delete ${tar_fl}"
                 ${HSICMD} rm "${tar_fl}"
