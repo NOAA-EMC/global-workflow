@@ -59,7 +59,7 @@ pipeline {
                         stage("Run ${experiment_name}") {
                             agent{ label 'orion-emc'}
                               script { env.experiment = experiment_name }
-                              sh '${WORKSPACE}/ci/scripts/run-check.sh ${WORKSPACE} ${experiment}'
+                              sh '${WORKSPACE}/ci/scripts/run-check_ci.sh ${WORKSPACE} ${experiment}'
                         }
                     }
                     script { pullRequest.comment("SUCCESS running experiments: ${experiments} on Orion") }
