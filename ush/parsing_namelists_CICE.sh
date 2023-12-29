@@ -104,7 +104,7 @@ local CICE_DECOMP=${processor_shape}
 
 # Ensure the template exists
 local template=${CICE_TEMPLATE:-"${HOMEgfs}/parm/ufs/ice_in.IN"}
-if [[ ! -f ${tempate} ]]; then
+if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi

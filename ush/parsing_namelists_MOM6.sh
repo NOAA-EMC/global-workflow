@@ -86,7 +86,7 @@ fi
 #local ODAS_INCUPD=${ODA_INCUPD}
 local ODA_TEMPINC_VAR="Temp"
 local ODA_SALTINC_VAR="Salt"
-local ODA_THKINC_VAR="h"
+local ODA_THK_VAR="h"
 local ODA_INCUPD_UV="True"
 local ODA_UINC_VAR="u"
 local ODA_VINC_VAR="v"
@@ -106,7 +106,7 @@ else
 fi
 # Ensure the template exists
 local template=${MOM6_INPUT_TEMPLATE:-"${HOMEgfs}/parm/ufs/MOM_input_${OCNRES}.IN"}
-if [[ ! -f ${tempate} ]]; then
+if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi
@@ -123,7 +123,7 @@ local MOM6_FRUNOFF=${FRUNOFF}
 
 # Ensure the template exists
 local template=${MOM6_DATA_TABLE_TEMPLATE:-"${HOMEgfs}/parm/ufs/MOM6_data_table.IN"}
-if [[ ! -f ${tempate} ]]; then
+if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi
