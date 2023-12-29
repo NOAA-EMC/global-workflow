@@ -51,12 +51,16 @@ function get_pslot_list () {
 }
 
 function create_experiment () {
-  
-  yaml_config="${1}"
-  source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+
+  local yaml_config="${1}"
+  cd "${HOMEgfs}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
-  export pslot=${case}_${pr_sha}
+  case=$(basename "${yaml_config}" .yaml) || true
+  
+  source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
   source "${HOMEgfs}/workflow/gw_setup.sh"
+
+  export pslot=${case}_${pr_sha}
   "${HOMEgfs}/workflow/create_experiment.py" --yaml "${yaml_config}"
 
 }
