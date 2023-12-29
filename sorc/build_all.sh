@@ -98,9 +98,9 @@ fi
 #------------------------------------
 # Disable shellcheck warning about single quotes not being substituted.
 # shellcheck disable=SC2016
-ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $errs = 0 ]]'}
 # shellcheck disable=
-err=0
+errs=0
 
 declare -A build_jobs
 declare -A build_opts
@@ -219,7 +219,6 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
 done
 
 # Wait for all jobs to complete and check return statuses
-errs=0
 while [[ ${#build_jobs[@]} -gt 0 ]]; do
    for build in "${!build_jobs[@]}"; do
       # Test if each job is complete and if so, notify and remove from the array
@@ -252,7 +251,7 @@ if (( errs != 0 )); then
 BUILD ERROR: One or more components failed to build
   Check the associated build log(s) for details.
 EOF
-  ${ERRSCRIPT} || exit "${err}"
+  ${ERRSCRIPT} || exit "${errs}"
 fi
 
 echo;echo " .... Build system finished .... "
