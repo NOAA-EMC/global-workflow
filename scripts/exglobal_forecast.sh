@@ -105,9 +105,11 @@ common_predet
 
 echo "MAIN: Loading variables before determination of run type"
 FV3_predet
+[[ ${cplflx} = .true. ]] && CMEPS_predet
 [[ ${cplflx} = .true. ]] && MOM6_predet
 [[ ${cplwav} = .true. ]] && WW3_predet
 [[ ${cplice} = .true. ]] && CICE_predet
+[[ ${cplchm} = .true. ]] && GOCART_predet
 echo "MAIN: Variables before determination of run type loaded"
 
 echo "MAIN: Determining run type"
@@ -119,6 +121,7 @@ echo "MAIN: RUN Type Determined"
 
 echo "MAIN: Post-determination set up of run type"
 FV3_postdet
+[[ ${cplflx} = .true. ]] && CMEPS_postdet
 [[ ${cplflx} = .true. ]] && MOM6_postdet
 [[ ${cplwav} = .true. ]] && WW3_postdet
 [[ ${cplice} = .true. ]] && CICE_postdet
@@ -154,6 +157,7 @@ ${ERRSCRIPT} || exit "${err}"
 
 FV3_out
 [[ ${cplflx} = .true. ]] && MOM6_out
+[[ ${cplflx} = .true. ]] && CMEPS_out
 [[ ${cplwav} = .true. ]] && WW3_out
 [[ ${cplice} = .true. ]] && CICE_out
 [[ ${cplchm} = .true. ]] && GOCART_out

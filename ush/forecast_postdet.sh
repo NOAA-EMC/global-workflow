@@ -464,8 +464,6 @@ EOF
   LONB_STP=${LONB_STP:-${LONB_CASE}}
   LATB_STP=${LATB_STP:-${LATB_CASE}}
   cd "${DATA}" || exit 1
-  if [[ ! -d ${COM_ATMOS_HISTORY} ]]; then mkdir -p "${COM_ATMOS_HISTORY}"; fi
-  if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
   if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
     for fhr in ${FV3_OUTPUT_FH}; do
       local FH3=$(printf %03i "${fhr}")
@@ -504,7 +502,6 @@ FV3_out() {
   # Copy FV3 restart files
   if [[ ${RUN} =~ "gdas" ]]; then
     cd "${DATA}/RESTART"
-    mkdir -p "${COM_ATMOS_RESTART}"
     local idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
     while [[ ${idate} -le ${forecast_end_cycle} ]]; do
       for file in "${idate:0:8}.${idate:8:2}0000."*; do
@@ -517,7 +514,7 @@ FV3_out() {
     ${NCP} "${DATA}/input.nml" "${COM_CONF}/ufs.input.nml"
     ${NCP} "${DATA}/model_configure" "${COM_CONF}/ufs.model_configure"
     ${NCP} "${DATA}/ufs.configure" "${COM_CONF}/ufs.ufs.configure"
-    ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"  
+    ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"
   fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
@@ -606,8 +603,6 @@ WW3_postdet() {
     ${NLN} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"
   fi
 
-  if [[ ! -d ${COM_WAVE_HISTORY} ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
-
   # Link output files
   cd "${DATA}"
   if [[ ${waveMULTIGRID} = ".true." ]]; then
@@ -684,6 +679,7 @@ MOM6_postdet() {
   ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
   case ${OCNRES} in
     "025")
+      local nn
       for nn in $(seq 1 4); do
         if [[ -f "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res_${nn}.nc" ]]; then
           ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
@@ -702,7 +698,7 @@ MOM6_postdet() {
   fi
 
   # Copy MOM6 fixed files
-  ${NCP} "${FIXmom}/${OCNRES}/"* "${DATA}/INPUT/"
+  ${NCP} "${FIXmom}/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
 
   # Copy coupled grid_spec
   spec_file="${FIX_DIR}/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
@@ -711,27 +707,6 @@ MOM6_postdet() {
   else
     echo "FATAL ERROR: grid_spec file '${spec_file}' does not exist"
     exit 3
-  fi
-
-  # Copy mediator restart files to RUNDIR  # TODO: mediator should have its own CMEPS_postdet() function
-  if [[ ${warm_start} = ".true." ]]; then
-    local mediator_file="${COM_MED_RESTART}/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
-    if [[ -f "${mediator_file}" ]]; then
-      ${NCP} "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
-      rm -f "${DATA}/rpointer.cpl"
-      touch "${DATA}/rpointer.cpl"
-      echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
-    else
-      # We have a choice to make here.
-      # Either we can FATAL ERROR out, or we can let the coupling fields initialize from zero
-      # cmeps_run_type is determined based on the availability of the mediator restart file
-      echo "WARNING: ${mediator_file} does not exist for warm_start = .true., initializing!"
-      #echo "FATAL ERROR: ${mediator_file} must exist for warm_start = .true. and does not, ABORT!"
-      #exit 4
-    fi
-  else
-    # This is a cold start, so initialize the coupling fields from zero
-    export cmeps_run_type="startup"
   fi
 
   # If using stochatic parameterizations, create a seed that does not exceed the
@@ -745,57 +720,54 @@ MOM6_postdet() {
     fi
   fi
 
-  # Create COMOUTocean
-  [[ ! -d ${COM_OCEAN_HISTORY} ]] && mkdir -p "${COM_OCEAN_HISTORY}"
-
   # Link output files
   if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
     # Link output files for RUN = gfs
 
     # TODO: get requirements on what files need to be written out and what these dates here are and what they mean
 
-    if [[ ! -d ${COM_OCEAN_HISTORY} ]]; then mkdir -p "${COM_OCEAN_HISTORY}"; fi
+    # Looping over MOM6 output hours
+    local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
+    for fhr in ${MOM6_OUTPUT_FH}; do
+      fhr3=$(printf %03i "${fhr}")
 
-    # Looping over FV3 output hours
-    # TODO: Need to define MOM6_OUTPUT_FH and control at some point for issue #1629
-    for fhr in ${FV3_OUTPUT_FH}; do
       if [[ -z ${last_fhr:-} ]]; then
-        local last_fhr=${fhr}
+        last_fhr=${fhr}
         continue
       fi
+
       (( interval = fhr - last_fhr ))
       (( midpoint = last_fhr + interval/2 ))
 
-      local vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-      local vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
-
+      vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+      vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
 
       # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
-      local source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-      local dest_file="ocn${vdate}.${ENSMEM}.${current_cycle}.nc"
+      source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+      dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
       ${NLN} "${COM_OCEAN_HISTORY}/${dest_file}" "${DATA}/${source_file}"
 
-      local source_file="ocn_daily_${vdate:0:4}_${vdate:4:2}_${vdate:6:2}.nc"
-      local dest_file=${source_file}
-      if [[ ! -a "${DATA}/${source_file}" ]]; then
+      # Daily output
+      if (( fhr > 0 & fhr % 24 == 0 )); then
+        source_file="ocn_daily_${vdate:0:4}_${vdate:4:2}_${vdate:6:2}.nc"
+        dest_file="${RUN}.ocean.t${cyc}z.daily.f${fhr3}.nc"
         ${NLN} "${COM_OCEAN_HISTORY}/${dest_file}" "${DATA}/${source_file}"
       fi
 
-      local last_fhr=${fhr}
+      last_fhr=${fhr}
+
     done
 
   elif [[ "${RUN}" =~ "gdas" ]]; then
     # Link output files for RUN = gdas
 
-    # Save MOM6 backgrounds
-    for fhr in ${FV3_OUTPUT_FH}; do
-      local idatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
+    # Save (instantaneous) MOM6 backgrounds
+    for fhr in ${MOM6_OUTPUT_FH}; do
       local fhr3=$(printf %03i "${fhr}")
-      ${NLN} "${COM_OCEAN_HISTORY}/${RUN}.t${cyc}z.ocnf${fhr3}.nc" "${DATA}/ocn_da_${idatestr}.nc"
+      local vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
+      ${NLN} "${COM_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATA}/ocn_da_${vdatestr}.nc"
     done
   fi
-
-  mkdir -p "${COM_OCEAN_RESTART}"
 
   # Link ocean restarts from DATA to COM
   # Coarser than 1/2 degree has a single MOM restart
@@ -811,10 +783,17 @@ MOM6_postdet() {
     ;;
   esac
 
-  # Loop over restart_interval frequency and link restarts from DATA to COM
-  local idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  while [[ ${idate} -lt ${forecast_end_cycle} ]]; do
-    local idatestr=$(date +%Y-%m-%d-%H -d "${idate:0:8} ${idate:8:2}")
+  if [[ "${RUN}" =~ "gdas" ]]; then
+    local interval rdate rdatestr
+    if [[ "${DOIAU}" = "YES" ]]; then
+      # Link restarts at the beginning of the next cycle from DATA to COM
+      interval=$(( assim_freq / 2 ))
+    else
+      # Link restarts at the middle of the next cycle from DATA to COM
+      interval=${assim_freq}
+    fi
+    rdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${interval} hours" +%Y%m%d%H)
+    rdatestr=$(date +%Y-%m-%d-%H -d "${rdate:0:8} ${rdate:8:2}")
     ${NLN} "${COM_OCEAN_RESTART}/${idate:0:8}.${idate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/"
     case ${OCNRES} in
       "025")
@@ -823,23 +802,7 @@ MOM6_postdet() {
         done
         ;;
     esac
-    local idate=$(date --utc -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  done
-
-  # TODO: mediator should have its own CMEPS_postdet() function
-  # Link mediator restarts from DATA to COM
-  # DANGER DANGER DANGER - Linking mediator restarts to COM causes the model to fail with a message like this below:
-  # Abort with message NetCDF: File exists && NC_NOCLOBBER in file pio-2.5.7/src/clib/pioc_support.c at line 2173
-  # Instead of linking, copy the mediator files after the model finishes
-  #local COMOUTmed="${ROTDIR}/${RUN}.${PDY}/${cyc}/med"
-  #mkdir -p "${COMOUTmed}/RESTART"
-  #local idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  #while [[ ${idate} -le ${forecast_end_cycle} ]]; do
-  #  local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
-  #  local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-  #  ${NLN} "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
-  #  local idate=$(date --utc -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  #done
+  fi
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 
@@ -855,26 +818,8 @@ MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 
   # Copy MOM_input from DATA to COM_OCEAN_INPUT after the forecast is run (and successfull)
-  if [[ ! -d ${COM_OCEAN_INPUT} ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
   ${NCP} "${DATA}/INPUT/MOM_input" "${COM_CONF}/ufs.MOM_input"
 
-  # TODO: mediator should have its own CMEPS_out() function
-  # Copy mediator restarts from DATA to COM
-  # Linking mediator restarts to COM causes the model to fail with a message.
-  # See MOM6_postdet() function for error message
-  mkdir -p "${COM_MED_RESTART}"
-  local idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  while [[ ${idate} -le ${forecast_end_cycle} ]]; do
-    local seconds=$(to_seconds "${idate:8:2}"0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
-    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    local mediator_file="${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
-    if [[ -f ${mediator_file} ]]; then
-      ${NCP} "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
-    else
-      echo "Mediator restart ${mediator_file} not found."
-    fi
-    local idate=$(date --utc -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  done
 }
 
 CICE_postdet() {
@@ -921,10 +866,6 @@ CICE_postdet() {
   ${NLN} "${FIXcice}/${ICERES}/${ice_grid_file}" "${DATA}/"
   ${NLN} "${FIXcice}/${ICERES}/${ice_kmt_file}"  "${DATA}/"
   ${NLN} "${FIXcice}/${ICERES}/${MESH_OCN_ICE}"  "${DATA}/"
-
-  # Link CICE output files
-  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi
-  mkdir -p "${COM_ICE_RESTART}"
 
   if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
     # Link output files for RUN = gfs
@@ -993,7 +934,6 @@ CICE_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
 
   # Copy ice_in namelist from DATA to COMOUTice after the forecast is run (and successfull)
-  if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
   ${NCP} "${DATA}/ice_in" "${COM_CONF}/ufs.ice_in"
 }
 
@@ -1031,8 +971,6 @@ GOCART_rc() {
 GOCART_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
 
-  if [[ ! -d "${COM_CHEM_HISTORY}" ]]; then mkdir -p "${COM_CHEM_HISTORY}"; fi
-
   for fhr in ${FV3_OUTPUT_FH}; do
     local vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
 
@@ -1060,6 +998,61 @@ GOCART_out() {
     ${NCP} "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
       "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
   done
+}
 
+CMEPS_postdet() {
+  echo "SUB ${FUNCNAME[0]}: Linking output data for CMEPS mediator"
+
+  # Copy mediator restart files to RUNDIR
+  if [[ "${warm_start}" = ".true." ]]; then
+    local mediator_file="${COM_MED_RESTART}/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
+    if [[ -f "${mediator_file}" ]]; then
+      ${NCP} "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
+      rm -f "${DATA}/rpointer.cpl"
+      touch "${DATA}/rpointer.cpl"
+      echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
+    else
+      # We have a choice to make here.
+      # Either we can FATAL ERROR out, or we can let the coupling fields initialize from zero
+      # cmeps_run_type is determined based on the availability of the mediator restart file
+      echo "WARNING: ${mediator_file} does not exist for warm_start = .true., initializing!"
+      #echo "FATAL ERROR: ${mediator_file} must exist for warm_start = .true. and does not, ABORT!"
+      #exit 4
+    fi
+  fi
+
+  # Link mediator restarts from DATA to COM
+  # DANGER DANGER DANGER - Linking mediator restarts to COM causes the model to fail with a message like this below:
+  # Abort with message NetCDF: File exists && NC_NOCLOBBER in file pio-2.5.7/src/clib/pioc_support.c at line 2173
+  # Instead of linking, copy the mediator files after the model finishes
+  #local idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+  #while [[ ${idate} -le ${forecast_end_cycle} ]]; do
+  #  local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+  #  local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
+  #  ${NLN} "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
+  #  local idate=$(date --utc -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+  #done
+
+}
+
+CMEPS_out() {
+  echo "SUB ${FUNCNAME[0]}: Copying output data for CMEPS mediator"
+
+  # Linking mediator restarts to COM causes the model to fail with a message.
+  # Abort with message NetCDF: File exists && NC_NOCLOBBER in file pio-2.5.7/src/clib/pioc_support.c at line 2173
+  # Copy mediator restarts from DATA to COM
+  local seconds idate idatestr mediator_file
+  idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+  while [[ ${idate} -le ${forecast_end_cycle} ]]; do
+    seconds=$(to_seconds "${idate:8:2}"0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+    idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
+    mediator_file="${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
+    if [[ -f ${mediator_file} ]]; then
+      ${NCP} "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
+    else
+      echo "Mediator restart ${mediator_file} not found."
+    fi
+    idate=$(date --utc -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+  done
 
 }

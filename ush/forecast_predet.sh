@@ -88,22 +88,28 @@ common_predet(){
     tcyc=${scyc}
   fi
 
-  mkdir -p "${COM_CONF}"
+  FHMIN=${FHMIN:-0}
+  FHMAX=${FHMAX:-9}
+  FHOUT=${FHOUT:-3}
+  FHMAX_HF=${FHMAX_HF:-0}
+  FHOUT_HF=${FHOUT_HF:-1}
+
+  if [[ ! -d ${COM_CONF} ]]; then mkdir -p "${COM_CONF}"; fi
   cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
 
 FV3_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
-  FHMIN=${FHMIN:-0}
-  FHMAX=${FHMAX:-9}
-  FHOUT=${FHOUT:-3}
+
+  if [[ ! -d "${COM_ATMOS_HISTORY}" ]]; then mkdir -p "${COM_ATMOS_HISTORY}"; fi
+  if [[ ! -d "${COM_ATMOS_MASTER}" ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
+  if [[ ! -d "${COM_ATMOS_RESTART}" ]]; then mkdir -p "${COM_ATMOS_RESTART}"; fi
+
+  if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
+
   FHZER=${FHZER:-6}
   FHCYC=${FHCYC:-24}
-  FHMAX_HF=${FHMAX_HF:-0}
-  FHOUT_HF=${FHOUT_HF:-1}
   NSOUT=${NSOUT:-"-1"}
-  FDIAG=${FHOUT}
-  if (( FHMAX_HF > 0 && FHOUT_HF > 0 )); then FDIAG=${FHOUT_HF}; fi
   WRITE_DOPOST=${WRITE_DOPOST:-".false."}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
@@ -154,8 +160,6 @@ FV3_predet(){
   WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
 
   rCDUMP=${rCDUMP:-${CDUMP}}
-
-  mkdir -p "${DATA}/INPUT"
 
   #------------------------------------------------------------------
   # changeable parameters
@@ -215,7 +219,6 @@ FV3_predet(){
 
   #-------------------------------------------------------
   if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]]; then
-    if [[ ! -d ${COM_ATMOS_RESTART} ]]; then mkdir -p "${COM_ATMOS_RESTART}" ; fi
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
@@ -229,26 +232,68 @@ FV3_predet(){
       ${NLN} "${file}" "${COM_ATMOS_RESTART}/${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${file}"
     done
   else
-    mkdir -p "${DATA}/RESTART"
+    if [[ ! -d "${DATA}/RESTART" ]]; then mkdir -p "${DATA}/RESTART"; fi
   fi
 
-  echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }
 
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
+
+  if [[ ! -d "${COM_WAVE_HISTORY}" ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
   if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
+
   ${NLN} "${COM_WAVE_RESTART}" "restart_wave"
 }
 
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
+
+  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi
+  if [[ ! -d "${COM_ICE_RESTART}" ]]; then mkdir -p "${COM_ICE_RESTART}"; fi
+  if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
+
   if [[ ! -d "${DATA}/CICE_OUTPUT" ]]; then  mkdir -p "${DATA}/CICE_OUTPUT"; fi
   if [[ ! -d "${DATA}/CICE_RESTART" ]]; then mkdir -p "${DATA}/CICE_RESTART"; fi
+
+  # CICE does not have a concept of high frequency output like FV3
+  CICE_OUTPUT_FH=""
+  local fhr
+  for (( fhr = FHMIN; fhr <= FHMAX; fhr = fhr + FHOUT )); do
+    CICE_OUTPUT_FH="${CICE_OUTPUT_FH} ${fhr}"
+  done
+
 }
 
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
+
+  if [[ ! -d "${COM_OCEAN_HISTORY}" ]]; then mkdir -p "${COM_OCEAN_HISTORY}"; fi
+  if [[ ! -d "${COM_OCEAN_RESTART}" ]]; then mkdir -p "${COM_OCEAN_RESTART}"; fi
+  if [[ ! -d "${COM_OCEAN_INPUT}" ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
+
   if [[ ! -d "${DATA}/MOM6_OUTPUT" ]]; then mkdir -p "${DATA}/MOM6_OUTPUT"; fi
   if [[ ! -d "${DATA}/MOM6_RESTART" ]]; then mkdir -p "${DATA}/MOM6_RESTART"; fi
+
+  # MOM6 does not have a concept of high frequency output like FV3
+  MOM6_OUTPUT_FH=""
+  local fhr
+  for (( fhr = FHMIN; fhr <= FHMAX; fhr = fhr + FHOUT )); do
+    MOM6_OUTPUT_FH="${MOM6_OUTPUT_FH} ${fhr}"
+  done
+
+}
+
+CMEPS_predet(){
+  echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
+
+  if [[ ! -d "${COM_MED_RESTART}" ]]; then mkdir -p "${COM_MED_RESTART}"; fi
+
+}
+
+GOCART_predet(){
+  echo "SUB ${FUNCNAME[0]}: GOCART before run type determination"
+
+  if [[ ! -d "${COM_CHEM_HISTORY}" ]]; then mkdir -p "${COM_CHEM_HISTORY}"; fi
+
 }

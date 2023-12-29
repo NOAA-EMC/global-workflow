@@ -22,7 +22,7 @@ local cap_dbug_flag=${cap_dbug_flag:-0}
 # Determine "cmeps_run_type" based on the availability of the mediator restart file
 # If it is a warm_start, we already copied the mediator restart to DATA, if it was present
 # If the mediator restart was not present, despite being a "warm_start", we put out a WARNING
-# in forecast_postdet.sh
+# in forecast_postdet.sh function CMEPS_postdet
 if [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
   local cmeps_run_type='continue'
 else
