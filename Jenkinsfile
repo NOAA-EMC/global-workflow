@@ -31,6 +31,7 @@ pipeline {
         stage('Create Experiments') {
         agent{ label 'orion-emc'}
             steps {
+                sh 'rm -Rf ${RUNTESTS}'
                 sh 'mkdir -p ${RUNTESTS}'
                 script {
                     pullRequest.removeLabel('CI-Orion-Building')
