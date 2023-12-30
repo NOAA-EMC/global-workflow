@@ -39,7 +39,7 @@ pipeline {
                             agent{ label 'orion-emc'}
                               script { 
                                 env.case = case_name
-                                env.RUNTESTS = "${WORKSPCE}/RUNTESTS"
+                                env.RUNTESTS = "${WORKSPACE}/RUNTESTS"
                               }
                               sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                         }
