@@ -541,9 +541,8 @@ WW3_postdet() {
   fi
 
 
-  #if wave mesh is not the same as the ocn/ice mesh, linkk it in the file
-  local comparemesh=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-  if [[ "${MESH_WAV}" = "${comparemesh}" ]]; then
+  #if wave mesh is not the same as the ocn/ice mesh, link it in the file
+  if [[ "${MESH_WAV}" == "${MESH_OCN_ICE}" ]]; then
     echo "Wave is on same mesh as ocean/ice"
   else
     ${NLN} "${FIXwave}/${MESH_WAV}" "${DATA}/"
@@ -893,12 +892,9 @@ CICE_postdet() {
   echo "${DATA}/cice_model.res.nc" > "${DATA}/ice.restart_file"
 
   echo "Link CICE fixed files"
-  ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
-  ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
-  export MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-  ${NLN} "${FIXcice}/${ICERES}/${ice_grid_file}" "${DATA}/"
-  ${NLN} "${FIXcice}/${ICERES}/${ice_kmt_file}"  "${DATA}/"
-  ${NLN} "${FIXcice}/${ICERES}/${MESH_OCN_ICE}"  "${DATA}/"
+  ${NLN} "${FIXcice}/${ICERES}/${CICE_GRID}"    "${DATA}/"
+  ${NLN} "${FIXcice}/${ICERES}/${CICE_MASK}"    "${DATA}/"
+  ${NLN} "${FIXcice}/${ICERES}/${MESH_OCN_ICE}" "${DATA}/"
 
   # Link CICE output files
   if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi

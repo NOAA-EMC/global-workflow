@@ -66,7 +66,6 @@ if [[ "${cplice}" = ".true." ]]; then
   local ice_model="cice6"
   local ice_petlist_bounds="$(( ATMPETS+OCNPETS )) $(( ATMPETS+OCNPETS+ICEPETS-1 ))"
   local ice_omp_num_threads="${ICETHREADS}"
-  local MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
   local FHMAX="${FHMAX_GFS}"  # TODO:  How did this get in here hard-wired to FHMAX_GFS?
 fi
 

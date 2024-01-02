@@ -51,7 +51,8 @@ fi
 #
 #EOF
 
-echo "$(cat input.nml)"
+echo "Rendered input.nml:"
+cat input.nml
 
 # Source functions from this file for filling in templates
 source "${HOMEgfs}/ush/atparse.bash"
@@ -60,39 +61,40 @@ source "${HOMEgfs}/ush/atparse.bash"
 # MOM_input
 # ---------
 # Prepare local variables for use in MOM_input.IN from UFSWM
+# The ones already defined are left commented as a reminder
 # == MOM_domains section ==
-#local NX_GLB=${NX_GLB}
-#local NY_GLB=${NY_GLB}
+# NX_GLB
+# NY_GLB
 # == MOM section ==
-#local DT_DYNAM_MOM6=${DT_DYNAM_MOM6}
-#local DT_THERM_MOM6=${DT_THERM_MOM6}
-#local MOM6_THERMO_SPAN=${MOM6_THERMO_SPAN}
+# DT_DYNAM_MOM6
+# DT_THERM_MOM6
+# MOM6_THERMO_SPAN
 # == MOM_grid_init section ==
 local MOM6_TOPOEDITS=${TOPOEDITS}
-#local MOM6_ALLOW_LANDMASK_CHANGES=${MOM6_ALLOW_LANDMASK_CHANGES}
+# MOM6_ALLOW_LANDMASK_CHANGES
 # == MOM_diag_mediator section ==
-#local MOM6_DIAG_COORD_DEF_Z_FILE=${MOM6_DIAG_COORD_DEF_Z_FILE}
-#local MOM6_DIAG_MISVAL=${MOM6_DIAG_MISVAL}
+# MOM6_DIAG_COORD_DEF_Z_FILE
+# MOM6_DIAG_MISVAL
 # == MOM_diabatic_aux section ==
 local MOM6_CHLCLIM=${CHLCLIM}
 # == MOM_energetic_PBL section ==
-#local MOM6_USE_LI2016=${MOM6_USE_LI2016}
+# MOM6_USE_LI2016
 if [[ "${cplwav}" == ".true." ]] ; then
   local MOM6_USE_WAVES="True"
 else
   local MOM6_USE_WAVES="False"
 fi
 # == MOM_oda_incupd section ==
-#local ODAS_INCUPD=${ODA_INCUPD}
 local ODA_TEMPINC_VAR="Temp"
 local ODA_SALTINC_VAR="Salt"
 local ODA_THK_VAR="h"
 local ODA_INCUPD_UV="True"
 local ODA_UINC_VAR="u"
 local ODA_VINC_VAR="v"
-#local ODA_INCUPD_NHOURS=${ODA_INCUPD_NHOURS}
+# ODA_INCUPD
+# ODA_INCUPD_NHOURS
 # == MOM_surface_forcing section ==
-#local MOM6_RIVER_RUNOFF=${MOM6_RIVER_RUNOFF}
+# MOM6_RIVER_RUNOFF
 # == ocean_stochastics section ==
 if [[ "${DO_OCN_SPPT}" == "YES" ]]; then
   local DO_OCN_SPPT="True"  # TODO: This is problematic if DO_OCN_SPPT is going to be used elsewhere

@@ -46,6 +46,7 @@ stepsperhr=$((3600/ICETIM))
 npt=$((FHMAX*stepsperhr)) # Need this in order for dump_last to work
 
 # Prepare local variables for use in ice_in_template from UFSWM
+# The ones already defined are left commented as a reminder
 # setup_nml section
 local SYEAR=${current_cycle:0:4}
 local SMONTH=${current_cycle:4:2}
@@ -70,8 +71,8 @@ fi
 local CICE_HISTORY_DIR="./CICE_OUTPUT/"
 local CICE_INCOND_DIR="./CICE_OUTPUT/"
 # grid_nml section
-local CICE_GRID="${ice_grid_file}"
-local CICE_MASK="${ice_kmt_file}"
+# CICE_GRID
+# CICE_MASK
 local CICE_GRIDATM="A"  # A-grid for atmosphere (FV3)
 local CICE_GRIDOCN="A"  # A-grid for ocean (MOM6)
 local CICE_GRIDICE="B"  # B-grid for seaice (CICE6)
@@ -96,8 +97,8 @@ local CICE_FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
 local CICE_TFREEZE_OPTION=${tfrz_option:-"mushy"}
 # domain_nml section
 local CICE_NPROC=${ntasks_cice6}
-#local NX_GLB=${NX_GLB}
-#local NY_GLB=${NY_GLB}
+# NX_GLB
+# NY_GLB
 local CICE_BLCKX=${block_size_x}
 local CICE_BLCKY=${block_size_y}
 local CICE_DECOMP=${processor_shape}

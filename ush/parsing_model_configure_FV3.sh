@@ -8,15 +8,16 @@ FV3_model_configure(){
 local restile=${CASE:1}
 
 # Prepare local variables for use in model_configure.IN from UFSWM
+# The ones already defined are left commented as a reminder
 local SYEAR=${tPDY:0:4}
 local SMONTH=${tPDY:4:2}
 local SDAY=${tPDY:6:2}
 local SHOUR=${tcyc}
-#local FHMAX=${FHMAX}
+# FHMAX
 local FHROT=${IAU_FHROT:-0}
 local DT_ATMOS=${DELTIM}
 local RESTART_INTERVAL="${restart_interval} -1"
-#local QUILTING=${QUILTING}
+# QUILTING
 local QUILTING_RESTART=".true."
 local WRITE_GROUP=${WRITE_GROUP:-1}
 local WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-24}
@@ -27,7 +28,7 @@ local WRITE_DOPOST=${WRITE_DOPOST:-".false."}
 local WRITE_NSFLIP=${WRITE_NSFLIP:-".false."}
 local NUM_FILES=${NUM_FILES:-2}
 local FILENAME_BASE="'atm' 'sfc'"
-#local OUTPUT_GRID=${OUTPUT_GRID}
+# OUTPUT_GRID
 local OUTPUT_FILE="'${OUTPUT_FILETYPE_ATM}' '${OUTPUT_FILETYPE_SFC}'"
 local ZSTANDARD_LEVEL=0
 local IDEFLATE=1  # netCDF zlib lossless compression (0-9); 0: no compression
