@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-# TODO (#1222) This job is not part of the rocoto suite
-
 ############################################
 # GFS_PGRB2_SPEC_GEMPAK PRODUCT GENERATION
 ############################################
@@ -12,12 +10,12 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_spec" -c "base"
 ################################
 # Set up the HOME directory
 ################################
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export FIXgempak=${FIXgempak:-${HOMEgfs}/gempak/fix}
-export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
-export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
+export EXECgfs="${EXECgfs:-${HOMEgfs}/exec}"
+export PARMgfs="${PARMgfs:-${HOMEgfs}/parm}"
+export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
+export FIXgempak="${FIXgempak:-${HOMEgfs}/gempak/fix}"
+export USHgempak="${USHgempak:-${HOMEgfs}/gempak/ush}"
+export SRCgfs="${SRCgfs:-${HOMEgfs}/scripts}"
 
 # For half-degree P Grib files
 #export DO_HD_PGRB=YES
@@ -33,25 +31,20 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${NET}.${PDY})/${cyc}/${COMPONENT}/gempak}
+export COMIN="${COMIN:-$(compath.py "${envir}"/"${NET}"/"${gfs_ver}")/${RUN}.${PDY}/${cyc}/${COMPONENT}}"
+export COMOUT="${COMOUT:-$(compath.py -o "${NET}"/"${gfs_ver}"/"${NET}"."${PDY}")/${cyc}/${COMPONENT}/gempak}"
 
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+export SENDDBN="${SENDDBN:-NO}"
+export DBNROOT="${DBNROOT:-${UTILROOT}/fakedbn}"
 
-mkdir -m 775 -p ${COMOUT}
-
-
-# TODO - Assess what is going on with overwriting $DATA here (#1224)
-
-export DATA_HOLD=${DATA}
+mkdir -m 775 -p "${COMOUT}"
 
 #################################################################
 # Execute the script for the regular grib
 #################################################################
-export DATA=${DATA_HOLD}/SPECIAL
-mkdir -p ${DATA}
-cd ${DATA}
+export DATA_SPECIAL="${DATA}/SPECIAL"
+mkdir -p "${DATA_SPECIAL}"
+cd "${DATA_SPECIAL}" || exit 1
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
 export RUN2=gfs_goessim
@@ -65,14 +58,14 @@ echo "RUNS the Program"
 
 ########################################################
 # Execute the script.
-${SRCgfs}/exgfs_atmos_goes_nawips.sh
+"${SRCgfs}/exgfs_atmos_goes_nawips.sh"
 
 #################################################################
 # Execute the script for the 221 grib
 
-export DATA=${DATA_HOLD}/SPECIAL221
-mkdir -p ${DATA}
-cd ${DATA}
+export DATA_SPECIAL221="${DATA}/SPECIAL221"
+mkdir -p "${DATA_SPECIAL221}"
+cd "${DATA_SPECIAL221}" || exit 1
 
 export DBN_ALERT_TYPE=GFS_GOESSIM221_GEMPAK
 export RUN2=gfs_goessim221
@@ -86,12 +79,12 @@ echo "RUNS the Program"
 
 ########################################################
 # Execute the script.
-${SRCgfs}/exgfs_atmos_goes_nawips.sh
+"${SRCgfs}/exgfs_atmos_goes_nawips.sh"
 export err=$?; err_chk
 ########################################################
 
 echo "end of program"
-cd ${DATA_HOLD}
+cd "${DATA}" || exit 1
 echo "######################################"
 echo "  SPECIAL.OUT "
 echo "######################################"
@@ -99,14 +92,14 @@ echo "######################################"
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "${KEEPDATA}" != "YES" ] ; then
+if [[ "${KEEPDATA}" != "YES" ]] ; then
   rm -rf "${DATA}"
 fi
 

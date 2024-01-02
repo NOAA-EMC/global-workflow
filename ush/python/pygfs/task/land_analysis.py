@@ -153,7 +153,7 @@ class LandAnalysis(Analysis):
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'ntiles']
+                'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
 
@@ -198,7 +198,7 @@ class LandAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exe}")
 
         # Ensure the snow depth IMS file is produced by the above executable
-        input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}_oro_data.nc"
+        input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}.mx{localconf.OCNRES}_oro_data.nc"
         if not os.path.isfile(f"{os.path.join(localconf.DATA, input_file)}"):
             logger.exception(f"{self.task_config.CALCFIMSEXE} failed to produce {input_file}")
             raise FileNotFoundError(f"{os.path.join(localconf.DATA, input_file)}")
