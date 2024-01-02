@@ -2,9 +2,6 @@
 
 echo "BEGIN: config.ocn"
 
-# MOM_input template to use
-export MOM_INPUT="MOM_input_template_${OCNRES}"
-
 export MESH_OCN_ICE="mesh.mx${OCNRES}.nc"
 
 export DO_OCN_SPPT="NO"  # In MOM_input, this variable is determines OCN_SPPT (OCN_SPPT = True|False)
