@@ -56,7 +56,7 @@ elif [[ "${machine}" = "AWSPW" ]]; then
 elif [[ ${machine} = "ORION" ]]; then
    export npe_node_max=40
 elif [[ ${machine} = "HERCULES" ]]; then
-   export npe_node_max=40
+   export npe_node_max=80
 fi
 
 if [[ ${step} = "prep" ]]; then
@@ -907,10 +907,16 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
     export npe_node_eobs
     export npe_node_eomg=${npe_node_eobs}
     export is_exclusive=True
-    #The number of tasks and cores used must be the same for eobs
-    #For S4, this is accomplished by running 10 tasks/node
+    # The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+    # For S4, this is accomplished by running 10 tasks/node
     if [[ ${machine} = "S4" ]]; then
        export npe_node_eobs=10
+    elif [[ ${machine} = "HERCULES" ]]; then
+       #For Hercules, this is only an issue at C384; use 20 tasks/node
+       if [[ ${CASE} = "C384" ]]; then
+          export npe_node_eobs=20
+       fi
     fi
 
 elif [[ ${step} = "ediag" ]]; then
