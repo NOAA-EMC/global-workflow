@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent{ label 'orion-emc'}
     stages {
         stage('BuildAndTest') {
             matrix {
