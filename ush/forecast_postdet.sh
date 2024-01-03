@@ -542,7 +542,7 @@ WW3_postdet() {
 
 
   #if wave mesh is not the same as the ocean mesh, link it in the file
-  if [[ "${MESH_WAV}" == "${MESH_OCN}" ]]; then
+  if [[ "${MESH_WAV}" == "${MESH_OCN:-mesh.mx${OCNRES}.nc}" ]]; then
     echo "Wave is on same mesh as ocean"
   else
     ${NLN} "${FIXwave}/${MESH_WAV}" "${DATA}/"
