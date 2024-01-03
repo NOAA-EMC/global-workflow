@@ -28,9 +28,6 @@ pipeline {
                     steps {
                         sh("Running Test One  on ${it.machine}")
                     }
-                    steps {
-                        sh("Running Test Two on ${it.machine}")
-                    }
                 }
             }    
         }
