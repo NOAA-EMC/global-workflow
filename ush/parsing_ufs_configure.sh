@@ -17,8 +17,10 @@ writing_ufs_configure() {
 echo "SUB ${FUNCNAME[0]}: ufs.configure.sh begins"
 
 # Setup ufs.configure
-local DumpFields=${NEMSDumpFields:-false}
+local esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
+local DumpFields=${DumpFields:-false}
 local cap_dbug_flag=${cap_dbug_flag:-0}
+
 # Determine "cmeps_run_type" based on the availability of the mediator restart file
 # If it is a warm_start, we already copied the mediator restart to DATA, if it was present
 # If the mediator restart was not present, despite being a "warm_start", we put out a WARNING
@@ -29,7 +31,6 @@ else
   local cmeps_run_type='startup'
 fi
 
-local esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
 # Atm-related
 local atm_model="fv3"

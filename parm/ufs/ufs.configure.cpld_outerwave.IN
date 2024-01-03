@@ -38,7 +38,7 @@ OCN_attributes::
   DumpFields = @[DumpFields]
   ProfileMemory = false
   OverwriteSlice = true
-  mesh_ocn = @[MESH_OCN_ICE]
+  mesh_ocn = @[MESH_OCN]
   use_coldstart = @[use_coldstart]
   use_mommesh = @[use_mommesh]
 ::
@@ -52,7 +52,7 @@ ICE_attributes::
   DumpFields = @[DumpFields]
   ProfileMemory = false
   OverwriteSlice = true
-  mesh_ice = @[MESH_OCN_ICE]
+  mesh_ice = @[MESH_ICE]
   eps_imesh = @[eps_imesh]
   stop_n = @[RESTART_N]
   stop_option = nhours
