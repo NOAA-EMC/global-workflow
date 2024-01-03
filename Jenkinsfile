@@ -41,12 +41,12 @@ pipeline {
                 stages {
                     stage('Build') {
                         steps {
-                            echo "Do Build for ${PLATFORM}"
+                            echo "Do Build for ${CHOICE_NODE} - ${Cases}"
                         }
                     }
                     stage('Run Cases') {
                         steps {
-                            echo "Do Test for ${PLATFORM} - ${Cases}"
+                            echo "Do Test for ${CHOICE_NODE} - ${Cases}"
                         }
                     }
                 }
