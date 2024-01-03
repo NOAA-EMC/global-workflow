@@ -3,11 +3,10 @@ pipeline {
     stages {
         stage('BuildAndTest') {
             matrix {
-                agent{ label 'orion-emc'}
                 axes {
                     axis {
                         name 'PLATFORM'
-                        values 'Orion', 'Hera', 'Hercules'
+                        values 'Orion', 'Hera'
                     }
                     axis {
                         name 'Cases'
