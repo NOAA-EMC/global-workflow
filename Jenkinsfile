@@ -1,31 +1,84 @@
+
 pipeline {
     agent{ label 'orion-emc'}
+
     stages {
-        stage('BuildAndTest') {
-            matrix {
-                agent{ label 'orion-emc'}
-                axes {
-                    axis {
-                        name 'PLATFORM'
-                        values 'Orion', 'Hera', 'Hercules'
-                    }
-                    axis {
-                        name 'Cases'
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW',  'C96_atm3DVar', 'C96C48_hybatmDA'
-                    }
+
+        stage('Checkout') {
+        agent{ label 'orion-emc'}
+            steps {
+                checkout scm
+                script {
+                   pullRequest.removeLabel('CI-Orion-Ready')
+                   pullRequest.addLabel('CI-Orion-Building')
                 }
-                stages {
-                    stage('Build') {
-                        steps {
-                            echo "Do Build for ${PLATFORM}"
+                sh 'git submodule update --init --recursive'
+            }
+        }
+
+        stage('Build') {
+        agent{ label 'orion-emc'}
+          steps {
+            sh 'sorc/build_all.sh -gu'
+            sh 'sorc/link_workflow.sh'
+          }
+        }
+ 
+        stage('Create Experiments') {
+        agent{ label 'orion-emc'}
+            steps {
+                sh 'rm -Rf ${WORKSPACE}/RUNTESTS'
+                sh 'mkdir -p ${WORKSPACE}/RUNTESTS'
+                script {
+                    pullRequest.removeLabel('CI-Orion-Building')
+                    pullRequest.addLabel('CI-Orion-Running')
+                    case_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pr_case_list", returnStdout: true ).trim()
+                    cases = case_list.tokenize('\n')
+                    cases.each { case_name ->
+                        stage("Create ${case_name}") {
+                            agent{ label 'orion-emc'}
+                              script { 
+                                env.case = case_name
+                                env.RUNTESTS = "${WORKSPACE}/RUNTESTS"
+                              }
+                              sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                         }
                     }
-                    stage('Run Tests') {
-                        steps {
-                            echo "Do Test for ${PLATFORM} - ${Cases}"
+                    script { pullRequest.comment("SUCCESS creating cases: ${cases} on Orion") }
+                }
+            }
+        }
+
+        stage('Run Experiments') {
+        agent{ label 'orion-emc'}
+            steps {
+                script {
+                    experiment_list = sh( script: "${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list ${WORKSPACE}/RUNTESTS", returnStdout: true ).trim()
+                    experiments = experiment_list.tokenize('\n')
+                    experiments.each { experiment_name ->
+                        stage("Run ${experiment_name}") {
+                            agent{ label 'orion-emc'}
+                              script { env.experiment = experiment_name }
+                              sh '${WORKSPACE}/ci/scripts/run-check_ci.sh ${WORKSPACE} ${experiment}'
                         }
                     }
+                    script { pullRequest.comment("SUCCESS running experiments: ${experiments} on Orion") }
                 }
+            }
+        }
+    }    
+
+    post {
+        success {
+            script {
+                pullRequest.removeLabel('CI-Orion-Running')
+                pullRequest.addLabel('CI-Orion-Passed')  
+            }
+        }
+        failure {
+            script {
+                pullRequest.removeLabel('CI-Orion-Running')
+                pullRequest.addLabel('CI-Orion-Failed')  
             }
         }
     }
