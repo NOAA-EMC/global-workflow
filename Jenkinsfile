@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('BuildAndTest') {
             matrix {
-                agent any
+                agent{ label 'orion-emc'}
                 axes {
                     axis {
                         name 'PLATFORM'
