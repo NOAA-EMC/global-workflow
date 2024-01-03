@@ -913,7 +913,7 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
     if [[ ${machine} = "S4" ]]; then
        export npe_node_eobs=10
     elif [[ ${machine} = "HERCULES" ]]; then
-       #For Hercules, this is only an issue at C384; use 20 tasks/node
+       # For Hercules, this is only an issue at C384; use 20 tasks/node
        if [[ ${CASE} = "C384" ]]; then
           export npe_node_eobs=20
        fi
