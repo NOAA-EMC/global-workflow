@@ -14,12 +14,12 @@ pipeline {
                     }
                 }
                 stages {
-                    stage('Build') {
+                    stage('Build ${PLATFORM}') {
                         steps {
                             echo "Do Build for ${PLATFORM}"
                         }
                     }
-                    stage('Run Tests') {
+                    stage('Run Tests ${PLATFORM} - ${Cases}') {
                         steps {
                             echo "Do Test for ${PLATFORM} - ${Cases}"
                         }
