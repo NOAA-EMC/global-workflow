@@ -54,12 +54,14 @@ if [[ "${cplflx}" = ".true." ]]; then
   local ocn_petlist_bounds="${ATMPETS} $(( ATMPETS+OCNPETS-1 ))"
   local ocn_omp_num_threads="${OCNTHREADS}"
   local RUNTYPE="${cmeps_run_type}"
+  local CMEPS_RESTART_DIR="RESTART/"
   local CPLMODE="${cplmode}"
   local coupling_interval_fast_sec="${CPL_FAST}"
   local RESTART_N="${restart_interval}"
   local ocean_albedo_limit=0.06
   local ATMTILESIZE="${CASE:1}"
   local ocean_albedo_limit=0.06
+  local pio_rearranger="box"
 fi
 
 if [[ "${cplice}" = ".true." ]]; then

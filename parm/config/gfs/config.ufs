@@ -482,27 +482,27 @@ case "${model_list}" in
     export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atm.IN"
     ;;
   atm.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atm_aero.IN"
-    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atmaero.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atm_aero.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atmaero.IN"  # TODO: Uncomment this line and remove the line above when the UFSWM is updated
     ;;
   atm.wave)
     export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav.IN"
     ;;
   atm.ocean.ice)
-    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld.IN"
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2s.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2s.IN"  # TODO: Uncomment this line and remove the line above when the UFSWM is updated
     ;;
   atm.ocean.ice.aero)
-    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero.IN"
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sa.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sa.IN"  # TODO: Uncomment this line and remove the line above when the UFSWM is updated
     ;;
   atm.ocean.ice.wave)
-    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_outerwave.IN"
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sw_slow.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_outerwave.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sw_slow.IN"  # TODO: Uncomment this line and remove the line above when the UFSWM is updated
     ;;
   atm.ocean.ice.wave.aero)
-    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero_outerwave.IN"
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2swa_slow.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero_outerwave.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2swa_slow.IN"  # TODO: Uncomment this line and remove the line above when the UFSWM is updated
     ;;
   *)
     echo "FATAL ERROR: Unable to determine appropriate UFS configure template for ${model_list}"
