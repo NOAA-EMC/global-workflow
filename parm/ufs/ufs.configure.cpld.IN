@@ -39,6 +39,8 @@ OCN_attributes::
   ProfileMemory = false
   OverwriteSlice = true
   mesh_ocn = @[MESH_OCN_ICE]
+  use_coldstart = @[use_coldstart]
+  use_mommesh = @[use_mommesh]
 ::
 
 # ICE #
@@ -51,6 +53,7 @@ ICE_attributes::
   ProfileMemory = false
   OverwriteSlice = true
   mesh_ice = @[MESH_OCN_ICE]
+  eps_imesh = @[eps_imesh]
   stop_n = @[RESTART_N]
   stop_option = nhours
   stop_ymd = -999
@@ -107,9 +110,6 @@ ALLCOMP_attributes::
       restart_option = nhours
       restart_ymd = -999
       dbug_flag = @[cap_dbug_flag]
-      use_coldstart = @[use_coldstart]
-      use_mommesh = @[use_mommesh]
-      eps_imesh = @[eps_imesh]
       stop_n = @[FHMAX]
       stop_option = nhours
       stop_ymd = -999
