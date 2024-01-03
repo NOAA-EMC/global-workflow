@@ -483,21 +483,26 @@ case "${model_list}" in
     ;;
   atm.aero)
     export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atm_aero.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atmaero.IN"
     ;;
   atm.wave)
     export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav.IN"
     ;;
   atm.ocean.ice)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2s.IN"
     ;;
   atm.ocean.ice.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sa.IN"
     ;;
   atm.ocean.ice.wave)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_outerwave.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_outerwave.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sw_slow.IN"
     ;;
   atm.ocean.ice.wave.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero_outerwave.IN"
+    #export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero_outerwave.IN"
+    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.s2swa_slow.IN"
     ;;
   *)
     echo "FATAL ERROR: Unable to determine appropriate UFS configure template for ${model_list}"

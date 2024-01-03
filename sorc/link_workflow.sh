@@ -158,17 +158,12 @@ declare -a ufs_templates=("model_configure.IN" \
                           "ice_in.IN")
 # TODO: Add these ufs.configure templates to the list above once they are updated
 #                          "ufs.configure.atm.IN" \
-#                          "ufs.configure.atm_aero.IN" \
-#                          "ufs.configure.atmw.IN" \
-#                          "ufs.configure.blocked_atm_wav_2way.IN" \
-#                          "ufs.configure.blocked_atm_wav.IN" \
-#                          "ufs.configure.cpld_agrid.IN" \
-#                          "ufs.configure.cpld_esmfthreads.IN" \
-#                          "ufs.configure.cpld.IN" \
-#                          "ufs.configure.cpld_noaero.IN" \
-#                          "ufs.configure.cpld_noaero_nowave.IN" \
-#                          "ufs.configure.cpld_noaero_outwav.IN" \
-#                          "ufs.configure.leapfrog_atm_wav.IN")
+#                          "ufs.configure.atmaero.IN" \
+#                          "ufs.configure.leapfrog_atm_wav.IN" \
+#                          "ufs.configure.s2s.IN" \
+#                          "ufs.configure.s2sa.IN" \
+#                          "ufs.configure.s2sw_slow.IN" \
+#                          "ufs.configure.s2swa_slow.IN" )
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
