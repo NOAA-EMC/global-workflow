@@ -58,7 +58,7 @@ common_predet(){
   FCSTEXEC=${FCSTEXEC:-ufs_model.x}
 
   # Directories.
-  FIX_DIR=${FIX_DIR:-${HOMEgfs}/fix}
+  FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
 
   # Model specific stuff
   PARM_POST=${PARM_POST:-${HOMEgfs}/parm/post}
