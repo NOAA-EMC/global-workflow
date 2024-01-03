@@ -1,12 +1,13 @@
 pipeline {
-    agent{ label 'orion-emc'}
+    agent none
     stages {
         stage('BuildAndTest') {
             matrix {
+                agent { label '${PLATFORM}-emc' }
                 axes {
                     axis {
                         name 'PLATFORM'
-                        values 'Orion', 'Hera'
+                        values 'orion', 'hera'
                     }
                     axis {
                         name 'Cases'
@@ -14,12 +15,12 @@ pipeline {
                     }
                 }
                 stages {
-                    stage('Build ${PLATFORM}') {
+                    stage('Build') {
                         steps {
-                            echo "Do Build for ${PLATFORM}"
+                            echo "Do Build for ${env.PLATFORM}"
                         }
                     }
-                    stage('Run Tests ${PLATFORM} - ${Cases}') {
+                    stage('Run Cases') {
                         steps {
                             echo "Do Test for ${PLATFORM} - ${Cases}"
                         }
