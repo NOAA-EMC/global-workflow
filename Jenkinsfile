@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('BuildAndTest') {
             matrix {
-                agent { label '${PLATFORM}-emc' }
+                agent { label "${PLATFORM}-emc" }
                 axes {
                     axis {
                         name 'PLATFORM'
@@ -17,7 +17,7 @@ pipeline {
                 stages {
                     stage('Build') {
                         steps {
-                            echo "Do Build for ${env.PLATFORM}"
+                            echo "Do Build for ${PLATFORM}"
                         }
                     }
                     stage('Run Cases') {
