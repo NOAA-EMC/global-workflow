@@ -243,11 +243,6 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
             targrp_list="${targrp_list} gdasice"
         fi
 
-        #gdasland
-        if [ "${DO_JEDILANDDA}" = "YES" ]; then
-            targrp_list="${targrp_list} gdasland"
-        fi
-
         if [ "${SAVEWARMICA}" = "YES" ] || [ "${SAVEFCSTIC}" = "YES" ]; then
             targrp_list="${targrp_list} gdas_restarta"
             if [ "${DO_WAVE}" = "YES" ]; then targrp_list="${targrp_list} gdaswave_restart"; fi
