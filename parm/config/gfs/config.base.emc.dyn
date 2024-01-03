@@ -23,16 +23,22 @@ export HPSS_PROJECT="@HPSS_PROJECT@"
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
-export PARMgfs=${HOMEgfs}/parm
-export FIXgfs=${HOMEgfs}/fix
-export USHgfs=${HOMEgfs}/ush
-export UTILgfs=${HOMEgfs}/util
-export EXECgfs=${HOMEgfs}/exec
-export SCRgfs=${HOMEgfs}/scripts
+export PARMgfs="${HOMEgfs}/parm"
+export FIXgfs="${HOMEgfs}/fix"
+export USHgfs="${HOMEgfs}/ush"
+export UTILgfs="${HOMEgfs}/util"
+export EXECgfs="${HOMEgfs}/exec"
+export SCRgfs="${HOMEgfs}/scripts"
 
-export FIXcice=${HOMEgfs}/fix/cice
-export FIXmom=${HOMEgfs}/fix/mom6
-export FIXreg2grb2=${HOMEgfs}/fix/reg2grb2
+export FIXam="${FIXgfs}/am"
+export FIXaer="${FIXgfs}/aer"
+export FIXcpl="${FIXgfs}/cpl"
+export FIXlut="${FIXgfs}/lut"
+export FIXorog="${FIXgfs}/orog"
+export FIXcice="${FIXgfs}/cice"
+export FIXmom="${FIXgfs}/mom6"
+export FIXreg2grb2="${FIXgfs}/reg2grb2"
+export FIXugwd="${FIXgfs}/ugwd"
 
 ########################################################################
 

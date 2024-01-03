@@ -40,13 +40,52 @@ export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
 
-SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
+####################################
+# Specify Timeout Behavior of Post
+#
+# SLEEP_TIME - Amount of time to wait for
+#              a restart file before exiting
+# SLEEP_INT  - Amount of time to wait between
+#              checking for restart files
+####################################
+export SLEEP_TIME=${SLEEP_TIME:-900}
+export SLEEP_INT=${SLEEP_TIME:-5}
+
+SLEEP_LOOP_MAX=$(( SLEEP_TIME / SLEEP_INT ))
+
+# TODO: Does this section do anything? I retained if for clarity of
+# changes/updates, but it does not appear to do anything.
+
+####################################
+# Check if this is a restart
+####################################
+if [[ -f "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb2" ]]; then
+   modelrecvy=$(cat < "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
+   recvy_cyc="${modelrecvy:8:2}"
+   recvy_shour="${modelrecvy:10:13}"
+
+   if [[ ${RERUN} == "NO" ]]; then
+      NEW_SHOUR=$(( recvy_shour + FHINC ))
+      if (( NEW_SHOUR >= SHOUR )); then
+         export SHOUR="${NEW_SHOUR}"
+      fi
+      if (( recvy_shour >= FHOUR )); then
+         echo "Forecast Pgrb Generation Already Completed to ${FHOUR}"
+      else
+         echo "Starting: PDY=${PDY} cycle=t${recvy_cyc}z SHOUR=${SHOUR}"
+      fi
+   fi
+fi
 
 ##############################################################################
 # Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P5DEG
 ##############################################################################
 export SHOUR=000
 export FHOUR=024
+export FHINC=003
+if [[ "${FHOUR}" -gt "${FHMAX_GFS}" ]]; then
+   export FHOUR="${FHMAX_GFS}"
+fi
 
 ############################################################
 # Loop Through the Post Forecast Files 
@@ -109,6 +148,10 @@ done
 ################################################################
 export SHOUR=000
 export FHOUR=180
+export FHINC=003
+if [[ "${FHOUR}" -gt "${FHMAX_GFS}" ]]; then
+   export FHOUR="${FHMAX_GFS}"
+fi
 
 #################################
 # Process GFS PGRB2_SPECIAL_POST
