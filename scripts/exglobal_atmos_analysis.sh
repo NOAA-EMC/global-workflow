@@ -289,7 +289,6 @@ else
 fi
 
 # GSI Fix files
-RTMFIX=${CRTM_FIX}
 BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
 SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
@@ -408,22 +407,22 @@ fi
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
 for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
-   ${NLN} ${RTMFIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
-   ${NLN} ${RTMFIX}/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
+   ${NLN} ${CRTM_FIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
+   ${NLN} ${CRTM_FIX}/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
 done
-${NLN} ${RTMFIX}/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
+${NLN} ${CRTM_FIX}/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
 
-${NLN} ${RTMFIX}/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.IRland.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRland.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.IRsnow.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRsnow.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.VISice.EmisCoeff.bin   ./crtm_coeffs/NPOESS.VISice.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.VISland.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISland.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
-${NLN} ${RTMFIX}/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
-${NLN} ${RTMFIX}/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
-${NLN} ${RTMFIX}/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
+${NLN} ${CRTM_FIX}/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.IRland.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRland.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.IRsnow.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRsnow.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.VISice.EmisCoeff.bin   ./crtm_coeffs/NPOESS.VISice.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.VISland.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISland.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
+${NLN} ${CRTM_FIX}/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
 
 ##############################################################
 # Observational data
@@ -434,18 +433,13 @@ ${NLN} ${OSCATBF}          oscatbufr
 ${NLN} ${RAPIDSCATBF}      rapidscatbufr
 ${NLN} ${GSNDBF}           gsndrbufr
 ${NLN} ${GSNDBF1}          gsnd1bufr
-${NLN} ${B1HRS2}           hirs2bufr
 ${NLN} ${B1MSU}            msubufr
-${NLN} ${B1HRS3}           hirs3bufr
-${NLN} ${B1HRS4}           hirs4bufr
 ${NLN} ${B1AMUA}           amsuabufr
 ${NLN} ${B1AMUB}           amsubbufr
 ${NLN} ${B1MHS}            mhsbufr
-${NLN} ${ESHRS3}           hirs3bufrears
 ${NLN} ${ESAMUA}           amsuabufrears
 ${NLN} ${ESAMUB}           amsubbufrears
 #$NLN $ESMHS            mhsbufrears
-${NLN} ${HRS3DB}           hirs3bufr_db
 ${NLN} ${AMUADB}           amsuabufr_db
 ${NLN} ${AMUBDB}           amsubbufr_db
 #$NLN $MHSDB            mhsbufr_db
@@ -781,8 +775,6 @@ OBS_INPUT::
    sbuvbufr       sbuv2       n16         sbuv8_n16           0.0     0     0
    sbuvbufr       sbuv2       n17         sbuv8_n17           0.0     0     0
    sbuvbufr       sbuv2       n18         sbuv8_n18           0.0     0     0
-   hirs3bufr      hirs3       n17         hirs3_n17           0.0     1     0
-   hirs4bufr      hirs4       metop-a     hirs4_metop-a       0.0     1     1
    gimgrbufr      goes_img    g11         imgr_g11            0.0     1     0
    gimgrbufr      goes_img    g12         imgr_g12            0.0     1     0
    airsbufr       airs        aqua        airs_aqua           0.0     1     1
@@ -816,7 +808,6 @@ OBS_INPUT::
    gomebufr       gome        metop-a     gome_metop-a        0.0     2     0
    omibufr        omi         aura        omi_aura            0.0     2     0
    sbuvbufr       sbuv2       n19         sbuv8_n19           0.0     0     0
-   hirs4bufr      hirs4       n19         hirs4_n19           0.0     1     1
    amsuabufr      amsua       n19         amsua_n19           0.0     1     1
    mhsbufr        mhs         n19         mhs_n19             0.0     1     1
    tcvitl         tcp         null        tcp                 0.0     0     0
@@ -824,7 +815,6 @@ OBS_INPUT::
    seviribufr     seviri      m09         seviri_m09          0.0     1     0
    seviribufr     seviri      m10         seviri_m10          0.0     1     0
    seviribufr     seviri      m11         seviri_m11          0.0     1     0
-   hirs4bufr      hirs4       metop-b     hirs4_metop-b       0.0     1     1
    amsuabufr      amsua       metop-b     amsua_metop-b       0.0     1     1
    mhsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
    iasibufr       iasi        metop-b     iasi_metop-b        0.0     1     1
