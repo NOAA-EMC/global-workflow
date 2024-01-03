@@ -43,6 +43,7 @@ export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 #export BASE_CPLIC="@BASE_CPLIC@"
 export BASE_CPLIC="/lfs/h2/emc/couple/noscrub/jessica.meixner/HR3/IC"
+export BASE_CPLIC="/work2/noaa/marine/jmeixner/HR3/HR2_refactored_IC"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -188,7 +189,7 @@ case "${CASE}" in
     "C768" | "C1152")
         export OCNRES=025
         export waveGRD='mx025'
-	export waveGRD='uglo_20km'
+	export waveGRD='uglo_m1g16'
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
