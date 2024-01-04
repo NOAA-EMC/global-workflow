@@ -62,7 +62,7 @@ pipeline {
                     stage('Create Experiment') {
                         steps {
                             script { 
-                                env.case = ${Cases}
+                                env.case = "${Cases}"
                                 env.RUNTESTS = "${WORKSPACE}/RUNTESTS"
                             }
                             sh '''
