@@ -87,6 +87,8 @@ pipeline {
     post {
         always {
             script {
+                machine = env.MACHINE[0].toUpperCase() + env.MACHINE.substring(1)
+                echo "Do Post for ${machine}"
                 pullRequest.removeLabel("CI-${machine}-Building")
                 pullRequest.addLabel("CI-${machine}-Done")
             }
