@@ -17,16 +17,16 @@ pipeline {
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
                         if ((label.matches("CI-Hera-Ready"))) {
-                             env.MACHINE='hera'
+                             MACHINE='hera'
                         }  
                         else if ((label.matches("CI-Orion-Ready"))) {
-                            env.MACHINE='orion'
+                            MACHINE='orion'
                         }  
                         else if ((label.matches("CI-Hercules-Ready"))) {
-                            env.MACHINE='hercules'
+                            MACHINE='hercules'
                         }  
                         else { 
-                            env.MACHINE='none'
+                            MACHINE='none'
                         }
                      }
                 }
@@ -36,7 +36,7 @@ pipeline {
         stage( 'Build and Test' ) {
 
             when {
-                expression { env.MACHINE != 'none' }
+                expression { MACHINE != 'none' }
             }
 
             matrix {
@@ -87,10 +87,10 @@ pipeline {
     post {
         always {
             script {
-                //machine = env.MACHINE[0].toUpperCase() + env.MACHINE.substring(1)
-                //echo "Do Post for ${machine}"
-                //pullRequest.removeLabel("CI-${machine}-Building")
-                //pullRequest.addLabel("CI-${machine}-Done")
+                machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
+                echo "Do Post for ${machine}"
+                pullRequest.removeLabel("CI-${machine}-Building")
+                pullRequest.addLabel("CI-${machine}-Passed")
                 echo "no-op"
             }
         }
