@@ -102,7 +102,7 @@ export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/${PSLOT}"
-export ROTDIR="@ROTDIR@/${PSLOT}"
+export ROTDIR="@COMROOT@/${PSLOT}"
 
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
 export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead

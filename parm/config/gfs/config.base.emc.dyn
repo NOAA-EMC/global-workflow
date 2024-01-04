@@ -114,7 +114,7 @@ export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/${PSLOT}"
-export ROTDIR="@ROTDIR@/${PSLOT}"
+export ROTDIR="@COMROOT@/${PSLOT}"
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
 if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then
