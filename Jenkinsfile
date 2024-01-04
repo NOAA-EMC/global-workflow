@@ -41,7 +41,7 @@ pipeline {
                 axes {
                     axis {
                         name 'Cases'
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW',  'C96_atm3DVar' //, 'C96C48_hybatmDA'
+                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW',  'C96_atm3DVar'
                     }
                 }
                 stages {
@@ -78,21 +78,22 @@ pipeline {
             }
         }
     }
-
-    post {
-        success {
-            script {
-                machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
-                echo "Do Post for ${machine}"
-                pullRequest.removeLabel("CI-${machine}-Building")
-                pullRequest.addLabel("CI-${machine}-Passed")
-            }
-        failure {
-            script {
-                machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
-                pullRequest.removeLabel('CI-${machine}-Running')
-                pullRequest.addLabel('CI-${machine}-Failed')  
-            }
+}
+    
+post {
+    success {
+        script {
+            machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
+            echo "Do Post for ${machine}"
+            pullRequest.removeLabel("CI-${machine}-Building")
+            pullRequest.addLabel("CI-${machine}-Passed")
+        }
+    }
+    failure {
+        script {
+            machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
+            pullRequest.removeLabel('CI-${machine}-Running')
+            pullRequest.addLabel('CI-${machine}-Failed')  
         }
     }
 }
