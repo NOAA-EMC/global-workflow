@@ -50,7 +50,7 @@ pipeline {
                     stage('Build') {
                         steps {
                            script {
-                            machine = env.MACHINE[0].toUpperCase() + env.MACHINE.substring(1)
+                            machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
                             pullRequest.removeLabel("CI-${machine}-Ready")
                             pullRequest.addLabel("CI-${machine}-Building")
                            }
