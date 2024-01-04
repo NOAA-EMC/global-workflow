@@ -14,6 +14,7 @@ pipeline {
             steps {
                 script {
                     for (label in pullRequest.labels) {
+                        echo "Label: ${label}"
                         if ((label.matches("CI-Hera-Ready"))) {
                              env.MACHINE='hera'
                         }  
