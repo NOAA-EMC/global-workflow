@@ -15,16 +15,16 @@ pipeline {
                 script {
                     for (label in pullRequest.labels) {
                         if ((label.matches("CI-Hera-Ready"))) {
-                             env.CHOICE_NODE='hera-emc'
+                             env.MACHINE='hera'
                         }  
                         else if ((label.matches("CI-Orion-Ready"))) {
-                            env.CHOICE_NODE='orion-emc'
+                            env.MACHINE='orion'
                         }  
                         else if ((label.matches("CI-Hercules-Ready"))) {
-                            env.CHOICE_NODE='hercules-emc'
+                            env.MACHINE='hercules'
                         }  
                         else { 
-                            env.CHOICE_NODE='none'
+                            env.MACHINE='none'
                         }
                      }
                 }
@@ -34,11 +34,11 @@ pipeline {
         stage( 'Build and Test' ) {
 
             when {
-                expression { env.CHOICE_NODE != 'none' }
+                expression { env.MACHINE != 'none' }
             }
 
             matrix {
-                agent { label "${CHOICE_NODE}" }
+                agent { label "${MACHINE}-emc" }
                 axes {
                     axis {
                         name 'Cases'
@@ -48,10 +48,14 @@ pipeline {
                 stages {
                     stage('Build') {
                         steps {
-                            echo "Do Build for ${CHOICE_NODE} - ${Cases}"
+                           echo "Do Build for ${MACHINE^} - ${Cases}"
+                           script {
+                            pullRequest.removeLabel('CI-${MACHINE^}-Ready')
+                            pullRequest.addLabel('CI-${MACHINE^}-Building')
+                           }
                             cleanWs()
                             checkout scm
-                            sh 'sorc/build_all.sh -gu'
+                            //sh 'sorc/build_all.sh -gu'
                             sh 'sorc/link_workflow.sh'
                         }
                     }
@@ -68,12 +72,21 @@ pipeline {
                             sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                         }
                     }
-                    stage('Run Cases') {
+                    stage("Run ${Cases}") {
                         steps {
                             echo "Do Test for ${CHOICE_NODE} - ${Cases}"
                         }
                     }
                 }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                pullRequest.removeLabel('CI-${MACHINE^}-Building')
+                pullRequest.addLabel('CI-${MACHINE^}-Done')
             }
         }
     }
