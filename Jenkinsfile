@@ -73,9 +73,9 @@ pipeline {
                             sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                         }
                     }
-                    stage("Run ${Cases}") {
+                    stage("Run Cases") {
                         steps {
-                            echo "Do Test for ${CHOICE_NODE} - ${Cases}"
+                            echo "Do Test for ${machine} - ${Cases}"
                         }
                     }
                 }
