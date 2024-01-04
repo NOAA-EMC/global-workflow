@@ -1,5 +1,12 @@
 pipeline {
     agent none
+
+    options {
+        disableConcurrentBuilds()
+        overrideIndexTriggers(false)
+        skipDefaultCheckout(true)
+    }
+
     stages {
 
         stage( 'Get Machine' ) {
@@ -42,6 +49,23 @@ pipeline {
                     stage('Build') {
                         steps {
                             echo "Do Build for ${CHOICE_NODE} - ${Cases}"
+                            cleaanWs()
+                            checkout scm
+                            sh 'sorc/build_all.sh -gu'
+                            sh 'sorc/link_workflow.sh'
+                        }
+                    }
+                    stage('Create Experiment') {
+                        steps {
+                            script { 
+                                env.case = ${Cases}
+                                env.RUNTESTS = "${WORKSPACE}/RUNTESTS"
+                            }
+                            sh '''
+                                rm -rf ${RUNTESTS}
+                                mkdir -p ${RUNTESTS}
+                                '''
+                            sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                         }
                     }
                     stage('Run Cases') {
