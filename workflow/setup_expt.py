@@ -29,17 +29,17 @@ def makedirs_if_missing(dirname):
         os.makedirs(dirname)
 
 
-def fill_COMROT(host, inputs):
+def fill_ROTDIR(host, inputs):
     """
-    Method to populate the COMROT for supported modes.
+    Method to populate the ROTDIR for supported modes.
     INPUTS:
         host: host object from class Host
         inputs: user inputs to setup_expt.py
     """
 
     fill_modes = {
-        'cycled': fill_COMROT_cycled,
-        'forecast-only': fill_COMROT_forecasts
+        'cycled': fill_ROTDIR_cycled,
+        'forecast-only': fill_ROTDIR_forecasts
     }
 
     try:
@@ -52,12 +52,12 @@ def fill_COMROT(host, inputs):
     return
 
 
-def fill_COMROT_cycled(host, inputs):
+def fill_ROTDIR_cycled(host, inputs):
     """
-    Implementation of 'fill_COMROT' for cycled mode
+    Implementation of 'fill_ROTDIR' for cycled mode
     """
 
-    comrot = os.path.join(inputs.comrot, inputs.pslot)
+    rotdir = os.path.join(inputs.comroot, inputs.pslot)
 
     do_ocean = do_ice = do_med = False
 
@@ -136,17 +136,17 @@ def fill_COMROT_cycled(host, inputs):
             memdir = f'mem{ii:03d}'
             # Link atmospheric files
             if inputs.start in ['warm']:
-                dst_dir = os.path.join(comrot, previous_cycle_dir, memdir, dst_atm_dir)
+                dst_dir = os.path.join(rotdir, previous_cycle_dir, memdir, dst_atm_dir)
                 src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, memdir, src_atm_dir)
             elif inputs.start in ['cold']:
-                dst_dir = os.path.join(comrot, current_cycle_dir, memdir, dst_atm_dir)
+                dst_dir = os.path.join(rotdir, current_cycle_dir, memdir, dst_atm_dir)
                 src_dir = os.path.join(inputs.icsdir, current_cycle_dir, memdir, src_atm_dir)
             makedirs_if_missing(dst_dir)
             link_files_from_src_to_dst(src_dir, dst_dir)
 
             # Link ocean files
             if do_ocean:
-                dst_dir = os.path.join(comrot, previous_cycle_dir, memdir, dst_ocn_rst_dir)
+                dst_dir = os.path.join(rotdir, previous_cycle_dir, memdir, dst_ocn_rst_dir)
                 src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, memdir, src_ocn_rst_dir)
                 makedirs_if_missing(dst_dir)
                 link_files_from_src_to_dst(src_dir, dst_dir)
@@ -154,20 +154,20 @@ def fill_COMROT_cycled(host, inputs):
                 # First 1/2 cycle needs a MOM6 increment
                 incfile = f'enkf{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
                 src_file = os.path.join(inputs.icsdir, current_cycle_dir, memdir, src_ocn_anl_dir, incfile)
-                dst_file = os.path.join(comrot, current_cycle_dir, memdir, dst_ocn_anl_dir, incfile)
-                makedirs_if_missing(os.path.join(comrot, current_cycle_dir, memdir, dst_ocn_anl_dir))
+                dst_file = os.path.join(rotdir, current_cycle_dir, memdir, dst_ocn_anl_dir, incfile)
+                makedirs_if_missing(os.path.join(rotdir, current_cycle_dir, memdir, dst_ocn_anl_dir))
                 os.symlink(src_file, dst_file)
 
             # Link ice files
             if do_ice:
-                dst_dir = os.path.join(comrot, previous_cycle_dir, memdir, dst_ice_rst_dir)
+                dst_dir = os.path.join(rotdir, previous_cycle_dir, memdir, dst_ice_rst_dir)
                 src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, memdir, src_ice_rst_dir)
                 makedirs_if_missing(dst_dir)
                 link_files_from_src_to_dst(src_dir, dst_dir)
 
             # Link mediator files
             if do_med:
-                dst_dir = os.path.join(comrot, previous_cycle_dir, memdir, dst_med_dir)
+                dst_dir = os.path.join(rotdir, previous_cycle_dir, memdir, dst_med_dir)
                 src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, memdir, src_med_dir)
                 makedirs_if_missing(dst_dir)
                 link_files_from_src_to_dst(src_dir, dst_dir)
@@ -178,10 +178,10 @@ def fill_COMROT_cycled(host, inputs):
 
     # Link atmospheric files
     if inputs.start in ['warm']:
-        dst_dir = os.path.join(comrot, previous_cycle_dir, dst_atm_dir)
+        dst_dir = os.path.join(rotdir, previous_cycle_dir, dst_atm_dir)
         src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_atm_dir)
     elif inputs.start in ['cold']:
-        dst_dir = os.path.join(comrot, current_cycle_dir, dst_atm_dir)
+        dst_dir = os.path.join(rotdir, current_cycle_dir, dst_atm_dir)
         src_dir = os.path.join(inputs.icsdir, current_cycle_dir, src_atm_dir)
 
     makedirs_if_missing(dst_dir)
@@ -189,7 +189,7 @@ def fill_COMROT_cycled(host, inputs):
 
     # Link ocean files
     if do_ocean:
-        dst_dir = os.path.join(comrot, previous_cycle_dir, dst_ocn_rst_dir)
+        dst_dir = os.path.join(rotdir, previous_cycle_dir, dst_ocn_rst_dir)
         src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_ocn_rst_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
@@ -197,27 +197,27 @@ def fill_COMROT_cycled(host, inputs):
         # First 1/2 cycle needs a MOM6 increment
         incfile = f'{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
         src_file = os.path.join(inputs.icsdir, current_cycle_dir, src_ocn_anl_dir, incfile)
-        dst_file = os.path.join(comrot, current_cycle_dir, dst_ocn_anl_dir, incfile)
-        makedirs_if_missing(os.path.join(comrot, current_cycle_dir, dst_ocn_anl_dir))
+        dst_file = os.path.join(rotdir, current_cycle_dir, dst_ocn_anl_dir, incfile)
+        makedirs_if_missing(os.path.join(rotdir, current_cycle_dir, dst_ocn_anl_dir))
         os.symlink(src_file, dst_file)
 
     # Link ice files
     if do_ice:
-        dst_dir = os.path.join(comrot, previous_cycle_dir, dst_ice_rst_dir)
+        dst_dir = os.path.join(rotdir, previous_cycle_dir, dst_ice_rst_dir)
         src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_ice_rst_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
     # Link mediator files
     if do_med:
-        dst_dir = os.path.join(comrot, previous_cycle_dir, dst_med_dir)
+        dst_dir = os.path.join(rotdir, previous_cycle_dir, dst_med_dir)
         src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_med_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
     # Link bias correction and radiance diagnostics files
     src_dir = os.path.join(inputs.icsdir, current_cycle_dir, src_atm_anl_dir)
-    dst_dir = os.path.join(comrot, current_cycle_dir, dst_atm_anl_dir)
+    dst_dir = os.path.join(rotdir, current_cycle_dir, dst_atm_anl_dir)
     makedirs_if_missing(dst_dir)
     for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat']:
         fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
@@ -228,9 +228,9 @@ def fill_COMROT_cycled(host, inputs):
     return
 
 
-def fill_COMROT_forecasts(host, inputs):
+def fill_ROTDIR_forecasts(host, inputs):
     """
-    Implementation of 'fill_COMROT' for forecast-only mode
+    Implementation of 'fill_ROTDIR' for forecast-only mode
     """
     print('forecast-only mode treats ICs differently and cannot be staged here')
 
@@ -311,7 +311,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@EDATE@": datetime_to_YMDH(inputs.edate),
         "@CASECTL@": f'C{inputs.resdet}',
         "@EXPDIR@": inputs.expdir,
-        "@ROTDIR@": inputs.comrot,
+        "@COMROOT@": inputs.comroot,
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
@@ -389,7 +389,7 @@ def input_args(*argv):
                             type=str, required=False, default='test')
         parser.add_argument('--resdet', help='resolution of the deterministic model forecast',
                             type=int, required=False, default=384)
-        parser.add_argument('--comrot', help='full path to COMROT',
+        parser.add_argument('--comroot', help='full path to COMROOT',
                             type=str, required=False, default=os.getenv('HOME'))
         parser.add_argument('--expdir', help='full path to EXPDIR',
                             type=str, required=False, default=os.getenv('HOME'))
@@ -445,7 +445,7 @@ def input_args(*argv):
     description = """
         Setup files and directories to start a GFS parallel.\n
         Create EXPDIR, copy config files.\n
-        Create COMROT experiment directory structure,
+        Create ROTDIR experiment directory structure,
         """
 
     parser = ArgumentParser(description=description,
@@ -528,15 +528,15 @@ def main(*argv):
 
     validate_user_request(host, user_inputs)
 
-    comrot = os.path.join(user_inputs.comrot, user_inputs.pslot)
+    rotdir = os.path.join(user_inputs.comroot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
 
-    create_comrot = query_and_clean(comrot)
+    create_rotdir = query_and_clean(rotdir)
     create_expdir = query_and_clean(expdir)
 
-    if create_comrot:
-        makedirs_if_missing(comrot)
-        fill_COMROT(host, user_inputs)
+    if create_rotdir:
+        makedirs_if_missing(rotdir)
+        fill_ROTDIR(host, user_inputs)
 
     if create_expdir:
         makedirs_if_missing(expdir)
