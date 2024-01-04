@@ -13,6 +13,7 @@ pipeline {
 
             steps {
                 script {
+                    MACHINE = 'none'
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
                         if ((label.matches("CI-Hera-Ready"))) {
@@ -24,9 +25,6 @@ pipeline {
                         else if ((label.matches("CI-Hercules-Ready"))) {
                             MACHINE='hercules'
                         }  
-                        else { 
-                            MACHINE='none'
-                        }
                      }
                 }
             }
