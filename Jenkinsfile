@@ -49,8 +49,8 @@ pipeline {
                         steps {
                            script {
                             machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
-                            pullRequest.removeLabel("CI-${machine}-Ready")
-                            pullRequest.addLabel("CI-${machine}-Building")
+                            //pullRequest.removeLabel("CI-${machine}-Ready")
+                            //pullRequest.addLabel("CI-${machine}-Building")
                            }
                            echo "Do Build for ${machine} ${Cases}"
                             checkout scm
