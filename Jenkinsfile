@@ -88,9 +88,8 @@ pipeline {
             script {
                 machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
                 echo "Do Post for ${machine}"
-                pullRequest.removeLabel("CI-${machine}-Building")
-                pullRequest.addLabel("CI-${machine}-Passed")
-                echo "no-op"
+                //pullRequest.removeLabel("CI-${machine}-Building")
+                //pullRequest.addLabel("CI-${machine}-Passed")
             }
         }
     }
