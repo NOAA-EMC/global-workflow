@@ -48,11 +48,12 @@ pipeline {
                 stages {
                     stage('Build') {
                         steps {
-                           echo "Do Build for ${MACHINE^} - ${Cases}"
                            script {
-                            pullRequest.removeLabel('CI-${MACHINE^}-Ready')
-                            pullRequest.addLabel('CI-${MACHINE^}-Building')
+                            machine = env.MACHINE[0].toUpperCase() + env.MACHINE.substring(1)
+                            pullRequest.removeLabel("CI-${machine}-Ready")
+                            pullRequest.addLabel("CI-${machine}-Building")
                            }
+                           echo "Do Build for" ${machine} ${Cases}
                             cleanWs()
                             checkout scm
                             //sh 'sorc/build_all.sh -gu'
@@ -85,8 +86,8 @@ pipeline {
     post {
         always {
             script {
-                pullRequest.removeLabel('CI-${MACHINE^}-Building')
-                pullRequest.addLabel('CI-${MACHINE^}-Done')
+                pullRequest.removeLabel("CI-${machine}-Building")
+                pullRequest.addLabel("CI-${machine}-Done")
             }
         }
     }
