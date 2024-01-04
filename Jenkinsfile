@@ -13,7 +13,6 @@ pipeline {
 
             steps {
                 script {
-                    echo pullRequest.labels
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
                         if ((label.matches("CI-Hera-Ready"))) {
