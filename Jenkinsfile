@@ -49,7 +49,7 @@ pipeline {
                     stage('Build') {
                         steps {
                             echo "Do Build for ${CHOICE_NODE} - ${Cases}"
-                            cleaanWs()
+                            cleanWs()
                             checkout scm
                             sh 'sorc/build_all.sh -gu'
                             sh 'sorc/link_workflow.sh'
