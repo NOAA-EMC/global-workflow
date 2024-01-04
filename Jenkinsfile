@@ -54,7 +54,6 @@ pipeline {
                             pullRequest.addLabel("CI-${machine}-Building")
                            }
                            echo "Do Build for ${machine} ${Cases}"
-                            cleanWs()
                             checkout scm
                             //sh 'sorc/build_all.sh -gu'
                             sh 'sorc/link_workflow.sh'
