@@ -26,7 +26,7 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
     a nested task, you also need to provide a 'var_dict' key that
     contains a dictionary of variables to loop over.
 
-    All task dicts must include a 'task_name' and a 'cdump'.
+    All task dicts must include a 'task_name'.
 
     Innermost tasks (regular tasks) additionally require a 'resources'
     key containing a dict of values defining the HPC settings.
@@ -38,8 +38,8 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
 
     Returns
     -------
-    List[str]
-        List of strings containing the XML code defining the task
+    str
+        Strings containing the XML code defining the task
 
     Raises
     ------
@@ -55,7 +55,7 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
 
     else:
         # There is a nested task_dict, so this is a metatask
-        metataskname = f"{task_dict.get('cdump','gdas')}{task_dict.get('task_name', 'demometatask')}"
+        metataskname = f"{task_dict.get('task_name', 'demometatask')}"
         var_dict = task_dict.get('var_dict', None)
 
         strings = [f'<metatask name="{metataskname}">\n',
@@ -77,7 +77,7 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
         strings.append('\n')
         strings.append('</metatask>\n')
 
-    return strings
+    return ''.join(strings)
 
 
 def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
@@ -87,7 +87,7 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     Creates the XML required to define a task and returns the lines
     as a list of strings.
 
-    All task dicts must include a 'task_name', 'cdump', and a 'resources'
+    All task dicts must include a 'task_name' and a 'resources'
     key containing a dict of values defining the HPC settings.
 
     Parameters
@@ -108,15 +108,12 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     """
 
     # Grab task info from the task_names
-    cdump = task_dict.get('cdump', 'gdas')
-    base_taskname = task_dict.get('task_name', 'demotask')
-
-    taskname = f'{cdump}{base_taskname}'
-    cycledef = task_dict.get('cycledef', cdump.replace('enkf', ''))
-    maxtries = task_dict.get('maxtries', '&MAXTRIES;')
+    taskname = task_dict.get('task_name', 'demotask')
+    cycledef = task_dict.get('cycledef', 'democycle')
+    maxtries = task_dict.get('maxtries', 3)
     final = task_dict.get('final', False)
-    command = task_dict.get('command', f'&JOBS_DIR;/{re.sub("#.+?#", "", base_taskname)}.sh')
-    jobname = task_dict.get('jobname', f'&PSLOT;_{taskname}_@H')
+    command = task_dict.get('command', 'sleep 10')
+    jobname = task_dict.get('job_name', 'demojob')
     resources_dict = task_dict['resources']
     account = resources_dict.get('account', 'batch')
     queue = resources_dict.get('queue', 'debug')

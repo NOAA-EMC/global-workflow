@@ -1,5 +1,5 @@
 from applications.applications import AppConfig
-from rocoto.tasks import Tasks, create_wf_task
+from rocoto.tasks import Tasks
 from wxflow import timedelta_to_HMS
 import rocoto.rocoto as rocoto
 import numpy as np
@@ -71,14 +71,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('stage_ic')
-        task_dict = {'task_name': 'stage_ic',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}stage_ic'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/stage_ic.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -109,15 +114,19 @@ class GFSTasks(Tasks):
             cycledef = 'gdas'
 
         resources = self.get_resource('prep')
-        task_dict = {'task_name': 'prep',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}prep'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/prep.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -135,14 +144,19 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
-        task_dict = {'task_name': 'waveinit',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}waveinit'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/waveinit.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -154,14 +168,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('waveprep')
-        task_dict = {'task_name': 'waveprep',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}waveprep'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/waveprep.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -200,14 +219,19 @@ class GFSTasks(Tasks):
 
         cycledef = 'gfs_seq'
         resources = self.get_resource('aerosol_init')
-        task_dict = {'task_name': 'aerosol_init',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}aerosol_init'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/aerosol_init.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -223,13 +247,19 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('anal')
-        task_dict = {'task_name': 'anal',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}anal'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/anal.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -249,13 +279,19 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('sfcanl')
-        task_dict = {'task_name': 'sfcanl',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}sfcanl'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/sfcanl.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -275,13 +311,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('analcalc')
-        task_dict = {'task_name': 'analcalc',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}analcalc'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -293,13 +335,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('analdiag')
-        task_dict = {'task_name': 'analdiag',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}analdiag'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/analdiag.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -311,13 +359,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('prepatmiodaobs')
-        task_dict = {'task_name': 'prepatmiodaobs',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}prepatmiodaobs'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/prepatmiodaobs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -341,14 +395,19 @@ class GFSTasks(Tasks):
             cycledef = 'gdas'
 
         resources = self.get_resource('atmanlinit')
-        task_dict = {'task_name': 'atmanlinit',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}atmanlinit'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmanlinit.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -360,13 +419,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('atmanlrun')
-        task_dict = {'task_name': 'atmanlrun',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}atmanlrun'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmanlrun.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -378,13 +443,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmanlfinal')
-        task_dict = {'task_name': 'atmanlfinal',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}atmanlfinal'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmanlfinal.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -396,13 +467,20 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('aeroanlinit')
-        task_dict = {'task_name': 'aeroanlinit',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}aeroanlinit'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlinit.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
+
         return task
 
     def aeroanlrun(self):
@@ -413,13 +491,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('aeroanlrun')
-        task_dict = {'task_name': 'aeroanlrun',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}aeroanlrun'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlrun.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -431,13 +515,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('aeroanlfinal')
-        task_dict = {'task_name': 'aeroanlfinal',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}aeroanlfinal'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlfinal.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -449,13 +539,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('preplandobs')
-        task_dict = {'task_name': 'preplandobs',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}preplandobs'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/preplandobs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -467,13 +563,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('landanl')
-        task_dict = {'task_name': 'landanl',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}landanl'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/landanl.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
         return task
 
     def ocnanalprep(self):
@@ -487,13 +589,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ocnanalprep')
-        task_dict = {'task_name': 'ocnanalprep',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}ocnanalprep'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalprep.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -505,13 +613,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ocnanalbmat')
-        task_dict = {'task_name': 'ocnanalbmat',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}ocnanalbmat'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalbmat.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -523,13 +637,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ocnanalrun')
-        task_dict = {'task_name': 'ocnanalrun',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}ocnanlrun'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanlrun.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -545,13 +665,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalchkpt')
-        task_dict = {'task_name': 'ocnanalchkpt',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}ocnanalchkpt'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalchkpt.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -563,13 +689,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalpost')
-        task_dict = {'task_name': 'ocnanalpost',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}ocnanalpost'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalpost.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -581,13 +713,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalvrfy')
-        task_dict = {'task_name': 'ocnanalvrfy',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}ocnanalvrfy'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalvrfy.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -634,13 +772,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         resources = self.get_resource('fcst')
-        task_dict = {'task_name': 'fcst',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}fcst'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -677,14 +821,19 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
         resources = self.get_resource('fcst')
-        task_dict = {'task_name': 'fcst',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}fcst'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -708,15 +857,19 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         resources = self.get_resource('upp')
-        task_dict = {'task_name': 'atmanlupp',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}atmanlupp'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': postenvars,
-                     'cycledef': self.cdump,
-                     'command': '&JOBS_DIR;/upp.sh'
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/upp.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -733,15 +886,19 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         resources = self.get_resource('atmos_products')
-        task_dict = {'task_name': 'atmanlprod',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}atmanlprod'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': postenvars,
-                     'cycledef': self.cdump,
-                     'command': '&JOBS_DIR;/atmos_products.sh'
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmos_products.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -805,22 +962,24 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('upp')
 
-        task_dict = {'task_name': f'atmupp#{varname1}#',
-                     'cdump': self.cdump,
-                     'cycledef': cycledef,
+        task_name = f'{self.cdump}atmupp#{varname1}#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': postenvars,
-                     'command': '&JOBS_DIR;/upp.sh'
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/upp.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'atmupp',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}atmupp',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -844,22 +1003,24 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('atmos_products')
 
-        task_dict = {'task_name': f'atmprod#{varname1}#',
-                     'cdump': self.cdump,
-                     'cycledef': cycledef,
+        task_name = f'{self.cdump}atmprod#{varname1}#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': postenvars,
-                     'command': '&JOBS_DIR;/atmos_products.sh'
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmos_products.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'atmprod',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}atmprod',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -886,21 +1047,24 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('ocnpost')
 
-        task_dict = {'task_name': f'ocnpost#{varname1}#',
-                     'cdump': self.cdump,
-                     'cycledef': cycledef,
+        task_name = f'{self.cdump}ocnpost#{varname1}#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': postenvars
+                     'envars': postenvars,
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnpost.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'ocnpost',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}ocnpost',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -914,14 +1078,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('wavepostsbs')
-        task_dict = {'task_name': 'wavepostsbs',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}wavepostsbs'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostsbs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -932,14 +1101,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wavepostbndpnt')
-        task_dict = {'task_name': 'wavepostbndpnt',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}wavepostbndpnt'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostbndpnt.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -952,14 +1126,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wavepostbndpntbll')
-        task_dict = {'task_name': 'wavepostbndpntbll',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}wavepostbndpntbll'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostbndpntbll.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -973,14 +1152,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('wavepostpnt')
-        task_dict = {'task_name': 'wavepostpnt',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}wavepostpnt'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostpnt.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -991,14 +1175,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wavegempak')
-        task_dict = {'task_name': 'wavegempak',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}wavegempak'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavegempak.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1011,14 +1200,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('waveawipsbulls')
-        task_dict = {'task_name': 'waveawipsbulls',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}waveawipsbulls'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/waveawipsbulls.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1029,14 +1223,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('waveawipsgridded')
-        task_dict = {'task_name': 'waveawipsgridded',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}waveawipsgridded'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/waveawipsgridded.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1047,14 +1246,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('postsnd')
-        task_dict = {'task_name': 'postsnd',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}postsnd'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/postsnd.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1079,14 +1283,19 @@ class GFSTasks(Tasks):
         # prematurely starting with partial files. Unfortunately, the
         # ability to "group" post would make this more convoluted than
         # it should be and not worth the complexity.
-        task_dict = {'task_name': 'fbwind',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}fbwind'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/fbwind.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1147,20 +1356,24 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('awips')
 
-        task_dict = {'task_name': f'awips_20km_1p0deg#{varname1}#',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}awips_20km_1p0deg#{varname1}#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': awipsenvars
+                     'envars': awipsenvars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/awips_20km_1p0deg.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'awips_20km_1p0deg',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}awips_20km_1p0deg',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -1184,20 +1397,24 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('awips')
 
-        task_dict = {'task_name': f'awips_g2#{varname1}#',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}awips_g2#{varname1}#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': awipsenvars
+                     'envars': awipsenvars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/awips_g2.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'awips_g2',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}awips_g2',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -1209,14 +1426,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
-        task_dict = {'task_name': 'gempak',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}gempak'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/gempak.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1227,14 +1449,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
-        task_dict = {'task_name': 'gempakmeta',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}gempakmeta'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/gempakmeta.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1245,14 +1472,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
-        task_dict = {'task_name': 'gempakmetancdc',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}gempakmetancdc'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/gempakmetancdc.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1263,31 +1495,42 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
-        task_dict = {'task_name': 'gempakncdcupapgif',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}gempakncdcupapgif'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/gempakncdcupapgif.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
     def gempakpgrb2spec(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}npoess_pgrb2_0p5deg'}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
-        task_dict = {'task_name': 'gempakpgrb2spec',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}gempakgrb2spec'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/gempakgrb2spec.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1299,14 +1542,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('npoess')
-        task_dict = {'task_name': 'npoess_pgrb2_0p5deg',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}npoess_pgrb2_0p5deg'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/npoess_pgrb2_0p5deg.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1317,14 +1565,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('verfozn')
-        task_dict = {'task_name': 'verfozn',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}verfozn'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/verfozn.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1335,14 +1588,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('verfrad')
-        task_dict = {'task_name': 'verfrad',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}verfrad'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/verfrad.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1353,14 +1611,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('vminmon')
-        task_dict = {'task_name': 'vminmon',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}vminmon'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/vminmon.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1371,14 +1634,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('tracker')
-        task_dict = {'task_name': 'tracker',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}tracker'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/tracker.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1389,14 +1657,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('genesis')
-        task_dict = {'task_name': 'genesis',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}genesis'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/genesis.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1407,14 +1680,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('genesis_fsu')
-        task_dict = {'task_name': 'genesis_fsu',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}genesis_fsu'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/genesis_fsu.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1425,14 +1703,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('fit2obs')
-        task_dict = {'task_name': 'fit2obs',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}fit2obs'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/fit2obs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1457,20 +1740,24 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('metp')
 
-        task_dict = {'task_name': f'metp#{varname1}#',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}metp#{varname1}#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': metpenvars
+                     'envars': metpenvars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/metp.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'metp',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}metp',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -1481,14 +1768,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_stn_prep')
-        task_dict = {'task_name': 'mos_stn_prep',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_stn_prep'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_stn_prep.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1499,14 +1791,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_grd_prep')
-        task_dict = {'task_name': 'mos_grd_prep',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_grd_prep'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_grd_prep.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1517,14 +1814,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_ext_stn_prep')
-        task_dict = {'task_name': 'mos_ext_stn_prep',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_ext_stn_prep'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_ext_stn_prep.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1535,14 +1837,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_ext_grd_prep')
-        task_dict = {'task_name': 'mos_ext_grd_prep',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_ext_grd_prep'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_ext_grd_prep.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1553,14 +1860,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_stn_fcst')
-        task_dict = {'task_name': 'mos_stn_fcst',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_stn_fcst'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_stn_fcst.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1574,14 +1886,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_grd_fcst')
-        task_dict = {'task_name': 'mos_grd_fcst',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_grd_fcst'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_grd_fcst.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1595,14 +1912,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_ext_stn_fcst')
-        task_dict = {'task_name': 'mos_ext_stn_fcst',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_ext_stn_fcst'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_ext_stn_fcst.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1619,14 +1941,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_ext_grd_fcst')
-        task_dict = {'task_name': 'mos_ext_grd_fcst',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_ext_grd_fcst'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_ext_grd_fcst.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1637,14 +1964,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_stn_prdgen')
-        task_dict = {'task_name': 'mos_stn_prdgen',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_stn_prdgen'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_stn_prdgen.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1658,14 +1990,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_grd_prdgen')
-        task_dict = {'task_name': 'mos_grd_prdgen',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_grd_prdgen'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_grd_prdgen.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1679,14 +2016,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_ext_stn_prdgen')
-        task_dict = {'task_name': 'mos_ext_stn_prdgen',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_ext_stn_prdgen'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_ext_stn_prdgen.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1703,14 +2045,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_ext_grd_prdgen')
-        task_dict = {'task_name': 'mos_ext_grd_prdgen',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_ext_grd_prdgen'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_ext_grd_prdgen.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1721,14 +2068,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_wx_prdgen')
-        task_dict = {'task_name': 'mos_wx_prdgen',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_wx_prdgen'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_wx_prdgen.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1742,14 +2094,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_wx_ext_prdgen')
-        task_dict = {'task_name': 'mos_wx_ext_prdgen',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}mos_wx_ext_prdgen'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/mos_wx_ext_prdgen.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1822,15 +2179,19 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
         resources = self.get_resource('arch')
-        task_dict = {'task_name': 'arch',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}arch'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1847,14 +2208,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('cleanup')
-        task_dict = {'task_name': 'cleanup',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}cleanup'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/cleanup.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1868,14 +2234,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('eobs')
-        task_dict = {'task_name': 'eobs',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}eobs'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/eobs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1893,20 +2264,24 @@ class GFSTasks(Tasks):
         var_dict = {'grp': groups}
 
         resources = self.get_resource('eomg')
-        task_dict = {'task_name': f'eomg#grp#',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}eomg#grp#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': eomgenvars
+                     'envars': eomgenvars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/eomg.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'eomn',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}eomn',
                          'var_dict': var_dict,
                          'task_dict': task_dict,
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -1917,13 +2292,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ediag')
-        task_dict = {'task_name': 'ediag',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}ediag'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ediag.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1937,13 +2318,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('eupd')
-        task_dict = {'task_name': 'eupd',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}eupd'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/eupd.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1957,14 +2344,19 @@ class GFSTasks(Tasks):
 
         cycledef = "gdas"
         resources = self.get_resource('atmensanlinit')
-        task_dict = {'task_name': 'atmensanlinit',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}atmensanlinit'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmensanlinit.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1978,13 +2370,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmensanlrun')
-        task_dict = {'task_name': 'atmensanlrun',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}atmensanlrun'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmensanlrun.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -1996,13 +2394,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('atmensanlfinal')
-        task_dict = {'task_name': 'atmensanlfinal',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}atmensanlfinal'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmensanlfinal.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -2053,20 +2457,24 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('ecen')
 
-        task_dict = {'task_name': f'ecen#{varname1}#',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}ecen#{varname1}'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': ecenenvars
+                     'envars': ecenenvars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ecen.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'ecmn',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}ecmn',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
         return task
 
     def esfc(self):
@@ -2084,13 +2492,19 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('esfc')
-        task_dict = {'task_name': 'esfc',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}esfc'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/esfc.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -2118,21 +2532,24 @@ class GFSTasks(Tasks):
 
         var_dict = {'grp': groups}
 
-        task_dict = {'task_name': f'efcs#grp#',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}efcs#grp#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': efcsenvars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/efcs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'efmn',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}efmn',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -2150,15 +2567,19 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump
 
         resources = self.get_resource('echgres')
-        task_dict = {'task_name': 'echgres',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}echgres'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/echgres.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -2205,21 +2626,24 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('epos')
 
-        task_dict = {'task_name': f'epos#{varname1}#',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}epos#{varname1}#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': eposenvars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/epos.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'epmn',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}epmn',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -2241,20 +2665,23 @@ class GFSTasks(Tasks):
 
         var_dict = {'grp': groups}
 
-        task_dict = {'task_name': f'earc#grp#',
-                     'cdump': self.cdump,
+        task_name = f'{self.cdump}earc#grp#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': earcenvars,
-                     'cycledef': cycledef
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/earc.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'eamn',
-                         'cdump': self.cdump,
+        metatask_dict = {'task_name': f'{self.cdump}eamn',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task

@@ -1,5 +1,5 @@
 from applications.applications import AppConfig
-from rocoto.tasks import Tasks, create_wf_task
+from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
 
 
@@ -57,29 +57,40 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('stage_ic')
-        task_dict = {'task_name': 'stage_ic',
-                     'cdump': self.cdump,
+        task_name = f'stage_ic'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/stage_ic.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
     def waveinit(self):
 
         resources = self.get_resource('waveinit')
-        task_dict = {'task_name': 'waveinit',
-                     'cdump': self.cdump,
+        task_name = f'waveinit'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/waveinit.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
     def fcst(self):
+
         # TODO: Add real dependencies
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
@@ -92,13 +103,18 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         resources = self.get_resource('fcst')
-        task_dict = {'task_name': 'fcst',
-                     'cdump': self.cdump,
+        task_name = f'fcst'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
-        task = create_wf_task(task_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -121,20 +137,23 @@ class GEFSTasks(Tasks):
 
         resources = self.get_resource('efcs')
 
-        task_dict = {'task_name': 'efcs#grp#',
-                     'cdump': self.cdump,
+        task_name = f'efcs#grp#'
+        task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': efcsenvars,
-                     'cycledef': 'gefs'
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/efcs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
                      }
 
         metatask_dict = {'task_name': 'efmn',
-                         'cdump': self.cdump,
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
 
-        task = create_wf_task(metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task

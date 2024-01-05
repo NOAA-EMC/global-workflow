@@ -42,12 +42,14 @@ class Tasks:
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._configs = self.app_config.configs
         self._base = self._configs['base']
+        self.HOMEgfs = self._base['HOMEgfs']
+        self.pslot = self._base['PSLOT']
         self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
-                      'HOMEgfs': self._base.get('HOMEgfs'),
+                      'HOMEgfs': self.HOMEgfs,
                       'EXPDIR': self._base.get('EXPDIR'),
                       'NET': self._base.get('NET'),
                       'CDUMP': self.cdump,
@@ -197,40 +199,3 @@ class Tasks:
             raise AttributeError(f'"{task_name}" is not a valid task.\n' +
                                  'Valid tasks are:\n' +
                                  f'{", ".join(Tasks.VALID_TASKS)}')
-
-
-def create_wf_task(task_dict):
-    """
-    Create XML for a rocoto task or metatask
-
-    Creates the XML required to define a task and returns the lines
-    as a list of strings. Tasks can be nested to create metatasks by
-    defining a key 'task_dict' within the task_dict. When including
-    a nested task, you also need to provide a 'var_dict' key that
-    contains a dictionary of variables to loop over.
-
-    All task dicts must include a 'task_name' and a 'cdump'.
-
-    Innermost tasks (regular tasks) additionally require a 'resources'
-    key containing a dict of values defining the HPC settings.
-
-    Parameters
-    ----------
-    task_dict: dict
-        Dictionary of task definitions
-
-    Returns
-    -------
-    str
-        The XML code defining the task
-
-    Raises
-    ------
-    KeyError
-        If a required key is missing
-
-    """
-
-    task = rocoto.create_task(task_dict)
-
-    return ''.join(task)
