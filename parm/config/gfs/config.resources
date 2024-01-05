@@ -905,7 +905,6 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
     export nth_eomg=${nth_eobs}
     npe_node_eobs=$(echo "${npe_node_max} / ${nth_eobs}" | bc)
     export npe_node_eobs
-    export npe_node_eomg=${npe_node_eobs}
     export is_exclusive=True
     # The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
@@ -918,6 +917,7 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
           export npe_node_eobs=20
        fi
     fi
+    export npe_node_eomg=${npe_node_eobs}
 
 elif [[ ${step} = "ediag" ]]; then
 
