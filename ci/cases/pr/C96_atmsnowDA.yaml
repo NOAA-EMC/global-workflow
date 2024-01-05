@@ -6,13 +6,12 @@ arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdet: 96
-  resens: 48
   comrot: {{ 'RUNTESTS' | getenv }}/COMROT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48
-  idate: 2021122018
-  edate: 2021122106
-  nens: 2
+  icsdir: ${ICSDIR_ROOT}/C96C48
+  idate: 2021122012
+  edate: 2021122100
+  nens: 0
   gfs_cyc: 1
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml

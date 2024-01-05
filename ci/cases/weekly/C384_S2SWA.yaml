@@ -10,4 +10,4 @@ arguments:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2016070100
   edate: 2016070100
-  yaml: {{ HOMEgfs }}/ci/platforms/gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
