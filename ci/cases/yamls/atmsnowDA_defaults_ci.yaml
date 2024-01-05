@@ -1,4 +1,5 @@
 defaults:
   !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
 base:
+  DOIAU: "NO"
   DO_JEDILANDDA: "YES"
