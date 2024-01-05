@@ -14,6 +14,7 @@ WAFS:
   Additionally, EMC is updating WAFS ecf definition file to:
   1. trigger WAFS blending job 5 min later from 4:25 to 4:30 to compensate for 5-10 min delay in receiving UKMO high resolution data;
   2. stop producing blended 1.25 deg WAFS file per ICAO milestone.
+  3. stop producing wafsgfs[37-44]* octant files because NCO decides to remove the related DBNET alerts
 
   Both sides agreed that we sill stop waiting for data from the other side at T+4:45.
 
@@ -88,6 +89,8 @@ SCRIPT CHANGES
 * In ecf/defs/gfs_v16_3.def, remove jgfs_atmos_wafs_blending task, delay trigger time of jgfs_atmos_wafs_blending_0p25 by 5 minutes
 * Update scripts/exgfs_atmos_wafs_grib2_0p25.sh to add forecast hour window to dbn_alert for awf and WAFS unblended hazard data
 * In scripts/exgfs_atmos_wafs_grib2.sh, add dbn_alert of non-headed non-hazard 1.25 deg data (gfs.tCCz.wafs_grb45fFF.grib2) with subtype GFS_WAFS_1P25_GB2
+* In scripts/exgfs_atmos_wafs_grib.sh, stop running ush/wafs_intdsk.sh which produces wafsgfs[37-44]* octant files because NCO decides to remove the related DBNET alerts.
+* In ush/mkwfsgbl.sh, remove GFS_WAFS and GFS_XWAFS DBNET alerts.
 
 FIX CHANGES
 -----------
@@ -124,6 +127,17 @@ DISSEMINATION INFORMATION
 * SCN23-111: Change to Global Aviation Products related to the World Area Forecast System (WAFS) Product on or about January 17, 2024. A pdf version is posted at:
 https://www.weather.gov/media/notification/pdf_2023_24/scn23-111_wafs_products_change.pdf
 
+* File changes
+  1. Stop WAFS_blended_*.grib2, and wmo/grib2.*wafs_grb_wifs*.45
+  2. Stop wafsgfs[37-44]* octant files, and wmo/com.wafs*
+  3. Stop gfs.t??z.wafs_grb45f??.nouswafs.grib2
+  4. gfs.tCCz.wafs_0p25.fFFF.grib2:  temporal resolution increases and forecast hour is extended to 120
+  5. For the following files, vertical levels and file sizes are changed, and each level is the exact number of pressure level:
+     - gfs.tCCz.awf_0p25.fFFF.grib2 (additionally temporal resolution increases and forecast hour is extended to 48)
+     - gfs.tCCz.wafs_0p25_unblended.fFF.grib2 (additionally temporal resolution increases and forecast hour is extended to 48)
+     - WAFS_0p25_blended_*.grib2 (additionally temporal resolution increases and forecast hour is extended to 48)
+     - gfs.tCCz.wafs_grb45fFF.grib2, and wmo/grib2.tCCz.wafs_grbfFF.45 (additionally remove hazard data including CAT, ICIP and CB fields)
+     - gfs.tCCz.gcip.f00.grib2   
 
 HPSS ARCHIVE
 ------------
