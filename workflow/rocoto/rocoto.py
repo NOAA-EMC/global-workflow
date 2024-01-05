@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from typing import Union, List, Dict, Any
-import re
 
 '''
     MODULE:
@@ -71,7 +70,7 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
 
         strings.append('\n')
         task_dict.update(inner_task_dict)
-        tasklines = create_task(task_dict)
+        tasklines = create_task(task_dict).splitlines(True)
         for tl in tasklines:
             strings.append(f'{tl}') if tl == '\n' else strings.append(f'\t{tl}')
         strings.append('\n')

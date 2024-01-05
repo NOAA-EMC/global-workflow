@@ -1032,7 +1032,7 @@ class GFSTasks(Tasks):
 
         postenvars = self.envars.copy()
         postenvar_dict = {'FHRLST': '#lst#',
-                          'ROTDIR': self._base.get('ROTDIR')}
+                          'ROTDIR': self.rotdir}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -1346,7 +1346,7 @@ class GFSTasks(Tasks):
         awipsenvars = self.envars.copy()
         awipsenvar_dict = {'FHRGRP': '#grp#',
                            'FHRLST': '#lst#',
-                           'ROTDIR': self._base.get('ROTDIR')}
+                           'ROTDIR': self.rotdir}
         for key, value in awipsenvar_dict.items():
             awipsenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -1387,7 +1387,7 @@ class GFSTasks(Tasks):
         awipsenvars = self.envars.copy()
         awipsenvar_dict = {'FHRGRP': '#grp#',
                            'FHRLST': '#lst#',
-                           'ROTDIR': self._base.get('ROTDIR')}
+                           'ROTDIR': self.rotdir}
         for key, value in awipsenvar_dict.items():
             awipsenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
