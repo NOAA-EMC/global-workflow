@@ -396,6 +396,8 @@ def input_args(*argv):
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
         parser.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
+        parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
+                            action='store_true', required=False)
         return parser
 
     def _gfs_args(parser):
@@ -490,17 +492,19 @@ def input_args(*argv):
     return parser.parse_args(list(*argv) if len(argv) else None)
 
 
-def query_and_clean(dirname):
+def query_and_clean(dirname, force_clean=False):
     """
     Method to query if a directory exists and gather user input for further action
     """
 
     create_dir = True
     if os.path.exists(dirname):
-        print()
-        print(f'directory already exists in {dirname}')
-        print()
-        overwrite = input('Do you wish to over-write [y/N]: ')
+        print(f'\ndirectory already exists in {dirname}')
+        if force_clean:
+            overwrite = True
+            print(f'removing directory ........ {dirname}\n')
+        else:
+            overwrite = input('Do you wish to over-write [y/N]: ')
         create_dir = True if overwrite in [
             'y', 'yes', 'Y', 'YES'] else False
         if create_dir:
@@ -531,8 +535,8 @@ def main(*argv):
     comrot = os.path.join(user_inputs.comrot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
 
-    create_comrot = query_and_clean(comrot)
-    create_expdir = query_and_clean(expdir)
+    create_comrot = query_and_clean(comrot, force_clean=user_inputs.overwrite)
+    create_expdir = query_and_clean(expdir, force_clean=user_inputs.overwrite)
 
     if create_comrot:
         makedirs_if_missing(comrot)
@@ -542,6 +546,11 @@ def main(*argv):
         makedirs_if_missing(expdir)
         fill_EXPDIR(user_inputs)
         update_configs(host, user_inputs)
+
+    print(f"*"*100)
+    print(f'EXPDIR: {expdir}')
+    print(f'COMROT: {comrot}')
+    print(f"*"*100)
 
 
 if __name__ == '__main__':
