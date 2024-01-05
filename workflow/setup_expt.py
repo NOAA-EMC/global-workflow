@@ -547,10 +547,10 @@ def main(*argv):
         fill_EXPDIR(user_inputs)
         update_configs(host, user_inputs)
 
-    print(f"*"*100)
+    print(f"*" * 100)
     print(f'EXPDIR: {expdir}')
     print(f'COMROT: {comrot}')
-    print(f"*"*100)
+    print(f"*" * 100)
 
 
 if __name__ == '__main__':
