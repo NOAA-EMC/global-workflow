@@ -54,10 +54,10 @@ pSO2_OCS NA Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
 # ---------------
 
 # # VOCs - OFFLINE MEGAN BIOG
-OC_ISOPRENE NA  N Y %y4-%m2-%d2t12:00:00 none none isoprene ExtData/nexus/MEGAN_OFFLINE_BVOC/v2019-10/%y4/MEGAN.OFFLINE.BIOVOC.%y4.emis.%y4%m2%d2.nc
-OC_LIMO     NA  N Y %y4-%m2-%d2t12:00:00 none none limo     ExtData/nexus/MEGAN_OFFLINE_BVOC/v2019-10/%y4/MEGAN.OFFLINE.BIOVOC.%y4.emis.%y4%m2%d2.nc
-OC_MTPA     NA  N Y %y4-%m2-%d2t12:00:00 none none mtpa     ExtData/nexus/MEGAN_OFFLINE_BVOC/v2019-10/%y4/MEGAN.OFFLINE.BIOVOC.%y4.emis.%y4%m2%d2.nc
-OC_MTPO     NA  N Y %y4-%m2-%d2t12:00:00 none none mtpo     ExtData/nexus/MEGAN_OFFLINE_BVOC/v2019-10/%y4/MEGAN.OFFLINE.BIOVOC.%y4.emis.%y4%m2%d2.nc
+OC_ISOPRENE NA  N Y %y4-%m2-%d2t12:00:00 none none isoprene ExtData/nexus/MEGAN_OFFLINE_BVOC/v2021-12/MEGAN_OFFLINE_CLIMO_2000_2022_01.nc
+OC_LIMO     NA  N Y %y4-%m2-%d2t12:00:00 none none limo     ExtData/nexus/MEGAN_OFFLINE_BVOC/v2021-12/MEGAN_OFFLINE_CLIMO_2000_2022_01.nc
+OC_MTPA     NA  N Y %y4-%m2-%d2t12:00:00 none none mtpa     ExtData/nexus/MEGAN_OFFLINE_BVOC/v2021-12/MEGAN_OFFLINE_CLIMO_2000_2022_01.nc
+OC_MTPO     NA  N Y %y4-%m2-%d2t12:00:00 none none mtpo     ExtData/nexus/MEGAN_OFFLINE_BVOC/v2021-12/MEGAN_OFFLINE_CLIMO_2000_2022_01.nc
 
 # Biofuel Source -- Included in AeroCom anthropogenic emissions
 OC_BIOFUEL NA  Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
