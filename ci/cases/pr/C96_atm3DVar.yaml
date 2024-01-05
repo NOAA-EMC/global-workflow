@@ -8,7 +8,7 @@ arguments:
   resdet: 96
   comrot: {{ 'RUNTESTS' | getenv }}/COMROT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: ${ICSDIR_ROOT}/C96C48
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48
   idate: 2021122018
   edate: 2021122106
   nens: 0
