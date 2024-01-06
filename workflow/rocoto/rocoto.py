@@ -123,7 +123,7 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     nodes = resources_dict.get('nodes', 1)
     ppn = resources_dict.get('ppn', 1)
     threads = resources_dict.get('threads', 1)
-    log = task_dict.get('log', f'&ROTDIR;/logs/@Y@m@d@H/{taskname}.log')
+    log = task_dict.get('log', 'demo.log')
     envar = task_dict.get('envars', None)
     dependency = task_dict.get('dependency', [])
 
