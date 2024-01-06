@@ -629,6 +629,12 @@ class GFSTasks(Tasks):
         return grp, dep, lst
 
     def atmupp(self):
+        return self._upptask(upp_run='forecast', task_name='atmupp')
+
+    def goesupp(self):
+        return self._upptask(upp_run='goes', task_name='goesupp')
+
+    def _upptask(self, upp_run="forecast", task_name="atmupp"):
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
         varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs['upp'])
@@ -636,7 +642,7 @@ class GFSTasks(Tasks):
 
         postenvars = self.envars.copy()
         postenvar_dict = {'FHRLST': '#lst#',
-                          'UPP_RUN': 'forecast'}
+                          'UPP_RUN': upp_run}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -654,8 +660,8 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('upp')
-        task = create_wf_task('atmupp', resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              metatask='atmupp', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef,
+        task = create_wf_task(task_name, resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
+                              metatask=task_name, varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef,
                               command='&JOBS_DIR;/upp.sh')
 
         return task
