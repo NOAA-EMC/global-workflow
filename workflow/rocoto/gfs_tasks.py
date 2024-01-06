@@ -2457,7 +2457,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('ecen')
 
-        task_name = f'{self.cdump}ecen#{varname1}'
+        task_name = f'{self.cdump}ecen#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
