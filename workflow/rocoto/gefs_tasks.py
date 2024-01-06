@@ -93,11 +93,11 @@ class GEFSTasks(Tasks):
 
         # TODO: Add real dependencies
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_wave:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
+            dep_dict = {'type': 'task', 'name': f'waveinit'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
@@ -120,11 +120,11 @@ class GEFSTasks(Tasks):
 
     def efcs(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_wave:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveinit'}
+            dep_dict = {'type': 'task', 'name': f'waveinit'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
