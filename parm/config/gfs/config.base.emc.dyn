@@ -59,7 +59,7 @@ export NOSCRUB="@NOSCRUB@"
 export BASE_GIT="@BASE_GIT@"
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_GOES="NO"        # GOES products
+export DO_GOES="@DO_GOES@" # GOES products
 export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
