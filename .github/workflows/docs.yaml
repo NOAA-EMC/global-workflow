@@ -7,8 +7,8 @@ on:
       - main/*
       - bugfix/*
       - release/*
-#   paths:
-#     - docs/**
+    paths:
+      - docs/**
   pull_request_target:
     types: [issues, opened, reopened, synchronize]
     paths:
