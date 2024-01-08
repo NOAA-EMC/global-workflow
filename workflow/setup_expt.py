@@ -538,6 +538,7 @@ def get_ocean_resolution(resdetatm):
     except KeyError:
         raise KeyError(f"Ocean resolution for {resdetatm} is not implemented")
 
+
 def main(*argv):
 
     user_inputs = input_args(*argv)
