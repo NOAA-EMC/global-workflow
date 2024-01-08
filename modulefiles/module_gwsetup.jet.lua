@@ -4,19 +4,15 @@ Load environment to run GFS workflow setup scripts on Jet
 
 load(pathJoin("rocoto", "1.3.3"))
 
-if (mode() == "unload") then
-    -- `execute` delays commands until last, but we need conda deactivated
-    --   before unloading miniconda. `print` (bizarrely) still executes the
-    --   command, but does it immediately. The semicolon is necessary 
-    --   because otherwise other commands get tacked onto the same line.
-    print("conda deactivate;")
-end
+prepend_path("MODULEPATH", "/mnt/lfs4/HFIP/hfv3gfs/role.epic/spack-stack/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
--- Temporary until official hpc-stack is updated
-prepend_path("MODULEPATH", "/mnt/lfs4/HFIP/hfv3gfs/role.epic/miniconda3/modulefiles")
-load(pathJoin("miniconda3", "4.12.0"))
-if (mode() == "load") then
-    execute{cmd="conda activate ufswm", modeA={"load"}}
-end
+local stack_intel_ver=os.getenv("stack_intel_ver") or "2021.5.0"
+local python_ver=os.getenv("python_ver") or "3.10.8"
+
+load(pathJoin("stack-intel", stack_intel_ver))
+load(pathJoin("python", python_ver))
+load("py-jinja2")
+load("py-pyyaml")
+load("py-numpy")
 
 whatis("Description: GFS run setup environment")

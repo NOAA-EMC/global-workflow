@@ -40,7 +40,6 @@ while getopts "p:d:o:h" opt; do
 done
 
 cd "${repodir}" || exit 1
-# clone copy of repo
 if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
@@ -48,15 +47,8 @@ fi
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
 
-pr_state=$("${GH}" pr view "${PR}" --json state --jq '.state')
-if [[ "${pr_state}" != "OPEN" ]]; then
-  title=$("${GH}" pr view "${PR}" --json title --jq '.title')
-  echo "PR ${title} is no longer open, state is ${pr_state} ... quitting"
-  exit 1
-fi
-
 # checkout pull request
-"${GH}" pr checkout "${PR}" --repo "${REPO_URL}"
+"${GH}" pr checkout "${PR}" --repo "${REPO_URL}" --recurse-submodules
 HOMEgfs="${PWD}"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
@@ -75,47 +67,43 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 commit=$(git log --pretty=format:'%h' -n 1)
 echo "${commit}" > "../commit"
 
-# run checkout script
+# build full cycle
 cd sorc || exit 1
 set +e
-./checkout.sh -c -g -u >> log.checkout 2>&1
-checkout_status=$?
-if [[ ${checkout_status} != 0 ]]; then
-  {
-    echo "Checkout:                      *FAILED*"
-    echo "Checkout: Failed at $(date)" || true
-    echo "Checkout: see output at ${PWD}/log.checkout"
-  } >> "${outfile}"
-  exit "${checkout_status}"
-else
-  {
-    echo "Checkout:                      *SUCCESS*"
-    echo "Checkout: Completed at $(date)" || true
-  } >> "${outfile}"
-fi
 
-# build full cycle
 source "${HOMEgfs}/ush/module-setup.sh"
 export BUILD_JOBS=8
 rm -rf log.build
-./build_all.sh  >> log.build 2>&1
+./build_all.sh -gu  >> log.build 2>&1
 build_status=$?
 
+DATE=$(date +'%D %r')
 if [[ ${build_status} != 0 ]]; then
   {
-    echo "Build:                         *FAILED*"
-    echo "Build: Failed at $(date)" || true
-    echo "Build: see output at ${PWD}/log.build"
+    echo "Build: *** FAILED ***"
+    echo "Build: Failed at ${DATE}"
+    cat "${PWD}/log.build"
   } >> "${outfile}"
   exit "${build_status}"
 else
   {
-    echo "Build:                         *SUCCESS*"
-    echo "Build: Completed at $(date)" || true
+    echo "Build: Completed at ${DATE}"
   } >> "${outfile}"
 fi
 
-./link_workflow.sh
+LINK_LOGFILE_PATH=link_workflow.log
+rm -f "${LINK_LOGFILE_PATH}"
+./link_workflow.sh >> "${LINK_LOGFILE_PATH}" 2>&1
+link_status=$?
+if [[ ${link_status} != 0 ]]; then
+  DATE=$(date +'%D %r')
+  {
+    echo "Link: *** FAILED ***"
+    echo "Link: Failed at ${DATE}"
+    cat "${LINK_LOGFILE_PATH}"
+  } >> "${outfile}"
+  exit "${link_status}"
+fi
 
 echo "check/build/link test completed"
 exit "${build_status}"

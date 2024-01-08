@@ -10,62 +10,109 @@ from typing import Union, List, Dict, Any
         Helper module to create tasks, metatasks, and dependencies for Rocoto
 '''
 
-__all__ = ['create_task', 'create_metatask',
+__all__ = ['create_task',
            'add_dependency', 'create_dependency',
            'create_envar', 'create_entity', 'create_cycledef']
 
 
-def create_metatask(task_dict: Dict[str, Any], metatask_dict: Dict[str, Any]) -> List[str]:
-    """
-    create a Rocoto metatask given a dictionary containing task and metatask information
-    :param metatask_dict: metatask key-value parameters
-    :type metatask_dict: dict
-    :param task_dict: task key-value parameters
-    :type task_dict: dict
-    :return: Rocoto metatask
-    :rtype: list
-    """
-
-    # Grab metatask info from the metatask_dict
-    metataskname = metatask_dict.get('metataskname', 'demometatask')
-    varname = metatask_dict.get('varname', 'demovar')
-    varval = metatask_dict.get('varval', 1)
-    vardict = metatask_dict.get('vardict', None)
-
-    strings = [f'<metatask name="{metataskname}">\n',
-               '\n',
-               f'\t<var name="{varname}">{str(varval)}</var>\n']
-
-    if vardict is not None:
-        for key in vardict.keys():
-            value = str(vardict[key])
-            strings.append(f'\t<var name="{key}">{value}</var>\n')
-    strings.append('\n')
-    tasklines = create_task(task_dict)
-    for tl in tasklines:
-        strings.append(f'{tl}') if tl == '\n' else strings.append(f'\t{tl}')
-    strings.append('\n')
-    strings.append('</metatask>\n')
-
-    return strings
-
-
 def create_task(task_dict: Dict[str, Any]) -> List[str]:
     """
-    create a Rocoto task given a dictionary containing task information
-    :param task_dict: task key-value parameters
-    :type task_dict: dict
-    :return: Rocoto task
-    :rtype: list
+    Create XML for a rocoto task or metatask
+
+    Creates the XML required to define a task and returns the lines
+    as a list of strings. Tasks can be nested to create metatasks by
+    defining a key 'task_dict' within the task_dict. When including
+    a nested task, you also need to provide a 'var_dict' key that
+    contains a dictionary of variables to loop over.
+
+    All task dicts must include a 'task_name'.
+
+    Innermost tasks (regular tasks) additionally require a 'resources'
+    key containing a dict of values defining the HPC settings.
+
+    Parameters
+    ----------
+    task_dict: dict
+        Dictionary of task definitions
+
+    Returns
+    -------
+    str
+        Strings containing the XML code defining the task
+
+    Raises
+    ------
+    KeyError
+        If a required key is missing
+
+    """
+
+    inner_task_dict = task_dict.pop('task_dict', None)
+
+    if inner_task_dict is None:
+        strings = _create_innermost_task(task_dict)
+
+    else:
+        # There is a nested task_dict, so this is a metatask
+        metataskname = f"{task_dict.get('task_name', 'demometatask')}"
+        var_dict = task_dict.get('var_dict', None)
+
+        strings = [f'<metatask name="{metataskname}">\n',
+                   '\n']
+
+        if var_dict is None:
+            msg = f'Task {metataskname} has a nested task dict, but has no var_dict'
+            raise KeyError(msg)
+
+        for key in var_dict.keys():
+            value = str(var_dict[key])
+            strings.append(f'\t<var name="{key}">{value}</var>\n')
+
+        strings.append('\n')
+        task_dict.update(inner_task_dict)
+        tasklines = create_task(task_dict).splitlines(True)
+        for tl in tasklines:
+            strings.append(f'{tl}') if tl == '\n' else strings.append(f'\t{tl}')
+        strings.append('\n')
+        strings.append('</metatask>\n')
+
+    return ''.join(strings)
+
+
+def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
+    """
+    Create XML for a regular rocoto task
+
+    Creates the XML required to define a task and returns the lines
+    as a list of strings.
+
+    All task dicts must include a 'task_name' and a 'resources'
+    key containing a dict of values defining the HPC settings.
+
+    Parameters
+    ----------
+    task_dict: dict
+        Dictionary of task definitions
+
+    Returns
+    -------
+    List[str]
+        List of strings containing the XML code defining the task
+
+    Raises
+    ------
+    KeyError
+        If a required key is missing
+
     """
 
     # Grab task info from the task_names
-    taskname = task_dict.get('taskname', 'demotask')
+    taskname = task_dict.get('task_name', 'demotask')
     cycledef = task_dict.get('cycledef', 'democycle')
     maxtries = task_dict.get('maxtries', 3)
     final = task_dict.get('final', False)
     command = task_dict.get('command', 'sleep 10')
-    jobname = task_dict.get('jobname', 'demojob')
+    jobname = task_dict.get('job_name', 'demojob')
     resources_dict = task_dict['resources']
     account = resources_dict.get('account', 'batch')
     queue = resources_dict.get('queue', 'debug')
@@ -115,8 +162,6 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
             strings.append(f'\t\t{d}\n')
         strings.append('\t</dependency>\n')
         strings.append('\n')
-    elif taskname != "gfswaveinit":
-        print("WARNING: No dependencies for task " + taskname)
 
     strings.append('</task>\n')
 
@@ -193,6 +238,7 @@ def _add_data_tag(dep_dict: Dict[str, Any]) -> str:
     dep_type = dep_dict.get('type', None)
     dep_data = dep_dict.get('data', None)
     dep_offset = dep_dict.get('offset', None)
+    dep_age = dep_dict.get('age', None)
 
     if dep_data is None:
         msg = f'a data value is necessary for {dep_type} dependency'
@@ -206,7 +252,10 @@ def _add_data_tag(dep_dict: Dict[str, Any]) -> str:
 
     assert len(dep_data) == len(dep_offset)
 
-    strings = ['<datadep>']
+    if dep_age is None:
+        strings = ['<datadep>']
+    else:
+        strings = [f'<datadep age="{dep_age}">']
     for data, offset in zip(dep_data, dep_offset):
         if '@' in data:
             offset_str = '' if offset in [None, ''] else f' offset="{offset}"'

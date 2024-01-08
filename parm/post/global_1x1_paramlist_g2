@@ -46,6 +46,7 @@ ALBDO:surface
 APCP:surface
 APTMP:2 m above ground
 var discipline=0 master_table=2 parmcat=0 parm=21:2 m above ground
+AOTK:entire atmosphere
 CAPE:180-0 mb above ground
 CAPE:255-0 mb above ground
 CAPE:90-0 mb above ground
@@ -91,6 +92,8 @@ DPT:2 m above ground
 DSWRF:surface
 FLDCP:surface
 FRICV:surface
+FROZR:surface
+FRZR:surface
 GFLUX:surface
 GRLE:50 mb
 GRLE:1000 mb
@@ -167,6 +170,7 @@ HGT:PV=2e-06 (Km^2/kg/s) surface
 HGT:surface
 HGT:tropopause
 HINDEX:surface
+HLCY:1000-0 m above ground
 HLCY:3000-0 m above ground
 HPBL:surface
 ICAHT:max wind
@@ -363,6 +367,7 @@ RWMR:950 mb
 RWMR:975 mb
 RWMR:1 hybrid level
 SHTFL:surface
+SDEN:surface
 SFCR:surface
 SOILW:0-0.1 m below ground
 SOILW:0.1-0.4 m below ground
@@ -533,6 +538,7 @@ TMP:PV=2e-06 (Km^2/kg/s) surface
 TMP:surface
 TMP:tropopause
 TOZNE:entire atmosphere (considered as a single layer)
+TSNOWP:surface
 UFLX:surface
 UGRD:0.995 sigma level
 UGRD:1000 mb

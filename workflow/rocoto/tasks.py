@@ -3,9 +3,9 @@
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
-from wxflow import Template, TemplateConstants
+from wxflow import Template, TemplateConstants, to_timedelta
 
-__all__ = ['Tasks', 'create_wf_task']
+__all__ = ['Tasks']
 
 
 class Tasks:
@@ -19,10 +19,20 @@ class Tasks:
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'preplandobs', 'landanl',
-                   'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
-                   'postsnd', 'awips', 'gempak',
+                   'fcst',
+                   'atmanlupp', 'atmanlprod', 'atmupp', 'atmprod', 'goesupp',
+                   'ocnpost',
+                   'verfozn', 'verfrad', 'vminmon',
+                   'metp',
+                   'tracker', 'genesis', 'genesis_fsu',
+                   'postsnd', 'awips_g2', 'awips_20km_1p0deg', 'fbwind',
+                   'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg'
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
-                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
+                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
+                   'npoess',
+                   'mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
+                   'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
+                   'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
 
@@ -32,11 +42,15 @@ class Tasks:
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._configs = self.app_config.configs
         self._base = self._configs['base']
+        self.HOMEgfs = self._base['HOMEgfs']
+        self.rotdir = self._base['ROTDIR']
+        self.pslot = self._base['PSLOT']
+        self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
-                      'HOMEgfs': self._base.get('HOMEgfs'),
+                      'HOMEgfs': self.HOMEgfs,
                       'EXPDIR': self._base.get('EXPDIR'),
                       'NET': self._base.get('NET'),
                       'CDUMP': self.cdump,
@@ -141,12 +155,18 @@ class Tasks:
             threads = task_config[f'nth_{task_name}_gfs']
 
         memory = task_config.get(f'memory_{task_name}', None)
+        if scheduler in ['pbspro']:
+            if task_config.get('prepost', False):
+                memory += ':prepost=true'
 
         native = None
         if scheduler in ['pbspro']:
             native = '-l debug=true,place=vscatter'
+            # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
             if task_config.get('is_exclusive', False):
                 native += ':exclhost'
+            else:
+                native += ':shared'
         elif scheduler in ['slurm']:
             native = '--export=NONE'
 
@@ -180,34 +200,3 @@ class Tasks:
             raise AttributeError(f'"{task_name}" is not a valid task.\n' +
                                  'Valid tasks are:\n' +
                                  f'{", ".join(Tasks.VALID_TASKS)}')
-
-
-def create_wf_task(task_name, resources,
-                   cdump='gdas', cycledef=None, envar=None, dependency=None,
-                   metatask=None, varname=None, varval=None, vardict=None,
-                   final=False):
-    tasknamestr = f'{cdump}{task_name}'
-    metatask_dict = None
-    if metatask is not None:
-        tasknamestr = f'{tasknamestr}#{varname}#'
-        metatask_dict = {'metataskname': f'{cdump}{metatask}',
-                         'varname': f'{varname}',
-                         'varval': f'{varval}',
-                         'vardict': vardict}
-
-    cycledefstr = cdump.replace('enkf', '') if cycledef is None else cycledef
-
-    task_dict = {'taskname': f'{tasknamestr}',
-                 'cycledef': f'{cycledefstr}',
-                 'maxtries': '&MAXTRIES;',
-                 'command': f'&JOBS_DIR;/{task_name}.sh',
-                 'jobname': f'&PSLOT;_{tasknamestr}_@H',
-                 'resources': resources,
-                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{tasknamestr}.log',
-                 'envars': envar,
-                 'dependency': dependency,
-                 'final': final}
-
-    task = rocoto.create_task(task_dict) if metatask is None else rocoto.create_metatask(task_dict, metatask_dict)
-
-    return ''.join(task)

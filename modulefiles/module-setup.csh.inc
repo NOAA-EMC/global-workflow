@@ -19,11 +19,18 @@ else if ( { test -d /scratch1 } ) then
         source /apps/lmod/lmod/init/$__ms_shell
     endif
     module purge
-else if ( { test -d /work } ) then
-    # We are on MSU Orion
-    if ( ! { module help >& /dev/null } ) then
-        source /apps/lmod/init/$__ms_shell
-    endif
+elif [[ -d /work ]] ; then
+    # We are on MSU Orion or Hercules
+    if [[ -d /apps/other ]] ; then
+        # Hercules
+        init_path="/apps/other/lmod/lmod/init/$__ms_shell"
+    else
+        # Orion
+        init_path="/apps/lmod/lmod/init/$__ms_shell"
+    fi
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source "${init_path}"
+    fi
     module purge
 else if ( { test -d /data/prod } ) then
     # We are on SSEC S4

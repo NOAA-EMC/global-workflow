@@ -3,7 +3,7 @@ For EMC, the fix fields for running the model are not included in git repository
 They are saved locally on all platforms
 
 Hera: /scratch1/NCEPDEV/global/glopara/fix
-Orion: /work/noaa/global/glopara/fix
+Orion/Hercules: /work/noaa/global/glopara/fix
 Jet: /mnt/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix
 S4: /data/prod/glopara/fix
 

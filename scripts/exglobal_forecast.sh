@@ -2,7 +2,7 @@
 
 ################################################################################
 ## UNIX Script Documentation Block
-## Script name:         exglobal_fcst_nemsfv3gfs.sh
+## Script name:         exglobal_forecast.sh
 ## Script description:  Runs a global FV3GFS model forecast
 ##
 ## Author:   Fanglin Yang       Organization: NCEP/EMC       Date: 2016-11-15
@@ -38,19 +38,19 @@
 ##	Restart files:
 ##
 ##	Fix files:
-##		1. computing grid, $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc
-##		2. orography data, $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc
-##		3. mosaic data, $FIXfv3/$CASE/${CASE}_mosaic.nc
-##		4. Global O3 data, $FIX_AM/${O3FORC}
-##		5. Global H2O data, $FIX_AM/${H2OFORC}
-##		6. Global solar constant data, $FIX_AM/global_solarconstant_noaa_an.txt
-##		7. Global surface emissivity, $FIX_AM/global_sfc_emissivity_idx.txt
-##		8. Global CO2 historical data, $FIX_AM/global_co2historicaldata_glob.txt
-##		8. Global CO2 monthly data, $FIX_AM/co2monthlycyc.txt
-##		10. Additional global CO2 data, $FIX_AM/fix_co2_proj/global_co2historicaldata
+##		1. computing grid, $FIXorog/$CASE/${CASE}_grid.tile${n}.nc
+##		2. orography data, $FIXorog/$CASE/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc
+##		3. mosaic data, $FIXorog/$CASE/${CASE}_mosaic.nc
+##		4. Global O3 data, $FIXam/${O3FORC}
+##		5. Global H2O data, $FIXam/${H2OFORC}
+##		6. Global solar constant data, $FIXam/global_solarconstant_noaa_an.txt
+##		7. Global surface emissivity, $FIXam/global_sfc_emissivity_idx.txt
+##		8. Global CO2 historical data, $FIXam/global_co2historicaldata_glob.txt
+##		8. Global CO2 monthly data, $FIXam/co2monthlycyc.txt
+##		10. Additional global CO2 data, $FIXam/fix_co2_proj/global_co2historicaldata
 ##		11. Climatological aerosol global distribution
-##			$FIX_AM/global_climaeropac_global.txt
-## 		12. Monthly volcanic forcing $FIX_AM/global_volcanic_aerosols_YYYY-YYYY.txt
+##			$FIXam/global_climaeropac_global.txt
+## 		12. Monthly volcanic forcing $FIXam/global_volcanic_aerosols_YYYY-YYYY.txt
 ##
 ## Data output (location, name)
 ##	If quilting=true and output grid is gaussian grid:
@@ -70,7 +70,7 @@
 ##
 ## Namelist input, in RUNDIR,
 ##	1. diag_table
-##	2. nems.configure
+##	2. ufs.configure
 ##	3. model_configure
 ##	4. input.nml
 #######################
@@ -80,15 +80,11 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 # include all subroutines. Executions later.
-source "${HOMEgfs}/ush/cplvalidate.sh"	# validation of cpl*
 source "${HOMEgfs}/ush/forecast_predet.sh"	# include functions for variable definition
 source "${HOMEgfs}/ush/forecast_det.sh"  # include functions for run type determination
 source "${HOMEgfs}/ush/forecast_postdet.sh"	# include functions for variables after run type determination
-source "${HOMEgfs}/ush/nems_configure.sh"	# include functions for nems_configure processing
+source "${HOMEgfs}/ush/ufs_configure.sh"	# include functions for ufs.configure processing
 source "${HOMEgfs}/ush/parsing_model_configure_FV3.sh"
-
-# Compset string. For nems.configure.* template selection. Default ATM only
-confignamevarfornems=${confignamevarfornems:-'atm'}
 
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
@@ -103,10 +99,6 @@ ICETIM=${DELTIM}
 
 CPL_SLOW=${CPL_SLOW:-${OCNTIM}}
 CPL_FAST=${CPL_FAST:-${ICETIM}}
-
-echo "MAIN: Validating '${confignamevarfornems}' with cpl switches"
-cplvalidate
-echo "MAIN: '${confignamevarfornems}' validated, continue"
 
 echo "MAIN: Loading common variables before determination of run type"
 common_predet
@@ -142,9 +134,9 @@ FV3_nml
 FV3_model_configure
 echo "MAIN: Name lists and model configuration written"
 
-echo "MAIN: Writing NEMS Configure file"
-writing_nems_configure
-echo "MAIN: NEMS configured"
+echo "MAIN: Writing UFS Configure file"
+writing_ufs_configure
+echo "MAIN: UFS configured"
 
 #------------------------------------------------------------------
 # run the executable

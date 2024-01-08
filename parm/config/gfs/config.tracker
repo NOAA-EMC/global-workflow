@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+########## config.tracker ##########
+echo "BEGIN: config.tracker"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" tracker
+
+# Get tropcy settings
+. "${EXPDIR}/config.tropcy"
+
+echo "END: config.tracker"

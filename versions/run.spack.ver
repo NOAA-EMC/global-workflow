@@ -1,0 +1,27 @@
+export spack_stack_ver=1.5.1
+export spack_env=gsi-addon
+export python_ver=3.10.8
+
+export jasper_ver=2.0.32
+export libpng_ver=1.6.37
+export cdo_ver=2.0.5
+export nco_ver=5.0.6
+
+export hdf5_ver=1.14.0
+export netcdf_c_ver=4.9.2
+export netcdf_fortran_ver=4.6.0
+
+export bufr_ver=11.7.0
+export gsi_ncdiag_ver=1.1.2
+export g2tmpl_ver=1.10.2
+export crtm_ver=2.4.0
+export wgrib2_ver=2.0.8
+export py_netcdf4_ver=1.5.8
+export py_pyyaml_ver=5.4.1
+export py_jinja2_ver=3.1.2
+
+export obsproc_run_ver=1.1.2
+export prepobs_run_ver=1.0.1
+
+export ens_tracker_ver=feature-GFSv17_com_reorg
+export fit2obs_ver=1.0.0

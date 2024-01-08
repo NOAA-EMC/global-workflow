@@ -14,8 +14,8 @@ export GG=${master_grid:-"0p25deg"}   # 1deg 0p5deg 0p25deg 0p125deg
 pwd=$(pwd)
 export DATA=${DATA:-$pwd}
 export HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
-export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-export FIXfv3=${FIXfv3:-$FIX_DIR/orog}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+export FIXorog=${FIXorog:-$FIXgfs/orog}
 export REMAPEXE=${REMAPEXE:-$HOMEgfs/exec/fregrid_parallel}
 export IPD4=${IPD4:-"YES"}
 
@@ -25,8 +25,8 @@ export CDUMP=${CDUMP:-gfs}
 export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
 
 #--------------------------------------------------
-export grid_loc=$FIXfv3/$CASE/${CASE}_mosaic.nc
-export weight_file=$FIXfv3/$CASE/remap_weights_${CASE}_${GG}.nc
+export grid_loc=${FIXorog}/${CASE}/${CASE}_mosaic.nc
+export weight_file=${FIXorog}/${CASE}/remap_weights_${CASE}_${GG}.nc
 
 export APRUN_REMAP=${APRUN_REMAP:-${APRUN:-""}}
 export NTHREADS_REMAP=${NTHREADS_REMAP:-${NTHREADS:-1}}

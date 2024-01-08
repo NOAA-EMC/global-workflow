@@ -41,19 +41,22 @@ write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
 itasks:                  1
 output_history:          ${OUTPUT_HISTORY:-".true."}
+history_file_on_native_grid: .false.
 write_dopost:            ${WRITE_DOPOST:-".false."}
 write_nsflip:            ${WRITE_NSFLIP:-".false."}
 num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             ${OUTPUT_GRID}
 output_file:             '${OUTPUT_FILETYPE_ATM}' '${OUTPUT_FILETYPE_SFC}'
+zstandard_level:         0
 ichunk2d:                ${ichunk2d:-0}
 jchunk2d:                ${jchunk2d:-0}
 ichunk3d:                ${ichunk3d:-0}
 jchunk3d:                ${jchunk3d:-0}
 kchunk3d:                ${kchunk3d:-0}
 ideflate:                ${ideflate:-1}
-nbits:                   ${nbits:-14}
+quantize_mode:           'quantize_bitround'
+quantize_nsd:            ${QUANTIZE_NSD:-0}
 imo:                     ${LONB_IMO}
 jmo:                     ${LATB_JMO}
 output_fh:               ${FV3_OUTPUT_FH}
