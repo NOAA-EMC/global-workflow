@@ -129,20 +129,27 @@ build_opts["ww3prepost"]="${_verbose_opt} ${_build_ufs_opt}"
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
-   build_jobs["gdas"]=8
-   big_jobs=$((big_jobs+1))
-   build_opts["gdas"]="${_verbose_opt}"
+   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" ]]; then
+      echo "NOTE: The GDAS App is not supported on ${MACHINE_ID}.  Disabling build."
+   else
+      build_jobs["gdas"]=8
+      big_jobs=$((big_jobs+1))
+      build_opts["gdas"]="${_verbose_opt}"
+   fi
 fi
 if [[ "${_build_gsi}" == "YES" ]]; then
    build_jobs["gsi_enkf"]=8
-   big_jobs=$((big_jobs+1))
    build_opts["gsi_enkf"]="${_verbose_opt}"
 fi
 if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then
    build_jobs["gsi_utils"]=2
    build_opts["gsi_utils"]="${_verbose_opt}"
-   build_jobs["gsi_monitor"]=1
-   build_opts["gsi_monitor"]="${_verbose_opt}"
+   if [[ "${MACHINE_ID}" == "hercules" ]]; then
+      echo "NOTE: The GSI Monitor is not supported on Hercules.  Disabling build."
+   else
+      build_jobs["gsi_monitor"]=1
+      build_opts["gsi_monitor"]="${_verbose_opt}"
+   fi
 fi
 
 # Go through all builds and adjust CPU counts down if necessary
@@ -168,7 +175,7 @@ if [[ ${requested_cpus} -lt ${_build_job_max} && ${big_jobs} -gt 0 ]]; then
    extra_cores=$(( _build_job_max - requested_cpus ))
    extra_cores=$(( extra_cores / big_jobs ))
    for build in "${!build_jobs[@]}"; do
-      if [[ "${build}" == "gdas" || "${build}" == "ufs" || "${build}" == "gsi_enkf" ]]; then
+      if [[ "${build}" == "gdas" || "${build}" == "ufs" ]]; then
          build_jobs[${build}]=$(( build_jobs[${build}] + extra_cores ))
       fi
    done
