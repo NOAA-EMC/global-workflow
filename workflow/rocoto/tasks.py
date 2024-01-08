@@ -5,7 +5,7 @@ from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
 from wxflow import Template, TemplateConstants, to_timedelta
 
-__all__ = ['Tasks', 'create_wf_task']
+__all__ = ['Tasks']
 
 
 class Tasks:
@@ -42,12 +42,15 @@ class Tasks:
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._configs = self.app_config.configs
         self._base = self._configs['base']
+        self.HOMEgfs = self._base['HOMEgfs']
+        self.rotdir = self._base['ROTDIR']
+        self.pslot = self._base['PSLOT']
         self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
-                      'HOMEgfs': self._base.get('HOMEgfs'),
+                      'HOMEgfs': self.HOMEgfs,
                       'EXPDIR': self._base.get('EXPDIR'),
                       'NET': self._base.get('NET'),
                       'CDUMP': self.cdump,
@@ -197,34 +200,3 @@ class Tasks:
             raise AttributeError(f'"{task_name}" is not a valid task.\n' +
                                  'Valid tasks are:\n' +
                                  f'{", ".join(Tasks.VALID_TASKS)}')
-
-
-def create_wf_task(task_name, resources,
-                   cdump='gdas', cycledef=None, envar=None, dependency=None,
-                   metatask=None, varname=None, varval=None, vardict=None,
-                   final=False, command=None):
-    tasknamestr = f'{cdump}{task_name}'
-    metatask_dict = None
-    if metatask is not None:
-        tasknamestr = f'{tasknamestr}#{varname}#'
-        metatask_dict = {'metataskname': f'{cdump}{metatask}',
-                         'varname': f'{varname}',
-                         'varval': f'{varval}',
-                         'vardict': vardict}
-
-    cycledefstr = cdump.replace('enkf', '') if cycledef is None else cycledef
-
-    task_dict = {'taskname': f'{tasknamestr}',
-                 'cycledef': f'{cycledefstr}',
-                 'maxtries': '&MAXTRIES;',
-                 'command': f'&JOBS_DIR;/{task_name}.sh' if command is None else command,
-                 'jobname': f'&PSLOT;_{tasknamestr}_@H',
-                 'resources': resources,
-                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{tasknamestr}.log',
-                 'envars': envar,
-                 'dependency': dependency,
-                 'final': final}
-
-    task = rocoto.create_task(task_dict) if metatask is None else rocoto.create_metatask(task_dict, metatask_dict)
-
-    return ''.join(task)
