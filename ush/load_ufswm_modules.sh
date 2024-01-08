@@ -12,8 +12,8 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
-  module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
-  module load modules.ufs_model.lua
+  module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+  module load "ufs_${MACHINE_ID}.intel"
   module load prod_util
   if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
     module load cray-pals
