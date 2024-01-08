@@ -20,7 +20,7 @@ class Tasks:
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'preplandobs', 'landanl',
                    'fcst',
-                   'atmanlupp', 'atmanlprod', 'atmupp', 'atmprod',
+                   'atmanlupp', 'atmanlprod', 'atmupp', 'atmprod', 'goesupp',
                    'ocnpost',
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
