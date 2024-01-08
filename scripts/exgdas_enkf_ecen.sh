@@ -76,8 +76,8 @@ CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
 export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
-export FIXfv3=${FIXfv3:-$HOMEgfs/fix/orog}
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
+export FIXorog=${FIXorog:-$HOMEgfs/fix/orog}
+export FIXam=${FIXam:-$HOMEgfs/fix/am}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
@@ -241,7 +241,7 @@ if [ $RECENTER_ENKF = "YES" ]; then
 
       $NLN $ATMANL_GSI        atmanl_gsi
       $NLN $ATMANL_GSI_ENSRES atmanl_gsi_ensres
-      SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
+      SIGLEVEL=${SIGLEVEL:-${FIXam}/global_hyblev.l${LEVS}.txt}
       $NLN $CHGRESNC chgres.x
       chgresnml=chgres_nc_gauss.nml
       nmltitle=chgres
