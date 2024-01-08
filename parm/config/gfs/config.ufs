@@ -72,8 +72,11 @@ case "${machine}" in
   "WCOSS2")
     npe_node_max=128
     ;;
-  "HERA" | "ORION" | "HERCULES")
+  "HERA" | "ORION" )
     npe_node_max=40
+    ;;
+  "HERCULES" )
+    npe_node_max=80
     ;;
   "JET")
     case "${PARTITION_BATCH}" in
