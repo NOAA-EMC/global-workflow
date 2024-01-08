@@ -9,17 +9,14 @@ on:
       - release/*
     paths:
       - docs/**
-  pull_request_target:
-    types: [issues, opened, reopened, synchronize]
+  pull_request:
+    types: [opened, reopened, synchronize]
     paths:
       - docs/**
 
 jobs:
 
   documentation:
-    
-    permissions:
-      pull-requests: 'write'
 
     runs-on: ubuntu-latest
     name: Build and deploy documentation
@@ -55,18 +52,3 @@ jobs:
         name: documentation_warnings.log
         path: artifact/doc_warnings.log
         if-no-files-found: ignore
-
-    - name: Comment ReadDocs
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const message = `
-          Link to ReadTheDocs sample build for this PR can be found at:
-          https://global-workflow--${{ github.event.pull_request.number }}.org.readthedocs.build/en/${{ github.event.pull_request.number }}
-          `
-          github.rest.issues.createComment({
-           issue_number: context.issue.number,
-           owner: context.repo.owner,
-           repo: context.repo.repo,
-           body: message 
-          })     
