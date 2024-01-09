@@ -70,6 +70,7 @@ pipeline {
                             script {
                                  env.HOME = "$HOME"
                                  env.RUNTESTS = "${HOME}/RUNTESTS"
+                            }
                             echo "Cases: ${Cases} ${HOME}"
                             sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Cases}.yaml'
                         }
