@@ -1,6 +1,6 @@
 pipeline {
 
-    agent { label 'master' }
+    agent none
     options {
         disableConcurrentBuilds()
         overrideIndexTriggers(false)
@@ -10,7 +10,7 @@ pipeline {
     stages {
 
         stage('Get Machine') {
-            agent { label 'master' }
+            agent { label 'build-in' }
             steps {
                 script {
                     MACHINE = 'none'
