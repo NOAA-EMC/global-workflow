@@ -68,7 +68,8 @@ pipeline {
                 stages {
                     stage('Create Experiment') {
                         steps {
-                            sh 'echo "Create Experiment for ${Cases}"'
+                            script { env.HOMEgfs = "${HOMEgfs}" }
+                            echo "Cases: ${Cases}"
                             sh '${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Cases}.yaml'
                         }
                     }
