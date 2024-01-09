@@ -391,7 +391,7 @@ def input_args(*argv):
         parser.add_argument('--resdetatmos', help='atmosphere resolution of the deterministic model forecast',
                             type=int, required=False, default=384)
         parser.add_argument('--resdetocean', help='ocean resolution of the deterministic model forecast',
-                            type=float, required=False, default=-1.0)  # -1.0 means determine from resdetatmos (limited combinations will be available)
+                            type=float, required=False, default=0.0)  # 0.0 (or lower) means determine from resdetatmos (limited combinations will be available)
         parser.add_argument('--comrot', help='full path to COMROT',
                             type=str, required=False, default=os.getenv('HOME'))
         parser.add_argument('--expdir', help='full path to EXPDIR',
@@ -547,7 +547,7 @@ def main(*argv):
     validate_user_request(host, user_inputs)
 
     # Determine ocean resolution if not provided
-    if user_inputs.resdetocean < 0:
+    if user_inputs.resdetocean <= 0:
         user_inputs.resdetocean = get_ocean_resolution(user_inputs.resdetatmos)
 
     comrot = os.path.join(user_inputs.comrot, user_inputs.pslot)
