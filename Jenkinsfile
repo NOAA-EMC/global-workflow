@@ -42,7 +42,7 @@ pipeline {
                 echo "Do Build for ${machine}"
                 checkout scm
                 script { env.MACHINE_ID = MACHINE }
-                sh 'sorc/build_all.sh -gu'
+                //sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
             }
         }
