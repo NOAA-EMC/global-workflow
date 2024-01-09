@@ -29,27 +29,27 @@ pipeline {
         }
 
         stage('Build') {
-            agent { label "${env.MACHINE}-emc" }
+            agent { label "${MACHINE}-emc" }
             when {
-                expression { env.MACHINE != 'none' }
+                expression { MACHINE != 'none' }
             }
             steps {
                 script {
-                    machine = env.MACHINE[0].toUpperCase() + env.MACHINE.substring(1)
+                    machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
                     pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
                 }
                 echo "Do Build for ${machine}"
                 checkout scm
+                script { env.MACHINE_ID = MACHINE }
                 sh 'sorc/build_all.sh -gu'
-                script { env.MACHINE_ID = env.MACHINE }
                 sh 'sorc/link_workflow.sh'
             }
         }
 
         stage('Build and Test') {
             when {
-                expression { env.MACHINE != 'none' }
+                expression { MACHINE != 'none' }
             }
 
             matrix {
