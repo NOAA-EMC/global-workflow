@@ -4,7 +4,7 @@ pipeline {
     options {
         disableConcurrentBuilds(abortPrevious: true)
         skipDefaultCheckout()
-        buildDicarder(logRotator(numToKeepStr: '2'))
+        buildDiscarder(logRotator(numToKeepStr: '2'))
     }
 
     stages {
