@@ -2,7 +2,7 @@ pipeline {
 
     agent none
     options {
-        disableConcurrentBuilds(abortProcess: true)
+        disableConcurrentBuilds(abortPrevious: true)
         skipDefaultCheckout()
         buildDicarder(logRotator(numToKeepStr: '2'))
     }
