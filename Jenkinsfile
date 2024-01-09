@@ -42,11 +42,13 @@ pipeline {
                 echo "Do Build for ${machine}"
                 checkout scm
                 script {
+                    HOMEgfs = "${WORKSPACE}"
+                    env.HOMEgfs = "${HOMEgfs}"
                     env.MACHINE_ID = MACHINE
-                    HOMEgfs="${WORKSPACE}"
                 }
                 // sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
+                sh 'mkdir -p ${HOMEgfs}/${RUNTESTS}'
             }
         }
 
@@ -71,7 +73,6 @@ pipeline {
                                 env.RUNTESTS = "RUNTESTS"
                                 env.HOMEgfs = "${HOMEgfs}"
                             }
-                            sh 'mkdir -p ${HOMEgfs}/${RUNTESTS}'
                             sh '${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${case}.yaml'
                         }
                     }
