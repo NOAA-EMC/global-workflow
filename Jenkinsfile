@@ -53,7 +53,7 @@ pipeline {
             }
 
             matrix {
-                agent { label "${env.MACHINE}-emc" }
+                agent { label "${MACHINE}-emc" }
                 axes {
                     axis {
                         name 'Cases'
