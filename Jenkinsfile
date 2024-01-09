@@ -48,7 +48,7 @@ pipeline {
                 }
                 // sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
-                sh 'mkdir -p ${HOMEgfs}/${RUNTESTS}'
+                sh 'mkdir -p ${HOMEgfs}/RUNTESTS'
             }
         }
 
@@ -61,8 +61,8 @@ pipeline {
                 agent { label "${MACHINE}-emc" }
                 axes {
                     axis {
-                        name 'Cases'
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar'
+                        name "Cases"
+                        values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
                     }
                 }
                 stages {
@@ -70,9 +70,10 @@ pipeline {
                         steps {
                             script {
                                 env.case = "${Cases}"
-                                env.RUNTESTS = "RUNTESTS"
                                 env.HOMEgfs = "${HOMEgfs}"
                             }
+                            echo "Cases: ${Cases}"
+                            sh 'echo "Create Experiment for ${case} and ${Cases}"'
                             sh '${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${case}.yaml'
                         }
                     }
