@@ -67,7 +67,8 @@ pipeline {
                 stages {
                     stage('Create Experiment') {
                         steps {
-                            echo "Cases: ${Cases}"
+                            script { env.HOME = "$HOME"}
+                            echo "Cases: ${Cases} ${HOME}"
                             sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Cases}.yaml'
                         }
                     }
