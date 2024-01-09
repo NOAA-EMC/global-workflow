@@ -61,6 +61,6 @@ function create_experiment () {
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
   export pslot=${case}_${pr_sha}
-  yes | "${HOMEgfs}/workflow/create_experiment.py" --yaml "${yaml_config}"
+  "${HOMEgfs}/workflow/create_experiment.py" --yaml "${yaml_config}"
 
 }

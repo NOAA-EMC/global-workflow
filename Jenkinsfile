@@ -65,10 +65,10 @@ pipeline {
                         steps {
                             script {
                                 env.case = "${Cases}"
-                                env.RUNTESTS = "${WORKSPACE}/RUNTESTS"
+                                env.RUNTESTS = "RUNTESTS"
                             }
                             sh 'mkdir -p ${RUNTESTS}'
-                            sh '${WORKSPACE}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
+                            sh 'ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
                         }
                     }
                     stage("Run Cases") {
