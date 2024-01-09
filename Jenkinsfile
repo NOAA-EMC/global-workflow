@@ -47,11 +47,11 @@ pipeline {
                 }
                 // sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
-                sh 'mkdir -p ${HOME}/RUNTESTS'
+                sh 'mkdir -p ${WORKSPACE}/RUNTESTS'
             }
         }
 
-        stage('Build and Test') {
+        stage('Run Tests') {
             when {
                 expression { MACHINE != 'none' }
             }
@@ -67,12 +67,14 @@ pipeline {
                 stages {
                     stage('Create Experiment') {
                         steps {
-                            script { env.HOME = "$HOME"}
+                            script {
+                                 env.HOME = "$HOME"
+                                 env.RUNTESTS = "${HOME}/RUNTESTS"
                             echo "Cases: ${Cases} ${HOME}"
                             sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Cases}.yaml'
                         }
                     }
-                    stage("Run Cases") {
+                    stage("Run Experiment") {
                         steps {
                             echo "Do Test for ${machine} - ${Cases}"
                         }
