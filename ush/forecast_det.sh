@@ -67,7 +67,7 @@ FV3_det(){
 
       # Check for availability of FV3 restarts
       if [[ -f "${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res" ]]; then
-        mv "${COM_ATMOS_RESTART}/${PDYS}.${cycs}.coupler.res" "${COM_ATMOS_RESTART}/${PDYS}.${cycs}.coupler.res.old"
+        mv "${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res" "${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res.old"
       else
         local fv3_rst_ok="NO"
       fi
