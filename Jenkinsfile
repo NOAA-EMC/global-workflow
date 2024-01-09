@@ -1,5 +1,31 @@
 pipeline {
-    agent any
+
+    options {
+        disableConcurrentBuilds()
+        overrideIndexTriggers(false)
+        skipDefaultCheckout(true)
+    }
+
+    stage( 'Get Machine' ) {
+        agent { label 'master' }
+        steps {
+            script {
+                MACHINE = 'none'
+                for (label in pullRequest.labels) {
+                    echo "Label: ${label}"
+                    if ((label.matches("CI-Hera-Ready"))) {
+                        MACHINE='hera'
+                    }  
+                    else if ((label.matches("CI-Orion-Ready"))) {
+                        MACHINE='orion'
+                    }  
+                    else if ((label.matches("CI-Hercules-Ready"))) {
+                            MACHINE='hercules'
+                    }  
+                }
+            }
+        }
+    }
 
     stages {
         stage('Build') {
