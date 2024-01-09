@@ -44,6 +44,7 @@ pipeline {
                 script { env.MACHINE_ID = MACHINE }
                 // sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
+                HOMEgfs="${WORKSPACE}"
             }
         }
 
@@ -66,9 +67,10 @@ pipeline {
                             script {
                                 env.case = "${Cases}"
                                 env.RUNTESTS = "RUNTESTS"
+                                env.HOMEgfs = "${HOMEgfs}"
                             }
-                            sh 'mkdir -p ${RUNTESTS}'
-                            sh 'ci/scripts/utils/ci_utils_wrapper.sh create_experiment ci/cases/pr/${case}.yaml'
+                            sh 'mkdir -p ${HOMEgfs}/${RUNTESTS}'
+                            sh '${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${case}.yaml'
                         }
                     }
                     stage("Run Cases") {
