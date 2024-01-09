@@ -129,7 +129,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
   # Run with MPMD or serial
   if [[ "${USE_CFP:-}" = "YES" ]]; then
-    "${HOMEgfs}/ush/run_mpmd.sh" "${DATA}/poescript"
+    OMP_NUM_THREADS=1 "${HOMEgfs}/ush/run_mpmd.sh" "${DATA}/poescript"
     export err=$?
   else
     chmod 755 "${DATA}/poescript"
