@@ -10,7 +10,7 @@ pipeline {
     stages {
 
         stage('Get Machine') {
-            agent { label 'build-in' }
+            agent { label 'built-in' }
             steps {
                 script {
                     MACHINE = 'none'
