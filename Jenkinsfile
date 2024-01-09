@@ -42,8 +42,7 @@ pipeline {
                 echo "Do Build for ${machine}"
                 checkout scm
                 script {
-                    HOMEgfs = "${WORKSPACE}"
-                    env.HOMEgfs = "${HOMEgfs}"
+                    HOME = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
                 }
                 // sh 'sorc/build_all.sh -gu'
@@ -68,9 +67,8 @@ pipeline {
                 stages {
                     stage('Create Experiment') {
                         steps {
-                            script { env.HOMEgfs = "${HOMEgfs}" }
                             echo "Cases: ${Cases}"
-                            sh '${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Cases}.yaml'
+                            sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Cases}.yaml'
                         }
                     }
                     stage("Run Cases") {
