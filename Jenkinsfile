@@ -7,28 +7,27 @@ pipeline {
         skipDefaultCheckout(true)
     }
 
-    stage( 'Get Machine' ) {
-        agent { label 'master' }
-        steps {
-            script {
-                MACHINE = 'none'
-                for (label in pullRequest.labels) {
-                    echo "Label: ${label}"
-                    if ((label.matches("CI-Hera-Ready"))) {
-                        MACHINE='hera'
-                    }  
-                    else if ((label.matches("CI-Orion-Ready"))) {
-                        MACHINE='orion'
-                    }  
-                    else if ((label.matches("CI-Hercules-Ready"))) {
-                            MACHINE='hercules'
-                    }  
+    stages {
+
+        stage('Get Machine') {
+            agent { label 'master' }
+            steps {
+                script {
+                    MACHINE = 'none'
+                    for (label in pullRequest.labels) {
+                        echo "Label: ${label}"
+                        if ((label.matches("CI-Hera-Ready"))) {
+                            MACHINE = 'hera'
+                        } else if ((label.matches("CI-Orion-Ready"))) {
+                            MACHINE = 'orion'
+                        } else if ((label.matches("CI-Hercules-Ready"))) {
+                            MACHINE = 'hercules'
+                        }
+                    }
                 }
             }
         }
-    }
 
-    stages {
         stage('Build') {
             agent { label "${env.MACHINE}-emc" }
             when {
@@ -43,7 +42,7 @@ pipeline {
                 echo "Do Build for ${machine}"
                 checkout scm
                 sh 'sorc/build_all.sh -gu'
-                script { env.MACHINE_ID = env.MACHINE } 
+                script { env.MACHINE_ID = env.MACHINE }
                 sh 'sorc/link_workflow.sh'
             }
         }
@@ -58,13 +57,13 @@ pipeline {
                 axes {
                     axis {
                         name 'Cases'
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW',  'C96_atm3DVar'
+                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar'
                     }
                 }
                 stages {
                     stage('Create Experiment') {
                         steps {
-                            script { 
+                            script {
                                 env.case = "${Cases}"
                                 env.RUNTESTS = "${WORKSPACE}/RUNTESTS"
                             }
@@ -80,5 +79,6 @@ pipeline {
                 }
             }
         }
+
     }
 }
