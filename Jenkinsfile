@@ -41,10 +41,12 @@ pipeline {
                 }
                 echo "Do Build for ${machine}"
                 checkout scm
-                script { env.MACHINE_ID = MACHINE }
+                script {
+                    env.MACHINE_ID = MACHINE
+                    HOMEgfs="${WORKSPACE}"
+                }
                 // sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
-                HOMEgfs="${WORKSPACE}"
             }
         }
 
