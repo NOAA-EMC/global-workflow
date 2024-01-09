@@ -47,7 +47,7 @@ pipeline {
                 }
                 // sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
-                sh 'mkdir -p ${HOMEgfs}/RUNTESTS'
+                sh 'mkdir -p ${HOME}/RUNTESTS'
             }
         }
 
