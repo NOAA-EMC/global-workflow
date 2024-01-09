@@ -1,5 +1,6 @@
 pipeline {
 
+    agent { label 'master' }
     options {
         disableConcurrentBuilds()
         overrideIndexTriggers(false)
@@ -29,6 +30,7 @@ pipeline {
 
     stages {
         stage('Build') {
+            agent { label "${env.MACHINE}-emc" }
             when {
                 expression { env.MACHINE != 'none' }
             }
