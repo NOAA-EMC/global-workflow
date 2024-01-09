@@ -5,7 +5,7 @@ experiment:
 arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATM
-  resdet: 48
+  resdetatmos: 48
   comrot: {{ 'RUNTESTS' | getenv }}/COMROT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021032312
