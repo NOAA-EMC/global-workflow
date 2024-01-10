@@ -211,6 +211,9 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += ['atmupp']
         gfs_tasks += ['atmprod']
 
+        if self.do_goes:
+            gfs_tasks += ['goesupp']
+
         if self.do_vminmon:
             gfs_tasks += ['vminmon']
 
