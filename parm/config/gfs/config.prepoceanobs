@@ -7,10 +7,13 @@ echo "BEGIN: config.prepoceanobs"
 export OCNOBS2IODAEXEC=${HOMEgfs}/sorc/gdas.cd/build/bin/gdas_obsprovider2ioda.x
 
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config
-export OBSPROC_YAML=@OBSPROC_CONFIG@
+export OBSPROC_YAML=${HOMEgfs}/sorc/gdas.cd/parm/soca/obsproc/obsproc_config.yaml
 export OBS_LIST=@SOCA_OBS_LIST@
 [[ -n "${OBS_LIST}" ]] || export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
 export OBS_YAML=${OBS_LIST}
+
+# until dmpdir has full ocean obs; works on Hera
+export DMPDIR=/scratch1/NCEPDEV/stmp4/Shastri.Paturi/forAndrew
 
 # Get task specific resources
 . "${EXPDIR}/config.resources" prepoceanobs
