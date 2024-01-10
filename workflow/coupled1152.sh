@@ -1,6 +1,6 @@
 APP=S2SW
 PSLOT=c1152t01
-BASEDIR=/lfs/h2/emc/couple/noscrub/jessica.meixner/HR3/unstruc02
+BASEDIR=/lfs/h2/emc/couple/noscrub/jessica.meixner/HR3/unstruc04
 CDUMP=gfs #gfs or gefs
 CONFIGDIR=$BASEDIR/global-workflow/parm/config/${CDUMP}
 IDATE=2019120300

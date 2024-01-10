@@ -49,7 +49,7 @@ export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 #export BASE_CPLIC="@BASE_CPLIC@"
 export BASE_CPLIC="/lfs/h2/emc/couple/noscrub/jessica.meixner/HR3/IC"
-export BASE_CPLIC="/work2/noaa/marine/jmeixner/HR3/HR2_refactored_IC"
+#export BASE_CPLIC="/work2/noaa/marine/jmeixner/HR3/HR2_refactored_IC"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
