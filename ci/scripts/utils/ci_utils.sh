@@ -40,12 +40,32 @@ function get_pslot_list () {
     local RUNTESTS="${1}"
   
     #############################################################
-    # loop over every yaml file in the PR's ci/cases
-    # and create an run directory for each one for this PR loop
+    # loop over expdir directories in RUNTESTS
+    # and create list of the directory names (pslot) with the hash tag
     #############################################################
     for pslot_dir in "${RUNTESTS}/EXPDIR/"*; do
       pslot=$(basename "${pslot_dir}") || true
       echo "${pslot}"
+    done
+
+}
+
+function get_pslot () {
+
+    local RUNTESTS="${1}"
+    local case="${2}"
+  
+    #############################################################
+    # loop over expdir directories in RUNTESTS
+    # and return the name of the pslot with its tag that matches the case
+    #############################################################
+    for pslot_dir in "${RUNTESTS}/EXPDIR/"*; do
+      pslot=$(basename "${pslot_dir}")
+      check_case = $(echo "${pslot}" | rev | cut -d"_" -f2- | rev) || true
+      if [[ "${check_case}" == "${case}" ]]; then
+        echo "${pslot}"
+        break
+      fi
     done
 
 }

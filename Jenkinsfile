@@ -75,14 +75,18 @@ pipeline {
                             sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Cases}.yaml'
                         }
                     }
-                    stage("Run Experiment") {
-                        steps {
-                            echo "Do Test for ${machine} - ${Cases}"
+
+                    stage('Run Experiments') {
+                        script {
+                            pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                            sh '${WORKSPACE}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}'
+                            pullRequest.comment("SUCCESS running experiments: ${Case} on Orion")
                         }
                     }
                 }
             }
-        }
+        }  
+
 
     }
 }
