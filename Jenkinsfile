@@ -79,14 +79,30 @@ pipeline {
                     stage('Run Experiments') {
                         script {
                             pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                            pullRequest.removeLabel('CI-${machine}-Building')
+                            pullRequest.addLabel('CI-${machine}-Running')
                             sh '${WORKSPACE}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}'
                             pullRequest.comment("SUCCESS running experiments: ${Case} on Orion")
                         }
                     }
                 }
             }
-        }  
+        }
 
+        post {
+            success {
+                script {
+                    pullRequest.removeLabel('CI-${machine}-Running')
+                    pullRequest.addLabel('CI-${machine}-Passed')  
+                }
+            }
+            failure {
+                script {
+                    pullRequest.removeLabel('CI-${machine}-Running')
+                    pullRequest.addLabel('CI-${machine}-Failed')  
+                }
+            }
+        }   
 
     }
 }
