@@ -22,7 +22,7 @@ REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 source "${ROOT_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion)
+  hera | orion | hercules)
    echo "Running Automated Testing on ${MACHINE_ID}"
    source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
    ;;

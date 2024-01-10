@@ -8,7 +8,9 @@ prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/hercules/spack
 
 load(pathJoin("stack-intel", os.getenv("stack_intel_ver")))
 load(pathJoin("stack-intel-oneapi-mpi", os.getenv("stack_impi_ver")))
+load(pathJoin("intel-oneapi-mkl", os.getenv("intel_mkl_ver")))
 load(pathJoin("python", os.getenv("python_ver")))
+load(pathJoin("perl", os.getenv("perl_ver")))
 
 -- TODO load NCL once the SAs remove the 'depends_on' statements within it
 --      NCL is a static installation and does not depend on any libraries
