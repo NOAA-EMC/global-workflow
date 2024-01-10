@@ -43,7 +43,7 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
         --resdetatmos atmosphere resolution of the deterministic model forecast
                         (default: 384)
         --resdetocean ocean resolution of the deterministic model forecast
-                        (default: 0. [determined automatically based on atmosphere resolution]]])
+                        (default: 0. [determined automatically based on atmosphere resolution])
         --resensatmos     resolution of the ensemble model forecast
                         (default: 192)
         --comrot     full path to COMROT
