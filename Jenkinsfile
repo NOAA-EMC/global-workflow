@@ -88,21 +88,21 @@ pipeline {
                 }
             }
         }
-
-        post {
-            success {
-                script {
-                    pullRequest.removeLabel('CI-${machine}-Running')
-                    pullRequest.addLabel('CI-${machine}-Passed')  
-                }
-            }
-            failure {
-                script {
-                    pullRequest.removeLabel('CI-${machine}-Running')
-                    pullRequest.addLabel('CI-${machine}-Failed')  
-                }
-            }
-        }   
-
     }
+
+    post {
+        success {
+            script {
+                pullRequest.removeLabel('CI-${machine}-Running')
+                pullRequest.addLabel('CI-${machine}-Passed')  
+            }
+        }
+        failure {
+            script {
+                pullRequest.removeLabel('CI-${machine}-Running')
+                pullRequest.addLabel('CI-${machine}-Failed')  
+            }
+        }
+    }
+
 }
