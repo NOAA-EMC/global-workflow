@@ -19,7 +19,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         if self.do_atm:
 
-            if self.do_upp:
+            if self.do_upp or self.do_goes:
                 configs += ['upp']
 
             configs += ['atmos_products']
@@ -101,6 +101,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['atmupp']
 
             tasks += ['atmprod']
+
+            if self.do_goes:
+                tasks += ['goesupp']
 
             if self.do_tracker:
                 tasks += ['tracker']
