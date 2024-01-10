@@ -42,7 +42,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['anal', 'analdiag']
 
         if self.do_jediocnvar:
-            configs += [ 'prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
+            configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
                          'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost',
                          'ocnanalvrfy']
 
