@@ -721,9 +721,7 @@ MOM6_postdet() {
 
   # Link output files
   if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-    # Link output files for RUN = gfs
-
-    # TODO: get requirements on what files need to be written out and what these dates here are and what they mean
+    # Link output files for RUN = gfs|gefs
 
     # Looping over MOM6 output hours
     local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
@@ -866,47 +864,58 @@ CICE_postdet() {
   ${NLN} "${FIXcice}/${ICERES}/${ice_kmt_file}"  "${DATA}/"
   ${NLN} "${FIXcice}/${ICERES}/${MESH_OCN_ICE}"  "${DATA}/"
 
+  # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
+  # TODO: Is this file needed in COM? Is this going to be used for generating any products?
+  local vdate seconds vdatestr fhr fhr3 interval last_fhr
+  seconds=$(to_seconds "${current_cycle:8:2}0000")  # convert HHMMSS to seconds
+  vdatestr="${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2}-${seconds}"
+  ${NLN} "${COM_ICE_HISTORY}/${RUN}.ice.t${cyc}z.ic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+
+  # Link output files for CICE
   if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-    # Link output files for RUN = gfs
 
-    # TODO: make these forecast output files consistent w/ GFS output
-    # TODO: Work w/ NB to determine appropriate naming convention for these files
+    # Link instantaneous CICE forecast output files from DATA/CICE_OUTPUT to COM
+    for fhr in ${CICE_OUTPUT_FH}; do
+      fhr3=$(printf %03i "${fhr}")
 
-    # TODO: consult w/ NB on how to improve on this.  Gather requirements and more information on what these files are and how they are used to properly catalog them
-    local vdate seconds vdatestr fhr last_fhr
-    for fhr in ${FV3_OUTPUT_FH}; do
+      if [[ -z ${last_fhr:-} ]]; then
+        last_fhr=${fhr}
+        continue
+      fi
+
+      (( interval = fhr - last_fhr ))
+
       vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
       seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
       vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
-      if [[ 10#${fhr} -eq 0 ]]; then
-        ${NLN} "${COM_ICE_HISTORY}/iceic${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
-      else
-        (( interval = fhr - last_fhr ))  # Umm.. isn't this histfreq_n?
-        ${NLN} "${COM_ICE_HISTORY}/ice${vdate}.${ENSMEM}.${current_cycle}.nc" "${DATA}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
-      fi
+      source_file="iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
+      dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+      ${NLN} "${COM_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
+
       last_fhr=${fhr}
     done
 
   elif [[ "${RUN}" =~ "gdas" ]]; then
 
-    # Link CICE generated initial condition file from DATA/CICE_OUTPUT to COMOUTice
-    # This can be thought of as the f000 output from the CICE model
-    local seconds vdatestr
-    seconds=$(to_seconds "${current_cycle:8:2}0000")  # convert HHMMSS to seconds
-    vdatestr="${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2}-${seconds}"
-    ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.iceic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+    # Link instantaneous CICE forecast output files from DATA/CICE_OUTPUT to COM
+    for fhr in ${CICE_OUTPUT_FH}; do
+      fhr3=$(printf %03i "${fhr}")
 
-    # Link instantaneous CICE forecast output files from DATA/CICE_OUTPUT to COMOUTice
-    local vdate vdatestr seconds fhr fhr3
-    fhr="${FHOUT}"
-    while [[ "${fhr}" -le "${FHMAX}" ]]; do
+      if [[ -z ${last_fhr:-} ]]; then
+        last_fhr=${fhr}
+        continue
+      fi
+
       vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
       seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
       vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
-      fhr3=$(printf %03i "${fhr}")
-      ${NLN} "${COM_ICE_HISTORY}/${RUN}.t${cyc}z.icef${fhr3}.nc" "${DATA}/CICE_OUTPUT/iceh_inst.${vdatestr}.nc"
-      fhr=$((fhr + FHOUT))
+
+      source_file="iceh_inst.${vdatestr}.nc"
+      dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
+      ${NLN} "${COM_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
+
+      last_fhr=${fhr}
     done
 
   fi
