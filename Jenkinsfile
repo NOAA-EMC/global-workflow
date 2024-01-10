@@ -45,7 +45,7 @@ pipeline {
                     HOME = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
                 }
-                // sh 'sorc/build_all.sh -gu'
+                sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
                 sh 'mkdir -p ${WORKSPACE}/RUNTESTS'
             }
