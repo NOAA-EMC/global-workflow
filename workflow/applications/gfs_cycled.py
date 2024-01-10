@@ -43,8 +43,8 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_jediocnvar:
             configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
-                         'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost',
-                         'ocnanalvrfy']
+                        'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost',
+                        'ocnanalvrfy']
 
         if self.do_ocean:
             configs += ['ocnpost']
