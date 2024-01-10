@@ -61,7 +61,7 @@ function get_pslot () {
     #############################################################
     for pslot_dir in "${RUNTESTS}/EXPDIR/"*; do
       pslot=$(basename "${pslot_dir}")
-      check_case = $(echo "${pslot}" | rev | cut -d"_" -f2- | rev) || true
+      check_case=$(echo "${pslot}" | rev | cut -d"_" -f2- | rev) || true
       if [[ "${check_case}" == "${case}" ]]; then
         echo "${pslot}"
         break
