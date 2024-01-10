@@ -936,6 +936,16 @@ class GFSTasks(Tasks):
         return grp, dep, lst
 
     def atmupp(self):
+        return self._upptask(upp_run='forecast', task_id='atmupp')
+
+    def goesupp(self):
+        return self._upptask(upp_run='goes', task_id='goesupp')
+
+    def _upptask(self, upp_run="forecast", task_id="atmupp"):
+
+        VALID_UPP_RUN = ["forecast", "goes", "wafs"]
+        if upp_run not in VALID_UPP_RUN:
+            raise KeyError(f"{upp_run} is invalid; UPP_RUN options are: {('|').join(VALID_UPP_RUN)}")
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
         varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs['upp'])
@@ -943,7 +953,7 @@ class GFSTasks(Tasks):
 
         postenvars = self.envars.copy()
         postenvar_dict = {'FHRLST': '#lst#',
-                          'UPP_RUN': 'forecast'}
+                          'UPP_RUN': upp_run}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -962,7 +972,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('upp')
 
-        task_name = f'{self.cdump}atmupp#{varname1}#'
+        task_name = f'{self.cdump}{task_id}#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -974,7 +984,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.cdump}atmupp',
+        metatask_dict = {'task_name': f'{self.cdump}{task_id}',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
