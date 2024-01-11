@@ -52,12 +52,11 @@ pipeline {
         }
 
         stage('Run Tests') {
-            agent { label "${MACHINE}-emc" }
             when {
                 expression { MACHINE != 'none' }
             }
             matrix {
-                //agent { label "${MACHINE}-emc" }
+                agent { label "${MACHINE}-emc" }
                 axes {
                     axis {
                         name "Cases"
@@ -75,7 +74,6 @@ pipeline {
                             sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Cases}.yaml'
                         }
                     }
-
                     stage('Run Experiments') {
                         steps {
                             script {
