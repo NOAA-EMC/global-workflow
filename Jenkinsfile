@@ -36,8 +36,8 @@ pipeline {
             steps {
                 script {
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
-                    pullRequest.removeLabel("CI-${machine}-Ready")
-                    pullRequest.addLabel("CI-${machine}-Building")
+                    //pullRequest.removeLabel("CI-${machine}-Ready")
+                    //pullRequest.addLabel("CI-${machine}-Building")
                 }
                 echo "Do Build for ${machine}"
                 checkout scm
@@ -83,8 +83,9 @@ pipeline {
                                 //pullRequest.removeLabel('CI-${machine}-Building')
                                 //pullRequest.addLabel('CI-${machine}-Running')
                             }
+                            script { pullRequest.comment("Running experiments: ${Case} on ${machine}") }
                             sh '${WORKSPACE}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}'
-                            script { pullRequest.comment("SUCCESS running experiments: ${Case} on Orion") }
+                            script { pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}") }
                         }
                     }
                 }
