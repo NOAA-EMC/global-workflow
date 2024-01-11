@@ -52,12 +52,12 @@ pipeline {
         }
 
         stage('Run Tests') {
+            agent { label "${MACHINE}-emc" }
             when {
                 expression { MACHINE != 'none' }
             }
-
             matrix {
-                agent { label "${MACHINE}-emc" }
+                //agent { label "${MACHINE}-emc" }
                 axes {
                     axis {
                         name "Cases"
@@ -82,8 +82,8 @@ pipeline {
                                 pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                 //pullRequest.removeLabel('CI-${machine}-Building')
                                 //pullRequest.addLabel('CI-${machine}-Running')
+                                pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                             }
-                            script { pullRequest.comment("Running experiments: ${Case} on ${machine}") }
                             sh '${WORKSPACE}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}'
                             script { pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}") }
                         }
