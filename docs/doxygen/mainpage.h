@@ -23,7 +23,7 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
     $> setup_expt.py -h
     usage: setup_expt.py [-h] --pslot PSLOT
                      [--configdir CONFIGDIR] [--idate IDATE] [--icsdir ICSDIR]
-                     [--resdet RESDET] [--resens RESENS] [--comroot COMROOT]
+                     [--resdetatmos RESDET] [--resensatmos RESENS] [--comroot COMROOT]
                      [--expdir EXPDIR] [--nens NENS] [--cdump CDUMP]
 
     Setup files and directories to start a GFS parallel. Create EXPDIR, copy
@@ -40,9 +40,11 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
                         (default: 2016100100)
         --icsdir     full path to initial condition directory
                         (default: /scratch4/NCEPDEV/da/noscrub/Rahul.Mahajan/ICS)
-        --resdet     resolution of the deterministic model forecast
+        --resdetatmos atmosphere resolution of the deterministic model forecast
                         (default: 384)
-        --resens     resolution of the ensemble model forecast
+        --resdetocean ocean resolution of the deterministic model forecast
+                        (default: 0. [determined automatically based on atmosphere resolution])
+        --resensatmos     resolution of the ensemble model forecast
                         (default: 192)
         --comroot    full path to COMROOT, where ROTDIR (COMROOT+PSLOT) will be created
                         (default: None)
@@ -53,7 +55,7 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
         --cdump      CDUMP to start the experiment
                         (default: gdas)
 
-The above script creates directories <b>\c EXPDIR</b> and <b>\c ROTDIR</b>. It will make links for initial conditions from a location provided via the <b>\c --icsdir</b> argument for a chosen resolution for the control <b>\c --resdet</b> and the ensemble <b>\c --resens</b>. Experiment name is controlled by the input argument <b>\c --pslot</b>. The script will ask user input in case any of the directories already exist. It will copy experiment configuration files into the <b>\c EXPDIR</b> from <b>\c CONFIGDIR</b>.
+The above script creates directories <b>\c EXPDIR</b> and <b>\c ROTDIR</b>. It will make links for initial conditions from a location provided via the <b>\c --icsdir</b> argument for a chosen resolution for the control <b>\c --resdetatmos</b> and the ensemble <b>\c --resensatmos</b>. Experiment name is controlled by the input argument <b>\c --pslot</b>. The script will ask user input in case any of the directories already exist. It will copy experiment configuration files into the <b>\c EXPDIR</b> from <b>\c CONFIGDIR</b>.
 
 Sample initial conditions for a few resolutions are available at:<br>
 <b>Hera:</b> TODO: /path/here/for/initial/conditions<br>

@@ -309,7 +309,8 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@PSLOT@": inputs.pslot,
         "@SDATE@": datetime_to_YMDH(inputs.idate),
         "@EDATE@": datetime_to_YMDH(inputs.edate),
-        "@CASECTL@": f'C{inputs.resdet}',
+        "@CASECTL@": f'C{inputs.resdetatmos}',
+        "@OCNRES@": f"{int(100.*inputs.resdetocean):03d}",
         "@EXPDIR@": inputs.expdir,
         "@COMROOT@": inputs.comroot,
         "@EXP_WARM_START@": is_warm_start,
@@ -322,7 +323,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
     extend_dict = dict()
     if getattr(inputs, 'nens', 0) > 0:
         extend_dict = {
-            "@CASEENS@": f'C{inputs.resens}',
+            "@CASEENS@": f'C{inputs.resensatmos}',
             "@NMEM_ENS@": inputs.nens,
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
@@ -387,8 +388,10 @@ def input_args(*argv):
     def _common_args(parser):
         parser.add_argument('--pslot', help='parallel experiment name',
                             type=str, required=False, default='test')
-        parser.add_argument('--resdet', help='resolution of the deterministic model forecast',
+        parser.add_argument('--resdetatmos', help='atmosphere resolution of the deterministic model forecast',
                             type=int, required=False, default=384)
+        parser.add_argument('--resdetocean', help='ocean resolution of the deterministic model forecast',
+                            type=float, required=False, default=0.0)  # 0.0 (or lower) means determine from resdetatmos (limited combinations will be available)
         parser.add_argument('--comroot', help='full path to COMROOT',
                             type=str, required=False, default=os.getenv('HOME'))
         parser.add_argument('--expdir', help='full path to EXPDIR',
@@ -418,7 +421,7 @@ def input_args(*argv):
         return parser
 
     def _gfs_or_gefs_ensemble_args(parser):
-        parser.add_argument('--resens', help='resolution of the ensemble model forecast',
+        parser.add_argument('--resensatmos', help='atmosphere resolution of the ensemble model forecast',
                             type=int, required=False, default=192)
         parser.add_argument('--nens', help='number of ensemble members',
                             type=int, required=False, default=20)
@@ -512,7 +515,7 @@ def query_and_clean(dirname):
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
-    for attr in ['resdet', 'resens']:
+    for attr in ['resdetatmos', 'resensatmos']:
         try:
             expt_res = f'C{getattr(inputs, attr)}'
         except AttributeError:
@@ -521,12 +524,31 @@ def validate_user_request(host, inputs):
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
 
 
+def get_ocean_resolution(resdetatmos):
+    """
+    Method to determine the ocean resolution based on the atmosphere resolution
+    Limited options are going to be available
+    """
+    atmos_to_ocean_map = {
+        1152: 0.25, 768: 0.25, 384: 0.25,
+        192: 1.0,
+        96: 5.0, 48: 5.0}
+    try:
+        return atmos_to_ocean_map[resdetatmos]
+    except KeyError:
+        raise KeyError(f"Ocean resolution for {resdetatmos} is not implemented")
+
+
 def main(*argv):
 
     user_inputs = input_args(*argv)
     host = Host()
 
     validate_user_request(host, user_inputs)
+
+    # Determine ocean resolution if not provided
+    if user_inputs.resdetocean <= 0:
+        user_inputs.resdetocean = get_ocean_resolution(user_inputs.resdetatmos)
 
     rotdir = os.path.join(user_inputs.comroot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)

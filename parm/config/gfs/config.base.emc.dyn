@@ -177,27 +177,20 @@ export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENS="@CASEENS@"
-# TODO: This should not depend on $CASE or $CASE_ENS
-# These are the currently available grid-combinations
+export OCNRES="@OCNRES@"
+export ICERES="${OCNRES}"
+# These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
-        export OCNRES=500
         export waveGRD='glo_500'
         ;;
-    "C96")
-        export OCNRES=500
-        export waveGRD='glo_200'
-        ;;
-    "C192")
-        export OCNRES=050
+    "C96" | "C192")
         export waveGRD='glo_200'
         ;;
     "C384")
-        export OCNRES=025
         export waveGRD='glo_025'
         ;;
     "C768" | "C1152")
-        export OCNRES=025
         export waveGRD='mx025'
         ;;
     *)
@@ -205,7 +198,6 @@ case "${CASE}" in
         exit 1
         ;;
 esac
-export ICERES=${OCNRES}
 
 case "${APP}" in
   ATM)

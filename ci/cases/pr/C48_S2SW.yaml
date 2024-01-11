@@ -5,7 +5,8 @@ experiment:
 arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2SW
-  resdet: 48
+  resdetatmos: 48
+  resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021032312
