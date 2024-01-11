@@ -149,7 +149,7 @@ for pr in ${pr_list}; do
     if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
       #Remove Experment cases that completed successfully
       rm -Rf "${pslot_dir}"
-      rm -Rf "${pr_dir}/RUNTESTS/ROTDIR/${pslot}"
+      rm -Rf "${pr_dir}/RUNTESTS/COMROOT/${pslot}"
       rm -f "${output_ci_single}"
       # echo "\`\`\`" > "${output_ci_single}"
       DATE=$(date +'%D %r')

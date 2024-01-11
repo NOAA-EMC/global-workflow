@@ -7,7 +7,7 @@ arguments:
   app: ATM
   resdet: 384
   resens: 192
-  rotdir: {{ 'RUNTESTS' | getenv }}/ROTDIR
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C384C192
   idate: 2023040118
