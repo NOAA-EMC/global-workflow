@@ -59,7 +59,7 @@ pipeline {
                 agent { label "${MACHINE}-emc" }
                 axes {
                     axis {
-                        name "Cases"
+                        name "Case"
                         values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
                     }
                 }
@@ -70,14 +70,16 @@ pipeline {
                                  env.HOME = "$HOME"
                                  env.RUNTESTS = "${HOME}/RUNTESTS"
                             }
-                            echo "Cases: ${Cases} ${HOME}"
-                            sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Cases}.yaml'
+                            echo "Case: ${Case} ${HOME}"
+                            sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Case}.yaml'
                         }
                     }
                     stage('Run Experiments') {
                         steps {
                             script {
+                                env.HOME = "$HOME"
                                 pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                                env.pslot = "$pslot"
                                 //pullRequest.removeLabel('CI-${machine}-Building')
                                 //pullRequest.addLabel('CI-${machine}-Running')
                                 pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
