@@ -36,8 +36,8 @@ pipeline {
             steps {
                 script {
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
-                    //pullRequest.removeLabel("CI-${machine}-Ready")
-                    //pullRequest.addLabel("CI-${machine}-Building")
+                    pullRequest.removeLabel("CI-${machine}-Ready")
+                    pullRequest.addLabel("CI-${machine}-Building")
                 }
                 echo "Do Build for ${machine}"
                 cleanWs()
@@ -49,6 +49,10 @@ pipeline {
                 sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
                 sh 'mkdir -p ${WORKSPACE}/RUNTESTS'
+                script {
+                    pullRequest.removeLabel("CI-${machine}-Building")
+                    pullRequest.addLabel("CI-${machine}-Running")
+                }
             }
         }
 
@@ -81,8 +85,6 @@ pipeline {
                                 env.HOME = "$HOME"
                                 pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                 env.pslot = "$pslot"
-                                //pullRequest.removeLabel('CI-${machine}-Building')
-                                //pullRequest.addLabel('CI-${machine}-Running')
                                 pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                             }
                             sh '${HOME}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}'
@@ -97,16 +99,18 @@ pipeline {
     post {
         success {
             script {
-                echo "SUCCESS"
-                //pullRequest.removeLabel('CI-${machine}-Running')
-                //pullRequest.addLabel('CI-${machine}-Passed')  
+                if(pullRequest.labels.contains("CI-${machine}-Running")) {
+                   pullRequest.removeLabel('CI-${machine}-Running')
+                   pullRequest.addLabel('CI-${machine}-Passed')
+                }
             }
         }
         failure {
             script {
-                echo "FAILURE"
-                //pullRequest.removeLabel('CI-${machine}-Running')
-                //pullRequest.addLabel('CI-${machine}-Failed')  
+                if(pullRequest.labels.contains("CI-${machine}-Running")) {
+                   pullRequest.removeLabel('CI-${machine}-Running')
+                   pullRequest.addLabel('CI-${machine}-Failed')
+                }
             }
         }
     }
