@@ -84,7 +84,7 @@ pipeline {
                                 //pullRequest.addLabel('CI-${machine}-Running')
                                 pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                             }
-                            sh '${WORKSPACE}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}'
+                            sh '${HOME}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}'
                             script { pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}") }
                         }
                     }
