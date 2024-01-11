@@ -40,12 +40,13 @@ pipeline {
                     //pullRequest.addLabel("CI-${machine}-Building")
                 }
                 echo "Do Build for ${machine}"
+                cleanWs()
                 checkout scm
                 script {
                     HOME = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
                 }
-                //sh 'sorc/build_all.sh -gu'
+                sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
                 sh 'mkdir -p ${WORKSPACE}/RUNTESTS'
             }
