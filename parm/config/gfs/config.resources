@@ -134,7 +134,7 @@ case ${step} in
     export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
     export NTASKS=${npe_wavepostsbs}
     export memory_wavepostsbs="10GB"
-    export memory_wavepostsbs_gfs="1GB"
+    export memory_wavepostsbs_gfs="10GB"
     ;;
 
   "wavepostbndpnt")
@@ -777,7 +777,7 @@ case ${step} in
     export npe_init=24
     export nth_init=1
     export npe_node_init=6
-    export memory_init="70"
+    export memory_init="70GB"
     ;;
 
   "init_chem")

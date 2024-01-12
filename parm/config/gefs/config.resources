@@ -85,7 +85,7 @@ case ${step} in
     export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
     export NTASKS=${npe_wavepostsbs}
     export memory_wavepostsbs="10GB"
-    export memory_wavepostsbs_gfs="1GB"
+    export memory_wavepostsbs_gfs="10GB"
     ;;
 
   "fcst" | "efcs")
