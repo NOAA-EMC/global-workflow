@@ -5,9 +5,10 @@ experiment:
 arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATM
-  resdet: 96
-  resens: 48
-  comrot: {{ 'RUNTESTS' | getenv }}/COMROT
+  resdetatmos: 96
+  resdetocean: 5.0
+  resensatmos: 48
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48
   idate: 2021122018
