@@ -1,7 +1,6 @@
 BASE_GIT: ''
 DMPDIR: '/home/${USER}'
 PACKAGEROOT: ''
-COMROOT: ''
 COMINsyn: ''
 HOMEDIR: '/home/${USER}'
 STMP: '/home/${USER}'
