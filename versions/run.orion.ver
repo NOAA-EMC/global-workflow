@@ -4,4 +4,8 @@ export stack_impi_ver=2021.5.1
 export ncl_ver=6.6.2
 export gempak_ver=7.5.1
 
+#For metplus jobs, not currently working with spack-stack
+#export met_ver=9.1.3
+#export metplus_ver=3.1.1
+
 source "${HOMEgfs:-}/versions/run.spack.ver"
