@@ -1002,7 +1002,7 @@ case ${step} in
     export npe_node_gempak_gfs=28
     export nth_gempak=1
     export memory_gempak="4GB"
-    export memory_gempak_gfs="GB"
+    export memory_gempak_gfs="2GB"
     ;;
 
   "mos_stn_prep")
