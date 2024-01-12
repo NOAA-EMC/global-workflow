@@ -1049,6 +1049,7 @@ CMEPS_out() {
   # Linking mediator restarts to COM causes the model to fail with a message.
   # Abort with message NetCDF: File exists && NC_NOCLOBBER in file pio-2.5.7/src/clib/pioc_support.c at line 2173
   # Copy mediator restarts from DATA to COM
+  # TODO: Do we need to copy mediator restarts to COM for all restart_interval's?
   local seconds idate idatestr mediator_file
   idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   while [[ ${idate} -le ${forecast_end_cycle} ]]; do
@@ -1056,7 +1057,7 @@ CMEPS_out() {
     idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
     mediator_file="${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
     if [[ -f ${mediator_file} ]]; then
-      ${NCP} "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
+      ${NCP} "${mediator_file}" "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
     else
       echo "Mediator restart ${mediator_file} not found."
     fi
