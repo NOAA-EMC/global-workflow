@@ -61,7 +61,7 @@ if [[ "${cplflx}" = ".true." ]]; then
   local ocean_albedo_limit=0.06
   local ATMTILESIZE="${CASE:1}"
   local ocean_albedo_limit=0.06
-  local pio_rearranger="box"
+  local pio_rearranger=${pio_rearranger:-"box"}
 fi
 
 if [[ "${cplice}" = ".true." ]]; then
@@ -78,6 +78,7 @@ if [[ "${cplwav}" = ".true." ]]; then
   local wav_petlist_bounds="$(( ATMPETS+OCNPETS+ICEPETS )) $(( ATMPETS+OCNPETS+ICEPETS+WAVPETS-1 ))"
   local wav_omp_num_threads="${WAVTHREADS}"
   local MULTIGRID="${waveMULTIGRID}"
+  local WW3_user_sets_restname="false"
 
 fi
 
@@ -86,7 +87,7 @@ if [[ "${cplchm}" = ".true." ]]; then
   local chm_model="gocart"
   local chm_petlist_bounds="0 $(( CHMPETS-1 ))"
   local chm_omp_num_threads="${CHMTHREADS}"
-  local coupling_interval_fast_sec="${CPL_FAST}"
+  local coupling_interval_sec="${CPL_FAST}"
 
 fi
 
