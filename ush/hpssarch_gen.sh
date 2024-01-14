@@ -92,7 +92,7 @@ if [[ ${type} = "gfs" ]]; then
   #  This uses the bash extended globbing option
   {
     echo "./logs/${PDY}${cyc}/gfs!(arch).log"
-    echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/input.nml"
+    echo "${COM_CONF/${ROTDIR}\//}/ufs.input.nml"
 
     if [[ ${MODE} = "cycled" ]]; then
       if [[ -s "${COM_ATMOS_ANALYSIS}/${head}gsistat" ]]; then
@@ -169,7 +169,8 @@ if [[ ${type} = "gfs" ]]; then
     if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
       {
         echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2"
-        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
+        # TODO Create sflux idx files so they can be archived
+        #echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
       } >> "${DATA}/gfs_flux.txt"
 
       {
@@ -368,13 +369,16 @@ if [[ ${type} == "gdas" ]]; then
         echo "./logs/${PDY}${cyc}/gdas${fstep}.log"
       fi
     done
-    echo "./logs/${PDY}${cyc}/gdaspost*.log"
+    echo "./logs/${PDY}${cyc}/gdas*prod*.log"
+    if [[ "${WRITE_DOPOST}" == ".false." ]]; then
+       echo "./logs/${PDY}${cyc}/gdas*upp*.log"
+    fi
 
     fh=0
     while [[ ${fh} -le 9 ]]; do
       fhr=$(printf %03i "${fh}")
       echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2"
-      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
+      #echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
       echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}"
       echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.idx"
       echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}"
@@ -407,10 +411,13 @@ if [[ ${type} == "gdas" ]]; then
         fi
         subtyplist="gome_metop-b omi_aura ompslp_npp ompsnp_n20 ompsnp_npp ompstc8_n20 ompstc8_npp sbuv2_n19"
         for subtype in ${subtyplist}; do
-          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.${PDY}${cyc}.ieee_d${suffix}"
-          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.ctl"
-          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.${PDY}${cyc}.ieee_d${suffix}"
-          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.ctl"
+          # On occassion, data is not available for some of these satellites.  Check for existence.
+          if [[ -s "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.${PDY}${cyc}.ieee_d${suffix}" ]]; then
+             echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.${PDY}${cyc}.ieee_d${suffix}"
+             echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.ctl"
+             echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.${PDY}${cyc}.ieee_d${suffix}"
+             echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.ctl"
+          fi
         done
         echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/stdout.${type}.tar.gz"
       done
@@ -612,8 +619,17 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
         fi
       fi
     done # loop over FHR
-    for fstep in eobs ecen esfc eupd efcs epos ; do
+    for fstep in efcs epos ; do
      echo "logs/${PDY}${cyc}/${RUN}${fstep}*.log"
+    done
+
+  # eobs, ecen, esfc, and eupd are not run on the first cycle
+    for fstep in eobs ecen esfc eupd ; do
+       for log in "${ROTDIR}/logs/${PDY}${cyc}/${RUN}${fstep}"*".log"; do
+          if [[ -s "${log}" ]]; then
+             echo "logs/${PDY}${cyc}/${RUN}${fstep}*.log"
+          fi
+       done
     done
 
   # eomg* are optional jobs
