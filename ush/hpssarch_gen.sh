@@ -169,8 +169,7 @@ if [[ ${type} = "gfs" ]]; then
     if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
       {
         echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2"
-        # TODO Create sflux idx files so they can be archived
-        #echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
+        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
       } >> "${DATA}/gfs_flux.txt"
 
       {
