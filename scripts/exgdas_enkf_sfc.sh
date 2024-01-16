@@ -161,9 +161,7 @@ if [ $DOIAU = "YES" ]; then
             ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [ $DO_LNDINC = ".true." ]; then
-                echo 'CSD fetching sfc increment'
                 FHR=6 # CSD - is this right?
-                echo "CSD will use: ${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc"
                 ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                    "${DATA}/lnd_incr.${cmem}"
             fi
