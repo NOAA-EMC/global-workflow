@@ -64,27 +64,28 @@ pipeline {
                     }
                 }
                 stages {
-                  ws("${HOMEgfs}") {
                     stage('Create Experiment') {
                         steps {
-                            script {
-                                env.HOME = HOMEgfs
-                                env.RUNTESTS = "${HOMEgfs}/RUNTESTS"
-                                sh( script: "ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Case}.yaml", returnStatus: false)
+                            ws("${HOMEgfs}") {
+                                script {
+                                    env.RUNTESTS = "${HOMEgfs}/RUNTESTS"
+                                    sh( script: "ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: false)
+                                }
                             }
                         }
                     }
                     stage('Run Experiments') {
                         steps {
-                            script {
-                                pslot = sh( script: "ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
-                                pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                sh( script: "ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
-                                pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
+                            ws("${HOMEgfs}") {
+                                script {
+                                    pslot = sh( script: "ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                                    pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
+                                    sh( script: "ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
+                                    pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
+                               }
                             }
                         }
                     }
-                  }
                 }
             }
        }
