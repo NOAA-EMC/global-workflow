@@ -94,7 +94,7 @@ MAKE_OPT="-DCMAKE_INSTALL_PREFIX=install"
 [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
 
 #Build executables:
-cmake "${WW3_DIR} -DSWITCH=${buildswitch} ${MAKE_OPT}"
+cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" "${MAKE_OPT}"
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in cmake."

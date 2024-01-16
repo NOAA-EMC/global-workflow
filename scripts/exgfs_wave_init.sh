@@ -173,7 +173,7 @@ source "${HOMEgfs}/ush/preamble.sh"
       exit=$?
     fi
 
-    if [ "$exit" != '0' ]
+    if [[ "$exit" != '0' ]]
     then
       set +x
       echo ' '
@@ -202,9 +202,9 @@ source "${HOMEgfs}/ush/preamble.sh"
       echo '********************************************** '
       echo '*** FATAL ERROR : NO MODEL DEFINITION FILE *** '
       echo '********************************************** '
-      echo "                                grdID = $grdID"
+      echo "                                grdID = ${grdID}"
       echo ' '
-      sed "s/^/$grdID.out : /g"  $grdID.out
+      sed "s/^/${grdID}.out : /g"  ${grdID}.out
       set_trace
       err=3;export err;${errchk}
     fi
