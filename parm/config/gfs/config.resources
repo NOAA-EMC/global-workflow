@@ -123,7 +123,7 @@ case ${step} in
     export NTASKS=${npe_waveprep}
     export NTASKS_gfs=${npe_waveprep_gfs}
     export memory_waveprep="100GB"
-    export memory_waveprep_gfs="15GB"
+    export memory_waveprep_gfs="150GB"
     ;;
 
   "wavepostsbs")
@@ -341,7 +341,7 @@ case ${step} in
     export npe_ocnanalprep=1
     export nth_ocnanalprep=1
     export npe_node_ocnanalprep=$(( npe_node_max / nth_ocnanalprep ))
-    export memory_ocnanalprep="4GB"
+    export memory_ocnanalprep="24GB"
     ;;
 
   "prepoceanobs")
@@ -425,7 +425,7 @@ case ${step} in
     export npe_ocnanalvrfy=1
     export nth_ocnanalvrfy=1
     export npe_node_ocnanalvrfy=$(( npe_node_max / nth_ocnanalvrfy ))
-    export memory_ocnanalvrfy="4GB"
+    export memory_ocnanalvrfy="24GB"
     ;;
 
   "anal")
@@ -494,7 +494,7 @@ case ${step} in
     export nth_echgres_gfs=12
     export npe_node_analcalc=$(( npe_node_max / nth_analcalc ))
     export is_exclusive=True
-    export memory_analcalc="8GB"
+    export memory_analcalc="48GB"
     ;;
 
   "analdiag")
@@ -502,7 +502,7 @@ case ${step} in
     export npe_analdiag=96             # Should be at least twice npe_ediag
     export nth_analdiag=1
     export npe_node_analdiag=$(( npe_node_max / nth_analdiag ))
-    export memory_analdiag="8GB"
+    export memory_analdiag="48GB"
     ;;
 
   "sfcanl")
@@ -510,7 +510,7 @@ case ${step} in
     export npe_sfcanl=6
     export nth_sfcanl=1
     export npe_node_sfcanl=$(( npe_node_max / nth_sfcanl ))
-    export is_exclusive=Tre
+    export is_exclusive=True
     ;;
 
   "fcst" | "efcs")
