@@ -86,18 +86,6 @@ case "${waveGRD}" in
     export wavepostGRD=''
     export waveuoutpGRD=${waveGRD}
     ;;
-  "uglo_20km")
-    #unstructured 20km grid 
-    export waveinterpGRD='glo_15mxt'
-    export wavepostGRD=''
-    export waveuoutpGRD=${waveGRD}
-    ;;
-  "uglo_15km")
-    #unstructured 15km grid 
-    export waveinterpGRD='glo_15mxt'
-    export wavepostGRD=''
-    export waveuoutpGRD=${waveGRD}
-    ;;
   "uglo_m1g16")
     #unstructured m1v16 grid 
     export waveinterpGRD='glo_15mxt'

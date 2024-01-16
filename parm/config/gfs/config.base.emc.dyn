@@ -47,9 +47,7 @@ export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
-#export BASE_CPLIC="@BASE_CPLIC@"
-export BASE_CPLIC="/lfs/h2/emc/couple/noscrub/jessica.meixner/HR3/IC"
-#export BASE_CPLIC="/work2/noaa/marine/jmeixner/HR3/HR2_refactored_IC"
+export BASE_CPLIC="@BASE_CPLIC@"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -184,17 +182,15 @@ export ICERES="${OCNRES}"
 # These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
-        export waveGRD='glo_500'
         export waveGRD='uglo_100km'
         ;;
     "C96" | "C192")
-        export waveGRD='glo_200'
+        export waveGRD='uglo_100km'
         ;;
     "C384")
-        export waveGRD='glo_025'
+        export waveGRD='uglo_m1g16'
         ;;
     "C768" | "C1152")
-        export waveGRD='mx025'
 	export waveGRD='uglo_m1g16'
         ;;
     *)
@@ -267,7 +263,7 @@ export FHMAX_GFS_12=120
 export FHMAX_GFS_18=120
 current_fhmax_var=FHMAX_GFS_${cyc}; declare -x FHMAX_GFS=${!current_fhmax_var}
 
-export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
+export FHOUT_GFS=6 # Must be 6 for S2S until #1629 is addressed; 3 for ops
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 if (( gfs_cyc != 0 )); then

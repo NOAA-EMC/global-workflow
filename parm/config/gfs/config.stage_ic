@@ -21,16 +21,16 @@ case "${CASE}" in
     export CPL_WAVIC=workflow_C384_refactored
     ;;
   "C768")
-    export CPL_ATMIC=TestHR23_768
-    export CPL_ICEIC=TestHR23_768
-    export CPL_OCNIC=TestHR23_768
-    export CPL_WAVIC=TestHR23_768
+    export CPL_ATMIC=HR2_refactored
+    export CPL_ICEIC=HR1_refactored
+    export CPL_OCNIC=HR1_refactored
+    export CPL_WAVIC=HR1_refactored
     ;;
   "C1152")
-    export CPL_ATMIC=TestHR23_C1152
-    export CPL_ICEIC=TestHR23_C1152
-    export CPL_OCNIC=TestHR23_C1152
-    export CPL_WAVIC=TestHR23_C1152
+    export CPL_ATMIC=HR2_C1152_refactored
+    export CPL_ICEIC=HR3_refactored
+    export CPL_OCNIC=HR3_refactored
+    export CPL_WAVIC=HR1_refactored
     ;;
   *)
     echo "FATAL ERROR Unrecognized resolution: ${CASE}"
