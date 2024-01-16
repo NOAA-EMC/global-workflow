@@ -28,7 +28,7 @@ analysis:
 
 forecast:
   config:
-    rdaod: False
+    rdaod: True
   data_in:
     copy:
       {% if forecast_hour == 0 %}
@@ -47,7 +47,7 @@ forecast:
 
 goes:
   config:
-    rdaod: True
+    rdaod: False
   data_in:
     copy:
       {% set crtm_coefficients = [
