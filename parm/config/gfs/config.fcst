@@ -231,9 +231,6 @@ export FSICL="0"
 export FSICS="0"
 
 #---------------------------------------------------------------------
-# Disable the use of coupler.res; get model start time from model_configure
-export USE_COUPLER_RES="NO"
-
 if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling

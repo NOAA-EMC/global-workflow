@@ -44,11 +44,11 @@ FV3_postdet(){
         done
       fi
 
-      # Need a coupler.res when doing IAU
+      # Need a coupler.res when doing IAU  # FIXME: This is needed for warm_start, regardless of IAU.
       if [[ ${DOIAU} = "YES" ]]; then
         rm -f "${DATA}/INPUT/coupler.res"
         cat >> "${DATA}/INPUT/coupler.res" << EOF
-        2        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
+        3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
         ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
         ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
 EOF
@@ -93,7 +93,9 @@ EOF
         ${NLN} "${file}" "${DATA}/INPUT/${file2}"
       done
 
-      local hour_rst=$(nhour "${CDATE_RST}" "${current_cycle}")
+      local hour_rst
+      hour_rst=$(nhour "${CDATE_RST}" "${current_cycle}")
+      # shellcheck disable=SC2034
       IAU_FHROT=$((IAU_OFFSET+hour_rst))
       if [[ ${DOIAU} = "YES" ]]; then
         IAUFHRS=-1
