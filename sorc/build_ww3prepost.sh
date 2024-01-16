@@ -26,7 +26,7 @@ while getopts ":j:a:dvw" option; do
   esac
 done
 
-# Determine which switch to use 
+# Determine which switch to use
 if [[ "${APP}" == "ATMW" ]]; then 
   ww3switch="model/esmf/switch"
 else 
@@ -93,8 +93,8 @@ cat "${buildswitch}"
 MAKE_OPT="-DCMAKE_INSTALL_PREFIX=install"
 [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
 
-#Build executables: 
-cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" ${MAKE_OPT}
+#Build executables:
+cmake "${WW3_DIR} -DSWITCH=${buildswitch} ${MAKE_OPT}"
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in cmake."
