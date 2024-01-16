@@ -45,11 +45,18 @@ export AMSR2BF=${AMSR2BF:-/dev/null}
 
 # Set default values for info files and observation error
 #  NOTE:  Remember to set PRVT in config.prep as OBERROR is set below
-export CONVINFO=${FIXgsi}/global_convinfo.txt
+#export CONVINFO=${FIXgsi}/global_convinfo.txt
+export CONVINFO=/scratch2/BMC/gsienkf/Clara.Draper/2mDAfiles_gworkflow/global_convinfo.txt_2mObs_newQC
+export ANAVINFO=/scratch2/BMC/gsienkf/Clara.Draper/2mDAfiles_gworkflow/global_anavinfo.l127.txt_2mObs_enkfSMCSTC
 export OZINFO=${FIXgsi}/global_ozinfo.txt
 export SATINFO=${FIXgsi}/global_satinfo.txt
 export OBERROR=${FIXgsi}/prepobs_errtable.global
 
+if [[ $DO_LNDINC == ".true." ]]; then
+    export hofx_2m_sfcfile=".true."
+    export paranc=".false." # temporary until coded.
+    export reducedgrid=".false."
+fi
 
 # Use experimental dumps in EMC GFS v16 parallels
 if [[ ${RUN_ENVIR} == "emc" ]]; then

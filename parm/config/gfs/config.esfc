@@ -16,4 +16,8 @@ if [ $DOIAU_ENKF = "YES" ]; then
    export DOSFCANL_ENKF="NO"
 fi
 
+if [ $DO_LNDINC = ".true." ]; then
+    export LND_SOI_FILE="lnd_incr"
+fi
+
 echo "END: config.esfc"

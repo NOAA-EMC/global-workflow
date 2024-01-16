@@ -360,9 +360,14 @@ fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
 
+export DO_SFCCYCLE=".false." 
+export DO_LNDINC=".true."
+
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
-export DONST="YES"
-if [[ ${DONST} = "YES" ]]; then export FNTSFA="        "; fi
+export DONST="NO" # CSD until gcycle fixed
+#if [[ ${DONST} = "YES" ]]; then export FNTSFA="        "; fi
+# needs to be defined later, regardless of DONST
+export FNTSFA="        " 
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.

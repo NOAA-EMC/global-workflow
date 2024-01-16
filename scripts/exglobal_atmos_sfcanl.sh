@@ -180,13 +180,16 @@ if [[ ${DOIAU} = "YES" ]]; then
         ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                     "${DATA}/fnorog.00${n}"
     done
 
-    export APRUNCY=${APRUN_CYCLE}
-    export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
-    export MAX_TASKS_CY=${ntiles}
-
-    CDATE="${PDY}${cyc}" ${CYCLESH}
-    export err=$?; err_chk
+    SKIP_GCYCLE="YES" # CSD - turn off for now.
+    if [ $SKIP_GCYCLE = "NO" ]; then
+        export APRUNCY=${APRUN_CYCLE}
+        export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
+        export MAX_TASKS_CY=${ntiles}
+        CDATE="${PDY}${cyc}" ${CYCLESH}
+        export err=$?; err_chk
+    fi
 fi
+# CSD should above be an else statement?
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do

@@ -87,6 +87,7 @@ else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
+DO_LNDINC=${DO_LNDINC:-".false."}
 
 ################################################################################
 
@@ -203,6 +204,10 @@ for imem in $(seq 1 $NMEM_ENS); do
    for FHR in $nfhrs; do
       ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      if [ $DO_LNDINC = ".true." ]; then
+      ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
+         "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      fi
       if [ $cnvw_option = ".true." ]; then
          ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}.nc" \
             "sfgsfc_${PDY}${cyc}_fhr0${FHR}_${memchar}"
@@ -223,6 +228,10 @@ for imem in $(seq 1 $NMEM_ENS); do
             ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}atmi00${FHR}.nc" \
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
+      fi
+      if [ $DO_LNDINC = ".true." ]; then
+          ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
+           "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
    done
 done

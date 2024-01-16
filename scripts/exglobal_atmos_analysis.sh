@@ -89,6 +89,9 @@ SENDDBN=${SENDDBN:-"NO"}
 RUN_GETGES=${RUN_GETGES:-"NO"}
 GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
+ 
+# Assim of 2m obs: 
+export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 # Observations
 OPREFIX=${OPREFIX:-""}
@@ -296,6 +299,7 @@ RADCLOUDINFO=${RADCLOUDINFO:-${FIXgsi}/cloudy_radiance_info.txt}
 ATMSFILTER=${ATMSFILTER:-${FIXgsi}/atms_beamwidth.txt}
 ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
 CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
+
 vqcdat=${vqcdat:-${FIXgsi}/vqctp001.dat}
 INSITUINFO=${INSITUINFO:-${FIXgsi}/global_insituinfo.txt}
 OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
@@ -748,6 +752,7 @@ cat > gsiparm.anl << EOF
 /
 &OBS_INPUT
   dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,dmesh(4)=50.0,time_window_max=3.0,
+  hofx_2m_sfcfile=${hofx_2m_sfcfile}, 
   ${OBSINPUT}
 /
 OBS_INPUT::
@@ -908,7 +913,6 @@ export pgm=${GSIEXEC}
 ${NCP} ${GSIEXEC} ${DATA}
 ${APRUN_GSI} ${DATA}/$(basename ${GSIEXEC}) 1>&1 2>&2
 export err=$?; err_chk
-
 
 ##############################################################
 # If full analysis field written, calculate analysis increment
