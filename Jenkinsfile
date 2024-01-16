@@ -72,7 +72,7 @@ pipeline {
                     stage('Create Experiment') {
                         steps {
                             script {
-                                 env.HOME = "$HOME"
+                                 env.HOME = HOME
                                  env.RUNTESTS = "${HOME}/RUNTESTS"
                             }
                             echo "Case: ${Case} ${HOME}"
@@ -82,10 +82,10 @@ pipeline {
                     stage('Run Experiments') {
                         steps {
                             script {
-                                env.HOME = "$HOME"
-                                env.Case = "$Case"
+                                env.HOME = "${HOME}"
+                                env.Case = "${Case}"
                                 pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
-                                env.pslot = "$pslot"
+                                env.pslot = pslot
                                 pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                             }
                             sh '${HOME}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}'
