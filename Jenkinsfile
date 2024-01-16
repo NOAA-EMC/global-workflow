@@ -38,18 +38,13 @@ pipeline {
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
                     pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
-                }
-                echo "Do Build for ${machine}"
-                // cleanWs()
-                checkout scm
-                script {
-                    HOME = "${WORKSPACE}"
+                    cleanWs()
+                    checkout scm
+                    HOMEgfs = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
-                }
-                // sh 'sorc/build_all.sh -gu'
-                sh 'sorc/link_workflow.sh'
-                sh 'mkdir -p ${WORKSPACE}/RUNTESTS'
-                script {
+                    sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                    sh( script: "sorc/link_workflow.sh", returnStatus: false)
+                    sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: false)
                     pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
@@ -69,29 +64,31 @@ pipeline {
                     }
                 }
                 stages {
+                  ws("${HOMEgfs}") {
                     stage('Create Experiment') {
                         steps {
                             script {
-                                 env.HOME = HOME
-                                 env.RUNTESTS = "${HOME}/RUNTESTS"
+                                env.HOME = HOMEgfs
+                                env.RUNTESTS = "${HOMEgfs}/RUNTESTS"
+                                sh( script: "ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Case}.yaml", returnStatus: false)
                             }
-                            echo "Case: ${Case} ${HOME}"
-                            sh '${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Case}.yaml'
                         }
                     }
                     stage('Run Experiments') {
                         steps {
                             script {
-                                pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                                pslot = sh( script: "ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                 pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                sh( script: "${HOME}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
+                                sh( script: "ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
                                 pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                             }
                         }
                     }
+                  }
                 }
             }
-        }
+       }
+
     }
 
     post {
