@@ -1,6 +1,6 @@
 pipeline {
 
-    agent none
+    agent { label 'built-in' }
     options {
         disableConcurrentBuilds(abortPrevious: true)
         skipDefaultCheckout(true)
@@ -40,13 +40,13 @@ pipeline {
                     pullRequest.addLabel("CI-${machine}-Building")
                 }
                 echo "Do Build for ${machine}"
-                cleanWs()
+                // cleanWs()
                 checkout scm
                 script {
                     HOME = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
                 }
-                sh 'sorc/build_all.sh -gu'
+                // sh 'sorc/build_all.sh -gu'
                 sh 'sorc/link_workflow.sh'
                 sh 'mkdir -p ${WORKSPACE}/RUNTESTS'
                 script {
@@ -83,6 +83,7 @@ pipeline {
                         steps {
                             script {
                                 env.HOME = "$HOME"
+                                env.Case = "$Case"
                                 pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                 env.pslot = "$pslot"
                                 pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
