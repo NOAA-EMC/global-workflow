@@ -3,3 +3,4 @@ defaults:
 base:
   DOIAU: "NO"
   DO_JEDILANDDA: "YES"
+  ACCOUNT: {{ 'SLURM_ACCOUNT' | getenv }}

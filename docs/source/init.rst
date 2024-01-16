@@ -391,7 +391,7 @@ The chgres jobs will have a dependency on the data-pull jobs and will wait to ru
 
 5. Check output:
 
-In the config you will have defined an output folder called ``$OUTDIR``. The converted output will be found there, including the needed abias and radstat initial condition files (if CDUMP=gdas). The files will be in the needed directory structure for the global-workflow system, therefore a user can move the contents of their ``$OUTDIR`` directly into their ``$ROTDIR/$COMROT``.
+In the config you will have defined an output folder called ``$OUTDIR``. The converted output will be found there, including the needed abias and radstat initial condition files (if CDUMP=gdas). The files will be in the needed directory structure for the global-workflow system, therefore a user can move the contents of their ``$OUTDIR`` directly into their ``$ROTDIR``.
 
 Please report bugs to George Gayno (george.gayno@noaa.gov) and Kate Friedman (kate.friedman@noaa.gov).
 
@@ -449,7 +449,7 @@ The warm starts and other output from production are at C768 deterministic and C
 What files should you pull for starting a new experiment with warm starts from production?
 ------------------------------------------------------------------------------------------
 
-That depends on what mode you want to run -- forecast-only or cycled. Whichever mode, navigate to the top of your ``COMROT`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$CDUMP.$PDY/$CYC/$ATMOS`` folder format expected by the system.
+That depends on what mode you want to run -- forecast-only or cycled. Whichever mode, navigate to the top of your ``ROTDIR`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$CDUMP.$PDY/$CYC/$ATMOS`` folder format expected by the system.
 
 For forecast-only there are two tarballs to pull
 
@@ -489,7 +489,7 @@ Tarballs per cycle:
    com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp7.tar
    com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp8.tar
 
-Go to the top of your ``COMROT/ROTDIR`` and pull the contents of all tarballs there. The tarballs already contain the needed directory structure.
+Go to the top of your ``ROTDIR`` and pull the contents of all tarballs there. The tarballs already contain the needed directory structure.
 
 .. _warmstarts-preprod-parallels:
 
@@ -514,7 +514,7 @@ Recent pre-implementation parallel series was for GFS v16 (implemented March 202
     + ../$GDATE/gdas_restartb.tar
     + ../$GDATE/enkfgdas_restartb_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
 
-* **Where do I put the warm-start initial conditions?** Extraction should occur right inside your COMROT. You may need to rename the enkf folder (enkf.gdas.$PDY -> enkfgdas.$PDY).
+* **Where do I put the warm-start initial conditions?** Extraction should occur right inside your ROTDIR. You may need to rename the enkf folder (enkf.gdas.$PDY -> enkfgdas.$PDY).
 
 Due to a recent change in the dycore, you may also need an additional offline step to fix the checksum of the NetCDF files for warm start. See the :ref:`Fix netcdf checksum section <gfsv17-checksum>`.
 
@@ -602,5 +602,5 @@ And then on all platforms:
 
 ::
 
-   cd $COMROT
+   cd $ROTDIR
    for f in $(find ./ -name *tile*.nc); do echo $f; ncatted -a checksum,,d,, $f; done
