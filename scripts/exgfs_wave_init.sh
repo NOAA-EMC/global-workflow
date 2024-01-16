@@ -204,7 +204,7 @@ source "${HOMEgfs}/ush/preamble.sh"
       echo '********************************************** '
       echo "                                grdID = ${grdID}"
       echo ' '
-      sed "s/^/${grdID}.out : /g"  ${grdID}.out
+      sed "s/^/${grdID}.out : /g"  "${grdID}.out"
       set_trace
       err=3;export err;${errchk}
     fi
