@@ -7,6 +7,11 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '2'))
     }
 
+    environment {
+        HOMEgfs = "${WORKSPACE}"
+        MACHINE = 'none'
+    }
+
     stages {
 
         stage('Get Machine') {
@@ -68,7 +73,6 @@ pipeline {
                         steps {
                             ws(HOMEgfs) {
                                 script {
-                                    env.HOME=HOMEgfs
                                     env.RUNTESTS = "${HOME}/RUNTESTS"
                                     sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Case}.yaml", returnStatus: false)
                                 }
@@ -79,7 +83,6 @@ pipeline {
                         steps {
                             ws(HOMEgfs) {
                                 script {
-                                    env.HOME=HOMEgfs
                                     pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                     sh( script: "${HOME}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
