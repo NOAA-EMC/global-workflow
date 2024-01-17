@@ -229,7 +229,7 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0"      "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.${fhr3}"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0_WIDX" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.${fhr3}.idx"
     fi
-    if [[ "${WGNE:-}" == "YES"]] & [[ -s "${COM_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}" ]] ; then
+    if [[ "${WGNE:-}" == "YES" ]] && [[ -s "${COM_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}" ]] ; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WGNE" "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
     fi
   fi
