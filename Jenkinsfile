@@ -7,11 +7,6 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '2'))
     }
 
-    environment {
-        HOMEgfs = "${WORKSPACE}"
-        MACHINE = 'none'
-    }
-
     stages {
 
         stage('Get Machine') {
@@ -35,9 +30,9 @@ pipeline {
 
         stage('Build') {
             agent { label "${MACHINE}-emc" }
-            when {
-                expression { MACHINE != 'none' }
-            }
+            //when {
+            //    expression { MACHINE != 'none' }
+            //}
             steps {
                 script {
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
@@ -57,9 +52,9 @@ pipeline {
         }
 
         stage('Run Tests') {
-            when {
-                expression { MACHINE != 'none' }
-            }
+            //when {
+            //    expression { MACHINE != 'none' }
+            //}
             matrix {
                 agent { label "${MACHINE}-emc" }
                 axes {
