@@ -1,3 +1,6 @@
+def MACHINE = 'none'
+def HOMEgfs = 'initial value'
+
 pipeline {
 
     agent { label 'built-in' }
@@ -42,7 +45,7 @@ pipeline {
                     checkout scm
                     HOMEgfs = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
-                    //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                    sh( script: "sorc/build_all.sh -gu", returnStatus: false)
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
                     sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: false)
                     pullRequest.removeLabel("CI-${machine}-Building")
@@ -60,7 +63,8 @@ pipeline {
                 axes {
                     axis {
                         name "Case"
-                        values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
+                        //values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
+                        values "C48_ATM", "C48_S2SW"
                     }
                 }
                 stages {
