@@ -38,11 +38,11 @@ pipeline {
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
                     pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
-                    cleanWs()
-                    checkout scm
+                    //cleanWs()
+                    //checkout scm
                     HOMEgfs = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
-                    sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                    //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
                     sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: false)
                     pullRequest.removeLabel("CI-${machine}-Building")
