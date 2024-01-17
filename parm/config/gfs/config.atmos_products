@@ -29,6 +29,8 @@ elif [[ "${RUN:-}" == "gfs" ]]; then
   export FHMAX_WGNE=180
 fi
 
+export APCP_MSG="597"  # Message number for APCP in GFSv16.  Look for TODO in exglobal_atmos_products.sh
+
 # paramlist files for the different forecast hours and downsets
 export paramlista="${HOMEgfs}/parm/product/gfs.fFFF.paramlist.a.txt"
 export paramlista_anl="${HOMEgfs}/parm/product/gfs.anl.paramlist.a.txt"

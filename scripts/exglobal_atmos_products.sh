@@ -202,7 +202,8 @@ fi
 if [[ "${WGNE:-}" == "YES" ]]; then
   grp=""  # TODO: this should be "a" when we eventually rename the pressure grib2 files per EE2 convention
   if (( FORECAST_HOUR > 0 & FORECAST_HOUR <= FHMAX_WGNE )); then
-    ${WGRIB2} "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2${grp}.0p25.${fhr3}" -d 597 -grib "${COM_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
+    # TODO: 597 is the message number for APCP in GFSv16.  GFSv17 may change this as more messages are added. This can be controlled via config.atmos_products
+    ${WGRIB2} "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2${grp}.0p25.${fhr3}" -d "${APCP_MSG:-597}" -grib "${COM_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
   fi
 fi
 
@@ -227,6 +228,9 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0_WIDX"  "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0"      "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.${fhr3}"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0_WIDX" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.${fhr3}.idx"
+    fi
+    if [[ "${WGNE:-}" == "YES"]] & [[ -s "${COM_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}" ]] ; then
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WGNE" "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
     fi
   fi
 
