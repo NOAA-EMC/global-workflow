@@ -26,9 +26,9 @@ elif [[ "${RUN:-}" == "gfs" ]]; then
 fi
 
 # paramlist files for the different forecast hours and downsets
-export paramlista="${HOMEgfs}/parm/post/global_1x1_paramlist_g2"
-export paramlista_anl="${HOMEgfs}/parm/post/global_1x1_paramlist_g2.anl"
-export paramlista_f000="${HOMEgfs}/parm/post/global_1x1_paramlist_g2.f000"
-export paramlistb="${HOMEgfs}/parm/post/global_master-catchup_parmlist_g2"
+export paramlista="${HOMEgfs}/parm/product/gfs.fFFF.paramlist.a.txt"
+export paramlista_anl="${HOMEgfs}/parm/product/gfs.anl.paramlist.a.txt"
+export paramlista_f000="${HOMEgfs}/parm/product/gfs.f000.paramlist.a.txt"
+export paramlistb="${HOMEgfs}/parm/product/gfs.fFFF.paramlist.b.txt"
 
 echo "END: config.atmos_products"

@@ -218,6 +218,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 
 # GFS output and frequency
 export FHMIN_GFS=0
+export FHMIN=${FHMIN_GFS}
 
 export FHMAX_GFS_00=120
 export FHMAX_GFS_06=120
@@ -270,7 +271,7 @@ export NMEM_ENS=@NMEM_ENS@
 
 # set default member number memdir for control
 # this will be overwritten for the perturbed members
-export ENSMEM="000"
+export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
