@@ -68,8 +68,8 @@ pipeline {
                         steps {
                             ws(HOMEgfs) {
                                 script {
-                                    env.RUNTESTS = "${HOME}/RUNTESTS"
-                                    sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Case}.yaml", returnStatus: false)
+                                    env.RUNTESTS = "${gfsHOME}/RUNTESTS"
+                                    sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: false)
                                 }
                             }
                         }
@@ -78,9 +78,9 @@ pipeline {
                         steps {
                             ws(HOMEgfs) {
                                 script {
-                                    pslot = sh( script: "${HOME}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                                    pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                    sh( script: "${HOME}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
+                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                             }
