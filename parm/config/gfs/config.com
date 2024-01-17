@@ -31,7 +31,7 @@ echo "BEGIN: config.com"
 #
 
 #
-# If any restart, input, or analysis template is updated, `setup_expt.py.fill_COMROT_cycled()`
+# If any restart, input, or analysis template is updated, `setup_expt.py.fill_ROTDIR_cycled()`
 #   must correspondingly be updated to match.
 #
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then

@@ -22,7 +22,7 @@ REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 source "${ROOT_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion)
+  hera | orion | hercules)
    echo "Running Automated Testing on ${MACHINE_ID}"
    source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
    ;;
@@ -149,7 +149,7 @@ for pr in ${pr_list}; do
     if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
       #Remove Experment cases that completed successfully
       rm -Rf "${pslot_dir}"
-      rm -Rf "${pr_dir}/RUNTESTS/COMROT/${pslot}"
+      rm -Rf "${pr_dir}/RUNTESTS/COMROOT/${pslot}"
       rm -f "${output_ci_single}"
       # echo "\`\`\`" > "${output_ci_single}"
       DATE=$(date +'%D %r')
