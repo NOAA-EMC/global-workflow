@@ -13,6 +13,10 @@ INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${HOMEgfs}/ush/interp_atmos_sflux.
 downset=${downset:-1}  # No. of groups of pressure grib2 products to create
 npe_atmos_products=${npe_atmos_products:-8}  # no. of processors available to process each group
 
+# WGNE related options
+WGNE=${WGNE:-NO}  # Create WGNE products
+FHMAX_WGNE=${FHMAX_WGNE:-0}  # WGNE products are created for first FHMAX_WGNE forecast hours (except 0)
+
 cd "${DATA}" || exit 1
 
 # Set paramlist files based on FORECAST_HOUR (-1, 0, 3, 6, etc.)
@@ -194,6 +198,14 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
   done
 fi
 
+# Section creating 0.25 degree WGNE products for nset=1, and fhr <= FHMAX_WGNE
+if [[ "${WGNE:-}" == "YES" ]]; then
+  grp=""  # TODO: this should be "a" when we eventually rename the pressure grib2 files per EE2 convention
+  if (( FORECAST_HOUR > 0 & FORECAST_HOUR <= FHMAX_WGNE )); then
+    ${WGRIB2} "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2${grp}.0p25.${fhr3}" -d 597 -grib "${COM_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
+  fi
+fi
+
 #---------------------------------------------------------------
 
 # Start sending DBN alerts
@@ -204,13 +216,13 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
   if [[ "${RUN}" == "gfs" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25"      "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.${fhr3}"
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.${fhr3}.idx"
-    if [[ -s "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}" ]]; then
+    if [[ -s "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.${fhr3}" ]]; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5"       "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.${fhr3}"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5_WIDX"  "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.${fhr3}.idx"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5"      "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.${fhr3}"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5_WIDX" "${job}" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.${fhr3}.idx"
     fi
-    if [[ -s "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}" ]]; then
+    if [[ -s "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}" ]]; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0"       "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0_WIDX"  "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0"      "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.${fhr3}"
