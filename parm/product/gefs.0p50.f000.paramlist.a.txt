@@ -1,0 +1,80 @@
+############################# sorted pgrb2a 201408
+:CAPE:180-0 mb above ground:
+:CIN:180-0 mb above ground:
+:DLWRF:surface:
+:DSWRF:surface:
+:HGT:10 mb:
+:HGT:100 mb:
+:HGT:1000 mb:
+:HGT:200 mb:
+:HGT:250 mb:
+:HGT:300 mb:
+:HGT:50 mb:
+:HGT:500 mb:
+:HGT:700 mb:
+:HGT:850 mb:
+:HGT:925 mb:
+:HGT:surface:
+:ICETK:surface:
+:LHTFL:surface:
+:PRES:surface:
+:PRMSL:mean sea level:
+:PWAT:entire atmosphere (considered as a single layer):
+:RH:10 mb:
+:RH:100 mb:
+:RH:1000 mb:
+:RH:2 m above ground:
+:RH:200 mb:
+:RH:250 mb:
+:RH:50 mb:
+:RH:500 mb:
+:RH:700 mb:
+:RH:850 mb:
+:RH:925 mb:
+:SHTFL:surface:
+:SNOD:surface:
+:SOILW:0-0.1 m below ground:
+:TMP:10 mb:
+:TMP:100 mb:
+:TMP:1000 mb:
+:TMP:2 m above ground:
+:TMP:200 mb:
+:TMP:250 mb:
+:TMP:50 mb:
+:TMP:500 mb:
+:TMP:700 mb:
+:TMP:850 mb:
+:TMP:925 mb:
+:TSOIL:0-0.1 m below ground:
+:UGRD:10 m above ground:
+:UGRD:10 mb:
+:UGRD:100 mb:
+:UGRD:1000 mb:
+:UGRD:200 mb:
+:UGRD:250 mb:
+:UGRD:300 mb:
+:UGRD:400 mb:
+:UGRD:50 mb:
+:UGRD:500 mb:
+:UGRD:700 mb:
+:UGRD:850 mb:
+:UGRD:925 mb:
+:ULWRF:surface:
+:ULWRF:top of atmosphere:
+:USWRF:surface:
+:VGRD:10 m above ground:
+:VGRD:10 mb:
+:VGRD:100 mb:
+:VGRD:1000 mb:
+:VGRD:200 mb:
+:VGRD:250 mb:
+:VGRD:300 mb:
+:VGRD:400 mb:
+:VGRD:50 mb:
+:VGRD:500 mb:
+:VGRD:700 mb:
+:VGRD:850 mb:
+:VGRD:925 mb:
+:VVEL:850 mb:
+:WEASD:surface:
+;############################ do not leave a blank line at the end
