@@ -42,7 +42,7 @@ pipeline {
                     checkout scm
                     HOMEgfs = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
-                    sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                    //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
                     sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: false)
                     pullRequest.removeLabel("CI-${machine}-Building")
@@ -66,21 +66,23 @@ pipeline {
                 stages {
                     stage('Create Experiment') {
                         steps {
-                            ws("${HOMEgfs}") {
+                            ws(HOMEgfs) {
                                 script {
-                                    env.RUNTESTS = "${HOMEgfs}/RUNTESTS"
-                                    sh( script: "ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: false)
+                                    env.HOME=HOMEgfs
+                                    env.RUNTESTS = "${HOME}/RUNTESTS"
+                                    sh( script: "ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOME}/ci/cases/pr/${Case}.yaml", returnStatus: false)
                                 }
                             }
                         }
                     }
                     stage('Run Experiments') {
                         steps {
-                            ws("${HOMEgfs}") {
+                            ws(HOMEgfs) {
                                 script {
-                                    pslot = sh( script: "ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                                    env.HOME=HOMEgfs
+                                    pslot = sh( script: "ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                    sh( script: "ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
+                                    sh( script: "ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                             }
