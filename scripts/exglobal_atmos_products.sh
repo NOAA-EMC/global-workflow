@@ -129,7 +129,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
   # Run with MPMD or serial
   if [[ "${USE_CFP:-}" = "YES" ]]; then
-    "${HOMEgfs}/ush/run_mpmd.sh" "${DATA}/poescript"
+    OMP_NUM_THREADS=1 "${HOMEgfs}/ush/run_mpmd.sh" "${DATA}/poescript"
     export err=$?
   else
     chmod 755 "${DATA}/poescript"
@@ -167,14 +167,18 @@ done  # for (( nset=1 ; nset <= downset ; nset++ ))
 
 #---------------------------------------------------------------
 
+# Create the index file for the sflux master, if it exists.
+FLUX_FILE="${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
+if [[ -s "${FLUX_FILE}" ]]; then
+  ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.idx"
+fi
+
 # Section creating slfux grib2 interpolated products
 # Create 1-degree sflux grib2 output
 # move to COM and index it
 if [[ "${FLXGF:-}" == "YES" ]]; then
 
   # Files needed by ${INTERP_ATMOS_SFLUXSH}
-  FLUX_FILE="${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
-
   input_file="${FLUX_FILE}"
   output_file_prefix="sflux_${fhr3}"
   grid_string="1p00"

@@ -1,8 +1,7 @@
 BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git' #TODO: This does not yet exist.
 DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump' # TODO: This does not yet exist.
 PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara' #TODO: This does not yet exist.
-COMROOT: '/scratch1/NCEPDEV/global/glopara/com' #TODO: This does not yet exist.
-COMINsyn: '${COMROOT}/gfs/prod/syndat' #TODO: This does not yet exist.
+COMINsyn: '/scratch1/NCEPDEV/global/glopara/com/gfs/prod/syndat' #TODO: This does not yet exist.
 HOMEDIR: '/contrib/${USER}'
 STMP: '/lustre/${USER}/stmp2/'
 PTMP: '/lustre/${USER}/stmp4/'

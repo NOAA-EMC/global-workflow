@@ -3,7 +3,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 
 export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalrun"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalbmat" -c "base ocnanal ocnanalbmat"
 
 
 ##############################################
@@ -15,7 +15,11 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalr
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_ANALYSIS
+
+mkdir -p "${COM_OCEAN_ANALYSIS}"
+
+export COMOUT=${COM_OCEAN_ANALYSIS}
 
 ###############################################################
 # Run relevant script

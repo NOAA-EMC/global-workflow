@@ -59,17 +59,24 @@ export NOSCRUB="@NOSCRUB@"
 export BASE_GIT="@BASE_GIT@"
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_GOES="NO"        # GOES products
+export DO_GOES="@DO_GOES@" # GOES products
 export DO_BUFRSND="NO"     # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
 export DO_AWIPS="NO"       # AWIPS products
-export DO_NPOESS="NO"       # NPOESS products
+export DO_NPOESS="NO"      # NPOESS products
 export DO_TRACKER="YES"    # Hurricane track verification
 export DO_GENESIS="YES"    # Cyclone genesis verification
 export DO_GENESIS_FSU="NO" # Cyclone genesis verification (FSU)
-export DO_VERFOZN="YES"    # Ozone data assimilation monitoring
-export DO_VERFRAD="YES"    # Radiance data assimilation monitoring
-export DO_VMINMON="YES"    # GSI minimization monitoring
+# The monitor is not yet supported on Hercules
+if [[ "${machine}" == "HERCULES" ]]; then
+   export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
+   export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
+   export DO_VMINMON="NO"     # GSI minimization monitoring
+else
+   export DO_VERFOZN="YES"    # Ozone data assimilation monitoring
+   export DO_VERFRAD="YES"    # Radiance data assimilation monitoring
+   export DO_VMINMON="YES"    # GSI minimization monitoring
+fi
 export DO_MOS="NO"         # GFS Model Output Statistics - Only supported on WCOSS2
 
 # NO for retrospective parallel; YES for real-time parallel
@@ -114,7 +121,7 @@ export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/${PSLOT}"
-export ROTDIR="@ROTDIR@/${PSLOT}"
+export ROTDIR="@COMROOT@/${PSLOT}"
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
 if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then
@@ -170,27 +177,20 @@ export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENS="@CASEENS@"
-# TODO: This should not depend on $CASE or $CASE_ENS
-# These are the currently available grid-combinations
+export OCNRES="@OCNRES@"
+export ICERES="${OCNRES}"
+# These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
-        export OCNRES=500
         export waveGRD='glo_500'
         ;;
-    "C96")
-        export OCNRES=500
-        export waveGRD='glo_200'
-        ;;
-    "C192")
-        export OCNRES=050
+    "C96" | "C192")
         export waveGRD='glo_200'
         ;;
     "C384")
-        export OCNRES=025
         export waveGRD='glo_025'
         ;;
     "C768" | "C1152")
-        export OCNRES=025
         export waveGRD='mx025'
         ;;
     *)
@@ -198,7 +198,6 @@ case "${CASE}" in
         exit 1
         ;;
 esac
-export ICERES=${OCNRES}
 
 case "${APP}" in
   ATM)

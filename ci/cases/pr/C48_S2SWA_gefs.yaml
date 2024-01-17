@@ -5,12 +5,13 @@ experiment:
 arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2SWA
-  resdet: 48
-  resens: 48
+  resdetatmos: 48
+  resdetocean: 5.0
+  resensatmos: 48
   nens: 2
   gfs_cyc: 1
   start: cold
-  comrot: {{ 'RUNTESTS' | getenv }}/COMROT
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021032312
   edate: 2021032312

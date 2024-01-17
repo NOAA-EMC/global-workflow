@@ -14,7 +14,7 @@ class GEFSAppConfig(AppConfig):
         """
         Returns the config_files that are involved in gefs
         """
-        configs = ['stage_ic', 'fcst']
+        configs = ['stage_ic', 'fcst', 'atmos_products']
 
         if self.nens > 0:
             configs += ['efcs']
@@ -44,5 +44,7 @@ class GEFSAppConfig(AppConfig):
 
         if self.nens > 0:
             tasks += ['efcs']
+
+        tasks += ['atmprod']
 
         return {f"{self._base['CDUMP']}": tasks}
