@@ -557,7 +557,7 @@ def main(*argv):
     rotdir = os.path.join(user_inputs.comroot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
 
-    create_comrot = query_and_clean(comrot, force_clean=user_inputs.overwrite)
+    create_rotdir = query_and_clean(rotdir, force_clean=user_inputs.overwrite)
     create_expdir = query_and_clean(expdir, force_clean=user_inputs.overwrite)
 
     if create_rotdir:
@@ -571,7 +571,7 @@ def main(*argv):
 
     print(f"*" * 100)
     print(f'EXPDIR: {expdir}')
-    print(f'COMROT: {comrot}')
+    print(f'ROTDIR: {rotdir}')
     print(f"*" * 100)
 
 
