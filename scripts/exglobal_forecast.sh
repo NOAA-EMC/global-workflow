@@ -162,7 +162,7 @@ FV3_out
 [[ ${cplice} = .true. ]] && CICE_out
 [[ ${cplchm} = .true. ]] && GOCART_out
 [[ ${esmf_profile:-} = .true. ]] && CPL_out
-echo "MAIN: Output copied to COMROT"
+echo "MAIN: Output copied to ROTDIR"
 
 #------------------------------------------------------------------
 
