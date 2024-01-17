@@ -182,16 +182,16 @@ export ICERES="${OCNRES}"
 # These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
-        export waveGRD='uglo_100km'
+        export waveGRD='glo_500'
         ;;
     "C96" | "C192")
-        export waveGRD='uglo_100km'
+        export waveGRD='glo_200'
         ;;
     "C384")
-        export waveGRD='uglo_m1g16'
+        export waveGRD='glo_025'
         ;;
     "C768" | "C1152")
-	export waveGRD='uglo_m1g16'
+        export waveGRD='mx025'
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
