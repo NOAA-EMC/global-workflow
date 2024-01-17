@@ -191,7 +191,7 @@ case "${CASE}" in
         export waveGRD='glo_025'
         ;;
     "C768" | "C1152")
-        export waveGRD='mx025'
+        export waveGRD='uglo_m1g16'
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
