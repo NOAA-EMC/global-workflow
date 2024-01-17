@@ -21,5 +21,3 @@ if __name__ == '__main__':
     # Instantiate the land prepare task
     LandAnl = LandAnalysis(config)
     LandAnl.prepare_GTS()
-    if f"{ LandAnl.runtime_config.cyc }" == '18':
-        LandAnl.prepare_IMS()
