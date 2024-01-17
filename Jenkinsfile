@@ -30,9 +30,9 @@ pipeline {
 
         stage('Build') {
             agent { label "${MACHINE}-emc" }
-            //when {
-            //    expression { MACHINE != 'none' }
-            //}
+            when {
+                expression { MACHINE != 'none' }
+            }
             steps {
                 script {
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
@@ -42,7 +42,7 @@ pipeline {
                     checkout scm
                     HOMEgfs = "${WORKSPACE}"
                     env.MACHINE_ID = MACHINE
-                    //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                    sh( script: "sorc/build_all.sh -gu", returnStatus: false)
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
                     sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: false)
                     pullRequest.removeLabel("CI-${machine}-Building")
@@ -52,9 +52,9 @@ pipeline {
         }
 
         stage('Run Tests') {
-            //when {
-            //    expression { MACHINE != 'none' }
-            //}
+            when {
+                expression { MACHINE != 'none' }
+            }
             matrix {
                 agent { label "${MACHINE}-emc" }
                 axes {
