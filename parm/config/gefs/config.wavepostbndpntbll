@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.wavepostbndpntbll ##########
+# Wave steps specific
+
+echo "BEGIN: config.wavepostbndpntbll"
+
+# Get task specific resources
+. $EXPDIR/config.resources wavepostbndpntbll
+
+echo "END: config.wavepostbndpntbll"
