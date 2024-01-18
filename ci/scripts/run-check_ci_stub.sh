@@ -2,4 +2,7 @@
 
 set -eu
 
-echo -e "HOMEgfs: $1\npslpot: $2\n in ${PWD}" >> ${HOMEgfs}/ci/scripts/run-check_ci_stub.log
+HOMEgfs=$1
+pslpot=$2
+
+echo -e "HOMEgfs: ${HOMEgfs}\npslpot: ${pslot}\n in ${PWD}" >> ${HOMEgfs}/ci/scripts/run-check_ci_stub.log
