@@ -13,7 +13,7 @@ while getopts ":da:j:vw" option; do
     a) APP="${OPTARG}";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
-    w) export PDLIB="ON";; 
+    w) PDLIB="ON";; 
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       ;;
