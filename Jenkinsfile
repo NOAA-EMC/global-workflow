@@ -47,14 +47,14 @@ pipeline {
                 }
                 script {
                     env.MACHINE_ID = MACHINE
-                    if (not fileExists("${HOMEgfs}/sorc/BUILT_sema")) {
+                    if (fileExists("${HOMEgfs}/sorc/BUILT_sema")) {
+                        HOMEgfs = sh( script: "cat ${HOMEgfs}/sorc/BUILT_sema", returnStatus: true).trim()
+                        pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
+                    }
+                    else {
                         //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
                         sh( script: "sorc/build_all_stub.sh", returnStatus: false)
                         sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_sema", returnStatus: false)
-                    }
-                    else {
-                        HOMEgfs = sh( script: "cat ${HOMEgfs}/sorc/BUILT_sema", returnStatus: true).trim()
-                        pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                     }
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
                     sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: false)
