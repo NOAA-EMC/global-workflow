@@ -163,7 +163,7 @@ source "${HOMEgfs}/ush/preamble.sh"
     if [ "$NTASKS" -gt '1' ]
     then
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
-        "${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile"
+        ${wavempexec} -n "${wavenproc}" "${wave_mpmd}" cmdfile
       else
         "${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile"
       fi
