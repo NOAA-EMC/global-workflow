@@ -83,7 +83,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/forecast_predet.sh"	# include functions for variable definition
 source "${HOMEgfs}/ush/forecast_det.sh"  # include functions for run type determination
 source "${HOMEgfs}/ush/forecast_postdet.sh"	# include functions for variables after run type determination
-source "${HOMEgfs}/ush/ufs_configure.sh"	# include functions for ufs.configure processing
+source "${HOMEgfs}/ush/parsing_ufs_configure.sh"	# include functions for ufs_configure processing
 source "${HOMEgfs}/ush/parsing_model_configure_FV3.sh"
 
 # Coupling control switches, for coupling purpose, off by default
@@ -158,7 +158,7 @@ FV3_out
 [[ ${cplice} = .true. ]] && CICE_out
 [[ ${cplchm} = .true. ]] && GOCART_out
 [[ ${esmf_profile:-} = .true. ]] && CPL_out
-echo "MAIN: Output copied to COMROT"
+echo "MAIN: Output copied to ROTDIR"
 
 #------------------------------------------------------------------
 

@@ -578,13 +578,37 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
         return task
 
-    def ocnanalprep(self):
+    def prepoceanobs(self):
 
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
 
         deps = []
         data = f'{ocean_hist_path}/gdas.t@Hz.ocnf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('prepoceanobs')
+        task_name = f'{self.cdump}prepoceanobs'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/prepoceanobs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def ocnanalprep(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}prepoceanobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -637,13 +661,13 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ocnanalrun')
-        task_name = f'{self.cdump}ocnanlrun'
+        task_name = f'{self.cdump}ocnanalrun'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanlrun.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalrun.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -905,22 +929,7 @@ class GFSTasks(Tasks):
     @staticmethod
     def _get_ufs_postproc_grps(cdump, config):
 
-        fhmin = config['FHMIN']
-        fhmax = config['FHMAX']
-        fhout = config['FHOUT']
-
-        # Get a list of all forecast hours
-        fhrs = []
-        if cdump in ['gdas']:
-            fhrs = range(fhmin, fhmax + fhout, fhout)
-        elif cdump in ['gfs']:
-            fhmax = np.max(
-                [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
-            fhout = config['FHOUT_GFS']
-            fhmax_hf = config['FHMAX_HF_GFS']
-            fhout_hf = config['FHOUT_HF_GFS']
-            fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
-            fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+        fhrs = Tasks._get_forecast_hours(cdump, config)
 
         nfhrs_per_grp = config.get('NFHRS_PER_GROUP', 1)
         ngrps = len(fhrs) // nfhrs_per_grp if len(fhrs) % nfhrs_per_grp == 0 else len(fhrs) // nfhrs_per_grp + 1
