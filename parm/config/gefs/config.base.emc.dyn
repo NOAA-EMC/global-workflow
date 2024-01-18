@@ -144,7 +144,7 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
-export DOBNDPNT_WAVE="NO"
+export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
 export FRAC_GRID=".true."
 
 # Set operational resolution

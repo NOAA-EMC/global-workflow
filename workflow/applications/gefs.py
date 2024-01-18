@@ -16,11 +16,10 @@ class GEFSAppConfig(AppConfig):
         """
         configs = ['stage_ic', 'fcst', 'atmos_products']
 
-        if self.nens > 0:
-            configs += ['efcs']
-
         if self.do_wave:
-            configs += ['waveinit']
+            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
+            if self.do_wave_bnd:
+                configs += ['wavepostbndpnt', 'wavepostbndpntbll']
 
         return configs
 
@@ -40,11 +39,12 @@ class GEFSAppConfig(AppConfig):
         if self.do_wave:
             tasks += ['waveinit']
 
-        tasks += ['fcst']
+        tasks += ['fcst', 'atmprod']
 
-        if self.nens > 0:
-            tasks += ['efcs']
-
-        tasks += ['atmprod']
+        if self.do_wave:
+            tasks += ['wavepostsbs']
+            if self.do_wave_bnd:
+                tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
+            tasks += ['wavepostpnt']
 
         return {f"{self._base['CDUMP']}": tasks}
