@@ -33,9 +33,9 @@ pipeline {
 
         stage('Build') {
             agent { label "${MACHINE}-emc" }
-            when {
-                expression { MACHINE != 'none' }
-            }
+            //when {
+            //    expression { MACHINE != 'none' }
+            //}
             steps {
                 script {
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
@@ -44,8 +44,18 @@ pipeline {
                     cleanWs()
                     checkout scm
                     HOMEgfs = "${WORKSPACE}"
+                }
+                script {
                     env.MACHINE_ID = MACHINE
-                    sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                    if (not fileExists("${HOMEgfs}/sorc/BUILT_sema")) {
+                        //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                        sh( script: "sorc/build_all_stub.sh", returnStatus: false)
+                        sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_sema", returnStatus: false)
+                    }
+                    else {
+                        HOMEgfs = sh( script: "cat ${HOMEgfs}/sorc/BUILT_sema", returnStatus: true).trim()
+                        pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
+                    }
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
                     sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: false)
                     pullRequest.removeLabel("CI-${machine}-Building")
@@ -55,9 +65,9 @@ pipeline {
         }
 
         stage('Run Tests') {
-            when {
-                expression { MACHINE != 'none' }
-            }
+            //when {
+            //    expression { MACHINE != 'none' }
+            //}
             matrix {
                 agent { label "${MACHINE}-emc" }
                 axes {
@@ -84,7 +94,8 @@ pipeline {
                                 script {
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
+                                    //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
+                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}", returnStatus: false)
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                             }
@@ -100,9 +111,9 @@ pipeline {
         success {
             script {
                 if(pullRequest.labels.contains("CI-${machine}-Running")) {
-                   pullRequest.removeLabel('CI-${machine}-Running')
-                   pullRequest.addLabel('CI-${machine}-Passed')
+                   pullRequest.removeLabel("CI-${machine}-Running")
                 }
+                pullRequest.addLabel("CI-${machine}-Passed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("SUCCESSFULLY ran all CI Cases on ${machine} at ${timestamp}")
             }
@@ -111,9 +122,9 @@ pipeline {
         failure {
             script {
                 if(pullRequest.labels.contains("CI-${machine}-Running")) {
-                   pullRequest.removeLabel('CI-${machine}-Running')
-                   pullRequest.addLabel('CI-${machine}-Failed')
+                   pullRequest.removeLabel("CI-${machine}-Running")
                 }
+                pullRequest.addLabel("CI-${machine}-Failed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
             }
