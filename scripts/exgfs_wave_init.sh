@@ -121,7 +121,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
       if [ -f ${FIXwave}/${grdID}.msh ]
       then
-        cp $FIXwave/${grdID}.msh ${grdID}.msh
+        cp "${FIXwave}/${grdID}.msh" "${grdID}.msh"
       fi
       #TO DO: how do we say "it's unstructured, and therefore need to have error check here" 
 
