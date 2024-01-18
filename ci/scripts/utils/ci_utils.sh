@@ -13,7 +13,7 @@ function cancel_batch_jobs() {
 
   # cancel pbs jobs <substring>
   if [[ ${MACHINE_ID} == "wcoss2" ]]; then
-    job_ids=$(qstat -u "${USER}" | awk '{print $1}')
+    job_ids=$(qstat -u "${USER}" | awk '{print $1}') || true
 
     for job_id in ${job_ids}; do
       job_name=$(qstat -f "${job_id}" | grep Job_Name | awk '{print $3}') || true
