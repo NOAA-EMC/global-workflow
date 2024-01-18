@@ -32,7 +32,7 @@ pipeline {
         }
 
         stage('Build') {
-            agent { label "${MACHINE}-emc" }
+            agent { label "Orion-emc" }
             //when {
             //    expression { MACHINE != 'none' }
             //}
@@ -41,7 +41,6 @@ pipeline {
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
                     pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
-                    cleanWs()
                     checkout scm
                     HOMEgfs = "${WORKSPACE}"
                 }
@@ -50,9 +49,6 @@ pipeline {
                     if (fileExists("${HOMEgfs}/sorc/BUILT_sema")) {
                         HOMEgfs = sh( script: "cat ${HOMEgfs}/sorc/BUILT_sema", returnStatus: true).trim()
                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
-                        //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
-                        sh( script: "sorc/build_all_stub.sh", returnStatus: false)
-                        sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_sema", returnStatus: false)
                     }
                     else {
                         //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
@@ -72,7 +68,7 @@ pipeline {
             //    expression { MACHINE != 'none' }
             //}
             matrix {
-                agent { label "${MACHINE}-emc" }
+                agent { label "Orion-emc" }
                 axes {
                     axis {
                         name "Case"
@@ -113,9 +109,10 @@ pipeline {
     post {
         success {
             script {
-                if ( pullRequest.labels.contains( 'CI-${machine}-Running') ) {
+                if ( pullRequest.labels.contains( "CI-${machine}-Running" ) ) {
                    pullRequest.removeLabel("CI-${machine}-Running")
                 }
+                pullRequest.removeLabel("CI-${machine}-Running")
                 pullRequest.addLabel("CI-${machine}-Passed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("SUCCESSFULLY ran all CI Cases on ${machine} at ${timestamp}")
@@ -126,7 +123,8 @@ pipeline {
             script {
                 if(pullRequest.labels.contains("CI-${machine}-Running")) {
                    pullRequest.removeLabel("CI-${machine}-Running")
-                }
+                } 
+                pullRequest.removeLabel("CI-${machine}-Running")
                 pullRequest.addLabel("CI-${machine}-Failed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
