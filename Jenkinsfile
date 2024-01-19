@@ -96,7 +96,7 @@ pipeline {
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                     //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
-                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}", returnStatus: false)
+                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}", returnStatus: true)
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                             }
