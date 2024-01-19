@@ -27,6 +27,7 @@ pipeline {
                             MACHINE = 'hercules'
                         }
                     }
+                    machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
                 }
             }
         }
@@ -38,7 +39,6 @@ pipeline {
             //}
             steps {
                 script {
-                    machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
                     pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
                     checkout scm
@@ -53,10 +53,11 @@ pipeline {
                     else {
                         //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
                         sh( script: "sorc/build_all_stub.sh" )
-                        sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_sema", returnStatus: false)
+                        sh( script: "rm -Rf ${WORKSPACE}/RUNTESTS", returnStatus: true)
+                        sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: true)
+                        sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_sema", returnStatus: true)
                     }
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
-                    sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: false)
                     pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
