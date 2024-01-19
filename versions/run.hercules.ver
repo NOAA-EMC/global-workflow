@@ -6,7 +6,3 @@ export ncl_ver=6.6.2
 export perl_ver=5.36.0
 
 source "${HOMEgfs:-}/versions/run.spack.ver"
-
-# wgrib2 and cdo are different on Hercules from all the other systems
-export wgrib2_ver=3.1.1
-export cdo_ver=2.2.0

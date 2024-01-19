@@ -2,7 +2,7 @@ help([[
 Load environment to run GFS workflow ci scripts on Orion
 ]])
 
-prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.6.0/envs/gsi-addon/install/modulefiles/Core")
 
 load(pathJoin("stack-intel", os.getenv("2022.0.2")))
 load(pathJoin("stack-intel-oneapi-mpi", os.getenv("2021.5.1")))
