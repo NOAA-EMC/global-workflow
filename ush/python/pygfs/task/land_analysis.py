@@ -45,7 +45,7 @@ class LandAnalysis(Analysis):
                 'npz': self.config.LEVS - 1,
                 'LAND_WINDOW_BEGIN': _window_begin,
                 'LAND_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
-                'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",
+                'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'jedi_yaml': _letkfoi_yaml
             }
@@ -153,7 +153,7 @@ class LandAnalysis(Analysis):
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
+                'OPREFIX', 'CASE', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
 
@@ -187,7 +187,6 @@ class LandAnalysis(Analysis):
         os.symlink(exe_src, exe_dest)
 
         # execute CALCFIMSEXE to calculate IMS snowdepth
-        os.chdir(localconf.DATA)
         exe = Executable(self.task_config.APRUN_CALCFIMS)
         exe.add_default_arg(os.path.join(localconf.DATA, os.path.basename(exe_src)))
         logger.info(f"Executing {exe}")
@@ -199,7 +198,7 @@ class LandAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exe}")
 
         # Ensure the snow depth IMS file is produced by the above executable
-        input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}.mx{localconf.OCNRES}_oro_data.nc"
+        input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}_oro_data.nc"
         if not os.path.isfile(f"{os.path.join(localconf.DATA, input_file)}"):
             logger.exception(f"{self.task_config.CALCFIMSEXE} failed to produce {input_file}")
             raise FileNotFoundError(f"{os.path.join(localconf.DATA, input_file)}")
@@ -245,17 +244,12 @@ class LandAnalysis(Analysis):
             Instance of the LandAnalysis object
         """
 
-        # Stage observations
-        obs_dict = self.get_obs_dict()
-        FileHandler(obs_dict).sync()
-
-        # link jedi executable to run directory
-        self.link_jediexe()
+        super().initialize()
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'ntiles']
+                'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
 
@@ -277,6 +271,7 @@ class LandAnalysis(Analysis):
 
         # generate letkfoi YAML file
         logger.info(f"Generate JEDI LETKF YAML file: {self.task_config.jedi_yaml}")
+        self.task_config.OCNRES = f'{localconf.OCNRES:03d}'
         letkfoi_yaml = parse_j2yaml(self.task_config.JEDIYAML, self.task_config)
         save_as_yaml(letkfoi_yaml, self.task_config.jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.jedi_yaml}")
@@ -307,7 +302,7 @@ class LandAnalysis(Analysis):
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_LAND_ANALYSIS', 'APREFIX',
-                'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'ntiles',
+                'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'OCNRES', 'ntiles',
                 'APRUN_LANDANL', 'JEDIEXE', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
@@ -378,39 +373,6 @@ class LandAnalysis(Analysis):
             dest = os.path.join(self.task_config.COM_LAND_ANALYSIS, filename)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
-
-    @logit(logger)
-    def get_obs_dict(self) -> None:
-        """Compile a dictionary of observation files to copy
-
-        This method uses the OBS_LIST configuration variable to generate a dictionary
-        from a list of YAML files that specify what observation files are to be
-        copied to the run directory from the observation input directory
-
-        Parameters
-        ----------
-
-        Returns
-        ----------
-        obs_dict: Dict
-            a dictionary containing the list of observation files to copy for FileHandler
-        """
-        logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
-        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config)
-        logger.debug(f"obs_list_config: {obs_list_config}")
-        # get observers from master dictionary
-        observers = obs_list_config['observers']
-        copylist = []
-        for ob in observers:
-            obfile = ob['obs space']['obsdatain']['engine']['obsfile']
-            basename = os.path.basename(obfile)
-            if 'ims_snow' not in obfile:
-                copylist.append([os.path.join(self.task_config['COM_OBS'], basename), obfile])
-        obs_dict = {
-            'mkdir': [os.path.join(self.runtime_config['DATA'], 'obs')],
-            'copy': copylist
-        }
-        return obs_dict
 
     @staticmethod
     @logit(logger)
@@ -573,6 +535,7 @@ class LandAnalysis(Analysis):
              DATA
              current_cycle
              CASE
+             OCNRES
              ntiles
              APPLY_INCR_NML_TMPL
              APPLY_INCR_EXE

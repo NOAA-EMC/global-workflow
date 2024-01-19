@@ -64,7 +64,8 @@ class Analysis(Task):
         for ob in observers:
             obfile = ob['obs space']['obsdatain']['engine']['obsfile']
             basename = os.path.basename(obfile)
-            copylist.append([os.path.join(self.task_config['COM_OBS'], basename), obfile])
+            if 'ims_snow' not in obfile:
+                copylist.append([os.path.join(self.task_config['COM_OBS'], basename), obfile])
         obs_dict = {
             'mkdir': [os.path.join(self.runtime_config['DATA'], 'obs')],
             'copy': copylist
