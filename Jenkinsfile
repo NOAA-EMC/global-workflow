@@ -5,15 +5,16 @@ pipeline {
     agent { label 'built-in' }
 
     options {
-        parameters(class: 'NodeParameterDefinition',
-            allowedSlaves: ['Hera-EMC', 'Orion-EMC'],
-            defaultSlaves: ['built-in'], name: 'rdhpcs',
-            nodeEligibility: [$class: 'AllNodeEligibility'],
-            triggerIfResult: 'allCases')
         disableConcurrentBuilds(abortPrevious: true)
         skipDefaultCheckout(true)
         buildDiscarder(logRotator(numToKeepStr: '2'))
     }
+    parameters{class: 'NodeParameterDefinition',
+            allowedSlaves: ['Hera-EMC', 'Orion-EMC'],
+            defaultSlaves: ['built-in'], name: 'rdhpcs',
+            nodeEligibility: [$class: 'AllNodeEligibility'],
+            triggerIfResult: 'allCases'
+            }
 
     stages {
 
