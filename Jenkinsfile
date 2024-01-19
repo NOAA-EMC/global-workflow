@@ -32,7 +32,7 @@ pipeline {
         }
 
         stage('Build') {
-            agent { label "${machine}-emc" }
+            agent { label "${MACHINE}-emc" }
             //when {
             //    expression { MACHINE != 'none' }
             //}
@@ -68,7 +68,7 @@ pipeline {
             //    expression { MACHINE != 'none' }
             //}
             matrix {
-                agent { label "${machine}-emc" }
+                agent { label "${MACHINE}-emc" }
                 axes {
                     axis {
                         name "Case"
