@@ -9,7 +9,7 @@ pipeline {
         skipDefaultCheckout(true)
         buildDiscarder(logRotator(numToKeepStr: '2'))
     }
-    parameters{class: 'NodeParameterDefinition',
+    parameters{
             allowedSlaves: ['Hera-EMC', 'Orion-EMC'],
             defaultSlaves: ['built-in'], name: 'rdhpcs',
             nodeEligibility: [$class: 'AllNodeEligibility'],
