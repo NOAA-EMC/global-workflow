@@ -4,7 +4,7 @@ def HOMEgfs = 'initial value'
 pipeline {
     agent { label 'built-in' }
 
-    parameters{ $class: 'NodeParameterDefinition',
+    parameters{ 
             allowedSlaves: ['Hera-EMC', 'Orion-EMC'],
             defaultSlaves: ['built-in'], name: 'rdhpcs',
             nodeEligibility: [$class: 'AllNodeEligibility'],
