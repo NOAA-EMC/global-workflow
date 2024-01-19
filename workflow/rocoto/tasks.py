@@ -4,6 +4,7 @@ import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
 from wxflow import Template, TemplateConstants, to_timedelta
+from typing import List
 
 __all__ = ['Tasks']
 
@@ -124,7 +125,7 @@ class Tasks:
                                              rocoto_conversion_dict.get)
 
     @staticmethod
-    def _get_forecast_hours(cdump, config) -> list[str]:
+    def _get_forecast_hours(cdump, config) -> List[str]:
         fhmin = config['FHMIN']
         fhmax = config['FHMAX']
         fhout = config['FHOUT']
