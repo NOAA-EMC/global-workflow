@@ -1,4 +1,5 @@
 def MACHINE = 'none'
+def machine = 'none'
 def HOMEgfs = 'initial value'
 
 pipeline {
@@ -16,7 +17,6 @@ pipeline {
             agent { label 'built-in' }
             steps {
                 script {
-                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['Hera-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
                     MACHINE = 'none'
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
@@ -40,6 +40,7 @@ pipeline {
             //}
             steps {
                 script {
+                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['Hera-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
                     pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
                     checkout scm
