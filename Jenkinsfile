@@ -15,9 +15,8 @@ pipeline {
         stage('Get Machine') {
             agent { label 'built-in' }
             steps {
-                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['Hera-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
-
                 script {
+                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['Hera-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
                     MACHINE = 'none'
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
