@@ -6,6 +6,6 @@
 echo "BEGIN: config.wavepostpnt"
 
 # Get task specific resources
-. $EXPDIR/config.resources wavepostpnt
+source "${EXPDIR}/config.resources" wavepostpnt
 
 echo "END: config.wavepostpnt"
