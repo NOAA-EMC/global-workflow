@@ -115,7 +115,6 @@ pipeline {
                 if ( pullRequest.labels.contains( "CI-${machine}-Running" ) ) {
                    pullRequest.removeLabel("CI-${machine}-Running")
                 }
-                pullRequest.removeLabel("CI-${machine}-Running")
                 pullRequest.addLabel("CI-${machine}-Passed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("SUCCESSFULLY ran all CI Cases on ${machine} at ${timestamp}")
@@ -127,7 +126,6 @@ pipeline {
                 if(pullRequest.labels.contains("CI-${machine}-Running")) {
                    pullRequest.removeLabel("CI-${machine}-Running")
                 } 
-                pullRequest.removeLabel("CI-${machine}-Running")
                 pullRequest.addLabel("CI-${machine}-Failed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
