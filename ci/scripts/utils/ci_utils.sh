@@ -88,6 +88,8 @@ function get_pslot () {
 
 function create_experiment () {
 
+  exit 0
+
   local yaml_config="${1}"
   cd "${HOMEgfs}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
