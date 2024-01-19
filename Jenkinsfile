@@ -82,6 +82,7 @@ pipeline {
                         steps {
                             ws(HOMEgfs) {
                                 script {
+                                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], defaultSlaves: ['Hera-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
                                     env.RUNTESTS = "${HOMEgfs}/RUNTESTS"
                                     sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: false)
                                 }
