@@ -67,7 +67,6 @@ pipeline {
             //when {
             //    expression { MACHINE != 'none' }
             //}
-            properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: [], defaultSlaves: [], name: 'rdhpc', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
             matrix {
                 agent { label "${machine}-emc" }
                 axes {
@@ -92,6 +91,7 @@ pipeline {
                         steps {
                             ws(HOMEgfs) {
                                 script {
+            properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: [], defaultSlaves: [], name: 'rdhpc', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                     //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
