@@ -6,7 +6,7 @@
 echo "BEGIN: config.wavepostsbs"
 
 # Get task specific resources
-. $EXPDIR/config.resources wavepostsbs
+source "${EXPDIR}/config.resources" wavepostsbs
 
 # Subgrid info for grib2 encoding
 export WAV_SUBGRBSRC=""
