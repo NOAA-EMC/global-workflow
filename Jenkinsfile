@@ -92,7 +92,8 @@ pipeline {
                         steps {
                             ws(HOMEgfs) {
                                 script {
-                                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Orion-EMC'], defaultSlaves: ['Orion-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
+                                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                                    //properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Orion-EMC'], defaultSlaves: ['Orion-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                     //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
