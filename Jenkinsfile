@@ -4,17 +4,16 @@ def HOMEgfs = 'initial value'
 pipeline {
     agent { label 'built-in' }
 
+        parameters{[[$class: 'NodeParameterDefinition',
+            allowedSlaves: ['Hera-EMC', 'Orion-EMC'],
+            defaultSlaves: ['built-in'], name: 'rdhpcs',
+            nodeEligibility: [$class: 'AllNodeEligibility'],
+            triggerIfResult: 'allCases']]}
     options {
         disableConcurrentBuilds(abortPrevious: true)
         skipDefaultCheckout(true)
         buildDiscarder(logRotator(numToKeepStr: '2'))
     }
-    parameters{
-            allowedSlaves: ['Hera-EMC', 'Orion-EMC'],
-            defaultSlaves: ['built-in'], name: 'rdhpcs',
-            nodeEligibility: [$class: 'AllNodeEligibility'],
-            triggerIfResult: 'allCases'
-            }
 
     stages {
 
