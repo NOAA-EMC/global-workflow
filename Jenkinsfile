@@ -34,7 +34,7 @@ pipeline {
         }
 
         stage('Build') {
-            agent { label "orion-emc" }
+            agent { label "hera-emc" }
             //when {
             //    expression { MACHINE != 'none' }
             //}
@@ -71,7 +71,7 @@ pipeline {
             //    expression { MACHINE != 'none' }
             //}
             matrix {
-                agent { label "orion-emc" }
+                agent { label "hera-emc" }
                 axes {
                     axis {
                         name "Case"
