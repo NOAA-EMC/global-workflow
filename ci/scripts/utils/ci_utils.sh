@@ -92,11 +92,17 @@ function create_experiment () {
   cd "${HOMEgfs}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
   case=$(basename "${yaml_config}" .yaml) || true
+  export pslot=${case}_${pr_sha}
   
   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
-  export pslot=${case}_${pr_sha}
+  if [[ -d "${HOMEgfs}/RUNDIRS/EXPDIR/${pslot}" ]]; then
+    echo "Removing existing experiment directory: ${HOMEgfs}/RUNDIRS/EXPDIR/${case}_${pr_sha}"
+    rm -rf "${HOMEgfs}/RUNDIRS/EXPDIR/${pslot}"
+    rm -rf "${HOMEgfs}/RUNDIRS/COMROT/${pslot}"
+  fi
+
   "${HOMEgfs}/workflow/create_experiment.py" --yaml "${yaml_config}"
 
 }
