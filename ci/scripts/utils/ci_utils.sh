@@ -97,12 +97,8 @@ function create_experiment () {
   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
-  if [[ -d "${HOMEgfs}/RUNDIRS/EXPDIR/${pslot}" ]]; then
-    echo "Removing existing experiment directory: ${HOMEgfs}/RUNDIRS/EXPDIR/${case}_${pr_sha}"
-    rm -rf "${HOMEgfs}/RUNDIRS/EXPDIR/${pslot}"
-    rm -rf "${HOMEgfs}/RUNDIRS/COMROT/${pslot}"
-  fi
+  set -eux
 
-  "${HOMEgfs}/workflow/create_experiment.py" --yaml "${yaml_config}"
+  yes | ${HOMEgfs}/workflow/create_experiment.py --yaml "${yaml_config}"
 
 }
