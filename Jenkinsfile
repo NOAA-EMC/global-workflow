@@ -41,6 +41,7 @@ pipeline {
                    values "gfs", "gefs"}
             }  
         }
+        stages {
         stage('Build') {
             steps {
                 ws( "${HOME}/${system}")
@@ -70,6 +71,7 @@ pipeline {
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
             }
+        }
         }
 
         stage('Run Tests') {
