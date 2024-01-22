@@ -1,6 +1,7 @@
 def MACHINE = 'none'
 def machine = 'none'
 def HOMEgfs = 'none'
+def TESTDIR = 'none'
 
 pipeline {
     agent { label 'built-in' }
@@ -32,6 +33,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Get Common Workspace') {
+            agent { label "${MACHINE}-emc" }
+            steps ( timeout(time: 1, unit: 'HOURS') ) {
+                script {
+                    TESTDIR = "${WORKSPACE}/TESTDIR"
+                }
+            }
+        }
+
         stage('Build') {
         matrix {
             agent { label "${MACHINE}-emc" }
@@ -44,7 +55,6 @@ pipeline {
             steps {
                 script {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                    TESTDIR = "${WORKSPACE}/TESTDIR"
                     HOMEgfs = "${TESTDIR}/${system}"
                     sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                     dir(HOMEgfs) {
