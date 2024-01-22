@@ -3,13 +3,19 @@ Load environment to run GFS workflow ci scripts on Orion
 ]])
 
 prepend_path("MODULEPATH", "/apps/modulefiles/core")
+load(pathJoin("contrib","0.1"))
+load(pathJoin("rocoto","1.3.3"))
+load(pathJoin("git","2.28.0"))
 
--- prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
-prepend_path("MODULEPATH", "/shared/spack/share/spack/modules/linux-amzn2-skylake")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
-load ("python-3.9.12-gcc-7.3.1-cfrtozo")
-load ("py-numpy-1.22.4-gcc-7.3.1-ylp7efj")
-load ("py-pyyaml-6.0-gcc-7.3.1-z36arc4")
-load ("py-jinja2-3.0.3-gcc-7.3.1-oegomip")
+local stack_intel_ver=os.getenv("stack_intel_ver") or "2022.0.2"
+local python_ver=os.getenv("python_ver") or "3.10.8"
+
+load(pathJoin("stack-intel", stack_intel_ver))
+load(pathJoin("python", python_ver))
+load("py-jinja2")
+load("py-pyyaml")
+load("py-numpy")
 
 whatis("Description: GFS run setup environment")

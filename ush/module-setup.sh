@@ -30,8 +30,11 @@ elif [[ ${MACHINE_ID} = hercules* ]] ; then
     set -u
 
 elif [[ ${MACHINE_ID} = orion* ]] ; then
-    # We are on Orion TMcG
-    source $(spack location -i lmod)/lmod/lmod/init/bash
+    # We are on Orion
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /apps/lmod/lmod/init/bash
+    fi
+    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
     set +u
     module reset
     set -u
