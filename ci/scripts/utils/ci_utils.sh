@@ -99,6 +99,6 @@ function create_experiment () {
 
   set -eux
 
-  yes | ${HOMEgfs}/workflow/create_experiment.py --yaml "${yaml_config}"
+  yes || true | "${HOMEgfs}/workflow/create_experiment.py" --yaml "${yaml_config}"
 
 }
