@@ -1,6 +1,6 @@
 def MACHINE = 'none'
 def machine = 'none'
-def HOMEgfs = '/home/tmcguinness/Jenkins/Hera/workspace/Global_PR-218'
+def HOMEgfs = 'none'
 
 pipeline {
     agent { label 'built-in' }
@@ -34,7 +34,7 @@ pipeline {
         }
 
         stage('Build') {
-            agent { label "hera-emc" }
+            agent { label "${MACHINE}-emc" }
             //when {
             //    expression { MACHINE != 'none' }
             //}
@@ -71,7 +71,7 @@ pipeline {
             //    expression { MACHINE != 'none' }
             //}
             matrix {
-                agent { label "hera-emc" }
+                agent { label "${machine}-emc" }
                 axes {
                     axis {
                         name "Case"
