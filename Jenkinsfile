@@ -37,7 +37,7 @@ pipeline {
         matrix {
             agent { label "${MACHINE}-emc" }
             axes {
-                axes { name "system"
+                axis { name "system"
                    values "gfs", "gefs"}
             }  
         stage('Build') {
