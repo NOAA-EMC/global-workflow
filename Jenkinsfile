@@ -35,9 +35,9 @@ pipeline {
 
         stage('Build') {
             agent { label "${MACHINE}-emc" }
-            //when {
-            //    expression { MACHINE != 'none' }
-            //}
+            when {
+                expression { MACHINE != 'none' }
+            }
             steps {
                 script {
                 properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases'],
