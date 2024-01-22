@@ -47,7 +47,7 @@ pipeline {
                     TESTDIR = "${WORKSPACE}/TESTDIR"
                     HOMEgfs = "${TESTDIR}/${system}"
                     sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
-                    dir(HOMEgfs)
+                    dir(HOMEgfs) {
                     checkout scm
                     env.MACHINE_ID = MACHINE
                     if (fileExists("sorc/BUILT_semaphor")) {
@@ -70,6 +70,7 @@ pipeline {
                     //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
                     //pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
+                    }
                 }
             }
             }
