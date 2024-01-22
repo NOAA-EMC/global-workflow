@@ -44,11 +44,11 @@ FV3_postdet(){
         done
       fi
 
-      # Need a coupler.res when doing IAU
+      # Need a coupler.res when doing IAU  # FIXME: This is needed for warm_start, regardless of IAU.
       if [[ ${DOIAU} = "YES" ]]; then
         rm -f "${DATA}/INPUT/coupler.res"
         cat >> "${DATA}/INPUT/coupler.res" << EOF
-        2        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
+        3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
         ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
         ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
 EOF
@@ -93,7 +93,9 @@ EOF
         ${NLN} "${file}" "${DATA}/INPUT/${file2}"
       done
 
-      local hour_rst=$(nhour "${CDATE_RST}" "${current_cycle}")
+      local hour_rst
+      hour_rst=$(nhour "${CDATE_RST}" "${current_cycle}")
+      # shellcheck disable=SC2034
       IAU_FHROT=$((IAU_OFFSET+hour_rst))
       if [[ ${DOIAU} = "YES" ]]; then
         IAUFHRS=-1
@@ -537,10 +539,9 @@ WW3_postdet() {
   fi
 
 
-  #if wave mesh is not the same as the ocn/ice mesh, linkk it in the file
-  local comparemesh=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-  if [[ "${MESH_WAV}" = "${comparemesh}" ]]; then
-    echo "Wave is on same mesh as ocean/ice"
+  #if wave mesh is not the same as the ocean mesh, link it in the file
+  if [[ "${MESH_WAV}" == "${MESH_OCN:-mesh.mx${OCNRES}.nc}" ]]; then
+    echo "Wave is on same mesh as ocean"
   else
     ${NLN} "${FIXwave}/${MESH_WAV}" "${DATA}/"
   fi
@@ -822,31 +823,6 @@ MOM6_out() {
 CICE_postdet() {
   echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
 
-  # TODO:  These settings should be elevated to config.ice
-  histfreq_n=${histfreq_n:-6}
-  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
-  dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
-
-  if [[ "${RUN}" =~ "gdas" ]]; then
-    cice_hist_avg=".false., .false., .false., .false., .false."   # DA needs instantaneous
-  else
-    cice_hist_avg=".true., .true., .true., .true., .true."    # P8 wants averaged over histfreq_n
-  fi
-
-  FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
-  ktherm=${ktherm:-2}
-  tfrz_option=${tfrz_option:-"'mushy'"}
-  tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
-
-  # restart_pond_lvl (if tr_pond_lvl=true):
-  #   -- if true, initialize the level ponds from restart (if runtype=continue)
-  #   -- if false, re-initialize level ponds to zero (if runtype=initial or continue)
-  restart_pond_lvl=${restart_pond_lvl:-".false."}
-
-  ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
-  ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
-  export MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-
   # Copy CICE ICs
   echo "Link CICE ICs"
   cice_restart_file="${COM_ICE_RESTART_PREV}/${sPDY}.${scyc}0000.cice_model.res.nc"
@@ -860,9 +836,9 @@ CICE_postdet() {
   echo "${DATA}/cice_model.res.nc" > "${DATA}/ice.restart_file"
 
   echo "Link CICE fixed files"
-  ${NLN} "${FIXcice}/${ICERES}/${ice_grid_file}" "${DATA}/"
-  ${NLN} "${FIXcice}/${ICERES}/${ice_kmt_file}"  "${DATA}/"
-  ${NLN} "${FIXcice}/${ICERES}/${MESH_OCN_ICE}"  "${DATA}/"
+  ${NLN} "${FIXcice}/${ICERES}/${CICE_GRID}" "${DATA}/"
+  ${NLN} "${FIXcice}/${ICERES}/${CICE_MASK}" "${DATA}/"
+  ${NLN} "${FIXcice}/${ICERES}/${MESH_ICE}"  "${DATA}/"
 
   # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
   # TODO: Is this file needed in COM? Is this going to be used for generating any products?
