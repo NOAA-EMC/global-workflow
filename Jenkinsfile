@@ -18,6 +18,7 @@ pipeline {
             steps {
                 script {
                     MACHINE = 'none'
+                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
                         if ((label.matches("CI-Hera-Ready"))) {
@@ -29,37 +30,42 @@ pipeline {
                         }
                     }
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
+                    HOME = "${WORKSPACE}"
                 }
             }
         }
-
-        stage('Build') {
+        matrix {
             agent { label "${MACHINE}-emc" }
-            //when {
-            //    expression { MACHINE != 'none' }
-            //}
+            axes {
+                axes { name "system"
+                   values "gfs", "gefs"}
+            }  
+        }
+        stage('Build') {
             steps {
+                ws( "${HOME}/${system}")
                 script {
-                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                    //pullRequest.removeLabel("CI-${machine}-Ready")
-                    pullRequest.addLabel("CI-${machine}-Building")
                     checkout scm
-                    HOMEgfs = "${WORKSPACE}"
-                }
-                script {
+                    HOMEgfs = "${HOME}/${system}"
                     env.MACHINE_ID = MACHINE
-                    if (fileExists("${HOMEgfs}/sorc/BUILT_sema")) {
+                    if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
                         HOMEgfs = sh( script: "cat ${HOMEgfs}/sorc/BUILT_sema", returnStdout: true).trim()
                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                     }
                     else {
-                        sh( script: "sorc/build_all.sh -gu", returnStatus: false)
-                        //sh( script: "sorc/build_all_stub.sh" )
-                        sh( script: "rm -Rf ${WORKSPACE}/RUNTESTS", returnStatus: true)
-                        sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: true)
-                        sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_sema", returnStatus: true)
+                        if (system == "gfs") {
+                            //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                            sh( script: "sorc/build_all_stub.sh", returnStatus: false)
+                        }
+                        else if (system == "gefs") {
+                            //sh( script: "sorc/build_all.sh -guw", returnStatus: false)
+                            sh( script: "sorc/build_all_stub.sh", returnStatus: false)
+                        }
+                        sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_semaphor", returnStatus: true)
                     }
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
+                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
+                    //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
                     //pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
@@ -75,21 +81,20 @@ pipeline {
                 axes {
                     axis {
                         name "Case"
-                        //values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
-                        values "C48_ATM", "C48_S2SW"
+                        values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
                     }
                 }
                 stages {
                     stage('Create Experiment') {
                         steps {
-                            ws(HOMEgfs) {
                                 script {
-                                    env.RUNTESTS = "${HOMEgfs}/RUNTESTS"
-                                    sh( script: "rm -Rf ${HOMEgfs}/RUNTESTS/EXPDIR/${Case}_*" )
-                                    sh( script: "rm -Rf ${HOMEgfs}/RUNTESTS/COMROOT/${Case}_*" )
+                                    HOMEgfs = "${HOME}/gfs"
+                                    env.RUNTESTS = "${HOME}/RUNTESTS"
+                                    env.HOME = HOME
+                                    sh( script: "rm -Rf ${RUNTESTS}/EXPDIR/${Case}_*" )
+                                    sh( script: "rm -Rf ${RUNTESTS}/COMROOT/${Case}_*" )
                                     sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
                                 }
-                            }
                         }
                     }
                     stage('Run Experiments') {
@@ -98,8 +103,8 @@ pipeline {
                                 script {
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
-                                    //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}")
+                                    //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
+                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}")
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                             }
