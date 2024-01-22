@@ -34,13 +34,13 @@ pipeline {
                 }
             }
         }
+        stage('Build') {
         matrix {
             agent { label "${MACHINE}-emc" }
             axes {
                 axis { name "system"
                    values "gfs", "gefs"}
             }  
-        stage('Build') {
             steps {
                 ws( "${HOME}/${system}")
                 script {
