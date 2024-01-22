@@ -40,7 +40,9 @@ pipeline {
             axes {
                 axis { name "system"
                    values "gfs", "gefs"}
-            }  
+            }
+            stages {
+            stage("build ${system}") {
             steps {
                 ws( "${HOME}/${system}")
                 script {
@@ -68,6 +70,8 @@ pipeline {
                     //pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
+            }
+            }
             }
         }
         }
