@@ -336,10 +336,16 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
         if machine in ['WCOSS2']:
             natstr = "-l debug=true"
 
-            if task not in ['arch', 'earc', 'getic']:
+            # Add place settings
+            if task in ['arch', 'earc', 'getic']: # dev_transfer shared only
+               natstr += ",place=shared"
+            else:
                natstr += ",place=vscatter"
+               # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
                if memory is None:
                   natstr += ":exclhost"
+               else:
+                  natstr += ":shared"
 
     elif machine in ['WCOSS']:
         resstr = f'<cores>{tasks}</cores>'
