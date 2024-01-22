@@ -40,8 +40,6 @@ pipeline {
                 axes { name "system"
                    values "gfs", "gefs"}
             }  
-        }
-        stages {
         stage('Build') {
             steps {
                 ws( "${HOME}/${system}")
