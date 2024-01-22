@@ -85,6 +85,7 @@ pipeline {
                             ws(HOMEgfs) {
                                 script {
                                     env.RUNTESTS = "${HOMEgfs}/RUNTESTS"
+                                    sh( script: "rm -Rf ${HOMEgfs}/RUNTESTS/EXPDIR/${Case}_*" )
                                     sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: false)
                                 }
                             }
