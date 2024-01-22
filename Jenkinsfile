@@ -35,7 +35,6 @@ pipeline {
         stage('Build') {
         matrix {
             agent { label "${MACHINE}-emc" }
-            script { TESTDIR = "${WORKSPACE}/TESTDIR" }
             axes {
                 axis { name "system"
                    values "gfs", "gefs"}
