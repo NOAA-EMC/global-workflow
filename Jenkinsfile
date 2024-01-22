@@ -40,7 +40,7 @@ pipeline {
             //}
             steps {
                 script {
-                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in','Hera-EMC','Orion-EMC'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     //pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
                     checkout scm
@@ -86,7 +86,8 @@ pipeline {
                                 script {
                                     env.RUNTESTS = "${HOMEgfs}/RUNTESTS"
                                     sh( script: "rm -Rf ${HOMEgfs}/RUNTESTS/EXPDIR/${Case}_*" )
-                                    sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: false)
+                                    sh( script: "rm -Rf ${HOMEgfs}/RUNTESTS/COMROOT/${Case}_*" )
+                                    sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
                                 }
                             }
                         }
