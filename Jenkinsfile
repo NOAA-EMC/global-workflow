@@ -35,13 +35,12 @@ pipeline {
 
         stage('Build') {
             agent { label "${MACHINE}-emc" }
-            when {
-                expression { MACHINE != 'none' }
-            }
+            //when {
+            //    expression { MACHINE != 'none' }
+            //}
             steps {
                 script {
-                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases'],
-                                        [choice(choices: ['C48_ATM', 'C48_S2SW', 'C96_atm3DVar', 'C48_S2SWA_gefs'], name: 'Cases')] ])])
+                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     //pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
                     checkout scm
