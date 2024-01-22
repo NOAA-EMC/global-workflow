@@ -44,13 +44,14 @@ pipeline {
             stages {
             stage("build system") {
             steps {
-                ws( "${HOME}/${system}") {
                 script {
+                    HOMEgfs = "${HOME}/HOMEgfs/${system}"
+                    sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
+                    dir(HOMEgfs)
                     checkout scm
-                    HOMEgfs = "${HOME}/${system}"
                     env.MACHINE_ID = MACHINE
-                    if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
-                        HOMEgfs = sh( script: "cat ${HOMEgfs}/sorc/BUILT_sema", returnStdout: true).trim()
+                    if (fileExists("sorc/BUILT_semaphor")) {
+                        sh( script: "cat ${HOMEgfs}/sorc/BUILT_sema", returnStdout: true).trim()
                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                     }
                     else {
@@ -69,7 +70,6 @@ pipeline {
                     //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
                     //pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
-                }
                 }
             }
             }
@@ -104,15 +104,14 @@ pipeline {
                     }
                     stage('Run Experiments') {
                         steps {
-                            ws(HOMEgfs) {
                                 script {
+                                    HOMEgfs = "${HOME}/gfs"
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                     //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
                                     sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}")
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
-                            }
                         }
                     }
                 }
