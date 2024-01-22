@@ -4,6 +4,7 @@ import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
 from wxflow import Template, TemplateConstants, to_timedelta
+from typing import List
 
 __all__ = ['Tasks']
 
@@ -122,6 +123,27 @@ class Tasks:
         return Template.substitute_structure(template,
                                              TemplateConstants.DOLLAR_CURLY_BRACE,
                                              rocoto_conversion_dict.get)
+
+    @staticmethod
+    def _get_forecast_hours(cdump, config) -> List[str]:
+        fhmin = config['FHMIN']
+        fhmax = config['FHMAX']
+        fhout = config['FHOUT']
+
+        # Get a list of all forecast hours
+        fhrs = []
+        if cdump in ['gdas']:
+            fhrs = range(fhmin, fhmax + fhout, fhout)
+        elif cdump in ['gfs', 'gefs']:
+            fhmax = np.max(
+                [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
+            fhout = config['FHOUT_GFS']
+            fhmax_hf = config['FHMAX_HF_GFS']
+            fhout_hf = config['FHOUT_HF_GFS']
+            fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
+            fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+
+        return fhrs
 
     def get_resource(self, task_name):
         """

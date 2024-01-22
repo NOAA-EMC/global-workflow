@@ -6,7 +6,7 @@ arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2SWA
   resdetatmos: 384
-  resdetocean: 0.5
+  resdetocean: 0.25
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2016070100
