@@ -30,13 +30,13 @@ pipeline {
                         }
                     }
                     machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
-                    HOME = "${WORKSPACE}"
                 }
             }
         }
         stage('Build') {
         matrix {
             agent { label "${MACHINE}-emc" }
+            script { TESTDIR = "${WORKSPACE}/TESTDIR" }
             axes {
                 axis { name "system"
                    values "gfs", "gefs"}
@@ -45,7 +45,7 @@ pipeline {
             stage("build system") {
             steps {
                 script {
-                    HOMEgfs = "${HOME}/HOMEgfs/${system}"
+                    HOMEgfs = "${HOME}/${system}"
                     sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                     dir(HOMEgfs)
                     checkout scm
