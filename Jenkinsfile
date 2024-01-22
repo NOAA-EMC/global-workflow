@@ -42,7 +42,7 @@ pipeline {
                    values "gfs", "gefs"}
             }
             stages {
-            stage("build ${system}") {
+            stage("build system") {
             steps {
                 ws( "${HOME}/${system}")
                 script {
