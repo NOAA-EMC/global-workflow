@@ -139,6 +139,10 @@ for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
 done
+for file in ice.csv ocean.csv ocnicepost.nml.jinja2
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
+done
 
 cd "${HOMEgfs}/scripts" || exit 8
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
@@ -237,7 +241,7 @@ cd "${HOMEgfs}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
   syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x \
-  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x reg2grb2.x
+  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x reg2grb2.x ocnicepost.x
 do
   [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
@@ -399,7 +403,8 @@ for prog in enkf_chgres_recenter_nc.fd \
   tave.fd \
   tocsbufr.fd \
   vint.fd \
-  webtitle.fd
+  webtitle.fd \
+  ocnicepost.fd
 do
   if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
   ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .

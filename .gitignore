@@ -90,6 +90,9 @@ parm/post/postxconfig-NT-GFS-WAFS.txt
 parm/post/postxconfig-NT-GFS.txt
 parm/post/postxconfig-NT-gefs-aerosol.txt
 parm/post/postxconfig-NT-gefs-chem.txt
+parm/post/ocean.csv
+parm/post/ice.csv
+parm/post/ocnicepost.nml.jinja2
 parm/ufs/noahmptable.tbl
 parm/ufs/model_configure.IN
 parm/ufs/MOM_input_*.IN
@@ -138,6 +141,7 @@ sorc/tocsbufr.fd
 sorc/upp.fd
 sorc/vint.fd
 sorc/webtitle.fd
+sorc/ocnicepost.fd
 
 # Ignore scripts from externals
 #------------------------------
