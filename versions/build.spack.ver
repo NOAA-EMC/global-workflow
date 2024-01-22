@@ -1,5 +1,5 @@
 export spack_stack_ver=1.6.0
-export spack_env=gsi-addon
+export spack_env=gsi-addon-dev
 
 export cmake_ver=3.23.1
 
