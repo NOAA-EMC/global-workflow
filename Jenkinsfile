@@ -71,7 +71,7 @@ pipeline {
             //    expression { MACHINE != 'none' }
             //}
             matrix {
-                agent { label "${machine}-emc" }
+                agent { label "${MACHINE}-emc" }
                 axes {
                     axis {
                         name "Case"
