@@ -40,7 +40,8 @@ pipeline {
             //}
             steps {
                 script {
-                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['${machine}-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases'],
+                                        [choice(choices: ['C48_ATM', 'C48_S2SW', 'C96_atm3DVar', 'C48_S2SWA_gefs'], name: 'Cases')] ])])
                     //pullRequest.removeLabel("CI-${machine}-Ready")
                     pullRequest.addLabel("CI-${machine}-Building")
                     checkout scm
@@ -53,8 +54,8 @@ pipeline {
                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                     }
                     else {
-                        //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
-                        sh( script: "sorc/build_all_stub.sh" )
+                        sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                        //sh( script: "sorc/build_all_stub.sh" )
                         sh( script: "rm -Rf ${WORKSPACE}/RUNTESTS", returnStatus: true)
                         sh( script: "mkdir -p ${WORKSPACE}/RUNTESTS", returnStatus: true)
                         sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_sema", returnStatus: true)
@@ -98,8 +99,8 @@ pipeline {
                                 script {
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                    //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
-                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}")
+                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
+                                    //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}")
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                             }
