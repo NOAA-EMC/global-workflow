@@ -18,7 +18,6 @@ pipeline {
             steps {
                 script {
                     MACHINE = 'none'
-                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
                         if ((label.matches("CI-Hera-Ready"))) {
@@ -45,7 +44,9 @@ pipeline {
             stage("build system") {
             steps {
                 script {
-                    HOMEgfs = "${HOME}/${system}"
+                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                    TESTDIR = "${WORKSPACE}/TESTDIR"
+                    HOMEgfs = "${TESTDIR}/${system}"
                     sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                     dir(HOMEgfs)
                     checkout scm
@@ -66,7 +67,7 @@ pipeline {
                         sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_semaphor", returnStatus: true)
                     }
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
-                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
+                    sh( script: "mkdir -p ${TESTDIR}/RUNTESTS", returnStatus: true)
                     //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
                     //pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
@@ -93,9 +94,8 @@ pipeline {
                     stage('Create Experiment') {
                         steps {
                                 script {
-                                    HOMEgfs = "${HOME}/gfs"
-                                    env.RUNTESTS = "${HOME}/RUNTESTS"
-                                    env.HOME = HOME
+                                    env.RUNTESTS = "${TESTDIR}/RUNTESTS"
+                                    env.HOME = HOMEgfs
                                     sh( script: "rm -Rf ${RUNTESTS}/EXPDIR/${Case}_*" )
                                     sh( script: "rm -Rf ${RUNTESTS}/COMROOT/${Case}_*" )
                                     sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
@@ -105,7 +105,6 @@ pipeline {
                     stage('Run Experiments') {
                         steps {
                                 script {
-                                    HOMEgfs = "${HOME}/gfs"
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                     //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
