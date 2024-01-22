@@ -44,7 +44,7 @@ pipeline {
             stages {
             stage("build system") {
             steps {
-                ws( "${HOME}/${system}")
+                ws( "${HOME}/${system}") {
                 script {
                     checkout scm
                     HOMEgfs = "${HOME}/${system}"
@@ -69,6 +69,7 @@ pipeline {
                     //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
                     //pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
+                }
                 }
             }
             }
