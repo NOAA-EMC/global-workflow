@@ -1031,7 +1031,7 @@ CMEPS_out() {
   while [[ ${idate} -le ${forecast_end_cycle} ]]; do
     seconds=$(to_seconds "${idate:8:2}"0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
     idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    mediator_file="${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
+    mediator_file="${DATA}/CMEPS_RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
     if [[ -f ${mediator_file} ]]; then
       ${NCP} "${mediator_file}" "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
     else

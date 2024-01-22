@@ -219,7 +219,7 @@ FV3_predet(){
 
   #-------------------------------------------------------
   if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]]; then
-    ${NLN} "${COM_ATMOS_RESTART}" RESTART  # TODO: CMEPS restart is also currently in this directory as well as CMEPS_out is copying them to COM_MED_RESTART
+    ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
     files="coupler.res fv_core.res.nc"
@@ -288,6 +288,8 @@ CMEPS_predet(){
   echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 
   if [[ ! -d "${COM_MED_RESTART}" ]]; then mkdir -p "${COM_MED_RESTART}"; fi
+
+  if [[ ! -d "${DATA}/CMEPS_RESTART" ]]; then mkdir -p "${DATA}/CMEPS_RESTART"; fi
 
 }
 
