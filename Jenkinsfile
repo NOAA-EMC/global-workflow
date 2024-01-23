@@ -66,6 +66,8 @@ pipeline {
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
                                         if (system == "gfs") {
+                                            sh( script: "echo 'What is going on here: ${HOMEgfs}/sorc'", returnStatus: true)
+                                            sh( script: "ls -lrtha ${HOMEgfs}/sorc'", returnStatus: true)
                                             dir("${HOMEgfs}/sorc") {
                                                 sh( script: "echo 'In gfs block in dir $PWD';which ls;ls --version", returnStatus: true) 
                                                 sh( script: "build_all.sh -gu", returnStatus: false)
