@@ -1,6 +1,7 @@
 def MACHINE = 'none'
 def machine = 'none'
 def TESTDIR = 'none'
+def HOME = 'none'
 
 pipeline {
     agent { label 'built-in' }
@@ -37,7 +38,7 @@ pipeline {
             agent { label "${MACHINE}-emc" }
             steps ( timeout(time: 1, unit: 'HOURS') ) {
                 script {
-                    TESTDIR = "${WORKSPACE}/TESTDIR"
+                    HOME = "${WORKSPACE}/TESTDIR"
                 }
             }
         }
@@ -53,14 +54,14 @@ pipeline {
             stage("build system") {
             steps {
                 script {
-                    def HOMEgfs = "${TESTDIR}/${system}"
+                    def HOMEgfs = "${HOME}/${system}"
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                     dir(HOMEgfs) {
                     checkout scm
                     env.MACHINE_ID = MACHINE
                     if (fileExists("sorc/BUILT_semaphor")) {
-                        sh( script: "cat sorc/BUILT_sema", returnStdout: true).trim()
+                        sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                     }
                     else {
@@ -104,6 +105,7 @@ pipeline {
                         steps {
                                 script {
                                     env.RUNTESTS = "${TESTDIR}/RUNTESTS"
+                                    def HOMEgfs = "${HOME}/TESTDIR/gfs"
                                     env.HOME = HOMEgfs
                                     sh( script: "rm -Rf ${RUNTESTS}/EXPDIR/${Case}_*" )
                                     sh( script: "rm -Rf ${RUNTESTS}/COMROOT/${Case}_*" )
