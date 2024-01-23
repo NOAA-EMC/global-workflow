@@ -1,0 +1,51 @@
+ocnicepost:
+  config:
+    interpolation_weights_dir: "{{ DATA }}"
+    debug: False
+  fix_data:
+    mkdir:
+      - "{{ DATA }}"
+    copy:
+      - ["{{ HOMEgfs }}/exec/ocnicepost.x", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/parm/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/parm/fix/mom6/post/{{ src_grd }}/tripole.{{ src_grd }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/parm/fix/mom6/post/{{ src_grd }}/tripole.{{ src_grd }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/parm/fix/mom6/post/{{ src_grd }}/tripole.{{ src_grd }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      {% for tgt_grd in grids %}
+      - ["{{ HOMEgfs }}/parm/fix/mom6/post/tripole.{{ src_grd }}.Ct.to.rect.{{ tgt_grd }}.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/parm/fix/mom6/post/tripole.{{ src_grd }}.Ct.to.rect.{{ tgt_grd }}.conserve.nc", "{{ DATA }}/"]
+      {% endfor %}
+
+ocean:
+  config:
+    ftype: "ocean"
+    maskvar: "temp"
+    sinvar: "sin_rot"
+    cosvar: "cos_rot"
+    angvar: ""
+  data_in:
+    copy:
+      - ["{{ HOMEgfs }}/parm/post/ocean.csv", "{{ DATA }}/"]
+      - ["{{ COM_OCEAN_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.6hr_avg.{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
+  data_out:
+    copy:
+      {% for tgt_grd in grids %}
+      - ["{{ DATA }}/ocean.{{ tgt_grd }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ tgt_grd }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.ocean.{{ tgt_grd }}.grib2"]
+      {% endfor %}
+
+ice:
+  config:
+    ftype: "ice"
+    maskvar: "tmask"
+    sinvar: ""
+    cosvar: ""
+    angvar: "ANGLET"
+  data_in:
+    copy:
+      - ["{{ HOMEgfs }}/parm/post/ice.csv", "{{ DATA }}/"]
+      - ["{{ COM_ICE_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.6hr_avg.{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
+  data_out:
+    copy:
+      {% for tgt_grd in grids %}
+      - ["{{ DATA }}/ice.{{ tgt_grd }}.grib2", "{{ COM_ICE_GRIB }}/{{ tgt_grd }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.ocean.{{ tgt_grd }}.grib2"]
+      {% endfor %}
