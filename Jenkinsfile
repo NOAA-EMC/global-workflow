@@ -75,7 +75,7 @@ pipeline {
                         sh( script: "echo ${HOMEgfs} > sorc/BUILT_semaphor", returnStatus: true)
                     }
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
-                    sh( script: "mkdir -p ${TESTDIR}/RUNTESTS", returnStatus: true)
+                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
                     //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
                     //pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
