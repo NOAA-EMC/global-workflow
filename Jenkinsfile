@@ -69,7 +69,7 @@ pipeline {
                             //sh( script: "sorc/build_all_stub.sh", returnStatus: false)
                         }
                         else if (system == "gefs") {
-                            sh( script: "sorc/build_all.sh -gu -a UFS_app", returnStatus: false)
+                            sh( script: "sorc/build_all.sh -gu", returnStatus: false)
                             //sh( script: "sorc/build_all_stub.sh", returnStatus: false)
                         }
                         sh( script: "echo ${HOMEgfs} > sorc/BUILT_semaphor", returnStatus: true)
