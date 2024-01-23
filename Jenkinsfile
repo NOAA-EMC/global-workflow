@@ -69,38 +69,36 @@ pipeline {
                                             dir("sorc") {
                                                 sh( script: "echo $PWD;which ls;ls --version", returnStatus: true) 
                                                 sh( script: "build_all.sh -gu", returnStatus: false)
+                                                sh( script: "link_workflow.sh", returnStatus: false)
+                                                sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
                                         } else if (system == "gefs") {
                                             // TODO: need to add gefs build arguments from a yaml file
                                             dir("sorc") {
                                                 sh( script: "echo $PWD", returnStatus: true) 
                                                 sh( script: "build_all.sh -gu", returnStatus: false)
+                                                sh( script: "link_workflow.sh", returnStatus: false)
+                                                sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
                                         }
-                                        sh( script: "echo ${HOMEgfs} > sorc/BUILT_semaphor", returnStatus: true)
                                     }
-                                    sh( script: "sorc/link_workflow.sh", returnStatus: false)
-                                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
-                                    //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
-                                    pullRequest.removeLabel("CI-${machine}-Building")
-                                    pullRequest.addLabel("CI-${machine}-Running")
                                 }
                             }
                         }
                     }
                 }
-                script {
-                    pullRequest.removeLabel("CI-${machine}-Building")
-                    pullRequest.addLabel("CI-${machine}-Running")
-                }
-            }
-            script {
-                    pullRequest.removeLabel("CI-${machine}-Building")
-                    pullRequest.addLabel("CI-${machine}-Running")
             }
         }
 
         stage('Run Tests') {
+            steps {
+                script {
+                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
+                    //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
+                    pullRequest.removeLabel("CI-${machine}-Building")
+                    pullRequest.addLabel("CI-${machine}-Running")
+                }
+            }
             matrix {
                 agent { label "${MACHINE}-emc" }
                 axes {
