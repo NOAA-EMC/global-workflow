@@ -90,7 +90,7 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('Setup RUNTESTS') {
             steps {
                 script {
                     sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
@@ -99,6 +99,10 @@ pipeline {
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
             }
+
+        }
+
+        stage('Run Tests') {
             matrix {
                 agent { label "${MACHINE}-emc" }
                 axes {
