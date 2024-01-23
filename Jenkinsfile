@@ -66,16 +66,16 @@ pipeline {
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
                                         if (system == "gfs") {
-                                            dir("sorc") {
-                                                sh( script: "echo $PWD;which ls;ls --version", returnStatus: true) 
+                                            dir("${HOMEgfs}/sorc") {
+                                                sh( script: "echo 'In gfs block in dir $PWD';which ls;ls --version", returnStatus: true) 
                                                 sh( script: "build_all.sh -gu", returnStatus: false)
                                                 sh( script: "link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
                                         } else if (system == "gefs") {
                                             // TODO: need to add gefs build arguments from a yaml file
-                                            dir("sorc") {
-                                                sh( script: "echo $PWD", returnStatus: true) 
+                                            dir("${HOMEgfs}/sorc") {
+                                                sh( script: "echo 'In gefs block in dir $PWD'", returnStatus: true) 
                                                 sh( script: "build_all.sh -gu", returnStatus: false)
                                                 sh( script: "link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
