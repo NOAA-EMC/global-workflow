@@ -65,12 +65,12 @@ pipeline {
                     }
                     else {
                         if (system == "gfs") {
-                            //sh( script: "sorc/build_all.sh -gu", returnStatus: false)
-                            sh( script: "sorc/build_all_stub.sh", returnStatus: false)
+                            sh( script: "sorc/build_all.sh -gu", returnStatus: false)
+                            //sh( script: "sorc/build_all_stub.sh", returnStatus: false)
                         }
                         else if (system == "gefs") {
-                            //sh( script: "sorc/build_all.sh -guw", returnStatus: false)
-                            sh( script: "sorc/build_all_stub.sh", returnStatus: false)
+                            sh( script: "sorc/build_all.sh -guw", returnStatus: false)
+                            //sh( script: "sorc/build_all_stub.sh", returnStatus: false)
                         }
                         sh( script: "echo ${HOMEgfs} > sorc/BUILT_semaphor", returnStatus: true)
                     }
@@ -118,8 +118,8 @@ pipeline {
                                     def HOMEgfs = "${HOME}/gfs"
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                    //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
-                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOME} ${pslot}")
+                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
+                                    //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOME} ${pslot}")
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                         }
