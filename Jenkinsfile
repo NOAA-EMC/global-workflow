@@ -1,6 +1,5 @@
 def MACHINE = 'none'
 def machine = 'none'
-def HOMEgfs = 'none'
 def TESTDIR = 'none'
 
 pipeline {
@@ -54,14 +53,14 @@ pipeline {
             stage("build system") {
             steps {
                 script {
-                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['Hera-EMC','Orion-EMC'], name: 'EMC RDHPCS', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                    HOMEgfs = "${TESTDIR}/${system}"
+                    def HOMEgfs = "${TESTDIR}/${system}"
+                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                     dir(HOMEgfs) {
                     checkout scm
                     env.MACHINE_ID = MACHINE
                     if (fileExists("sorc/BUILT_semaphor")) {
-                        sh( script: "cat ${HOMEgfs}/sorc/BUILT_sema", returnStdout: true).trim()
+                        sh( script: "cat sorc/BUILT_sema", returnStdout: true).trim()
                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                     }
                     else {
@@ -73,7 +72,7 @@ pipeline {
                             //sh( script: "sorc/build_all.sh -guw", returnStatus: false)
                             sh( script: "sorc/build_all_stub.sh", returnStatus: false)
                         }
-                        sh( script: "echo ${HOMEgfs} > ${HOMEgfs}/sorc/BUILT_semaphor", returnStatus: true)
+                        sh( script: "echo ${HOMEgfs} > sorc/BUILT_semaphor", returnStatus: true)
                     }
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
                     sh( script: "mkdir -p ${TESTDIR}/RUNTESTS", returnStatus: true)
