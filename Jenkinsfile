@@ -43,47 +43,61 @@ pipeline {
         }
 
         stage('Build') {
-        matrix {
-            agent { label "${MACHINE}-emc" }
-            axes {
-                axis { name "system"
-                   values "gfs", "gefs"}
-            }
-            stages {
-            stage("build system") {
-            steps {
-                script {
-                    def HOMEgfs = "${HOME}/${system}"
-                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                    sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
-                    dir(HOMEgfs) {
-                    checkout scm
-                    env.MACHINE_ID = MACHINE
-                    if (fileExists("sorc/BUILT_semaphor")) {
-                        sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
-                        pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
-                    }
-                    else {
-                        if (system == "gfs") {
-                            sh( script: "sorc/build_all.sh -gu", returnStatus: false)
-                        }
-                        else if (system == "gefs") {
-                            // TODO: need to add gefs build arguments from a yaml file
-                            sh( script: "sorc/build_all.sh -gu", returnStatus: false)
-                        }
-                        sh( script: "echo ${HOMEgfs} > sorc/BUILT_semaphor", returnStatus: true)
-                    }
-                    sh( script: "sorc/link_workflow.sh", returnStatus: false)
-                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
-                    //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
-                    pullRequest.removeLabel("CI-${machine}-Building")
-                    pullRequest.addLabel("CI-${machine}-Running")
+            matrix {
+                agent { label "${MACHINE}-emc" }
+                axes {
+                    axis { 
+                        name "system"
+                        values "gfs", "gefs"
                     }
                 }
+                stages {
+                    stage("build system") {
+                        steps {
+                            script {
+                                def HOMEgfs = "${HOME}/${system}"
+                                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                                sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
+                                dir(HOMEgfs) {
+                                    checkout scm
+                                    env.MACHINE_ID = MACHINE
+                                    if (fileExists("sorc/BUILT_semaphor")) {
+                                        sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
+                                        pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
+                                    } else {
+                                        if (system == "gfs") {
+                                            dir("sorc") {
+                                                sh( script: "echo $PWD;which ls;ls --version", returnStatus: true) 
+                                                sh( script: "build_all.sh -gu", returnStatus: false)
+                                            }
+                                        } else if (system == "gefs") {
+                                            // TODO: need to add gefs build arguments from a yaml file
+                                            dir("sorc") {
+                                                sh( script: "echo $PWD", returnStatus: true) 
+                                                sh( script: "build_all.sh -gu", returnStatus: false)
+                                            }
+                                        }
+                                        sh( script: "echo ${HOMEgfs} > sorc/BUILT_semaphor", returnStatus: true)
+                                    }
+                                    sh( script: "sorc/link_workflow.sh", returnStatus: false)
+                                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
+                                    //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
+                                    pullRequest.removeLabel("CI-${machine}-Building")
+                                    pullRequest.addLabel("CI-${machine}-Running")
+                                }
+                            }
+                        }
+                    }
+                }
+                script {
+                    pullRequest.removeLabel("CI-${machine}-Building")
+                    pullRequest.addLabel("CI-${machine}-Running")
+                }
             }
+            script {
+                    pullRequest.removeLabel("CI-${machine}-Building")
+                    pullRequest.addLabel("CI-${machine}-Running")
             }
-            }
-        }
         }
 
         stage('Run Tests') {
@@ -110,18 +124,29 @@ pipeline {
                     }
                     stage('Run Experiments') {
                         steps {
-                                script {
-                                    def HOMEgfs = "${HOME}/gfs"
-                                    pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
-                                    pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
-                                    pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
-                               }
+                            script {
+                                def HOMEgfs = "${HOME}/gfs"
+                                pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                                pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
+                            try {
+                                sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
+                                pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
+                            } catch (Exception e) {
+                                if (fileExists('${HOME}/RUNTESTS/ci.log')) {
+                                    def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
+                                    fileContent.eachLine { line ->
+                                        archiveArtifacts artifacts: "${line}", fingerprint: true
+                                    }
+                                }
+                            }
+                                    pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
+                                    error("Failed to run experiments ${Case} on ${machine}")
+                            }
                         }
                     }
                 }
             }
-       }
+        }
 
     }
 
