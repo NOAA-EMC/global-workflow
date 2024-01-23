@@ -1,6 +1,5 @@
 def MACHINE = 'none'
 def machine = 'none'
-def TESTDIR = 'none'
 def HOME = 'none'
 
 pipeline {
@@ -104,8 +103,8 @@ pipeline {
                     stage('Create Experiment') {
                         steps {
                                 script {
-                                    env.RUNTESTS = "${TESTDIR}/RUNTESTS"
-                                    def HOMEgfs = "${HOME}/TESTDIR/gfs"
+                                    env.RUNTESTS = "${HOME}/RUNTESTS"
+                                    def HOMEgfs = "${HOME}/gfs"
                                     env.HOME = HOMEgfs
                                     sh( script: "rm -Rf ${RUNTESTS}/EXPDIR/${Case}_*" )
                                     sh( script: "rm -Rf ${RUNTESTS}/COMROOT/${Case}_*" )
@@ -116,10 +115,11 @@ pipeline {
                     stage('Run Experiments') {
                         steps {
                                 script {
-                                    pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOMEgfs}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                                    def HOMEgfs = "${HOME}/gfs"
+                                    pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                     //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
-                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOMEgfs} ${pslot}")
+                                    sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOME} ${pslot}")
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                         }
