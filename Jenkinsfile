@@ -8,7 +8,7 @@ pipeline {
     options {
         disableConcurrentBuilds(abortPrevious: true)
         skipDefaultCheckout(true)
-        buildDiscarder(logRotator(numToKeepStr: '2'))
+        // buildDiscarder(logRotator(numToKeepStr: '2'))
     }
 
     stages {
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     def HOMEgfs = "${HOME}/${system}"
-                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['ALL (no restriction)', 'built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                     dir(HOMEgfs) {
                     checkout scm
@@ -66,18 +66,17 @@ pipeline {
                     else {
                         if (system == "gfs") {
                             sh( script: "sorc/build_all.sh -gu", returnStatus: false)
-                            //sh( script: "sorc/build_all_stub.sh", returnStatus: false)
                         }
                         else if (system == "gefs") {
+                            // TODO: need to add gefs build arguments from a yaml file
                             sh( script: "sorc/build_all.sh -gu", returnStatus: false)
-                            //sh( script: "sorc/build_all_stub.sh", returnStatus: false)
                         }
                         sh( script: "echo ${HOMEgfs} > sorc/BUILT_semaphor", returnStatus: true)
                     }
                     sh( script: "sorc/link_workflow.sh", returnStatus: false)
                     sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
                     //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
-                    //pullRequest.removeLabel("CI-${machine}-Building")
+                    pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
                     }
                 }
@@ -88,9 +87,6 @@ pipeline {
         }
 
         stage('Run Tests') {
-            //when {
-            //    expression { MACHINE != 'none' }
-            //}
             matrix {
                 agent { label "${MACHINE}-emc" }
                 axes {
@@ -119,7 +115,6 @@ pipeline {
                                     pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                     pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                     sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
-                                    //sh( script: "${HOMEgfs}/ci/scripts/run-check_ci_stub.sh ${HOME} ${pslot}")
                                     pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                }
                         }
