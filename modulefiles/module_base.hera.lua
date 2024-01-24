@@ -33,6 +33,10 @@ load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
 load(pathJoin("py-netcdf4", (os.getenv("py_netcdf4_ver") or "None")))
 load(pathJoin("py-pyyaml", (os.getenv("py_pyyaml_ver") or "None")))
 load(pathJoin("py-jinja2", (os.getenv("py_jinja2_ver") or "None")))
+load(pathJoin("py-pandas", (os.getenv("py_pandas_ver") or "None")))
+load(pathJoin("py-python-dateutil", (os.getenv("py_python_dateutil_ver") or "None")))
+load(pathJoin("met", (os.getenv("met_ver") or "None")))
+load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 
 -- MET/METplus are not available for use with spack-stack, yet
 --load(pathJoin("met", (os.getenv("met_ver") or "None")))
