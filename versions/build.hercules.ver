@@ -1,3 +1,4 @@
 export stack_intel_ver=2021.9.0
 export stack_impi_ver=2021.9.0
+export spack_env=gsi-addon-env
 source "${HOMEgfs:-}/versions/build.spack.ver"

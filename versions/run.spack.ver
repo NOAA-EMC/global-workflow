@@ -1,5 +1,4 @@
 export spack_stack_ver=1.6.0
-export spack_env=gsi-addon-dev
 export python_ver=3.11.6
 
 export jasper_ver=2.0.32
