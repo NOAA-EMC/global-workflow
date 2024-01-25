@@ -30,6 +30,8 @@ load(pathJoin("g2tmpl", (os.getenv("g2tmpl_ver") or "None")))
 load(pathJoin("ncdiag", (os.getenv("ncdiag_ver") or "None")))
 load(pathJoin("crtm", (os.getenv("crtm_ver") or "None")))
 load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
+load(pathJoin("met", (os.getenv("met_ver") or "None")))
+load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 
 --prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
