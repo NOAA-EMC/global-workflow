@@ -65,20 +65,16 @@ pipeline {
                                         sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
+                                        sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         if (system == "gfs") {
-                                            sh( script: "echo 'What is going on here in gfs block: ${HOMEgfs}/sorc'", returnStatus: true)
-                                            sh( script: "ls -lrtha ${HOMEgfs}/sorc", returnStatus: true)
                                             dir("${HOMEgfs}/sorc") {
-                                                sh( script: "echo 'In gfs block in dir $PWD';which ls;ls --version;ls", returnStatus: true) 
-                                                sh( script: "cd ${HOMEgfs}/sorc;echo 'PWD:${PWD}';./build_all.sh -gu", returnStatus: false)
+                                                sh( script: "./build_all.sh -gu", returnStatus: false)
                                                 sh( script: "./link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
                                         } else if (system == "gefs") {
-                                            sh( script: "echo 'What is going on here in gefs: ${HOMEgfs}/sorc'", returnStatus: true)
                                             // TODO: need to add gefs build arguments from a yaml file
                                             dir("${HOMEgfs}/sorc") {
-                                                sh( script: "echo 'In gefs block in dir $PWD';ls -l", returnStatus: true) 
                                                 sh( script: "./build_all.sh -gu", returnStatus: false)
                                                 sh( script: "./link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
