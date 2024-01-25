@@ -231,20 +231,6 @@ export FSICL="0"
 export FSICS="0"
 
 #---------------------------------------------------------------------
-
-# ideflate: netcdf zlib lossless compression (0-9): 0 no compression
-# nbits: netcdf lossy compression level (0-32): 0 lossless
-export ideflate=1
-export nbits=14
-export ishuffle=0
-# compression for RESTART files written by FMS
-export shuffle=1
-export deflate_level=1
-
-#---------------------------------------------------------------------
-# Disable the use of coupler.res; get model start time from model_configure
-export USE_COUPLER_RES="NO"
-
 if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
