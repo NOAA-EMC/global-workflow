@@ -406,13 +406,20 @@ case ${step} in
     export nth_ocnanalchkpt=1
     export npe_node_ocnanalchkpt=$(( npe_node_max / nth_ocnanalchkpt ))
     case ${CASE} in
-      "C384") memory_ocnanalchkpt="128GB";;
-      "C96")  memory_ocnanalchkpt="32GB";;
-      "C48")  memory_ocnanalchkpt="32GB";;
+      "C384")
+        memory_ocnanalchkpt="128GB"
+        npes=40;;
+      "C96")
+        memory_ocnanalchkpt="32GB"
+        npes=16;;
+      "C48")
+        memory_ocnanalchkpt="32GB"
+        npes=8;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
     esac
+    export npe_ocnanalchkpt=${npes}
     export memory_ocnanalchkpt
     ;;
 
@@ -926,7 +933,7 @@ case ${step} in
           export nth_eupd=4
         fi
         ;;
-      *)        
+      *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
         ;;
