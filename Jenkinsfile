@@ -70,7 +70,7 @@ pipeline {
                                             sh( script: "ls -lrtha ${HOMEgfs}/sorc", returnStatus: true)
                                             dir("${HOMEgfs}/sorc") {
                                                 sh( script: "echo 'In gfs block in dir $PWD';which ls;ls --version;ls", returnStatus: true) 
-                                                sh( script: "./build_all.sh -gu", returnStatus: false)
+                                                sh( script: "cd ${HOMEgfs}/sorc;echo "PWD:${PWD};./build_all.sh -gu", returnStatus: false)
                                                 sh( script: "./link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
