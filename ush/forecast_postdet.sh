@@ -32,10 +32,8 @@ FV3_postdet(){
         ${NLN} "${file}" "${DATA}/INPUT/${file2}"
       done
 
-      # Replace sfc_data with sfcanl_data restart files from current cycle (if found)   
-      if [[ "${MODE}" = "cycled" ]]; then  # TODO: remove if statement when global_cycle can handle NOAHMP
-        #  CSD - replaced check on SUITE here by not calling global_cycle where it can't be used 
-        # (calling it for soil increments though) 
+      # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
+      if [[ "${MODE}" = "cycled" ]]; then
         for file in "${COM_ATMOS_RESTART}/${sPDY}.${scyc}0000."*.nc; do
           file2=$(basename "${file}")
           file2=$(echo "${file2}" | cut -d. -f3-) # remove the date from file

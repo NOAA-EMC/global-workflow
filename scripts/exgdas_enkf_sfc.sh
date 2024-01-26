@@ -24,7 +24,7 @@ pwd=$(pwd)
 
 # Base variables
 DONST=${DONST:-"NO"}
-DO_LNDINC=${DO_LNDINC:-".true."}
+GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
 DOSFCANL_ENKF=${DOSFCANL_ENKF:-"YES"}
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
@@ -149,8 +149,6 @@ if [ $DOIAU = "YES" ]; then
                 COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
-            
-            # would it be more intuitive to put these into the analysis (not model_data) directory? 
             ${NCP} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
                 "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
             ${NLN} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
@@ -160,23 +158,23 @@ if [ $DOIAU = "YES" ]; then
             ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
             ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-            if [ $DO_LNDINC = ".true." ]; then
-                FHR=6 # CSD - is this right?
+            if [ ${GSI_SOILANAL} = "YES" ]; then
+                FHR=6
                 ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                    "${DATA}/lnd_incr.${cmem}"
             fi
         done # ensembles
 
-        echo 'CSD Calling global_cycle'
-        export DONST="NO" # turn off for now,not sure this works with fractional grids
-        CDATE="${PDY}${cyc}" ${CYCLESH}
-        export err=$?; err_chk
+        if [ ${GSI_SOILANAL} = "YES" ]; then
+            export DONST="NO" #  temporary, until fractional grids solved
+            CDATE="${PDY}${cyc}" ${CYCLESH}
+            export err=$?; err_chk
+        fi
 
     done
 
 fi
 
-# CSD - should probably code this too.
 if [ $DOSFCANL_ENKF = "YES" ]; then
     for n in $(seq 1 $ntiles); do
 

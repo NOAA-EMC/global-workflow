@@ -87,7 +87,7 @@ else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
-DO_LNDINC=${DO_LNDINC:-".false."}
+GSI_SOILINC=${GSI_SOILINC:-"NO"}
 
 ################################################################################
 
@@ -204,9 +204,9 @@ for imem in $(seq 1 $NMEM_ENS); do
    for FHR in $nfhrs; do
       ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
-      if [ $DO_LNDINC = ".true." ]; then
-      ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
-         "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      if [ $GSI_SOILINC = "YES" ]; then
+         ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
+             "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
       if [ $cnvw_option = ".true." ]; then
          ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}.nc" \
@@ -229,7 +229,7 @@ for imem in $(seq 1 $NMEM_ENS); do
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       fi
-      if [ $DO_LNDINC = ".true." ]; then
+      if [ $GSI_SOILANAL = "YES" ]; then
           ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
            "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
