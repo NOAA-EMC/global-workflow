@@ -68,7 +68,7 @@ pipeline {
                                         sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         if (system == "gfs") {
                                             dir("${HOMEgfs}/sorc") {
-                                                sh( script: "./build_all.sh -gu", returnStatus: false)
+                                                sh( script: "./build_all.sh -gu -j 4", returnStatus: false)
                                                 sh( script: "./link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
