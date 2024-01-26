@@ -186,7 +186,7 @@ link initial condition files from $ICSDIR to $COMROT'''
     if machine == 'WCOSS2':
       base_git = '/lfs/h2/emc/global/save/emc.global/git'
       base_svn = '/lfs/h2/emc/global/save/emc.global/git'
-      dmpdir = '/lfs/h2/emc/global/noscrub/emc.global/dump'
+      dmpdir = '/lfs/h2/emc/dump/noscrub/dump'
       packageroot = '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
       comroot = '${COMROOT:-"/lfs/h1/ops/prod/com"}'
       cominsyn = '${COMROOT}/gfs/${gfs_ver:-"v16.3"}/syndat'
