@@ -130,14 +130,20 @@ cd "${HOMEgfs}/parm/ufs" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
-for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
-    postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
-    postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt \
-    postxconfig-NT-GFS.txt postxconfig-NT-gefs-aerosol.txt postxconfig-NT-gefs-chem.txt params_grib2_tbl_new \
-    post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat \
-    AEROSOL_LUTS.dat optics_luts_DUST.dat optics_luts_SALT.dat optics_luts_SOOT.dat optics_luts_SUSO.dat optics_luts_WASO.dat
+for file in postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GEFS-WAFS.txt \
+    postxconfig-NT-GEFS-F00-aerosol.txt postxconfig-NT-GEFS-aerosol.txt \
+    postxconfig-NT-GFS-ANL.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt \
+    postxconfig-NT-GFS.txt postxconfig-NT-GFS-FLUX.txt postxconfig-NT-GFS-GOES.txt \
+    postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-TWO.txt \
+    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat 
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
+done
+for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
+    optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
+    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat    
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
 done
 
 cd "${HOMEgfs}/scripts" || exit 8
