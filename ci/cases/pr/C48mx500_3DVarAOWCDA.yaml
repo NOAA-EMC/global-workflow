@@ -9,8 +9,7 @@ arguments:
   resdetocean: 5.0
   comrot: {{ 'RUNTESTS' | getenv }}/COMROT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  #icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48cpldDA
-  icsdir: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/ICSDIR/C48O500" # TODO: make platform agnostic
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500
   idate: 2021032412
   edate: 2021032418
   nens: 0
