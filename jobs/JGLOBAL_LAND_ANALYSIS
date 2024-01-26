@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
+export DATA=${DATA:-${DATAROOT}/${RUN}landanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "landanl" -c "base landanl"
 
 ##############################################

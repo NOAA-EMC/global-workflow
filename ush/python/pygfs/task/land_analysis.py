@@ -26,7 +26,7 @@ class LandAnalysis(Analysis):
     Class for global land analysis tasks
     """
 
-    NMEM_LANDENS = 2  # The size of the land ensemble is fixed at 2.  Does this need to be a variable?
+    NMEM_LANDENS = 2
 
     @logit(logger, name="LandAnalysis")
     def __init__(self, config):
@@ -74,7 +74,7 @@ class LandAnalysis(Analysis):
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'ntiles']
+                'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
 
@@ -198,7 +198,7 @@ class LandAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exe}")
 
         # Ensure the snow depth IMS file is produced by the above executable
-        input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}.mx{localconf.OCNRES}_oro_data.nc"
+        input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}_oro_data.nc"
         if not os.path.isfile(f"{os.path.join(localconf.DATA, input_file)}"):
             logger.exception(f"{self.task_config.CALCFIMSEXE} failed to produce {input_file}")
             raise FileNotFoundError(f"{os.path.join(localconf.DATA, input_file)}")
@@ -249,7 +249,7 @@ class LandAnalysis(Analysis):
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'ntiles']
+                'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
 
@@ -301,7 +301,7 @@ class LandAnalysis(Analysis):
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_LAND_ANALYSIS', 'APREFIX',
-                'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'ntiles',
+                'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'OCNRES', 'ntiles',
                 'APRUN_LANDANL', 'JEDIEXE', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
@@ -530,6 +530,7 @@ class LandAnalysis(Analysis):
              DATA
              current_cycle
              CASE
+             OCNRES
              ntiles
              APPLY_INCR_NML_TMPL
              APPLY_INCR_EXE
