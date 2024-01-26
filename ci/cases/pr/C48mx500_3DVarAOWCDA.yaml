@@ -16,5 +16,5 @@ arguments:
   nens: 0
   gfs_cyc: 0
   start: warm
-  yaml: {{ HOMEgfs }}/ci/platforms/soca_gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/soca_gfs_defaults_ci.yaml
 
