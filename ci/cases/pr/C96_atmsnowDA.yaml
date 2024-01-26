@@ -17,4 +17,5 @@ arguments:
   yaml: {{ HOMEgfs }}/ci/cases/yamls/atmsnowDA_defaults_ci.yaml
 
 skip_ci_on_hosts:
+  - orion
   - hercules
