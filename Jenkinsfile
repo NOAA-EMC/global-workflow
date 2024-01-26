@@ -90,11 +90,12 @@ pipeline {
         }
 
         stage('Setup RUNTESTS') {
+            agent { label "${MACHINE}-emc" }
             steps {
                 script {
                     sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
                     //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
-                    pullRequest.removeLabel("CI-${machine}-Building")
+                    //pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
             }
@@ -130,7 +131,7 @@ pipeline {
                                 pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                 pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                             try {
-                                sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
+                                sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot}", returnStatus: false)
                                 pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                             } catch (Exception e) {
                                 if (fileExists('${HOME}/RUNTESTS/ci.log')) {
