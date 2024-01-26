@@ -16,6 +16,8 @@
 #   TRACE (YES/NO): Whether to echo every command (set -x) [default: "YES"]
 #   STRICT (YES/NO): Whether to exit immediately on error or undefined variable
 #     (set -eu) [default: "YES"]
+#   POSTAMBLE_CMD (empty/set): A command to run at the end of the job
+#     [default: empty]
 #
 #######
 set +x
@@ -69,6 +71,24 @@ postamble() {
     script="${1}"
     start_time="${2}"
     rc="${3}"
+
+    # Execute postamble command
+    #
+    # Commands can be added to the postamble by appending them to $POSTAMBLE_CMD:
+    #    POSTAMBLE_CMD="new_thing; ${POSTAMBLE_CMD:-}" # (before existing commands)
+    #    POSTAMBLE_CMD="${POSTAMBLE_CMD:-}; new_thing" # (after existing commands)
+    #
+    # Always use this form so previous POSTAMBLE_CMD are not overwritten. This should
+    #   only be used for commands that execute conditionally (i.e. on certain machines
+    #   or jobs). Global changes should just be added to this function.
+    # These commands will be called when EACH SCRIPT terminates, so be mindful. Please
+    #   consult with global-workflow CMs about permanent changes to $POSTAMBLE_CMD or
+    #   this postamble function.
+    #
+
+    if [[ -v 'POSTAMBLE_CMD' ]]; then
+      ${POSTAMBLE_CMD}
+    fi
 
     # Calculate the elapsed time
     end_time=$(date +%s)
