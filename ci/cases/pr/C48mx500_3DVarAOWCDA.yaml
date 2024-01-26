@@ -7,7 +7,7 @@ arguments:
   app: S2S
   resdetatmos: 48
   resdetocean: 5.0
-  comrot: {{ 'RUNTESTS' | getenv }}/COMROT
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500
   idate: 2021032412
