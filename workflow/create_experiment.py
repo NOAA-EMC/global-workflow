@@ -63,7 +63,9 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
-        '--yaml', help='full path to yaml file describing the experiment configuration', type=Path, required=True)
+        '-y', '--yaml', help='full path to yaml file describing the experiment configuration', type=Path, required=True)
+    parser.add_argument(
+        '-o', '--overwrite', help='overwrite previously created experiment', action="store_true", required=False)
 
     return parser.parse_args()
 
@@ -88,6 +90,9 @@ if __name__ == '__main__':
     for kk, vv in testconf.arguments.items():
         setup_expt_args.append(f"--{kk}")
         setup_expt_args.append(str(vv))
+
+    if user_inputs.overwrite:
+        setup_expt_args.append("--overwrite")
 
     logger.info(f"Call: setup_expt.main()")
     logger.debug(f"setup_expt.py {' '.join(setup_expt_args)}")
