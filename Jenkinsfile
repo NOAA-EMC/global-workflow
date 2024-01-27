@@ -38,6 +38,10 @@ pipeline {
             steps ( timeout(time: 1, unit: 'HOURS') ) {
                 script {
                     HOME = "${WORKSPACE}/TESTDIR"
+                    pullRequest.addLabel("CI-${machine}-Building")
+                    if (pullRequest.labels.contains("CI-${machine}-Ready")) {
+                        pullRequest.removeLabel("CI-${machine}-Ready")
+                    }
                 }
             }
         }
@@ -75,7 +79,7 @@ pipeline {
                                         } else if (system == "gefs") {
                                             // TODO: need to add gefs build arguments from a yaml file
                                             dir("${HOMEgfs}/sorc") {
-                                                sh( script: "./build_all.sh -gu", returnStatus: false)
+                                                sh( script: "./build_all.sh -gu -j 4", returnStatus: false)
                                                 sh( script: "./link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
@@ -95,7 +99,7 @@ pipeline {
                 script {
                     sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
                     //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
-                    //pullRequest.removeLabel("CI-${machine}-Building")
+                    pullRequest.removeLabel("CI-${machine}-Building")
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
             }
@@ -134,15 +138,9 @@ pipeline {
                                 sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: false)
                                 pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                             } catch (Exception e) {
-                                if (fileExists('${HOME}/RUNTESTS/ci.log')) {
-                                    def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
-                                    fileContent.eachLine { line ->
-                                        archiveArtifacts artifacts: "${line}", fingerprint: true
-                                    }
+                                pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
+                                error("Failed to run experiments ${Case} on ${machine}")
                                 }
-                            }
-                                    pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
-                                    error("Failed to run experiments ${Case} on ${machine}")
                             }
                         }
                     }
@@ -172,6 +170,12 @@ pipeline {
                 pullRequest.addLabel("CI-${machine}-Failed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
+                if (fileExists('${HOME}/RUNTESTS/ci.log')) {
+                    def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
+                        fileContent.eachLine { line ->
+                        archiveArtifacts artifacts: "${line}", fingerprint: true
+                    }
+                }
             }
         }
     }
