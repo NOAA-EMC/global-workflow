@@ -50,7 +50,7 @@ pipeline {
             matrix {
                 agent { label "${MACHINE}-emc" }
                 options {
-                    throttle(['Building'])
+                    throttle(['Matrix_build'])
                 }
                 axes {
                     axis { 
