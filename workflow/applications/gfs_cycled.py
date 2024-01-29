@@ -56,6 +56,8 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
+            if self.do_jedilandda:
+                configs += ['landensanl']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
         if self.do_fit2obs:
@@ -104,7 +106,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         if self.do_jedilandda:
-            configs += ['preplandobs', 'landanl']
+            configs += ['preplandobs', 'landanl', 'landensanl']
 
         if self.do_mos:
             configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
@@ -160,6 +162,8 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            if self.do_jedilandda:
+                hybrid_tasks += ['landensanl']
             hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks

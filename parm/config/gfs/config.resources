@@ -12,7 +12,7 @@ if (( $# != 1 )); then
     echo "prep preplandobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanl"
+    echo "landanl landensanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
@@ -855,6 +855,20 @@ case ${step} in
     export npe_atmensanlfinal=${npe_node_max}
     export nth_atmensanlfinal=1
     export npe_node_atmensanlfinal=$(( npe_node_max / nth_atmensanlfinal ))
+    export is_exclusive=True
+    ;;
+
+  "landensanl")
+
+    export layout_x=1
+    export layout_y=1
+
+    export wtime_landensanl="00:15:00"
+    export npe_landensanl=$(( layout_x * layout_y * 6 ))
+    export npe_landensanl_gfs=$(( layout_x * layout_y * 6 ))
+    export nth_landensanl=1
+    export nth_landensanl_gfs=${nth_landensanl}
+    export npe_node_landensanl=$(( npe_node_max / nth_atmensanlrun ))
     export is_exclusive=True
     ;;
 

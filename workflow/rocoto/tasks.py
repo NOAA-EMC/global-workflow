@@ -20,7 +20,7 @@ class Tasks:
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'preplandobs', 'landanl',
+                   'preplandobs', 'landanl', 'landensanl',
                    'fcst',
                    'atmanlupp', 'atmanlprod', 'atmupp', 'atmprod', 'goesupp',
                    'ocnpost',

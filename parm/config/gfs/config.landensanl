@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+########## config.landensanl ##########
+# Land Ens Analysis specific
+
+echo "BEGIN: config.landensanl"
+
+source "${EXPDIR}/config.landanl"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" landensanl
+
+export NMEM_ELDAGRP=10
+
+echo "END: config.landensanl"
