@@ -868,7 +868,7 @@ case ${step} in
     export npe_landensanl_gfs=$(( layout_x * layout_y * 6 ))
     export nth_landensanl=1
     export nth_landensanl_gfs=${nth_landensanl}
-    export npe_node_landensanl=$(( npe_node_max / nth_atmensanlrun ))
+    export npe_node_landensanl=$(( npe_node_max / nth_landensanl ))
     export is_exclusive=True
     ;;
 
