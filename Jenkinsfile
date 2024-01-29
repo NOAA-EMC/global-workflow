@@ -101,8 +101,9 @@ pipeline {
             steps {
                 script {
                     sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
-                    //TODO cannot get pullRequest.labels.contains("CI-${machine}-Building") to work
-                    pullRequest.removeLabel("CI-${machine}-Building")
+                    if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
+                         pullRequest.removeLabel("CI-${machine}-Building")
+                    }
                     pullRequest.addLabel("CI-${machine}-Running")
                 }
             }
@@ -154,29 +155,29 @@ pipeline {
     }
 
     post {
+        always {
+            if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Running") } ) {
+                pullRequest.removeLabel("CI-${machine}-Running")
+            }
+        }
         success {
             script {
-                //if ( pullRequest.labels.contains( "CI-${machine}-Running" ) ) {
-                //   pullRequest.removeLabel("CI-${machine}-Running")
-                //}
-                // TODO: contains mehthod does not work
-                pullRequest.removeLabel("CI-${machine}-Running")
                 pullRequest.addLabel("CI-${machine}-Passed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("SUCCESSFULLY ran all CI Cases on ${machine} at ${timestamp}")
             }
-            cleanWs()
         }
         failure {
             script {
-                pullRequest.removeLabel("CI-${machine}-Running")
                 pullRequest.addLabel("CI-${machine}-Failed")
                 def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                 pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
                 if (fileExists('${HOME}/RUNTESTS/ci.log')) {
                     def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
                         fileContent.eachLine { line ->
-                        archiveArtifacts artifacts: "${line}", fingerprint: true
+                        if( line.contains(".log")) {
+                            archiveArtifacts artifacts: "${line}", fingerprint: true
+                        }
                     }
                 }
             }
