@@ -46,7 +46,7 @@ pipeline {
             }
         }
 
-        properties([throttle(['Build'])])
+        throttle(['Build']) {
         stage('Build') {
             matrix {
                 agent { label "${MACHINE}-emc" }
@@ -92,7 +92,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } }
 
         stage('Setup RUNTESTS') {
             agent { label "${MACHINE}-emc" }
