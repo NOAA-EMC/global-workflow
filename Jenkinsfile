@@ -49,9 +49,9 @@ pipeline {
         stage('Build') {
             matrix {
                 agent { label "${MACHINE}-emc" }
-                options {
-                    throttle(['Matrix_build'])
-                }
+                //options {
+                //    throttle(['Matrix_build'])
+                //}
                 axes {
                     axis { 
                         name "system"
@@ -75,14 +75,14 @@ pipeline {
                                         sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         if (system == "gfs") {
                                             dir("${HOMEgfs}/sorc") {
-                                                sh( script: "./build_all.sh -gu -j 4", returnStatus: false)
+                                                sh( script: "./build_all.sh -gu -j 2", returnStatus: false)
                                                 sh( script: "./link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
                                         } else if (system == "gefs") {
                                             // TODO: need to add gefs build arguments from a yaml file
                                             dir("${HOMEgfs}/sorc") {
-                                                sh( script: "./build_all.sh -gu -j 4", returnStatus: false)
+                                                sh( script: "./build_all.sh -gu -j 2", returnStatus: false)
                                                 sh( script: "./link_workflow.sh", returnStatus: false)
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
