@@ -5,7 +5,7 @@
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:10:00
 #PBS -l select=1:ncpus=3:mpiprocs=3:ompthreads=1:mem=200GB
-#PBS -l place=vscatter
+#PBS -l place=vscatter:shared
 #PBS -l debug=true
 
 model=gfs

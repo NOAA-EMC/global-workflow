@@ -137,7 +137,7 @@ https://www.weather.gov/media/notification/pdf_2023_24/scn23-111_wafs_products_c
      - gfs.tCCz.wafs_0p25_unblended.fFF.grib2 (additionally temporal resolution increases and forecast hour is extended to 48)
      - WAFS_0p25_blended_*.grib2 (additionally temporal resolution increases and forecast hour is extended to 48)
      - gfs.tCCz.wafs_grb45fFF.grib2, and wmo/grib2.tCCz.wafs_grbfFF.45 (additionally remove hazard data including CAT, ICIP and CB fields)
-     - gfs.tCCz.gcip.f00.grib2   
+     - gfs.tCCz.gcip.f00.grib2
 
 HPSS ARCHIVE
 ------------
