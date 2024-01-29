@@ -46,10 +46,12 @@ pipeline {
             }
         }
 
-        throttle(['Build']) {
         stage('Build') {
             matrix {
                 agent { label "${MACHINE}-emc" }
+                options {
+                    throttle(['Building'])
+                }
                 axes {
                     axis { 
                         name "system"
@@ -92,7 +94,7 @@ pipeline {
                     }
                 }
             }
-        } }
+        }
 
         stage('Setup RUNTESTS') {
             agent { label "${MACHINE}-emc" }
