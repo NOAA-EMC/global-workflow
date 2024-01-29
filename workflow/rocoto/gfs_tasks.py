@@ -2432,7 +2432,7 @@ class GFSTasks(Tasks):
     def landensanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}preplandobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}preplandobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2441,11 +2441,29 @@ class GFSTasks(Tasks):
         landensanlenvars = self.envars.copy()
         landensanlenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['landensanl']['NMEM_ELDAGRP'])
+        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['landensanl']['NMEM_ELDAGRP'], start_index=0)
+
+        var_dict = {'grp': groups}
 
         resources = self.get_resource('landensanl')
-        task = create_wf_task('landensanl', resources, cdump=self.cdump, envar=landensanlenvars, dependency=dependencies,
-                              metatask='landensanl', varname='grp', varval=groups)
+        task_name = f'{self.cdump}landensanl#grp#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': landensanlenvars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/landensanl.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        metatask_dict = {'task_name': f'{self.cdump}landensanl',
+                         'var_dict': var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
