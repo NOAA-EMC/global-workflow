@@ -2432,7 +2432,8 @@ class GFSTasks(Tasks):
     def landensanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}preplandobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}preplandobs'}
+      #  dep_dict = {'type': 'task', 'name': f'{self.cdump}preplandobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2441,7 +2442,7 @@ class GFSTasks(Tasks):
         landensanlenvars = self.envars.copy()
         landensanlenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['landensanl']['NMEM_ELDAGRP'], start_index=0)
+        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['landensanl']['NMEM_ELDAGRP'], start_index=1)
 
         var_dict = {'grp': groups}
 
