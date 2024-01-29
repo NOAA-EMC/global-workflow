@@ -813,7 +813,7 @@ case ${step} in
     export npe_cleanup=1
     export npe_node_cleanup=1
     export nth_cleanup=1
-    export memory_cleanu="4096M"
+    export memory_cleanup="4096M"
     ;;
 
   "stage_ic")
