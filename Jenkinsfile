@@ -39,13 +39,14 @@ pipeline {
                 script {
                     HOME = "${WORKSPACE}/TESTDIR"
                     pullRequest.addLabel("CI-${machine}-Building")
-                    if (pullRequest.labels.contains("CI-${machine}-Ready")) {
+                    if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Ready") } ) {
                         pullRequest.removeLabel("CI-${machine}-Ready")
                     }
                 }
             }
         }
 
+        properties([throttle(['Build'])])
         stage('Build') {
             matrix {
                 agent { label "${MACHINE}-emc" }
