@@ -156,8 +156,10 @@ pipeline {
 
     post {
         always {
-            if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Running") } ) {
-                pullRequest.removeLabel("CI-${machine}-Running")
+            script {
+               if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Running") } ) {
+                    pullRequest.removeLabel("CI-${machine}-Running")
+                }
             }
         }
         success {
