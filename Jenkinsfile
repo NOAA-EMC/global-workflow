@@ -77,12 +77,13 @@ pipeline {
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args = builds_file['builds']
                                         build_args.value.each{ build ->
-                                        if (build.key == system) {
-                                            build_args = build.value
+                                            if (build.key == system) {
+                                               build_args = build.value
+                                            } 
                                         }
                                         echo "build args: ${build_args}"
                                         dir("${HOMEgfs}/sorc") {
-                                            sh( script: "${build_args}", returnStatus: false)
+                                            sh( script: "", returnStatus: false)
                                             sh( script: "./link_workflow.sh", returnStatus: false)
                                             sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                         }
