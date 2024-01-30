@@ -76,13 +76,10 @@ pipeline {
                                         //sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args_list = builds_file['builds']
-                                        echo "build args list: ${build_args_list}"
-                                        def build_args = build_args_list[system]
+                                        def build_args = build_args_list[system].join(" ")
                                         echo "build args: ${build_args}"
-                                        def test = build_args.join(" ")
-                                        echo "test: ${test}"
                                         dir("${HOMEgfs}/sorc") {
-                                            sh( script: "", returnStatus: false)
+                                            sh( script: "${build_args}", returnStatus: false)
                                             sh( script: "./link_workflow.sh", returnStatus: false)
                                             sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                         }
