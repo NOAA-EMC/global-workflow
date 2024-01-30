@@ -77,8 +77,10 @@ pipeline {
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args_list = builds_file['builds']
                                         echo "build args list: ${build_args_list}"
-                                        def build_args = build_args_list[system].join()
+                                        def build_args = build_args_list[system]
                                         echo "build args: ${build_args}"
+                                        def test = build_args.join(" ")
+                                        echo "test: ${test}"
                                         dir("${HOMEgfs}/sorc") {
                                             sh( script: "", returnStatus: false)
                                             sh( script: "./link_workflow.sh", returnStatus: false)
@@ -115,16 +117,16 @@ pipeline {
                                 properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                                 dir(HOMEgfs) {
-                                    checkout scm
+                                    //checkout scm
                                     env.MACHINE_ID = MACHINE
                                     if (fileExists("sorc/BUILT_semaphor")) {
                                         sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
-                                        sh( script: "git submodule update --init --recursive", returnStatus: true) 
+                                        //sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         if (system == "gfs") {
-                                            def build_args = builds_file.find { it.system == system }.build_args
+                                            //def build_args = builds_file.find { it.system == system }.build_args
                                             echo "build args: ${build_args}"
                                             dir("${HOMEgfs}/sorc") {
                                                 sh( script: "./${build_args}", returnStatus: false)
