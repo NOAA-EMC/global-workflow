@@ -57,7 +57,6 @@ pipeline {
                         name "system"
                         //values "gfs", "gefs"
                         values "gefs"
-                        values "gfs"
                     }
                 }
                 stages {
