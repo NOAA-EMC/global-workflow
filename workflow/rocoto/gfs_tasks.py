@@ -2433,7 +2433,6 @@ class GFSTasks(Tasks):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}preplandobs'}
-      #  dep_dict = {'type': 'task', 'name': f'{self.cdump}preplandobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
