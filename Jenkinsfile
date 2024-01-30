@@ -76,7 +76,8 @@ pipeline {
                                         sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         if (system == "gfs") {
-                                            def build_args = builds_file.find { it.system == system }.build_args
+                                            def system_key = string( system )
+                                            def build_args = builds_file.find { it.system_key == system_key }.build_args
                                             echo "build args: ${build_args}"
                                             dir("${HOMEgfs}/sorc") {
                                                 sh( script: "./${build_args}", returnStatus: false)
@@ -84,7 +85,8 @@ pipeline {
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
                                         } else if (system == "gefs") {
-                                            def build_args = builds_file.find { it.system == system }.build_args
+                                            def system_key = string( system )
+                                            def build_args = builds_file.find { it.system_key == system_key }.build_args
                                             echo "build args: ${build_args}"
                                             dir("${HOMEgfs}/sorc") {
                                                 sh( script: "./build_all.sh -gu -j 4", returnStatus: false)
