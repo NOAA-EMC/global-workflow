@@ -85,7 +85,8 @@ pipeline {
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
                                         } else if (system == "gefs") {
-                                            def system_key = string( system )
+                                            // def system_key = string( system )
+                                            def system_key = "gefs"
                                             def build_args = builds_file.find { it.system_key == system_key }.build_args
                                             echo "build args: ${build_args}"
                                             dir("${HOMEgfs}/sorc") {
