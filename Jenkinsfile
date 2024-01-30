@@ -76,7 +76,8 @@ pipeline {
                                         //sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args_list = builds_file['builds']
-                                        def build_args = build_args_list.find { it.key == system }.value
+                                        echo "build args list: ${build_args_list}"
+                                        def build_args = build_args_list[system]
                                         echo "build args: ${build_args}"
                                         dir("${HOMEgfs}/sorc") {
                                             sh( script: "", returnStatus: false)
