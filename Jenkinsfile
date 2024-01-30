@@ -77,7 +77,7 @@ pipeline {
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args_list = builds_file['builds']
                                         echo "build args list: ${build_args_list}"
-                                        def build_args = build_args_list[system].toString()
+                                        def build_args = build_args_list[system].join()
                                         echo "build args: ${build_args}"
                                         dir("${HOMEgfs}/sorc") {
                                             sh( script: "", returnStatus: false)
