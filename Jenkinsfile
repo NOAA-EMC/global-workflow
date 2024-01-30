@@ -67,17 +67,17 @@ pipeline {
                                 properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                                 dir(HOMEgfs) {
-                                    checkout scm
+                                    //checkout scm
                                     env.MACHINE_ID = MACHINE
                                     if (fileExists("sorc/BUILT_semaphor")) {
                                         sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
-                                        sh( script: "git submodule update --init --recursive", returnStatus: true) 
+                                        //sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
+                                        def build_args = builds_file['builds']
+                                        echo "build args: ${build_args}"
                                         if (system == "gfs") {
-                                            def system_key = string( system )
-                                            def build_args = builds_file.find { it.system_key == system_key }.build_args
                                             echo "build args: ${build_args}"
                                             dir("${HOMEgfs}/sorc") {
                                                 sh( script: "./${build_args}", returnStatus: false)
@@ -85,9 +85,6 @@ pipeline {
                                                 sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                             }
                                         } else if (system == "gefs") {
-                                            // def system_key = string( system )
-                                            def system_key = "gefs"
-                                            def build_args = builds_file.find { it.system_key == system_key }.build_args
                                             echo "build args: ${build_args}"
                                             dir("${HOMEgfs}/sorc") {
                                                 sh( script: "./build_all.sh -gu -j 4", returnStatus: false)
