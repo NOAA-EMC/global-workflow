@@ -117,7 +117,8 @@ pipeline {
                     stage('Create Experiment') {
                         steps {
                                 script {
-                                    def yaml_case = readYaml file: "${HOME}/gfs/ci/cases/pr/${Case}.yaml"
+                                    sh( script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp", returnStatus: true)
+                                    def yaml_case = readYaml file: "${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp"
                                     system = yaml_case.experiment.system
                                     def HOMEgfs = "${HOME}/${system}"
                                     env.RUNTESTS = "${HOME}/RUNTESTS"

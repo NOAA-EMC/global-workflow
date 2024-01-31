@@ -97,6 +97,8 @@ function create_experiment () {
   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
-  "${HOME}/workflow/create_experiment.py" --yaml "${yaml_config}"
+  # system=$(grep "system:" "${yaml_config}" | cut -d":" -f2 | tr -d " ") || true
+
+  "${HOMEgfs}/${system}/workflow/create_experiment.py" --yaml "${yaml_config}"
 
 }
