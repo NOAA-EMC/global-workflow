@@ -99,6 +99,6 @@ function create_experiment () {
 
   # system=$(grep "system:" "${yaml_config}" | cut -d":" -f2 | tr -d " ") || true
 
-  "${HOMEgfs}/${system}/workflow/create_experiment.py" --yaml "${yaml_config}"
+  "${HOMEgfs}/${system}/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
 
 }
