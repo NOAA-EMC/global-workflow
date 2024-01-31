@@ -56,7 +56,6 @@ pipeline {
                     axis { 
                         name "system"
                         values "gfs", "gefs"
-                        values "gfs"
                     }
                 }
                 stages {
