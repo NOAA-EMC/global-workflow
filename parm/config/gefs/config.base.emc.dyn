@@ -219,7 +219,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 export FHMIN=${FHMIN_GFS}
-export FHMAX_GFS=120
+export FHMAX_GFS=@FHMAX_GFS@
 export FHOUT_GFS=6 # Must be 6 for S2S until #1629 is addressed; 3 for ops
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
