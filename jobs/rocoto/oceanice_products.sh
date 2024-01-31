@@ -12,6 +12,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 if (( status != 0 )); then exit "${status}"; fi
 
+###############################################################
+# setup python path for workflow utilities and tasks
+wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
+export PYTHONPATH
+
 export job="oceanice_products"
 export jobid="${job}.$$"
 

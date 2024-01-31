@@ -1,6 +1,6 @@
 ocnicepost:
-  config:
-    interpolation_weights_dir: "{{ DATA }}"
+  namelist:
+    interpolation_weights_dir: "{{ DATA }}/"
     debug: False
   fix_data:
     mkdir:
@@ -8,33 +8,43 @@ ocnicepost:
     copy:
       - ["{{ HOMEgfs }}/exec/ocnicepost.x", "{{ DATA }}/"]
       - ["{{ HOMEgfs }}/parm/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/parm/fix/mom6/post/{{ src_grd }}/tripole.{{ src_grd }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/parm/fix/mom6/post/{{ src_grd }}/tripole.{{ src_grd }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/parm/fix/mom6/post/{{ src_grd }}/tripole.{{ src_grd }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
-      {% for tgt_grd in grids %}
-      - ["{{ HOMEgfs }}/parm/fix/mom6/post/tripole.{{ src_grd }}.Ct.to.rect.{{ tgt_grd }}.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/parm/fix/mom6/post/tripole.{{ src_grd }}.Ct.to.rect.{{ tgt_grd }}.conserve.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/parm/post/{{ component }}.csv", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      {% for grid in product_grids %}
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
       {% endfor %}
 
 ocean:
-  config:
+  namelist:
     ftype: "ocean"
     maskvar: "temp"
     sinvar: "sin_rot"
     cosvar: "cos_rot"
     angvar: ""
+    #ocean_levels: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215.86945, 241.06255, 266.5239, 308.7874, 373.9288, 467.3998, 593.87915, 757.1453, 959.97325, 1204.059, 1489.9735, 1817.1455, 2183.879, 2587.3995, 3023.9285, 3488.7875, 3976.524, 4481.0625]
+    ocean_levels: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105]  # TODO: the 5 degree ocean grid fails for the above list of levels
   data_in:
     copy:
-      - ["{{ HOMEgfs }}/parm/post/ocean.csv", "{{ DATA }}/"]
-      - ["{{ COM_OCEAN_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.6hr_avg.{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
+      - ["{{ COM_OCEAN_HISTORY }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
   data_out:
+    mkdir:
+      {% for grid in product_grids %}
+      - "{{ COM_OCEAN_GRIB }}/{{ grid }}"
+      {% endfor %}
     copy:
-      {% for tgt_grd in grids %}
-      - ["{{ DATA }}/ocean.{{ tgt_grd }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ tgt_grd }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.ocean.{{ tgt_grd }}.grib2"]
+      {% for grid in product_grids %}
+      - ["{{ DATA }}/ocean_2D.{{ grid }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.2D_{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ocean_3D.{{ grid }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.3D_{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ocean_2D.{{ grid }}.grib2.idx", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.2D_{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      - ["{{ DATA }}/ocean_3D.{{ grid }}.grib2.idx", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.3D_{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}
 
 ice:
-  config:
+  namelist:
     ftype: "ice"
     maskvar: "tmask"
     sinvar: ""
@@ -42,10 +52,14 @@ ice:
     angvar: "ANGLET"
   data_in:
     copy:
-      - ["{{ HOMEgfs }}/parm/post/ice.csv", "{{ DATA }}/"]
-      - ["{{ COM_ICE_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.6hr_avg.{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
+      - ["{{ COM_ICE_HISTORY }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
   data_out:
+    mkdir:
+      {% for grid in product_grids %}
+      - "{{ COM_ICE_GRIB }}/{{ grid }}"
+      {% endfor %}
     copy:
-      {% for tgt_grd in grids %}
-      - ["{{ DATA }}/ice.{{ tgt_grd }}.grib2", "{{ COM_ICE_GRIB }}/{{ tgt_grd }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.ocean.{{ tgt_grd }}.grib2"]
+      {% for grid in product_grids %}
+      - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}
