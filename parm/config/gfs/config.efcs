@@ -5,14 +5,16 @@
 
 echo "BEGIN: config.efcs"
 
-# Turn off components in ensemble via _ENKF, or use setting from deterministic
-export DO_AERO=${DO_AERO_ENKF:-${DO_AERO:-"NO"}}
-export DO_OCN=${DO_OCN_ENKF:-${DO_OCN:-"NO"}}
-export DO_ICE=${DO_ICE_ENKF:-${DO_ICE:-"NO"}}
-export DO_WAVE=${DO_WAVE_ENKF:-${DO_WAVE:-"NO"}}
+# Turn off components in ensemble
+# export DO_AERO="NO"
+# export DO_OCN="NO"
+# export DO_ICE="NO"
+export DO_WAVE="NO"
+
+export CASE=${CASE_ENS}
 
 # Source model specific information that is resolution dependent
-string="--fv3 ${CASE_ENS}"
+string="--fv3 ${CASE}"
 # Ocean/Ice/Waves ensemble configurations are identical to deterministic member
 [[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
 [[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
@@ -25,14 +27,22 @@ source "${EXPDIR}/config.ufs" ${string}
 # Get task specific resources
 . "${EXPDIR}/config.resources" efcs
 
+# nggps_diag_nml
+export FHOUT=${FHOUT_ENKF:-3}
+if [[ ${RUN} == "enkfgfs" ]]; then
+    export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT_ENKF:${FHOUT:-3}}}
+fi
+
+# model_configure
+export FHMIN=${FHMIN_ENKF:-3}
+export FHMAX=${FHMAX_ENKF:-9}
+if [[ ${RUN} == "enkfgfs" ]]; then
+   export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX_ENKF:-${FHMAX}}}
+fi
+
 # Use serial I/O for ensemble (lustre?)
 export OUTPUT_FILETYPE_ATM="netcdf"
 export OUTPUT_FILETYPE_SFC="netcdf"
-
-# Number of enkf members per fcst job
-export NMEM_EFCSGRP=2
-export NMEM_EFCSGRP_GFS=1
-export RERUN_EFCSGRP="NO"
 
 # Turn off inline UPP for EnKF forecast
 export WRITE_DOPOST=".false."
@@ -60,6 +70,25 @@ if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; t
     export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table_da"
 else
     export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table_da_orig"
+fi
+
+# Model config option for Ensemble
+# export TYPE=nh                  # choices:  nh, hydro
+# export MONO=non-mono            # choices:  mono, non-mono
+
+# gfs_physics_nml
+export FHSWR=3600.
+export FHLWR=3600.
+export IEMS=1
+export ISOL=2
+export ICO2=2
+export dspheat=".true."
+export shal_cnv=".true."
+export FHZER=6
+
+# Set PREFIX_ATMINC to r when recentering on
+if [[ ${RECENTER_ENKF:-"YES"} = "YES" ]]; then
+   export PREFIX_ATMINC="r"
 fi
 
 # For IAU, write restarts at beginning of window also
