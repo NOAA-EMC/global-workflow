@@ -2,13 +2,15 @@ def MACHINE = 'none'
 def machine = 'none'
 def HOME = 'none'
 
-checkout([
-    $class: 'GitSCM', 
-    branches: scm.branches, 
-    doGenerateSubmoduleConfigurations: false, 
-    extensions: [[$class: 'SubmoduleOption', disableSubmodules: true]], 
-    userRemoteConfigs: scm.userRemoteConfigs
-])
+def checkout_shallow () {
+    checkout([
+       $class: 'GitSCM', 
+       branches: scm.branches, 
+       doGenerateSubmoduleConfigurations: false, 
+       extensions: [[$class: 'SubmoduleOption', disableSubmodules: true]], 
+       userRemoteConfigs: scm.userRemoteConfigs
+    ])
+}
 
 pipeline {
     agent { label 'built-in' }
@@ -48,7 +50,7 @@ pipeline {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}/TESTDIR"
                     sh( script: "mkdir -p ${HOME}", returnStatus: true)
-                    checkout
+                    checkout_shallow()
                     pullRequest.addLabel("CI-${machine}-Building")
                     if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Ready") } ) {
                         pullRequest.removeLabel("CI-${machine}-Ready")
