@@ -68,12 +68,9 @@ function _ice_nc2grib2 {
   rc=$?
   # Check if the conversion was successful
   if (( rc != 0 )); then
-   echo "FATAL ERROR: Failed to convert the ocean 2D rectilinear netCDF file to grib2 format"
-   exit 1
+   echo "FATAL ERROR: Failed to convert the ice rectilinear netCDF file to grib2 format"
   fi
-
-  # Index the grib2 file
-  ${WGRIB2} -s "${outfile}" > "${outfile}.idx"
+  return "${rc}"
 
 }
 
@@ -160,12 +157,9 @@ function _ocean2D_nc2grib2 {
   rc=$?
   # Check if the conversion was successful
   if (( rc != 0 )); then
-   echo "FATAL ERROR: Failed to convert the ocean 2D rectilinear netCDF file to grib2 format"
-   exit 1
+   echo "FATAL ERROR: Failed to convert the ocean rectilinear netCDF file to grib2 format"
   fi
-
-  # Index the grib2 file
-  ${WGRIB2} -s "${outfile}" > "${outfile}.idx"
+  return "${rc}"
 
 }
 
@@ -183,14 +177,14 @@ function _ocean3D_nc2grib2 {
   local outfile=${7} # ocean_3D.0p25.grib2
   local template=${8} # template.global.0p25.gb2
 
-IFS=':' read -ra depths <<< "${levels}"
+  IFS=':' read -ra depths <<< "${levels}"
 
-zl=0
-for depth in "${depths[@]}"; do
+  zl=0
+  for depth in "${depths[@]}"; do
 
-  [[ -f "tmp.gb2" ]] && rm -f "tmp.gb2"
+    [[ -f "tmp.gb2" ]] && rm -f "tmp.gb2"
 
-  ${WGRIB2} "${template}" \
+    ${WGRIB2} "${template}" \
     -import_netcdf "${infile}" "temp" "0:1:${zl}:1:${latlon_dims}" \
       -set_var WTMP -set center 7 -rpn "273.15:+" \
       -set_lev "${depth} m below water surface" \
@@ -212,27 +206,26 @@ for depth in "${depths[@]}"; do
       -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2
 
-  rc=$?
-  # Check if the conversion was successful
-  if (( rc != 0 )); then
-   echo "FATAL ERROR: Failed to convert the ocean 2D rectilinear netCDF file to grib2 format"
-   exit 1
-  fi
+    rc=$?
+    # Check if the conversion was successful
+    if (( rc != 0 )); then
+      echo "FATAL ERROR: Failed to convert the ocean rectilinear netCDF file to grib2 format at depth ${depth}m, ABORT!"
+      return "${rc}"
+    fi
 
-  cat tmp.gb2 >> "${outfile}"
-  rm -f tmp.gb2
-  ((zl = zl + 1))
+    cat tmp.gb2 >> "${outfile}"
+    rm -f tmp.gb2
+    ((zl = zl + 1))
 
-done
+  done
 
-# Notes:
-#   WATPTEMP (water potential temperature (theta)) may be a better
-#   GRIB2 parameter than WTMP (water temperature) if MOM6 outputs
-#   potential temperature. WATPTEMP is not available in NCEP
-#   (-set center 7) tables in wgrib2 v2.0.8.
+  # Notes:
+  #   WATPTEMP (water potential temperature (theta)) may be a better
+  #   GRIB2 parameter than WTMP (water temperature) if MOM6 outputs
+  #   potential temperature. WATPTEMP is not available in NCEP
+  #   (-set center 7) tables in wgrib2 v2.0.8.
 
-  # Index the grib2 file
-  ${WGRIB2} -s "${outfile}" > "${outfile}.idx"
+  return "${rc}"
 
 }
 
@@ -266,48 +259,61 @@ esac
 input_file="${component}.${grid}.nc"
 template="template.global.${grid}.gb2"
 
-# Check if the input file exists
-if [[ ! -f "${input_file}" ]]; then
-  echo "FATAL ERROR: '${input_file}' does not exist, ABORT!"
-  exit 1
-fi
-
 # Check if the template file exists
 if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: '${template}' does not exist, ABORT!"
-  exit 1
+  exit 127
+fi
+
+# Check if the input file exists
+if [[ ! -f "${input_file}" ]]; then
+  echo "FATAL ERROR: '${input_file}' does not exist, ABORT!"
+  exit 127
 fi
 
 case "${component}" in
   "ice")
     rm -f "${component}.${grid}.grib2" || true
     _ice_nc2grib2 "${grid}" "${latlon_dims}" "${vdate}" "${avg_period}" "${input_file}" "${component}.${grid}.grib2" "${template}"
-    # Check if the output file exists
-    if [[ ! -f "${component}.${grid}.grib2" ]]; then
+    rc=$?
+    if (( rc != 0 )); then
       echo "FATAL ERROR: Failed to convert the ice rectilinear netCDF file to grib2 format"
-      exit 1
+      exit "${rc}"
     fi
   ;;
   "ocean")
     rm -f "${component}_2D.${grid}.grib2" || true
     _ocean2D_nc2grib2 "${grid}" "${latlon_dims}" "${vdate}" "${avg_period}" "${input_file}" "${component}_2D.${grid}.grib2" "${template}"
-    # Check if the output file exists
-    if [[ ! -f "${component}_2D.${grid}.grib2" ]]; then
+    rc=$?
+    if (( rc != 0 )); then
       echo "FATAL ERROR: Failed to convert the ocean 2D rectilinear netCDF file to grib2 format"
-      exit 1
+      exit "${rc}"
     fi
     rm -f "${component}_3D.${grid}.grib2" || true
     _ocean3D_nc2grib2 "${grid}" "${latlon_dims}" "${ocean_levels}" "${vdate}" "${avg_period}" "${input_file}" "${component}_3D.${grid}.grib2" "${template}"
-    # Check if the output file exists
-    if [[ ! -f "${component}_3D.${grid}.grib2" ]]; then
+    rc=$?
+    if (( rc != 0 )); then
       echo "FATAL ERROR: Failed to convert the ocean 3D rectilinear netCDF file to grib2 format"
-      exit 1
+      exit "${rc}"
     fi
+    # Combine the 2D and 3D grib2 files into a single file
+    rm -f "${component}.${grid}.grib2" || true
+    cat "${component}_2D.${grid}.grib2" "${component}_3D.${grid}.grib2" > "${component}.${grid}.grib2"
+
   ;;
   *)
     echo "FATAL ERROR: Unknown component: '${component}'. ABORT!"
-    exit 1
+    exit 3
   ;;
 esac
+
+# Index the output grib2 file
+${WGRIB2} -s "${component}.${grid}.grib2" > "${component}.${grid}.grib2.idx"
+rc=$?
+# Check if the output file exists
+if (( rc != 0 )); then
+  echo "FATAL ERROR: Failed to index the file '${component}.${grid}.grib2'"
+  exit "${rc}"
+fi
 
 exit 0

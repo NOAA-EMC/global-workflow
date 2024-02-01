@@ -31,7 +31,7 @@ class OceanIceProducts(Task):
 
     # These could be read from the yaml file
     TRIPOLE_DIMS_MAP = {'mx025': [1440, 1080], 'mx050': [720, 526], 'mx100': [360, 320], 'mx500': [72, 35]}
-    LATLON_DIMS_MAP = {'0p25': [1440, 721], '0p50': [720, 361], '1p00': [360,181], '5p00': [72, 36]}
+    LATLON_DIMS_MAP = {'0p25': [1440, 721], '0p50': [720, 361], '1p00': [360, 181], '5p00': [72, 36]}
 
     @logit(logger, name="OceanIceProducts")
     def __init__(self, config: Dict[str, Any]) -> None:
@@ -71,55 +71,61 @@ class OceanIceProducts(Task):
         self.task_config.oceanice_yaml = parse_j2yaml(self.config.OCEANICEPRODUCTS_CONFIG, self.task_config)
         logger.debug(f"oceanice_yaml:\n{pformat(self.task_config.oceanice_yaml)}")
 
+    @staticmethod
     @logit(logger)
-    def initialize(self) -> None:
+    def initialize(config: Dict) -> None:
         """Initialize the work directory by copying all the common fix data
 
         Parameters
         ----------
+        config : Dict
+            Configuration dictionary for the task
+
+        Returns
+        -------
+        None
         """
 
         # Copy static data to run directory
         logger.info("Copy static data to run directory")
-        FileHandler(self.task_config.oceanice_yaml.ocnicepost.fix_data).sync()
+        FileHandler(config.oceanice_yaml.ocnicepost.fix_data).sync()
 
         # Copy "component" specific model data to run directory (e.g. ocean/ice forecast output)
-        logger.info(f"Copy {self.task_config.component} data to run directory")
-        FileHandler(self.task_config.oceanice_yaml[self.task_config.component].data_in).sync()
+        logger.info(f"Copy {config.component} data to run directory")
+        FileHandler(config.oceanice_yaml[config.component].data_in).sync()
 
+    @staticmethod
     @logit(logger)
-    def configure(self, product_grid: str) -> None:
+    def configure(config: Dict, product_grid: str) -> None:
         """Configure the namelist for the product_grid in the work directory.
         Create namelist 'ocnicepost.nml' from template
 
         Parameters
         ----------
+        config : Dict
+            Configuration dictionary for the task
         product_grid : str
             Target product grid to process
+
+        Returns
+        -------
+        None
         """
 
         # Make a localconf with the "component" specific configuration for parsing the namelist
         localconf = AttrDict()
-        localconf.DATA = self.task_config.DATA
-        localconf.component = self.task_config.component
-        localconf.interpolation_weights_dir = self.task_config.DATA
+        localconf.DATA = config.DATA
+        localconf.component = config.component
+        localconf.interpolation_weights_dir = config.DATA
 
-        model_grid_dims = self.TRIPOLE_DIMS_MAP[self.task_config.model_grid]
-        nlevs = 0  # ice
-        if self.task_config.component in ['ocean']:
-            #nlevs = self.task_config.ocean_levels  TODO: need to get this from config files
-            #nlevs = 40
-            nlevs = 25
-        model_grid_dims.append(nlevs)
+        localconf.source_tripole_dims = ', '.join(map(str, OceanIceProducts.TRIPOLE_DIMS_MAP[config.model_grid]))
+        localconf.target_latlon_dims = ', '.join(map(str, OceanIceProducts.LATLON_DIMS_MAP[product_grid]))
 
-        localconf.source_tripole_dims = ', '.join(map(str, model_grid_dims))
-        localconf.target_latlon_dims = ', '.join(map(str, self.LATLON_DIMS_MAP[product_grid]))
-
-        localconf.maskvar = self.task_config.oceanice_yaml[self.task_config.component].namelist.maskvar
-        localconf.sinvar = self.task_config.oceanice_yaml[self.task_config.component].namelist.sinvar
-        localconf.cosvar = self.task_config.oceanice_yaml[self.task_config.component].namelist.cosvar
-        localconf.angvar = self.task_config.oceanice_yaml[self.task_config.component].namelist.angvar
-        localconf.debug = ".true." if self.task_config.oceanice_yaml.ocnicepost.namelist.debug else ".false."
+        localconf.maskvar = config.oceanice_yaml[config.component].namelist.maskvar
+        localconf.sinvar = config.oceanice_yaml[config.component].namelist.sinvar
+        localconf.cosvar = config.oceanice_yaml[config.component].namelist.cosvar
+        localconf.angvar = config.oceanice_yaml[config.component].namelist.angvar
+        localconf.debug = ".true." if config.oceanice_yaml.ocnicepost.namelist.debug else ".false."
 
         logger.debug(f"localconf:\n{pformat(localconf)}")
 
@@ -132,12 +138,15 @@ class OceanIceProducts(Task):
         with open(nml_file, "w") as fho:
             fho.write(nml_data)
 
+    @staticmethod
     @logit(logger)
-    def execute(self, product_grid: str) -> None:
+    def execute(config: Dict, product_grid: str) -> None:
         """Run the ocnicepost.x executable to interpolate and convert to grib2
 
         Parameters
         ----------
+        config : Dict
+            Configuration dictionary for the task
         product_grid : str
             Target product grid to process
 
@@ -147,26 +156,25 @@ class OceanIceProducts(Task):
         """
 
         # Run the ocnicepost.x executable
-        self.interp(exec_name="ocnicepost.x")
+        OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 
         # Convert interpolated netCDF file to grib2
-        self.netCDF_to_grib2(product_grid)
+        OceanIceProducts.netCDF_to_grib2(config, product_grid)
 
-        # Index the grib2 product files
-        self.netCDF_to_grib2(product_grid)
-
-
+    @staticmethod
     @logit(logger)
-    def interp(self, exec_name: str = "ocnicepost.x") -> None:
+    def interp(workdir: str, aprun_cmd: str, exec_name: str = "ocnicepost.x") -> None:
         """
-        Run the interpolation executable
+        Run the interpolation executable to generate rectilinear netCDF file
 
         Parameters
         ----------
-        workdir : str | os.PathLike
-            Working directory where to run containing the necessary files and executable
+        config : Dict
+            Configuration dictionary for the task
+        workdir : str
+            Working directory for the task
         aprun_cmd : str
-            Launcher command e.g. mpirun -np <ntasks> or srun, etc.
+            aprun command to use
         exec_name : str
             Name of the executable e.g. ocnicepost.x
 
@@ -174,23 +182,36 @@ class OceanIceProducts(Task):
         -------
         None
         """
-        os.chdir(self.task_config.DATA)
+        os.chdir(workdir)
 
-        exec_cmd = Executable(self.task_config.APRUN_OCNICEPOST)
-        exec_cmd.add_default_arg(os.path.join(self.task_config.DATA, exec_name))
+        exec_cmd = Executable(aprun_cmd)
+        exec_cmd.add_default_arg(os.path.join(workdir, exec_name))
 
-        self._call_executable(exec_cmd)
+        OceanIceProducts._call_executable(exec_cmd)
 
-
+    @staticmethod
     @logit(logger)
-    def netCDF_to_grib2(self, grid: str) -> None:
+    def netCDF_to_grib2(config: Dict, grid: str) -> None:
+        """Convert interpolated netCDF file to grib2
 
-        os.chdir(self.task_config.DATA)
+        Parameters
+        ----------
+        config : Dict
+            Configuration dictionary for the task
+        grid : str
+            Target product grid to process
 
-        exec_cmd = Executable(os.path.join(self.task_config.HOMEgfs, "ush", "oceanice_nc2grib2.sh"))
-        arguments = [self.task_config.component, grid, self.task_config.valid_datetime.strftime("%Y%m%d%H"), "0-6"]
-        if self.task_config.component == 'ocean':
-            levs = self.task_config.oceanice_yaml.ocean.namelist.ocean_levels
+        Returns
+        ------
+        None
+        """
+
+        os.chdir(config.DATA)
+
+        exec_cmd = Executable(config.oceanice_yaml.nc2grib2.script)
+        arguments = [config.component, grid, config.valid_datetime.strftime("%Y%m%d%H"), config.oceanice_yaml.nc2grib2.avg_period,]
+        if config.component == 'ocean':
+            levs = config.oceanice_yaml.ocean.namelist.ocean_levels
             arguments.append(':'.join(map(str, levs)))
 
         logger.info(f"Executing {exec_cmd} with arguments {arguments}")
@@ -231,19 +252,24 @@ class OceanIceProducts(Task):
             logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
             raise WorkflowException(f"{exec_cmd}")
 
+    @staticmethod
     @logit(logger)
-    def finalize(self) -> None:
+    def finalize(config: Dict) -> None:
         """Perform closing actions of the task.
         Copy data back from the DATA/ directory to COM/
 
         Parameters
         ----------
-        None
+        config: Dict
+            Configuration dictionary for the task
 
+        Returns
+        -------
+        None
         """
 
         # Copy "component" specific generated data to COM/ directory
-        data_out = self.task_config.oceanice_yaml[self.task_config.component].data_out
+        data_out = config.oceanice_yaml[config.component].data_out
 
         logger.info(f"Copy processed data to COM/ directory")
         FileHandler(data_out).sync()
