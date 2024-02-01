@@ -46,8 +46,8 @@ class GFSCycledAppConfig(AppConfig):
                         'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost',
                         'ocnanalvrfy']
 
-        if self.do_ocean:
-            configs += ['ocnpost']
+        if self.do_ocean or self.do_ice:
+            configs += ['oceanice_products']
 
         configs += ['sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
@@ -175,7 +175,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_upp:
             gdas_tasks += ['atmupp']
-        gdas_tasks += ['atmprod']
+        gdas_tasks += ['atmosprod']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -209,7 +209,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_upp:
             gfs_tasks += ['atmupp']
-        gfs_tasks += ['atmprod']
+        gfs_tasks += ['atmosprod']
 
         if self.do_goes:
             gfs_tasks += ['goesupp']

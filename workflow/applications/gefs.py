@@ -45,6 +45,6 @@ class GEFSAppConfig(AppConfig):
         if self.nens > 0:
             tasks += ['efcs']
 
-        tasks += ['atmprod']
+        tasks += ['atmosprod']
 
         return {f"{self._base['CDUMP']}": tasks}
