@@ -83,7 +83,7 @@ pipeline {
                                         sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
-                                        sh( script: "source ${HOME/workflow/gw_setup.sh}", returnStatus: true)
+                                        sh( script: "source ${HOME}/workflow/gw_setup.sh", returnStatus: true)
                                         checkout scm
                                         //sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
