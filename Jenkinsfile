@@ -72,7 +72,7 @@ pipeline {
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
                                         checkout scm
-                                        //sh( script: "git submodule update --init --recursive", returnStatus: true) 
+                                        sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(" ").trim().replaceAll("null", "")
