@@ -41,7 +41,7 @@ pipeline {
                     HOME = "${WORKSPACE}/TESTDIR"
                     sh( script: "mkdir -p ${HOME}", returnStatus: true)
                     dir("${HOME}") {
-                       checkout_shallow()
+                       checkout scm
                     }
                     pullRequest.addLabel("CI-${machine}-Building")
                     if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Ready") } ) {
