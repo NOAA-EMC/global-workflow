@@ -2,16 +2,6 @@ def MACHINE = 'none'
 def machine = 'none'
 def HOME = 'none'
 
-def checkout_shallow () {
-    checkout([
-       $class: 'GitSCM', 
-       branches: scm.branches, 
-       doGenerateSubmoduleConfigurations: false, 
-       extensions: [[$class: 'SubmoduleOption', disableSubmodules: true]], 
-       userRemoteConfigs: scm.userRemoteConfigs
-    ])
-}
-
 pipeline {
     agent { label 'built-in' }
 
@@ -86,7 +76,7 @@ pipeline {
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
                                         sh( script: "source ${HOME}/workflow/gw_setup.sh", returnStatus: true)
-                                        checkout_shallow()
+                                        checkout scm
                                         sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args_list = builds_file['builds']
