@@ -21,7 +21,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
+export FIXam=${FIXam:-$HOMEgfs/fix/am}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
@@ -59,7 +59,7 @@ SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
 
 # level info file
-SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
+SIGLEVEL=${SIGLEVEL:-${FIXam}/global_hyblev.l${LEVS}.txt}
 
 # forecast files
 APREFIX=${APREFIX:-""}
@@ -129,7 +129,7 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
       $NLN $ATMF09ENS  fcst.ensres.09
    fi
    export OMP_NUM_THREADS=$NTHREADS_CHGRES
-   SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS_ENKF}.txt}
+   SIGLEVEL=${SIGLEVEL:-${FIXam}/global_hyblev.l${LEVS_ENKF}.txt}
 
    if [ $USE_CFP = "YES" ]; then
       [[ -f $DATA/mp_chgres.sh ]] && rm $DATA/mp_chgres.sh

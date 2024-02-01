@@ -33,25 +33,18 @@ export PYTHONPATH=${USHens_tracker}/FSUgenesisPY:${PYTHONPATH}
 ##############################################
 # Define COM and Data directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMINgfs=${COMIN}
-#export gfsdir=${COMINgfs}
-export gfsdir=${ROTDIR}
-export COMINgdas=${COMIN}
-export gdasdir=${COMINgdas}
-export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GENESIS
+YMD=${PDY} HH=${cyc} GRID="0p25" generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
 
-if [ ${RUN_ENVIR} = "nco" ]; then
-    export COMOUThur=${COMROOTp1}/hur/${envir}/global
-    export COMOUTatcf=${COMROOTp1}/nhc/${envir}/atcf
-    mkdir -m 775 -p ${COMOUThur} ${COMOUTatcf}
-else
-#    export COMOUThur=$COMOUT
-#    export COMOUTatcf=$COMOUT
-    export COMOUThur=${DATA}
-    export COMOUTatcf=${DATA}
-fi
+# The following variables are used by the tracker scripts which are outside
+#   of global-workflow and therefore can't be standardized at this time
+export COMIN=${COM_ATMOS_GRIB_0p25}
+export gfsdir=${COM_ATMOS_GRIB_0p25}
+export COMINgfs=${COM_ATMOS_GRIB_0p25}
+
+export COMOUT=${COM_ATMOS_GENESIS}
+
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 ##############################################
 # Run relevant script

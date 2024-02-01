@@ -42,7 +42,9 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['anal', 'analdiag']
 
         if self.do_jediocnvar:
-            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy']
+            configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
+                        'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost',
+                        'ocnanalvrfy']
 
         if self.do_ocean:
             configs += ['ocnpost']
@@ -133,8 +135,10 @@ class GFSCycledAppConfig(AppConfig):
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
         if self.do_jediocnvar:
-            gdas_gfs_common_tasks_before_fcst += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun',
-                                                  'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy']
+            gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep',
+                                                  'ocnanalbmat', 'ocnanalrun',
+                                                  'ocnanalchkpt', 'ocnanalpost',
+                                                  'ocnanalvrfy']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
@@ -206,6 +210,9 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_upp:
             gfs_tasks += ['atmupp']
         gfs_tasks += ['atmprod']
+
+        if self.do_goes:
+            gfs_tasks += ['goesupp']
 
         if self.do_vminmon:
             gfs_tasks += ['vminmon']

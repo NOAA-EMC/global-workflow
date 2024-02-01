@@ -12,12 +12,12 @@ pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this scr
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
-# 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
+# 2. RUNTESTS: A directory containing EXPDIR and COMROOT for experiments
 # # e.g. $> tree ./TEST_DIR
 # ./TEST_DIR
 # ├── HOMEgfs
 # └── RUNTESTS
-#     ├── COMROT
+#     ├── COMROOT
 #     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}

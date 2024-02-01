@@ -12,12 +12,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
-
-####################################
-# Specify version numbers
-####################################
-export gfs_ver=${gfs_ver:-v15.0.0}
-
 ####################################
 # Specify Execution Areas
 ####################################
@@ -32,10 +26,7 @@ export USHgfs=${HOMEgfs:-${HOMEgfs}/ush}
 ###########################
 export EXT_FCST=NO
 
-export ROTDIR=${ROTDIR:-${COMROOT:?}/${NET}/${envir}}
-export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
 
 ########################################################
 # Execute the script.

@@ -55,8 +55,8 @@ export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
 export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
-export FIXgsm=${FIXgsm:-${HOMEgfs}/fix/am}
-export FIXfv3=${FIXfv3:-${HOMEgfs}/fix/orog}
+export FIXam=${FIXam:-${HOMEgfs}/fix/am}
+export FIXorog=${FIXorog:-${HOMEgfs}/fix/orog}
 
 # FV3 specific info (required for global_cycle)
 export CASE=${CASE:-"C384"}
@@ -176,8 +176,8 @@ if [[ ${DOIAU} = "YES" ]]; then
                 "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
         ${NLN} "${COM_ATMOS_RESTART_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
         ${NLN} "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
-        ${NLN} "${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc"                         "${DATA}/fngrid.00${n}"
-        ${NLN} "${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc"                     "${DATA}/fnorog.00${n}"
+        ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"                         "${DATA}/fngrid.00${n}"
+        ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                     "${DATA}/fnorog.00${n}"
     done
 
     export APRUNCY=${APRUN_CYCLE}
@@ -199,8 +199,8 @@ for n in $(seq 1 ${ntiles}); do
     fi
     ${NLN} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
     ${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
-    ${NLN} "${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc"                       "${DATA}/fngrid.00${n}"
-    ${NLN} "${FIXfv3}/${CASE}/${CASE}_oro_data.tile${n}.nc"                   "${DATA}/fnorog.00${n}"
+    ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"                       "${DATA}/fngrid.00${n}"
+    ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                   "${DATA}/fnorog.00${n}"
 done
 
 export APRUNCY=${APRUN_CYCLE}

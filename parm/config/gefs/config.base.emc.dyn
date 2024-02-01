@@ -30,9 +30,15 @@ export UTILgfs=${HOMEgfs}/util
 export EXECgfs=${HOMEgfs}/exec
 export SCRgfs=${HOMEgfs}/scripts
 
-export FIXcice=${HOMEgfs}/fix/cice
-export FIXmom=${HOMEgfs}/fix/mom6
-export FIXreg2grb2=${HOMEgfs}/fix/reg2grb2
+export FIXam="${FIXgfs}/am"
+export FIXaer="${FIXgfs}/aer"
+export FIXcpl="${FIXgfs}/cpl"
+export FIXlut="${FIXgfs}/lut"
+export FIXorog="${FIXgfs}/orog"
+export FIXcice="${FIXgfs}/cice"
+export FIXmom="${FIXgfs}/mom6"
+export FIXreg2grb2="${FIXgfs}/reg2grb2"
+export FIXugwd="${FIXgfs}/ugwd"
 
 ########################################################################
 
@@ -96,7 +102,7 @@ export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/${PSLOT}"
-export ROTDIR="@ROTDIR@/${PSLOT}"
+export ROTDIR="@COMROOT@/${PSLOT}"
 
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
 export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
@@ -148,35 +154,27 @@ export OPS_RES="C768" # Do not change
 export LEVS=128
 export CASE="@CASECTL@"  # CASE is required in GEFS to determine ocean/ice/wave resolutions
 export CASE_ENS="@CASEENS@"
-# TODO: This should not depend on $CASE or $CASE_ENS
-# These are the currently available grid-combinations
+export OCNRES="@OCNRES@"
+export ICERES="${OCNRES}"
+# These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
-        export OCNRES=500
         export waveGRD='glo_500'
         ;;
-    "C96")
-        export OCNRES=100
-        export waveGRD='glo_200'
-        ;;
-    "C192")
-        export OCNRES=050
+    "C96" | "C192")
         export waveGRD='glo_200'
         ;;
     "C384")
-        export OCNRES=025
         export waveGRD='glo_025'
         ;;
-    "C768")
-        export OCNRES=025
-        export waveGRD='mx025'
+    "C768" | "C1152")
+           export waveGRD='mx025'
         ;;
     *)
-        export OCNRES=025
-        export waveGRD='glo_025'
+        echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
+        exit 1
         ;;
 esac
-export ICERES=${OCNRES}
 
 case "${APP}" in
   ATM)
@@ -220,6 +218,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 
 # GFS output and frequency
 export FHMIN_GFS=0
+export FHMIN=${FHMIN_GFS}
 
 export FHMAX_GFS_00=120
 export FHMAX_GFS_06=120
@@ -272,7 +271,7 @@ export NMEM_ENS=@NMEM_ENS@
 
 # set default member number memdir for control
 # this will be overwritten for the perturbed members
-export ENSMEM="000"
+export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future

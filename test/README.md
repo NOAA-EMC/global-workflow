@@ -24,11 +24,11 @@ Where `dirA` and `dirB` are the two cycle directories (`.../gfs.YYYYMMDD/HH/`)
 OR
 
 ```
-./diff_ROTDIR.sh rotdir cdate expA expB
+./diff_ROTDIR.sh comroot cdate expA expB
 ```
 
 Where:
-- `rotdir` is the root of your rotdirs (the portion of path the experiments share)
+- `comroot` is the root of your rotdirs (the portion of path the experiments share)
 - `cdate` is the datetime of the cycle in YYYMMDDHH format
 - `expA` and `expB` are the experiment names ($PSLOT) of each experiment
 

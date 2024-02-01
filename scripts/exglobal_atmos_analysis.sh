@@ -289,7 +289,6 @@ else
 fi
 
 # GSI Fix files
-RTMFIX=${CRTM_FIX}
 BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
 SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
@@ -408,22 +407,22 @@ fi
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
 for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
-   ${NLN} ${RTMFIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
-   ${NLN} ${RTMFIX}/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
+   ${NLN} ${CRTM_FIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
+   ${NLN} ${CRTM_FIX}/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
 done
-${NLN} ${RTMFIX}/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
+${NLN} ${CRTM_FIX}/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
 
-${NLN} ${RTMFIX}/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.IRland.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRland.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.IRsnow.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRsnow.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.VISice.EmisCoeff.bin   ./crtm_coeffs/NPOESS.VISice.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.VISland.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISland.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.EmisCoeff.bin
-${NLN} ${RTMFIX}/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
-${NLN} ${RTMFIX}/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
-${NLN} ${RTMFIX}/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
-${NLN} ${RTMFIX}/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
+${NLN} ${CRTM_FIX}/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.IRland.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRland.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.IRsnow.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRsnow.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.VISice.EmisCoeff.bin   ./crtm_coeffs/NPOESS.VISice.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.VISland.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISland.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
+${NLN} ${CRTM_FIX}/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
+${NLN} ${CRTM_FIX}/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
 
 ##############################################################
 # Observational data

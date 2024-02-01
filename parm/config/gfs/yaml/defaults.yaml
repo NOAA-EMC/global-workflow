@@ -5,6 +5,7 @@ base:
   DO_JEDIOCNVAR: "NO"
   DO_JEDILANDDA: "NO"
   DO_MERGENSST: "NO"
+  DO_GOES: "NO"
 
 atmanl:
   IO_LAYOUT_X: 1

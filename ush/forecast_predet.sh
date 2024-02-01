@@ -58,7 +58,7 @@ common_predet(){
   FCSTEXEC=${FCSTEXEC:-ufs_model.x}
 
   # Directories.
-  FIX_DIR=${FIX_DIR:-${HOMEgfs}/fix}
+  FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
 
   # Model specific stuff
   PARM_POST=${PARM_POST:-${HOMEgfs}/parm/post}
@@ -117,15 +117,10 @@ FV3_predet(){
   FV3_OUTPUT_FH=""
   local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
-    for (( fh = FHMIN; fh < FHMAX_HF; fh = fh + FHOUT_HF )); do
-      FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
-    done
+    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
     fhr=${FHMAX_HF}
   fi
-  for (( fh = fhr; fh <= FHMAX; fh = fh + FHOUT )); do
-    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
-  done
-
+  FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
   # Model resolution specific parameters
   DELTIM=${DELTIM:-225}
