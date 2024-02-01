@@ -69,7 +69,7 @@ pipeline {
                             script {
                                 def HOMEgfs = "${HOME}/${system}"
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
-                                ws(HOMEgfs) {
+                                dir(HOMEgfs) {
                                     env.MACHINE_ID = MACHINE
                                     if (fileExists("sorc/BUILT_semaphor")) {
                                         sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
