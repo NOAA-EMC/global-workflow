@@ -62,6 +62,8 @@ ${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
+# Send DBN alerts for EnKF
+# TODO: Should these be in post manager instead?
 if [[ "${RUN}" =~ "enkf" ]] && [[ "${SENDDBN}" = YES ]]; then
   for (( fhr = FHOUT; fhr <= FHMAX; fhr + FHOUT )); do
     if (( fhr % 3 == 0 )); then

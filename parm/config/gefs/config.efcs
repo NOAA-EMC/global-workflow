@@ -11,7 +11,7 @@ echo "BEGIN: config.efcs"
 # export DO_ICE="NO"
 # export DO_WAVE="NO"
 
-export CASE=${CASE_ENS}
+export CASE="${CASE_ENS}"
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
@@ -28,14 +28,14 @@ source "${EXPDIR}/config.resources" efcs
 
 # nggps_diag_nml
 export FHOUT=${FHOUT_ENKF:-3}
-if [[ ${RUN} == "enkfgfs" ]]; then
-    export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT_ENKF:${FHOUT:-3}}}
+if [[ "${RUN}" == "enkfgfs" ]]; then
+    export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT}}
 fi
 
 # model_configure
 export FHMAX=${FHMAX_ENKF:-9}
-if [[ ${RUN} == "enkfgfs" ]]; then
-   export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX_ENKF:-${FHMAX}}}
+if [[ "${RUN}" == "enkfgfs" ]]; then
+   export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX}}
 fi
 
 # Use serial I/O for ensemble (lustre?)
@@ -61,6 +61,6 @@ export SPPT_LSCALE=500000.
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 
-export restart_interval=${restart_interval_gfs}
+export restart_interval="${restart_interval_gfs}"
 
 echo "END: config.efcs"
