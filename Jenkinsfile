@@ -1,7 +1,15 @@
 def MACHINE = 'none'
 def machine = 'none'
 def HOME = 'none'
-// NO OP for Orion seperate PR
+
+checkout([
+    $class: 'GitSCM', 
+    branches: scm.branches, 
+    doGenerateSubmoduleConfigurations: false, 
+    extensions: [[$class: 'SubmoduleOption', disableSubmodules: true]], 
+    userRemoteConfigs: scm.userRemoteConfigs
+])
+
 pipeline {
     agent { label 'built-in' }
 
@@ -37,7 +45,10 @@ pipeline {
             agent { label "${MACHINE}-emc" }
             steps ( timeout(time: 1, unit: 'HOURS') ) {
                 script {
+                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}/TESTDIR"
+                    sh( script: "mkdir -p ${HOME}", returnStatus: true)
+                    checkout
                     pullRequest.addLabel("CI-${machine}-Building")
                     if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Ready") } ) {
                         pullRequest.removeLabel("CI-${machine}-Ready")
@@ -63,16 +74,16 @@ pipeline {
                         steps {
                             script {
                                 def HOMEgfs = "${HOME}/${system}"
-                                properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
-                                dir(HOMEgfs) {
+                                ws(HOMEgfs) {
                                     env.MACHINE_ID = MACHINE
                                     if (fileExists("sorc/BUILT_semaphor")) {
                                         sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
+                                        sh( script: "source ${HOME/workflow/gw_setup.sh}", returnStatus: true)
                                         checkout scm
-                                        sh( script: "git submodule update --init --recursive", returnStatus: true) 
+                                        //sh( script: "git submodule update --init --recursive", returnStatus: true) 
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(" ").trim().replaceAll("null", "")
