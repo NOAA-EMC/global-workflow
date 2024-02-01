@@ -3,6 +3,7 @@ Load environment to run GFS workflow setup scripts on Hera
 ]])
 
 load(pathJoin("rocoto"))
+load(pathJoin("git","2.40.0"))
 
 prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
