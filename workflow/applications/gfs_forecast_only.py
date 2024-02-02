@@ -127,10 +127,10 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']
 
         if self.do_ocean:
-            tasks += ['ocean_products']
+            tasks += ['oceanprod']
 
         if self.do_ice:
-            tasks += ['ice_products']
+            tasks += ['iceprod']
 
         if self.do_wave:
             if self.do_wave_bnd:

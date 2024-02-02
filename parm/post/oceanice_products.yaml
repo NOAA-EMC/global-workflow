@@ -1,7 +1,6 @@
 ocnicepost:
   executable: "ocnicepost.x"
   namelist:
-    interpolation_weights_dir: "{{ DATA }}/"
     debug: False
   fix_data:
     mkdir:

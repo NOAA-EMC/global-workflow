@@ -116,7 +116,6 @@ class OceanIceProducts(Task):
         localconf = AttrDict()
         localconf.DATA = config.DATA
         localconf.component = config.component
-        localconf.interpolation_weights_dir = config.DATA
 
         localconf.source_tripole_dims = ', '.join(map(str, OceanIceProducts.TRIPOLE_DIMS_MAP[config.model_grid]))
         localconf.target_latlon_dims = ', '.join(map(str, OceanIceProducts.LATLON_DIMS_MAP[product_grid]))
@@ -183,6 +182,7 @@ class OceanIceProducts(Task):
         None
         """
         os.chdir(workdir)
+        logger.debug(f"Current working directory: {os.getcwd()}")
 
         exec_cmd = Executable(aprun_cmd)
         exec_cmd.add_default_arg(os.path.join(workdir, exec_name))

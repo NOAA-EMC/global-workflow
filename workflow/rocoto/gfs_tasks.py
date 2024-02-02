@@ -927,9 +927,12 @@ class GFSTasks(Tasks):
         return task
 
     @staticmethod
-    def _get_ufs_postproc_grps(cdump, config):
+    def _get_ufs_postproc_grps(cdump, config, component='atmos'):
 
         fhrs = Tasks._get_forecast_hours(cdump, config)
+        # ocean/ice components do not have fhr 0 as they are averaged output
+        if component not in ['atmos']:
+            fhrs.remove(0)
 
         nfhrs_per_grp = config.get('NFHRS_PER_GROUP', 1)
         ngrps = len(fhrs) // nfhrs_per_grp if len(fhrs) % nfhrs_per_grp == 0 else len(fhrs) // nfhrs_per_grp + 1
@@ -1029,11 +1032,11 @@ class GFSTasks(Tasks):
         history_file_tmpl = component_dict['history_file_tmpl']
 
         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs[config])
+        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs[config], component=component)
         var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#lst#'}
+        postenvar_dict = {'FHRLST': '#lst#', 'COMPONENT': component}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
