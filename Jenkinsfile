@@ -68,10 +68,11 @@ pipeline {
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                                 dir(HOMEgfs) {
                                     env.MACHINE_ID = MACHINE
-                                    if (fileExists("sorc/BUILT_semaphor")) {
-                                        sh( script: "cat sorc/BUILT_semaphor", returnStdout: true).trim()
+                                    if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
+                                        sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
+                                        deleteDir()
                                         checkout scm
                                         sh( script: "source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive", returnStatus: true)
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
