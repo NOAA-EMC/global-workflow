@@ -36,7 +36,6 @@ fix/gsi
 fix/lut
 fix/mom6
 fix/orog
-fix/reg2grb2
 fix/sfc_climo
 fix/ugwd
 fix/verif
@@ -131,7 +130,6 @@ sorc/radmon_bcor.fd
 sorc/radmon_time.fd
 sorc/rdbfmsua.fd
 sorc/recentersigp.fd
-sorc/reg2grb2.fd
 sorc/supvit.fd
 sorc/syndat_getjtbul.fd
 sorc/syndat_maksynrc.fd

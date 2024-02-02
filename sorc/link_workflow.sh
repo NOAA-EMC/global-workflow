@@ -107,7 +107,6 @@ for dir in aer \
             lut \
             mom6 \
             orog \
-            reg2grb2 \
             sfc_climo \
             ugwd \
             verif \
@@ -247,7 +246,7 @@ cd "${HOMEgfs}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
   syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x \
-  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x reg2grb2.x ocnicepost.x
+  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x
 do
   [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
@@ -401,7 +400,6 @@ for prog in enkf_chgres_recenter_nc.fd \
   mkgfsawps.fd \
   overgridid.fd \
   rdbfmsua.fd \
-  reg2grb2.fd \
   supvit.fd \
   syndat_getjtbul.fd \
   syndat_maksynrc.fd \
