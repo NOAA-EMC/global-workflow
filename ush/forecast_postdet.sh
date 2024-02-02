@@ -782,7 +782,7 @@ MOM6_postdet() {
   esac
 
   if [[ "${RUN}" =~ "gdas" ]]; then
-    local interval rdate rdatestr
+    local interval
     if [[ "${DOIAU}" = "YES" ]]; then
       # Link restarts at the beginning of the next cycle from DATA to COM
       interval=$(( assim_freq / 2 ))
@@ -790,8 +790,6 @@ MOM6_postdet() {
       # Link restarts at the middle of the next cycle from DATA to COM
       interval=${assim_freq}
     fi
-    rdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${interval} hours" +%Y%m%d%H)
-    rdatestr=$(date +%Y-%m-%d-%H -d "${rdate:0:8} ${rdate:8:2}")
     ${NLN} "${COM_OCEAN_RESTART}/${idate:0:8}.${idate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/"
     case ${OCNRES} in
       "025")
@@ -1008,14 +1006,12 @@ CMEPS_postdet() {
   # Link mediator restarts from DATA to COM
   # DANGER DANGER DANGER - Linking mediator restarts to COM causes the model to fail with a message like this below:
   # Abort with message NetCDF: File exists && NC_NOCLOBBER in file pio-2.5.7/src/clib/pioc_support.c at line 2173
-  # Instead of linking, copy the mediator files after the model finishes
-  #local idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  #while [[ ${idate} -le ${forecast_end_cycle} ]]; do
-  #  local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
-  #  local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-  #  ${NLN} "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
-  #  local idate=$(date --utc -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  #done
+  # Instead of linking, copy the mediator files after the model finishes.  See CMEPS_out() below.
+  #local rdate rdatestr seconds mediator_file
+  #rdate=${forecast_end_cycle}
+  #seconds=$(to_seconds "${rdate:8:2}"0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+  #rdatestr="${rdate:0:4}-${rdate:4:2}-${rdate:6:2}-${seconds}"
+  #${NLN} "${COM_MED_RESTART}/${rdate:0:8}.${rdate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/CMEPS_RESTART/ufs.cpld.cpl.r.${rdatestr}.nc"
 
 }
 
@@ -1025,19 +1021,15 @@ CMEPS_out() {
   # Linking mediator restarts to COM causes the model to fail with a message.
   # Abort with message NetCDF: File exists && NC_NOCLOBBER in file pio-2.5.7/src/clib/pioc_support.c at line 2173
   # Copy mediator restarts from DATA to COM
-  # TODO: Do we need to copy mediator restarts to COM for all restart_interval's?
-  local seconds idate idatestr mediator_file
-  idate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  while [[ ${idate} -le ${forecast_end_cycle} ]]; do
-    seconds=$(to_seconds "${idate:8:2}"0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
-    idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    mediator_file="${DATA}/CMEPS_RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
-    if [[ -f ${mediator_file} ]]; then
-      ${NCP} "${mediator_file}" "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
-    else
-      echo "Mediator restart ${mediator_file} not found."
-    fi
-    idate=$(date --utc -d "${idate:0:8} ${idate:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  done
+  local rdate rdatestr seconds mediator_file
+  rdate=${forecast_end_cycle}
+  seconds=$(to_seconds "${rdate:8:2}"0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+  rdatestr="${rdate:0:4}-${rdate:4:2}-${rdate:6:2}-${seconds}"
+  mediator_file="${DATA}/CMEPS_RESTART/ufs.cpld.cpl.r.${rdatestr}.nc"
+  if [[ -f ${mediator_file} ]]; then
+    ${NCP} "${mediator_file}" "${COM_MED_RESTART}/${rdate:0:8}.${rdate:8:2}0000.ufs.cpld.cpl.r.nc"
+  else
+    echo "Mediator restart ${mediator_file} not found."
+  fi
 
 }
