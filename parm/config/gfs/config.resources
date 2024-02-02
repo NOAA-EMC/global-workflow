@@ -649,7 +649,7 @@ case ${step} in
     export npe_oceanice_products=1
     export npe_node_oceanice_products=1
     export nth_oceanice_products=1
-    export memory_oceanice_products="96G"
+    export memory_oceanice_products="96GB"
     ;;
 
   "upp")
@@ -659,6 +659,7 @@ case ${step} in
       ;;
       "C192" | "C384" | "C768")
         export npe_upp=120
+        export memory_upp="48GB"
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
