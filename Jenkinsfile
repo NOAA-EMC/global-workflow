@@ -44,8 +44,8 @@ pipeline {
                         checkout scm
                     }
                     // TODO get system build dirs from  ${HOME}/repo_pr/ci/cases/yamls/build.yaml
-                    sh( script: "rsync -p ${HOME}/repo_pr  ${HOME}/gfs", returnStatus: true)
-                    sh( script: "rsync -p ${HOME}/repo_pr  ${HOME}/gefs", returnStatus: true)
+                    sh( script: "rsync -a ${HOME}/repo_pr/  ${HOME}/gfs", returnStatus: true)
+                    sh( script: "rsync -a ${HOME}/repo_pr/  ${HOME}/gefs", returnStatus: true)
                     pullRequest.addLabel("CI-${machine}-Building")
                     if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Ready") } ) {
                         pullRequest.removeLabel("CI-${machine}-Ready")
@@ -71,7 +71,7 @@ pipeline {
                         steps {
                             script {
                                 def HOMEgfs = "${HOME}/${system}"
-                                sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
+                                // sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                                 dir(HOMEgfs) {
                                     env.MACHINE_ID = MACHINE
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
