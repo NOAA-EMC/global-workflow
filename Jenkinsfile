@@ -39,7 +39,13 @@ pipeline {
                 script {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}/TESTDIR"
-                    sh( script: "mkdir -p ${HOME}", returnStatus: true)
+                    sh( script: "mkdir -p ${HOME}/repo_pr", returnStatus: true)
+                    dir("${HOME}/repo_pr") {
+                        checkout scm
+                    }
+                    // TODO get system build dirs from  ${HOME}/repo_pr/ci/cases/yamls/build.yaml
+                    sh( script: "rsync -p ${HOME}/repo_pr  ${HOME}/gfs", returnStatus: true)
+                    sh( script: "rsync -p ${HOME}/repo_pr  ${HOME}/gefs", returnStatus: true)
                     pullRequest.addLabel("CI-${machine}-Building")
                     if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Ready") } ) {
                         pullRequest.removeLabel("CI-${machine}-Ready")
@@ -72,8 +78,6 @@ pipeline {
                                         sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
-                                        deleteDir()
-                                        checkout scm
                                         sh( script: "source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive", returnStatus: true)
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
                                         def build_args_list = builds_file['builds']
