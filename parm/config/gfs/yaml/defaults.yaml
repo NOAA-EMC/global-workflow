@@ -6,6 +6,7 @@ base:
   DO_JEDILANDDA: "NO"
   DO_MERGENSST: "NO"
   DO_GOES: "NO"
+  FHMAX_GFS: 120
 
 atmanl:
   IO_LAYOUT_X: 1
