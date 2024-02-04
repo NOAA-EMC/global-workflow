@@ -95,6 +95,7 @@ pipeline {
 
         stage('Setup RUNTESTS') {
             agent { label "${MACHINE}-emc" }
+            options { skipDefaultCheckout() }
             steps {
                 script {
                     sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
