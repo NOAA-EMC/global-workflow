@@ -6,7 +6,7 @@ pipeline {
     agent { label 'built-in' }
 
     options {
-        //t disableConcurrentBuilds(abortPrevious: false)
+        // disableConcurrentBuilds(abortPrevious: false)
         skipDefaultCheckout(true)
         buildDiscarder(logRotator(numToKeepStr: '3'))
     }
