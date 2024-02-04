@@ -61,7 +61,7 @@ pipeline {
                 }
                 stages {
                     options {
-                       checkoutToSubdirectory('${HOME}/${system}') }
+                       checkoutToSubdirectory('${HOME}/${system}')
                     }
                     stage("build system") {
                         steps {
