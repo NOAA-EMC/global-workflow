@@ -6,8 +6,7 @@ pipeline {
     agent { label 'built-in' }
 
     options {
-        //t disableConcurrentBuilds(abortPrevious: false)
-        skipDefaultCheckout(true)
+        skipDefaultCheckout()
         buildDiscarder(logRotator(numToKeepStr: '3'))
     }
 
@@ -51,9 +50,9 @@ pipeline {
         stage('Build System') {
             matrix {
                 agent { label "${MACHINE}-emc" }
-                options {
-                    throttle(['global_matrix_build'])
-                }
+                //options {
+                //    throttle(['global_matrix_build'])
+                //}
                 axes {
                     axis { 
                         name "system"
@@ -61,6 +60,9 @@ pipeline {
                     }
                 }
                 stages {
+                    options {
+                       checkoutToSubdirectory('${HOME}/${system}') }
+                    }
                     stage("build system") {
                         steps {
                             script {
@@ -72,7 +74,6 @@ pipeline {
                                         sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
                                     } else {
-                                        deleteDir()
                                         checkout scm
                                         sh( script: "source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive", returnStatus: true)
                                         def builds_file = readYaml file: "ci/cases/yamls/build.yaml"
