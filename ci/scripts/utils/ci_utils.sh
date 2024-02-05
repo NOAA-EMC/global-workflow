@@ -35,7 +35,8 @@ function cancel_batch_jobs() {
       fi
     done
   # cancel slurm jobs <substring>
-  else 
+    ;;
+  "torque")
     job_ids=$(squeue -u "${USER}" -h -o "%i")
 
     for job_id in ${job_ids}; do
