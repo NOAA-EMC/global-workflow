@@ -159,7 +159,7 @@ class GEFSTasks(Tasks):
 
         return task
 
-    def atmosprod(self):
+    def atmos_prod(self):
         atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"], {'MEMDIR': 'mem#member#'})
         deps = []
         data = f'{atm_master_path}/{self.cdump}.t@Hz.master.grb2f#fhr#'
@@ -167,21 +167,21 @@ class GEFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        atmosprod_envars = self.envars.copy()
+        atmos_prod_envars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
                           'FHRLST': '#fhr#',
                           }
         for key, value in postenvar_dict.items():
-            atmosprod_envars.append(rocoto.create_envar(name=key, value=str(value)))
+            atmos_prod_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('atmos_products')
 
-        task_name = f'atmosprod_mem#member#_f#fhr#'
+        task_name = f'atmos_prod_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': atmosprod_envars,
+                     'envars': atmos_prod_envars,
                      'cycledef': 'gefs',
                      'command': f'{self.HOMEgfs}/jobs/rocoto/atmos_products.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -191,13 +191,13 @@ class GEFSTasks(Tasks):
 
         fhr_var_dict = {'fhr': ' '.join([str(fhr).zfill(3) for fhr in
                                          self._get_forecast_hours('gefs', self._configs['atmos_products'])])}
-        fhr_metatask_dict = {'task_name': 'atmosprod_#member#',
+        fhr_metatask_dict = {'task_name': 'atmos_prod_#member#',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict
                              }
 
         member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': 'atmosprod',
+        member_metatask_dict = {'task_name': 'atmos_prod',
                                 'task_dict': fhr_metatask_dict,
                                 'var_dict': member_var_dict
                                 }

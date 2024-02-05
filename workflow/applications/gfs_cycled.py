@@ -175,7 +175,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_upp:
             gdas_tasks += ['atmupp']
-        gdas_tasks += ['atmosprod']
+        gdas_tasks += ['atmos_prod']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -207,9 +207,15 @@ class GFSCycledAppConfig(AppConfig):
 
         gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
+        if self.do_ocean:
+            gfs_tasks += ['ocean_prod']
+
+        if self.do_ice:
+            gfs_tasks += ['ice_prod']
+
         if self.do_upp:
             gfs_tasks += ['atmupp']
-        gfs_tasks += ['atmosprod']
+        gfs_tasks += ['atmos_prod']
 
         if self.do_goes:
             gfs_tasks += ['goesupp']

@@ -99,7 +99,7 @@ class GFSTasks(Tasks):
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': 'gdasatmosprod', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gdasatmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
@@ -1014,13 +1014,13 @@ class GFSTasks(Tasks):
 
         return task
 
-    def atmosprod(self):
+    def atmos_prod(self):
         return self._atmosoceaniceprod('atmos')
 
-    def oceanprod(self):
+    def ocean_prod(self):
         return self._atmosoceaniceprod('ocean')
 
-    def iceprod(self):
+    def ice_prod(self):
         return self._atmosoceaniceprod('ice')
 
     def _atmosoceaniceprod(self, component: str):
@@ -1058,7 +1058,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource(component_dict['config'])
 
-        task_name = f'{self.cdump}{component}prod#{varname1}#'
+        task_name = f'{self.cdump}{component}_prod#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1349,7 +1349,7 @@ class GFSTasks(Tasks):
     def awips_20km_1p0deg(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1390,7 +1390,7 @@ class GFSTasks(Tasks):
     def awips_g2(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1431,7 +1431,7 @@ class GFSTasks(Tasks):
     def gempak(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1454,7 +1454,7 @@ class GFSTasks(Tasks):
 
     def gempakmeta(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1477,7 +1477,7 @@ class GFSTasks(Tasks):
 
     def gempakmetancdc(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1500,7 +1500,7 @@ class GFSTasks(Tasks):
 
     def gempakncdcupapgif(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1639,7 +1639,7 @@ class GFSTasks(Tasks):
 
     def tracker(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1662,7 +1662,7 @@ class GFSTasks(Tasks):
 
     def genesis(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1685,7 +1685,7 @@ class GFSTasks(Tasks):
 
     def genesis_fsu(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1708,7 +1708,7 @@ class GFSTasks(Tasks):
 
     def fit2obs(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1773,7 +1773,7 @@ class GFSTasks(Tasks):
 
     def mos_stn_prep(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1796,7 +1796,7 @@ class GFSTasks(Tasks):
 
     def mos_grd_prep(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1819,7 +1819,7 @@ class GFSTasks(Tasks):
 
     def mos_ext_stn_prep(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1842,7 +1842,7 @@ class GFSTasks(Tasks):
 
     def mos_ext_grd_prep(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2160,7 +2160,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}genesis_fsu'}
             deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmosprod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostsbs'}
@@ -2171,12 +2171,12 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
-            if self.app_config.mode in ['forecast-only']:
-                dep_dict = {'type': 'metatask', 'name': f'{self.cdump}oceanprod'}
+            if self.cdump in ['gfs']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocean_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ice:
-            if self.app_config.mode in ['forecast-only']:
-                dep_dict = {'type': 'metatask', 'name': f'{self.cdump}iceprod'}
+            if self.cdump in ['gfs']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # MOS job dependencies
         if self.cdump in ['gfs'] and self.app_config.do_mos:
