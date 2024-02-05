@@ -37,7 +37,7 @@ pipeline {
                 script {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}/TESTDIR"
-                    sh( script: "mkdir -p ${HOME}", returnStatus: true)
+                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
                     pullRequest.addLabel("CI-${machine}-Building")
                     if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Ready") } ) {
                         pullRequest.removeLabel("CI-${machine}-Ready")
@@ -98,7 +98,6 @@ pipeline {
             options { skipDefaultCheckout() }
             steps {
                 script {
-                    sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
                     if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
                          pullRequest.removeLabel("CI-${machine}-Building")
                     }
