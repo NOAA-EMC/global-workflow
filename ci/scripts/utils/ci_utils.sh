@@ -22,8 +22,8 @@ function cancel_batch_jobs() {
   local job_ids
 
   scheduler=$(determine_scheduler)
-  case ${scheduler} in;
-    "torque")
+
+  if [[ "${schduler}" == "torque" ]]; then
     job_ids=$(qstat -u "${USER}" | awk '{print $1}') || true
 
     for job_id in ${job_ids}; do
@@ -34,9 +34,9 @@ function cancel_batch_jobs() {
         continue
       fi
     done
-  # cancel slurm jobs <substring>
-    ;;
-  "torque")
+
+  elif [[ "${scheduler}" == "slurm" ]]; then
+
     job_ids=$(squeue -u "${USER}" -h -o "%i")
 
     for job_id in ${job_ids}; do
@@ -47,13 +47,11 @@ function cancel_batch_jobs() {
         continue
       fi
     done
-    ;;
-  *)
-    echo "FATAL: Unknown/unsupported job scheduler"
-    exit 1
-    ;;
-  esac
-}
+
+  else
+      echo "FATAL: Unknown/unsupported job scheduler"
+      exit 1
+  fi
 
 
 function get_pr_case_list () {
