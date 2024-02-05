@@ -120,15 +120,17 @@ pipeline {
                 }
                 stages {
                     stage('Create Experiment') {
-                        steps { ws("${HOME}/gfs") {
+                        steps { 
                                 script {
                                     sh( script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp", returnStatus: true)
                                     def yaml_case = readYaml file: "${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp"
                                     system = yaml_case.experiment.system
                                     def HOMEgfs = "${HOME}/${system}"
                                     env.RUNTESTS = "${HOME}/RUNTESTS"
-                                    sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
-                                } }
+                                    ws(HOMEgfs) {
+                                      sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
+                                    }
+                                } 
                         }
                     }
                     stage('Run Experiments') {
