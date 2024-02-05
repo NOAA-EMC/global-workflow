@@ -7,7 +7,6 @@ pipeline {
 
     options {
         skipDefaultCheckout()
-        buildDiscarder(logRotator(numToKeepStr: '3'))
     }
 
     stages {
@@ -68,7 +67,8 @@ pipeline {
                             script {
                                 def HOMEgfs = "${HOME}/${system}"
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
-                                dir(HOMEgfs) {
+                                ws(HOMEgfs) {
+                                    checkoutToSubdirectory('${HOME}/${system}')
                                     env.MACHINE_ID = MACHINE
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
                                         sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
