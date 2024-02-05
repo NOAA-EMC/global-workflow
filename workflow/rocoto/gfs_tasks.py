@@ -1330,8 +1330,7 @@ class GFSTasks(Tasks):
         if cdump in ['gdas']:
             fhrs = range(fhmin, fhmax + fhout, fhout)
         elif cdump in ['gfs']:
-            fhmax = np.max(
-                [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
+            fhmax = config['FHMAX_GFS']
             fhout = config['FHOUT_GFS']
             fhmax_hf = config['FHMAX_HF_GFS']
             fhout_hf = config['FHOUT_HF_GFS']
