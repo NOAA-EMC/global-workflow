@@ -68,54 +68,6 @@ if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${
   skip_mediator=false
 fi
 
-case "${machine}" in
-  "WCOSS2")
-    npe_node_max=128
-    ;;
-  "HERA" | "ORION" )
-    npe_node_max=40
-    ;;
-  "HERCULES" )
-    npe_node_max=80
-    ;;
-  "JET")
-    case "${PARTITION_BATCH}" in
-      "xjet")
-        npe_node_max=24
-        ;;
-      "vjet" | "sjet")
-        npe_node_max=16
-        ;;
-      "kjet")
-        npe_node_max=40
-        ;;
-      *)
-        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
-        exit 1
-        ;;
-    esac
-    ;;
-  "S4")
-    case "${PARTITION_BATCH}" in
-      "s4")
-        npe_node_max=32
-        ;;
-      "ivy")
-        npe_node_max=20
-        ;;
-      *)
-        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
-        exit 1
-        ;;
-    esac
-    ;;
-  *)
-    echo "FATAL ERROR: Unrecognized machine ${machine}"
-    exit 14
-    ;;
-esac
-export npe_node_max
-
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
     "C48")
