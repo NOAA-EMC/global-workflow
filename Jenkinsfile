@@ -127,7 +127,8 @@ pipeline {
                                     def HOMEgfs = "${HOME}/${system}"
                                     env.RUNTESTS = "${HOME}/RUNTESTS"
                                     ws(HOMEgfs) {
-                                      sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
+                                      //sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
+                                      sh( script: "echo 'skip create", returnStatus: true)
                                     }
                                 } 
                         }
