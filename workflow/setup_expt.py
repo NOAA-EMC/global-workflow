@@ -323,7 +323,8 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
-        "@APP@": inputs.app
+        "@APP@": inputs.app,
+        "@NMEM_ENS@": getattr(inputs, 'nens', 0)
     }
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
@@ -331,7 +332,6 @@ def edit_baseconfig(host, inputs, yaml_dict):
     if getattr(inputs, 'nens', 0) > 0:
         extend_dict = {
             "@CASEENS@": f'C{inputs.resensatmos}',
-            "@NMEM_ENS@": inputs.nens,
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
