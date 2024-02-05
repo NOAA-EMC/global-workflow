@@ -22,7 +22,7 @@ def main():
             'COM_OCEAN_HISTORY', 'COM_OCEAN_GRIB',
             'COM_ICE_HISTORY', 'COM_ICE_GRIB',
             'APRUN_OCNICEPOST',
-            'component', 'forecast_hour', 'valid_datetime',
+            'component', 'forecast_hour', 'valid_datetime', 'avg_period',
             'model_grid', 'product_grids', 'oceanice_yaml']
     oceanice_dict = AttrDict()
     for key in keys:
