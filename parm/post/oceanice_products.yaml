@@ -20,7 +20,6 @@ ocnicepost:
 
 nc2grib2:
   script: "{{ HOMEgfs }}/ush/oceanice_nc2grib2.sh"
-  avg_period: "0-6"
 
 ocean:
   namelist:

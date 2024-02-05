@@ -57,10 +57,16 @@ class OceanIceProducts(Task):
 
         valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
 
+        # TODO: This is a bit of a hack, but it works for now
+        # FIXME: find a better way to provide the averaging period
+        # This will be different for ocean and ice, so when they are made flexible, this will need to be addressed
+        avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_GFS:03d}-{self.config.FORECAST_HOUR:03d}"
+
         localdict = AttrDict(
             {'component': self.config.COMPONENT,
              'forecast_hour': self.config.FORECAST_HOUR,
              'valid_datetime': valid_datetime,
+             'avg_period': avg_period,
              'model_grid': model_grid,
              'product_grids': self.VALID_PRODUCT_GRIDS[model_grid]}
         )
@@ -209,7 +215,7 @@ class OceanIceProducts(Task):
         os.chdir(config.DATA)
 
         exec_cmd = Executable(config.oceanice_yaml.nc2grib2.script)
-        arguments = [config.component, grid, config.valid_datetime.strftime("%Y%m%d%H"), config.oceanice_yaml.nc2grib2.avg_period,]
+        arguments = [config.component, grid, config.current_cycle.strftime("%Y%m%d%H"), config.avg_period]
         if config.component == 'ocean':
             levs = config.oceanice_yaml.ocean.namelist.ocean_levels
             arguments.append(':'.join(map(str, levs)))
