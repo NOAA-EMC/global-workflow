@@ -21,8 +21,9 @@ function cancel_batch_jobs() {
   local substring=$1
   local job_ids
 
-  # cancel pbs jobs <substring>
-  if [[ ${MACHINE_ID} == "wcoss2" ]]; then
+  scheduler=$(determine_scheduler)
+  case ${scheduler} in;
+    "torque")
     job_ids=$(qstat -u "${USER}" | awk '{print $1}') || true
 
     for job_id in ${job_ids}; do
