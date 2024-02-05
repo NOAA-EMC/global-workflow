@@ -929,9 +929,18 @@ class GFSTasks(Tasks):
     @staticmethod
     def _get_ufs_postproc_grps(cdump, config, component='atmos'):
 
-        fhrs = Tasks._get_forecast_hours(cdump, config)
+        # Make a local copy of the config to avoid modifying the original
+        local_config = config.copy()
+
+        # Ocean/Ice components do not have a HF output option like the atmosphere
+        if component in ['ocean', 'ice']:
+            local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_GFS']
+
+        fhrs = Tasks._get_forecast_hours(cdump, local_config)
+
         # ocean/ice components do not have fhr 0 as they are averaged output
-        if component not in ['atmos']:
+        if component in ['ocean', 'ice']:
             fhrs.remove(0)
 
         nfhrs_per_grp = config.get('NFHRS_PER_GROUP', 1)
