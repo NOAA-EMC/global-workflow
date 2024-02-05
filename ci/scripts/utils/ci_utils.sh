@@ -52,6 +52,7 @@ function cancel_batch_jobs() {
       echo "FATAL: Unknown/unsupported job scheduler"
       exit 1
   fi
+}
 
 
 function get_pr_case_list () {
