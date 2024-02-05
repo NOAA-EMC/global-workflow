@@ -252,11 +252,7 @@ CICE_predet(){
   if [[ ! -d "${DATA}/CICE_RESTART" ]]; then mkdir -p "${DATA}/CICE_RESTART"; fi
 
   # CICE does not have a concept of high frequency output like FV3
-  CICE_OUTPUT_FH=""
-  local fhr
-  for (( fhr = FHMIN; fhr <= FHMAX; fhr = fhr + FHOUT )); do
-    CICE_OUTPUT_FH="${CICE_OUTPUT_FH} ${fhr}"
-  done
+  CICE_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT}" "${FHMAX}")
 
 }
 
@@ -271,11 +267,7 @@ MOM6_predet(){
   if [[ ! -d "${DATA}/MOM6_RESTART" ]]; then mkdir -p "${DATA}/MOM6_RESTART"; fi
 
   # MOM6 does not have a concept of high frequency output like FV3
-  MOM6_OUTPUT_FH=""
-  local fhr
-  for (( fhr = FHMIN; fhr <= FHMAX; fhr = fhr + FHOUT )); do
-    MOM6_OUTPUT_FH="${MOM6_OUTPUT_FH} ${fhr}"
-  done
+  MOM6_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT}" "${FHMAX}")
 
 }
 

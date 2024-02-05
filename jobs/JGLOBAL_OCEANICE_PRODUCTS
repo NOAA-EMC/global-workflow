@@ -9,8 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_
 ##############################################
 
 # Construct COM variables from templates
-if [[ "${COMPONENT}" == "ocean" ]]; then YMD=${PDY} HH=${cyc} generate_com -rx COM_OCEAN_HISTORY COM_OCEAN_GRIB; fi
-if [[ "${COMPONENT}" == "ice" ]]; then YMD=${PDY} HH=${cyc} generate_com -rx COM_ICE_HISTORY COM_ICE_GRIB; fi
+YMD="${PDY}" HH="${cyc}" generate_com -rx "COM_${COMPONENT^^}_HISTORY" "COM_${COMPONENT^^}_GRIB"
 
 ###############################################################
 # Run exglobal script
