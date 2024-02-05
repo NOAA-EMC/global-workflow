@@ -120,7 +120,7 @@ pipeline {
                 }
                 stages {
                     stage('Create Experiment') {
-                        steps {
+                        steps { ws("${HOME}/gfs") {
                                 script {
                                     sh( script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp", returnStatus: true)
                                     def yaml_case = readYaml file: "${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp"
@@ -128,11 +128,11 @@ pipeline {
                                     def HOMEgfs = "${HOME}/${system}"
                                     env.RUNTESTS = "${HOME}/RUNTESTS"
                                     sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
-                                }
+                                } }
                         }
                     }
                     stage('Run Experiments') {
-                        steps {
+                        steps { ws("${HOME}/gfs") {
                             script {
                                 def HOMEgfs = "${HOME}/gfs"
                                 pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
@@ -144,7 +144,7 @@ pipeline {
                                 pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
                                 error("Failed to run experiments ${Case} on ${machine}")
                                 }
-                            }
+                            } }
                         }
                     }
                 }
