@@ -843,54 +843,33 @@ CICE_postdet() {
   vdatestr="${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2}-${seconds}"
   ${NLN} "${COM_ICE_HISTORY}/${RUN}.ice.t${cyc}z.ic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
 
-  # Link output files for CICE
-  if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
+  # Link CICE forecast output files from DATA/CICE_OUTPUT to COM
+  local source_file dest_file
+  for fhr in ${CICE_OUTPUT_FH}; do
+    fhr3=$(printf %03i "${fhr}")
 
-    # Link instantaneous CICE forecast output files from DATA/CICE_OUTPUT to COM
-    for fhr in ${CICE_OUTPUT_FH}; do
-      fhr3=$(printf %03i "${fhr}")
+    if [[ -z ${last_fhr:-} ]]; then
+      last_fhr=${fhr}
+      continue
+    fi
 
-      if [[ -z ${last_fhr:-} ]]; then
-        last_fhr=${fhr}
-        continue
-      fi
+    (( interval = fhr - last_fhr ))
 
-      (( interval = fhr - last_fhr ))
+    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+    seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
+    vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
-      vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-      seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
-      vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
-
+    if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
       source_file="iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
       dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-      ${NLN} "${COM_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
-
-      last_fhr=${fhr}
-    done
-
-  elif [[ "${RUN}" =~ "gdas" ]]; then
-
-    # Link instantaneous CICE forecast output files from DATA/CICE_OUTPUT to COM
-    for fhr in ${CICE_OUTPUT_FH}; do
-      fhr3=$(printf %03i "${fhr}")
-
-      if [[ -z ${last_fhr:-} ]]; then
-        last_fhr=${fhr}
-        continue
-      fi
-
-      vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-      seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
-      vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
-
+    elif [[ "${RUN}" =~ "gdas" ]]; then
       source_file="iceh_inst.${vdatestr}.nc"
       dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
-      ${NLN} "${COM_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
+    fi
+    ${NLN} "${COM_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
 
-      last_fhr=${fhr}
-    done
-
-  fi
+    last_fhr=${fhr}
+  done
 
   # Link CICE restarts from CICE_RESTART to COMOUTice/RESTART
   # Loop over restart_interval and link restarts from DATA to COM
