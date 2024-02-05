@@ -157,10 +157,12 @@ pipeline {
     post {
         always {
             script {
+                withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
                 for (label in pullRequest.labels) {
                     if (label.contains("${machine}")) {
                         pullRequest.removeLabel(label)
                     }
+                }
                 }
             }
         }
