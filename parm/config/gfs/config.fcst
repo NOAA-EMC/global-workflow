@@ -21,6 +21,24 @@ string="--fv3 ${CASE}"
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
 
+# Forecast length for GFS forecast
+case ${RUN} in
+  *gfs)
+    # shellcheck disable=SC2153
+    export FHMAX=${FHMAX_GFS}
+    # shellcheck disable=SC2153
+    export FHOUT=${FHOUT_GFS}
+    export FHMAX_HF=${FHMAX_HF_GFS}
+    export FHOUT_HF=${FHOUT_HF_GFS}
+    ;;
+  *gdas)
+    export FHMAX_HF=0
+    export FHOUT_HF=0
+    ;;
+  *)
+    echo "FATAL ERROR: Unsupported RUN '${RUN}'"
+    exit 1
+esac
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
