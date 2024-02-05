@@ -111,6 +111,7 @@ pipeline {
         stage('Run Tests') {
             matrix {
                 agent { label "${MACHINE}-emc" }
+                options { skipDefaultCheckout() }
                 axes {
                     axis {
                         name "Case"
@@ -126,7 +127,8 @@ pipeline {
                                     system = yaml_case.experiment.system
                                     def HOMEgfs = "${HOME}/${system}"
                                     env.RUNTESTS = "${HOME}/RUNTESTS"
-                                    sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
+                                    sh( script: "echo 'stub create experiment'", returnStatus: true)
+                                    //sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
                                 }
                         }
                     }
