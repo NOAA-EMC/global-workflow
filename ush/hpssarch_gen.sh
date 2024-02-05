@@ -618,8 +618,8 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
         fi
       fi
     done # loop over FHR
-    for fstep in efcs epos ; do
-     echo "logs/${PDY}${cyc}/${RUN}${fstep}*.log"
+    for fstep in fcst epos ; do
+      echo "logs/${PDY}${cyc}/${RUN}${fstep}*.log"
     done
 
   # eobs, ecen, esfc, and eupd are not run on the first cycle

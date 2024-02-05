@@ -623,15 +623,15 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}"="00:30:00"
+        declare -x "wtime_${step}"="00:15:00"
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384")
-        declare -x "wtime_${step}"="00:20:00"
+        declare -x "wtime_${step}"="00:10:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       "C768" | "C1152")
-        declare -x "wtime_${step}"="01:00:00"
+        declare -x "wtime_${step}"="00:30:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
@@ -809,7 +809,7 @@ case ${step} in
     ;;
 
   "cleanup")
-    export wtime_cleanup="01:00:00"
+    export wtime_cleanup="00:15:00"
     export npe_cleanup=1
     export npe_node_cleanup=1
     export nth_cleanup=1
@@ -860,7 +860,7 @@ case ${step} in
 
   "eobs" | "eomg")
     export wtime_eobs="00:15:00"
-    export wtime_eomg="01:00:00"
+    export wtime_eomg="00:30:00"
     case ${CASE} in
       "C768")                 export npe_eobs=200;;
       "C384")                 export npe_eobs=100;;
