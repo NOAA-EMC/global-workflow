@@ -8,9 +8,6 @@
 ## This script is a definition of functions.
 #####
 
-# For all non-evironment variables
-# Cycling and forecast hour specific parameters
-
 to_seconds() {
   # Function to convert HHMMSS to seconds since 00Z
   local hhmmss=${1:?}
@@ -50,21 +47,12 @@ common_predet(){
   # shellcheck disable=SC2034
   pwd=$(pwd)
   CDUMP=${CDUMP:-gdas}
-  CASE=${CASE:-C768}
-  CDATE=${CDATE:-2017032500}
+  CASE=${CASE:-C96}
+  CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
 
-  FCSTEXECDIR=${FCSTEXECDIR:-${HOMEgfs}/exec}
-  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
-
-  # Directories.
-  FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
-
-  # Model specific stuff
-  PARM_POST=${PARM_POST:-${HOMEgfs}/parm/post}
-
   # Define significant cycles
-  current_cycle=${CDATE}
+  current_cycle="${PDY}${cyc}"
   previous_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
   # ignore errors that variable isn't used
   # shellcheck disable=SC2034
@@ -94,7 +82,10 @@ common_predet(){
   FHMAX_HF=${FHMAX_HF:-0}
   FHOUT_HF=${FHOUT_HF:-1}
 
-  if [[ ! -d ${COM_CONF} ]]; then mkdir -p "${COM_CONF}"; fi
+  # Several model components share DATA/INPUT for input data
+  if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
+
+  if [[ ! -d "${COM_CONF}" ]]; then mkdir -p "${COM_CONF}"; fi
   cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
 
@@ -105,12 +96,8 @@ FV3_predet(){
   if [[ ! -d "${COM_ATMOS_MASTER}" ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
   if [[ ! -d "${COM_ATMOS_RESTART}" ]]; then mkdir -p "${COM_ATMOS_RESTART}"; fi
 
-  if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
-
   FHZER=${FHZER:-6}
   FHCYC=${FHCYC:-24}
-  NSOUT=${NSOUT:-"-1"}
-  WRITE_DOPOST=${WRITE_DOPOST:-".false."}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
   if [[ ${restart_interval} -eq 0 ]]; then
@@ -128,15 +115,8 @@ FV3_predet(){
   fi
   FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
-  # Model resolution specific parameters
-  DELTIM=${DELTIM:-225}
-  layout_x=${layout_x:-8}
-  layout_y=${layout_y:-16}
-  LEVS=${LEVS:-65}
-
   # Other options
   MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
-  ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options
@@ -145,14 +125,6 @@ FV3_predet(){
 
   # Model config options
   ntiles=6
-
-  TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
-  MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
-
-  QUILTING=${QUILTING:-".true."}
-  OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
-  WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
-  WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
 
   rCDUMP=${rCDUMP:-${CDUMP}}
 
@@ -213,7 +185,7 @@ FV3_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]]; then
+  if [[ "${RUN}" =~ "gfs" || "${RUN}" = "gefs" ]]; then
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
