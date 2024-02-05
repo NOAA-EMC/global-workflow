@@ -47,7 +47,12 @@ function cancel_batch_jobs() {
         continue
       fi
     done
-  fi
+    ;;
+  *)
+    echo "FATAL: Unknown/unsupported job scheduler"
+    exit 1
+    ;;
+  esac
 }
 
 
