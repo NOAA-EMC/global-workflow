@@ -60,9 +60,9 @@ pipeline {
                 }
                 stages {
                     stage("build system") {
-                        options {
-                          checkoutToSubdirectory('${HOME}/${system}')
-                        }
+                        //options {
+                        //  checkoutToSubdirectory('${HOME}/${system}')
+                        //}
                         steps {
                             script {
                                 def HOMEgfs = "${HOME}/${system}"
