@@ -186,9 +186,14 @@ class GEFSTasks(Tasks):
         history_path_tmpl = component_dict['history_path_tmpl']
         history_file_tmpl = component_dict['history_file_tmpl']
 
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs[config], component=component)
-        var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
+        resources = self.get_resource(config)
+
+        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl])
+        deps = []
+        data = f'{history_path}/{history_file_tmpl}'
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
 
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
@@ -197,15 +202,6 @@ class GEFSTasks(Tasks):
                           'COMPONENT': component}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource(component_dict['config'])
-
-        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl])
-        deps = []
-        data = f'{history_path}/{history_file_tmpl}'
-        dep_dict = {'type': 'data', 'data': data, 'age': 120}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
 
         task_name = f'{component}_prod_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
@@ -216,8 +212,7 @@ class GEFSTasks(Tasks):
                      'command': f'{self.HOMEgfs}/jobs/rocoto/{config}.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
+                     'maxtries': '&MAXTRIES;'}
 
         fhr_var_dict = {'fhr': ' '.join([str(fhr).zfill(3) for fhr in
                                          self._get_forecast_hours('gefs', self._configs[config])])}
