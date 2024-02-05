@@ -1,5 +1,3 @@
 builds:
- #- gefs: './build_all.sh'
- #- gfs: './build_all.sh -gu'
- - gefs: 'echo "skipping build"'
- - gfs: 'echo "skipping build"'
+ - gefs: './build_all.sh -j 2'
+ - gfs: './build_all.sh -g -j 2'
