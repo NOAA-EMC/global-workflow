@@ -22,6 +22,9 @@ class GEFSAppConfig(AppConfig):
         if self.do_wave:
             configs += ['waveinit']
 
+        if self.do_ocean or self.do_ice:
+            configs += ['oceanice_products']
+
         return configs
 
     @staticmethod
@@ -46,5 +49,11 @@ class GEFSAppConfig(AppConfig):
             tasks += ['efcs']
 
         tasks += ['atmos_prod']
+
+        if self.do_ocean:
+            tasks += ['ocean_prod']
+
+        if self.do_ice:
+            tasks += ['ice_prod']
 
         return {f"{self._base['CDUMP']}": tasks}

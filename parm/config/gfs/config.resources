@@ -645,7 +645,7 @@ case ${step} in
     ;;
 
   "oceanice_products")
-    export wtime_oceanice_products="00:30:00"
+    export wtime_oceanice_products="00:15:00"
     export npe_oceanice_products=1
     export npe_node_oceanice_products=1
     export nth_oceanice_products=1

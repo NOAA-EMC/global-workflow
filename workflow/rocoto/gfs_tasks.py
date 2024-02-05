@@ -1070,7 +1070,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.cdump}{component}prod',
+        metatask_dict = {'task_name': f'{self.cdump}{component}_prod',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
