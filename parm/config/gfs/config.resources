@@ -33,43 +33,43 @@ step=$1
 echo "BEGIN: config.resources"
 
 # TODO: Removing `npe_node_max` declaration.
-#case ${machine} in
-#  "WCOSS2")   npe_node_max=128;;
-#  "HERA")     npe_node_max=40;;
-#  "ORION")    npe_node_max=40;;
-#  "HERCULES") npe_node_max=80;;
-#  "JET")
-#    case ${PARTITION_BATCH} in
-#      "xjet")          npe_node_max=24;;
-#      "vjet" | "sjet") npe_node_max=16;;
-#      "kjet")          npe_node_max=40;;
-#      *)
-#        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
-#        exit 3
-#    esac
-#    ;;
-#  "S4")
-#    case ${PARTITION_BATCH} in
-#      "s4")  npe_node_max=32;;
-#      "ivy") npe_node_max=20;;
-#      *)
-#        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
-#        exit 3
-#    esac
-#    ;;
-#  "AWSPW")
-#    export PARTITION_BATCH="compute"
-#    npe_node_max=40
-#    ;;
-#  "CONTAINER")
-#    npe_node_max=1
-#    ;;
-#  *)
-#    echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
-#    exit 2
-#    ;;
-#esac
-#export npe_node_max
+case ${machine} in
+  "WCOSS2")   npe_node_max=128;;
+  "HERA")     npe_node_max=40;;
+  "ORION")    npe_node_max=40;;
+  "HERCULES") npe_node_max=80;;
+  "JET")
+    case ${PARTITION_BATCH} in
+      "xjet")          npe_node_max=24;;
+      "vjet" | "sjet") npe_node_max=16;;
+      "kjet")          npe_node_max=40;;
+      *)
+        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
+        exit 3
+    esac
+    ;;
+  "S4")
+    case ${PARTITION_BATCH} in
+      "s4")  npe_node_max=32;;
+      "ivy") npe_node_max=20;;
+      *)
+        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
+        exit 3
+    esac
+    ;;
+  "AWSPW")
+    export PARTITION_BATCH="compute"
+    npe_node_max=40
+    ;;
+  "CONTAINER")
+    npe_node_max=1
+    ;;
+  *)
+    echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
+    exit 2
+    ;;
+esac
+export npe_node_max
 
 case ${step} in
   "prep")
