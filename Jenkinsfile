@@ -160,31 +160,35 @@ pipeline {
         always {
             script {
                 withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
-                for (label in pullRequest.labels) {
-                    if (label.contains("${machine}")) {
-                        pullRequest.removeLabel(label)
+                    for (label in pullRequest.labels) {
+                        if (label.contains("${machine}")) {
+                            pullRequest.removeLabel(label)
+                        }
                     }
-                }
                 }
             }
         }
         success {
             script {
-                pullRequest.addLabel("CI-${machine}-Passed")
-                def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
-                pullRequest.comment("SUCCESSFULLY ran all CI Cases on ${machine} at ${timestamp}")
+                withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+                    pullRequest.addLabel("CI-${machine}-Passed")
+                    def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
+                    pullRequest.comment("SUCCESSFULLY ran all CI Cases on ${machine} at ${timestamp}")
+                }
             }
         }
         failure {
             script {
-                pullRequest.addLabel("CI-${machine}-Failed")
-                def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
-                pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
-                if (fileExists('${HOME}/RUNTESTS/ci.log')) {
-                    def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
-                        fileContent.eachLine { line ->
-                        if( line.contains(".log")) {
-                            archiveArtifacts artifacts: "${line}", fingerprint: true
+                withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+                    pullRequest.addLabel("CI-${machine}-Failed")
+                    def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
+                    pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
+                    if (fileExists('${HOME}/RUNTESTS/ci.log')) {
+                        def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
+                            fileContent.eachLine { line ->
+                            if( line.contains(".log")) {
+                                archiveArtifacts artifacts: "${line}", fingerprint: true
+                            }
                         }
                     }
                 }
