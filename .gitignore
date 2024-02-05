@@ -51,10 +51,16 @@ parm/post/nam_micro_lookup.dat
 parm/post/optics_luts_DUST.dat
 parm/post/gtg.config.gfs
 parm/post/gtg_imprintings.txt
+parm/post/optics_luts_DUST_nasa.dat
+parm/post/optics_luts_NITR_nasa.dat
 parm/post/optics_luts_SALT.dat
+parm/post/optics_luts_SALT_nasa.dat
 parm/post/optics_luts_SOOT.dat
+parm/post/optics_luts_SOOT_nasa.dat
 parm/post/optics_luts_SUSO.dat
+parm/post/optics_luts_SUSO_nasa.dat
 parm/post/optics_luts_WASO.dat
+parm/post/optics_luts_WASO_nasa.dat
 parm/post/params_grib2_tbl_new
 parm/post/post_tag_gfs128
 parm/post/post_tag_gfs65
@@ -76,6 +82,9 @@ parm/post/postcntrl_gfs_wafs.xml
 parm/post/postcntrl_gfs_wafs_anl.xml
 parm/post/postxconfig-NT-GEFS-ANL.txt
 parm/post/postxconfig-NT-GEFS-F00.txt
+parm/post/postxconfig-NT-GEFS-F00-aerosol.txt
+parm/post/postxconfig-NT-GEFS-WAFS.txt
+parm/post/postxconfig-NT-GEFS-aerosol.txt
 parm/post/postxconfig-NT-GEFS.txt
 parm/post/postxconfig-NT-GFS-ANL.txt
 parm/post/postxconfig-NT-GFS-F00-TWO.txt

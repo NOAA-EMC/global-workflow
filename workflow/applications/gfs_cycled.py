@@ -321,9 +321,4 @@ class GFSCycledAppConfig(AppConfig):
             base_out['EDATE_GFS'] = edate_gfs
             base_out['INTERVAL_GFS'] = interval_gfs
 
-            fhmax_gfs = {}
-            for hh in ['00', '06', '12', '18']:
-                fhmax_gfs[hh] = base.get(f'FHMAX_GFS_{hh}', base.get('FHMAX_GFS_00', 120))
-            base_out['FHMAX_GFS'] = fhmax_gfs
-
         return base_out
