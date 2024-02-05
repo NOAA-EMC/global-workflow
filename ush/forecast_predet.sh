@@ -105,8 +105,8 @@ FV3_predet(){
   fi
 
   # Convert output settings into an explicit list for FV3
-  # NOTE:  FV3_OUTPUT_FH is also currently used in other components
-  # TODO: Have a seperate control for other components to address issue #1629
+  # Ignore "not used" warning
+  # shellcheck disable=SC2034
   FV3_OUTPUT_FH=""
   local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
@@ -224,6 +224,9 @@ CICE_predet(){
   if [[ ! -d "${DATA}/CICE_RESTART" ]]; then mkdir -p "${DATA}/CICE_RESTART"; fi
 
   # CICE does not have a concept of high frequency output like FV3
+  # Convert output settings into an explicit list for CICE
+  # Ignore "not used" warning
+  # shellcheck disable=SC2034
   CICE_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT}" "${FHMAX}")
 
 }
@@ -239,6 +242,9 @@ MOM6_predet(){
   if [[ ! -d "${DATA}/MOM6_RESTART" ]]; then mkdir -p "${DATA}/MOM6_RESTART"; fi
 
   # MOM6 does not have a concept of high frequency output like FV3
+  # Convert output settings into an explicit list for MOM6
+  # Ignore "not used" warning
+  # shellcheck disable=SC2034
   MOM6_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT}" "${FHMAX}")
 
 }
