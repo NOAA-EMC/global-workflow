@@ -1,40 +1,19 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
-
-##############################################
-# Set variables used in the script
-##############################################
-export CDUMP=${RUN/enkf}
+if (( ${ENSMEM:-0} > 0 )); then
+  source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+else
+  source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+fi
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Restart conditions for GFS cycle come from GDAS
-rCDUMP=${CDUMP}
-[[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
-
-# Forecast length for GFS forecast
-case ${RUN} in
-  *gfs | *gefs)
-    # shellcheck disable=SC2153
-    export FHMAX=${FHMAX_GFS}
-    # shellcheck disable=SC2153
-    export FHOUT=${FHOUT_GFS}
-    export FHMAX_HF=${FHMAX_HF_GFS}
-    export FHOUT_HF=${FHOUT_HF_GFS}
-    ;;
-  *gdas)
-    export FHMAX_HF=0
-    export FHOUT_HF=0
-    ;;
-  *)
-    echo "FATAL ERROR: Unsupported RUN '${RUN}'"
-    exit 1
-esac
-
+rCDUMP=${RUN}
+[[ ${RUN} == "gfs" ]] && export rCDUMP="gdas"
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
@@ -78,11 +57,21 @@ fi
 
 ###############################################################
 # Run relevant exglobal script
-
+###############################################################
 ${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+[[ ${status} -ne 0 ]] && exit "${status}"
 
+# Send DBN alerts for EnKF
+# TODO: Should these be in post manager instead?
+if [[ "${RUN}" =~ "enkf" ]] && [[ "${SENDDBN}" = YES ]]; then
+  for (( fhr = FHOUT; fhr <= FHMAX; fhr + FHOUT )); do
+    if (( fhr % 3 == 0 )); then
+      fhr3=$(printf %03i "${fhr}")
+      "${DBNROOT}/bin/dbn_alert" MODEL GFS_ENKF "${job}" "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
+    fi
+  done
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -91,15 +80,14 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
-
+cd "${DATAROOT}" || true
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0

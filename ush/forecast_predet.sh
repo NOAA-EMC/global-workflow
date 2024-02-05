@@ -116,7 +116,9 @@ FV3_predet(){
   FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
   # Other options
-  MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
+  # ignore errors that variable isn't used
+  # shellcheck disable=SC2034
+  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options
