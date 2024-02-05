@@ -129,8 +129,9 @@ FV3_predet(){
   LEVS=${LEVS:-65}
 
   # Other options
-  MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
-  ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
+  # ignore errors that variable isn't used
+  # shellcheck disable=SC2034
+  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options
