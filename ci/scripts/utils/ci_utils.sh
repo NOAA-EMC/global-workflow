@@ -1,5 +1,15 @@
 #!/bin/env bash
 
+function determine_scheduler() {
+  if command -v sbatch &> /dev/null; then
+    echo "slurm";
+  elif command -v qsub &> /dev/null; then
+    echo "torque";
+  else
+    echo "unknown"
+  fi
+}
+
 function cancel_batch_jobs() {
   # Usage: cancel_batch_jobs <substring>
   # Example: cancel_batch_jobs "C48_ATM_3c4e7f74"
@@ -11,8 +21,9 @@ function cancel_batch_jobs() {
   local substring=$1
   local job_ids
 
-  # cancel pbs jobs <substring>
-  if [[ ${MACHINE_ID} == "wcoss2" ]]; then
+  scheduler=$(determine_scheduler)
+  case ${scheduler} in;
+    "torque")
     job_ids=$(qstat -u "${USER}" | awk '{print $1}') || true
 
     for job_id in ${job_ids}; do
@@ -24,7 +35,8 @@ function cancel_batch_jobs() {
       fi
     done
   # cancel slurm jobs <substring>
-  else 
+    ;;
+  "torque")
     job_ids=$(squeue -u "${USER}" -h -o "%i")
 
     for job_id in ${job_ids}; do
@@ -35,7 +47,12 @@ function cancel_batch_jobs() {
         continue
       fi
     done
-  fi
+    ;;
+  *)
+    echo "FATAL: Unknown/unsupported job scheduler"
+    exit 1
+    ;;
+  esac
 }
 
 
