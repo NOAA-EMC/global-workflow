@@ -1,5 +1,15 @@
 #!/bin/env bash
 
+function determine_scheduler() {
+  if command -v sbatch &> /dev/null; then
+    echo "slurm";
+  elif command -v qsub &> /dev/null; then
+    echo "torque";
+  else
+    echo "unknown"
+  fi
+}
+
 function cancel_batch_jobs() {
   # Usage: cancel_batch_jobs <substring>
   # Example: cancel_batch_jobs "C48_ATM_3c4e7f74"
