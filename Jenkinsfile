@@ -104,7 +104,7 @@ pipeline {
                     axis {
                         name "Case"
                         // values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
-                        values "C48_S2SWA_gefs", "C96_atm3DVar"
+                        values "C48_S2SWA_gefs"
                     }
                 }
                 stages {
