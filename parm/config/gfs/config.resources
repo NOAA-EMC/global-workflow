@@ -537,6 +537,19 @@ case ${step} in
         nthreads_fv3=${nthreads_fv3_gfs}
       fi
 
+      # Determine if using ESMF-managed threading or traditional threading
+      # If using traditional threading, set them to 1
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        export UFS_THREADS=1
+      else  # traditional threading
+        export UFS_THREADS=${nthreads_ufs:-1}
+        nthreads_fv3=1
+        nthreads_mediator=1
+        [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
+        [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
+        [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
+      fi
+
       # PETS for the atmosphere dycore
       (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
       echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
@@ -926,7 +939,7 @@ case ${step} in
           export nth_eupd=4
         fi
         ;;
-      *)        
+      *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
         ;;
