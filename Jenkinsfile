@@ -113,7 +113,8 @@ pipeline {
                 axes {
                     axis {
                         name "Case"
-                        values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
+                        // values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
+                        values "C48_S2SWA_gefs", "C96_atm3DVar"
                     }
                 }
                 stages {
@@ -125,9 +126,7 @@ pipeline {
                                     system = yaml_case.experiment.system
                                     def HOMEgfs = "${HOME}/${system}"
                                     env.RUNTESTS = "${HOME}/RUNTESTS"
-                                    //ws(HOMEgfs) {
-                                    //  sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
-                                    //}
+                                    sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
                                 } 
                         }
                     }
@@ -158,7 +157,7 @@ pipeline {
                             }
                             success {
                                 script {
-                                    pullRequest.addLabel("CI-${machine}-Success")
+                                    pullRequest.addLabel("CI-${machine}-Passed")
                                     def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                                     pullRequest.comment("CI SUCCESS ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
                                 }
