@@ -110,7 +110,6 @@ pipeline {
         stage('Run Tests') {
             matrix {
                 agent { label "${MACHINE}-emc" }
-                options { skipDefaultCheckout() }
                 axes {
                     axis {
                         name "Case"
@@ -133,7 +132,7 @@ pipeline {
                         }
                     }
                     stage('Run Experiments') {
-                        steps { ws("${HOME}/gfs") {
+                        steps {
                             script {
                                 def HOMEgfs = "${HOME}/gfs"
                                 pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
@@ -145,41 +144,43 @@ pipeline {
                                 pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
                                 error("Failed to run experiments ${Case} on ${machine}")
                                 }
-                            } }
+                            } 
                         }
-                    }
-                }
-            }
-        }
-
-    }
-
-    post {
-        agent { label "${MACHINE}-emc" }
-        success {
-            script {
-               // withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
-                    pullRequest.addLabel("CI-${machine}-Passed")
-                    def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
-                    pullRequest.comment("SUCCESSFULLY ran all CI Cases on ${machine} at ${timestamp}")
-                }
-            //}
-        }
-        failure {
-            script {
-                // withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
-                    pullRequest.addLabel("CI-${machine}-Failed")
-                    def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
-                    pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
-                    if (fileExists('${HOME}/RUNTESTS/ci.log')) {
-                        def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
-                            fileContent.eachLine { line ->
-                            if( line.contains(".log")) {
-                                archiveArtifacts artifacts: "${line}", fingerprint: true
+                        post {
+                            always {
+                                script {
+                                    for (label in pullRequest.labels) {
+                                        if (label.contains("${machine}")) {
+                                            pullRequest.removeLabel(label)
+                                        }
+                                    }
+                               }
+                            }
+                            success {
+                                script {
+                                    pullRequest.addLabel("CI-${machine}-Success")
+                                    def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
+                                    pullRequest.comment("CI SUCCESS ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
+                                }
+                            }
+                            failure {
+                                script {
+                                    pullRequest.addLabel("CI-${machine}-Failed")
+                                    def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
+                                    pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
+                                    if (fileExists('${HOME}/RUNTESTS/ci.log')) {
+                                        def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
+                                        fileContent.eachLine { line ->
+                                            if( line.contains(".log")) {
+                                                archiveArtifacts artifacts: "${line}", fingerprint: true
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                //}
+                }
             }
         }
     }
