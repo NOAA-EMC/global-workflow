@@ -86,25 +86,15 @@ pipeline {
                                         }
                                     }
                                 }
+                                if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
+                                     pullRequest.removeLabel("CI-${machine}-Building")
+                                }
+                                pullRequest.addLabel("CI-${machine}-Running")
                             }
                         }
                     }
                 }
             }
-        }
-
-        stage('Setup RUNTESTS') {
-            agent { label "${MACHINE}-emc" }
-            options { skipDefaultCheckout() }
-            steps {
-                script {
-                    if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
-                         pullRequest.removeLabel("CI-${machine}-Building")
-                    }
-                    pullRequest.addLabel("CI-${machine}-Running")
-                }
-            }
-
         }
 
         stage('Run Tests') {
