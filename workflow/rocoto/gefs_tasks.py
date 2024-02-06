@@ -284,10 +284,14 @@ class GEFSTasks(Tasks):
     def wavepostbndpntbll(self):
         deps = []
         atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'MEMDIR': 'mem#member#'})
+        # Is there any reason this is 180?
         data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+
+        dep_dict = {'type': 'task', 'name': f'fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         wave_post_bndpnt_bull_envars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
