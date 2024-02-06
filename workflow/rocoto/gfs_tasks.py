@@ -2275,14 +2275,14 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         eomgenvars = self.envars.copy()
-        eomgenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
-
-        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['eobs']['NMEM_EOMGGRP'])
-
-        var_dict = {'grp': groups}
+        eomgenvars_dict = {'ENSMEM': '#member#',
+                           'MEMDIR': 'mem#member#'
+                           }
+        for key, value in eomgenvars_dict.items():
+            eomgenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('eomg')
-        task_name = f'{self.cdump}eomg#grp#'
+        task_name = f'{self.cdump}eomg_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2294,8 +2294,9 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.cdump}eomn',
-                         'var_dict': var_dict,
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
+        metatask_dict = {'task_name': f'{self.cdump}eomg',
+                         'var_dict': member_var_dict,
                          'task_dict': task_dict,
                          }
 
@@ -2331,7 +2332,7 @@ class GFSTasks(Tasks):
         if self.app_config.lobsdiag_forenkf:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ediag'}
         else:
-            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}eomn'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}eomg'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2583,31 +2584,30 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
         efcsenvars = self.envars.copy()
-        efcsenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+        efcsenvars_dict = {'ENSMEM': '#member#',
+                           'MEMDIR': 'mem#member#'
+                           }
+        for key, value in efcsenvars_dict.items():
+            efcsenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['efcs']['NMEM_EFCSGRP'])
-
-        if self.cdump == "enkfgfs":
-            groups = self._get_hybgroups(self._base['NMEM_ENS_GFS'], self._configs['efcs']['NMEM_EFCSGRP_GFS'])
         cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump.replace('enkf', '')
         resources = self.get_resource('efcs')
 
-        var_dict = {'grp': groups}
-
-        task_name = f'{self.cdump}efcs#grp#'
+        task_name = f'{self.cdump}fcst_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': efcsenvars,
                      'cycledef': cycledef,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/efcs.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.cdump}efmn',
-                         'var_dict': var_dict,
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
+        metatask_dict = {'task_name': f'{self.cdump}fcst',
+                         'var_dict': member_var_dict,
                          'task_dict': task_dict
                          }
 
@@ -2622,7 +2622,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}efcs01'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst_mem001'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2670,7 +2670,7 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}efmn'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2719,7 +2719,9 @@ class GFSTasks(Tasks):
         earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['earc']['NMEM_EARCGRP'], start_index=0)
+        # Integer division is floor division, but we need ceiling division
+        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups)])
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump.replace('enkf', '')
 
