@@ -155,7 +155,7 @@ pipeline {
     }
 
     post {
-
+        agent { label "${MACHINE}-emc" }
         success {
             script {
                // withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
