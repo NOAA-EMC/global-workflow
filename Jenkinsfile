@@ -155,29 +155,19 @@ pipeline {
     }
 
     post {
-        always {
-            script {
-                withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
-                    for (label in pullRequest.labels) {
-                        if (label.contains("${machine}")) {
-                            pullRequest.removeLabel(label)
-                        }
-                    }
-                }
-            }
-        }
+
         success {
             script {
-                withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+               // withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
                     pullRequest.addLabel("CI-${machine}-Passed")
                     def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                     pullRequest.comment("SUCCESSFULLY ran all CI Cases on ${machine} at ${timestamp}")
                 }
-            }
+            //}
         }
         failure {
             script {
-                withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+                // withCredentials([usernamePassword(credentialsId: 'emc-bot', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
                     pullRequest.addLabel("CI-${machine}-Failed")
                     def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                     pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
@@ -189,7 +179,7 @@ pipeline {
                             }
                         }
                     }
-                }
+                //}
             }
         }
     }
