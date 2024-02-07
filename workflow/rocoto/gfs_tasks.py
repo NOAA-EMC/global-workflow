@@ -2439,16 +2439,14 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         landensanlenvars = self.envars.copy()
-        landensanlenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
-
-        # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['landensanl']['NMEM_ELDAGRP'])
-        groups = ' '.join([f'{grp:02d}' for grp in range(1, n_groups)])
-
-        var_dict = {'grp': groups}
+        landensanlenvars_dict = {'ENSMEM': '#member#',
+                                 'MEMDIR': 'mem#member#'
+                                 }
+        for key, value in landensanlenvars_dict.items():
+            landensanlenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('landensanl')
-        task_name = f'{self.cdump}landensanl#grp#'
+        task_name = f'{self.cdump}landensanl_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2460,8 +2458,9 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
         metatask_dict = {'task_name': f'{self.cdump}landensanl',
-                         'var_dict': var_dict,
+                         'var_dict': member_var_dict,
                          'task_dict': task_dict
                          }
 
