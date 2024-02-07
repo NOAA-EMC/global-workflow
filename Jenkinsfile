@@ -129,14 +129,14 @@ pipeline {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                 ws(HOMEgfs) {
                                    pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
-                                   pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
+                                   pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${Machine}")
                                    try {
                                       sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: true)
                                     } catch (Exception e) {
-                                       pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
-                                       error("Failed to run experiments ${Case} on ${machine}")
+                                       pullRequest.comment("FAILURE running experiments: ${Case} on ${Machine}")
+                                       error("Failed to run experiments ${Case} on ${Machine}")
                                     }
-                                    pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
+                                    pullRequest.comment("SUCCESS running experiments: ${Case} on ${Machine}")
                                 }
                             } 
                         }
@@ -164,7 +164,7 @@ pipeline {
                             failure {
                                 script {
                                     ws (HOMEgfs) {
-                                    pullRequest.addLabel("CI-${machine}-Failed")
+                                    pullRequest.addLabel("CI-${Machine}-Failed")
                                     def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                                     pullRequest.comment("CI FAILED ${Machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
                                     if (fileExists('${HOME}/RUNTESTS/ci.log')) {
