@@ -2441,7 +2441,9 @@ class GFSTasks(Tasks):
         landensanlenvars = self.envars.copy()
         landensanlenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENS'], self._configs['landensanl']['NMEM_ELDAGRP'], start_index=1)
+        # Integer division is floor division, but we need ceiling division
+        n_groups = -(self.nmem // -self._configs['landensanl']['NMEM_ELDAGRP'])
+        groups = ' '.join([f'{grp:02d}' for grp in range(1, n_groups)])
 
         var_dict = {'grp': groups}
 
