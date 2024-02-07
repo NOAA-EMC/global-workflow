@@ -1,4 +1,4 @@
-def MACHINE = 'none'
+def Machine = 'none'
 def machine = 'none'
 def HOME = 'none'
 def localworkspace = 'none'
@@ -52,7 +52,7 @@ pipeline {
 
         stage('Build System') {
             matrix {
-                agent { label "${MACHINE}-emc" }
+                agent { label "${machine}-emc" }
                 //options {
                 //    throttle(['global_matrix_build'])
                 //}
@@ -69,7 +69,7 @@ pipeline {
                                 def HOMEgfs = "${HOME}/${system}"
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                                 ws(HOMEgfs) {
-                                    env.MACHINE_ID = MACHINE
+                                    env.MACHINE_ID = machine
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
                                         sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
                                         ws(localworkspace) { pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}") }
@@ -100,7 +100,7 @@ pipeline {
 
         stage('Run Tests') {
             matrix {
-                agent { label "${MACHINE}-emc" }
+                agent { label "${machine}-emc" }
                 axes {
                     axis {
                         name "Case"
