@@ -58,9 +58,6 @@ export DELTSFC=${DELTSFC:-6}
 export FIXam=${FIXam:-${HOMEgfs}/fix/am}
 export FIXorog=${FIXorog:-${HOMEgfs}/fix/orog}
 
-# temporary - skip global_cycle, until can deal with fractional grids
-SKIP_GCYCLE="YES" 
-
 # FV3 specific info (required for global_cycle)
 export CASE=${CASE:-"C384"}
 ntiles=${ntiles:-6}
@@ -183,16 +180,13 @@ if [[ ${DOIAU} = "YES" ]]; then
         ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                     "${DATA}/fnorog.00${n}"
     done
 
-    # skip calling global_cycle, until fractional grids issues is resolved
-    if [[ ${SKIP_GCYCLE} = "NO" ]]; then
-        export APRUNCY=${APRUN_CYCLE}
-        export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
-        export MAX_TASKS_CY=${ntiles}
-        CDATE="${PDY}${cyc}" ${CYCLESH}
-        export err=$?; err_chk
-    fi
+    export APRUNCY=${APRUN_CYCLE}
+    export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
+    export MAX_TASKS_CY=${ntiles}
+
+    CDATE="${PDY}${cyc}" ${CYCLESH}
+    export err=$?; err_chk
 fi
-# CSD should above be an else statement? i.e, for IAU do we use the restarts in the middle of the window?
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do
@@ -209,15 +203,12 @@ for n in $(seq 1 ${ntiles}); do
     ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                   "${DATA}/fnorog.00${n}"
 done
 
-# skip calling global_cycle, until fractional grids issues is resolved
-if [[ ${SKIP_GCYCLE} = "NO" ]]; then
-    export APRUNCY=${APRUN_CYCLE}
-    export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
-    export MAX_TASKS_CY=${ntiles}
+export APRUNCY=${APRUN_CYCLE}
+export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
+export MAX_TASKS_CY=${ntiles}
 
-    CDATE="${PDY}${cyc}" ${CYCLESH}
-    export err=$?; err_chk
-fi
+CDATE="${PDY}${cyc}" ${CYCLESH}
+export err=$?; err_chk
 
 
 ################################################################################

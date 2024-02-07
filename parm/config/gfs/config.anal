@@ -54,9 +54,8 @@ if [[ ${GSI_SOILANAL} = ".true." ]]; then
     export hofx_2m_sfcfile=".true."
     export reducedgrid=".false." # not possible for sfc analysis, Jeff Whitaker says it's not useful anyway
     export paranc=".false." # temporary until sfc io coded for parance (PR being prepared by T. Gichamo)
-    export DO_SFCCYCLE=".false."  # temporary, until sfccycle has handle fractional grids (PR very close)
-    export CONVINFO=/scratch2/BMC/gsienkf/Clara.Draper/2mDAfiles_gworkflow/global_convinfos.w2mobs.txt
-    export ANAVINFO=/scratch2/BMC/gsienkf/Clara.Draper/2mDAfiles_gworkflow/global_anavinfo.2mobs_soilupd.l127.txt
+    export CONVINFO=${FIXgsi}/global_convinfo_2mObs.txt
+    export ANAVINFO=${FIXgsi}/global_anavinfo_soilanal.l127.txt
 fi
 
 # Use experimental dumps in EMC GFS v16 parallels

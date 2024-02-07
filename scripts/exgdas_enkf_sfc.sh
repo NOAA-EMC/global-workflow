@@ -166,7 +166,6 @@ if [ $DOIAU = "YES" ]; then
         done # ensembles
 
         if [[ ${GSI_SOILANAL} = "YES" ]]; then
-            export DONST="NO" #  temporary, until fractional grids solved
             CDATE="${PDY}${cyc}" ${CYCLESH}
             export err=$?; err_chk
         fi
