@@ -117,7 +117,7 @@ pipeline {
                                     sh( script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp", returnStatus: true)
                                     def yaml_case = readYaml file: "${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp"
                                     system = yaml_case.experiment.system
-                                    def HOMEgfs = "${HOME}/${system}"
+                                    def HOMEgfs = "${HOME}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
                                     env.RUNTESTS = "${HOME}/RUNTESTS"
                                     sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
                                 } 
@@ -126,7 +126,7 @@ pipeline {
                     stage('Run Experiments') {
                         steps {
                             script {
-                                def HOMEgfs = "${HOME}/gfs"
+                                HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                 ws(HOMEgfs) {
                                    pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
                                    pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
