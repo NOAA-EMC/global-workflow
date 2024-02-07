@@ -29,13 +29,21 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/:${HOMEgfs}/sorc/gdas.cd/ush/eva:${PYTHONPATH}
 export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/soca:${PYTHONPATH}
 
-###############################################################
-# Run relevant script
+if [[ ${DO_VRFYOCNDA} == "YES" ]]; then
 
-EXSCRIPT=${GDASOCNVRFYPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_vrfy.py}
-${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+  ###############################################################
+  # Run relevant script
+
+  EXSCRIPT=${GDASOCNVRFYPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_vrfy.py}
+  ${EXSCRIPT}
+  status=$?
+  [[ ${status} -ne 0 ]] && exit "${status}"
+
+else
+
+  echo "DO_VRFYOCNDA not set to YES. Exiting."
+
+fi
 
 ##############################################
 # End JOB SPECIFIC work
