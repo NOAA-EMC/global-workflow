@@ -40,7 +40,7 @@ pipeline {
                 script {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}/TESTDIR"
-                    commonworkspace = "${WORKSPCE}"
+                    commonworkspace = "${WORKSPACE}"
                     sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
                     pullRequest.addLabel("CI-${Machine}-Building")
                     if ( pullRequest.labels.any{ value -> value.matches("CI-${Machine}-Ready") } ) {
