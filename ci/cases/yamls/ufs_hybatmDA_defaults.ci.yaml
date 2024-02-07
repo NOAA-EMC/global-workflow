@@ -1,0 +1,14 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
+base:
+  DOIAU: "NO"
+  DO_JEDIATMVAR: "YES"
+  DO_JEDIATMENS: "YES"
+  ACCOUNT: {{ 'SLURM_ACCOUNT' | getenv }}
+esfc:
+  DONST: "NO"
+nsst:
+  NST_MODEL: "1"
+sfcanl:
+  DONST: "NO"
+  
