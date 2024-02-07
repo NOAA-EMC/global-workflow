@@ -27,7 +27,7 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
-source "${HOMEgfs}/modulefiles/module-setup.sh.inc"
+source "${HOMEgfs}/ush/module-setup.sh"
 
 # Load our modules:
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"

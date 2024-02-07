@@ -10,7 +10,7 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
-source "${HOMEgfs}/modulefiles/module-setup.sh.inc"
+source "${HOMEgfs}/ush/module-setup.sh"
 
 # Source versions file for runtime
 source "${HOMEgfs}/versions/run.ver"
