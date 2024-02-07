@@ -33,16 +33,14 @@ FV3_postdet(){
       done
 
       # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
-      if [[ "${MODE}" = "cycled" ]]; then
-        for file in "${COM_ATMOS_RESTART}/${sPDY}.${scyc}0000."*.nc; do
-          file2=$(basename "${file}")
-          file2=$(echo "${file2}" | cut -d. -f3-) # remove the date from file
-          fsufanl=$(echo "${file2}" | cut -d. -f1)
-          file2=$(echo "${file2}" | sed -e "s/sfcanl_data/sfc_data/g")
-          rm -f "${DATA}/INPUT/${file2}"
-          ${NLN} "${file}" "${DATA}/INPUT/${file2}"
-        done
-      fi
+      for file in "${COM_ATMOS_RESTART}/${sPDY}.${scyc}0000."*.nc; do
+        file2=$(basename "${file}")
+        file2=$(echo "${file2}" | cut -d. -f3-) # remove the date from file
+        fsufanl=$(echo "${file2}" | cut -d. -f1)
+        file2=$(echo "${file2}" | sed -e "s/sfcanl_data/sfc_data/g")
+        rm -f "${DATA}/INPUT/${file2}"
+        ${NLN} "${file}" "${DATA}/INPUT/${file2}"
+      done
 
       # Need a coupler.res when doing IAU  # FIXME: This is needed for warm_start, regardless of IAU.
       if [[ ${DOIAU} = "YES" ]]; then

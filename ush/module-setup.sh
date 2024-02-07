@@ -1,6 +1,8 @@
 #!/bin/bash
 set -u
 
+source "${HOMEgfs}/ush/detect_machine.sh" 
+
 if [[ ${MACHINE_ID} = jet* ]] ; then
     # We are on NOAA Jet
     if ( ! eval module help > /dev/null 2>&1 ) ; then

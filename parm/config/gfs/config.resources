@@ -623,15 +623,15 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}"="00:30:00"
+        declare -x "wtime_${step}"="00:15:00"
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384")
-        declare -x "wtime_${step}"="00:20:00"
+        declare -x "wtime_${step}"="00:10:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       "C768" | "C1152")
-        declare -x "wtime_${step}"="01:00:00"
+        declare -x "wtime_${step}"="00:30:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
@@ -809,11 +809,11 @@ case ${step} in
     ;;
 
   "cleanup")
-    export wtime_cleanup="01:00:00"
+    export wtime_cleanup="00:15:00"
     export npe_cleanup=1
     export npe_node_cleanup=1
     export nth_cleanup=1
-    export memory_cleanu="4096M"
+    export memory_cleanup="4096M"
     ;;
 
   "stage_ic")
@@ -821,7 +821,7 @@ case ${step} in
     export npe_stage_ic=1
     export npe_node_stage_ic=1
     export nth_stage_ic=1
-    export is_exclusive=Tue
+    export is_exclusive=True
     ;;
 
   "atmensanlinit")
@@ -860,7 +860,7 @@ case ${step} in
 
   "eobs" | "eomg")
     export wtime_eobs="00:15:00"
-    export wtime_eomg="01:00:00"
+    export wtime_eomg="00:30:00"
     case ${CASE} in
       "C768")                 export npe_eobs=200;;
       "C384")                 export npe_eobs=100;;
@@ -956,7 +956,7 @@ case ${step} in
     export npe_node_esfc=$(( npe_node_max / nth_esfc ))
     export nth_cycle=${nth_esfc}
     export npe_node_cycle=$(( npe_node_max / nth_cycle ))
-    export memory_esfc="8GB"
+    export memory_esfc="80GB"
     ;;
 
   "epos")
@@ -986,7 +986,7 @@ case ${step} in
     export npe_awips=1
     export npe_node_awips=1
     export nth_awips=1
-    export memory_awip="3GB"
+    export memory_awips="3GB"
     ;;
 
   "npoess")
@@ -994,7 +994,7 @@ case ${step} in
     export npe_npoess=1
     export npe_node_npoess=1
     export nth_npoess=1
-    export memory_npoes="3GB"
+    export memory_npoess="3GB"
     ;;
 
   "gempak")
@@ -1015,7 +1015,7 @@ case ${step} in
     export nth_mos_stn_prep=1
     export memory_mos_stn_prep="5GB"
     export NTASK="${npe_mos_stn_prep}"
-    export PTILE="${npe_node_mos_stn_pep}"
+    export PTILE="${npe_node_mos_stn_prep}"
     ;;
 
   "mos_grd_prep")
@@ -1025,7 +1025,7 @@ case ${step} in
     export nth_mos_grd_prep=1
     export memory_mos_grd_prep="16GB"
     export NTASK="${npe_mos_grd_prep}"
-    export PTILE="${npe_node_mos_grd_pep}"
+    export PTILE="${npe_node_mos_grd_prep}"
     ;;
 
   "mos_ext_stn_prep")
@@ -1035,7 +1035,7 @@ case ${step} in
     export nth_mos_ext_stn_prep=1
     export memory_mos_ext_stn_prep="5GB"
     export NTASK="${npe_mos_ext_stn_prep}"
-    export PTILE="${npe_node_mos_ext_stn_pep}"
+    export PTILE="${npe_node_mos_ext_stn_prep}"
     ;;
 
   "mos_ext_grd_prep")
@@ -1045,7 +1045,7 @@ case ${step} in
     export nth_mos_ext_grd_prep=1
     export memory_mos_ext_grd_prep="3GB"
     export NTASK="${npe_mos_ext_grd_prep}"
-    export PTILE="${npe_node_mos_ext_grd_pep}"
+    export PTILE="${npe_node_mos_ext_grd_prep}"
     ;;
 
   "mos_stn_fcst")
@@ -1055,7 +1055,7 @@ case ${step} in
     export nth_mos_stn_fcst=1
     export memory_mos_stn_fcst="40GB"
     export NTASK="${npe_mos_stn_fcst}"
-    export PTILE="${npe_node_mos_stn_fst}"
+    export PTILE="${npe_node_mos_stn_fcst}"
     ;;
 
   "mos_grd_fcst")
@@ -1065,7 +1065,7 @@ case ${step} in
     export nth_mos_grd_fcst=1
     export memory_mos_grd_fcst="50GB"
     export NTASK="${npe_mos_grd_fcst}"
-    export PTILE="${npe_node_mos_grd_fst}"
+    export PTILE="${npe_node_mos_grd_fcst}"
     ;;
 
   "mos_ext_stn_fcst")
@@ -1086,7 +1086,7 @@ case ${step} in
     export nth_mos_ext_grd_fcst=1
     export memory_mos_ext_grd_fcst="50GB"
     export NTASK="${npe_mos_ext_grd_fcst}"
-    export PTILE="${npe_node_mos_ext_grd_fst}"
+    export PTILE="${npe_node_mos_ext_grd_fcst}"
     ;;
 
   "mos_stn_prdgen")
@@ -1108,7 +1108,7 @@ case ${step} in
     export memory_mos_grd_prdgen="20GB"
     export NTASK="${npe_mos_grd_prdgen}"
     export PTILE="${npe_node_mos_grd_prdgen}"
-    export OMP_NUM_THREADS="${nth_mos_grd_prden}"
+    export OMP_NUM_THREADS="${nth_mos_grd_prdgen}"
     ;;
 
   "mos_ext_stn_prdgen")
@@ -1130,7 +1130,7 @@ case ${step} in
     export memory_mos_ext_grd_prdgen="30GB"
     export NTASK="${npe_mos_ext_grd_prdgen}"
     export PTILE="${npe_node_mos_ext_grd_prdgen}"
-    export OMP_NUM_THREADS="${nth_mos_ext_grd_prden}"
+    export OMP_NUM_THREADS="${nth_mos_ext_grd_prdgen}"
     ;;
 
   "mos_wx_prdgen")
@@ -1141,7 +1141,7 @@ case ${step} in
     export memory_mos_wx_prdgen="10GB"
     export NTASK="${npe_mos_wx_prdgen}"
     export PTILE="${npe_node_mos_wx_prdgen}"
-    export OMP_NUM_THREADS="${nth_mos_wx_prden}"
+    export OMP_NUM_THREADS="${nth_mos_wx_prdgen}"
     ;;
 
   "mos_wx_ext_prdgen")
