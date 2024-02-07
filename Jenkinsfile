@@ -2,6 +2,7 @@ def Machine = 'none'
 def machine = 'none'
 def HOME = 'none'
 def localworkspace = 'none'
+def commonworkspace = 'none'
 
 pipeline {
     agent { label 'built-in' }
@@ -36,7 +37,7 @@ pipeline {
 
         stage('Get Common Workspace') {
             agent { label "${machine}-emc" }
-            steps ( timeout(time: 1, unit: 'HOURS') ) {
+            steps {
                 script {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}/TESTDIR"
@@ -72,7 +73,7 @@ pipeline {
                                     env.MACHINE_ID = machine
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
                                         sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
-                                        ws(localworkspace) { pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}") }
+                                        ws(commonworkspace) { pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}") }
                                     } else {
                                         checkout scm
                                         sh( script: "source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive", returnStatus: true)
