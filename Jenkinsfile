@@ -132,18 +132,18 @@ pipeline {
                                    pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
                                    try {
                                       sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: true)
-                                      pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                     } catch (Exception e) {
                                        pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
                                        error("Failed to run experiments ${Case} on ${machine}")
                                     }
+                                    pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
                                 }
                             } 
                         }
                         post {
                             always {
                                 script {
-                                    ws (localworkspace) {
+                                    ws (HOMEgfs) {
                                         for (label in pullRequest.labels) {
                                            if (label.contains("${Machine}")) {
                                                pullRequest.removeLabel(label)
@@ -154,7 +154,7 @@ pipeline {
                             }
                             success {
                                 script {
-                                    ws (localworkspace) {
+                                    ws (HOMEgfs) {
                                        pullRequest.addLabel("CI-${Machine}-Passed")
                                        def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                                        pullRequest.comment("CI SUCCESS ${Machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
@@ -163,7 +163,7 @@ pipeline {
                             }
                             failure {
                                 script {
-                                    ws (localworkspace) {
+                                    ws (HOMEgfs) {
                                     pullRequest.addLabel("CI-${machine}-Failed")
                                     def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                                     pullRequest.comment("CI FAILED ${Machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
