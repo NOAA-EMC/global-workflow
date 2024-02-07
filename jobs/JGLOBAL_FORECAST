@@ -2,7 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 if (( 10#${ENSMEM:-0} > 0 )); then
-source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+  source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
   source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
