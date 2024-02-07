@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-if (( ${ENSMEM:-0} > 0 )); then
+if (( 10#${ENSMEM:-0} > 0 )); then
   source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
   source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
