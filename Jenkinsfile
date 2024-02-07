@@ -86,7 +86,7 @@ pipeline {
                                             sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                         }
                                     }
-                                    ws(commonworkspace) {
+                                    ws(HOMEgfs) {
                                     if ( pullRequest.labels.any{ value -> value.matches("CI-${Machine}-Building") } ) {
                                          pullRequest.removeLabel("CI-${Machine}-Building")
                                     }
