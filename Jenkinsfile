@@ -87,10 +87,10 @@ pipeline {
                                         }
                                     }
                                 
-                                    if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
-                                         pullRequest.removeLabel("CI-${machine}-Building")
+                                    if ( pullRequest.labels.any{ value -> value.matches("CI-${Machine}-Building") } ) {
+                                         pullRequest.removeLabel("CI-${Machine}-Building")
                                     }
-                                    pullRequest.addLabel("CI-${machine}-Running")
+                                    pullRequest.addLabel("CI-${Machine}-Running")
                                 }
                             }
                         }
@@ -144,7 +144,7 @@ pipeline {
                                 script {
                                     ws (localworkspace) {
                                         for (label in pullRequest.labels) {
-                                           if (label.contains("${machine}")) {
+                                           if (label.contains("${Machine}")) {
                                                pullRequest.removeLabel(label)
                                             }
                                         }
@@ -153,10 +153,10 @@ pipeline {
                             }
                             success {
                                 script {
-                                    ws (localwospace) {
-                                       pullRequest.addLabel("CI-${machine}-Passed")
+                                    ws (localworkspace) {
+                                       pullRequest.addLabel("CI-${Machine}-Passed")
                                        def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
-                                       pullRequest.comment("CI SUCCESS ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
+                                       pullRequest.comment("CI SUCCESS ${Machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
                                     }
                                 }
                             }
@@ -165,7 +165,7 @@ pipeline {
                                     ws (localworkspace) {
                                     pullRequest.addLabel("CI-${machine}-Failed")
                                     def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
-                                    pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
+                                    pullRequest.comment("CI FAILED ${Machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
                                     if (fileExists('${HOME}/RUNTESTS/ci.log')) {
                                         def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
                                         fileContent.eachLine { line ->
