@@ -50,7 +50,7 @@ export OZINFO=${FIXgsi}/global_ozinfo.txt
 export SATINFO=${FIXgsi}/global_satinfo.txt
 export OBERROR=${FIXgsi}/prepobs_errtable.global
 
-if [[ $GSI_SOILANAL == ".true." ]]; then
+if [[ ${GSI_SOILANAL} = ".true." ]]; then
     export hofx_2m_sfcfile=".true."
     export reducedgrid=".false." # not possible for sfc analysis, Jeff Whitaker says it's not useful anyway
     export paranc=".false." # temporary until sfc io coded for parance (PR being prepared by T. Gichamo)

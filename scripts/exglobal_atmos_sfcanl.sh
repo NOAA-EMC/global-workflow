@@ -184,7 +184,7 @@ if [[ ${DOIAU} = "YES" ]]; then
     done
 
     # skip calling global_cycle, until fractional grids issues is resolved
-    if [ $SKIP_GCYCLE = "NO" ]; then
+    if [[ ${SKIP_GCYCLE} = "NO" ]]; then
         export APRUNCY=${APRUN_CYCLE}
         export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
         export MAX_TASKS_CY=${ntiles}
@@ -210,7 +210,7 @@ for n in $(seq 1 ${ntiles}); do
 done
 
 # skip calling global_cycle, until fractional grids issues is resolved
-if [ $SKIP_GCYCLE = "NO" ]; then
+if [[ ${SKIP_GCYCLE} = "NO" ]]; then
     export APRUNCY=${APRUN_CYCLE}
     export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
     export MAX_TASKS_CY=${ntiles}

@@ -158,14 +158,14 @@ if [ $DOIAU = "YES" ]; then
             ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
             ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-            if [ ${GSI_SOILANAL} = "YES" ]; then
+            if [[ ${GSI_SOILANAL} = "YES" ]]; then
                 FHR=6
                 ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                    "${DATA}/lnd_incr.${cmem}"
             fi
         done # ensembles
 
-        if [ ${GSI_SOILANAL} = "YES" ]; then
+        if [[ ${GSI_SOILANAL} = "YES" ]]; then
             export DONST="NO" #  temporary, until fractional grids solved
             CDATE="${PDY}${cyc}" ${CYCLESH}
             export err=$?; err_chk
