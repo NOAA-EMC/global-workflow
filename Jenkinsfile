@@ -87,9 +87,9 @@ pipeline {
                                         }
                                     }
                                 }
-                                if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
-                                     pullRequest.removeLabel("CI-${machine}-Building")
-                                }
+                                //if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
+                                //     pullRequest.removeLabel("CI-${machine}-Building")
+                                //}
                                 pullRequest.addLabel("CI-${machine}-Running")
                             }
                         }
