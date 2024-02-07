@@ -1,6 +1,7 @@
 def MACHINE = 'none'
 def machine = 'none'
 def HOME = 'none'
+def localworkspace = 'none'
 
 pipeline {
     agent { label 'built-in' }
@@ -16,32 +17,34 @@ pipeline {
             agent { label 'built-in' }
             steps {
                 script {
-                    MACHINE = 'none'
+                    localworkspace = env.WORKSPACE
+                    machine = 'none'
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
                         if ((label.matches("CI-Hera-Ready"))) {
-                            MACHINE = 'hera'
+                            machine = 'hera'
                         } else if ((label.matches("CI-Orion-Ready"))) {
-                            MACHINE = 'orion'
+                            machine = 'orion'
                         } else if ((label.matches("CI-Hercules-Ready"))) {
-                            MACHINE = 'hercules'
+                            machine = 'hercules'
                         }
                     }
-                    machine = MACHINE[0].toUpperCase() + MACHINE.substring(1)
+                    Machine = machine[0].toUpperCase() + machine.substring(1)
                 }
             }
         }
 
         stage('Get Common Workspace') {
-            agent { label "${MACHINE}-emc" }
+            agent { label "${machine}-emc" }
             steps ( timeout(time: 1, unit: 'HOURS') ) {
                 script {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in','Hera-EMC','Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}/TESTDIR"
+                    commonworkspace = "${WORKSPCE}"
                     sh( script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
-                    pullRequest.addLabel("CI-${machine}-Building")
-                    if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Ready") } ) {
-                        pullRequest.removeLabel("CI-${machine}-Ready")
+                    pullRequest.addLabel("CI-${Machine}-Building")
+                    if ( pullRequest.labels.any{ value -> value.matches("CI-${Machine}-Ready") } ) {
+                        pullRequest.removeLabel("CI-${Machine}-Ready")
                     }
                 }
             }
@@ -69,7 +72,7 @@ pipeline {
                                     env.MACHINE_ID = MACHINE
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
                                         sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
-                                        pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
+                                        ws(localworkspace) { pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}") }
                                     } else {
                                         checkout scm
                                         sh( script: "source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive", returnStatus: true)
@@ -82,11 +85,12 @@ pipeline {
                                             sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                         }
                                     }
+                                
+                                    if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
+                                         pullRequest.removeLabel("CI-${machine}-Building")
+                                    }
+                                    pullRequest.addLabel("CI-${machine}-Running")
                                 }
-                                //if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
-                                //     pullRequest.removeLabel("CI-${machine}-Building")
-                                //}
-                                //pullRequest.addLabel("CI-${machine}-Running")
                             }
                         }
                     }
@@ -101,7 +105,7 @@ pipeline {
                     axis {
                         name "Case"
                         // values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
-                        values "C48_S2SWA_gefs"
+                        values "C48_S2SWA_gefs", "C96_atm3DVar"
                     }
                 }
                 stages {
@@ -121,36 +125,43 @@ pipeline {
                         steps {
                             script {
                                 def HOMEgfs = "${HOME}/gfs"
-                                pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
-                                pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
-                            try {
-                                sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: true)
-                                pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
-                            } catch (Exception e) {
-                                pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
-                                error("Failed to run experiments ${Case} on ${machine}")
+                                ws(HOMEgfs) {
+                                   pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
+                                   pullRequest.comment("Running experiments: ${Case} with pslot ${pslot} on ${machine}")
+                                   try {
+                                      sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: true)
+                                      pullRequest.comment("SUCCESS running experiments: ${Case} on ${machine}")
+                                    } catch (Exception e) {
+                                       pullRequest.comment("FAILURE running experiments: ${Case} on ${machine}")
+                                       error("Failed to run experiments ${Case} on ${machine}")
+                                    }
                                 }
                             } 
                         }
                         post {
                             always {
                                 script {
-                                    for (label in pullRequest.labels) {
-                                        if (label.contains("${machine}")) {
-                                            pullRequest.removeLabel(label)
+                                    ws (localworkspace) {
+                                        for (label in pullRequest.labels) {
+                                           if (label.contains("${machine}")) {
+                                               pullRequest.removeLabel(label)
+                                            }
                                         }
                                     }
                                }
                             }
                             success {
                                 script {
-                                    pullRequest.addLabel("CI-${machine}-Passed")
-                                    def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
-                                    pullRequest.comment("CI SUCCESS ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
+                                    ws (localwospace) {
+                                       pullRequest.addLabel("CI-${machine}-Passed")
+                                       def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
+                                       pullRequest.comment("CI SUCCESS ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
+                                    }
                                 }
                             }
                             failure {
                                 script {
+                                    ws (localworkspace) {
                                     pullRequest.addLabel("CI-${machine}-Failed")
                                     def timestamp = new Date().format("MM dd HH:mm:ss", TimeZone.getTimeZone('America/New_York'))
                                     pullRequest.comment("CI FAILED ${machine} at ${timestamp}\n\nBuilt and ran in directory ${HOME}")
@@ -161,6 +172,7 @@ pipeline {
                                                 archiveArtifacts artifacts: "${line}", fingerprint: true
                                             }
                                         }
+                                    }
                                     }
                                 }
                             }
