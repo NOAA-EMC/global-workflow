@@ -61,15 +61,11 @@ pipeline {
                 }
                 stages {
                     stage("build system") {
-                        options {
-                          checkoutToSubdirectory('${HOME}/${system}')
-                        }
                         steps {
                             script {
                                 def HOMEgfs = "${HOME}/${system}"
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                                 ws(HOMEgfs) {
-                                    checkoutToSubdirectory('${HOME}/${system}')
                                     env.MACHINE_ID = MACHINE
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
                                         sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
@@ -90,7 +86,7 @@ pipeline {
                                 //if ( pullRequest.labels.any{ value -> value.matches("CI-${machine}-Building") } ) {
                                 //     pullRequest.removeLabel("CI-${machine}-Building")
                                 //}
-                                pullRequest.addLabel("CI-${machine}-Running")
+                                //pullRequest.addLabel("CI-${machine}-Running")
                             }
                         }
                     }
