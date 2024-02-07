@@ -135,13 +135,13 @@ for file in postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-G
     postxconfig-NT-GFS-ANL.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt \
     postxconfig-NT-GFS.txt postxconfig-NT-GFS-FLUX.txt postxconfig-NT-GFS-GOES.txt \
     postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-TWO.txt \
-    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat 
+    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
 done
 for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
     optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
-    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat    
+    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
 done
@@ -163,12 +163,18 @@ declare -a ufs_templates=("model_configure.IN" \
                           "MOM6_data_table.IN" \
                           "ice_in.IN" \
                           "ufs.configure.atm.IN" \
+                          "ufs.configure.atm_esmf.IN" \
                           "ufs.configure.atmaero.IN" \
-                          "ufs.configure.leapfrog_atm_wav.IN" \
+                          "ufs.configure.atmaero_esmf.IN" \
+                          "ufs.configure.s2s.IN" \
                           "ufs.configure.s2s_esmf.IN" \
+                          "ufs.configure.s2sa.IN" \
                           "ufs.configure.s2sa_esmf.IN" \
+                          "ufs.configure.s2sw.IN" \
                           "ufs.configure.s2sw_esmf.IN" \
-                          "ufs.configure.s2swa_esmf.IN" )
+                          "ufs.configure.s2swa.IN" \
+                          "ufs.configure.s2swa_esmf.IN" \
+                          "ufs.configure.leapfrog_atm_wav.IN" )
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .

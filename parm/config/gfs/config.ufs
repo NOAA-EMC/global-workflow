@@ -495,27 +495,30 @@ fi
 
 # Set the name of the UFS (previously nems) configure template to use
 # Default ufs.configure templates for supported model configurations
+if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+  tmpl_suffix="_esmf"
+fi
 case "${model_list}" in
   atm)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atm.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atm${tmpl_suffix:-}.IN"
     ;;
   atm.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atmaero.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atmaero${tmpl_suffix:-}.IN"
     ;;
   atm.wave)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav${tmpl_suffix:-}.IN"
     ;;
   atm.ocean.ice)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2s_esmf.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2s${tmpl_suffix:-}.IN"
     ;;
   atm.ocean.ice.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sa_esmf.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sa${tmpl_suffix:-}.IN"
     ;;
   atm.ocean.ice.wave)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sw_esmf.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sw${tmpl_suffix:-}.IN"
     ;;
   atm.ocean.ice.wave.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2swa_esmf.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2swa${tmpl_suffix:-}.IN"
     ;;
   *)
     echo "FATAL ERROR: Unsupported UFSWM configuration for ${model_list}"

@@ -5,6 +5,8 @@
 
 echo "BEGIN: config.fcst"
 
+export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
+
 # Turn off waves if not used for this CDUMP
 case ${WAVE_CDUMP} in
   both | "${CDUMP/enkf}" ) ;; # Don't change
@@ -49,7 +51,6 @@ if [[ "${DONST}" == "YES" ]]; then
     source "${EXPDIR}/config.nsst"
 fi
 
-export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
 export esmf_profile=".false."
 export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
