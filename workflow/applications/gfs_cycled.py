@@ -140,7 +140,7 @@ class GFSCycledAppConfig(AppConfig):
             gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep',
                                                   'ocnanalbmat', 'ocnanalrun',
                                                   'ocnanalchkpt', 'ocnanalpost']
-            if  self.do_vrfy_oceanda:
+            if self.do_vrfy_oceanda:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
