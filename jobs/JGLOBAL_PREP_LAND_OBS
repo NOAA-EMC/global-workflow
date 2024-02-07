@@ -12,7 +12,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "preplandobs" -c "base preplandobs"
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
-GDUMP="gdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -20,7 +19,7 @@ GDUMP="gdas"
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+RUN=${RUN} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
 ###############################################################
