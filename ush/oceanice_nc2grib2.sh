@@ -12,7 +12,7 @@ function _ice_nc2grib2 {
   # Set the inputs
   local grid=${1} # 0p25, 0p50, 1p00, 5p00
   local latlon_dims=${2} # 0:721:0:1440, 0:361:0:720, 0:181:0:360, 0:36:0:72
-  local vdate=${3} # YYYYMMDDHH
+  local current_cycle=${3} # YYYYMMDDHH
   local aperiod=${4} # 0-6
   local infile=${5} # ice.0p25.nc
   local outfile=${6} # ice.0p25.grib2
@@ -21,23 +21,23 @@ function _ice_nc2grib2 {
   ${WGRIB2} "${template}" \
   -import_netcdf "${infile}" "hi_h" "0:1:${latlon_dims}" \
       -set_var ICETK -set center 7 \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "aice_h" "0:1:${latlon_dims}" \
       -set_var ICEC -set center 7 \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "Tsfc_h" "0:1:${latlon_dims}" \
       -set_var ICETMP -set center 7 -rpn "273.15:+" \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "uvel_h" "0:1:${latlon_dims}" \
       -set_var UICE -set center 7 \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "vvel_h" "0:1:${latlon_dims}" \
       -set_var VICE -set center 7 \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out "${outfile}"
 
 # Additional variables needed for GFSv17/GEFSv13 operational forecast
@@ -46,23 +46,23 @@ function _ice_nc2grib2 {
 
 #  -import_netcdf "${infile}" "hs_h" "0:1:${latlon_dims}" \
 #    -set_var ??? -set center 7 \
-#    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+#    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "frzmlt_h" "0:1:${latlon_dims}" \
 #    -set_var ??? -set center 7 \
-#    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+#    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "albsni_h" "0:1:${latlon_dims}" \
 #    -set_var ALBICE -set center 7 -rpn "100.0:/" \
-#    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+#    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "mlt_onset_h" "0:1:${latlon_dims}" \
 #    -set_var ??? -set center 7 \
-#    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+#    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "frz_onset_h" "0:1:${latlon_dims}" \
 #    -set_var ??? -set center 7 \
-#    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+#    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}"
 
   rc=$?
@@ -81,7 +81,7 @@ function _ocean2D_nc2grib2 {
   # Set the inputs
   local grid=${1} # 0p25, 0p50, 1p00, 5p00
   local latlon_dims=${2} # 0:721:0:1440, 0:361:0:720, 0:181:0:360, 0:36:0:72
-  local vdate=${3} # YYYYMMDDHH
+  local current_cycle=${3} # YYYYMMDDHH
   local aperiod=${4} # 0-6
   local infile=${5} # ocean.0p25.nc
   local outfile=${6} # ocean_2D.0p25.grib2
@@ -90,51 +90,51 @@ function _ocean2D_nc2grib2 {
   ${WGRIB2} "${template}" \
   -import_netcdf "${infile}" "SSH" "0:1:${latlon_dims}" \
     -set_var SSHG -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "SST" "0:1:${latlon_dims}" \
     -set_var WTMP -set center 7 -rpn "273.15:+" \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "SSS" "0:1:${latlon_dims}" \
     -set_var SALTY -set center 7 -rpn "1000.0:/" \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "speed" "0:1:${latlon_dims}" \
     -set_var SPC -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "SSU" "0:1:${latlon_dims}" \
     -set_var UOGRD -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "SSV" "0:1:${latlon_dims}" \
     -set_var VOGRD -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "latent" "0:1:${latlon_dims}" \
     -set_var LHTFL -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "sensible" "0:1:${latlon_dims}" \
     -set_var SHTFL -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "SW" "0:1:${latlon_dims}" \
     -set_var DSWRF -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "LW" "0:1:${latlon_dims}" \
     -set_var DLWRF -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "LwLatSens" "0:1:${latlon_dims}" \
     -set_var THFLX -set center 7 \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "MLD_003" "0:1:${latlon_dims}" \
     -set_var WDEPTH -set center 7 -set_lev "mixed layer depth" \
-    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}"
 
 # Additional variables needed for GFSv17/GEFSv13 operational forecast
@@ -143,15 +143,15 @@ function _ocean2D_nc2grib2 {
 #
 #  -import_netcdf "${infile}" "Heat_PmE" "0:1:${latlon_dims}" \
 #    -set_var DWHFLUX -set center 7 \
-#    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+#    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "taux" "0:1:${latlon_dims}" \
 #    -set_var XCOMPSS -set center 7 \
-#    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+#    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "tauy" "0:1:${latlon_dims}" \
 #    -set_var YCOMPSS -set center 7 \
-#    -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+#    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}"
 
   rc=$?
@@ -171,7 +171,7 @@ function _ocean3D_nc2grib2 {
   local grid=${1} # 0p25, 0p50, 1p00, 5p00
   local latlon_dims=${2} # 0:721:0:1440, 0:361:0:720, 0:181:0:360, 0:36:0:72
   local levels=${3} # 5:15:25:35:45:55:65:75:85:95:105:115:125
-  local vdate=${4} # YYYYMMDDHH
+  local current_cycle=${4} # YYYYMMDDHH
   local aperiod=${5} # 0-6
   local infile=${6} # ocean.0p25.nc
   local outfile=${7} # ocean_3D.0p25.grib2
@@ -188,22 +188,22 @@ function _ocean3D_nc2grib2 {
     -import_netcdf "${infile}" "temp" "0:1:${zl}:1:${latlon_dims}" \
       -set_var WTMP -set center 7 -rpn "273.15:+" \
       -set_lev "${depth} m below water surface" \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2 \
     -import_netcdf "${infile}" "so" "0:1:${zl}:1:${latlon_dims}" \
       -set_var SALTY -set center 7 -rpn "1000.0:/" \
       -set_lev "${depth} m below water surface" \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2 \
     -import_netcdf "${infile}" "uo" "0:1:${zl}:1:${latlon_dims}" \
       -set_var UOGRD -set center 7 \
       -set_lev "${depth} m below water surface" \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2 \
     -import_netcdf "${infile}" "vo" "0:1:${zl}:1:${latlon_dims}" \
       -set_var VOGRD -set center 7 \
       -set_lev "${depth} m below water surface" \
-      -set_date "${vdate}" -set_ftime "${aperiod} hour ave fcst" \
+      -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2
 
     rc=$?
@@ -233,7 +233,7 @@ function _ocean3D_nc2grib2 {
 # Input arguments
 component=${1:?"Need a valid component; options: ice|ocean"}
 grid=${2:-"0p25"} # Default to 0.25-degree grid
-vdate=${3:-"2013100100"} # Default to 2013100100
+current_cycle=${3:-"2013100100"} # Default to 2013100100
 avg_period=${4:-"0-6"} # Default to 6-hourly average
 ocean_levels=${5:-"5:15:25:35:45:55:65:75:85:95:105:115:125"} # Default to 12-levels
 
@@ -274,7 +274,7 @@ fi
 case "${component}" in
   "ice")
     rm -f "${component}.${grid}.grib2" || true
-    _ice_nc2grib2 "${grid}" "${latlon_dims}" "${vdate}" "${avg_period}" "${input_file}" "${component}.${grid}.grib2" "${template}"
+    _ice_nc2grib2 "${grid}" "${latlon_dims}" "${current_cycle}" "${avg_period}" "${input_file}" "${component}.${grid}.grib2" "${template}"
     rc=$?
     if (( rc != 0 )); then
       echo "FATAL ERROR: Failed to convert the ice rectilinear netCDF file to grib2 format"
@@ -283,14 +283,14 @@ case "${component}" in
   ;;
   "ocean")
     rm -f "${component}_2D.${grid}.grib2" || true
-    _ocean2D_nc2grib2 "${grid}" "${latlon_dims}" "${vdate}" "${avg_period}" "${input_file}" "${component}_2D.${grid}.grib2" "${template}"
+    _ocean2D_nc2grib2 "${grid}" "${latlon_dims}" "${current_cycle}" "${avg_period}" "${input_file}" "${component}_2D.${grid}.grib2" "${template}"
     rc=$?
     if (( rc != 0 )); then
       echo "FATAL ERROR: Failed to convert the ocean 2D rectilinear netCDF file to grib2 format"
       exit "${rc}"
     fi
     rm -f "${component}_3D.${grid}.grib2" || true
-    _ocean3D_nc2grib2 "${grid}" "${latlon_dims}" "${ocean_levels}" "${vdate}" "${avg_period}" "${input_file}" "${component}_3D.${grid}.grib2" "${template}"
+    _ocean3D_nc2grib2 "${grid}" "${latlon_dims}" "${ocean_levels}" "${current_cycle}" "${avg_period}" "${input_file}" "${component}_3D.${grid}.grib2" "${template}"
     rc=$?
     if (( rc != 0 )); then
       echo "FATAL ERROR: Failed to convert the ocean 3D rectilinear netCDF file to grib2 format"
@@ -310,7 +310,7 @@ esac
 # Index the output grib2 file
 ${WGRIB2} -s "${component}.${grid}.grib2" > "${component}.${grid}.grib2.idx"
 rc=$?
-# Check if the output file exists
+# Check if the indexing was successful
 if (( rc != 0 )); then
   echo "FATAL ERROR: Failed to index the file '${component}.${grid}.grib2'"
   exit "${rc}"

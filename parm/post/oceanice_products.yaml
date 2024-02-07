@@ -38,11 +38,14 @@ ocean:
       - ["{{ COM_OCEAN_HISTORY }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
   data_out:
     mkdir:
+      - "{{ COM_OCEAN_NETCDF }}"
       {% for grid in product_grids %}
+      #- "{{ COM_OCEAN_NETCDF }}/{{ grid }}"
       - "{{ COM_OCEAN_GRIB }}/{{ grid }}"
       {% endfor %}
     copy:
       {% for grid in product_grids %}
+      #- ["{{ DATA }}/ocean.{{ grid }}.nc", "{{ COM_OCEAN_NETCDF }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
       - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
       - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}
