@@ -35,4 +35,4 @@ ocnanal:
 prepoceanobs:
   SOCA_OBS_LIST: "{{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml"  # TODO: This is also repeated in ocnanal
   OBSPREP_YAML: "{{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obsprep/obsprep_config.yaml"
-  DMPDIR: "/scratch1/NCEPDEV/stmp2/Guillaume.Vernieres/runs/gw-ci/ci-obs"  # TODO: migrate to glopara space and Orion before merge
+  DMPDIR: "/scratch1/NCEPDEV/global/glopara/data/experimental_obs"
