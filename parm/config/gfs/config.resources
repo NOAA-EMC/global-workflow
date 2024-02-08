@@ -23,7 +23,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -398,6 +398,14 @@ case ${step} in
     export is_exclusive=True
     export npe_node_ocnanalrun=$(( npe_node_max / nth_ocnanalrun ))
     export memory_ocnanalrun
+    ;;
+
+  "ocnanalecen")
+    export wtime_ocnanalecen="00:10:00"
+    export npe_ocnanalecen=1
+    export nth_ocnanalecen=1
+    export npe_node_ocnanalecen=$(( npe_node_max / nth_ocnanalecen ))
+    export memory_ocnanalecen="24GB"
     ;;
 
   "ocnanalchkpt")

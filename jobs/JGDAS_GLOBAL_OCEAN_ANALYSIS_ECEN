@@ -1,0 +1,42 @@
+#!/bin/bash
+source "${HOMEgfs}/ush/preamble.sh"
+export WIPE_DATA="NO"
+export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalecen" -c "base ocnanalecen"
+
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASOCNRUNSH:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_ecen.sh}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
+
+exit 0
