@@ -81,10 +81,10 @@ pipeline {
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(" ").trim().replaceAll("null", "")
                                         dir("${HOMEgfs}/sorc") {
-                                            //sh( script: "${build_args}", returnStatus: true)
-                                            //sh( script: "./link_workflow.sh", returnStatus: true)
+                                            sh( script: "${build_args}", returnStatus: true)
+                                            sh( script: "./link_workflow.sh", returnStatus: true)
                                             //sh( script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
-                                            sh( script: "echo 'stubbing build scripts'", returnStatus: true)
+                                            sh( script: "echo 'ran with build scripts on'", returnStatus: true)
                                         }
                                     }
                                     ws(HOMEgfs) {
