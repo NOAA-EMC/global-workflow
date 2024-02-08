@@ -377,15 +377,16 @@ case ${step} in
     npes=16
     case ${CASE} in
       "C384")
-        npes=480
-        memory_ocnanalrun="128GB"
+        npes=40
+        memory_ocnanalrun="96GB"
         ;;
       "C96")
         npes=16
+        memory_ocnanalrun="96GB"
         ;;
       "C48")
         npes=16
-        memory_ocnanalrun="64GB"
+        memory_ocnanalrun="24GB"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
