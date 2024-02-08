@@ -97,7 +97,7 @@ function _ocean2D_nc2grib2 {
     -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "SSS" "0:1:${latlon_dims}" \
-    -set_var SALTY -set center 7 -rpn "1000.0:/" \
+    -set_var SALIN -set center 7 \
     -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "speed" "0:1:${latlon_dims}" \
@@ -191,7 +191,7 @@ function _ocean3D_nc2grib2 {
       -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2 \
     -import_netcdf "${infile}" "so" "0:1:${zl}:1:${latlon_dims}" \
-      -set_var SALTY -set center 7 -rpn "1000.0:/" \
+      -set_var SALIN -set center 7 \
       -set_lev "${depth} m below water surface" \
       -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2 \
