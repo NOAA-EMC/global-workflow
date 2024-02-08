@@ -26,8 +26,8 @@ pipeline {
                         echo "Label: ${label}"
                         if ((label.matches("CI-Hera-Ready"))) {
                             machine = 'hera'
-                        } else if ((label.matches("CI-Orion-Ready"))) {
-                            machine = 'orion'
+                        //} else if ((label.matches("CI-Orion-Ready"))) {
+                        //    machine = 'orion'
                         } else if ((label.matches("CI-Hercules-Ready"))) {
                             machine = 'hercules'
                         }
