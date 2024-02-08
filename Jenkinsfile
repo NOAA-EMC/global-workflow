@@ -129,7 +129,7 @@ pipeline {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                 ws(HOMEgfs) {
                                    pslot = sh( script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true ).trim()
-                                   pullRequest.comment("**Running experiments: ${Case} on ${Machine}**<br>Built against system **${system}** in directory:<br>`${HOMEgfs} with the experiment in directory ${HOME}/RUNTESTS/${pslot}`")
+                                   pullRequest.comment("**Running experiments: ${Case} on ${Machine}**<br>Built against system **${system}** in directory:<br>`${HOMEgfs}`<br>With the experiment in directory `${HOME}/RUNTESTS/${pslot}`")
                                    try {
                                       sh( script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: true)
                                     } catch (Exception e) {
