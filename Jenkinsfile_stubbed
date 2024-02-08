@@ -146,7 +146,11 @@ pipeline {
                                     ws (HOMEgfs) {
                                         for (label in pullRequest.labels) {
                                            if (label.contains("${Machine}")) {
-                                               pullRequest.removeLabel(label)
+                                               try {
+                                                   pullRequest.removeLabel(label)
+                                               } catch (Exception e) {
+                                                   echo "Failed to remove label ${label}"
+                                               }
                                             }
                                         }
                                     }
