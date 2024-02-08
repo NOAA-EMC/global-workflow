@@ -9,10 +9,10 @@ if (( $# != 1 )); then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init"
-    echo "prep preplandobs prepatmiodaobs"
+    echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanl"
+    echo "snowanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
@@ -83,11 +83,11 @@ case ${step} in
     fi
     ;;
 
-  "preplandobs")
-    export wtime_preplandobs="00:05:00"
-    export npe_preplandobs=1
-    export nth_preplandobs=1
-    export npe_node_preplandobs=1
+  "prepsnowobs")
+    export wtime_prepsnowobs="00:05:00"
+    export npe_prepsnowobs=1
+    export nth_prepsnowobs=1
+    export npe_node_prepsnowobs=1
     ;;
 
   "prepatmiodaobs")
@@ -232,7 +232,7 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "landanl")
+  "snowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
       "C768")
@@ -255,10 +255,10 @@ case ${step} in
     export layout_x
     export layout_y
 
-    export wtime_landanl="00:15:00"
-    export npe_landanl=$(( layout_x * layout_y * 6 ))
-    export nth_landanl=1
-    export npe_node_landanl=$(( npe_node_max / nth_landanl ))
+    export wtime_snowanl="00:15:00"
+    export npe_snowanl=$(( layout_x * layout_y * 6 ))
+    export nth_snowanl=1
+    export npe_node_snowanl=$(( npe_node_max / nth_snowanl ))
     ;;
 
   "aeroanlinit")
@@ -926,7 +926,7 @@ case ${step} in
           export nth_eupd=4
         fi
         ;;
-      *)        
+      *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
         ;;

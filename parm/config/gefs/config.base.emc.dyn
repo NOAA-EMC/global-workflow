@@ -257,7 +257,7 @@ export imp_physics=8
 export DO_JEDIATMVAR="NO"
 export DO_JEDIATMENS="NO"
 export DO_JEDIOCNVAR="NO"
-export DO_JEDILANDDA="NO"
+export DO_JEDISNOWDA="NO"
 export DO_MERGENSST="NO"
 
 # Hybrid related

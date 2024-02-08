@@ -190,8 +190,8 @@ fi
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do
-    if [[ ${DO_JEDILANDDA:-"NO"} = "YES" ]]; then
-        ${NCP} "${COM_LAND_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+    if [[ ${DO_JEDISNOWDA:-"NO"} = "YES" ]]; then
+        ${NCP} "${COM_SNOW_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
                "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
     else
         ${NCP} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
