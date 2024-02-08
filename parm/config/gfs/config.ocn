@@ -16,6 +16,14 @@ if [[ "${DO_JEDIOCNVAR}" == "YES" ]]; then
 else
   export ODA_INCUPD="False"
 fi
-export ODA_INCUPD_NHOURS="3.0"  # In MOM_input, this is time interval for applying increment
+
+# Time interval for applying the increment
+if [[ "${DOIAU}" == "YES" ]]; then
+  export ODA_INCUPD_NHOURS="6.0"
+else
+  export ODA_INCUPD_NHOURS="3.0"
+fi
+
+
 
 echo "END: config.ocn"

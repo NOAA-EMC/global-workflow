@@ -378,6 +378,7 @@ export binary_diag=".false."
 # Verification options
 export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
 export DO_FIT2OBS="YES"      # Run fit to observations package
+export DO_VRFY_OCEANDA="NO"  # Run SOCA Ocean DA verification tasks
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
