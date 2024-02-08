@@ -401,11 +401,30 @@ case ${step} in
     ;;
 
   "ocnanalecen")
+    npes=16
+    case ${CASE} in
+      "C384")
+        npes=480
+        memory_ocnanalecen="128GB"
+        ;;
+      "C96")
+        npes=16
+        ;;
+      "C48")
+        npes=16
+        memory_ocnanalecen="64GB"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        exit 4
+    esac
+
     export wtime_ocnanalecen="00:10:00"
-    export npe_ocnanalecen=1
+    export npe_ocnanalecen=${npes}
     export nth_ocnanalecen=1
+    export is_exclusive=True
     export npe_node_ocnanalecen=$(( npe_node_max / nth_ocnanalecen ))
-    export memory_ocnanalecen="24GB"
+    export memory_ocnanalecen
     ;;
 
   "ocnanalchkpt")
