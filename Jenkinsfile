@@ -12,7 +12,9 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '2'))
     }
 
-    stages {
+    stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
+             // which is used to designate the Nodes in the Jenkins Controler by the agent label
+             // Each Jenknis Node is connected to said machine via an JAVA agent via an ssh tunnel
 
         stage('Get Machine') {
             agent { label 'built-in' }
@@ -29,7 +31,8 @@ pipeline {
                         } else if ((label.matches("CI-Hercules-Ready"))) {
                             machine = 'hercules'
                         }
-                    }
+                    }         // createing a second machine varible with first letter capital
+                              // because the first letter of the machine name is captitalized in the GitHub labels
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                 }
             }
@@ -67,12 +70,12 @@ pipeline {
                     stage("build system") {
                         steps {
                             script {
-                                def HOMEgfs = "${HOME}/${system}"
+                                def HOMEgfs = "${HOME}/${system}" // local HOMEgfs is used to build the system on per system basis under the common workspace HOME
                                 sh( script: "mkdir -p ${HOMEgfs}", returnStatus: true)
                                 ws(HOMEgfs) {
-                                    env.MACHINE_ID = machine
-                                    if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) {
-                                        sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim()
+                                    env.MACHINE_ID = machine // MACHINE_ID is used in the build scripts to determine the machine and is added to the shell environment
+                                    if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
+                                        sh( script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
                                         ws(commonworkspace) { pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}") }
                                     } else {
                                         checkout scm
@@ -104,7 +107,7 @@ pipeline {
                 axes {
                     axis {
                         name "Case"
-                        values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar"
+                        values "C48_ATM", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar" // TODO add dynamic list of cases from env vars (needs addtional plugins)
                     }
                 }
                 stages {
