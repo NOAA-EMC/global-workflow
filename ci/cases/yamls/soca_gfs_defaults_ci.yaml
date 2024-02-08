@@ -1,0 +1,5 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
+base:
+  ACCOUNT: {{ 'SLURM_ACCOUNT' | getenv }}
+  DO_JEDIOCNVAR: "YES"
