@@ -47,6 +47,7 @@ class Tasks:
         self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
+        self.nmem = int(self._base['NMEM_ENS'])
         self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
@@ -72,12 +73,6 @@ class Tasks:
             envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         return envars
-
-    @staticmethod
-    def _get_hybgroups(nens: int, nmem_per_group: int, start_index: int = 1):
-        ngrps = nens / nmem_per_group
-        groups = ' '.join([f'{x:02d}' for x in range(start_index, int(ngrps) + 1)])
-        return groups
 
     def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:
         '''
@@ -135,8 +130,7 @@ class Tasks:
         if cdump in ['gdas']:
             fhrs = range(fhmin, fhmax + fhout, fhout)
         elif cdump in ['gfs', 'gefs']:
-            fhmax = np.max(
-                [config['FHMAX_GFS_00'], config['FHMAX_GFS_06'], config['FHMAX_GFS_12'], config['FHMAX_GFS_18']])
+            fhmax = config['FHMAX_GFS']
             fhout = config['FHOUT_GFS']
             fhmax_hf = config['FHMAX_HF_GFS']
             fhout_hf = config['FHOUT_HF_GFS']
