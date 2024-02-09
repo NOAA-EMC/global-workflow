@@ -182,13 +182,13 @@ export ICERES="${OCNRES}"
 # These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
-        export waveGRD='glo_500'
+        export waveGRD='uglo_100km'
         ;;
     "C96" | "C192")
-        export waveGRD='glo_200'
+        export waveGRD='uglo_100km'
         ;;
     "C384")
-        export waveGRD='glo_025'
+        export waveGRD='uglo_100km'
         ;;
     "C768" | "C1152")
         export waveGRD='uglo_m1g16'
