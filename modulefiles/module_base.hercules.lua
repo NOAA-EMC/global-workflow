@@ -37,8 +37,9 @@ load(pathJoin("py-pyyaml", (os.getenv("py_pyyaml_ver") or "None")))
 load(pathJoin("py-jinja2", (os.getenv("py_jinja2_ver") or "None")))
 load(pathJoin("py-pandas", (os.getenv("py_pandas_ver") or "None")))
 load(pathJoin("py-python-dateutil", (os.getenv("py_python_dateutil_ver") or "None")))
-load(pathJoin("met", (os.getenv("met_ver") or "None")))
-load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
+-- MET/METplus is not yet enabled on Hercules
+--load(pathJoin("met", (os.getenv("met_ver") or "None")))
+--load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 
 setenv("WGRIB2","wgrib2")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
