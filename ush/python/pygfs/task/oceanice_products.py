@@ -2,8 +2,9 @@
 
 import os
 from logging import getLogger
-from typing import Dict, Any, Union
+from typing import List, Dict, Any
 from pprint import pformat
+import xarray as xr
 
 from wxflow import (AttrDict,
                     parse_j2yaml,
@@ -229,6 +230,61 @@ class OceanIceProducts(Task):
         except Exception:
             logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
             raise WorkflowException(f"{exec_cmd}")
+
+    @staticmethod
+    @logit(logger)
+    def subset(config: Dict) -> None:
+        """
+        Subset a list of variables from a netcdf file and save to a new netcdf file.
+        Also save global attributes and history from the old netcdf file into new netcdf file
+
+        Parameters
+        ----------
+        config : Dict
+            Configuration dictionary for the task
+
+        Returns
+        -------
+        None
+        """
+
+        os.chdir(config.DATA)
+
+        input_file = f"{config.component}.nc"
+        output_file = f"{config.component}_subset.nc"
+        varlist = config.oceanice_yaml[config.component].subset
+
+        logger.info(f"Subsetting {varlist} from {input_file} to {output_file}")
+
+        try:
+            # open the netcdf file
+            ds = xr.open_dataset(input_file)
+
+            # subset the variables
+            ds_subset = ds[varlist]
+
+            # save global attributes from the old netcdf file into new netcdf file
+            ds_subset.attrs = ds.attrs
+
+            # save subsetted variables to a new netcdf file
+            ds_subset.to_netcdf(output_file)
+
+        except FileNotFoundError:
+            logger.exception(f"FATAL ERROR: Input file not found: {input_file}")
+            raise FileNotFoundError(f"File not found: {input_file}")
+
+        except IOError as err:
+            logger.exception(f"FATAL ERROR: IOError occurred during netCDF subset: {input_file}")
+            raise IOError(f"An I/O error occurred: {err}")
+
+        except Exception as err:
+            logger.exception(f"FATAL ERROR: Error occurred during netCDF subset: {input_file}")
+            raise WorkflowException(f"{err}")
+
+        finally:
+            # close the netcdf files
+            ds.close()
+            ds_subset.close()
 
     @staticmethod
     @logit(logger)

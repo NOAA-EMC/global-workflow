@@ -41,7 +41,10 @@ def main():
         # Run the oceanice post executable to interpolate and create grib2 files
         oceanice.execute(oceanice_dict, grid)
 
-    # Copy processed output from execute
+    # Subset raw model data to create netCDF products
+    oceanice.subset(oceanice_dict)
+
+    # Copy processed output from execute and subset
     oceanice.finalize(oceanice_dict)
 
 
