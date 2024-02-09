@@ -117,15 +117,10 @@ FV3_predet(){
   FV3_OUTPUT_FH=""
   local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
-    for (( fh = FHMIN; fh < FHMAX_HF; fh = fh + FHOUT_HF )); do
-      FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
-    done
+    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
     fhr=${FHMAX_HF}
   fi
-  for (( fh = fhr; fh <= FHMAX; fh = fh + FHOUT )); do
-    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
-  done
-
+  FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
   # Model resolution specific parameters
   DELTIM=${DELTIM:-225}
@@ -134,8 +129,9 @@ FV3_predet(){
   LEVS=${LEVS:-65}
 
   # Other options
-  MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
-  ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
+  # ignore errors that variable isn't used
+  # shellcheck disable=SC2034
+  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options

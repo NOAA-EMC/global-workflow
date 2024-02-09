@@ -224,6 +224,13 @@ def fill_ROTDIR_cycled(host, inputs):
         src_file = os.path.join(src_dir, fname)
         if os.path.exists(src_file):
             os.symlink(src_file, os.path.join(dst_dir, fname))
+    # First 1/2 cycle also needs a atmos increment if doing warm start
+    if inputs.start in ['warm']:
+        for ftype in ['atmi003.nc', 'atminc.nc', 'atmi009.nc']:
+            fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
+            src_file = os.path.join(src_dir, fname)
+            if os.path.exists(src_file):
+                os.symlink(src_file, os.path.join(dst_dir, fname))
 
     return
 
@@ -316,7 +323,8 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
-        "@APP@": inputs.app
+        "@APP@": inputs.app,
+        "@NMEM_ENS@": getattr(inputs, 'nens', 0)
     }
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
@@ -324,7 +332,6 @@ def edit_baseconfig(host, inputs, yaml_dict):
     if getattr(inputs, 'nens', 0) > 0:
         extend_dict = {
             "@CASEENS@": f'C{inputs.resensatmos}',
-            "@NMEM_ENS@": inputs.nens,
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
@@ -399,6 +406,8 @@ def input_args(*argv):
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
         parser.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
+        parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
+                            action='store_true', required=False)
         return parser
 
     def _gfs_args(parser):
@@ -493,17 +502,19 @@ def input_args(*argv):
     return parser.parse_args(list(*argv) if len(argv) else None)
 
 
-def query_and_clean(dirname):
+def query_and_clean(dirname, force_clean=False):
     """
     Method to query if a directory exists and gather user input for further action
     """
 
     create_dir = True
     if os.path.exists(dirname):
-        print()
-        print(f'directory already exists in {dirname}')
-        print()
-        overwrite = input('Do you wish to over-write [y/N]: ')
+        print(f'\ndirectory already exists in {dirname}')
+        if force_clean:
+            overwrite = True
+            print(f'removing directory ........ {dirname}\n')
+        else:
+            overwrite = input('Do you wish to over-write [y/N]: ')
         create_dir = True if overwrite in [
             'y', 'yes', 'Y', 'YES'] else False
         if create_dir:
@@ -553,8 +564,8 @@ def main(*argv):
     rotdir = os.path.join(user_inputs.comroot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
 
-    create_rotdir = query_and_clean(rotdir)
-    create_expdir = query_and_clean(expdir)
+    create_rotdir = query_and_clean(rotdir, force_clean=user_inputs.overwrite)
+    create_expdir = query_and_clean(expdir, force_clean=user_inputs.overwrite)
 
     if create_rotdir:
         makedirs_if_missing(rotdir)
@@ -564,6 +575,11 @@ def main(*argv):
         makedirs_if_missing(expdir)
         fill_EXPDIR(user_inputs)
         update_configs(host, user_inputs)
+
+    print(f"*" * 100)
+    print(f'EXPDIR: {expdir}')
+    print(f'ROTDIR: {rotdir}')
+    print(f"*" * 100)
 
 
 if __name__ == '__main__':

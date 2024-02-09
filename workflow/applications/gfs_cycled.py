@@ -18,6 +18,7 @@ class GFSCycledAppConfig(AppConfig):
         self.do_jediocnvar = self._base.get('DO_JEDIOCNVAR', False)
         self.do_jedilandda = self._base.get('DO_JEDILANDDA', False)
         self.do_mergensst = self._base.get('DO_MERGENSST', False)
+        self.do_vrfy_oceanda = self._base.get('DO_VRFY_OCEANDA', False)
 
         self.lobsdiag_forenkf = False
         self.eupd_cdumps = None
@@ -43,8 +44,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_jediocnvar:
             configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
-                        'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost',
-                        'ocnanalvrfy']
+                        'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost']
+            if self.do_vrfy_oceanda:
+                configs += ['ocnanalvrfy']
 
         if self.do_ocean:
             configs += ['ocnpost']
@@ -137,8 +139,9 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_jediocnvar:
             gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep',
                                                   'ocnanalbmat', 'ocnanalrun',
-                                                  'ocnanalchkpt', 'ocnanalpost',
-                                                  'ocnanalvrfy']
+                                                  'ocnanalchkpt', 'ocnanalpost']
+            if self.do_vrfy_oceanda:
+                gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
@@ -320,10 +323,5 @@ class GFSCycledAppConfig(AppConfig):
             base_out['SDATE_GFS'] = sdate_gfs
             base_out['EDATE_GFS'] = edate_gfs
             base_out['INTERVAL_GFS'] = interval_gfs
-
-            fhmax_gfs = {}
-            for hh in ['00', '06', '12', '18']:
-                fhmax_gfs[hh] = base.get(f'FHMAX_GFS_{hh}', base.get('FHMAX_GFS_00', 120))
-            base_out['FHMAX_GFS'] = fhmax_gfs
 
         return base_out

@@ -7,7 +7,6 @@ class GEFSTasks(Tasks):
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
         super().__init__(app_config, cdump)
-        self.nmem = self._base['NMEM_ENS']
 
     def stage_ic(self):
 
@@ -104,7 +103,7 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         resources = self.get_resource('fcst')
-        task_name = f'fcst'
+        task_name = f'fcst_mem000'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -131,27 +130,29 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         efcsenvars = self.envars.copy()
-        efcsenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
-
-        groups = self._get_hybgroups(self.nmem, self._configs['efcs']['NMEM_EFCSGRP'])
-        var_dict = {'grp': groups}
+        efcsenvars_dict = {'ENSMEM': '#member#',
+                           'MEMDIR': 'mem#member#'
+                           }
+        for key, value in efcsenvars_dict.items():
+            efcsenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('efcs')
 
-        task_name = f'efcs#grp#'
+        task_name = f'fcst_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': efcsenvars,
                      'cycledef': 'gefs',
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/efcs.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': 'efmn',
-                         'var_dict': var_dict,
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
+        metatask_dict = {'task_name': 'fcst_ens',
+                         'var_dict': member_var_dict,
                          'task_dict': task_dict
                          }
 
