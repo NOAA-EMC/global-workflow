@@ -219,7 +219,7 @@ def fill_ROTDIR_cycled(host, inputs):
     src_dir = os.path.join(inputs.icsdir, current_cycle_dir, src_atm_anl_dir)
     dst_dir = os.path.join(rotdir, current_cycle_dir, dst_atm_anl_dir)
     makedirs_if_missing(dst_dir)
-    for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat', 'atms_n20.satbias.nc4', 'atms_n20.satbias_cov.nc4', 'atms_n20.tlapse.txt' ]:
+    for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat', 'atms_n20.satbias.nc4', 'atms_n20.satbias_cov.nc4', 'atms_n20.tlapse.txt']:
         fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
         src_file = os.path.join(src_dir, fname)
         if os.path.exists(src_file):
