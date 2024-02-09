@@ -107,7 +107,8 @@ pipeline {
                 axes {
                     axis {
                         name 'Case'
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar' // TODO add dynamic list of cases from env vars (needs addtional plugins)
+                        // values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar' // TODO add dynamic list of cases from env vars (needs addtional plugins)
+                        values 'C48_ATM', 'C48_S2SW' // TODO add dynamic list of cases from env vars (needs addtional plugins)
                     }
                 }
                 stages {
