@@ -220,7 +220,7 @@ case ${step} in
 
   "wavepostsbs")
     export wtime_wavepostsbs="03:00:00"
-    export npe_wavepostsbs=8
+    export npe_wavepostsbs=1
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
     export NTASKS=${npe_wavepostsbs}
