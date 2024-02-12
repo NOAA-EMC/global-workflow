@@ -75,7 +75,12 @@ pipeline {
                                     env.MACHINE_ID = machine // MACHINE_ID is used in the build scripts to determine the machine and is added to the shell environment
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
-                                        ws(commonworkspace) { pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}") }
+                                        ws(commonworkspace) {
+                                            pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}")
+                                            pullRequest.comment("Still doing a checkout to get the latest changes")
+                                            checkout scm
+                                            sh(script: 'source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive', returnStatus: true)
+                                        }
                                     } else {
                                         checkout scm
                                         sh(script: 'source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive', returnStatus: true)
