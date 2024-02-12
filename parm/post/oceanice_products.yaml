@@ -57,7 +57,7 @@ ice:
     sinvar: ""
     cosvar: ""
     angvar: "ANGLET"
-  subset: ['hi_h', 'hs_h', 'aice_h', 'Tsfc_h', 'uvel_h', 'vvel_h', 'frzmlt_h', 'albsni_h', 'mlt_onset_h', 'frz_onset_h', 'sst_h']
+  subset: ['hi_h', 'hs_h', 'aice_h', 'Tsfc_h', 'uvel_h', 'vvel_h', 'frzmlt_h', 'albsni_h', 'mlt_onset_h', 'frz_onset_h']
   data_in:
     copy:
       - ["{{ COM_ICE_HISTORY }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
