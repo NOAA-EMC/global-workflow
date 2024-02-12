@@ -106,7 +106,8 @@ pipeline {
                 axes {
                     axis {
                         name 'Case'
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar' // TODO add dynamic list of cases from env vars (needs addtional plugins)
+                        // TODO add dynamic list of cases from env vars (needs addtional plugins)
+                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar', 'C48mx500_3DVarAOWCDA', 'C96C48_hybatmDA', 'C96_atmsnowDA'
                     }
                 }
                 stages {
@@ -128,16 +129,16 @@ pipeline {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                 ws(HOMEgfs) {
                                     pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
-                                    pullRequest.comment("**Running** experiment: ${Case} on ${Machine}<br>With the experiment in directory:<br>`${HOME}/RUNTESTS/${pslot}`")
-                                    try {
-                                        sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: true)
-                                    } catch (Exception e) {
+                                    // pullRequest.comment("**Running** experiment: ${Case} on ${Machine}<br>With the experiment in directory:<br>`${HOME}/RUNTESTS/${pslot}`")
+                                    err =  sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: true)
+                                    if (err != 0) {
                                         pullRequest.comment("**FAILURE** running experiment: ${Case} on ${Machine}")
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
                                     pullRequest.comment("**SUCCESS** running experiment: ${Case} on ${Machine}")
                                 }
                             }
+
                         }
                     }
                 }

@@ -84,7 +84,6 @@ while true; do
      echo "Error logs:"
      echo "${error_logs}"
     } | tee -a  "${run_check_logfile}"
-    sed -i "s/\`\`\`//2g" "${RUNTESTS}/ci.log"
     rc=1
     break
   fi
@@ -94,8 +93,7 @@ while true; do
       echo "Experiment ${pslot} Completed at $(date)" || true
       echo "with ${num_succeeded} successfully completed jobs" || true
       echo "Experiment ${pslot} Completed: *SUCCESS*"
-    } >> "${RUNTESTS}/ci.log"
-    sed -i "s/\`\`\`//2g" "${RUNTESTS}/ci.log"
+    } | tee -a ${run_check_logfile}
     rc=0
     break
   fi
