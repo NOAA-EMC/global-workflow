@@ -174,14 +174,16 @@ pipeline {
                     def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
                     pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
                 }
-                if (fileExists('${HOME}/RUNTESTS/ci.log')) {
-                    def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
+                sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS", returnStatus: true)
+                if (fileExists('${HOME}/RUNTESTS/ci-run_check.log')) {
+                    def fileContent = readFile '${HOME}/RUNTESTS/ci-run_check.log'
                     fileContent.eachLine { line ->
                         if (line.contains('.log')) {
                             archiveArtifacts artifacts: "${line}", fingerprint: true
                         }
                     }
                 }
+
             }
         }
     }

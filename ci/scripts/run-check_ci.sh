@@ -25,6 +25,7 @@ pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this scr
 # TODO: Make this configurable (for now all scripts run from gfs for CI at runtime)
 HOMEgfs="${TEST_DIR}/gfs"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
+run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
 # Source modules and setup logging
 echo "Source modules."
@@ -77,15 +78,13 @@ while true; do
     {
       echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
       echo "Experiment ${pslot} Terminated: *FAILED*"
-    } >> "${RUNTESTS}/ci.log"
-
+    } | tee -a "${run_check_logfile}"
     error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
     {
      echo "Error logs:"
      echo "${error_logs}"
-    } >> "${RUNTESTS}/ci.log"
+    } | tee -a  "${run_check_logfile}"
     sed -i "s/\`\`\`//2g" "${RUNTESTS}/ci.log"
-    sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
     rc=1
     break
   fi
@@ -107,3 +106,4 @@ while true; do
 done
 
 exit "${rc}"
+
