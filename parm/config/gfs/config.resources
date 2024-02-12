@@ -352,7 +352,7 @@ case ${step} in
     export npe_prepoceanobs=1
     export nth_prepoceanobs=1
     export npe_node_prepoceanobs=$(( npe_node_max / nth_prepoceanobs ))
-    export memory_prepoceanobs="24GB"
+    export memory_prepoceanobs="48GB"
     ;;
 
   "ocnanalbmat")
@@ -435,13 +435,20 @@ case ${step} in
     export nth_ocnanalchkpt=1
     export npe_node_ocnanalchkpt=$(( npe_node_max / nth_ocnanalchkpt ))
     case ${OCNRES} in
-      "500") memory_ocnanalchkpt="128GB";;
-      "050")  memory_ocnanalchkpt="32GB";;
-      "025")  memory_ocnanalchkpt="32GB";;
+      "500")
+        memory_ocnanalchkpt="128GB"
+        npes=40;;
+      "050")
+        memory_ocnanalchkpt="32GB"
+        npes=16;;
+      "025")
+        memory_ocnanalchkpt="32GB"
+        npes=8;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
+    export npe_ocnanalchkpt=${npes}
     export memory_ocnanalchkpt
     ;;
 
@@ -955,7 +962,7 @@ case ${step} in
           export nth_eupd=4
         fi
         ;;
-      *)        
+      *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
         ;;
