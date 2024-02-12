@@ -150,7 +150,7 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(1, self.nmem + 1)])}
         metatask_dict = {'task_name': 'fcst_ens',
                          'var_dict': member_var_dict,
                          'task_dict': task_dict
@@ -173,13 +173,13 @@ class GEFSTasks(Tasks):
 
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2#dep#'},
+                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.6hr_avg.#dep#.nc'},
+                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.6hr_avg.f#fhr#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.6hr_avg.#dep#.nc'}}
+                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.6hr_avg.f#fhr#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -214,13 +214,19 @@ class GEFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
 
-        fhr_var_dict = {'fhr': ' '.join([str(fhr).zfill(3) for fhr in
-                                         self._get_forecast_hours('gefs', self._configs[config])])}
+        fhrs = self._get_forecast_hours('gefs', self._configs[config])
+
+        # ocean/ice components do not have fhr 0 as they are averaged output
+        if component in ['ocean', 'ice']:
+            fhrs.remove(0)
+
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
         fhr_metatask_dict = {'task_name': f'{component}_prod_#member#',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
         member_metatask_dict = {'task_name': f'{component}_prod',
                                 'task_dict': fhr_metatask_dict,
                                 'var_dict': member_var_dict}
