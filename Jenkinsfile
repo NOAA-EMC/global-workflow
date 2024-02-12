@@ -9,7 +9,6 @@ pipeline {
 
     options {
         skipDefaultCheckout()
-        buildDiscarder(logRotator(numToKeepStr: '2'))
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
