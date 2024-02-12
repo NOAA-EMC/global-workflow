@@ -358,9 +358,9 @@ case ${step} in
   "ocnanalbmat")
     npes=16
     case ${OCNRES} in
-      "500") npes=480;;
+      "025") npes=480;;
       "050")  npes=16;;
-      "025")  npes=16;;
+      "500")  npes=16;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
@@ -376,7 +376,7 @@ case ${step} in
   "ocnanalrun")
     npes=16
     case ${OCNRES} in
-      "500")
+      "025")
         npes=40
         memory_ocnanalrun="96GB"
         ;;
@@ -384,7 +384,7 @@ case ${step} in
         npes=16
         memory_ocnanalrun="96GB"
         ;;
-      "025")
+      "500")
         npes=16
         memory_ocnanalrun="24GB"
         ;;
@@ -404,7 +404,7 @@ case ${step} in
   "ocnanalecen")
     npes=16
     case ${OCNRES} in
-      "500")
+      "025")
         npes=40
         memory_ocnanalecen="96GB"
         ;;
@@ -412,7 +412,7 @@ case ${step} in
         npes=16
         memory_ocnanalecen="96GB"
         ;;
-      "025")
+      "500")
         npes=16
         memory_ocnanalecen="24GB"
         ;;
@@ -435,13 +435,13 @@ case ${step} in
     export nth_ocnanalchkpt=1
     export npe_node_ocnanalchkpt=$(( npe_node_max / nth_ocnanalchkpt ))
     case ${OCNRES} in
-      "500")
+      "025")
         memory_ocnanalchkpt="128GB"
         npes=40;;
       "050")
         memory_ocnanalchkpt="32GB"
         npes=16;;
-      "025")
+      "500")
         memory_ocnanalchkpt="32GB"
         npes=8;;
       *)
