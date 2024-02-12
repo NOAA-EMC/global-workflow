@@ -780,13 +780,14 @@ MOM6_postdet() {
   esac
 
   if [[ "${RUN}" =~ "gdas" ]]; then
-    local interval
+    local interval idate
     if [[ "${DOIAU}" = "YES" ]]; then
       # Link restarts at the beginning of the next cycle from DATA to COM
       interval=$(( assim_freq / 2 ))
+      idate=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${interval} hours" +%Y%m%d%H)
     else
       # Link restarts at the middle of the next cycle from DATA to COM
-      interval=${assim_freq}
+      idate="${next_cycle}"
     fi
     ${NLN} "${COM_OCEAN_RESTART}/${idate:0:8}.${idate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/"
     case ${OCNRES} in
