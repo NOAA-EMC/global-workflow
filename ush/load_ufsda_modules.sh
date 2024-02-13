@@ -27,43 +27,42 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
+source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
 # Load our modules:
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
-if [[ -d /lfs/f1 ]]; then
+if [[ "${MACHINE_ID}" == "wcoss2" || "${MACHINE_ID}" == "acorn" ]]; then
   # We are on WCOSS2 (Cactus or Dogwood)
   echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /lfs3 ]] ; then
+elif [[ "${MACHINE_ID}" == "jet" ]] ; then
   # We are on NOAA Jet
   echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /scratch1 ]] ; then
+elif [[ "${MACHINE_ID}" == "hera" ]] ; then
   # We are on NOAA Hera
   module load "${MODS}/hera"
   # set NETCDF variable based on ncdump location
   NETCDF=$( which ncdump )
   export NETCDF
-elif [[ -d /work ]] ; then
-  # We are on MSU Orion or Hercules
-  if [[ -d /apps/other ]] ; then
-     # Hercules
-     module load "${MODS}/hercules"
-  else
-     # Orion
-     module load "${MODS}/orion"
-  fi
+elif [[ "${MACHINE_ID}" == "orion" ]] ; then
+  # We are on MSU Orion
+  module load "${MODS}/orion"
   # set NETCDF variable based on ncdump location
   ncdump=$( which ncdump )
   NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
   export NETCDF
-elif [[ -d /glade ]] ; then
-  # We are on NCAR Yellowstone
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /lustre && -d /ncrc ]] ; then
+elif [[ "${MACHINE_ID}" == "hercules" ]] ; then  
+  # We are on MSU Hercules
+  module load "${MODS}/hercules"
+  # set NETCDF variable based on ncdump location
+  ncdump=$( which ncdump )
+  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
+  export NETCDF
+elif [[ "${MACHINE_ID}" == "gaea" ]] ; then
   # We are on GAEA.
   echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /data/prod ]] ; then
+elif [[ "${MACHINE_ID}" == "s4" ]] ; then
   # We are on SSEC S4
   echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
 else

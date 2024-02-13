@@ -10,6 +10,7 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
+source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
 # Source versions file for runtime
@@ -18,35 +19,29 @@ source "${HOMEgfs}/versions/run.ver"
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
-if [[ -d /lfs/f1 ]]; then
+if [[ "${MACHINE_ID}" == "wcoss2" || "${MACHINE_ID}" == "acorn" ]]; then
   # We are on WCOSS2 (Cactus or Dogwood)
   module load module_base.wcoss2
-elif [[ -d /mnt/lfs1 ]] ; then
+elif [[ "${MACHINE_ID}" == "jet" ]] ; then
   # We are on NOAA Jet
   module load module_base.jet
-elif [[ -d /scratch1 ]] ; then
+elif [[ "${MACHINE_ID}" == "hera" ]] ; then
   # We are on NOAA Hera
   module load module_base.hera
-elif [[ -d /work ]] ; then
-  # We are on MSU Orion or Hercules
-  if [[ -d /apps/other ]] ; then
-     # Hercules
-     module load module_base.hercules
-  else
-     # Orion
-     module load module_base.orion
-  fi
-elif [[ -d /glade ]] ; then
-  # We are on NCAR Yellowstone
-  module load module_base.cheyenne
-elif [[ -d /lustre && -d /ncrc ]] ; then
+elif [[ "${MACHINE_ID}" == "orion" ]] ; then
+  # We are on MSU Orion
+  module load module_base.orion
+elif [[ "${MACHINE_ID}" == "hercules" ]] ; then  
+  # We are on MSU Hercules
+  module load module_base.hercules
+elif [[ "${MACHINE_ID}" == "gaea" ]] ; then
   # We are on GAEA.
   module load module_base.gaea
-elif [[ -d /data/prod ]] ; then
+elif [[ "${MACHINE_ID}" == "s4" ]] ; then
   # We are on SSEC S4
   module load module_base.s4
 else
-  echo WARNING: UNKNOWN PLATFORM
+  echo WARNING: UNKNOWN PLATFORM # TODO: Should an exception be raised here?
 fi
 
 module list
