@@ -49,10 +49,10 @@ pipeline {
                     pullRequest.addLabel("CI-${Machine}-Building")
                     if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
                         pullRequest.removeLabel("CI-${Machine}-Ready")
+                    }
                 }
             }
         }
-    }
 
         stage('Build System') {
             matrix {
@@ -94,8 +94,8 @@ pipeline {
                                         }
                                     }
                                     if (env.CHANGE_ID) {
-                                      if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
-                                          pullRequest.removeLabel("CI-${Machine}-Building")
+                                       if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
+                                           pullRequest.removeLabel("CI-${Machine}-Building")
                                        }
                                        pullRequest.addLabel("CI-${Machine}-Running")
                                     }
