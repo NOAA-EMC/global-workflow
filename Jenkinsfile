@@ -139,18 +139,18 @@ pipeline {
                                     if (err != 0) {
                                         pullRequest.comment("**FAILURE** running experiment: ${Case} on ${Machine}")
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS", returnStatus: true)
-                                        echo "log file exists: ${HOME}/RUNTESTS/ci-run_check.log"
-                                        sh(script: "ls -l ${HOME}/RUNTESTS", returnStatus: true)
-                                        if (fileExists('${HOME}/RUNTESTS/ci-run_check.log')) {
-                                            echo "log file exists"
-                                            def fileContent = readFile '${HOME}/RUNTESTS/ci-run_check.log'
-                                            fileContent.eachLine { line ->
-                                                echo "line: ${line}"
-                                                if (line.contains('.log')) {
-                                                    echo "archiving: ${line}"
-                                                    archiveArtifacts artifacts: "${line}", fingerprint: true
+                                        ws(HOME) {
+                                            if (fileExists('RUNTESTS/ci-run_check.log')) {
+                                                echo "log file exists in HOME workspace"
+                                                def fileContent = readFile 'RUNTESTS/ci-run_check.log'
+                                                fileContent.eachLine { line ->
+                                                   echo "line: ${line}"
+                                                   if (line.contains('.log')) {
+                                                      echo "archiving: ${line}"
+                                                      archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                    }
                                                 }
-                                            }
+                                          }
                                         }
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
