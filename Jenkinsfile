@@ -79,6 +79,7 @@ pipeline {
                                         dir("${HOMEgfs}") {
                                             sh(script: 'source workflow/gw_setup.sh;which git;git pull', returnStatus: true)
                                             sh(script: 'which git;git --version;git submodule update --init --recursive', returnStatus: true)
+                                            sh(script: './link_workflow.sh', returnStatus: true)
                                         }
                                     } else {
                                         checkout scm
