@@ -64,7 +64,6 @@ export DELTSFC=${DELTSFC:-6}
 APRUN_ESFC=${APRUN_ESFC:-${APRUN:-""}}
 NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
 
-
 ################################################################################
 # Preprocessing
 mkdata=NO
@@ -165,10 +164,8 @@ if [ $DOIAU = "YES" ]; then
             fi
         done # ensembles
 
-        if [[ ${GSI_SOILANAL} = "YES" ]]; then
-            CDATE="${PDY}${cyc}" ${CYCLESH}
-            export err=$?; err_chk
-        fi
+        CDATE="${PDY}${cyc}" ${CYCLESH}
+        export err=$?; err_chk
 
     done
 

@@ -87,7 +87,7 @@ else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
-GSI_SOILINC=${GSI_SOILINC:-"NO"}
+GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
 
 ################################################################################
 
@@ -204,7 +204,7 @@ for imem in $(seq 1 $NMEM_ENS); do
    for FHR in $nfhrs; do
       ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
-      if [ $GSI_SOILINC = "YES" ]; then
+      if [ $GSI_SOILANAL = "YES" ]; then
          ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
              "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
