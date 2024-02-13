@@ -93,7 +93,7 @@ while true; do
       echo "Experiment ${pslot} Completed at $(date)" || true
       echo "with ${num_succeeded} successfully completed jobs" || true
       echo "Experiment ${pslot} Completed: *SUCCESS*"
-    } | tee -a ${run_check_logfile}
+    } | tee -a "${run_check_logfile}"
     rc=0
     break
   fi
