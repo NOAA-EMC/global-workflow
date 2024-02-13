@@ -84,6 +84,10 @@ while true; do
      echo "Error logs:"
      echo "${error_logs}"
     } | tee -a  "${run_check_logfile}"
+    rm -f "${RUNTESTS}/error.logs"
+    for log in ${error_logs}; do
+      echo "${log}" | sed 's/.*RUNTESTS/RUNTESTS/' >> "${RUNTESTS}/error.logs"
+    done
     rc=1
     break
   fi

@@ -140,16 +140,13 @@ pipeline {
                                         pullRequest.comment("**FAILURE** running experiment: ${Case} on ${Machine}")
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS", returnStatus: true)
                                         ws(HOME) {
-                                            if (fileExists('RUNTESTS/ci-run_check.log')) {
-                                                def fileContent = readFile 'RUNTESTS/ci-run_check.log'
+                                            if (fileExists('RUNTESTS/error.logs')) {
+                                                def fileContent = readFile 'RUNTESTS/error.logs'
                                                 def lines = fileContent.readLines()
                                                 for (line in lines) {
-                                                    echo "line: ${line}"
-                                                    if (line.contains('.log')) {
-                                                        echo "archiving: ${line}"
-                                                        archiveArtifacts artifacts: "${line}", fingerprint: true
-                                                    }   
-                                                }
+                                                    echo "archiving: ${line}"
+                                                    archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                }   
                                             }
                                         }
                                         error("Failed to run experiments ${Case} on ${Machine}")
