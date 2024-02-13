@@ -21,7 +21,9 @@ pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this scr
 #     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}
-HOMEgfs="${TEST_DIR}/HOMEgfs"
+# Two system build directories created at build time gfs, and gdas
+# TODO: Make this configurable (for now all scripts run from gfs for CI at runtime)
+HOMEgfs="${TEST_DIR}/gfs"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 
 # Source modules and setup logging
