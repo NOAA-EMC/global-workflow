@@ -93,17 +93,19 @@ pipeline {
                                             sh(script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                         }
                                     }
-                                    if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
-                                        pullRequest.removeLabel("CI-${Machine}-Building")
-                                }
-                                    pullRequest.addLabel("CI-${Machine}-Running")
-                            }
+                                    if (env.CHANGE_ID) {
+                                      if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
+                                          pullRequest.removeLabel("CI-${Machine}-Building")
+                                       }
+                                       pullRequest.addLabel("CI-${Machine}-Running")
+                                    }
+                               }
+                           }
                         }
                     }
                 }
             }
         }
-}
 
         stage('Run Tests') {
             matrix {
