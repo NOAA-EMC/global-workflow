@@ -17,7 +17,7 @@ if [ $DOIAU_ENKF = "YES" ]; then
 fi
 
 # Turn off NST in JEDIATMENS
-if [ $DO_JEDIATMENS = "YES" ]; then
+if [[ "${DO_JEDIATMENS}" == "YES" ]]; then
    export DONST="NO"
 fi
 

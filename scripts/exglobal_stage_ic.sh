@@ -158,9 +158,9 @@ done # for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 else
   # Stage deterministic ICs from previous cycle
   RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_TOP:COM_TOP_TMPL
-  COM_TOP_BASE=$(dirname $COM_TOP)
+  COM_TOP_BASE=$(dirname "${COM_TOP}")
   [[ ! -d "${COM_TOP_BASE}" ]] && mkdir -p "${COM_TOP_BASE}"
-  [[ -d "${COM_TOP_BASE}/${gcyc}" ]] && rm -rf "${COM_TOP_BASE}/${gcyc}"
+  [[ -d "${COM_TOP_BASE}/${gcyc}" ]] && rm -f "${COM_TOP_BASE:-}/${gcyc:-}"
   src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${gPDY}/${gcyc}"
   tgt="${COM_TOP_BASE}/"
   ${NLN} "${src}" "${tgt}"
@@ -171,9 +171,9 @@ else
   # Stage ensemble ICs from previous cycle
   if [[ "${DOHYBVAR}" == "YES" ]]; then
     RUN=enkf${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_TOP:COM_TOP_TMPL
-    COM_TOP_BASE=$(dirname $COM_TOP)
+    COM_TOP_BASE=$(dirname "${COM_TOP}")
     [[ ! -d "${COM_TOP_BASE}" ]] && mkdir -p "${COM_TOP_BASE}"
-    [[ -d "${COM_TOP_BASE}/${gcyc}" ]] && rm -rf "${COM_TOP_BASE}/${gcyc}"
+    [[ -d "${COM_TOP_BASE}/${gcyc}" ]] && rm -rf "${COM_TOP_BASE:-}/${gcyc:-}"
     src="${BASE_CPLIC}/${CPL_ATMIC:-}/enkf${RUN}.${gPDY}/${gcyc}"
     tgt="${COM_TOP_BASE}/"
     ${NLN} "${src}" "${tgt}"
@@ -192,17 +192,17 @@ else
   else
     flist="abias abias_air abias_pc radstat"
   fi
-  for ftype in $flist; do
-    file=${rCDUMP}.t${cyc}z.$ftype
-    ${NCP} "${src}/$file" "${tgt}"
+  for ftype in ${flist}; do
+    file=${rCDUMP}.t${cyc}z.${ftype}
+    ${NCP} "${src}"/"${file}" "${tgt}"
     rc=$?
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
   done
   if [[ "${DO_JEDIATMVAR}" == "YES" || "${DO_JEDIATMENS}" == "YES" ]]; then
-    cd ${tgt}
-    tar -xvf ${rCDUMP}.t${cyc}z.radbcor
-    cd ${DATA}
+    cd "${tgt}" || exit
+    tar -xvf "${rCDUMP}".t"${cyc}"z.radbcor
+    cd "${DATA}" || exit
   fi
 
 fi

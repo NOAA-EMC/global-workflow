@@ -42,7 +42,7 @@ esac
 fi # End block for coupled ICs
 
 # Stage ICs for cycled runs
-if [[ "$MODE" = "cycled" ]]; then
+if [[ "${MODE}" == "cycled" ]]; then
   export CPL_ATMIC="C48C48"
   export CPL_ATMDAIC="C48C48"
 fi

@@ -11,7 +11,7 @@ echo "BEGIN: config.nsst"
 export NST_MODEL=2
 
 # Set NST_MODEL for JEDIATMVAR or JEDIATMENS
-if [[ $DO_JEDIATMVAR = "YES" || $DO_JEDIATMENS = "YES" ]]; then
+if [[ "${DO_JEDIATMVAR}" == "YES" || "${DO_JEDIATMENS}" == "YES" ]]; then
    export NST_MODEL=1
 fi
 
