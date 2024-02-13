@@ -1,0 +1,75 @@
+ocnicepost:
+  executable: "ocnicepost.x"
+  namelist:
+    debug: False
+  fix_data:
+    mkdir:
+      - "{{ DATA }}"
+    copy:
+      - ["{{ HOMEgfs }}/exec/ocnicepost.x", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/parm/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/parm/post/{{ component }}.csv", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      {% for grid in product_grids %}
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
+      - ["{{ HOMEgfs }}/fix/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
+      {% endfor %}
+
+nc2grib2:
+  script: "{{ HOMEgfs }}/ush/oceanice_nc2grib2.sh"
+
+ocean:
+  namelist:
+    ftype: "ocean"
+    maskvar: "temp"
+    sinvar: "sin_rot"
+    cosvar: "cos_rot"
+    angvar: ""
+    {% if model_grid == 'mx025' or model_grid == 'mx050' or model_grid == 'mx100' %}
+    ocean_levels: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225.86945, 241.06255, 266.5239, 308.7874, 373.9288, 467.3998, 593.87915, 757.1453, 959.97325, 1204.059, 1489.9735, 1817.1455, 2183.879, 2587.3995, 3023.9285, 3488.7875, 3976.524, 4481.0625]
+    {% elif model_grid == 'mx500' %}
+    ocean_levels: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225.86945, 241.06255, 266.5239]
+    {% endif %}
+  subset: ['SSH', 'SST', 'SSS', 'speed', 'MLD_003', 'latent', 'sensible', 'SW', 'LW', 'LwLatSens', 'Heat_PmE', 'SSU', 'SSV', 'taux', 'tauy', 'temp', 'so', 'uo', 'vo']
+  data_in:
+    copy:
+      - ["{{ COM_OCEAN_HISTORY }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
+  data_out:
+    mkdir:
+      - "{{ COM_OCEAN_NETCDF }}"
+      {% for grid in product_grids %}
+      - "{{ COM_OCEAN_GRIB }}/{{ grid }}"
+      {% endfor %}
+    copy:
+      - ["{{ DATA }}/ocean_subset.nc", "{{ COM_OCEAN_NETCDF }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      {% for grid in product_grids %}
+      - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      {% endfor %}
+
+ice:
+  namelist:
+    ftype: "ice"
+    maskvar: "tmask"
+    sinvar: ""
+    cosvar: ""
+    angvar: "ANGLET"
+  subset: ['hi_h', 'hs_h', 'aice_h', 'Tsfc_h', 'uvel_h', 'vvel_h', 'frzmlt_h', 'albsni_h', 'mlt_onset_h', 'frz_onset_h']
+  data_in:
+    copy:
+      - ["{{ COM_ICE_HISTORY }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
+  data_out:
+    mkdir:
+      - "{{ COM_ICE_NETCDF }}"
+      {% for grid in product_grids %}
+      - "{{ COM_ICE_GRIB }}/{{ grid }}"
+      {% endfor %}
+    copy:
+      - ["{{ DATA }}/ice_subset.nc", "{{ COM_ICE_NETCDF }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      {% for grid in product_grids %}
+      - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      {% endfor %}
