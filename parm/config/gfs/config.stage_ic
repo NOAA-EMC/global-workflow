@@ -7,6 +7,8 @@ echo "BEGIN: config.stage_ic"
 # Get task specific resources
 source "${EXPDIR}/config.resources" stage_ic
 
+# Stage ICs for coupled system
+if [[ "${DO_COUPLED}" = "YES" ]]; then
 case "${CASE}" in
   "C48" | "C96")
     export CPL_ATMIC="workflow_${CASE}_refactored"
@@ -37,5 +39,12 @@ case "${CASE}" in
     exit 1
     ;;
 esac
+fi # End block for coupled ICs
+
+# Stage ICs for cycled runs
+if [[ "$MODE" = "cycled" ]]; then
+  export CPL_ATMIC="C48C48"
+  export CPL_ATMDAIC="C48C48"
+fi
 
 echo "END: config.stage_ic"

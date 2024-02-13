@@ -24,14 +24,22 @@ class GFSTasks(Tasks):
 
         # Atm ICs
         if self.app_config.do_atm:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
-            for file in ['gfs_ctrl.nc'] + \
-                        [f'{datatype}_data.tile{tile}.nc'
-                         for datatype in ['gfs', 'sfc']
-                         for tile in range(1, self.n_tiles + 1)]:
+            if self.cdump in 'gdas':
+                prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/gdas.@Y@m@d/@H/model_data/atmos/restart"
+                PDY = self._base.get('SDATE').strftime("%Y%m%d%H")[0:8]
+                cyc = self._base.get('SDATE').strftime("%Y%m%d%H")[8:10]
+                file = PDY + '.' + cyc + '0000.fv_core.res.nc'
                 data = f"{prefix}/{file}"
-                dep_dict = {'type': 'data', 'data': data}
-                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            else:
+                prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
+                for file in ['gfs_ctrl.nc'] + \
+                            [f'{datatype}_data.tile{tile}.nc'
+                             for datatype in ['gfs', 'sfc']
+                             for tile in range(1, self.n_tiles + 1)]:
+                    data = f"{prefix}/{file}"
+                    dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
         else:  # data-atmosphere
             # TODO - need more information about how these forcings are stored
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_DATM']}/@Y@m@d@H"
@@ -70,13 +78,14 @@ class GFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
+        cycledef = 'gdas_half' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('stage_ic')
         task_name = f'{self.cdump}stage_ic'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.cdump,
+                     'cycledef': cycledef,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/stage_ic.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -833,7 +842,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         if self.cdump in ['gdas']:
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
@@ -2535,7 +2544,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'task', 'name': f'gdasstage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 

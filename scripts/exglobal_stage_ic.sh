@@ -25,6 +25,8 @@ error_message() {
   echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
 }
 
+if [[ "${MODE}" == "forecast-only" ]]; then
+
 ###############################################################
 for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
@@ -151,6 +153,59 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   fi
 
 done # for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
+
+# Stage files for MODE="cycled"
+else
+  # Stage deterministic ICs from previous cycle
+  RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_TOP:COM_TOP_TMPL
+  COM_TOP_BASE=$(dirname $COM_TOP)
+  [[ ! -d "${COM_TOP_BASE}" ]] && mkdir -p "${COM_TOP_BASE}"
+  [[ -d "${COM_TOP_BASE}/${gcyc}" ]] && rm -rf "${COM_TOP_BASE}/${gcyc}"
+  src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${gPDY}/${gcyc}"
+  tgt="${COM_TOP_BASE}/"
+  ${NLN} "${src}" "${tgt}"
+  rc=$?
+  ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+  err=$((err + rc))
+
+  # Stage ensemble ICs from previous cycle
+  if [[ "${DOHYBVAR}" == "YES" ]]; then
+    RUN=enkf${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com COM_TOP:COM_TOP_TMPL
+    COM_TOP_BASE=$(dirname $COM_TOP)
+    [[ ! -d "${COM_TOP_BASE}" ]] && mkdir -p "${COM_TOP_BASE}"
+    [[ -d "${COM_TOP_BASE}/${gcyc}" ]] && rm -rf "${COM_TOP_BASE}/${gcyc}"
+    src="${BASE_CPLIC}/${CPL_ATMIC:-}/enkf${RUN}.${gPDY}/${gcyc}"
+    tgt="${COM_TOP_BASE}/"
+    ${NLN} "${src}" "${tgt}"
+    rc=$?
+    ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+    err=$((err + rc))
+  fi
+
+  # Stage bias correction files
+  RUN=${rCDUMP} YMD=${PDY} HH=${cyc} generate_com COM_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+  [[ ! -d "${COM_ATMOS_ANALYSIS}" ]] && mkdir -p "${COM_ATMOS_ANALYSIS}"
+  src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+  tgt="${COM_ATMOS_ANALYSIS}/"
+  if [[ "${DO_JEDIATMVAR}" == "YES" || "${DO_JEDIATMENS}" == "YES" ]]; then
+    flist="radbcor"
+  else
+    flist="abias abias_air abias_pc radstat"
+  fi
+  for ftype in $flist; do
+    file=${rCDUMP}.t${cyc}z.$ftype
+    ${NCP} "${src}/$file" "${tgt}"
+    rc=$?
+    ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+    err=$((err + rc))
+  done
+  if [[ "${DO_JEDIATMVAR}" == "YES" || "${DO_JEDIATMENS}" == "YES" ]]; then
+    cd ${tgt}
+    tar -xvf ${rCDUMP}.t${cyc}z.radbcor
+    cd ${DATA}
+  fi
+
+fi
 
 ###############################################################
 # Check for errors and exit if any of the above failed
