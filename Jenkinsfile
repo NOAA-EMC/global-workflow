@@ -77,7 +77,7 @@ pipeline {
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}<br>Still doing a checkout to get the latest changes")
-                                        sh(script: 'source workflow/gw_setup.sh;git pull;git submodule update --init --recursive', returnStatus: true)
+                                        sh(script: 'source workflow/gw_setup.sh; git pull --recurse-submodules', returnStatus: true)
                                         dir('sorc') {
                                             sh(script: './link_workflow.sh', returnStatus: true)
                                         }
