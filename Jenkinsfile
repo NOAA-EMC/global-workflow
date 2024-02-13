@@ -78,7 +78,7 @@ pipeline {
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}<br>Still doing a checkout to get the latest changes")
                                         sh(script: 'source workflow/gw_setup.sh;git pull;git submodule update --init --recursive', returnStatus: true)
-                                        dir("${HOMEgfs}/sorc") {
+                                        dir('sorc') {
                                             sh(script: './link_workflow.sh', returnStatus: true)
                                         }
                                     } else {
