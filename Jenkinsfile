@@ -9,6 +9,7 @@ pipeline {
 
     options {
         skipDefaultCheckout()
+        parallelsAlwaysFailFast()
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -76,9 +77,9 @@ pipeline {
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}<br>Still doing a checkout to get the latest changes")
-                                        dir("${HOMEgfs}") {
-                                            sh(script: 'source workflow/gw_setup.sh;which git;git pull', returnStatus: true)
-                                            sh(script: 'which git;git --version;git submodule update --init --recursive', returnStatus: true)
+                                        sh(script: 'source workflow/gw_setup.sh;which git;git pull', returnStatus: true)
+                                        sh(script: 'which git;git --version;git submodule update --init --recursive', returnStatus: true)
+                                        dir("${HOMEgfs}/sorc") {
                                             sh(script: './link_workflow.sh', returnStatus: true)
                                         }
                                     } else {
