@@ -31,6 +31,7 @@ load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
 load(pathJoin("py-netcdf4", (os.getenv("py_netcdf4_ver") or "None")))
 load(pathJoin("py-pyyaml", (os.getenv("py_pyyaml_ver") or "None")))
 load(pathJoin("py-jinja2", (os.getenv("py_jinja2_ver") or "None")))
+load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
 -- MET/METplus are not yet supported with spack-stack
 --load(pathJoin("met", (os.getenv("met_ver") or "None")))
