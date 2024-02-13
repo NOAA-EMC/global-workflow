@@ -93,7 +93,7 @@ pipeline {
                                             sh(script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
                                         }
                                     }
-                                    if (env.CHANGE_ID) {
+                                    if (env.CHANGE_ID && system == 'gfs') {
                                        if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
                                            pullRequest.removeLabel("CI-${Machine}-Building")
                                        }
