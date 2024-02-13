@@ -25,13 +25,14 @@ landanl:
   IO_LAYOUT_Y: 1
 
 ocnanal:
-  SOCA_INPUT_FIX_DIR: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca"  # TODO: These need to go to glopara fix space. @guillaumevernieres will open an issue
-  CASE_ANL: "C48"
-  COMIN_OBS: "/scratch2/NCEPDEV/marineda/r2d2-v2-v3"  # TODO: make platform agnostic
-  SOCA_OBS_LIST: "{{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml"
+  SOCA_INPUT_FIX_DIR: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca"  # TODO: These need to go to glopara fix space.
+  CASE_ANL: "C48"  # TODO: Check in gdasapp if used anywhere for SOCA
+  SOCA_OBS_LIST: "{{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
   SOCA_NINNER: 100
-  R2D2_OBS_SRC: "gdas_marine"
-  R2D2_OBS_DUMP: "s2s_v1"
   SABER_BLOCKS_YAML: ""
   NICAS_RESOL: 1
   NICAS_GRID_SIZE: 15000
+prepoceanobs:
+  SOCA_OBS_LIST: "{{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml"  # TODO: This is also repeated in ocnanal
+  OBSPREP_YAML: "{{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obsprep/obsprep_config.yaml"
+  DMPDIR: "/scratch1/NCEPDEV/global/glopara/data/experimental_obs"
