@@ -28,12 +28,12 @@
 set -xa
 mkdir -p -m 775 $DATA/mrfus
 cd $DATA/mrfus
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 device="nc | mrf.meta"
 
-#XXW cp $FIXgempak/model/gfs/ak_sfstns.tbl alaska.tbl
-cp $FIXgempak/ak_sfstns.tbl alaska.tbl
+#XXW cp ${HOMEgfs}/gempak/fix/model/gfs/ak_sfstns.tbl alaska.tbl
+cp ${HOMEgfs}/gempak/fix/ak_sfstns.tbl alaska.tbl
 
 month=$(echo $PDY | cut -c5,6)
 if [ $month -ge 5 -a $month -le 9 ] ; then

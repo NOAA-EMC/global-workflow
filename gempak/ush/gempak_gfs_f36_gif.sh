@@ -31,7 +31,7 @@
 
   pixels="1728;1472"
 
-  cp $FIXgempak/coltbl.spc coltbl.xwp
+  cp ${HOMEgfs}/gempak/fix/coltbl.spc coltbl.xwp
 
 
  
