@@ -102,6 +102,14 @@ function get_pslot () {
 
 }
 
+function cancel_all_batch_jobs () {
+  local RUNTESTS="${1}"
+  pslot_list=$(get_pslot_list "${RUNTESTS}")
+  for pslot in ${pslot_list}; do
+    cancel_batch_jobs "${pslot}"
+  done
+}
+
 function create_experiment () {
 
   local yaml_config="${1}"

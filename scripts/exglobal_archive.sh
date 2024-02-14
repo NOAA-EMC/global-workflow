@@ -182,12 +182,12 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
             targrp_list="${targrp_list} gfswave"
         fi
 
-        if [ "${DO_OCN}" = "YES" ]; then
-            targrp_list="${targrp_list} ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily gfs_flux_1p00"
+        if [[ "${DO_OCN}" == "YES" ]]; then
+            targrp_list="${targrp_list} ocean_6hravg ocean_daily ocean_grib2 gfs_flux_1p00"
         fi
 
-        if [ "${DO_ICE}" = "YES" ]; then
-            targrp_list="${targrp_list} ice"
+        if [[ "${DO_ICE}" == "YES" ]]; then
+            targrp_list="${targrp_list} ice_6hravg ice_grib2"
         fi
 
         # Aerosols

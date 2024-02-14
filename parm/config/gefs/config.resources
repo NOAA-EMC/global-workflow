@@ -19,7 +19,7 @@ if (( $# != 1 )); then
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
-    echo "init_chem mom6ic ocnpost"
+    echo "init_chem mom6ic"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
@@ -216,6 +216,14 @@ case ${step} in
     export nth_atmos_products_gfs="${nth_atmos_products}"
     export npe_node_atmos_products_gfs="${npe_node_atmos_products}"
     export is_exclusive=True
+    ;;
+
+  "oceanice_products")
+    export wtime_oceanice_products="00:15:00"
+    export npe_oceanice_products=1
+    export npe_node_oceanice_products=1
+    export nth_oceanice_products=1
+    export memory_oceanice_products="96GB"
     ;;
 
   "wavepostsbs")
