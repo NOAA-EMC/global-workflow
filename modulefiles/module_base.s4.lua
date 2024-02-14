@@ -34,6 +34,7 @@ load(pathJoin("py-pandas", (os.getenv("py_pandas_ver") or "None")))
 load(pathJoin("py-python-dateutil", (os.getenv("py_python_dateutil_ver") or "None")))
 load(pathJoin("met", (os.getenv("met_ver") or "None")))
 load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
+load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
 setenv("WGRIB2","wgrib2")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))

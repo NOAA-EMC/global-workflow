@@ -22,8 +22,8 @@ class Tasks:
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'preplandobs', 'landanl',
                    'fcst',
-                   'atmanlupp', 'atmanlprod', 'atmupp', 'atmprod', 'goesupp',
-                   'ocnpost',
+                   'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
+                   'atmosprod', 'oceanprod', 'iceprod',
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
                    'tracker', 'genesis', 'genesis_fsu',
@@ -128,7 +128,7 @@ class Tasks:
         # Get a list of all forecast hours
         fhrs = []
         if cdump in ['gdas']:
-            fhrs = range(fhmin, fhmax + fhout, fhout)
+            fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif cdump in ['gfs', 'gefs']:
             fhmax = config['FHMAX_GFS']
             fhout = config['FHOUT_GFS']
