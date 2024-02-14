@@ -19,7 +19,7 @@ if (( $# != 1 )); then
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
-    echo "init_chem mom6ic ocnpost"
+    echo "init_chem mom6ic oceanice_products"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
@@ -651,17 +651,12 @@ case ${step} in
     unset NTASKS_TOT
     ;;
 
-  "ocnpost")
-    export wtime_ocnpost="00:30:00"
-    export npe_ocnpost=1
-    export npe_node_ocnpost=1
-    export nth_ocnpost=1
-    export memory_ocnpost="96G"
-    if [[ ${machine} == "JET" ]]; then
-      # JET only has 88GB of requestable memory per node
-      # so a second node is required to meet the requiremtn
-      npe_ocnpost=2
-    fi
+  "oceanice_products")
+    export wtime_oceanice_products="00:15:00"
+    export npe_oceanice_products=1
+    export npe_node_oceanice_products=1
+    export nth_oceanice_products=1
+    export memory_oceanice_products="96GB"
     ;;
 
   "upp")
@@ -671,6 +666,7 @@ case ${step} in
       ;;
       "C192" | "C384" | "C768")
         export npe_upp=120
+        export memory_upp="48GB"
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
