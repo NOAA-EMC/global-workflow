@@ -185,7 +185,7 @@ sub  makeErrMsg {
 #
 #---------------------------------------------------------------------------
 
-if ($#ARGV != 4 ) {
+if ($#ARGV != 3 ) {
    print "usage: minmon_xtrct_gnorms.pl SUFFIX pdy cyc infile \n";
    exit;
 }
