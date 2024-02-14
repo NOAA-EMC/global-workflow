@@ -35,7 +35,7 @@ class GFSCycledAppConfig(AppConfig):
         Returns the config_files that are involved in the cycled app
         """
 
-        configs = ['stage_ic', 'prep']
+        configs = ['prep']
 
         if self.do_jediatmvar:
             configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal']
@@ -166,8 +166,7 @@ class GFSCycledAppConfig(AppConfig):
             hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks
-        gdas_tasks = ['stage_ic']
-        gdas_tasks += gdas_gfs_common_tasks_before_fcst.copy()
+        gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
 
         if not self.do_jediatmvar:
             gdas_tasks += ['analdiag']
