@@ -13,7 +13,6 @@ export CDATE=${PDY}${cyc}
 export MP_PULSE=0
 
 # Path to HOME Directory
-export FIXwave=${FIXwave:-${HOMEgfs}/fix/wave}
 export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
 export USHwave=${USHwave:-${HOMEgfs}/ush}
 export EXECwave=${EXECwave:-${HOMEgfs}/exec}

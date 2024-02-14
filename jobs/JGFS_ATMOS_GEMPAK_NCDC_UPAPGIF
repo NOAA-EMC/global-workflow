@@ -24,7 +24,6 @@ export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 # Set up the GEMPAK directory
 #######################################
 export HOMEgempak=${HOMEgempak:-${HOMEgfs}/gempak}
-export FIXgempak=${FIXgempak:-${HOMEgempak}/fix}
 export USHgempak=${USHgempak:-${HOMEgempak}/ush}
 
 export MP_PULSE=0
