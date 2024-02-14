@@ -148,7 +148,7 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(1, self.nmem + 1)])}
         metatask_dict = {'task_name': 'fcst_ens',
                          'var_dict': member_var_dict,
                          'task_dict': task_dict
@@ -158,48 +158,76 @@ class GEFSTasks(Tasks):
 
         return task
 
-    def atmprod(self):
-        atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"], {'MEMDIR': 'mem#member#'})
+    def atmos_prod(self):
+        return self._atmosoceaniceprod('atmos')
+
+    def ocean_prod(self):
+        return self._atmosoceaniceprod('ocean')
+
+    def ice_prod(self):
+        return self._atmosoceaniceprod('ice')
+
+    def _atmosoceaniceprod(self, component: str):
+
+        products_dict = {'atmos': {'config': 'atmos_products',
+                                   'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
+                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
+                         'ocean': {'config': 'oceanice_products',
+                                   'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
+                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.6hr_avg.f#fhr#.nc'},
+                         'ice': {'config': 'oceanice_products',
+                                 'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
+                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.6hr_avg.f#fhr#.nc'}}
+
+        component_dict = products_dict[component]
+        config = component_dict['config']
+        history_path_tmpl = component_dict['history_path_tmpl']
+        history_file_tmpl = component_dict['history_file_tmpl']
+
+        resources = self.get_resource(config)
+
+        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
         deps = []
-        data = f'{atm_master_path}/{self.cdump}.t@Hz.master.grb2f#fhr#'
+        data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        atm_prod_envars = self.envars.copy()
+        postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
                           'FHRLST': '#fhr#',
-                          }
+                          'COMPONENT': component}
         for key, value in postenvar_dict.items():
-            atm_prod_envars.append(rocoto.create_envar(name=key, value=str(value)))
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        resources = self.get_resource('atmos_products')
-
-        task_name = f'atm_prod_mem#member#_f#fhr#'
+        task_name = f'{component}_prod_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': atm_prod_envars,
+                     'envars': postenvars,
                      'cycledef': 'gefs',
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmos_products.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/{config}.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
+                     'maxtries': '&MAXTRIES;'}
 
-        fhr_var_dict = {'fhr': ' '.join([str(fhr).zfill(3) for fhr in
-                                         self._get_forecast_hours('gefs', self._configs['atmos_products'])])}
-        fhr_metatask_dict = {'task_name': 'atm_prod_#member#',
+        fhrs = self._get_forecast_hours('gefs', self._configs[config])
+
+        # ocean/ice components do not have fhr 0 as they are averaged output
+        if component in ['ocean', 'ice']:
+            fhrs.remove(0)
+
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
+        fhr_metatask_dict = {'task_name': f'{component}_prod_#member#',
                              'task_dict': task_dict,
-                             'var_dict': fhr_var_dict
-                             }
+                             'var_dict': fhr_var_dict}
 
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': 'atm_prod',
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{component}_prod',
                                 'task_dict': fhr_metatask_dict,
-                                'var_dict': member_var_dict
-                                }
+                                'var_dict': member_var_dict}
 
         task = rocoto.create_task(member_metatask_dict)
 
