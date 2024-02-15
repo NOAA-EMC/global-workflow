@@ -13,11 +13,12 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalecen" -c "base ocnanalecen"
 # Begin JOB SPECIFIC work
 ##############################################
 
+export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNRUNSH:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_ecen.sh}
+EXSCRIPT=${GDASOCNRUNSH:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_ecen.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
