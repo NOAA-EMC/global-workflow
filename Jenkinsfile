@@ -76,13 +76,14 @@ pipeline {
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}<br>Still doing a checkout to get the latest changes")
-                                        sh(script: 'source workflow/gw_setup.sh; git pull --recurse-submodules')
+                                        checkout scm
+                                        //sh(script: 'source workflow/gw_setup.sh; git pull --recurse-submodules')
                                         dir('sorc') {
                                             sh(script: './link_workflow.sh')
                                         }
                                     } else {
                                         checkout scm
-                                        sh(script: 'source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive')
+                                        //sh(script: 'source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive')
                                         def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
