@@ -134,13 +134,13 @@ pipeline {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                 ws(HOMEgfs) {
-                                    pslot = sh(script: "ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
+                                    pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
                                     pullRequest.comment("**Running** experiment: ${Case} on ${Machine}<br>With the experiment in directory:<br>`${HOME}/RUNTESTS/${pslot}`")
                                     try {
-                                       sh(script: "ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
+                                       sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
                                     } catch (Exception e) {
                                         pullRequest.comment("**FAILURE** running experiment: ${Case} on ${Machine}")
-                                        sh(script: "ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
+                                        sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
                                         ws(HOME) {
                                             if (fileExists('RUNTESTS/error.logs')) {
                                                 def fileContent = readFile 'RUNTESTS/error.logs'
