@@ -931,7 +931,7 @@ GOCART_rc() {
 GOCART_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
 
-  for fhr in ${FV3_OUTPUT_FH}; do
+  for fhr in ${GOCART_OUTPUT_FH}; do
     local vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
 
     # Temporarily delete existing files due to noclobber in GOCART
