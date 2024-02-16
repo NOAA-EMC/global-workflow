@@ -16,4 +16,9 @@ if [ $DOIAU_ENKF = "YES" ]; then
    export DOSFCANL_ENKF="NO"
 fi
 
+# Turn off NST in JEDIATMENS
+if [[ "${DO_JEDIATMENS}" == "YES" ]]; then
+   export DONST="NO"
+fi
+
 echo "END: config.esfc"
