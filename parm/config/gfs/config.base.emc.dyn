@@ -397,4 +397,11 @@ export FITSARC="YES"
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
+# The monitor jobs are not yet supported for JEDIATMVAR
+if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
+   export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
+   export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
+   export DO_VMINMON="NO"     # GSI minimization monitoring
+fi
+
 echo "END: config.base"

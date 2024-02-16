@@ -94,7 +94,7 @@ class AtmAnalysis(Analysis):
                     'NMEM_ENS', 'DATA', 'current_cycle', 'ntiles']
             for key in keys:
                 localconf[key] = self.task_config[key]
-            localconf.RUN = 'enkf' + self.task_config.RUN
+            localconf.RUN = 'enkfgdas'
             localconf.dirname = 'ens'
             FileHandler(self.get_fv3ens_dict(localconf)).sync()
 
