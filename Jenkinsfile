@@ -123,7 +123,7 @@ pipeline {
 
                     stage('Create Experiments') {
                         when {
-                            expression { return test_casts_list.contains(Case) }
+                            expression { return test_cases_list.contains(Case) }
                         }
                         steps {
                                 script {
@@ -139,7 +139,7 @@ pipeline {
 
                     stage('Run Experiments') {
                         when {
-                            expression { return test_casts_list.contains(Case) }
+                            expression { return test_cases_list.contains(Case) }
                         }
                         steps {
                             script {
