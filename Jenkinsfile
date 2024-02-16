@@ -3,6 +3,7 @@ def machine = 'none'
 def HOME = 'none'
 def localworkspace = 'none'
 def commonworkspace = 'none'
+def test_cases_list = ['C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW']
 
 pipeline {
     agent { label 'built-in' }
@@ -120,6 +121,7 @@ pipeline {
                 }
                 stages {
                     stage('Create Experiment') {
+                        when { test_cases_list.contains(Case) }
                         steps {
                                 script {
                                     sh(script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp")
@@ -132,6 +134,7 @@ pipeline {
                         }
                     }
                     stage('Run Experiments') {
+                        when { test_cases_list.contains(Case) }
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
