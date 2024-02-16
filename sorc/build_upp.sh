@@ -10,7 +10,7 @@ while getopts ":dvj:" option; do
 	case "${option}" in
 		d) _opts+="-d ";;
 		v) _opts+="-v ";;
-      j) export BUILD_JOBS="${OPTARG}"; echo success ;;
+    j) export BUILD_JOBS="${OPTARG}"; echo success ;;
 		:)
 			echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
 			;;
