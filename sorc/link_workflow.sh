@@ -70,6 +70,7 @@ case "${machine}" in
   "hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
   "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
   "s4")       FIX_DIR="/data/prod/glopara/fix" ;;
+  "gaea-c5")  FIX_DIR="/gpfs/f5/ufs-ard/proj-shared/global-workflow/global/glopara/fix" ;;
   *)
     echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
     exit 1
