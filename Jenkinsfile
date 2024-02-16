@@ -3,7 +3,7 @@ def machine = 'none'
 def HOME = 'none'
 def localworkspace = 'none'
 def commonworkspace = 'none'
-def test_cases_list = ['C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW']
+def casesList = ['C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW']
 
 pipeline {
     agent { label 'built-in' }
@@ -101,6 +101,9 @@ pipeline {
                                        }
                                        pullRequest.addLabel("CI-${Machine}-Running")
                                     }
+                                    if (system == 'gfs') {
+                                        caseList = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py", returnStdout: true).trim().split()
+                                    }
                                }
                            }
                         }
@@ -123,7 +126,7 @@ pipeline {
 
                     stage('Create Experiments') {
                         when {
-                            expression { return test_cases_list.contains(Case) }
+                            expression { return caseList.contains(Case) }
                         }
                         steps {
                                 script {
@@ -139,7 +142,7 @@ pipeline {
 
                     stage('Run Experiments') {
                         when {
-                            expression { return test_cases_list.contains(Case) }
+                            expression { return casesList.contains(Case) }
                         }
                         steps {
                             script {
