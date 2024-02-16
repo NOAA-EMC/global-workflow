@@ -183,16 +183,16 @@ export ICERES="${OCNRES}"
 # These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
-        export waveGRD='glo_500'
+        export waveGRD='uglo_100km'
         ;;
     "C96" | "C192")
-        export waveGRD='glo_200'
+        export waveGRD='uglo_100km'
         ;;
     "C384")
-        export waveGRD='glo_025'
+        export waveGRD='uglo_100km'
         ;;
     "C768" | "C1152")
-        export waveGRD='mx025'
+        export waveGRD='uglo_m1g16'
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
@@ -396,5 +396,12 @@ export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs foreca
 export FITSARC="YES"
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
+
+# The monitor jobs are not yet supported for JEDIATMVAR
+if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
+   export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
+   export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
+   export DO_VMINMON="NO"     # GSI minimization monitoring
+fi
 
 echo "END: config.base"
