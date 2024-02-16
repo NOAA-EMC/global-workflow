@@ -12,6 +12,11 @@ export job="ocnanalecen"
 export jobid="${job}.$$"
 
 ###############################################################
+# Setup Python path for GDASApp ush
+PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush:${PYTHONPATH}
+export PYTHONPATH
+
+###############################################################
 # Execute the JJOB
 "${HOMEgfs}"/jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_ECEN
 status=$?
