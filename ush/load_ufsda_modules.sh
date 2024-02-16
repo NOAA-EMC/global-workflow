@@ -43,20 +43,20 @@ elif [[ "${MACHINE_ID}" == "hera" ]] ; then
   # We are on NOAA Hera
   module load "${MODS}/hera"
   # set NETCDF variable based on ncdump location
-  NETCDF=$( which ncdump )
+  NETCDF=$( command -v ncdump)
   export NETCDF
 elif [[ "${MACHINE_ID}" == "orion" ]] ; then
   # We are on MSU Orion
   module load "${MODS}/orion"
   # set NETCDF variable based on ncdump location
-  ncdump=$( which ncdump )
+  ncdump=$( command -v ncdump)
   NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
   export NETCDF
 elif [[ "${MACHINE_ID}" == "hercules" ]] ; then  
   # We are on MSU Hercules
   module load "${MODS}/hercules"
   # set NETCDF variable based on ncdump location
-  ncdump=$( which ncdump )
+  ncdump=$( command -v ncdump )
   NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
   export NETCDF
 elif [[ "${MACHINE_ID}" == "gaea" ]] ; then
