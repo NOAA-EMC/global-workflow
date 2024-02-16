@@ -121,7 +121,7 @@ pipeline {
                 }
                 stages {
                     stage('Create Experiment') {
-                        when { test_cases_list.contains(Case) }
+                        when { sh '${HOME}/gfs/ci/scripts/utils/check_case_skip.py ${Case}' }
                         steps {
                                 script {
                                     sh(script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp")
@@ -134,7 +134,7 @@ pipeline {
                         }
                     }
                     stage('Run Experiments') {
-                        when { test_cases_list.contains(Case) }
+                        when { sh '${HOME}/gfs/ci/scripts/utils/check_case_skip.py ${Case}' }
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
