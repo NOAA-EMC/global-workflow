@@ -121,18 +121,10 @@ pipeline {
                 }
                 stages {
 
-                    stage( 'Check Skip') {
-                        steps {
-                            script {
-                                env.HOME = HOME
-                                env.NOT_SKIP_CASE = sh(script: '${HOME}/gfs/ci/scripts/utils/check_case_skip.py ${Case}', returnStdout: true).trim()
-                                echo "NOT_SKIP_CASE: ${Case} ${env.NOT_SKIP_CASE}"
-                            }
-                        }
-                    }
-
                     stage('Create Experiments') {
-                        when { expression { env.NOT_SKIP_CASE == 'true' } }
+                        when {
+                            expression { return test_casts_list.contains(Case) }
+                        }
                         steps {
                                 script {
                                     sh(script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp")
@@ -146,7 +138,9 @@ pipeline {
                     }
 
                     stage('Run Experiments') {
-                        when { expression { env.NOT_SKIP_CASE == 'true' } }
+                        when {
+                            expression { return test_casts_list.contains(Case) }
+                        }
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
