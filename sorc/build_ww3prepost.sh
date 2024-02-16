@@ -6,12 +6,15 @@ cd "${script_dir}" || exit 1
 
 # Default settings
 APP="S2SWA"
+PDLIB="OFF" 
 
-while getopts ":j:a:v" option; do
+while getopts ":j:a:dvw" option; do
   case "${option}" in
     a) APP="${OPTARG}";;
+    d) BUILD_TYPE="DEBUG";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
+    w) PDLIB="ON";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
@@ -23,14 +26,16 @@ while getopts ":j:a:v" option; do
   esac
 done
 
-
 # Determine which switch to use
-if [[ "${APP}" == "ATMW" ]]; then
+if [[ "${APP}" == "ATMW" ]]; then 
   ww3switch="model/esmf/switch"
-else
-  ww3switch="model/bin/switch_meshcap"
-fi
-
+else 
+  if [[ "${PDLIB}" == "ON" ]]; then 
+    ww3switch="model/bin/switch_meshcap_pdlib"
+  else 
+    ww3switch="model/bin/switch_meshcap"
+  fi 
+fi 
 
 # Check final exec folder exists
 if [[ ! -d "../exec" ]]; then
@@ -64,6 +69,8 @@ mkdir -p "${path_build}" || exit 1
 cd "${path_build}" || exit 1
 echo "Forcing a SHRD build"
 
+buildswitch="${path_build}/switch"
+
 cat "${SWITCHFILE}" > "${path_build}/tempswitch"
 
 sed -e "s/DIST/SHRD/g"\
@@ -73,15 +80,21 @@ sed -e "s/DIST/SHRD/g"\
     -e "s/MPI / /g"\
     -e "s/B4B / /g"\
     -e "s/PDLIB / /g"\
+    -e "s/SCOTCH / /g"\
+    -e "s/METIS / /g"\
     -e "s/NOGRB/NCEP2/g"\
        "${path_build}/tempswitch" > "${path_build}/switch"
 rm "${path_build}/tempswitch"
 
-echo "Switch file is ${path_build}/switch with switches:"
-cat "${path_build}/switch"
+echo "Switch file is ${buildswitch} with switches:" 
+cat "${buildswitch}"
+
+#define cmake build options
+MAKE_OPT="-DCMAKE_INSTALL_PREFIX=install"
+[[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
 
 #Build executables:
-cmake "${WW3_DIR}" -DSWITCH="${path_build}/switch" -DCMAKE_INSTALL_PREFIX=install
+cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" "${MAKE_OPT}"
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in cmake."

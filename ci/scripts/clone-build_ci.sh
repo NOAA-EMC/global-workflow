@@ -74,7 +74,7 @@ set +e
 source "${HOMEgfs}/ush/module-setup.sh"
 export BUILD_JOBS=8
 rm -rf log.build
-./build_all.sh -gu  >> log.build 2>&1
+./build_all.sh -guw  >> log.build 2>&1
 build_status=$?
 
 DATE=$(date +'%D %r')
