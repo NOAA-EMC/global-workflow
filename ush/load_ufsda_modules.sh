@@ -36,7 +36,8 @@ module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 case "${MACHINE_ID}" in
   ("hera" | "orion" | "hercules")
     module load "${MODS}/${MACHINE_ID}"
-    NETCDF=$( command -v ncdump )
+    ncdump=$( command -v ncdump )
+    NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
     export NETCDF
     ;;
   ("wcoss2" | "acorn" | "jet" | "gaea" | "s4")
