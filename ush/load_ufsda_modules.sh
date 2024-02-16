@@ -33,41 +33,55 @@ source "${HOMEgfs}/ush/module-setup.sh"
 # Load our modules:
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
-if [[ "${MACHINE_ID}" == "wcoss2" || "${MACHINE_ID}" == "acorn" ]]; then
-  # We are on WCOSS2 (Cactus or Dogwood)
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ "${MACHINE_ID}" == "jet" ]] ; then
-  # We are on NOAA Jet
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ "${MACHINE_ID}" == "hera" ]] ; then
-  # We are on NOAA Hera
-  module load "${MODS}/hera"
-  # set NETCDF variable based on ncdump location
-  NETCDF=$( command -v ncdump)
-  export NETCDF
-elif [[ "${MACHINE_ID}" == "orion" ]] ; then
-  # We are on MSU Orion
-  module load "${MODS}/orion"
-  # set NETCDF variable based on ncdump location
-  ncdump=$( command -v ncdump)
-  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
-  export NETCDF
-elif [[ "${MACHINE_ID}" == "hercules" ]] ; then  
-  # We are on MSU Hercules
-  module load "${MODS}/hercules"
-  # set NETCDF variable based on ncdump location
-  ncdump=$( command -v ncdump )
-  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
-  export NETCDF
-elif [[ "${MACHINE_ID}" == "gaea" ]] ; then
+#if [[ "${MACHINE_ID}" == "wcoss2" || "${MACHINE_ID}" == "acorn" ]]; then
+#  # We are on WCOSS2 (Cactus or Dogwood)
+#  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+#elif [[ "${MACHINE_ID}" == "jet" ]] ; then
+#  # We are on NOAA Jet
+#  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+#elif [[ "${MACHINE_ID}" == "hera" ]] ; then
+#  # We are on NOAA Hera
+#  module load "${MODS}/hera"
+#  # set NETCDF variable based on ncdump location
+#  NETCDF=$( command -v ncdump)
+#  export NETCDF
+#elif [[ "${MACHINE_ID}" == "orion" ]] ; then
+#  # We are on MSU Orion
+#  module load "${MODS}/orion"
+#  # set NETCDF variable based on ncdump location
+#  ncdump=$( command -v ncdump)
+#  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
+#  export NETCDF
+#elif [[ "${MACHINE_ID}" == "hercules" ]] ; then  
+#  # We are on MSU Hercules
+#  module load "${MODS}/hercules"
+#  # set NETCDF variable based on ncdump location
+#  ncdump=$( command -v ncdump )
+#  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
+#  export NETCDF
+#elif [[ "${MACHINE_ID}" == "gaea" ]] ; then
   # We are on GAEA.
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ "${MACHINE_ID}" == "s4" ]] ; then
-  # We are on SSEC S4
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-else
-  echo WARNING: UNKNOWN PLATFORM
-fi
+#  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+#elif [[ "${MACHINE_ID}" == "s4" ]] ; then
+#  # We are on SSEC S4
+#  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+#else
+#  echo WARNING: UNKNOWN PLATFORM
+#fi
+
+case "${MACHINE_ID}" in
+  ("hera" | "orion" | "hercules")
+    module load "${MODS}/${MACHINE_ID}"
+    NETCDF=$( command -v ncdump )
+    export NETCDF
+    ;;
+  ("wcoss2" | "acorn" | "jet" | "gaea" | "s4")
+    echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+    ;;  
+  *)
+    echo "WARNING: UNKNOWN PLATFORM"
+    ;;
+esac
 
 module list
 pip list
