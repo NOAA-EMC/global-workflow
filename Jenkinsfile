@@ -126,6 +126,7 @@ pipeline {
                             script {
                                 env.HOME = HOME
                                 env.NOT_SKIP_CASE = sh(script: '${HOME}/gfs/ci/scripts/utils/check_case_skip.py ${Case}', returnStdout: true).trim()
+                                echo "NOT_SKIP_CASE: ${Case} ${env.NOT_SKIP_CASE}"
                             }
                         }
                     }
