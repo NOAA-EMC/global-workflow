@@ -2,7 +2,7 @@ help([[
 Load environment to run GFS workflow setup scripts on Jet
 ]])
 
-load(pathJoin("rocoto", "1.3.3"))
+load(pathJoin("rocoto"))
 
 prepend_path("MODULEPATH", "/mnt/lfs4/HFIP/hfv3gfs/role.epic/spack-stack/spack-stack-1.6.0/envs/gsi-addon-dev/install/modulefiles/Core")
 
