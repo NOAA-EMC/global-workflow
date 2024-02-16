@@ -17,7 +17,7 @@ arguments:
   start: warm
   yaml: {{ HOMEgfs }}/ci/cases/yamls/soca_gfs_defaults_ci.yaml
 
-skip_ci_on_host:
+skip_ci_on_hosts:
   - orion
   - hera
   - hercules

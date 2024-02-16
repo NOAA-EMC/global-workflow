@@ -7,12 +7,13 @@ cwd=$(pwd)
 APP="S2SWA"
 CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: does the g-w need to build with all these CCPP_SUITES?
 
-while getopts ":da:j:v" option; do
+while getopts ":da:j:vw" option; do
   case "${option}" in
     d) BUILD_TYPE="DEBUG";;
     a) APP="${OPTARG}";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
+    w) PDLIB="ON";; 
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       ;;
@@ -28,6 +29,7 @@ source "./tests/detect_machine.sh"
 source "./tests/module-setup.sh"
 
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
+[[ ${PDLIB:-"OFF"} = "ON" ]] && MAKE_OPT+=" -DPDLIB=ON"
 [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
 COMPILE_NR=0
 CLEAN_BEFORE=YES
