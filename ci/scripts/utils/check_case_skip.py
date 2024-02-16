@@ -20,8 +20,12 @@ if __name__ == '__main__':
     case_conf = parse_j2yaml(path=case_yaml, data=data)
 
     if 'skip_ci_on_hosts' not in case_conf:
+        print('true')
         sys.exit(0)
 
     if host.machine.lower() in [machine.lower() for machine in case_conf.skip_ci_on_hosts]:
-        print(f'Skipping creation of case: {case_name} on {host.machine.capitalize()}')
-        sys.exit(1)
+        #print(f'Skipping creation of case: {case_name} on {host.machine.capitalize()}')
+        print('false')
+    else:
+        print('true')
+
