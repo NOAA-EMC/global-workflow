@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os
 import sys
-sys.path.insert(0,'...')
-from wxflow import AttrDict, parse_j2yaml
+from wxflow import parse_j2yaml
+from wxflow import AttrDict
 from workflow import hosts
 
 _here = os.path.dirname(__file__)
