@@ -46,7 +46,7 @@ pipeline {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}/TESTDIR"
                     commonworkspace = "${WORKSPACE}"
-                    sh(script: "mkdir -p ${HOME}/RUNTESTS")
+                    sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
                     pullRequest.addLabel("CI-${Machine}-Building")
                     if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
                         pullRequest.removeLabel("CI-${Machine}-Ready")
@@ -115,7 +115,7 @@ pipeline {
                     axis {
                         name 'Case'
                         // TODO add dynamic list of cases from env vars (needs addtional plugins)
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar', 'C96C48_hybatmDA', 'C96_atmsnowDA'  // 'C48mx500_3DVarAOWCDA'
+                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar', 'C96C48_hybatmDA' // 'C96_atmsnowDA', 'C48mx500_3DVarAOWCDA'
                     }
                 }
                 stages {
