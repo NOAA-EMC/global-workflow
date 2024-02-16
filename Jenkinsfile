@@ -121,12 +121,15 @@ pipeline {
                 }
                 stages {
 
-                    stage('Create Experiments') {
+                    stage( 'Check Skip') {
                         steps {
                             script {
                                 env.NOT_SKIP_CASE = sh(script: '${HOME}/gfs/ci/scripts/utils/check_case_skip.py ${Case}', returnStdout: true).trim()
                             }
                         }
+                    }
+
+                    stage('Create Experiments') {
                         when { expression { env.NOT_SKIP_CASE == 'true' } }
                         steps {
                                 script {
@@ -141,11 +144,6 @@ pipeline {
                     }
 
                     stage('Run Experiments') {
-                        steps {
-                            script {
-                                env.NOT_SKIP_CASE = sh(script: '${HOME}/gfs/ci/scripts/utils/check_case_skip.py ${Case}', returnStdout: true).trim()
-                            }
-                        }
                         when { expression { env.NOT_SKIP_CASE == 'true' } }
                         steps {
                             script {
