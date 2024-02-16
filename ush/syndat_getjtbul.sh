@@ -52,8 +52,6 @@ hour=$(echo $CDATE10 | cut -c9-10)
 echo $PDYm1
 pdym1=$PDYm1
 
-#pdym1=$(sh $utilscript/finddate.sh $pdy d-1)
-
 echo " " >> $pgmout
 echo "Entering sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
  >> $pgmout
