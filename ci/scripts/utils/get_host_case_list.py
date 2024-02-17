@@ -23,6 +23,7 @@ if __name__ == '__main__':
         case_conf = parse_j2yaml(path=case_yaml, data=data)
         if 'skip_ci_on_hosts' in case_conf:
             if host.machine.lower() in [machine.lower() for machine in case_conf.skip_ci_on_hosts]:
-                case_list.append(splitext(basename(case_yaml))[0])
+                continue
+        case_list.append(splitext(basename(case_yaml))[0])
     print(' '.join(case_list))
 
