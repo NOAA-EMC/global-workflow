@@ -23,7 +23,7 @@ cwd=$(pwd)
 OPTIND=1
 while getopts ":j:dvh" option; do
   case "${option}" in
-    d) export BUILD_TYPE="DEBUG";;
+    d) export BUILD_TYPE="Debug";;
     v) export BUILD_VERBOSE="YES";;
     j) export BUILD_JOBS="${OPTARG}";;
     h)
