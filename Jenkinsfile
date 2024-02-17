@@ -3,7 +3,7 @@ def machine = 'none'
 def HOME = 'none'
 def localworkspace = 'none'
 def commonworkspace = 'none'
-def casesList = ['C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW']
+def caseList = ['C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW']
 
 pipeline {
     agent { label 'built-in' }
@@ -142,7 +142,7 @@ pipeline {
 
                     stage('Run Experiments') {
                         when {
-                            expression { return casesList.contains(Case) }
+                            expression { return caseList.contains(Case) }
                         }
                         steps {
                             script {
