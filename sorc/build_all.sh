@@ -16,9 +16,11 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v][-w]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w]
   -a UFS_app:
     Build a specific UFS app instead of the default
+  -d:
+    Build in debug mode
   -g:
     Build GSI
   -h:
@@ -46,9 +48,10 @@ _wave_unst=""
 _build_job_max=20
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:ghj:uvw" option; do
+while getopts ":a:dghj:uvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
+    d) export BUILD_TYPE="DEBUG";;  
     g) _build_gsi="YES" ;;
     h) _usage;;
     j) _build_job_max="${OPTARG} ";;
@@ -115,21 +118,22 @@ declare -A build_opts
 
 # Mandatory builds, unless otherwise specified, for the UFS
 big_jobs=0
-build_jobs["ufs"]=8
-big_jobs=$((big_jobs+1))
-build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
+#build_jobs["ufs"]=8
+#big_jobs=$((big_jobs+1))
+#build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
-build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
-build_opts["upp"]=""
+#build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
+#build_opts["upp"]=""
+#build_type["upp"]=${BUILD_TYPE:-"Release"}
 
-build_jobs["ufs_utils"]=3
-build_opts["ufs_utils"]="${_verbose_opt}"
+#build_jobs["ufs_utils"]=3
+#build_opts["ufs_utils"]="${_verbose_opt}"
 
 build_jobs["gfs_utils"]=1
 build_opts["gfs_utils"]="${_verbose_opt}"
 
-build_jobs["ww3prepost"]=3
-build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
+#build_jobs["ww3prepost"]=3
+#build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
@@ -160,6 +164,7 @@ fi
 requested_cpus=0
 build_list=""
 for build in "${!build_jobs[@]}"; do
+   BUILD_TYPE=${BUILD_TYPE:-"Release"}
    if [[ -z "${build_list}" ]]; then
       build_list="${build}"
    else
