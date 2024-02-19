@@ -40,9 +40,11 @@ EOF
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 cd "${script_dir}" || exit 1
 
+BUILD_TYPE="Release" # This is the default for all applications.
 _build_ufs_opt=""
 _build_ufsda="NO"
 _build_gsi="NO"
+_build_debug=""
 _verbose_opt=""
 _wave_unst=""
 _build_job_max=20
@@ -51,7 +53,9 @@ OPTIND=1
 while getopts ":a:dghj:uvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
-    d) export BUILD_TYPE="DEBUG";;  
+    d) _build_debug="-d"
+       export BUILD_TYPE="Debug"
+       ;;  
     g) _build_gsi="YES" ;;
     h) _usage;;
     j) _build_job_max="${OPTARG} ";;
@@ -118,19 +122,21 @@ declare -A build_opts
 
 # Mandatory builds, unless otherwise specified, for the UFS
 big_jobs=0
-#build_jobs["ufs"]=8
-#big_jobs=$((big_jobs+1))
-#build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
+build_jobs["ufs"]=8
+big_jobs=$((big_jobs+1))
+build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
+# TODO: Done
 #build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
-#build_opts["upp"]=""
-#build_type["upp"]=${BUILD_TYPE:-"Release"}
+#build_opts["upp"]="${_build_debug}"
 
+# TODO: Done
 #build_jobs["ufs_utils"]=3
-#build_opts["ufs_utils"]="${_verbose_opt}"
+#build_opts["ufs_utils"]="${_verbose_opt}" 
 
-build_jobs["gfs_utils"]=1
-build_opts["gfs_utils"]="${_verbose_opt}"
+# TODO: Done
+#build_jobs["gfs_utils"]=1
+#build_opts["gfs_utils"]="${_verbose_opt}"
 
 #build_jobs["ww3prepost"]=3
 #build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
