@@ -6,7 +6,7 @@ cwd=$(pwd)
 OPTIND=1
 while getopts ":j:dv" option; do
   case "${option}" in
-    d) export BUILD_TYPE="DEBUG";;
+    d) export BUILD_TYPE="Debug";;
     j) export BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
     :)
