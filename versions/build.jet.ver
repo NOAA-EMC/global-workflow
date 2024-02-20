@@ -1,5 +1,5 @@
-export spack_mod_path="/lfs4/HFIP/hfv3gfs/role.epic/spack-stack/spack-stack-1.6.0/envs/gsi-addon-dev/install/modulefiles/Core"
 export stack_intel_ver=2021.5.0
 export stack_impi_ver=2021.5.1
 export spack_env=gsi-addon-dev
 source "${HOMEgfs:-}/versions/build.spack.ver"
+export spack_mod_path="/lfs4/HFIP/hfv3gfs/role.epic/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
