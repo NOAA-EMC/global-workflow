@@ -1,0 +1,22 @@
+experiment:
+  system: gfs
+  mode: cycled
+
+arguments:
+  pslot: {{ 'pslot' | getenv }}
+  app: ATM
+  resdetatmos: 48
+  resensatmos: 48
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  idate: 2021032312
+  edate: 2021032400
+  nens: 2
+  gfs_cyc: 1
+  start: warm
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/ufs_hybatmDA_defaults.ci.yaml
+
+skip_ci_on_hosts:
+  - hera
+  - orion
+  - hercules
