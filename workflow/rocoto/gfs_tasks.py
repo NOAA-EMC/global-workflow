@@ -938,7 +938,7 @@ class GFSTasks(Tasks):
             local_config['FHOUT_HF_GFS'] = config['FHOUT_OCNICE_GFS']
             local_config['FHOUT_GFS']=config['FHOUT_OCNICE_GFS']
             local_config['FHOUT_GFS']=config['FHOUT_OCNICE_GFS']
-            local_config['FHOUT']=config['FHOUT_OCNICE']
+            local_config['FHOUT'] = config['FHOUT_OCNICE']
 
         fhrs = Tasks._get_forecast_hours(cdump, local_config)
 
