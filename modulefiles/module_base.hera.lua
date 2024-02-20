@@ -38,10 +38,6 @@ load(pathJoin("met", (os.getenv("met_ver") or "None")))
 load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
--- MET/METplus are not available for use with spack-stack, yet
---load(pathJoin("met", (os.getenv("met_ver") or "None")))
---load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
-
 setenv("WGRIB2","wgrib2")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
