@@ -18,4 +18,5 @@ arguments:
 
 skip_ci_on_hosts:
   - orion
+  - hera
   - hercules

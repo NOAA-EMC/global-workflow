@@ -3,7 +3,7 @@ def machine = 'none'
 def HOME = 'none'
 def localworkspace = 'none'
 def commonworkspace = 'none'
-def caseList = ['C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW']
+def caseList = ''
 
 pipeline {
     agent { label 'built-in' }
@@ -11,7 +11,7 @@ pipeline {
     options {
         skipDefaultCheckout()
         parallelsAlwaysFailFast()
-        buildDiscarder(logRotator(numToKeepStr: '2'))
+        buildDiscarder(logRotator(numToKeepStr: '4'))
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -79,13 +79,11 @@ pipeline {
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}<br>Still doing a checkout to get the latest changes")
                                         checkout scm
-                                        //sh(script: 'source workflow/gw_setup.sh; git pull --recurse-submodules')
                                         dir('sorc') {
                                             sh(script: './link_workflow.sh')
                                         }
                                     } else {
                                         checkout scm
-                                        //sh(script: 'source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive')
                                         def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
