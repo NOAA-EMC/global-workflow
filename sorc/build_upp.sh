@@ -6,11 +6,11 @@ cd "${script_dir}" || exit 1
 
 OPTIND=1
 _opts=""
-while getopts ":dvj:" option; do
+while getopts ":dj:v" option; do
 	case "${option}" in
 		d) _opts+="-d ";;
+		j) export BUILD_JOBS="${OPTARG}" ;;
 		v) _opts+="-v ";;
-    j) export BUILD_JOBS="${OPTARG}"; echo success ;;
 		:)
 			echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
 			;;
