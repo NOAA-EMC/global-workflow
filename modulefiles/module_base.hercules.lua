@@ -2,9 +2,8 @@ help([[
 Load environment to run GFS on Hercules
 ]])
 
-spack_stack_ver=(os.getenv("spack_stack_ver") or "None")
-spack_env=(os.getenv("spack_env") or "None")
-prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-" .. spack_stack_ver .. "/envs/" .. spack_env .. "/install/modulefiles/Core")
+local spack_mod_path=(os.getenv("spack_mod_path") or "None")
+prepend_path("MODULEPATH", spack_mod_path)
 
 load(pathJoin("stack-intel", (os.getenv("stack_intel_ver") or "None")))
 load(pathJoin("stack-intel-oneapi-mpi", (os.getenv("stack_impi_ver") or "None")))
@@ -12,10 +11,6 @@ load(pathJoin("intel-oneapi-mkl", (os.getenv("intel_mkl_ver") or "None")))
 load(pathJoin("python", (os.getenv("python_ver") or "None")))
 load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 
--- TODO load NCL once the SAs remove the 'depends_on' statements within it
---      NCL is a static installation and does not depend on any libraries
---      but as is will load, among others, the system netcdf-c/4.9.0 module
---load(pathJoin("ncl", (os.getenv("ncl_ver") or "None")))
 load(pathJoin("jasper", (os.getenv("jasper_ver") or "None")))
 load(pathJoin("libpng", (os.getenv("libpng_ver") or "None")))
 load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))

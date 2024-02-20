@@ -2,9 +2,8 @@ help([[
 Load environment to run GFS on Orion
 ]])
 
-spack_stack_ver=(os.getenv("spack_stack_ver") or "None")
-spack_env=(os.getenv("spack_env") or "None")
-prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-" .. spack_stack_ver .. "/envs/" .. spack_env .. "/install/modulefiles/Core")
+local spack_mod_path=(os.getenv("spack_mod_path") or "None")
+prepend_path("MODULEPATH", spack_mod_path)
 
 load(pathJoin("stack-intel", (os.getenv("stack_intel_ver") or "None")))
 load(pathJoin("stack-intel-oneapi-mpi", (os.getenv("stack_impi_ver") or "None")))
