@@ -9,6 +9,8 @@
 ## This script is a direct execution.
 #####
 
+# Disable variable not used warnings
+# shellcheck disable=SC2034
 FV3_namelists(){
 
 # setup the tables
