@@ -229,7 +229,7 @@ CICE_predet(){
   # Convert output settings into an explicit list for CICE
   # Ignore "not used" warning
   # shellcheck disable=SC2034
-  CICE_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT}" "${FHMAX}")
+  CICE_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_OCNICE}" "${FHMAX}")
 
 }
 
@@ -247,7 +247,7 @@ MOM6_predet(){
   # Convert output settings into an explicit list for MOM6
   # Ignore "not used" warning
   # shellcheck disable=SC2034
-  MOM6_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT}" "${FHMAX}")
+  MOM6_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_OCNICE}" "${FHMAX}")
 
 }
 
