@@ -1,9 +1,6 @@
 #!/bin/bash
 source "${HOMEgfs}/ush/preamble.sh"
-export WIPE_DATA="NO"
-export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalecen" -c "base ocnanalecen"
-
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalecen" -c "base ocnanal ocnanalecen"
 
 ##############################################
 # Set variables used in the script
@@ -33,8 +30,9 @@ if [[ -e "${pgmout}" ]] ; then
 fi
 
 ##########################################
-# Do not remove the Temporary working directory (do this in POST)
+# Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit 1
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
