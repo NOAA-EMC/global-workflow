@@ -47,6 +47,7 @@ pipeline {
             }
             steps {
                 script {
+                    ws (custome_workspace) {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                     HOME = "${WORKSPACE}"
                     sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
@@ -54,6 +55,7 @@ pipeline {
                     if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
                         pullRequest.removeLabel("CI-${Machine}-Ready")
                     }
+                }
                 }
             }
         }
