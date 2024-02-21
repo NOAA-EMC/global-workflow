@@ -85,7 +85,6 @@ export MODE="@MODE@" # cycled/forecast-only
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
 
