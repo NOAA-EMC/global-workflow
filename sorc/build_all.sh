@@ -126,20 +126,17 @@ build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
 build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
-# TODO: Done
-#build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
-#build_opts["upp"]="${_build_debug}"
+build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
+build_opts["upp"]="${_build_debug}"
 
-# TODO: Done
-#build_jobs["ufs_utils"]=3
-#build_opts["ufs_utils"]="${_verbose_opt}" 
+build_jobs["ufs_utils"]=3
+build_opts["ufs_utils"]="${_verbose_opt}" 
 
-# TODO: Done
-#build_jobs["gfs_utils"]=1
-#build_opts["gfs_utils"]="${_verbose_opt}"
+build_jobs["gfs_utils"]=1
+build_opts["gfs_utils"]="${_verbose_opt}"
 
-#build_jobs["ww3prepost"]=3
-#build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
+build_jobs["ww3prepost"]=3
+build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
