@@ -2,8 +2,8 @@ def Machine = 'none'
 def machine = 'none'
 def HOME = 'none'
 def localworkspace = 'none'
-def commonworkspace = 'none'
 def caseList = ''
+def custom_workspace = '/scratch1/NCEPDEV/global/Terry.McGuinness'
 
 pipeline {
     agent { label 'built-in' }
@@ -41,12 +41,13 @@ pipeline {
         }
 
         stage('Get Common Workspace') {
-            agent { label "${machine}-emc" }
+            agent {
+                label "${machine}-emc"
+                customWorkspace custom_workspace
             steps {
                 script {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                    HOME = "${WORKSPACE}/TESTDIR"
-                    commonworkspace = "${WORKSPACE}"
+                    HOME = "${WORKSPACE}"
                     sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
                     pullRequest.addLabel("CI-${Machine}-Building")
                     if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
