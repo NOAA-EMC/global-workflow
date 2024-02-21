@@ -15,7 +15,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_gif" -c "base"
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export FIXgfs=${FIXgfs:-${HOMEgfs}/gempak/fix}
 export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
