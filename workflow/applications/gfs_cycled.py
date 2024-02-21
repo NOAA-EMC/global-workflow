@@ -18,6 +18,7 @@ class GFSCycledAppConfig(AppConfig):
         self.do_jediocnvar = self._base.get('DO_JEDIOCNVAR', False)
         self.do_jedisnowda = self._base.get('DO_JEDISNOWDA', False)
         self.do_mergensst = self._base.get('DO_MERGENSST', False)
+        self.do_vrfy_oceanda = self._base.get('DO_VRFY_OCEANDA', False)
 
         self.lobsdiag_forenkf = False
         self.eupd_cdumps = None
@@ -43,11 +44,12 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_jediocnvar:
             configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
-                        'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost',
-                        'ocnanalvrfy']
+                        'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost']
+            if self.do_vrfy_oceanda:
+                configs += ['ocnanalvrfy']
 
-        if self.do_ocean:
-            configs += ['ocnpost']
+        if self.do_ocean or self.do_ice:
+            configs += ['oceanice_products']
 
         configs += ['sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
@@ -137,8 +139,9 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_jediocnvar:
             gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep',
                                                   'ocnanalbmat', 'ocnanalrun',
-                                                  'ocnanalchkpt', 'ocnanalpost',
-                                                  'ocnanalvrfy']
+                                                  'ocnanalchkpt', 'ocnanalpost']
+            if self.do_vrfy_oceanda:
+                gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
@@ -175,7 +178,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_upp:
             gdas_tasks += ['atmupp']
-        gdas_tasks += ['atmprod']
+        gdas_tasks += ['atmos_prod']
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -207,9 +210,15 @@ class GFSCycledAppConfig(AppConfig):
 
         gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
+        if self.do_ocean:
+            gfs_tasks += ['ocean_prod']
+
+        if self.do_ice:
+            gfs_tasks += ['ice_prod']
+
         if self.do_upp:
             gfs_tasks += ['atmupp']
-        gfs_tasks += ['atmprod']
+        gfs_tasks += ['atmos_prod']
 
         if self.do_goes:
             gfs_tasks += ['goesupp']

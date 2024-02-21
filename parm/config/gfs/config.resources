@@ -19,7 +19,7 @@ if (( $# != 1 )); then
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
-    echo "init_chem mom6ic ocnpost"
+    echo "init_chem mom6ic oceanice_products"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
@@ -91,7 +91,7 @@ case ${step} in
     ;;
 
   "prepatmiodaobs")
-    export wtime_prepatmiodaobs="00:10:00"
+    export wtime_prepatmiodaobs="00:30:00"
     export npe_prepatmiodaobs=1
     export nth_prepatmiodaobs=1
     export npe_node_prepatmiodaobs=$(( npe_node_max / nth_prepatmiodaobs ))
@@ -196,8 +196,8 @@ case ${step} in
 
   "atmanlinit")
     # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=8
+    export layout_y=8
 
     export layout_gsib_x=$(( layout_x * 3 ))
     export layout_gsib_y=$(( layout_y * 2 ))
@@ -212,8 +212,8 @@ case ${step} in
 
   "atmanlrun")
     # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=8
+    export layout_y=8
 
     export wtime_atmanlrun="00:30:00"
     export npe_atmanlrun=$(( layout_x * layout_y * 6 ))
@@ -221,6 +221,7 @@ case ${step} in
     export nth_atmanlrun=1
     export nth_atmanlrun_gfs=${nth_atmanlrun}
     export npe_node_atmanlrun=$(( npe_node_max / nth_atmanlrun ))
+    export memory_atmanlrun="96GB"
     export is_exclusive=True
     ;;
 
@@ -352,7 +353,7 @@ case ${step} in
     export npe_prepoceanobs=1
     export nth_prepoceanobs=1
     export npe_node_prepoceanobs=$(( npe_node_max / nth_prepoceanobs ))
-    export memory_prepoceanobs="24GB"
+    export memory_prepoceanobs="48GB"
     ;;
 
   "ocnanalbmat")
@@ -406,13 +407,20 @@ case ${step} in
     export nth_ocnanalchkpt=1
     export npe_node_ocnanalchkpt=$(( npe_node_max / nth_ocnanalchkpt ))
     case ${CASE} in
-      "C384") memory_ocnanalchkpt="128GB";;
-      "C96")  memory_ocnanalchkpt="32GB";;
-      "C48")  memory_ocnanalchkpt="32GB";;
+      "C384")
+        memory_ocnanalchkpt="128GB"
+        npes=40;;
+      "C96")
+        memory_ocnanalchkpt="32GB"
+        npes=16;;
+      "C48")
+        memory_ocnanalchkpt="32GB"
+        npes=8;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
     esac
+    export npe_ocnanalchkpt=${npes}
     export memory_ocnanalchkpt
     ;;
 
@@ -644,17 +652,12 @@ case ${step} in
     unset NTASKS_TOT
     ;;
 
-  "ocnpost")
-    export wtime_ocnpost="00:30:00"
-    export npe_ocnpost=1
-    export npe_node_ocnpost=1
-    export nth_ocnpost=1
-    export memory_ocnpost="96G"
-    if [[ ${machine} == "JET" ]]; then
-      # JET only has 88GB of requestable memory per node
-      # so a second node is required to meet the requiremtn
-      npe_ocnpost=2
-    fi
+  "oceanice_products")
+    export wtime_oceanice_products="00:15:00"
+    export npe_oceanice_products=1
+    export npe_node_oceanice_products=1
+    export nth_oceanice_products=1
+    export memory_oceanice_products="96GB"
     ;;
 
   "upp")
@@ -664,6 +667,7 @@ case ${step} in
       ;;
       "C192" | "C384" | "C768")
         export npe_upp=120
+        export memory_upp="48GB"
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
@@ -734,7 +738,7 @@ case ${step} in
     export npe_genesis=1
     export nth_genesis=1
     export npe_node_genesis=1
-    export memory_genesis="4G"
+    export memory_genesis="10G"
     ;;
 
   "genesis_fsu")
@@ -742,7 +746,7 @@ case ${step} in
     export npe_genesis_fsu=1
     export nth_genesis_fsu=1
     export npe_node_genesis_fsu=1
-    export memory_genesis_fsu="4G"
+    export memory_genesis_fsu="10G"
     ;;
 
   "fit2obs")
@@ -826,8 +830,8 @@ case ${step} in
 
   "atmensanlinit")
     # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=8
+    export layout_y=8
 
     export wtime_atmensanlinit="00:10:00"
     export npe_atmensanlinit=1
@@ -838,8 +842,8 @@ case ${step} in
 
   "atmensanlrun")
     # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=8
+    export layout_y=8
 
     export wtime_atmensanlrun="00:30:00"
     export npe_atmensanlrun=$(( layout_x * layout_y * 6 ))
@@ -847,6 +851,7 @@ case ${step} in
     export nth_atmensanlrun=1
     export nth_atmensanlrun_gfs=${nth_atmensanlrun}
     export npe_node_atmensanlrun=$(( npe_node_max / nth_atmensanlrun ))
+    export memory_atmensanlrun="96GB"
     export is_exclusive=True
     ;;
 
