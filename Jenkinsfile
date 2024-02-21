@@ -44,6 +44,7 @@ pipeline {
             agent {
                 label "${machine}-emc"
                 customWorkspace custom_workspace
+            }
             steps {
                 script {
                     properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
