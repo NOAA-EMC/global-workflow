@@ -41,10 +41,7 @@ pipeline {
         }
 
         stage('Get Common Workspace') {
-            agent {
-                label "${machine}-emc"
-                customWorkspace custom_workspace
-            }
+            agent { label "${machine}-emc" }
             steps {
                 script {
                     ws (custome_workspace) {
