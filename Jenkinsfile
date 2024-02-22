@@ -1,9 +1,8 @@
 def Machine = 'none'
 def machine = 'none'
 def HOME = 'none'
-def localworkspace = 'none'
-def commonworkspace = 'none'
 def caseList = ''
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
 
 pipeline {
     agent { label 'built-in' }
@@ -22,7 +21,6 @@ pipeline {
             agent { label 'built-in' }
             steps {
                 script {
-                    localworkspace = env.WORKSPACE
                     machine = 'none'
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
@@ -44,14 +42,16 @@ pipeline {
             agent { label "${machine}-emc" }
             steps {
                 script {
-                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                    HOME = "${WORKSPACE}/TESTDIR"
-                    commonworkspace = "${WORKSPACE}"
-                    sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
-                    pullRequest.addLabel("CI-${Machine}-Building")
-                    if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
-                        pullRequest.removeLabel("CI-${Machine}-Ready")
+                    ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        HOME = "${WORKSPACE}"
+                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
+                        pullRequest.addLabel("CI-${Machine}-Building")
+                        if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
+                            pullRequest.removeLabel("CI-${Machine}-Ready")
+                        }
                     }
+                    pullRequest.comment("Building and running on ${Machine} in directory ${HOME}")
                 }
             }
         }
