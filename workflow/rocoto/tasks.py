@@ -63,6 +63,10 @@ class Tasks:
                       'cyc': '<cyclestr>@H</cyclestr>',
                       'COMROOT': self._base.get('COMROOT'),
                       'DATAROOT': self._base.get('DATAROOT')}
+
+        if self._base['DEBUG'] and self.app_config.scheduler in ['slurm']:
+            envar_dict['SBATCH_DEBUG'] = '2'
+
         self.envars = self._set_envars(envar_dict)
 
     @staticmethod

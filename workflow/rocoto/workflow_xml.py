@@ -64,9 +64,6 @@ class RocotoXML(ABC):
 
         entity['MAXTRIES'] = self.rocoto_config['maxtries']
 
-        if self._base['DEBUG'] and self._app_config.scheduler in ['slurm']:
-            entity['SBATCH_DEBUG'] = '2'
-
         # Put them all in an XML key-value syntax
         strings = []
         for key, value in entity.items():
