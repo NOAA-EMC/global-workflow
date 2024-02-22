@@ -1,25 +1,25 @@
-BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git'
+BASE_GIT: '/gpfs/f5/epic/proj-shared/global/glopara/git'
 DMPDIR: '/gpfs/f5/epic/proj-shared/global/glopara/dump'
 BASE_CPLIC: '/gpfs/f5/epic/proj-shared/global/glopara/ICSDIR/prototype_ICs'
 PACKAGEROOT: '/gpfs/f5/epic/proj-shared/global/glopara/nwpara'
 COMROOT: '/gpfs/f5/epic/proj-shared/global/glopara/com'
 COMINsyn: '${COMROOT}/gfs/prod/syndat'
-HOMEDIR: '/scratch1/NCEPDEV/global/${USER}'
-STMP: '/scratch1/NCEPDEV/stmp2/${USER}'
-PTMP: '/scratch1/NCEPDEV/stmp4/${USER}'
+HOMEDIR: '/gpfs/f5/epic/scratch/${USER}'
+STMP: '/gpfs/f5/epic/scratch/${USER}'
+PTMP: '/gpfs/f5/epic/scratch/${USER}'
 NOSCRUB: $HOMEDIR
-ACCOUNT: fv3-cpu
+ACCOUNT: epic 
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
-PARTITION_BATCH: hera
+PARTITION_BATCH: gaea
 PARTITION_SERVICE: service
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'YES'
 HPSS_PROJECT: emc-global
 LOCALARCH: 'NO'
-ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}' 
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
 SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
