@@ -192,7 +192,11 @@ class Tasks:
 
         native = None
         if scheduler in ['pbspro']:
-            native = '-l debug=true,place=vscatter'
+            # Set place=vscatter by default and debug=true if DEBUG="YES"
+            if self._base['DEBUG']:
+                native = '-l debug=true,place=vscatter'
+            else:
+                native = '-l place=vscatter'
             # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
             if task_config.get('is_exclusive', False):
                 native += ':exclhost'
