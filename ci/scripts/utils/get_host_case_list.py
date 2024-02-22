@@ -26,4 +26,3 @@ if __name__ == '__main__':
                 continue
         case_list.append(splitext(basename(case_yaml))[0])
     print(' '.join(case_list))
-
