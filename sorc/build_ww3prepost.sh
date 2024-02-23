@@ -11,7 +11,7 @@ PDLIB="OFF"
 while getopts ":j:a:dvw" option; do
   case "${option}" in
     a) APP="${OPTARG}";;
-    d) BUILD_TYPE="Debug";;
+    d) BUILD_TYPE="DEBUG";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
     w) PDLIB="ON";;
