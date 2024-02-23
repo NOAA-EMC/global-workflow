@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 set -x
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/gpfs/f5/ufs-ard/proj-shared/spack-stack/spack-stack-1.6.0/envs/unified-env/install/intel/2023.1.0/openssl-3.1.3-roeuzzx/lib64/
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/gpfs/f5/ufs-ard/proj-shared/spack-stack/spack-stack-1.6.0/envs/unified-env/install/intel/2023.1.0/libaec-1.0.6-oimou6h/lib64/
 
 script_dir=$(dirname "${BASH_SOURCE[0]}")
 cd "${script_dir}" || exit 1
