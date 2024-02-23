@@ -65,7 +65,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 ####################################################################
 
 # File names
-pgmout=${pgmout:-${jlogfile}}
 touch "${pgmout}"
 
 # Other variables
