@@ -99,7 +99,7 @@ pipeline {
                                        pullRequest.addLabel("CI-${Machine}-Running")
                                     }
                                     if (system == 'gfs') {
-                                        caseList = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py", returnStdout: true).trim().split()
+                                        caseList = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
                                     }
                                }
                            }
