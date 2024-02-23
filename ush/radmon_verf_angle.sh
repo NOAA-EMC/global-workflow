@@ -83,7 +83,6 @@ which prep_step
 which startmsg
 
 # File names
-export pgmout=${pgmout:-${jlogfile}}
 touch "${pgmout}"
 
 # Other variables

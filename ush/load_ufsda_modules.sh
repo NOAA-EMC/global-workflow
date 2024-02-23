@@ -27,48 +27,26 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
+source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
 # Load our modules:
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
-if [[ -d /lfs/f1 ]]; then
-  # We are on WCOSS2 (Cactus or Dogwood)
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /lfs3 ]] ; then
-  # We are on NOAA Jet
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /scratch1 ]] ; then
-  # We are on NOAA Hera
-  module load "${MODS}/hera"
-  # set NETCDF variable based on ncdump location
-  NETCDF=$( which ncdump )
-  export NETCDF
-elif [[ -d /work ]] ; then
-  # We are on MSU Orion or Hercules
-  if [[ -d /apps/other ]] ; then
-     # Hercules
-     module load "${MODS}/hercules"
-  else
-     # Orion
-     module load "${MODS}/orion"
-  fi
-  # set NETCDF variable based on ncdump location
-  ncdump=$( which ncdump )
-  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
-  export NETCDF
-elif [[ -d /glade ]] ; then
-  # We are on NCAR Yellowstone
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /lustre && -d /ncrc ]] ; then
-  # We are on GAEA.
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /data/prod ]] ; then
-  # We are on SSEC S4
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-else
-  echo WARNING: UNKNOWN PLATFORM
-fi
+case "${MACHINE_ID}" in
+  ("hera" | "orion" | "hercules")
+    module load "${MODS}/${MACHINE_ID}"
+    ncdump=$( command -v ncdump )
+    NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
+    export NETCDF
+    ;;
+  ("wcoss2" | "acorn" | "jet" | "gaea" | "s4")
+    echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+    ;;  
+  *)
+    echo "WARNING: UNKNOWN PLATFORM"
+    ;;
+esac
 
 module list
 pip list
