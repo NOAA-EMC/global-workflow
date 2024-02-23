@@ -119,16 +119,16 @@ build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
 build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
-build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
+build_jobs["upp"]=2
 build_opts["upp"]=""
 
-build_jobs["ufs_utils"]=3
+build_jobs["ufs_utils"]=2
 build_opts["ufs_utils"]="${_verbose_opt}"
 
 build_jobs["gfs_utils"]=1
 build_opts["gfs_utils"]="${_verbose_opt}"
 
-build_jobs["ww3prepost"]=3
+build_jobs["ww3prepost"]=2
 build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
 # Optional DA builds
@@ -146,7 +146,7 @@ if [[ "${_build_gsi}" == "YES" ]]; then
    build_opts["gsi_enkf"]="${_verbose_opt}"
 fi
 if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then
-   build_jobs["gsi_utils"]=2
+   build_jobs["gsi_utils"]=1
    build_opts["gsi_utils"]="${_verbose_opt}"
    if [[ "${MACHINE_ID}" == "hercules" ]]; then
       echo "NOTE: The GSI Monitor is not supported on Hercules.  Disabling build."

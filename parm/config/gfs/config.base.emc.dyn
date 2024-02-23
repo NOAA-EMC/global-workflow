@@ -236,6 +236,7 @@ fi
 export FHMIN=0
 export FHMAX=9
 export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
+export FHOUT_OCNICE=3
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="gdas"
@@ -246,9 +247,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 export FHMAX_GFS=@FHMAX_GFS@
-export FHOUT_GFS=6 # Must be 6 for S2S until #1629 is addressed; 3 for ops
+export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
+export FHOUT_OCNICE_GFS=6
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
@@ -365,7 +367,7 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
+export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
 export DO_VRFY_OCEANDA="NO"  # Run SOCA Ocean DA verification tasks
 

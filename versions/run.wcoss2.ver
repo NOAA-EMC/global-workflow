@@ -39,6 +39,8 @@ export g2tmpl_ver=1.10.2
 export ncdiag_ver=1.0.0
 export crtm_ver=2.4.0
 export wgrib2_ver=2.0.8
+export met_ver=9.1.3
+export metplus_ver=3.1.1
 
 # Development-only below
 

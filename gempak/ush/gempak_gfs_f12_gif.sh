@@ -15,9 +15,6 @@
 #
 #########################################################################
 
-   msg=" Make GEMPAK GIFS utility"
-   postmsg "$jlogfile" "$msg"
-
   set -x
 
   MAPAREA="normal"
@@ -206,8 +203,5 @@ if [ $SENDCOM = YES ]; then
  fi
 
 fi
-
-   msg=" GEMPAK_GIF ${fhr} hour completed normally"
-   postmsg "$jlogfile" "$msg"
 
    exit
