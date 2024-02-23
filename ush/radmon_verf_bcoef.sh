@@ -69,7 +69,6 @@ fi
 echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, ${netcdf_boolean}"
 
 # File names
-pgmout=${pgmout:-${jlogfile}}
 touch "${pgmout}"
 
 # Other variables
