@@ -220,9 +220,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 export FHMIN_GFS=0
 export FHMIN=${FHMIN_GFS}
 export FHMAX_GFS=@FHMAX_GFS@
-export FHOUT_GFS=6 # Must be 6 for S2S until #1629 is addressed; 3 for ops
+export FHOUT_GFS=6 
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
+export FHOUT_OCNICE_GFS=6
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
