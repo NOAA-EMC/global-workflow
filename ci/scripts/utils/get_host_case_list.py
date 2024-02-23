@@ -14,7 +14,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Usage: get_host_case_list.py <host_name>')
         sys.exit(1)
-    
+
     host = sys.argv[1]
 
     case_list = []
