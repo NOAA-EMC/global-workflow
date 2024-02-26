@@ -17,7 +17,6 @@ export RUN=${RUN:-gfs}
 ####################################
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${HOMEgfs:-${HOMEgfs}/exec}
-export FIXgfs=${HOMEgfs:-${HOMEgfs}/fix}
 export PARMgfs=${HOMEgfs:-${HOMEgfs}/parm}
 export USHgfs=${HOMEgfs:-${HOMEgfs}/ush}
 

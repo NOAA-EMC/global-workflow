@@ -19,7 +19,6 @@ export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
 export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
-export FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
 
 ###################################
 # Specify NET and RUN Name and model

@@ -46,7 +46,7 @@ mv -f "cur_temp3.nc" "cur_uv_${PDY}_${fext}${fh3}_flat.nc"
 # Convert to regular lat lon file
 # If weights need to be regenerated due to CDO ver change, use:
 # $CDO genbil,r4320x2160 rtofs_glo_2ds_f000_3hrly_prog.nc weights.nc
-cp ${FIXwave}/weights_rtofs_to_r4320x2160.nc ./weights.nc
+cp ${FIXgfs}/wave/weights_rtofs_to_r4320x2160.nc ./weights.nc
 
 # Interpolate to regular 5 min grid
 ${CDO} remap,r4320x2160,weights.nc "cur_uv_${PDY}_${fext}${fh3}_flat.nc" "cur_5min_01.nc"

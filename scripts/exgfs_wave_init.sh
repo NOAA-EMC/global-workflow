@@ -94,16 +94,16 @@ source "${HOMEgfs}/ush/preamble.sh"
       echo " Mod def file for ${grdID} not found in ${COM_WAVE_PREP}. Setting up to generate ..."
       echo ' '
       set_trace
-      if [ -f $FIXwave/ww3_grid.inp.$grdID ]
+      if [ -f ${FIXgfs}/wave/ww3_grid.inp.$grdID ]
       then
-        cp $FIXwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
+        cp ${FIXgfs}/wave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
       fi
 
       if [ -f ww3_grid.inp.$grdID ]
       then
         set +x
         echo ' '
-        echo "   ww3_grid.inp.$grdID copied ($FIXwave/ww3_grid.inp.$grdID)."
+        echo "   ww3_grid.inp.$grdID copied (${FIXgfs}/wave/ww3_grid.inp.$grdID)."
         echo ' '
         set_trace
       else
@@ -119,9 +119,9 @@ source "${HOMEgfs}/ush/preamble.sh"
       fi
 
 
-      if [ -f ${FIXwave}/${grdID}.msh ]
+      if [ -f ${FIXgfs}/wave/${grdID}.msh ]
       then
-        cp "${FIXwave}/${grdID}.msh" "${grdID}.msh"
+        cp "${FIXgfs}/wave/${grdID}.msh" "${grdID}.msh"
       fi
       #TO DO: how do we say "it's unstructured, and therefore need to have error check here" 
 

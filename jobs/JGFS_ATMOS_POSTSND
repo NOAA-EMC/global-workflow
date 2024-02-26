@@ -24,7 +24,6 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 export HOMEbufrsnd=${HOMEbufrsnd:-${HOMEgfs}}
 export EXECbufrsnd=${EXECbufrsnd:-${HOMEbufrsnd}/exec}
-export FIXbufrsnd=${FIXbufrsnd:-${HOMEbufrsnd}/fix/product}
 export PARMbufrsnd=${PARMbufrsnd:-${HOMEbufrsnd}/parm/product}
 export USHbufrsnd=${USHbufrsnd:-${HOMEbufrsnd}/ush}
 export SCRbufrsnd=${SCRbufrsnd:-${HOMEbufrsnd}/scripts}
