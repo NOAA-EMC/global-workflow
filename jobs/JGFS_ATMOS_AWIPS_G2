@@ -14,9 +14,6 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 ################################
 export USHgfs=${USHgfs:-${HOMEgfs}/ush}
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
-export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
 export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 
 ###################################

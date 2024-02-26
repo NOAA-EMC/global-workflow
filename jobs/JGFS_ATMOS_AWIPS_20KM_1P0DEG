@@ -11,9 +11,6 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export USHgfs=${USHgfs:-${HOMEgfs}/ush}
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
-export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
 
 ###################################
 # Specify NET and RUN Name and model

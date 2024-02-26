@@ -14,9 +14,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 ################################
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
-export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
 export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
