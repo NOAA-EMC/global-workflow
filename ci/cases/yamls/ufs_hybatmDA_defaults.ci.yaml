@@ -5,6 +5,12 @@ base:
   DO_JEDIATMVAR: "YES"
   DO_JEDIATMENS: "YES"
   ACCOUNT: {{ 'SLURM_ACCOUNT' | getenv }}
+atmanl:
+  LAYOUT_X_ATMANL: 1
+  LAYOUT_Y_ATMANL: 1
+atmensanl:
+  LAYOUT_X_ATMENSANL: 1
+  LAYOUT_Y_ATMENSANL: 1
 esfc:
   DONST: "NO"
 nsst:
