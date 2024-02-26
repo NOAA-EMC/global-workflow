@@ -95,7 +95,7 @@ MAKE_OPT="-DCMAKE_INSTALL_PREFIX=install"
 
 #Build executables:
 # shellcheck disable=SC2086
-cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" "${MAKE_OPT}"
+cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" ${MAKE_OPT}
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in cmake."
