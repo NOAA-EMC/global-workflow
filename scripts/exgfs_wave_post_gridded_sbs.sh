@@ -139,9 +139,9 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     for intGRD in $waveinterpGRD
     do
-      if [ -f $PARMwave/${intGRD}_interp.inp.tmpl ]
+      if [ -f ${PARMgfs}/wave/${intGRD}_interp.inp.tmpl ]
       then
-        cp -f $PARMwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
+        cp -f ${PARMgfs}/wave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
       fi
 
       if [ -f ${intGRD}_interp.inp.tmpl ]
@@ -168,9 +168,9 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     for grbGRD in $waveinterpGRD $wavepostGRD
     do
-      if [ -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ]
+      if [ -f ${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl ]
       then
-        cp -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
+        cp -f ${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
       fi
 
       if [ -f ww3_grib2.${grbGRD}.inp.tmpl ]

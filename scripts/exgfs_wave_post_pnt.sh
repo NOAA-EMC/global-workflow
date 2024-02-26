@@ -151,13 +151,13 @@ source "$HOMEgfs/ush/preamble.sh"
 
   rm -f buoy.loc
 
-  if [ -f $PARMwave/wave_${NET}.buoys ]
+  if [ -f ${PARMgfs}/wave/wave_${NET}.buoys ]
   then
-    cp -f $PARMwave/wave_${NET}.buoys buoy.loc.temp
+    cp -f ${PARMgfs}/wave/wave_${NET}.buoys buoy.loc.temp
     if [ "$DOBNDPNT_WAV" = YES ]; then
       #only do boundary points
       sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
-          echo "WARNING: No boundary points found in buoy file ${PARMwave}/wave_${NET}.buoys"
+          echo "WARNING: No boundary points found in buoy file ${PARMgfs}/wave/wave_${NET}.buoys"
           echo "         Ending job without doing anything."
           exit 0
         }
@@ -170,7 +170,7 @@ source "$HOMEgfs/ush/preamble.sh"
   if [ -s buoy.loc ]
   then
     set +x
-    echo "   buoy.loc and buoy.ibp copied and processed ($PARMwave/wave_${NET}.buoys)."
+    echo "   buoy.loc and buoy.ibp copied and processed (${PARMgfs}/wave/wave_${NET}.buoys)."
     set_trace
   else
     set +x
@@ -188,9 +188,9 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 1.d Input template files
 
-  if [ -f $PARMwave/ww3_outp_spec.inp.tmpl ]
+  if [ -f ${PARMgfs}/wave/ww3_outp_spec.inp.tmpl ]
   then
-    cp -f $PARMwave/ww3_outp_spec.inp.tmpl ww3_outp_spec.inp.tmpl
+    cp -f ${PARMgfs}/wave/ww3_outp_spec.inp.tmpl ww3_outp_spec.inp.tmpl
   fi
 
   if [ -f ww3_outp_spec.inp.tmpl ]
@@ -211,9 +211,9 @@ source "$HOMEgfs/ush/preamble.sh"
     DOBLL_WAV='NO'
   fi
 
-  if [ -f $PARMwave/ww3_outp_bull.inp.tmpl ]
+  if [ -f ${PARMgfs}/wave/ww3_outp_bull.inp.tmpl ]
   then
-    cp -f $PARMwave/ww3_outp_bull.inp.tmpl ww3_outp_bull.inp.tmpl
+    cp -f ${PARMgfs}/wave/ww3_outp_bull.inp.tmpl ww3_outp_bull.inp.tmpl
   fi
 
   if [ -f ww3_outp_bull.inp.tmpl ]

@@ -207,16 +207,16 @@ source "$HOMEgfs/ush/preamble.sh"
               ;;
      esac 
 
-     if [ -f $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
+     if [ -f ${PARMgfs}/wave/ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
-       cp $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl .
+       cp ${PARMgfs}/wave/ww3_prnc.${type}.$grdID.inp.tmpl .
      fi
 
      if [ -f ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
        set +x
        echo ' '
-       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($PARMwave)."
+       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied (${PARMgfs}/wave)."
        echo ' '
        set_trace
      else
