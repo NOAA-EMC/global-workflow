@@ -1,11 +1,11 @@
 mkdir:
 - !ENV ${DATA}/fv3jedi
 copy:
-- - !ENV ${FIXgdas}/fv3jedi/fv3files/akbk$(npz).nc4
+- - !ENV ${FIXgfs}/gdas/fv3jedi/fv3files/akbk$(npz).nc4
   - !ENV ${DATA}/fv3jedi/akbk.nc4
-- - !ENV ${FIXgdas}/fv3jedi/fv3files/fmsmpp.nml
+- - !ENV ${FIXgfs}/gdas/fv3jedi/fv3files/fmsmpp.nml
   - !ENV ${DATA}/fv3jedi/fmsmpp.nml
-- - !ENV ${FIXgdas}/fv3jedi/fv3files/field_table_gfdl
+- - !ENV ${FIXgfs}/gdas/fv3jedi/fv3files/field_table_gfdl
   - !ENV ${DATA}/fv3jedi/field_table
 - - !ENV $(HOMEgfs)/sorc/gdas.cd/parm/io/fv3jedi_fieldmetadata_restart.yaml
   - !ENV ${DATA}/fv3jedi/fv3jedi_fieldmetadata_restart.yaml

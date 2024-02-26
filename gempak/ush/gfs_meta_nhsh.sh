@@ -19,7 +19,7 @@
 set -xa
 mkdir -p -m 775 $DATA/mrfnhsh
 cd $DATA/mrfnhsh
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 PDY2=$(echo $PDY | cut -c3-)
 

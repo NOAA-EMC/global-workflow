@@ -34,7 +34,7 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Fix files
 LEVS=${LEVS:-64}
-HYBENSMOOTH=${HYBENSMOOTH:-$FIXgsi/global_hybens_smoothinfo.l${LEVS}.txt}
+HYBENSMOOTH=${HYBENSMOOTH:-${FIXgfs}/gsi/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
 GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgfs/exec/getsigensmeanp_smooth.x}

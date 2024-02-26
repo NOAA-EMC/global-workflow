@@ -23,7 +23,7 @@
 #                                                                             #
 # Update log                                                                  #
 # Mar2007 HTolman - Added NCO note on resources on mist/dew                   #
-# Apr2007 HTolman - Renaming mod_def files in $FIX_wave.                      #
+# Apr2007 HTolman - Renaming mod_def files in ${FIXgfs}/wave.                 #
 # Mar2011 AChawla - Migrating to a vertical structure                         #
 # Nov2012 JHAlves - Transitioning to WCOSS                                    #
 # Apr2019 JHAlves - Transitioning to GEFS workflow                            #

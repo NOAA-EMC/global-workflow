@@ -46,7 +46,6 @@
 #             subsequent program SYNDAT_SYNDATA)
 #   PARMSYND  - path to syndat parm field directory
 #   EXECSYND  - path to syndat executable directory
-#   FIXam     - path to syndat fix field directory
 #   USHSYND   - path to syndat ush directory
 
 # Imported variables that can be passed in:
@@ -59,7 +58,7 @@
 #                data base
 #                (Default: /dcom/us007003)
 #   slmask    - path to t126 32-bit gaussian land/sea mask file
-#                (Default: $FIXam/syndat_slmask.t126.gaussian)
+#                (Default: ${FIXgfs}/am/syndat_slmask.t126.gaussian)
 #   copy_back - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
@@ -74,12 +73,11 @@ HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
-FIXam=${FIXam:-$HOMEgfs/fix/am}
 USHSYND=${USHSYND:-$HOMEgfs/ush}
 EXECSYND=${EXECSYND:-$HOMEgfs/exec}
 PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}
 
-slmask=${slmask:-$FIXam/syndat_slmask.t126.gaussian}
+slmask=${slmask:-${FIXgfs}/am/syndat_slmask.t126.gaussian}
 copy_back=${copy_back:-YES}
 files_override=${files_override:-""}
 
@@ -190,10 +188,10 @@ fi
 echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = $files " > vitchk.inp
 cat $PARMSYND/syndat_qctropcy.${RUN}.parm >> vitchk.inp
  
-#  Copy the fixed fields from FIXam
+#  Copy the fixed fields
  
-cp $FIXam/syndat_fildef.vit fildef.vit
-cp $FIXam/syndat_stmnames stmnames
+cp ${FIXgfs}/am/syndat_fildef.vit fildef.vit
+cp ${FIXgfs}/am/syndat_stmnames stmnames
 
 
 rm -f nhc fnoc lthistry
