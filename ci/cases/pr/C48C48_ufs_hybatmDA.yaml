@@ -9,6 +9,7 @@ arguments:
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48C48
   idate: 2021032312
   edate: 2021032400
   nens: 2
@@ -17,6 +18,5 @@ arguments:
   yaml: {{ HOMEgfs }}/ci/cases/yamls/ufs_hybatmDA_defaults.ci.yaml
 
 skip_ci_on_hosts:
-  - hera
   - orion
   - hercules
