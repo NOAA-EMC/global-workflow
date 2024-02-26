@@ -85,7 +85,7 @@ source "$HOMEgfs/ush/preamble.sh"
   rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
 
   if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
-    cp $PARMwave/${grdID}_interp.inp.tmpl ${DATA}
+    cp ${PARMgfs}/wave/${grdID}_interp.inp.tmpl ${DATA}
   fi
   ln -sf ${DATA}/${grdID}_interp.inp.tmpl .
 

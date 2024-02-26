@@ -65,9 +65,9 @@ rm -f cur_temp[123].nc cur_5min_??.nc "cur_glo_uv_${PDY}_${fext}${fh3}.nc weight
 
 if [ ${flagfirst}  = "T" ]
 then
-  sed -e "s/HDRFL/T/g" ${PARMwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
+  sed -e "s/HDRFL/T/g" ${PARMgfs}/wave/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
 else
-  sed -e "s/HDRFL/F/g" ${PARMwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
+  sed -e "s/HDRFL/F/g" ${PARMgfs}/wave/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
 fi
 
 rm -f cur.nc

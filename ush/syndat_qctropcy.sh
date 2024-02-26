@@ -44,7 +44,6 @@
 #   COMSP  - path to both output jtwc-fnoc file and output tcvitals file (this
 #             tcvitals file is read by subsequent relocation processing and/or
 #             subsequent program SYNDAT_SYNDATA)
-#   PARMSYND  - path to syndat parm field directory
 #   EXECSYND  - path to syndat executable directory
 #   USHSYND   - path to syndat ush directory
 
@@ -75,7 +74,6 @@ TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
 USHSYND=${USHSYND:-$HOMEgfs/ush}
 EXECSYND=${EXECSYND:-$HOMEgfs/exec}
-PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}
 
 slmask=${slmask:-${FIXgfs}/am/syndat_slmask.t126.gaussian}
 copy_back=${copy_back:-YES}
@@ -186,7 +184,7 @@ if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
 fi
 
 echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = $files " > vitchk.inp
-cat $PARMSYND/syndat_qctropcy.${RUN}.parm >> vitchk.inp
+cat ${PARMgfs}/relo/syndat_qctropcy.${RUN}.parm >> vitchk.inp
  
 #  Copy the fixed fields
  
