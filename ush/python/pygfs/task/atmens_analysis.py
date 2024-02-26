@@ -188,7 +188,7 @@ class AtmEnsAnalysis(Analysis):
         atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX}atmensstat")
 
         # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc4'))
+        diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
 
         logger.info(f"Compressing {len(diags)} diag files to {atmensstat}.gz")
 
