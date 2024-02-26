@@ -12,7 +12,7 @@ set -x
 export PS4='MAR_SKEWT:$SECONDS + '
 mkdir -p -m 775 $DATA/MAR_SKEWT
 cd $DATA/MAR_SKEWT
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 mdl=gfs
 MDL="GFS"

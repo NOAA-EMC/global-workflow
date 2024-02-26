@@ -1,8 +1,8 @@
 def Machine = 'none'
 def machine = 'none'
 def HOME = 'none'
-def localworkspace = 'none'
-def commonworkspace = 'none'
+def caseList = ''
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
 
 pipeline {
     agent { label 'built-in' }
@@ -20,7 +20,6 @@ pipeline {
             agent { label 'built-in' }
             steps {
                 script {
-                    localworkspace = env.WORKSPACE
                     machine = 'none'
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
@@ -42,14 +41,16 @@ pipeline {
             agent { label "${machine}-emc" }
             steps {
                 script {
-                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                    HOME = "${WORKSPACE}/TESTDIR"
-                    commonworkspace = "${WORKSPACE}"
-                    sh(script: "mkdir -p ${HOME}/RUNTESTS")
-                    pullRequest.addLabel("CI-${Machine}-Building")
-                    if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
-                        pullRequest.removeLabel("CI-${Machine}-Ready")
+                    ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        HOME = "${WORKSPACE}"
+                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
+                        pullRequest.addLabel("CI-${Machine}-Building")
+                        if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
+                            pullRequest.removeLabel("CI-${Machine}-Ready")
+                        }
                     }
+                    pullRequest.comment("Building and running on ${Machine} in directory ${HOME}")
                 }
             }
         }
@@ -73,17 +74,15 @@ pipeline {
                                 def HOMEgfs = "${HOME}/${system}" // local HOMEgfs is used to build the system on per system basis under the common workspace HOME
                                 sh(script: "mkdir -p ${HOMEgfs}")
                                 ws(HOMEgfs) {
-                                    env.MACHINE_ID = machine // MACHINE_ID is used in the build scripts to determine the machine and is added to the shell environment
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
                                         pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}<br>Still doing a checkout to get the latest changes")
-                                        sh(script: 'source workflow/gw_setup.sh; git pull --recurse-submodules')
+                                        checkout scm
                                         dir('sorc') {
                                             sh(script: './link_workflow.sh')
                                         }
                                     } else {
                                         checkout scm
-                                        sh(script: 'source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive')
                                         def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
@@ -98,6 +97,9 @@ pipeline {
                                            pullRequest.removeLabel("CI-${Machine}-Building")
                                        }
                                        pullRequest.addLabel("CI-${Machine}-Running")
+                                    }
+                                    if (system == 'gfs') {
+                                        caseList = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
                                     }
                                }
                            }
@@ -114,11 +116,15 @@ pipeline {
                     axis {
                         name 'Case'
                         // TODO add dynamic list of cases from env vars (needs addtional plugins)
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar', 'C96C48_hybatmDA', 'C96_atmsnowDA'  // 'C48mx500_3DVarAOWCDA'
+                        values 'C48C48_ufs_hybatmDA', 'C48_ATM', 'C48_S2SW', 'C48_S2SWA_gefs', 'C48mx500_3DVarAOWCDA', 'C96C48_hybatmDA', 'C96_atm3DVar', 'C96_atmsnowDA'
                     }
                 }
                 stages {
-                    stage('Create Experiment') {
+
+                    stage('Create Experiments') {
+                        when {
+                            expression { return caseList.contains(Case) }
+                        }
                         steps {
                                 script {
                                     sh(script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp")
@@ -130,15 +136,20 @@ pipeline {
                                 }
                         }
                     }
+
                     stage('Run Experiments') {
+                        when {
+                            expression { return caseList.contains(Case) }
+                        }
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                 ws(HOMEgfs) {
                                     pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
-                                    // pullRequest.comment("**Running** experiment: ${Case} on ${Machine}<br>With the experiment in directory:<br>`${HOME}/RUNTESTS/${pslot}`")
-                                    err =  sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
-                                    if (err != 0) {
+                                    pullRequest.comment("**Running** experiment: ${Case} on ${Machine}<br>With the experiment in directory:<br>`${HOME}/RUNTESTS/${pslot}`")
+                                    try {
+                                       sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
+                                    } catch (Exception e) {
                                         pullRequest.comment("**FAILURE** running experiment: ${Case} on ${Machine}")
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
                                         ws(HOME) {
@@ -153,12 +164,12 @@ pipeline {
                                         }
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
-                                   // pullRequest.comment("**SUCCESS** running experiment: ${Case} on ${Machine}")
                                 }
+                                pullRequest.comment("**SUCCESS** running experiment: ${Case} on ${Machine}")
                             }
-
                         }
                     }
+
                 }
             }
         }

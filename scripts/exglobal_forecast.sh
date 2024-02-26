@@ -38,19 +38,19 @@
 ##	Restart files:
 ##
 ##	Fix files:
-##		1. computing grid, $FIXorog/$CASE/${CASE}_grid.tile${n}.nc
-##		2. orography data, $FIXorog/$CASE/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc
-##		3. mosaic data, $FIXorog/$CASE/${CASE}_mosaic.nc
-##		4. Global O3 data, $FIXam/${O3FORC}
-##		5. Global H2O data, $FIXam/${H2OFORC}
-##		6. Global solar constant data, $FIXam/global_solarconstant_noaa_an.txt
-##		7. Global surface emissivity, $FIXam/global_sfc_emissivity_idx.txt
-##		8. Global CO2 historical data, $FIXam/global_co2historicaldata_glob.txt
-##		8. Global CO2 monthly data, $FIXam/co2monthlycyc.txt
-##		10. Additional global CO2 data, $FIXam/fix_co2_proj/global_co2historicaldata
+##		1. computing grid, ${FIXgfs}/orog/$CASE/${CASE}_grid.tile${n}.nc
+##		2. orography data, ${FIXgfs}/orog/$CASE/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc
+##		3. mosaic data, ${FIXgfs}/orog/$CASE/${CASE}_mosaic.nc
+##		4. Global O3 data, ${FIXgfs}/am/${O3FORC}
+##		5. Global H2O data, ${FIXgfs}/am/${H2OFORC}
+##		6. Global solar constant data, ${FIXgfs}/am/global_solarconstant_noaa_an.txt
+##		7. Global surface emissivity, ${FIXgfs}/am/global_sfc_emissivity_idx.txt
+##		8. Global CO2 historical data, ${FIXgfs}/am/global_co2historicaldata_glob.txt
+##		8. Global CO2 monthly data, ${FIXgfs}/am/co2monthlycyc.txt
+##		10. Additional global CO2 data, ${FIXgfs}/am/fix_co2_proj/global_co2historicaldata
 ##		11. Climatological aerosol global distribution
-##			$FIXam/global_climaeropac_global.txt
-## 		12. Monthly volcanic forcing $FIXam/global_volcanic_aerosols_YYYY-YYYY.txt
+##			${FIXgfs}/am/global_climaeropac_global.txt
+## 		12. Monthly volcanic forcing ${FIXgfs}/am/global_volcanic_aerosols_YYYY-YYYY.txt
 ##
 ## Data output (location, name)
 ##	If quilting=true and output grid is gaussian grid:

@@ -128,9 +128,6 @@
 #                   Default is "${HOMERELO}/ush"
 #     EXECRELO      String indicating directory path for RELOCATE executables
 #                   Default is "${HOMERELO}/exec"
-#     FIXRELO       String indicating directory path for RELOCATE data fix-
-#                   field files
-#                   Default is "${HOMERELO}/fix"
 #     EXECUTIL      String indicating directory path for utility program
 #                   executables
 #                   If the imported variable MACHINE!=sgi, then the default is
@@ -188,7 +185,7 @@
 #     programs   :
 #          RELOCATE_MV_NVORTEX - executable $RELOX
 #                                 T126 GRIB global land/sea mask:
-#                                          $FIXRELO/global_slmask.t126.grb
+#                                          ${FIXgfs}/am/global_slmask.t126.grb
 #          SUPVIT               - executable $SUPVX
 #          GETTRK               - executable $GETTX
 #
@@ -301,8 +298,6 @@ USHRELO=${USHRELO:-${HOMERELO}/ush}
 USHGETGES=${USHGETGES:-${USHRELO}}
 
 EXECRELO=${EXECRELO:-${HOMERELO}/exec}
-
-FIXRELO=${FIXRELO:-${HOMERELO}/fix}
 
 RELOX=${RELOX:-$EXECRELO/relocate_mv_nvortex}
 

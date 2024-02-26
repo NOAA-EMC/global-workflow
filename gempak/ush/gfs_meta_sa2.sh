@@ -19,7 +19,7 @@ set -x
 echo " start with ukmet_gfs_meta_sa2.sh"
 
 export PS4='SA2:$SECONDS + '
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 export COMPONENT=${COMPONENT:-atmos}
 
