@@ -24,11 +24,10 @@ export MP_DEBUG_NOTIMEOUT=yes
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export FIXgempak=${FIXgempak:-${HOMEgfs}/gempak/fix}
 export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 
-cp  ${FIXgempak}/datatype.tbl datatype.tbl
+cp  ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 #############################################
 #set the fcst hrs for all the cycles

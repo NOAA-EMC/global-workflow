@@ -16,7 +16,7 @@ source "$HOMEgfs/ush/preamble.sh"
 export m=$1
 mkdir $DATA/$m
 cd $DATA/$m
-  cp $FIXbufrsnd/gfs_collective${m}.list $DATA/$m/. 
+  cp ${HOMEgfs}/fix/product/gfs_collective${m}.list $DATA/$m/.
   CCCC=KWBC
     file_list=gfs_collective${m}.list
 

@@ -19,7 +19,7 @@
 set -xa
 mkdir -p -m 775 $DATA/mrfhi
 cd $DATA/mrfhi
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 device="nc | mrfhi.meta"
 
