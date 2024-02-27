@@ -131,15 +131,6 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
     "${USHgfs}/radmon_verf_time.sh"
     rc_time=$?
 
-    #--------------------------------------
-    #  optionally run clean_tankdir script
-    #
-    if [[ ${CLEAN_TANKVERF:-0} -eq 1 ]]; then
-       "${USHradmon}/clean_tankdir.sh" glb 60
-       rc_clean_tankdir=$?
-       echo "rc_clean_tankdir = ${rc_clean_tankdir}"
-    fi
-
 fi
 
 
