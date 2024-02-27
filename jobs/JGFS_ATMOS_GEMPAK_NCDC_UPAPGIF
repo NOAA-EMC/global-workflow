@@ -15,7 +15,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_gif" -c "base"
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
-export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 
 ######################################
 # Set up the GEMPAK directory
