@@ -20,7 +20,6 @@ export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
 export HOMERELO=$HOMEgfs
 export EXECRELO=${HOMERELO}/exec
-export USHRELO=${HOMERELO}/ush
 
 # Adjust observation error for GFS v16 parallels
 #
