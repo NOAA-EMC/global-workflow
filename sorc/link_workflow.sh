@@ -200,6 +200,14 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
 fi
 
 #------------------------------
+#--add GDASApp parm directory
+#------------------------------
+if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+  cd "${HOMEgfs}/parm/gdas" || exit 1
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/ioda/bufr2ioda" .
+fi
+
+#------------------------------
 #--add GDASApp files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
