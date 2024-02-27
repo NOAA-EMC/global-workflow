@@ -10,6 +10,9 @@ export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/lgetkf_prototype.yaml
 export ATMENSYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/lgetkf/lgetkf.yaml
 export INTERP_METHOD='barycentric'
 
+export layout_x_atmensanl=@LAYOUT_X_ATMENSANL@
+export layout_y_atmensanl=@LAYOUT_Y_ATMENSANL@
+
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 

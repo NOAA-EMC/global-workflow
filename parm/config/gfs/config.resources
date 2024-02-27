@@ -195,9 +195,8 @@ case ${step} in
     ;;
 
   "atmanlinit")
-    # make below case dependent later
-    export layout_x=8
-    export layout_y=8
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
 
     export layout_gsib_x=$(( layout_x * 3 ))
     export layout_gsib_y=$(( layout_y * 2 ))
@@ -211,9 +210,8 @@ case ${step} in
     ;;
 
   "atmanlrun")
-    # make below case dependent later
-    export layout_x=8
-    export layout_y=8
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
 
     export wtime_atmanlrun="00:30:00"
     export npe_atmanlrun=$(( layout_x * layout_y * 6 ))
@@ -635,7 +633,7 @@ case ${step} in
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384")
-        declare -x "wtime_${step}"="00:10:00"
+        declare -x "wtime_${step}"="00:30:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       "C768" | "C1152")
@@ -829,9 +827,8 @@ case ${step} in
     ;;
 
   "atmensanlinit")
-    # make below case dependent later
-    export layout_x=8
-    export layout_y=8
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlinit="00:10:00"
     export npe_atmensanlinit=1
@@ -841,9 +838,8 @@ case ${step} in
     ;;
 
   "atmensanlrun")
-    # make below case dependent later
-    export layout_x=8
-    export layout_y=8
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlrun="00:30:00"
     export npe_atmensanlrun=$(( layout_x * layout_y * 6 ))

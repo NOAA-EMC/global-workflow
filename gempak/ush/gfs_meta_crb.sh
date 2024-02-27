@@ -17,7 +17,7 @@ set -x
 export PS4='crb:$SECONDS + '
 mkdir -p -m 775 $DATA/crb
 cd $DATA/crb
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 #
 mdl=gfs
 MDL=GFS

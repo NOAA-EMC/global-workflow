@@ -6,9 +6,10 @@ cd "${script_dir}" || exit 1
 
 OPTIND=1
 _opts=""
-while getopts ":dv" option; do
+while getopts ":dj:v" option; do
 	case "${option}" in
 		d) _opts+="-d ";;
+		j) export BUILD_JOBS="${OPTARG}" ;;
 		v) _opts+="-v ";;
 		:)
 			echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -27,4 +28,4 @@ fi
 
 cd ufs_model.fd/FV3/upp/tests
 # shellcheck disable=SC2086
-./compile_upp.sh ${_opts}
+BUILD_JOBS=${BUILD_JOBS:-8} ./compile_upp.sh ${_opts}

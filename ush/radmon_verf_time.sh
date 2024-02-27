@@ -75,8 +75,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 ####################################################################
 
 # File names
-#pgmout=${pgmout:-${jlogfile}}
-#touch $pgmout
 
 radmon_err_rpt=${radmon_err_rpt:-${USHgfs}/radmon_err_rpt.sh}
 base_file=${base_file:-${PARMmonitor}/gdas_radmon_base.tar}

@@ -25,7 +25,7 @@ set -x
 export PS4='hur:$SECONDS + '
 mkdir  -p -m 775 $DATA/hur
 cd $DATA/hur
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 mdl=gfs
 MDL=GFS

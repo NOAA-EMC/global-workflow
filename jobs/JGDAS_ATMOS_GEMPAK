@@ -11,7 +11,6 @@ export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
 export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
-export FIXgempak=${FIXgempak:-${HOMEgfs}/gempak/fix}
 export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 export UTILgfs=${UTILgfs:-${HOMEgfs}/util}

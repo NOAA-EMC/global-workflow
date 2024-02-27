@@ -29,7 +29,7 @@ export PS4='COMP:$SECONDS + '
 rm -Rf $DATA/COMP $DATA/GEMPAK_META_COMP
 mkdir -p -m 775 $DATA/COMP  $DATA/GEMPAK_META_COMP
 cd $DATA/COMP
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 export COMPONENT=${COMPONENT:-atmos}
 

@@ -30,17 +30,6 @@ export UTILgfs="${HOMEgfs}/util"
 export EXECgfs="${HOMEgfs}/exec"
 export SCRgfs="${HOMEgfs}/scripts"
 
-export FIXam="${FIXgfs}/am"
-export FIXaer="${FIXgfs}/aer"
-export FIXcpl="${FIXgfs}/cpl"
-export FIXlut="${FIXgfs}/lut"
-export FIXorog="${FIXgfs}/orog"
-export FIXcice="${FIXgfs}/cice"
-export FIXmom="${FIXgfs}/mom6"
-export FIXreg2grb2="${FIXgfs}/reg2grb2"
-export FIXugwd="${FIXgfs}/ugwd"
-export FIXgdas="${FIXgfs}/gdas"
-
 ########################################################################
 
 # GLOBAL static environment parameters
@@ -96,7 +85,6 @@ export MODE="@MODE@" # cycled/forecast-only
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
 
@@ -259,7 +247,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 export FHMAX_GFS=@FHMAX_GFS@
-export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
+export FHOUT_GFS=3 
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 export FHOUT_OCNICE_GFS=6
@@ -379,7 +367,7 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
+export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
 export DO_VRFY_OCEANDA="NO"  # Run SOCA Ocean DA verification tasks
 
