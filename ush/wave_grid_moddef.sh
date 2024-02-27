@@ -59,7 +59,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$grdID" ] || [ -z "$EXECwave" ] || [ -z "$wave_sys_ver" ]
+  if [ -z "$grdID" ] || [ -z "$EXECwave" ]
   then
     set +x
     echo ' '
