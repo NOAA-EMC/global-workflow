@@ -247,7 +247,7 @@ source "$HOMEgfs/ush/preamble.sh"
     if [ "${RUNMEM}" = "-1" ] || [ "${WW3ICEIENS}" = "T" ] || [ "$waveMEMB" = "00" ]
     then
 
-      $USHwave/wave_prnc_ice.sh > wave_prnc_ice.out 
+      ${USHgfs}/wave_prnc_ice.sh > wave_prnc_ice.out
       ERR=$?
     
       if [ -d ice ]
@@ -389,10 +389,10 @@ source "$HOMEgfs/ush/preamble.sh"
         fi
 
         if [ ${CFP_MP:-"NO"} = "YES" ]; then
-          echo "$nm $USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+          echo "$nm ${USHgfs}/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
           nm=$(expr $nm + 1)
         else
-          echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+          echo "${USHgfs}/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
         fi
 
         if [ "${FLGFIRST}" = "T" ] ; then

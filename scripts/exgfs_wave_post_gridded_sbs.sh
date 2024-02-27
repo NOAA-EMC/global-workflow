@@ -30,7 +30,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -279,7 +279,7 @@ source "$HOMEgfs/ush/preamble.sh"
         for grdID in $waveinterpGRD
         do
           ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
-          echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           if [ "$DOGRB_WAV" = 'YES' ]
           then
             gribFL=\'$(echo ${OUTPARS_WAV})\'
@@ -296,7 +296,7 @@ source "$HOMEgfs/ush/preamble.sh"
               wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
               ak_10m) GRDNAME='alaska' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
             esac
-            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+            echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           fi
           echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
@@ -325,7 +325,7 @@ source "$HOMEgfs/ush/preamble.sh"
               glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
               gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
           esac
-          echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+          echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
         done
       fi
 

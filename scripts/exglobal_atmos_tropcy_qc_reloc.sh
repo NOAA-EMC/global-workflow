@@ -50,7 +50,7 @@ if [ "$PROCESS_TROPCY" = 'YES' ]; then
 
 #echo $PDY
 
-   ${USHSYND:-$HOMEgfs/ush}/syndat_qctropcy.sh $cdate10
+   ${USHgfs}/syndat_qctropcy.sh $cdate10
    errsc=$?
    if [ "$errsc" -ne '0' ]; then
     echo "syndat_qctropcy.sh failed. exit"
@@ -95,7 +95,7 @@ if [ "$DO_RELOCATE" = 'YES' ]; then
 ###################################################
 
    export MP_LABELIO=${MP_LABELIO:-yes}
-   $USHRELO/tropcy_relocate.sh $cdate10
+   ${USHgfs}/tropcy_relocate.sh $cdate10
    errsc=$?
 
    [ "$errsc" -ne '0' ]  &&  exit $errsc

@@ -127,9 +127,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 
       [[ ! -d "${COM_WAVE_PREP}" ]] && mkdir -m 775 -p "${COM_WAVE_PREP}"
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
-        echo "$nmoddef $USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+        echo "$nmoddef ${USHgfs}/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
       else
-        echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+        echo "${USHgfs}/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
       fi
 
       nmoddef=$(expr $nmoddef + 1)

@@ -31,7 +31,6 @@ source "$HOMEgfs/ush/preamble.sh"
  export FHOUT_WAV=${FHOUT_WAV:-6}         #from 72 to 180 inc=6
  export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
  export maxtries=720
- export USHwave=${USHwave:-$HOMEgfs/ush}
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
