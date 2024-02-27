@@ -9,7 +9,6 @@ export errchk=${errchk:-err_chk}
 export MP_PULSE=0
 
 # Path to HOME Directory
-export USHwave=${USHwave:-${HOMEgfs}/ush}
 export EXECwave=${EXECwave:-${HOMEgfs}/exec}
 
 # Set COM Paths and GETGES environment

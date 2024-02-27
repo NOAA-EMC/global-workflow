@@ -8,9 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 # Set up the HOME directory
 ################################
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 
 # For half-degree P Grib files

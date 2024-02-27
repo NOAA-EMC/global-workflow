@@ -12,7 +12,6 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 ################################
 # Set up the HOME directory
 ################################
-export USHgfs=${USHgfs:-${HOMEgfs}/ush}
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 

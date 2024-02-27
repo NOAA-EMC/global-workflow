@@ -11,7 +11,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base"
 ################################
 # Set up the HOME directory
 ################################
-export USHgfs=${USHgfs:-${HOMEgfs}/ush}
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 

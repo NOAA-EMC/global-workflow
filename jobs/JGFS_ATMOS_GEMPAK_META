@@ -22,9 +22,7 @@ export MP_DEBUG_NOTIMEOUT=yes
 # Set up the HOME directory
 ################################
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 
 cp  ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl

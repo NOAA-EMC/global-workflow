@@ -8,7 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 ################################
 # Set up the HOME directory
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 
