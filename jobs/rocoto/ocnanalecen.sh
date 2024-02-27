@@ -13,7 +13,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Setup Python path for GDASApp ush
-PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush:${PYTHONPATH}
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/gdas.cd/ush"
 export PYTHONPATH
 
 ###############################################################
