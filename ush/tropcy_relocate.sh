@@ -92,12 +92,12 @@
 #     HOMERELO      String indicating parent directory path for relocation
 #                   specific files.  (May be under HOMEALL)
 #     envir_getges  String indicating environment under which GETGES utility
-#                   ush runs (see documentation in $USHGETGES/getges.sh for
+#                   ush runs (see documentation in ${USHgfs}/getges.sh for
 #                   more information)
 #                   Default is "$envir"
 #     network_getges
 #                   String indicating job network under which GETGES utility
-#                   ush runs (see documentation in $USHGETGES/getges.sh for
+#                   ush runs (see documentation in ${USHgfs}/getges.sh for
 #                   more information)
 #                   Default is "global" unless the center relocation processing
 #                   date/time is not a multiple of 3-hrs, then the default is
@@ -122,10 +122,6 @@
 #     POE_OPTS      String indicating options to use with poe command
 #                   Default is "-pgmmodel mpmd -ilevel 2 -labelio yes \
 #                   -stdoutmode ordered"
-#     USHGETGES     String indicating directory path for GETGES utility ush
-#                   file
-#     USHRELO       String indicating directory path for RELOCATE ush files
-#                   Default is "${HOMERELO}/ush"
 #     EXECRELO      String indicating directory path for RELOCATE executables
 #                   Default is "${HOMERELO}/exec"
 #     EXECUTIL      String indicating directory path for utility program
@@ -163,18 +159,18 @@
 #
 #   Modules and files referenced:
 #                  Herefile: RELOCATE_GES
-#                  $USHRELO/tropcy_relocate_extrkr.sh
-#                  $USHGETGES/getges.sh
+#                  ${USHgfs}/tropcy_relocate_extrkr.sh
+#                  ${USHgfs}/getges.sh
 #                  $NDATE (here and in child script
-#                        $USHRELO/tropcy_relocate_extrkr.sh)
+#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  /usr/bin/poe
 #                  postmsg
 #                  $DATA/prep_step (here and in child script
-#                        $USHRELO/tropcy_relocate_extrkr.sh)
+#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  $DATA/err_exit (here and in child script
-#                        $USHRELO/tropcy_relocate_extrkr.sh)
+#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  $DATA/err_chk (here and in child script
-#                        $USHRELO/tropcy_relocate_extrkr.sh)
+#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #          NOTE: The last three scripts above are NOT REQUIRED utilities.
 #                If $DATA/prep_step not found, a scaled down version of it is
 #                executed in-line.  If $DATA/err_exit or $DATA/err_chk are not
@@ -292,11 +288,6 @@ pgmout=${pgmout:-/dev/null}
 tstsp=${tstsp:-/tmp/null/}
 tmmark=${tmmark:-tm00}
 
-USHRELO=${USHRELO:-${HOMERELO}/ush}
-##USHGETGES=${USHGETGES:-/nwprod/util/ush}
-##USHGETGES=${USHGETGES:-${HOMERELO}/ush}
-USHGETGES=${USHGETGES:-${USHRELO}}
-
 EXECRELO=${EXECRELO:-${HOMERELO}/exec}
 
 RELOX=${RELOX:-$EXECRELO/relocate_mv_nvortex}
@@ -350,7 +341,7 @@ echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
-      $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
+      ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -f $fhr -t tcvges tcvitals.m${fhr}
       set +x
       echo
@@ -400,7 +391,7 @@ echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
-      $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
+      ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -t $stype $sges
       errges=$?
       if test $errges -ne 0; then
@@ -434,7 +425,7 @@ to center relocation date/time;"
 #  ----------------------------------------------------------------------------
 
       if [ $fhr = "0"  ]; then
-         "${USHGETGES}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${CDATE10}" \
+         "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${CDATE10}" \
           -t "${stype}" > "${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
          cp "${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
           "${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
@@ -454,7 +445,7 @@ echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
-      $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
+      ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -t $ptype $pges
       errges=$?
       if test $errges -ne 0; then
@@ -536,7 +527,7 @@ else
 #   $DATA/$RUN.$cycle.relocate.model_track.tm00
 #  --------------------------------------------
 
-   $USHRELO/tropcy_relocate_extrkr.sh
+   ${USHgfs}/tropcy_relocate_extrkr.sh
    err=$?
    if [ $err -ne 0 ]; then
 
@@ -545,12 +536,12 @@ else
 
       set +x
       echo
-      echo "$USHRELO/tropcy_relocate_extrkr.sh failed"
+      echo "${USHgfs}/tropcy_relocate_extrkr.sh failed"
       echo "ABNORMAL EXIT!!!!!!!!!!!"
       echo
       set_trace
       if [ -s $DATA/err_exit ]; then
-         $DATA/err_exit "Script $USHRELO/tropcy_relocate_extrkr.sh failed"
+         $DATA/err_exit "Script ${USHgfs}/tropcy_relocate_extrkr.sh failed"
       else
          exit 555
       fi

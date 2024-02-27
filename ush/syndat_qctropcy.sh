@@ -45,7 +45,6 @@
 #             tcvitals file is read by subsequent relocation processing and/or
 #             subsequent program SYNDAT_SYNDATA)
 #   EXECSYND  - path to syndat executable directory
-#   USHSYND   - path to syndat ush directory
 
 # Imported variables that can be passed in:
 #   ARCHSYND  - path to syndat archive directory
@@ -72,7 +71,6 @@ HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
-USHSYND=${USHSYND:-$HOMEgfs/ush}
 EXECSYND=${EXECSYND:-$HOMEgfs/exec}
 
 slmask=${slmask:-${FIXgfs}/am/syndat_slmask.t126.gaussian}
@@ -217,17 +215,17 @@ touch nhc
 [ "$copy_back" = 'YES' ]  &&  cat nhc >> $ARCHSYND/syndat_tcvitals.$year
 
 mv -f nhc nhc1
-$USHSYND/parse-storm-type.pl nhc1 > nhc
+${USHgfs}/parse-storm-type.pl nhc1 > nhc
 
 cp -p nhc nhc.ORIG
 # JTWC/FNOC ... execute syndat_getjtbul script to write into working directory
 #               as fnoc; copy to archive
-$USHSYND/syndat_getjtbul.sh $CDATE10
+${USHgfs}/syndat_getjtbul.sh $CDATE10
 touch fnoc
 [ "$copy_back" = 'YES' ]  &&  cat fnoc >> $ARCHSYND/syndat_tcvitals.$year
 
 mv -f fnoc fnoc1
-$USHSYND/parse-storm-type.pl fnoc1 > fnoc
+${USHgfs}/parse-storm-type.pl fnoc1 > fnoc
 
 if [ $SENDDBN = YES ]; then
   $DBNROOT/bin/dbn_alert MODEL SYNDAT_TCVITALS $job $ARCHSYND/syndat_tcvitals.$year
