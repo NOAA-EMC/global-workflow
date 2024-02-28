@@ -69,6 +69,24 @@ fi
 
 pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
 
+# If the pr_list is empty (No Ready labels) check to see if there are PRs with the CI-KILL label
+# then check if it is indeed and active PR in CI and if so add it to the pr_kill_list
+# if they are any the pr_list then becomes the list of PRs to kill
+get_pr_kill_list=""
+pr_kill_list=""
+if [[ -z "${pr_list+x}" ]]; then
+  get_pr_kill_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-Kill" --state "open" | awk '{print $1}') || true
+  for pr in ${get_pr_kill_all_list}; do
+    pr_in_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}") || true
+    if [[ -n "${pr_in_list}" ]]; then
+      pr_kill_list="${pr_kill_list} ${pr}"
+    fi
+  done
+  if [[ -n "${pr_kill_list}" ]]; then
+    pr_list="${pr_kill_list}"
+  fi
+fi
+
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   db_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
@@ -87,11 +105,18 @@ for pr in ${pr_list}; do
     driver_HOST=$(echo "${driver_ID}" | cut -d":" -f2) || true
     host_name=$(hostname -s)
     rm -f "${output_ci_single}"
-    {
-      echo "CI Update on ${MACHINE_ID^} at $(date +'%D %r')" || true
-      echo "================================================="
-      echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests" || true
-    } >> "${output_ci_single}"
+    if [[ -z ${pr_kill_list+x}]] then
+      {
+        echo "CI set to be Killed by user on ${MACHINE_ID^} at $(date +'%D %r')" || true
+        echo "================================================="
+        echo "PR:${pr} Reset to CI-KILL by user and all running CI tests are being cancled" || true
+      } >> "${output_ci_single}"
+    else
+      {
+        echo "CI Update on ${MACHINE_ID^} at $(date +'%D %r')" || true
+        echo "================================================="
+        echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests" || true
+      } >> "${output_ci_single}"
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
@@ -122,7 +147,11 @@ for pr in ${pr_list}; do
     sed -i "1 i\`\`\`" "${output_ci_single}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
     "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    if [[ -n "${pr_kill_list}" ]]; then
+      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-Kill"
+    else
+      "${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    fi
   fi
 done
 
