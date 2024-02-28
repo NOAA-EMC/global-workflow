@@ -105,7 +105,7 @@ for pr in ${pr_list}; do
     driver_HOST=$(echo "${driver_ID}" | cut -d":" -f2) || true
     host_name=$(hostname -s)
     rm -f "${output_ci_single}"
-    if [[ -z ${pr_kill_list+x}]] then
+    if [[ -z ${pr_kill_list+x}]]; then
       {
         echo "CI set to be Killed by user on ${MACHINE_ID^} at $(date +'%D %r')" || true
         echo "================================================="
