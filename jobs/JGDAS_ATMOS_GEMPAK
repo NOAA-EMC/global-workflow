@@ -5,10 +5,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
 # TODO (#1219) This j-job is not part of the rocoto suite
 
-################################
-# Set up the HOME directory
-export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
-
 ############################################
 # Set up model and cycle specific variables
 ############################################
@@ -52,12 +48,12 @@ fi
 
 ########################################################
 # Execute the script.
-echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}" >> poescript
+echo "${SCRgfs}/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}" >> poescript
 ########################################################
 
 ########################################################
 # Execute the script for quater-degree grib
-echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}" >> poescript
+echo "${SCRgfs}/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}" >> poescript
 ########################################################
 
 cat poescript

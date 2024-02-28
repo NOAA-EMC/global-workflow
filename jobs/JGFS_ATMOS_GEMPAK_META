@@ -22,7 +22,6 @@ export MP_DEBUG_NOTIMEOUT=yes
 # Set up the HOME directory
 ################################
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 
 cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
@@ -63,7 +62,7 @@ mkdir -m 775 -p ${COMOUT}
 
 ########################################################
 # Execute the script.
-${SRCgfs}/exgfs_atmos_gempak_meta.sh
+${SCRgfs}/exgfs_atmos_gempak_meta.sh
 export err=$?; err_chk
 ########################################################
 

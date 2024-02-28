@@ -13,7 +13,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 # Set up the HOME directory
 ################################
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
-export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 
 #
 # Now set up GEMPAK/NTRANS environment
@@ -74,7 +73,7 @@ export err=$?; err_chk
 
 ########################################################
 # Execute the script.
-${SRCgfs}/exgdas_atmos_gempak_gif_ncdc.sh
+${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh
 export err=$?; err_chk
 ########################################################
 

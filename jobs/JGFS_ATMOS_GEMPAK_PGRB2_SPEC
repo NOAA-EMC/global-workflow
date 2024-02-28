@@ -11,7 +11,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_spec" -c "base"
 # Set up the HOME directory
 ################################
 export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
-export SRCgfs="${SRCgfs:-${HOMEgfs}/scripts}"
 
 # For half-degree P Grib files
 #export DO_HD_PGRB=YES
@@ -54,7 +53,7 @@ echo "RUNS the Program"
 
 ########################################################
 # Execute the script.
-"${SRCgfs}/exgfs_atmos_goes_nawips.sh"
+"${SCRgfs}/exgfs_atmos_goes_nawips.sh"
 
 #################################################################
 # Execute the script for the 221 grib
@@ -75,7 +74,7 @@ echo "RUNS the Program"
 
 ########################################################
 # Execute the script.
-"${SRCgfs}/exgfs_atmos_goes_nawips.sh"
+"${SCRgfs}/exgfs_atmos_goes_nawips.sh"
 export err=$?; err_chk
 ########################################################
 
