@@ -118,6 +118,7 @@ for pr in ${pr_list}; do
         echo "================================================="
         echo "PR:${pr} Reset to ${MACHINE_ID^}-Ready by user and is now restarting CI tests" || true
       } >> "${output_ci_single}"
+    fi
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}" ]]; then
