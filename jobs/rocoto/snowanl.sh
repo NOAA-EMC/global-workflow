@@ -8,18 +8,17 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="preplandobs"
+export job="snowanl"
 export jobid="${job}.$$"
 
 ###############################################################
 # setup python path for workflow utilities and tasks
 wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-gdasappPATH="${HOMEgfs}/sorc/gdas.cd/iodaconv/src:${HOMEgfs}/sorc/gdas.cd/build/lib/python3.7"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}:${gdasappPATH}"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
 export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_PREP_LAND_OBS"
+"${HOMEgfs}/jobs/JGLOBAL_SNOW_ANALYSIS"
 status=$?
 exit "${status}"

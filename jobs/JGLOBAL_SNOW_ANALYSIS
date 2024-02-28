@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA=${DATA:-${DATAROOT}/${RUN}landanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "preplandobs" -c "base preplandobs"
+export DATA=${DATA:-${DATAROOT}/${RUN}snowanl_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
 
 ##############################################
 # Set variables used in the script
@@ -18,17 +18,20 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_SNOW_ANALYSIS COM_CONF
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
+mkdir -m 775 -p "${COM_SNOW_ANALYSIS}" "${COM_CONF}"
+
 ###############################################################
 # Run relevant script
-EXSCRIPT=${GDASLANDPREPSH:-${HOMEgfs}/scripts/exglobal_prep_land_obs.py}
+
+EXSCRIPT=${SNOWANLPY:-${HOMEgfs}/scripts/exglobal_snow_analysis.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 ##############################################
 # End JOB SPECIFIC work
