@@ -266,7 +266,7 @@ source "${HOMEgfs}/ush/preamble.sh"
     ln -fs ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
     ln -fs ./mod_def.${waveuoutpGRD} ./mod_def.ww3
     export pgm=ww3_outp;. prep_step
-    $EXECwave/ww3_outp > buoy_lst.loc 2>&1
+    ${EXECgfs}/ww3_outp > buoy_lst.loc 2>&1
     export err=$?;err_chk
 
 

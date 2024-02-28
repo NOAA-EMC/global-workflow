@@ -29,9 +29,6 @@ source "$HOMEgfs/ush/preamble.sh"
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
- #export CODEwave=${CODEwave:-${PACKAGEROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
- export EXECwave=${EXECwave:-$HOMEgfs/exec}
- #export EXECcode=${EXECcode:-CODEwave/exec}
 
  mkdir -p $DATA
  cd $DATA
