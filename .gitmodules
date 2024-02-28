@@ -9,10 +9,6 @@
 	path = sorc/gfs_utils.fd
 	url = https://github.com/HenryWinterbottom-NOAA/gfs-utils
 	branch = feature/gwdev_issue_2329
-#[submodule "sorc/ufs_utils.fd"]
-#	path = sorc/ufs_utils.fd
-#	url = https://github.com/HenryWinterbottom-NOAA/UFS_UTILS
-#        branch = feature/gwdev_issue_2329
 [submodule "sorc/verif-global.fd"]
 	path = sorc/verif-global.fd
 	url = https://github.com/NOAA-EMC/EMC_verif-global.git
@@ -28,3 +24,7 @@
 [submodule "sorc/gsi_monitor.fd"]
 	path = sorc/gsi_monitor.fd
 	url = https://github.com/NOAA-EMC/GSI-Monitor.git
+[submodule "sorc/ufs_utils.fd"]
+	path = sorc/ufs_utils.fd
+	url = https://github.com/HenryWinterbottom-NOAA/UFS_UTILS
+	branch = feature/gwdev_issue_2329
