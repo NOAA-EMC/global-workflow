@@ -77,7 +77,7 @@ get_pr_kill_list=""
 pr_kill_list=""
 if [[ -z "${pr_list+x}" ]]; then
   get_pr_kill_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-Kill" --state "open" | awk '{print $1}') || true
-  for pr in ${get_pr_kill_all_list}; do
+  for pr in ${get_pr_kill_list}; do
     pr_in_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}") || true
     if [[ -n "${pr_in_list}" ]]; then
       pr_kill_list="${pr_kill_list} ${pr}"
