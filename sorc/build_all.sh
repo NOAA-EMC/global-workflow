@@ -16,7 +16,7 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v][-w]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -g:
@@ -25,12 +25,12 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v][-w]
     Print this help message and exit
   -j:
     Specify maximum number of build jobs (n)
+  -k:
+    Kill all builds if any build fails
   -u:
     Build UFS-DA
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
-  -w: 
-    Use unstructured wave grid 
 EOF
   exit 1
 }
@@ -42,19 +42,19 @@ _build_ufs_opt=""
 _build_ufsda="NO"
 _build_gsi="NO"
 _verbose_opt=""
-_wave_unst=""
 _build_job_max=20
+_quick_kill="NO"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:ghj:uvw" option; do
+while getopts ":a:ghj:kuv" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     g) _build_gsi="YES" ;;
     h) _usage;;
     j) _build_job_max="${OPTARG} ";;
+    k) _quick_kill="YES" ;;
     u) _build_ufsda="YES" ;;
     v) _verbose_opt="-v";;
-    w) _wave_unst="-w";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       _usage
@@ -117,23 +117,23 @@ declare -A build_opts
 big_jobs=0
 build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
-build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
+build_opts["ufs"]="${_verbose_opt} ${_build_ufs_opt}"
 
-build_jobs["upp"]=2
+build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
 build_opts["upp"]=""
 
-build_jobs["ufs_utils"]=2
+build_jobs["ufs_utils"]=3
 build_opts["ufs_utils"]="${_verbose_opt}"
 
 build_jobs["gfs_utils"]=1
 build_opts["gfs_utils"]="${_verbose_opt}"
 
-build_jobs["ww3prepost"]=2
-build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
+build_jobs["ww3prepost"]=3
+build_opts["ww3prepost"]="${_verbose_opt} ${_build_ufs_opt}"
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
-   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" ]]; then
+   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera.intel" && "${MACHINE_ID}" != "hercules" ]]; then
       echo "NOTE: The GDAS App is not supported on ${MACHINE_ID}.  Disabling build."
    else
       build_jobs["gdas"]=8
@@ -146,7 +146,7 @@ if [[ "${_build_gsi}" == "YES" ]]; then
    build_opts["gsi_enkf"]="${_verbose_opt}"
 fi
 if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then
-   build_jobs["gsi_utils"]=1
+   build_jobs["gsi_utils"]=2
    build_opts["gsi_utils"]="${_verbose_opt}"
    if [[ "${MACHINE_ID}" == "hercules" ]]; then
       echo "NOTE: The GSI Monitor is not supported on Hercules.  Disabling build."
@@ -188,6 +188,30 @@ fi
 procs_in_use=0
 declare -A build_ids
 
+check_builds()
+{
+   for build in "${!build_jobs[@]}"; do
+      # Check if the build is complete and if so what the status was
+      if [[ -n "${build_jobs[${build}]+0}" ]]; then
+         if ! ps -p "${build_ids[$build]}" > /dev/null; then
+            wait "${build_ids[${build}]}"
+            build_stat=$?
+            if [[ ${build_stat} != 0 ]]; then
+               echo "build_${build}.sh failed!  Exiting!"
+               echo "Check logs/build_${build}.log for details."
+               for build in "${!build_jobs[@]}"; do
+                  if [[ -n "${build_ids[${build}]+0}" ]]; then
+                     pkill -P "${build_ids[$build]}"
+                  fi
+               done
+               return ${build_stat}
+            fi
+         fi
+      fi
+   done
+   return 0
+}
+
 builds_started=0
 # Now start looping through all of the jobs until everything is done
 while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
@@ -226,11 +250,31 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
       fi
    done
 
+   # If requested, check if any build has failed and exit if so
+   if [[ "${_quick_kill}" == "YES" ]]; then
+      check_builds
+      build_stat=$?
+      if [[ ${build_stat} != 0 ]]; then
+         exit ${build_stat}
+      fi
+   fi
+
    sleep 5s
 done
 
+
 # Wait for all jobs to complete and check return statuses
 while [[ ${#build_jobs[@]} -gt 0 ]]; do
+
+   # If requested, check if any build has failed and exit if so
+   if [[ "${_quick_kill}" == "YES" ]]; then
+      check_builds
+      build_stat=$?
+      if [[ ${build_stat} != 0 ]]; then
+         exit ${build_stat}
+      fi
+   fi
+
    for build in "${!build_jobs[@]}"; do
       # Test if each job is complete and if so, notify and remove from the array
       if [[ -n "${build_ids[${build}]+0}" ]]; then
