@@ -23,7 +23,6 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ###################################
 
 export HOMEbufrsnd=${HOMEbufrsnd:-${HOMEgfs}}
-export SCRbufrsnd=${SCRbufrsnd:-${HOMEbufrsnd}/scripts}
 
 ##############################
 # Define COM Directories
@@ -40,7 +39,7 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
 
 ########################################################
 # Execute the script.
-${SCRbufrsnd}/exgfs_atmos_postsnd.sh
+${SCRgfs}/exgfs_atmos_postsnd.sh
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
