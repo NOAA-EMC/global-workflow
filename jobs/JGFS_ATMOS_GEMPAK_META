@@ -21,11 +21,10 @@ export MP_DEBUG_NOTIMEOUT=yes
 ################################
 # Set up the HOME directory
 ################################
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 
-cp  ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 #############################################
 #set the fcst hrs for all the cycles

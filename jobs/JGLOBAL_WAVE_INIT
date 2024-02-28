@@ -9,9 +9,6 @@ export errchk=${errchk:-err_chk}
 
 export MP_PULSE=0
 
-# Path to HOME Directory
-export EXECwave=${EXECwave:-${HOMEgfs}/exec}
-
 # Set COM Paths
 YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP
 

@@ -10,7 +10,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_spec" -c "base"
 ################################
 # Set up the HOME directory
 ################################
-export EXECgfs="${EXECgfs:-${HOMEgfs}/exec}"
 export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
 export SRCgfs="${SRCgfs:-${HOMEgfs}/scripts}"
 

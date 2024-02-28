@@ -9,11 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
-################################
-# Set up the HOME directory
-################################
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################

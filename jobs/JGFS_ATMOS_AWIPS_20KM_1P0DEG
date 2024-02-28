@@ -9,7 +9,6 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 # Set up the HOME directory
 ################################
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 
 ###################################
 # Specify NET and RUN Name and model

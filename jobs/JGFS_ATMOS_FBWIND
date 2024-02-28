@@ -8,11 +8,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base"
 
-################################
-# Set up the HOME directory
-################################
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################

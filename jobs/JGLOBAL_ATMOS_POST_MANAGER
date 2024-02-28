@@ -16,7 +16,6 @@ export RUN=${RUN:-gfs}
 # Specify Execution Areas
 ####################################
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
-export EXECgfs=${HOMEgfs:-${HOMEgfs}/exec}
 
 ###########################
 # Set up EXT variable
