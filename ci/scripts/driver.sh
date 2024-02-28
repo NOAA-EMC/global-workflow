@@ -18,7 +18,8 @@ set -eux
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
-export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+export REPO_URL="git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git"
+#export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging
@@ -105,7 +106,7 @@ for pr in ${pr_list}; do
     driver_HOST=$(echo "${driver_ID}" | cut -d":" -f2) || true
     host_name=$(hostname -s)
     rm -f "${output_ci_single}"
-    if [[ -z ${pr_kill_list+x}]] then
+    if [[ -z ${pr_kill_list+x} ]]; then
       {
         echo "CI set to be Killed by user on ${MACHINE_ID^} at $(date +'%D %r')" || true
         echo "================================================="
@@ -119,7 +120,7 @@ for pr in ${pr_list}; do
       } >> "${output_ci_single}"
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
-      if [[ "${driver_HOST}" == "${host_name}"  ]]; then
+      if [[ "${driver_HOST}" == "${host_name}" ]]; then
         # shellcheck disable=SC2312
         pstree -A -p "${driver_PID}" | grep -Pow "(?<=\()[0-9]+(?=\))" | xargs kill
       else
