@@ -29,7 +29,7 @@ set -x
 export PS4='TROP:$SECONDS + '
 mkdir -p -m 775 $DATA/TROP
 cd $DATA/TROP
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 mdl=gfs
 MDL=GFS

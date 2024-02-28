@@ -26,7 +26,7 @@ set -x
 export PS4='qpf:$SECONDS + '
 mkdir -p -m 775 $DATA/qpf
 cd $DATA/qpf
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 mdl=gfs
 MDL=GFS

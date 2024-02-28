@@ -7,11 +7,7 @@ echo "BEGIN: config.wave"
 
 # Parameters that are common to all wave model steps
 
-# System and version
-export wave_sys_ver=v1.0.0
-
 export EXECwave="${HOMEgfs}/exec"
-export FIXwave="${HOMEgfs}/fix/wave"
 export PARMwave="${HOMEgfs}/parm/wave"
 export USHwave="${HOMEgfs}/ush"
 
@@ -80,7 +76,19 @@ case "${waveGRD}" in
     export wavepostGRD='glo_500'
     export waveuoutpGRD=${waveGRD}
     ;;
-  *)
+  "uglo_100km") 
+    #unstructured 100km grid 
+    export waveinterpGRD='glo_200'
+    export wavepostGRD=''
+    export waveuoutpGRD=${waveGRD}
+    ;;
+  "uglo_m1g16")
+    #unstructured m1v16 grid 
+    export waveinterpGRD='glo_15mxt'
+    export wavepostGRD=''
+    export waveuoutpGRD=${waveGRD}
+    ;;
+   *)
     echo "FATAL ERROR: No grid specific wave config values exist for ${waveGRD}. Aborting."
     exit 1
     ;;

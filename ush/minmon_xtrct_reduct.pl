@@ -9,20 +9,18 @@ use strict;
 #  reduction.ieee_d files ready for GrADS use.
 #---------------------------------------------------------------------------
 
-if ($#ARGV != 4 ) {
-	print "usage: minmon_xtrct_reduct.pl SUFFIX pdy cyc infile jlogfile\n";
+if ($#ARGV != 3 ) {
+	print "usage: minmon_xtrct_reduct.pl SUFFIX pdy cyc infile\n";
         print " suffix is data source identifier\n";
         print " pdy is YYYYMMDD of the cycle to be processed\n";
         print " cyc is HH of the cycle to be processed\n";
         print " infile is the data file containing the reduction stats\n";
-        print " jlogfile is the job log file\n";
 	exit;
 }
 my $suffix   = $ARGV[0];
 my $pdy      = $ARGV[1];
 my $cyc      = $ARGV[2];
 my $infile   = $ARGV[3];
-my $jlogfile = $ARGV[4];
 
 my $scr = "minmon_xtrct_reduct.pl";
 print "$scr has started\n";

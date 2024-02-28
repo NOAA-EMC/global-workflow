@@ -27,6 +27,7 @@ export FHMAX=${FHMAX_GFS}
 export FHOUT=${FHOUT_GFS}
 export FHMAX_HF=${FHMAX_HF_GFS}
 export FHOUT_HF=${FHOUT_HF_GFS}
+export FHOUT_OCNICE=${FHOUT_OCNICE_GFS}
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst

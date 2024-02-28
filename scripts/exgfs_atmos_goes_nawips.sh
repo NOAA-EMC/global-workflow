@@ -15,13 +15,13 @@ source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
 
-cp $FIXgempak/g2varswmo2.tbl g2varswmo2.tbl
-cp $FIXgempak/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
-cp $FIXgempak/g2varsncep1.tbl g2varsncep1.tbl
-cp $FIXgempak/g2vcrdncep1.tbl g2vcrdncep1.tbl
+cp ${HOMEgfs}/gempak/fix/g2varswmo2.tbl g2varswmo2.tbl
+cp ${HOMEgfs}/gempak/fix/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
+cp ${HOMEgfs}/gempak/fix/g2varsncep1.tbl g2varsncep1.tbl
+cp ${HOMEgfs}/gempak/fix/g2vcrdncep1.tbl g2vcrdncep1.tbl
 
 #
-# NAGRIB_TABLE=$FIXgempak/nagrib.tbl
+# NAGRIB_TABLE=${HOMEgfs}/gempak/fix/nagrib.tbl
 NAGRIB=$GEMEXE/nagrib2
 #
 

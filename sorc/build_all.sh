@@ -16,7 +16,7 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v][-w]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -g:
@@ -29,6 +29,8 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v]
     Build UFS-DA
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
+  -w: 
+    Use unstructured wave grid 
 EOF
   exit 1
 }
@@ -40,10 +42,11 @@ _build_ufs_opt=""
 _build_ufsda="NO"
 _build_gsi="NO"
 _verbose_opt=""
+_wave_unst=""
 _build_job_max=20
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:ghj:uv" option; do
+while getopts ":a:ghj:uvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     g) _build_gsi="YES" ;;
@@ -51,6 +54,7 @@ while getopts ":a:ghj:uv" option; do
     j) _build_job_max="${OPTARG} ";;
     u) _build_ufsda="YES" ;;
     v) _verbose_opt="-v";;
+    w) _wave_unst="-w";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       _usage
@@ -113,23 +117,23 @@ declare -A build_opts
 big_jobs=0
 build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
-build_opts["ufs"]="${_verbose_opt} ${_build_ufs_opt}"
+build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
-build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
+build_jobs["upp"]=2
 build_opts["upp"]=""
 
-build_jobs["ufs_utils"]=3
+build_jobs["ufs_utils"]=2
 build_opts["ufs_utils"]="${_verbose_opt}"
 
 build_jobs["gfs_utils"]=1
 build_opts["gfs_utils"]="${_verbose_opt}"
 
-build_jobs["ww3prepost"]=3
-build_opts["ww3prepost"]="${_verbose_opt} ${_build_ufs_opt}"
+build_jobs["ww3prepost"]=2
+build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt}"
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
-   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera.intel" && "${MACHINE_ID}" != "hercules" ]]; then
+   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" ]]; then
       echo "NOTE: The GDAS App is not supported on ${MACHINE_ID}.  Disabling build."
    else
       build_jobs["gdas"]=8
@@ -142,7 +146,7 @@ if [[ "${_build_gsi}" == "YES" ]]; then
    build_opts["gsi_enkf"]="${_verbose_opt}"
 fi
 if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then
-   build_jobs["gsi_utils"]=2
+   build_jobs["gsi_utils"]=1
    build_opts["gsi_utils"]="${_verbose_opt}"
    if [[ "${MACHINE_ID}" == "hercules" ]]; then
       echo "NOTE: The GSI Monitor is not supported on Hercules.  Disabling build."

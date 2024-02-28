@@ -8,4 +8,9 @@ echo "BEGIN: config.sfcanl"
 # Get task specific resources
 . $EXPDIR/config.resources sfcanl
 
+# Turn off NST in JEDIATMVAR
+if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
+   export DONST="NO"
+fi
+
 echo "END: config.sfcanl"

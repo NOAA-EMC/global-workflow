@@ -133,17 +133,15 @@ EOF
   #--------------------------------------------------------------------------
   # Grid and orography data
 
-  FIXsfc=${FIXsfc:-"${FIXorog}/${CASE}/sfc"}
-
   if [[ ${cplflx} = ".false." ]] ; then
-    ${NLN} "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+    ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
   else
-    ${NLN} "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+    ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
   fi
 
   for n in $(seq 1 "${ntiles}"); do
-    ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/INPUT/oro_data.tile${n}.nc"
-    ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/INPUT/${CASE}_grid.tile${n}.nc"
+    ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/INPUT/oro_data.tile${n}.nc"
+    ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/INPUT/${CASE}_grid.tile${n}.nc"
   done
 
   _suite_file="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml"
@@ -201,10 +199,10 @@ EOF
   fi
 
   # Files for GWD
-  ${NLN} "${FIXugwd}/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
+  ${NLN} "${FIXgfs}/ugwd/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
   for n in $(seq 1 "${ntiles}"); do
-    ${NLN} "${FIXugwd}/${CASE}/${CASE}_oro_data_ls.tile${n}.nc" "${DATA}/INPUT/oro_data_ls.tile${n}.nc"
-    ${NLN} "${FIXugwd}/${CASE}/${CASE}_oro_data_ss.tile${n}.nc" "${DATA}/INPUT/oro_data_ss.tile${n}.nc"
+    ${NLN} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ls.tile${n}.nc" "${DATA}/INPUT/oro_data_ls.tile${n}.nc"
+    ${NLN} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ss.tile${n}.nc" "${DATA}/INPUT/oro_data_ss.tile${n}.nc"
   done
 
   # GFS standard input data
@@ -225,41 +223,41 @@ EOF
   #  imp_physics should be 8:
   ####
   if [[ ${imp_physics} -eq 8 ]]; then
-    ${NLN} "${FIXam}/CCN_ACTIVATE.BIN"  "${DATA}/CCN_ACTIVATE.BIN"
-    ${NLN} "${FIXam}/freezeH2O.dat"     "${DATA}/freezeH2O.dat"
-    ${NLN} "${FIXam}/qr_acr_qgV2.dat"   "${DATA}/qr_acr_qgV2.dat"
-    ${NLN} "${FIXam}/qr_acr_qsV2.dat"   "${DATA}/qr_acr_qsV2.dat"
+    ${NLN} "${FIXgfs}/am/CCN_ACTIVATE.BIN"  "${DATA}/CCN_ACTIVATE.BIN"
+    ${NLN} "${FIXgfs}/am/freezeH2O.dat"     "${DATA}/freezeH2O.dat"
+    ${NLN} "${FIXgfs}/am/qr_acr_qgV2.dat"   "${DATA}/qr_acr_qgV2.dat"
+    ${NLN} "${FIXgfs}/am/qr_acr_qsV2.dat"   "${DATA}/qr_acr_qsV2.dat"
   fi
 
-  ${NLN} "${FIXam}/${O3FORC}"                         "${DATA}/global_o3prdlos.f77"
-  ${NLN} "${FIXam}/${H2OFORC}"                        "${DATA}/global_h2oprdlos.f77"
-  ${NLN} "${FIXam}/global_solarconstant_noaa_an.txt"  "${DATA}/solarconstant_noaa_an.txt"
-  ${NLN} "${FIXam}/global_sfc_emissivity_idx.txt"     "${DATA}/sfc_emissivity_idx.txt"
+  ${NLN} "${FIXgfs}/am/${O3FORC}"                         "${DATA}/global_o3prdlos.f77"
+  ${NLN} "${FIXgfs}/am/${H2OFORC}"                        "${DATA}/global_h2oprdlos.f77"
+  ${NLN} "${FIXgfs}/am/global_solarconstant_noaa_an.txt"  "${DATA}/solarconstant_noaa_an.txt"
+  ${NLN} "${FIXgfs}/am/global_sfc_emissivity_idx.txt"     "${DATA}/sfc_emissivity_idx.txt"
 
   ## merra2 aerosol climo
   if [[ ${IAER} -eq "1011" ]]; then
     for month in $(seq 1 12); do
       MM=$(printf %02d "${month}")
-      ${NLN} "${FIXaer}/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
+      ${NLN} "${FIXgfs}/aer/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
     done
-    ${NLN} "${FIXlut}/optics_BC.v1_3.dat"  "${DATA}/optics_BC.dat"
-    ${NLN} "${FIXlut}/optics_OC.v1_3.dat"  "${DATA}/optics_OC.dat"
-    ${NLN} "${FIXlut}/optics_DU.v15_3.dat" "${DATA}/optics_DU.dat"
-    ${NLN} "${FIXlut}/optics_SS.v3_3.dat"  "${DATA}/optics_SS.dat"
-    ${NLN} "${FIXlut}/optics_SU.v1_3.dat"  "${DATA}/optics_SU.dat"
+    ${NLN} "${FIXgfs}/lut/optics_BC.v1_3.dat"  "${DATA}/optics_BC.dat"
+    ${NLN} "${FIXgfs}/lut/optics_OC.v1_3.dat"  "${DATA}/optics_OC.dat"
+    ${NLN} "${FIXgfs}/lut/optics_DU.v15_3.dat" "${DATA}/optics_DU.dat"
+    ${NLN} "${FIXgfs}/lut/optics_SS.v3_3.dat"  "${DATA}/optics_SS.dat"
+    ${NLN} "${FIXgfs}/lut/optics_SU.v1_3.dat"  "${DATA}/optics_SU.dat"
   fi
 
-  ${NLN} "${FIXam}/global_co2historicaldata_glob.txt" "${DATA}/co2historicaldata_glob.txt"
-  ${NLN} "${FIXam}/co2monthlycyc.txt"                 "${DATA}/co2monthlycyc.txt"
+  ${NLN} "${FIXgfs}/am/global_co2historicaldata_glob.txt" "${DATA}/co2historicaldata_glob.txt"
+  ${NLN} "${FIXgfs}/am/co2monthlycyc.txt"                 "${DATA}/co2monthlycyc.txt"
   if [[ ${ICO2} -gt 0 ]]; then
-    for file in $(ls "${FIXam}/fix_co2_proj/global_co2historicaldata"*) ; do
+    for file in $(ls "${FIXgfs}/am/fix_co2_proj/global_co2historicaldata"*) ; do
       ${NLN} "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
 
-  ${NLN} "${FIXam}/global_climaeropac_global.txt"     "${DATA}/aerosol.dat"
+  ${NLN} "${FIXgfs}/am/global_climaeropac_global.txt"     "${DATA}/aerosol.dat"
   if [[ ${IAER} -gt 0 ]] ; then
-    for file in $(ls "${FIXam}/global_volcanic_aerosols"*) ; do
+    for file in $(ls "${FIXgfs}/am/global_volcanic_aerosols"*) ; do
       ${NLN} "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
@@ -296,28 +294,28 @@ EOF
   LATB_JMO=${LATB_JMO:-${LATB_CASE}}
 
   # Fix files
-  FNGLAC=${FNGLAC:-"${FIXam}/global_glacier.2x2.grb"}
-  FNMXIC=${FNMXIC:-"${FIXam}/global_maxice.2x2.grb"}
-  FNTSFC=${FNTSFC:-"${FIXam}/RTGSST.1982.2012.monthly.clim.grb"}
-  FNSNOC=${FNSNOC:-"${FIXam}/global_snoclim.1.875.grb"}
+  FNGLAC=${FNGLAC:-"${FIXgfs}/am/global_glacier.2x2.grb"}
+  FNMXIC=${FNMXIC:-"${FIXgfs}/am/global_maxice.2x2.grb"}
+  FNTSFC=${FNTSFC:-"${FIXgfs}/am/RTGSST.1982.2012.monthly.clim.grb"}
+  FNSNOC=${FNSNOC:-"${FIXgfs}/am/global_snoclim.1.875.grb"}
   FNZORC=${FNZORC:-"igbp"}
-  FNAISC=${FNAISC:-"${FIXam}/IMS-NIC.blended.ice.monthly.clim.grb"}
-  FNALBC2=${FNALBC2:-"${FIXsfc}/${CASE}.mx${OCNRES}.facsf.tileX.nc"}
-  FNTG3C=${FNTG3C:-"${FIXsfc}/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc"}
-  FNVEGC=${FNVEGC:-"${FIXsfc}/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
-  FNMSKH=${FNMSKH:-"${FIXam}/global_slmask.t1534.3072.1536.grb"}
-  FNVMNC=${FNVMNC:-"${FIXsfc}/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
-  FNVMXC=${FNVMXC:-"${FIXsfc}/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
-  FNSLPC=${FNSLPC:-"${FIXsfc}/${CASE}.mx${OCNRES}.slope_type.tileX.nc"}
-  FNALBC=${FNALBC:-"${FIXsfc}/${CASE}.mx${OCNRES}.snowfree_albedo.tileX.nc"}
-  FNVETC=${FNVETC:-"${FIXsfc}/${CASE}.mx${OCNRES}.vegetation_type.tileX.nc"}
-  FNSOTC=${FNSOTC:-"${FIXsfc}/${CASE}.mx${OCNRES}.soil_type.tileX.nc"}
-  FNSOCC=${FNSOCC:-"${FIXsfc}/${CASE}.mx${OCNRES}.soil_color.tileX.nc"}
-  FNABSC=${FNABSC:-"${FIXsfc}/${CASE}.mx${OCNRES}.maximum_snow_albedo.tileX.nc"}
-  FNSMCC=${FNSMCC:-"${FIXam}/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
+  FNAISC=${FNAISC:-"${FIXgfs}/am/IMS-NIC.blended.ice.monthly.clim.grb"}
+  FNALBC2=${FNALBC2:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tileX.nc"}
+  FNTG3C=${FNTG3C:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc"}
+  FNVEGC=${FNVEGC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNMSKH=${FNMSKH:-"${FIXgfs}/am/global_slmask.t1534.3072.1536.grb"}
+  FNVMNC=${FNVMNC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNVMXC=${FNVMXC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNSLPC=${FNSLPC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tileX.nc"}
+  FNALBC=${FNALBC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tileX.nc"}
+  FNVETC=${FNVETC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tileX.nc"}
+  FNSOTC=${FNSOTC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tileX.nc"}
+  FNSOCC=${FNSOCC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_color.tileX.nc"}
+  FNABSC=${FNABSC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tileX.nc"}
+  FNSMCC=${FNSMCC:-"${FIXgfs}/am/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
   # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
-  [[ ! -f ${FNSMCC} ]] && FNSMCC="${FIXam}/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+  [[ ! -f ${FNSMCC} ]] && FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
 
   # NSST Options
   # nstf_name contains the NSST related parameters
@@ -541,7 +539,7 @@ WW3_postdet() {
   if [[ "${MESH_WAV}" == "${MESH_OCN:-mesh.mx${OCNRES}.nc}" ]]; then
     echo "Wave is on same mesh as ocean"
   else
-    ${NLN} "${FIXwave}/${MESH_WAV}" "${DATA}/"
+    ${NLN} "${FIXgfs}/wave/${MESH_WAV}" "${DATA}/"
   fi
 
   export wavprfx=${RUNwave}${WAV_MEMBER:-}
@@ -645,8 +643,8 @@ WW3_nml() {
   echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
   WAV_MOD_TAG=${RUN}wave${waveMEMB}
   if [[ "${USE_WAV_RMP:-YES}" = "YES" ]]; then
-    if (( $( ls -1 "${FIXwave}/rmp_src_to_dst_conserv_"* 2> /dev/null | wc -l) > 0 )); then
-      for file in $(ls "${FIXwave}/rmp_src_to_dst_conserv_"*) ; do
+    if (( $( ls -1 "${FIXgfs}/wave/rmp_src_to_dst_conserv_"* 2> /dev/null | wc -l) > 0 )); then
+      for file in $(ls "${FIXgfs}/wave/rmp_src_to_dst_conserv_"*) ; do
         ${NLN} "${file}" "${DATA}/"
       done
     else
@@ -696,10 +694,10 @@ MOM6_postdet() {
   fi
 
   # Copy MOM6 fixed files
-  ${NCP} "${FIXmom}/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
+  ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
 
   # Copy coupled grid_spec
-  spec_file="${FIXcpl}/a${CASE}o${OCNRES}/grid_spec.nc"
+  spec_file="${FIXgfs}/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
   if [[ -s ${spec_file} ]]; then
     ${NCP} "${spec_file}" "${DATA}/INPUT/"
   else
@@ -833,9 +831,9 @@ CICE_postdet() {
   echo "${DATA}/cice_model.res.nc" > "${DATA}/ice.restart_file"
 
   echo "Link CICE fixed files"
-  ${NLN} "${FIXcice}/${ICERES}/${CICE_GRID}" "${DATA}/"
-  ${NLN} "${FIXcice}/${ICERES}/${CICE_MASK}" "${DATA}/"
-  ${NLN} "${FIXcice}/${ICERES}/${MESH_ICE}"  "${DATA}/"
+  ${NLN} "${FIXgfs}/cice/${ICERES}/${CICE_GRID}" "${DATA}/"
+  ${NLN} "${FIXgfs}/cice/${ICERES}/${CICE_MASK}" "${DATA}/"
+  ${NLN} "${FIXgfs}/cice/${ICERES}/${MESH_ICE}"  "${DATA}/"
 
   # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
   # TODO: Is this file needed in COM? Is this going to be used for generating any products?

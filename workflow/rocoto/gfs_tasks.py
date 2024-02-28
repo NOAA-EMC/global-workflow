@@ -271,8 +271,8 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jedilandda:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanl'}
+        if self.app_config.do_jedisnowda:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
@@ -531,21 +531,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def preplandobs(self):
+    def prepsnowobs(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('preplandobs')
-        task_name = f'{self.cdump}preplandobs'
+        resources = self.get_resource('prepsnowobs')
+        task_name = f'{self.cdump}prepsnowobs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/preplandobs.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/prepsnowobs.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -555,21 +555,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def landanl(self):
+    def snowanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}preplandobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}prepsnowobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('landanl')
-        task_name = f'{self.cdump}landanl'
+        resources = self.get_resource('snowanl')
+        task_name = f'{self.cdump}snowanl'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/landanl.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/snowanl.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -826,8 +826,8 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_jedilandda:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanl'}
+        if self.app_config.do_jedisnowda:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}snowanl'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
@@ -929,19 +929,7 @@ class GFSTasks(Tasks):
     @staticmethod
     def _get_ufs_postproc_grps(cdump, config, component='atmos'):
 
-        # Make a local copy of the config to avoid modifying the original
-        local_config = config.copy()
-
-        # Ocean/Ice components do not have a HF output option like the atmosphere
-        if component in ['ocean', 'ice']:
-            local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']
-            local_config['FHOUT_HF_GFS'] = config['FHOUT_GFS']
-
-        fhrs = Tasks._get_forecast_hours(cdump, local_config)
-
-        # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice']:
-            fhrs.remove(0)
+        fhrs = Tasks._get_forecast_hours(cdump, config, component=component)
 
         nfhrs_per_grp = config.get('NFHRS_PER_GROUP', 1)
         ngrps = len(fhrs) // nfhrs_per_grp if len(fhrs) % nfhrs_per_grp == 0 else len(fhrs) // nfhrs_per_grp + 1

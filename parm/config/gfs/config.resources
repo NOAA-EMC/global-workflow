@@ -9,10 +9,10 @@ if (( $# != 1 )); then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init"
-    echo "prep preplandobs prepatmiodaobs"
+    echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanl"
+    echo "snowanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
@@ -83,15 +83,15 @@ case ${step} in
     fi
     ;;
 
-  "preplandobs")
-    export wtime_preplandobs="00:05:00"
-    export npe_preplandobs=1
-    export nth_preplandobs=1
-    export npe_node_preplandobs=1
+  "prepsnowobs")
+    export wtime_prepsnowobs="00:05:00"
+    export npe_prepsnowobs=1
+    export nth_prepsnowobs=1
+    export npe_node_prepsnowobs=1
     ;;
 
   "prepatmiodaobs")
-    export wtime_prepatmiodaobs="00:10:00"
+    export wtime_prepatmiodaobs="00:30:00"
     export npe_prepatmiodaobs=1
     export nth_prepatmiodaobs=1
     export npe_node_prepatmiodaobs=$(( npe_node_max / nth_prepatmiodaobs ))
@@ -195,9 +195,8 @@ case ${step} in
     ;;
 
   "atmanlinit")
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
 
     export layout_gsib_x=$(( layout_x * 3 ))
     export layout_gsib_y=$(( layout_y * 2 ))
@@ -211,9 +210,8 @@ case ${step} in
     ;;
 
   "atmanlrun")
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
 
     export wtime_atmanlrun="00:30:00"
     export npe_atmanlrun=$(( layout_x * layout_y * 6 ))
@@ -221,6 +219,7 @@ case ${step} in
     export nth_atmanlrun=1
     export nth_atmanlrun_gfs=${nth_atmanlrun}
     export npe_node_atmanlrun=$(( npe_node_max / nth_atmanlrun ))
+    export memory_atmanlrun="96GB"
     export is_exclusive=True
     ;;
 
@@ -232,7 +231,7 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "landanl")
+  "snowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
       "C768")
@@ -255,10 +254,10 @@ case ${step} in
     export layout_x
     export layout_y
 
-    export wtime_landanl="00:15:00"
-    export npe_landanl=$(( layout_x * layout_y * 6 ))
-    export nth_landanl=1
-    export npe_node_landanl=$(( npe_node_max / nth_landanl ))
+    export wtime_snowanl="00:15:00"
+    export npe_snowanl=$(( layout_x * layout_y * 6 ))
+    export nth_snowanl=1
+    export npe_node_snowanl=$(( npe_node_max / nth_snowanl ))
     ;;
 
   "aeroanlinit")
@@ -634,7 +633,7 @@ case ${step} in
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384")
-        declare -x "wtime_${step}"="00:10:00"
+        declare -x "wtime_${step}"="00:30:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       "C768" | "C1152")
@@ -737,7 +736,7 @@ case ${step} in
     export npe_genesis=1
     export nth_genesis=1
     export npe_node_genesis=1
-    export memory_genesis="4G"
+    export memory_genesis="10G"
     ;;
 
   "genesis_fsu")
@@ -745,7 +744,7 @@ case ${step} in
     export npe_genesis_fsu=1
     export nth_genesis_fsu=1
     export npe_node_genesis_fsu=1
-    export memory_genesis_fsu="4G"
+    export memory_genesis_fsu="10G"
     ;;
 
   "fit2obs")
@@ -828,9 +827,8 @@ case ${step} in
     ;;
 
   "atmensanlinit")
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlinit="00:10:00"
     export npe_atmensanlinit=1
@@ -840,9 +838,8 @@ case ${step} in
     ;;
 
   "atmensanlrun")
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlrun="00:30:00"
     export npe_atmensanlrun=$(( layout_x * layout_y * 6 ))
@@ -850,6 +847,7 @@ case ${step} in
     export nth_atmensanlrun=1
     export nth_atmensanlrun_gfs=${nth_atmensanlrun}
     export npe_node_atmensanlrun=$(( npe_node_max / nth_atmensanlrun ))
+    export memory_atmensanlrun="96GB"
     export is_exclusive=True
     ;;
 
