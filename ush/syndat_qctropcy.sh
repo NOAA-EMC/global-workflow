@@ -44,7 +44,6 @@
 #   COMSP  - path to both output jtwc-fnoc file and output tcvitals file (this
 #             tcvitals file is read by subsequent relocation processing and/or
 #             subsequent program SYNDAT_SYNDATA)
-#   EXECSYND  - path to syndat executable directory
 
 # Imported variables that can be passed in:
 #   ARCHSYND  - path to syndat archive directory
@@ -70,8 +69,6 @@ ARCHSYND=${ARCHSYND:-$COMROOTp3/gfs/prod/syndat}
 HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
-
-EXECSYND=${EXECSYND:-$HOMEgfs/exec}
 
 slmask=${slmask:-${FIXgfs}/am/syndat_slmask.t126.gaussian}
 copy_back=${copy_back:-YES}
@@ -239,7 +236,7 @@ cp $slmask slmask.126
  
 #  Execute program syndat_qctropcy
 
-pgm=$(basename $EXECSYND/syndat_qctropcy.x)
+pgm=$(basename ${EXECgfs}/syndat_qctropcy.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -253,7 +250,7 @@ fi
 echo "$CDATE10"      > cdate10.dat
 export FORT11=slmask.126
 export FORT12=cdate10.dat
-${EXECSYND}/${pgm} >> $pgmout 2> errfile
+${EXECgfs}/${pgm} >> $pgmout 2> errfile
 errqct=$?
 ###cat errfile
 cat errfile >> $pgmout

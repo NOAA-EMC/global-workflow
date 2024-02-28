@@ -122,27 +122,20 @@
 #     POE_OPTS      String indicating options to use with poe command
 #                   Default is "-pgmmodel mpmd -ilevel 2 -labelio yes \
 #                   -stdoutmode ordered"
-#     EXECRELO      String indicating directory path for RELOCATE executables
-#                   Default is "${HOMERELO}/exec"
-#     EXECUTIL      String indicating directory path for utility program
-#                   executables
-#                   If the imported variable MACHINE!=sgi, then the default is
-#                   "/nwprod/util/exec"; otherwise the default is
-#                   "${HOMEALL}/util/exec"
 #     RELOX         String indicating executable path for RELOCATE_MV_NVORTEX
 #                   program 
-#                   Default is "$EXECRELO/relocate_mv_nvortex"
+#                   Default is "${EXECgfs}/relocate_mv_nvortex"
 #     SUPVX         String indicating executable path for SUPVIT utility
 #                   program
-#                   Default is "$EXECUTIL/supvit.x"
+#                   Default is "${EXECgfs}/supvit.x"
 #     GETTX         String indicating executable path for GETTRK utility
 #                   program
-#                   Default is "$EXECUTIL/gettrk"
+#                   Default is "${EXECgfs}/gettrk"
 #     BKGFREQ       Frequency of background files for relocation
 #                   Default is "3" 
 #     SENDDBN       String when set to "YES" alerts output files to $COMSP
 #     NDATE         String indicating executable path for NDATE utility program
-#                   Default is "$EXECUTIL/ndate"
+#                   Default is "${EXECgfs}/ndate"
 #
 #     These do not have to be exported to this script.  If they are, they will
 #      be used by the script.  If they are not, they will be skipped
@@ -288,14 +281,12 @@ pgmout=${pgmout:-/dev/null}
 tstsp=${tstsp:-/tmp/null/}
 tmmark=${tmmark:-tm00}
 
-EXECRELO=${EXECRELO:-${HOMERELO}/exec}
-
-RELOX=${RELOX:-$EXECRELO/relocate_mv_nvortex}
+RELOX=${RELOX:-${EXECgfs}/relocate_mv_nvortex}
 
 export BKGFREQ=${BKGFREQ:-1}
 
-SUPVX=${SUPVX:-$EXECRELO/supvit.x}
-GETTX=${GETTX:-$EXECRELO/gettrk}
+SUPVX=${SUPVX:-${EXECgfs}/supvit.x}
+GETTX=${GETTX:-${EXECgfs}/gettrk}
 
 ################################################
 # EXECUTE TROPICAL CYCLONE RELOCATION PROCESSING

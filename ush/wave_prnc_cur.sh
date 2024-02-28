@@ -22,7 +22,7 @@
 ################################################################################
 #
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ymdh_rtofs=$1
 curfile=$2
@@ -75,7 +75,7 @@ ln -s "cur_glo_uv_${PDY}_${fext}${fh3}_5min.nc" "cur.nc"
 ln -s "${DATA}/mod_def.${WAVECUR_FID}" ./mod_def.ww3
 
 export pgm=ww3_prnc;. prep_step
-$EXECwave/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
+${EXECgfs}/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
 
 export err=$?; err_chk
 
