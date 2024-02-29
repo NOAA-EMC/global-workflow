@@ -53,9 +53,9 @@ OPTIND=1
 while getopts ":a:dghj:uvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
-    d) _build_debug="-d"
-       export BUILD_TYPE="Debug"
-       ;;  
+    d) _build_debug="-d" ;;
+#       export BUILD_TYPE="Debug"
+#       ;;  
     g) _build_gsi="YES" ;;
     h) _usage;;
     j) _build_job_max="${OPTARG} ";;
@@ -167,7 +167,6 @@ fi
 requested_cpus=0
 build_list=""
 for build in "${!build_jobs[@]}"; do
-   BUILD_TYPE=${BUILD_TYPE:-"Release"}
    if [[ -z "${build_list}" ]]; then
       build_list="${build}"
    else
