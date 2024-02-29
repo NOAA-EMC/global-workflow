@@ -346,7 +346,7 @@ if __name__ == '__main__':
     ComOut = os.getenv('COM_ATMOS_ANALYSIS', './')
     APrefix = os.getenv('APREFIX', '')
     NThreads = os.getenv('NTHREADS_CHGRES', 1)
-    FixDir = os.getenv('FIXam', './')
+    FixDir = os.path.join(os.getenv('FIXgfs', './'), 'am')
     atmges_ens_mean = os.getenv('ATMGES_ENSMEAN', './atmges_ensmean')
     RunDir = os.getenv('DATA', './')
     ExecCMD = os.getenv('APRUN_CALCANL', '')

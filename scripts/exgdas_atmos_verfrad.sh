@@ -37,9 +37,9 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    #------------------------------------------------------------------
    #  SATYPE is the list of expected satellite/instrument sources
-   #  in the radstat file.  It should be stored in the $TANKverf
-   #  directory.  If it isn't there then use the $FIXgdas copy.  In all
-   #  cases write it back out to the radmon.$PDY directory.  Add any
+   #  in the radstat file. It should be stored in the $TANKverf
+   #  directory. If it isn't there then use the gdas fix copy. In all
+   #  cases write it back out to the radmon.$PDY directory. Add any
    #  new sources to the list before writing back out.
    #------------------------------------------------------------------
 

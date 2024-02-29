@@ -16,12 +16,6 @@
 #
 #########################################################################
 
-
-
-   msg=" Make GEMPAK GIFS utility"
-   postmsg "$jlogfile" "$msg"
-
-
   set -x
 
 
@@ -31,7 +25,7 @@
 
   pixels="1728;1472"
 
-  cp $FIXgempak/coltbl.spc coltbl.xwp
+  cp ${HOMEgfs}/gempak/fix/coltbl.spc coltbl.xwp
 
 
  
@@ -222,10 +216,5 @@ if [ $SENDCOM = YES ]; then
  fi
 
 fi
-
-
-
-   msg=" GEMPAK_GIF ${fhr} hour completed normally"
-   postmsg "$jlogfile" "$msg"
 
    exit

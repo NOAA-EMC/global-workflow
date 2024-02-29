@@ -17,7 +17,6 @@ export MP_PULSE=0
 export CDO=${CDO_ROOT}/bin/cdo
 
 # Path to HOME Directory
-export FIXwave=${FIXwave:-${HOMEgfs}/fix/wave}
 export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
 export USHwave=${USHwave:-${HOMEgfs}/ush}
 export EXECwave=${EXECwave:-${HOMEgfs}/exec}

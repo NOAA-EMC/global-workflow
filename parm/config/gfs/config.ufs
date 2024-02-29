@@ -15,7 +15,7 @@ if (( $# <= 1 )); then
     echo "--fv3 C48|C96|C192|C384|C768|C1152|C3072"
     echo "--mom6 500|100|025"
     echo "--cice6 500|100|025"
-    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_200|glo_500|mx025"
+    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_200|glo_500|mx025|uglo_100km|uglo_m1g16"
     echo "--gocart"
 
     exit 1
@@ -415,6 +415,14 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ;;
     "mx025")
       ntasks_ww3=80
+      ;;
+    "uglo_100km")
+      ntasks_ww3=40
+      nthreads_ww3=1
+      ;;
+    "uglo_m1g16")  
+      ntasks_ww3=1000
+      nthreads_ww3=1
       ;;
     *)
       echo "FATAL ERROR: Unsupported WW3 resolution = ${ww3_res}, ABORT!"

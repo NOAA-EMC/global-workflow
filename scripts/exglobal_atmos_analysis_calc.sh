@@ -23,7 +23,6 @@ source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
-export FIXam=${FIXam:-$HOMEgfs/fix/am}
 
 # Base variables
 CDUMP=${CDUMP:-"gdas"}

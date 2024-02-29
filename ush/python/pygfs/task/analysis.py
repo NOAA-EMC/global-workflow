@@ -99,7 +99,7 @@ class Analysis(Task):
                 obdir = os.path.dirname(obfile)
                 basename = os.path.basename(obfile)
                 prefix = '.'.join(basename.split('.')[:-2])
-                for file in ['satbias.nc4', 'satbias_cov.nc4', 'tlapse.txt']:
+                for file in ['satbias.nc', 'satbias_cov.nc', 'tlapse.txt']:
                     bfile = f"{prefix}.{file}"
                     copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
 
@@ -311,13 +311,13 @@ class Analysis(Task):
         Parameters
         ----------
         statfile : str | os.PathLike
-            Path to the output .tar.gz .tgz file that will contain the diag*.nc4 files e.g. atmstat.tgz
+            Path to the output .tar.gz .tgz file that will contain the diag*.nc files e.g. atmstat.tgz
         diagdir : str | os.PathLike
             Directory containing JEDI diag files
         """
 
         # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(diagdir, 'diags', 'diag*nc4'))
+        diags = glob.glob(os.path.join(diagdir, 'diags', 'diag*nc'))
 
         logger.info(f"Compressing {len(diags)} diag files to {statfile}")
 

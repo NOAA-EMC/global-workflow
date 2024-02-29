@@ -22,27 +22,27 @@ DATA_RUN=$DATA/$RUN2
 mkdir -p $DATA_RUN
 cd $DATA_RUN
 
-cp $FIXgempak/g2varswmo2.tbl g2varswmo2.tbl
+cp ${HOMEgfs}/gempak/fix/g2varswmo2.tbl g2varswmo2.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File g2varswmo2.tbl file is missing."
    exit $err
 fi
-cp $FIXgempak/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
+cp ${HOMEgfs}/gempak/fix/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File g2vcrdwmo2.tbl file is missing."
    exit $err
 fi
 
-cp $FIXgempak/g2varsncep1.tbl g2varsncep1.tbl
+cp ${HOMEgfs}/gempak/fix/g2varsncep1.tbl g2varsncep1.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File g2varsncep1.tbl file is missing."
    exit $err
 fi
 
-cp $FIXgempak/g2vcrdncep1.tbl g2vcrdncep1.tbl
+cp ${HOMEgfs}/gempak/fix/g2vcrdncep1.tbl g2vcrdncep1.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File g2vcrdncep1.tbl file is missing."

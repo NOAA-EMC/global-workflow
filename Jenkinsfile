@@ -1,15 +1,15 @@
 def Machine = 'none'
 def machine = 'none'
 def HOME = 'none'
-def localworkspace = 'none'
-def commonworkspace = 'none'
+def caseList = ''
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
 
 pipeline {
     agent { label 'built-in' }
 
     options {
         skipDefaultCheckout()
-        buildDiscarder(logRotator(numToKeepStr: '2'))
+        parallelsAlwaysFailFast()
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -20,7 +20,6 @@ pipeline {
             agent { label 'built-in' }
             steps {
                 script {
-                    localworkspace = env.WORKSPACE
                     machine = 'none'
                     for (label in pullRequest.labels) {
                         echo "Label: ${label}"
@@ -42,17 +41,19 @@ pipeline {
             agent { label "${machine}-emc" }
             steps {
                 script {
-                    properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                    HOME = "${WORKSPACE}/TESTDIR"
-                    commonworkspace = "${WORKSPACE}"
-                    sh(script: "mkdir -p ${HOME}/RUNTESTS", returnStatus: true)
-                    pullRequest.addLabel("CI-${Machine}-Building")
-                    if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
-                        pullRequest.removeLabel("CI-${Machine}-Ready")
+                    ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        HOME = "${WORKSPACE}"
+                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
+                        pullRequest.addLabel("CI-${Machine}-Building")
+                        if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
+                            pullRequest.removeLabel("CI-${Machine}-Ready")
+                        }
+                    }
+                    pullRequest.comment("Building and running on ${Machine} in directory ${HOME}")
                 }
             }
         }
-    }
 
         stage('Build System') {
             matrix {
@@ -71,35 +72,42 @@ pipeline {
                         steps {
                             script {
                                 def HOMEgfs = "${HOME}/${system}" // local HOMEgfs is used to build the system on per system basis under the common workspace HOME
-                                sh(script: "mkdir -p ${HOMEgfs}", returnStatus: true)
+                                sh(script: "mkdir -p ${HOMEgfs}")
                                 ws(HOMEgfs) {
-                                    env.MACHINE_ID = machine // MACHINE_ID is used in the build scripts to determine the machine and is added to the shell environment
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
-                                        ws(commonworkspace) { pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}") }
+                                        pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}<br>Still doing a checkout to get the latest changes")
+                                        checkout scm
+                                        dir('sorc') {
+                                            sh(script: './link_workflow.sh')
+                                        }
                                     } else {
                                         checkout scm
-                                        sh(script: 'source workflow/gw_setup.sh;which git;git --version;git submodule update --init --recursive', returnStatus: true)
                                         def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
                                         dir("${HOMEgfs}/sorc") {
-                                            sh(script: "${build_args}", returnStatus: true)
-                                            sh(script: './link_workflow.sh', returnStatus: true)
-                                            sh(script: "echo ${HOMEgfs} > BUILT_semaphor", returnStatus: true)
+                                            sh(script: "${build_args}")
+                                            sh(script: './link_workflow.sh')
+                                            sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
                                         }
                                     }
-                                    if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
-                                        pullRequest.removeLabel("CI-${Machine}-Building")
-                                }
-                                    pullRequest.addLabel("CI-${Machine}-Running")
-                            }
+                                    if (env.CHANGE_ID && system == 'gfs') {
+                                       if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
+                                           pullRequest.removeLabel("CI-${Machine}-Building")
+                                       }
+                                       pullRequest.addLabel("CI-${Machine}-Running")
+                                    }
+                                    if (system == 'gfs') {
+                                        caseList = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
+                                    }
+                               }
+                           }
                         }
                     }
                 }
             }
         }
-}
 
         stage('Run Tests') {
             matrix {
@@ -108,23 +116,31 @@ pipeline {
                     axis {
                         name 'Case'
                         // TODO add dynamic list of cases from env vars (needs addtional plugins)
-                        values 'C48_ATM', 'C48_S2SWA_gefs', 'C48_S2SW', 'C96_atm3DVar', 'C48mx500_3DVarAOWCDA', 'C96C48_hybatmDA', 'C96_atmsnowDA'
+                        values 'C48C48_ufs_hybatmDA', 'C48_ATM', 'C48_S2SW', 'C48_S2SWA_gefs', 'C48mx500_3DVarAOWCDA', 'C96C48_hybatmDA', 'C96_atm3DVar', 'C96_atmsnowDA'
                     }
                 }
                 stages {
-                    stage('Create Experiment') {
+
+                    stage('Create Experiments') {
+                        when {
+                            expression { return caseList.contains(Case) }
+                        }
                         steps {
                                 script {
-                                    sh(script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp", returnStatus: true)
+                                    sh(script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp")
                                     def yaml_case = readYaml file: "${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp"
                                     system = yaml_case.experiment.system
                                     def HOMEgfs = "${HOME}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
                                     env.RUNTESTS = "${HOME}/RUNTESTS"
-                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStatus: true)
+                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml")
                                 }
                         }
                     }
+
                     stage('Run Experiments') {
+                        when {
+                            expression { return caseList.contains(Case) }
+                        }
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
@@ -132,16 +148,28 @@ pipeline {
                                     pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
                                     pullRequest.comment("**Running** experiment: ${Case} on ${Machine}<br>With the experiment in directory:<br>`${HOME}/RUNTESTS/${pslot}`")
                                     try {
-                                        sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}", returnStatus: true)
+                                       sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
                                     } catch (Exception e) {
                                         pullRequest.comment("**FAILURE** running experiment: ${Case} on ${Machine}")
+                                        sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
+                                        ws(HOME) {
+                                            if (fileExists('RUNTESTS/error.logs')) {
+                                                def fileContent = readFile 'RUNTESTS/error.logs'
+                                                def lines = fileContent.readLines()
+                                                for (line in lines) {
+                                                    echo "archiving: ${line}"
+                                                    archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                }   
+                                            }
+                                        }
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
-                                    pullRequest.comment("**SUCCESS** running experiment: ${Case} on ${Machine}")
                                 }
+                                pullRequest.comment("**SUCCESS** running experiment: ${Case} on ${Machine}")
                             }
                         }
                     }
+
                 }
             }
         }
@@ -174,14 +202,6 @@ pipeline {
                     pullRequest.addLabel("CI-${Machine}-Failed")
                     def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
                     pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
-                }
-                if (fileExists('${HOME}/RUNTESTS/ci.log')) {
-                    def fileContent = readFile '${HOME}/RUNTESTS/ci.log'
-                    fileContent.eachLine { line ->
-                        if (line.contains('.log')) {
-                            archiveArtifacts artifacts: "${line}", fingerprint: true
-                        }
-                    }
                 }
             }
         }

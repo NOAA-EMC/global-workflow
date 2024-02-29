@@ -20,7 +20,12 @@ class GEFSAppConfig(AppConfig):
             configs += ['efcs']
 
         if self.do_wave:
-            configs += ['waveinit']
+            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
+            if self.do_wave_bnd:
+                configs += ['wavepostbndpnt', 'wavepostbndpntbll']
+
+        if self.do_ocean or self.do_ice:
+            configs += ['oceanice_products']
 
         return configs
 
@@ -45,6 +50,18 @@ class GEFSAppConfig(AppConfig):
         if self.nens > 0:
             tasks += ['efcs']
 
-        tasks += ['atmprod']
+        tasks += ['atmos_prod']
+
+        if self.do_ocean:
+            tasks += ['ocean_prod']
+
+        if self.do_ice:
+            tasks += ['ice_prod']
+
+        if self.do_wave:
+            tasks += ['wavepostsbs']
+            if self.do_wave_bnd:
+                tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
+            tasks += ['wavepostpnt']
 
         return {f"{self._base['CDUMP']}": tasks}
