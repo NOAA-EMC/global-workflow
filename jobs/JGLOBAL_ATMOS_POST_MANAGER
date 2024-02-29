@@ -12,11 +12,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
-####################################
-# Specify Execution Areas
-####################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
-
 ###########################
 # Set up EXT variable
 ###########################

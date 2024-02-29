@@ -9,7 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 ##############################################
 export CDUMP=${RUN/enkf}
 
-
 ########################################
 # Runs GFS BUFR SOUNDINGS
 ########################################
@@ -17,12 +16,6 @@ export CDUMP=${RUN/enkf}
 export model=${model:-gfs}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-
-###################################
-# Set up the source directories
-###################################
-
-export HOMEbufrsnd=${HOMEbufrsnd:-${HOMEgfs}}
 
 ##############################
 # Define COM Directories

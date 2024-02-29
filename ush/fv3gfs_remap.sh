@@ -5,16 +5,13 @@
 #-- Fanglin Yang, October 2016
 #--------------------------------------
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 export CDATE=${CDATE:-"2016100300"}
 export CASE=${CASE:-"C192"}           # C48 C96 C192 C384 C768 C1152 C3072
 export GG=${master_grid:-"0p25deg"}   # 1deg 0p5deg 0p25deg 0p125deg
 
-pwd=$(pwd)
-export DATA=${DATA:-$pwd}
-export HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
-export REMAPEXE=${REMAPEXE:-$HOMEgfs/exec/fregrid_parallel}
+export REMAPEXE=${REMAPEXE:-${EXECgfs}/fregrid_parallel}
 export IPD4=${IPD4:-"YES"}
 
 cycn=$(echo $CDATE | cut -c 9-10)

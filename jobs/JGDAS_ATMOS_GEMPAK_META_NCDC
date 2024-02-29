@@ -9,14 +9,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
-################################
-# Set up the HOME directory
-################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
-
-#
 # Now set up GEMPAK/NTRANS environment
-#
 
 cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
