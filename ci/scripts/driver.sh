@@ -67,7 +67,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 if [[ ! -f "${pr_list_dbfile}" ]]; then
   "${ROOT_DIR}/ci/scripts/pr_list_database.py" --create --dbfile "${pr_list_dbfile}"
 fi
-
+pr_list=""
 pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
 
 # If the pr_list is empty (No Ready labels) check to see if there are PRs with the CI-KILL label
@@ -140,7 +140,7 @@ for pr in ${pr_list}; do
     else
       for case in ${experiments}; do
         case_name=$(basename "${case}")
-        cancel_slurm_jobs "${case_name}"
+        cancel_batch_jobs "${case_name}"
         {
           echo "Canceled all jobs for experiment ${case_name} in PR:${pr} on ${MACHINE_ID^}"
         } >> "${output_ci_single}"
@@ -177,6 +177,7 @@ fi
 
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
+  pr_building=""
   pr_building=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
   if [[ -z "${pr_building}" ]]; then
       continue
