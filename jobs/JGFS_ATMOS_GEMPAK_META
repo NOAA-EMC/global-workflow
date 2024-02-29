@@ -18,11 +18,6 @@ export MP_LABELIO=yes
 export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
-################################
-# Set up the HOME directory
-################################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-
 cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 #############################################

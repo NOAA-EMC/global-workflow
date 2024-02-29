@@ -10,11 +10,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
-################################
-# Set up the HOME directory
-################################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################

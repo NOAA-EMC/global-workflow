@@ -3,15 +3,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
-
-################################
-# Set up the HOME directory
-################################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-
-# For half-degree P Grib files
-export DO_HD_PGRB=${DO_HD_PGRB:-YES}
-
 ############################################
 # Set up model and cycle specific variables
 ############################################
@@ -21,6 +12,9 @@ export model=${model:-gfs}
 export GRIB=${GRIB:-pgrb2f}
 export EXT=""
 export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GFS_GEMPAK}
+
+# For half-degree P Grib files
+export DO_HD_PGRB=${DO_HD_PGRB:-YES}
 
 ###################################
 # Specify NET and RUN Name and model

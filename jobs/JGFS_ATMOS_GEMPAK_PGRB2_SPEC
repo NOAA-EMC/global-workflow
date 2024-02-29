@@ -6,15 +6,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_spec" -c "base"
 
-
-################################
-# Set up the HOME directory
-################################
-export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
-
-# For half-degree P Grib files
-#export DO_HD_PGRB=YES
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################
@@ -22,6 +13,9 @@ export COMPONENT="atmos"
 export finc=3
 export model=gfs
 export EXT=""
+
+# For half-degree P Grib files
+#export DO_HD_PGRB=YES
 
 ##############################################
 # Define COM directories
