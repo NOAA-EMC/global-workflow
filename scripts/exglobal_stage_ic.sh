@@ -104,6 +104,15 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
         ;;
     esac
 
+    # Ocean Perturbation Files
+    if [[ "${MEMDIR}" != "mem000" ]]; then
+        src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.mom6_increment.nc"
+        tgt="${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.mom6_increment.nc"
+        ${NCP} "${src}" "${tgt}"
+        rc=${?}
+        ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+    fi
+
     # TODO: Do mediator restarts exists in a ATMW configuration?
     # TODO: No mediator is presumably involved in an ATMA configuration
     if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
