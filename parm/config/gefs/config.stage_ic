@@ -8,7 +8,7 @@ echo "BEGIN: config.stage_ic"
 source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
-  "C348")
+  "C384")
     export CPL_ATMIC=""
     export CPL_ICEIC=""
     export CPL_OCNIC=""
