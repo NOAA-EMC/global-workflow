@@ -55,9 +55,6 @@ cycle2=${5:-${cycle2:?}}
 diag_rpt=${6:-${diag_rpt:?}}
 outfile=${7:-${outfile:?}}
 
-# Directories
-HOMEradmon=${HOMEradmon:-$(pwd)}
-
 # Other variables
 err=0
 RADMON_SUFFIX=${RADMON_SUFFIX}

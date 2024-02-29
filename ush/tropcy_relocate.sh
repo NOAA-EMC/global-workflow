@@ -84,13 +84,6 @@
 #     envir         String indicating environment under which job runs ('prod'
 #                   or 'test')
 #                   Default is "prod"
-#     HOMEALL       String indicating parent directory path for some or 
-#                   all files under which job runs.
-#                   If the imported variable MACHINE!=sgi, then the default is
-#                   "/nw${envir}"; otherwise the default is
-#                   "/disk1/users/snake/prepobs"
-#     HOMERELO      String indicating parent directory path for relocation
-#                   specific files.  (May be under HOMEALL)
 #     envir_getges  String indicating environment under which GETGES utility
 #                   ush runs (see documentation in ${USHgfs}/getges.sh for
 #                   more information)
@@ -190,7 +183,7 @@
 #
 ####
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 
@@ -260,14 +253,6 @@ set_trace
 #  --------------------------------------------------------
 
 envir=${envir:-prod}
-
-if [ $MACHINE != sgi ]; then
-   HOMEALL=${HOMEALL:-$OPSROOT}
-else
-   HOMEALL=${HOMEALL:-/disk1/users/snake/prepobs}
-fi
-
-HOMERELO=${HOMERELO:-${shared_global_home}}
 
 envir_getges=${envir_getges:-$envir}
 if [ $modhr -eq 0 ]; then

@@ -149,7 +149,7 @@ if [[ "${esmf_profile:-}" = ".true." ]]; then
   export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 fi
 
-${NCP} "${FCSTEXECDIR}/${FCSTEXEC}" "${DATA}/"
+${NCP} "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2
 export ERR=$?
 export err=${ERR}

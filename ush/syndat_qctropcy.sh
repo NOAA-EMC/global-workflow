@@ -63,10 +63,9 @@
 #                (Default: not set)
 #   TIMEIT   - optional time and resource reporting (Default: not set)
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ARCHSYND=${ARCHSYND:-$COMROOTp3/gfs/prod/syndat}
-HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
@@ -196,12 +195,9 @@ rm -f nhc fnoc lthistry
 #  All are input to program syndat_qctropcy
 #  ------------------------------------------------------------------
 
-if [ -s $HOMENHC/tcvitals ]; then
+if [ -s ${HOMENHC}/tcvitals ]; then
    echo "tcvitals found" >> $pgmout
-   cp $HOMENHC/tcvitals nhc
-elif [ -s $HOMENHCp1/tcvitals ]; then
-   echo "tcvitals found" >> $pgmout
-   cp $HOMENHCp1/tcvitals nhc
+   cp ${HOMENHC}/tcvitals nhc
 else
    echo "WARNING: tcvitals not found, create empty tcvitals" >> $pgmout
    > nhc
@@ -314,28 +310,25 @@ diff nhc nhc.ORIG > /dev/null
 errdiff=$?
 
 ###################################
-#  Update NHC file in $HOMENHC
+#  Update NHC file in ${HOMENHC}
 ###################################
 
 if test "$errdiff" -ne '0'
 then
 
    if [ "$copy_back" = 'YES' -a ${envir} = 'prod' ]; then
-      if [ -s $HOMENHC/tcvitals ]; then
-         cp nhc $HOMENHC/tcvitals
-      fi
-      if [ -s $HOMENHCp1/tcvitals ]; then
-         cp nhc $HOMENHCp1/tcvitals
+      if [ -s ${HOMENHC}/tcvitals ]; then
+         cp nhc ${HOMENHC}/tcvitals
       fi
 
       err=$?
 
       if [ "$err" -ne '0' ]; then
          msg="###ERROR: Previous NHC Synthetic Data Record File \
-$HOMENHC/tcvitals not updated by syndat_qctropcy"
+${HOMENHC}/tcvitals not updated by syndat_qctropcy"
       else
          msg="Previous NHC Synthetic Data Record File \
-$HOMENHC/tcvitals successfully updated by syndat_qctropcy"
+${HOMENHC}/tcvitals successfully updated by syndat_qctropcy"
       fi
 
       set +x
@@ -348,7 +341,7 @@ $HOMENHC/tcvitals successfully updated by syndat_qctropcy"
 
 else
 
-   msg="Previous NHC Synthetic Data Record File $HOMENHC/tcvitals \
+   msg="Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals \
 not changed by syndat_qctropcy"
    set +x
    echo
