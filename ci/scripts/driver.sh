@@ -151,10 +151,8 @@ for pr in ${pr_list}; do
     "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     if [[ -n "${pr_kill_list}" ]]; then
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-Kill"
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready"
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building"
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running"
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-Kill"
       rm -Rf "${GFS_CI_ROOT}/PR/${pr}"
     else
       "${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
