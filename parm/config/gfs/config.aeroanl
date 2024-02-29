@@ -10,8 +10,7 @@ export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/aero/obs/config/
 export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/aero/obs/lists/gdas_aero_prototype.yaml
 export STATICB_TYPE='identity'
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/berror/staticb_${STATICB_TYPE}.yaml
-export FIXgdas=${HOMEgfs}/fix/gdas
-export BERROR_DATA_DIR=${FIXgdas}/bump/aero/${CASE_ANL}/
+export BERROR_DATA_DIR=${FIXgfs}/gdas/bump/aero/${CASE_ANL}/
 export BERROR_DATE="20160630.000000"
 
 export io_layout_x=@IO_LAYOUT_X@

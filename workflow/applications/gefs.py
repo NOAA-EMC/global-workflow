@@ -14,13 +14,18 @@ class GEFSAppConfig(AppConfig):
         """
         Returns the config_files that are involved in gefs
         """
-        configs = ['stage_ic', 'fcst']
+        configs = ['stage_ic', 'fcst', 'atmos_products']
 
         if self.nens > 0:
             configs += ['efcs']
 
         if self.do_wave:
-            configs += ['waveinit']
+            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
+            if self.do_wave_bnd:
+                configs += ['wavepostbndpnt', 'wavepostbndpntbll']
+
+        if self.do_ocean or self.do_ice:
+            configs += ['oceanice_products']
 
         return configs
 
@@ -44,5 +49,19 @@ class GEFSAppConfig(AppConfig):
 
         if self.nens > 0:
             tasks += ['efcs']
+
+        tasks += ['atmos_prod']
+
+        if self.do_ocean:
+            tasks += ['ocean_prod']
+
+        if self.do_ice:
+            tasks += ['ice_prod']
+
+        if self.do_wave:
+            tasks += ['wavepostsbs']
+            if self.do_wave_bnd:
+                tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
+            tasks += ['wavepostpnt']
 
         return {f"{self._base['CDUMP']}": tasks}

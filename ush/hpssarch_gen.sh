@@ -92,7 +92,7 @@ if [[ ${type} = "gfs" ]]; then
   #  This uses the bash extended globbing option
   {
     echo "./logs/${PDY}${cyc}/gfs!(arch).log"
-    echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/input.nml"
+    echo "${COM_CONF/${ROTDIR}\//}/ufs.input.nml"
 
     if [[ ${MODE} = "cycled" ]]; then
       if [[ -s "${COM_ATMOS_ANALYSIS}/${head}gsistat" ]]; then
@@ -251,48 +251,64 @@ if [[ ${type} = "gfs" ]]; then
     } >> "${DATA}/gfswave.txt"
   fi
 
-  if [[ ${DO_OCN} = "YES" ]]; then
+  if [[ "${DO_OCN}" == "YES" ]]; then
 
-    head="gfs.t${cyc}z."
+    head="gfs.ocean.t${cyc}z."
+    rm -f "${DATA}/ocean_6hravg.txt"; touch "${DATA}/ocean_6hravg.txt"
+    rm -f "${DATA}/ocean_daily.txt"; touch "${DATA}/ocean_daily.txt"
+    rm -f "${DATA}/ocean_grib2.txt"; touch "${DATA}/ocean_grib2.txt"
 
-    rm -f "${DATA}/gfs_flux_1p00.txt"
-    rm -f "${DATA}/ocn_ice_grib2_0p5.txt"
-    rm -f "${DATA}/ocn_ice_grib2_0p25.txt"
-    rm -f "${DATA}/ocn_2D.txt"
-    rm -f "${DATA}/ocn_3D.txt"
-    rm -f "${DATA}/ocn_xsect.txt"
-    rm -f "${DATA}/ocn_daily.txt"
-    touch "${DATA}/gfs_flux_1p00.txt"
-    touch "${DATA}/ocn_ice_grib2_0p5.txt"
-    touch "${DATA}/ocn_ice_grib2_0p25.txt"
-    touch "${DATA}/ocn_2D.txt"
-    touch "${DATA}/ocn_3D.txt"
-    touch "${DATA}/ocn_xsect.txt"
-    touch "${DATA}/ocn_daily.txt"
-    echo "${COM_OCEAN_INPUT/${ROTDIR}\//}/MOM_input" >> "${DATA}/ocn_2D.txt"
-    echo "${COM_OCEAN_2D/${ROTDIR}\//}/ocn_2D*" >> "${DATA}/ocn_2D.txt"
-    echo "${COM_OCEAN_3D/${ROTDIR}\//}/ocn_3D*" >> "${DATA}/ocn_3D.txt"
-    echo "${COM_OCEAN_XSECT/${ROTDIR}\//}/ocn*EQ*" >> "${DATA}/ocn_xsect.txt"
-    echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/ocn_daily*" >> "${DATA}/ocn_daily.txt"
-    echo "${COM_OCEAN_GRIB_0p50/${ROTDIR}\//}/ocn_ice*0p5x0p5.grb2" >> "${DATA}/ocn_ice_grib2_0p5.txt"
-    echo "${COM_OCEAN_GRIB_0p25/${ROTDIR}\//}/ocn_ice*0p25x0p25.grb2" >> "${DATA}/ocn_ice_grib2_0p25.txt"
+    echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/${head}6hr_avg.f*.nc" >> "${DATA}/ocean_6hravg.txt"
+    echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/${head}daily.f*.nc" >> "${DATA}/ocean_daily.txt"
+
+    {
+      if [[ -d "${COM_OCEAN_GRIB}/5p00" ]]; then
+        echo "${COM_OCEAN_GRIB/${ROTDIR}\//}/5p00/${head}5p00.f*.grib2"
+        echo "${COM_OCEAN_GRIB/${ROTDIR}\//}/5p00/${head}5p00.f*.grib2.idx"
+      fi
+      if [[ -d "${COM_OCEAN_GRIB}/1p00" ]]; then
+        echo "${COM_OCEAN_GRIB/${ROTDIR}\//}/1p00/${head}1p00.f*.grib2"
+        echo "${COM_OCEAN_GRIB/${ROTDIR}\//}/1p00/${head}1p00.f*.grib2.idx"
+      fi
+      if [[ -d "${COM_OCEAN_GRIB}/0p25" ]]; then
+        echo "${COM_OCEAN_GRIB/${ROTDIR}\//}/0p25/${head}0p25.f*.grib2"
+        echo "${COM_OCEAN_GRIB/${ROTDIR}\//}/0p25/${head}0p25.f*.grib2.idx"
+      fi
+    } >> "${DATA}/ocean_grib2.txt"
 
     # Also save fluxes from atmosphere
+    head="gfs.t${cyc}z."
+    rm -f "${DATA}/gfs_flux_1p00.txt"; touch "${DATA}/gfs_flux_1p00.txt"
     {
       echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}flux.1p00.f???"
       echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}flux.1p00.f???.idx"
     } >> "${DATA}/gfs_flux_1p00.txt"
   fi
 
-  if [[ ${DO_ICE} = "YES" ]]; then
-    head="gfs.t${cyc}z."
+  if [[ "${DO_ICE}" == "YES" ]]; then
+    head="gfs.ice.t${cyc}z."
+    rm -f "${DATA}/ice_6hravg.txt"; touch "${DATA}/ice_6hravg.txt"
+    rm -f "${DATA}/ice_grib2.txt"; touch "${DATA}/ice_grib2.txt"
 
-    rm -f "${DATA}/ice.txt"
-    touch "${DATA}/ice.txt"
     {
-      echo "${COM_ICE_INPUT/${ROTDIR}\//}/ice_in"
-      echo "${COM_ICE_HISTORY/${ROTDIR}\//}/ice*nc"
-    } >> "${DATA}/ice.txt"
+      echo "${COM_ICE_HISTORY/${ROTDIR}\//}/${head}ic.nc"
+      echo "${COM_ICE_HISTORY/${ROTDIR}\//}/${head}6hr_avg.f*.nc"
+    } >> "${DATA}/ice_6hravg.txt"
+
+    {
+      if [[ -d "${COM_ICE_GRIB}/5p00" ]]; then
+        echo "${COM_ICE_GRIB/${ROTDIR}\//}/5p00/${head}5p00.f*.grib2"
+        echo "${COM_ICE_GRIB/${ROTDIR}\//}/5p00/${head}5p00.f*.grib2.idx"
+      fi
+      if [[ -d "${COM_ICE_GRIB}/1p00" ]]; then
+        echo "${COM_ICE_GRIB/${ROTDIR}\//}/1p00/${head}1p00.f*.grib2"
+        echo "${COM_ICE_GRIB/${ROTDIR}\//}/1p00/${head}1p00.f*.grib2.idx"
+      fi
+      if [[ -d "${COM_ICE_GRIB}/0p25" ]]; then
+        echo "${COM_ICE_GRIB/${ROTDIR}\//}/0p25/${head}0p25.f*.grib2"
+        echo "${COM_ICE_GRIB/${ROTDIR}\//}/0p25/${head}0p25.f*.grib2.idx"
+      fi
+    } >> "${DATA}/ice_grib2.txt"
   fi
 
   if [[ ${DO_AERO} = "YES" ]]; then
@@ -368,7 +384,10 @@ if [[ ${type} == "gdas" ]]; then
         echo "./logs/${PDY}${cyc}/gdas${fstep}.log"
       fi
     done
-    echo "./logs/${PDY}${cyc}/gdaspost*.log"
+    echo "./logs/${PDY}${cyc}/gdas*prod*.log"
+    if [[ "${WRITE_DOPOST}" == ".false." ]]; then
+       echo "./logs/${PDY}${cyc}/gdas*upp*.log"
+    fi
 
     fh=0
     while [[ ${fh} -le 9 ]]; do
@@ -407,10 +426,13 @@ if [[ ${type} == "gdas" ]]; then
         fi
         subtyplist="gome_metop-b omi_aura ompslp_npp ompsnp_n20 ompsnp_npp ompstc8_n20 ompstc8_npp sbuv2_n19"
         for subtype in ${subtyplist}; do
-          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.${PDY}${cyc}.ieee_d${suffix}"
-          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.ctl"
-          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.${PDY}${cyc}.ieee_d${suffix}"
-          echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.ctl"
+          # On occassion, data is not available for some of these satellites.  Check for existence.
+          if [[ -s "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.${PDY}${cyc}.ieee_d${suffix}" ]]; then
+             echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.${PDY}${cyc}.ieee_d${suffix}"
+             echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.anl.ctl"
+             echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.${PDY}${cyc}.ieee_d${suffix}"
+             echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/${subtype}.ges.ctl"
+          fi
         done
         echo "${COM_ATMOS_OZNMON/${ROTDIR}\//}/${type}/stdout.${type}.tar.gz"
       done
@@ -612,8 +634,17 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
         fi
       fi
     done # loop over FHR
-    for fstep in eobs ecen esfc eupd efcs epos ; do
-     echo "logs/${PDY}${cyc}/${RUN}${fstep}*.log"
+    for fstep in fcst epos ; do
+      echo "logs/${PDY}${cyc}/${RUN}${fstep}*.log"
+    done
+
+  # eobs, ecen, esfc, and eupd are not run on the first cycle
+    for fstep in eobs ecen esfc eupd ; do
+       for log in "${ROTDIR}/logs/${PDY}${cyc}/${RUN}${fstep}"*".log"; do
+          if [[ -s "${log}" ]]; then
+             echo "logs/${PDY}${cyc}/${RUN}${fstep}*.log"
+          fi
+       done
     done
 
   # eomg* are optional jobs
@@ -751,4 +782,3 @@ fi   ##end of enkfgdas or enkfgfs
 #-----------------------------------------------------
 
 exit 0
-

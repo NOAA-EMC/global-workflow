@@ -26,7 +26,7 @@ export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 
 YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_ATMOS_ANALYSIS COM_ATMOS_RESTART \
-    COM_LAND_ANALYSIS
+    COM_SNOW_ANALYSIS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_OBS_PREV:COM_OBS_TMPL \

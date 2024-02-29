@@ -47,12 +47,15 @@ esac
 ######################################################
 # setup runtime env for correct python install and git
 ######################################################
+HOMEgfs=${ROOT_DIR}
+export HOMEgfs
 set +x
 source "${ROOT_DIR}/ci/scripts/utils/ci_utils.sh"
 source "${ROOT_DIR}/ush/module-setup.sh"
 module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 set -x
+unset HOMEgfs
 
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI

@@ -13,9 +13,6 @@
 #
 #########################################################################
 
-   msg=" Make GEMPAK GIFS utility"
-   postmsg "$jlogfile" "$msg"
-
   set -x
 
   MAPAREA="normal"
@@ -25,7 +22,7 @@
 
   pixels="1728;1472"
 
-  cp $FIXgempak/coltbl.spc coltbl.xwp
+  cp ${HOMEgfs}/gempak/fix/coltbl.spc coltbl.xwp
 
 #################################################################
 #              NORTHERN HEMISPHERE ANALYSIS CHARTS              # 
@@ -487,9 +484,5 @@ if [ $SENDCOM = YES ]; then
 
 fi
 
-
-
-   msg=" GEMPAK_GIF ${fhr} hour completed normally"
-   postmsg "$jlogfile" "$msg"
 
    exit

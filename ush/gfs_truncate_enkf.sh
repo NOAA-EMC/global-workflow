@@ -14,17 +14,16 @@ mkdir -p $DATATMP
 cd $DATATMP
 
 export LEVS=${LEVS_LORES:-64}
-export FIXam=${FIXam:-$HOMEgfs/fix/am}
 
 export CHGRESSH=${CHGRESSH:-${USHgfs}/global_chgres.sh}
 export CHGRESEXEC=${CHGRESEXEC-${EXECgfs}/global_chgres}
-export OROGRAPHY=${OROGRAPHY_LORES:-$FIXam/global_orography.t$JCAP.$LONB.$LATB.grb}
-export OROGRAPHY_UF=${OROGRAPHY_UF_LORES:-$FIXam/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
-export LONSPERLAT=${LONSPERLAT_LORES:-$FIXam/global_lonsperlat.t${JCAP}.$LONB.$LATB.txt}
-export SLMASK=${SLMASK_LORES:-$FIXam/global_slmask.t$JCAP.$LONB.$LATB.grb}
-export MTNVAR=${MTNVAR_LORES:-$FIXam/global_mtnvar.t$JCAP.$LONB.$LATB.f77}
-export SIGLEVEL=${SIGLEVEL_LORES:-$FIXam/global_hyblev.l${LEVS}.txt}
-export O3CLIM=${O3CLIM:-$FIXam/global_o3clim.txt}
+export OROGRAPHY=${OROGRAPHY_LORES:-${FIXgfs}/am/global_orography.t$JCAP.$LONB.$LATB.grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF_LORES:-${FIXgfs}/am/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
+export LONSPERLAT=${LONSPERLAT_LORES:-${FIXgfs}/am/global_lonsperlat.t${JCAP}.$LONB.$LATB.txt}
+export SLMASK=${SLMASK_LORES:-${FIXgfs}/am/global_slmask.t$JCAP.$LONB.$LATB.grb}
+export MTNVAR=${MTNVAR_LORES:-${FIXgfs}/am/global_mtnvar.t$JCAP.$LONB.$LATB.f77}
+export SIGLEVEL=${SIGLEVEL_LORES:-${FIXgfs}/am/global_hyblev.l${LEVS}.txt}
+export O3CLIM=${O3CLIM:-${FIXgfs}/am/global_o3clim.txt}
 
 use_ufo=.true.
 

@@ -21,6 +21,25 @@ string="--fv3 ${CASE}"
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
 
+# Forecast length for GFS forecast
+case ${RUN} in
+  *gfs)
+    # shellcheck disable=SC2153
+    export FHMAX=${FHMAX_GFS}
+    # shellcheck disable=SC2153
+    export FHOUT=${FHOUT_GFS}
+    export FHMAX_HF=${FHMAX_HF_GFS}
+    export FHOUT_HF=${FHOUT_HF_GFS}
+    export FHOUT_OCNICE=${FHOUT_OCNICE_GFS}
+    ;;
+  *gdas)
+    export FHMAX_HF=0
+    export FHOUT_HF=0
+    ;;
+  *)
+    echo "FATAL ERROR: Unsupported RUN '${RUN}'"
+    exit 1
+esac
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
@@ -231,20 +250,6 @@ export FSICL="0"
 export FSICS="0"
 
 #---------------------------------------------------------------------
-
-# ideflate: netcdf zlib lossless compression (0-9): 0 no compression
-# nbits: netcdf lossy compression level (0-32): 0 lossless
-export ideflate=1
-export nbits=14
-export ishuffle=0
-# compression for RESTART files written by FMS
-export shuffle=1
-export deflate_level=1
-
-#---------------------------------------------------------------------
-# Disable the use of coupler.res; get model start time from model_configure
-export USE_COUPLER_RES="NO"
-
 if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling

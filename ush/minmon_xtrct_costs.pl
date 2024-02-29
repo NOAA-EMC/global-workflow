@@ -22,8 +22,8 @@ sub  trim { my $s = shift; $s =~ s/^\s+|\s+$//g; return $s };
 #
 #---------------------------
 
-if ($#ARGV != 4 ) {
-	print "usage: minmon_xtrct_costs.pl SUFFIX PDY cyc infile jlogfile\n";
+if ($#ARGV != 3 ) {
+	print "usage: minmon_xtrct_costs.pl SUFFIX PDY cyc infile\n";
 	exit;
 }
 my $suffix = $ARGV[0];
@@ -31,7 +31,6 @@ my $suffix = $ARGV[0];
 my $pdy      = $ARGV[1];
 my $cyc      = $ARGV[2];
 my $infile   = $ARGV[3];
-my $jlogfile = $ARGV[4];
 
 my $use_costterms = 0;
 my $no_data       = 0.00;

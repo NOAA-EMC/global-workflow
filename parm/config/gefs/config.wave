@@ -7,11 +7,7 @@ echo "BEGIN: config.wave"
 
 # Parameters that are common to all wave model steps
 
-# System and version
-export wave_sys_ver=v1.0.0
-
 export EXECwave="${HOMEgfs}/exec"
-export FIXwave="${HOMEgfs}/fix/wave"
 export PARMwave="${HOMEgfs}/parm/wave"
 export USHwave="${HOMEgfs}/ush"
 

@@ -8,7 +8,7 @@
 ## This script is a definition of functions.
 #####
 
-# For all non-evironment variables
+# For all non-environment variables
 # Cycling and forecast hour specific parameters
 
 FV3_det(){

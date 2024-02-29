@@ -5,9 +5,10 @@ experiment:
 arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATM
-  resdet: 384
-  resens: 192
-  comrot: {{ 'RUNTESTS' | getenv }}/COMROT
+  resdetatmos: 384
+  resdetocean: 0.25
+  resensatmos: 192
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C384C192
   idate: 2023040118
@@ -15,4 +16,4 @@ arguments:
   nens: 2
   gfs_cyc: 1
   start: cold
-  yaml: {{ HOMEgfs }}/ci/platforms/gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml

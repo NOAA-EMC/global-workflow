@@ -4,6 +4,7 @@ import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
 from wxflow import Template, TemplateConstants, to_timedelta
+from typing import List
 
 __all__ = ['Tasks']
 
@@ -13,15 +14,16 @@ class Tasks:
     VALID_TASKS = ['aerosol_init', 'stage_ic',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal',
+                   'prepoceanobs',
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'preplandobs', 'landanl',
+                   'prepsnowobs', 'snowanl',
                    'fcst',
-                   'atmanlupp', 'atmanlprod', 'atmupp', 'atmprod', 'goesupp',
-                   'ocnpost',
+                   'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
+                   'atmosprod', 'oceanprod', 'iceprod',
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
                    'tracker', 'genesis', 'genesis_fsu',
@@ -45,6 +47,7 @@ class Tasks:
         self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
+        self.nmem = int(self._base['NMEM_ENS'])
         self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
@@ -70,12 +73,6 @@ class Tasks:
             envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         return envars
-
-    @staticmethod
-    def _get_hybgroups(nens: int, nmem_per_group: int, start_index: int = 1):
-        ngrps = nens / nmem_per_group
-        groups = ' '.join([f'{x:02d}' for x in range(start_index, int(ngrps) + 1)])
-        return groups
 
     def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:
         '''
@@ -121,6 +118,40 @@ class Tasks:
         return Template.substitute_structure(template,
                                              TemplateConstants.DOLLAR_CURLY_BRACE,
                                              rocoto_conversion_dict.get)
+
+    @staticmethod
+    def _get_forecast_hours(cdump, config, component='atmos') -> List[str]:
+        # Make a local copy of the config to avoid modifying the original
+        local_config = config.copy()
+
+        # Ocean/Ice components do not have a HF output option like the atmosphere
+        if component in ['ocean', 'ice']:
+            local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_OCNICE_GFS']
+            local_config['FHOUT_GFS'] = config['FHOUT_OCNICE_GFS']
+            local_config['FHOUT'] = config['FHOUT_OCNICE']
+
+        fhmin = local_config['FHMIN']
+
+        # Get a list of all forecast hours
+        fhrs = []
+        if cdump in ['gdas']:
+            fhmax = local_config['FHMAX']
+            fhout = local_config['FHOUT']
+            fhrs = list(range(fhmin, fhmax + fhout, fhout))
+        elif cdump in ['gfs', 'gefs']:
+            fhmax = local_config['FHMAX_GFS']
+            fhout = local_config['FHOUT_GFS']
+            fhmax_hf = local_config['FHMAX_HF_GFS']
+            fhout_hf = local_config['FHOUT_HF_GFS']
+            fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
+            fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+
+        # ocean/ice components do not have fhr 0 as they are averaged output
+        if component in ['ocean', 'ice']:
+            fhrs.remove(0)
+
+        return fhrs
 
     def get_resource(self, task_name):
         """

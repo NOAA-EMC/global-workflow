@@ -12,17 +12,20 @@ pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this scr
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
-# 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
+# 2. RUNTESTS: A directory containing EXPDIR and COMROOT for experiments
 # # e.g. $> tree ./TEST_DIR
 # ./TEST_DIR
 # ├── HOMEgfs
 # └── RUNTESTS
-#     ├── COMROT
+#     ├── COMROOT
 #     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}
-HOMEgfs="${TEST_DIR}/HOMEgfs"
+# Two system build directories created at build time gfs, and gdas
+# TODO: Make this configurable (for now all scripts run from gfs for CI at runtime)
+HOMEgfs="${TEST_DIR}/gfs"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
+run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
 # Source modules and setup logging
 echo "Source modules."
@@ -75,15 +78,16 @@ while true; do
     {
       echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
       echo "Experiment ${pslot} Terminated: *FAILED*"
-    } >> "${RUNTESTS}/ci.log"
-
+    } | tee -a "${run_check_logfile}"
     error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
     {
      echo "Error logs:"
      echo "${error_logs}"
-    } >> "${RUNTESTS}/ci.log"
-    sed -i "s/\`\`\`//2g" "${RUNTESTS}/ci.log"
-    sacct --format=jobid,jobname%35,WorkDir%100,stat | grep "${pslot}" | grep "${pr}\/RUNTESTS" |  awk '{print $1}' | xargs scancel || true
+    } | tee -a  "${run_check_logfile}"
+    # rm -f "${RUNTESTS}/error.logs"
+    for log in ${error_logs}; do
+      echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/error.logs"
+    done
     rc=1
     break
   fi
@@ -93,8 +97,7 @@ while true; do
       echo "Experiment ${pslot} Completed at $(date)" || true
       echo "with ${num_succeeded} successfully completed jobs" || true
       echo "Experiment ${pslot} Completed: *SUCCESS*"
-    } >> "${RUNTESTS}/ci.log"
-    sed -i "s/\`\`\`//2g" "${RUNTESTS}/ci.log"
+    } | tee -a "${run_check_logfile}"
     rc=0
     break
   fi
@@ -105,3 +108,4 @@ while true; do
 done
 
 exit "${rc}"
+

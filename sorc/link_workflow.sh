@@ -107,7 +107,6 @@ for dir in aer \
             lut \
             mom6 \
             orog \
-            reg2grb2 \
             sfc_climo \
             ugwd \
             verif \
@@ -127,17 +126,27 @@ done
 #---------------------------------------
 #--copy/link NoahMp table form ccpp-physics repository
 cd "${HOMEgfs}/parm/ufs" || exit 1
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/physics/physics/noahmptable.tbl" .
+${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
-for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
-    postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
-    postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt \
-    postxconfig-NT-GFS.txt postxconfig-NT-gefs-aerosol.txt postxconfig-NT-gefs-chem.txt params_grib2_tbl_new \
-    post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat \
-    AEROSOL_LUTS.dat optics_luts_DUST.dat optics_luts_SALT.dat optics_luts_SOOT.dat optics_luts_SUSO.dat optics_luts_WASO.dat
+for file in postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GEFS-WAFS.txt \
+    postxconfig-NT-GEFS-F00-aerosol.txt postxconfig-NT-GEFS-aerosol.txt \
+    postxconfig-NT-GFS-ANL.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt \
+    postxconfig-NT-GFS.txt postxconfig-NT-GFS-FLUX.txt postxconfig-NT-GFS-GOES.txt \
+    postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-TWO.txt \
+    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
+done
+for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
+    optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
+    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
+done
+for file in ice.csv ocean.csv ocnicepost.nml.jinja2
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
 done
 
 cd "${HOMEgfs}/scripts" || exit 8
@@ -146,29 +155,29 @@ cd "${HOMEgfs}/ush" || exit 8
 for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
 done
-for file in finddate.sh make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name.sh ; do
+for file in make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name.sh ; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/ush/${file}" .
 done
 
-# TODO: Link these ufs.configure templates from ufs-weather-model
-#cd "${HOMEgfs}/parm/ufs" || exit 1
-#declare -a ufs_configure_files=("ufs.configure.atm.IN" \
-#                                 "ufs.configure.atm_aero.IN" \
-#                                 "ufs.configure.atmw.IN" \
-#                                 "ufs.configure.blocked_atm_wav_2way.IN" \
-#                                 "ufs.configure.blocked_atm_wav.IN" \
-#                                 "ufs.configure.cpld_agrid.IN" \
-#                                 "ufs.configure.cpld_esmfthreads.IN" \
-#                                 "ufs.configure.cpld.IN" \
-#                                 "ufs.configure.cpld_noaero.IN" \
-#                                 "ufs.configure.cpld_noaero_nowave.IN" \
-#                                 "ufs.configure.cpld_noaero_outwav.IN" \
-#                                 "ufs.configure.leapfrog_atm_wav.IN")
-#for file in "${ufs_configure_files[@]}"; do
-#  [[ -s "${file}" ]] && rm -f "${file}"
-#  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
-#done
+# Link these templates from ufs-weather-model
+cd "${HOMEgfs}/parm/ufs" || exit 1
+declare -a ufs_templates=("model_configure.IN" \
+                          "MOM_input_025.IN" "MOM_input_050.IN" "MOM_input_100.IN" "MOM_input_500.IN" \
+                          "MOM6_data_table.IN" \
+                          "ice_in.IN" \
+                          "ufs.configure.atm.IN" \
+                          "ufs.configure.atmaero.IN" \
+                          "ufs.configure.leapfrog_atm_wav.IN" \
+                          "ufs.configure.s2s_esmf.IN" \
+                          "ufs.configure.s2sa_esmf.IN" \
+                          "ufs.configure.s2sw_esmf.IN" \
+                          "ufs.configure.s2swa_esmf.IN" )
+for file in "${ufs_templates[@]}"; do
+  [[ -s "${file}" ]] && rm -f "${file}"
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
+done
 
+# Link the script from ufs-weather-model that parses the templates
 cd "${HOMEgfs}/ush" || exit 1
 [[ -s "atparse.bash" ]] && rm -f "atparse.bash"
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
@@ -181,7 +190,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/fix" || exit 1
   [[ ! -d gdas ]] && mkdir -p gdas
   cd gdas || exit 1
-  for gdas_sub in fv3jedi gsibec; do
+  for gdas_sub in fv3jedi gsibec obs; do
     if [[ -d "${gdas_sub}" ]]; then
        rm -rf "${gdas_sub}"
     fi
@@ -237,7 +246,7 @@ cd "${HOMEgfs}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
   syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x \
-  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x reg2grb2.x
+  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x
 do
   [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
@@ -391,7 +400,6 @@ for prog in enkf_chgres_recenter_nc.fd \
   mkgfsawps.fd \
   overgridid.fd \
   rdbfmsua.fd \
-  reg2grb2.fd \
   supvit.fd \
   syndat_getjtbul.fd \
   syndat_maksynrc.fd \
@@ -399,7 +407,8 @@ for prog in enkf_chgres_recenter_nc.fd \
   tave.fd \
   tocsbufr.fd \
   vint.fd \
-  webtitle.fd
+  webtitle.fd \
+  ocnicepost.fd
 do
   if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
   ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .

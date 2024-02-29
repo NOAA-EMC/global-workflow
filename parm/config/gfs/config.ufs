@@ -15,7 +15,7 @@ if (( $# <= 1 )); then
     echo "--fv3 C48|C96|C192|C384|C768|C1152|C3072"
     echo "--mom6 500|100|025"
     echo "--cice6 500|100|025"
-    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_200|glo_500|mx025"
+    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_200|glo_500|mx025|uglo_100km|uglo_m1g16"
     echo "--gocart"
 
     exit 1
@@ -67,54 +67,6 @@ done
 if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${skip_ww3}" == "false" ]]; then
   skip_mediator=false
 fi
-
-case "${machine}" in
-  "WCOSS2")
-    npe_node_max=128
-    ;;
-  "HERA" | "ORION" )
-    npe_node_max=40
-    ;;
-  "HERCULES" )
-    npe_node_max=80
-    ;;
-  "JET")
-    case "${PARTITION_BATCH}" in
-      "xjet")
-        npe_node_max=24
-        ;;
-      "vjet" | "sjet")
-        npe_node_max=16
-        ;;
-      "kjet")
-        npe_node_max=40
-        ;;
-      *)
-        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
-        exit 1
-        ;;
-    esac
-    ;;
-  "S4")
-    case "${PARTITION_BATCH}" in
-      "s4")
-        npe_node_max=32
-        ;;
-      "ivy")
-        npe_node_max=20
-        ;;
-      *)
-        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
-        exit 1
-        ;;
-    esac
-    ;;
-  *)
-    echo "FATAL ERROR: Unrecognized machine ${machine}"
-    exit 14
-    ;;
-esac
-export npe_node_max
 
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
@@ -464,6 +416,14 @@ if [[ "${skip_ww3}" == "false" ]]; then
     "mx025")
       ntasks_ww3=80
       ;;
+    "uglo_100km")
+      ntasks_ww3=40
+      nthreads_ww3=1
+      ;;
+    "uglo_m1g16")  
+      ntasks_ww3=1000
+      nthreads_ww3=1
+      ;;
     *)
       echo "FATAL ERROR: Unsupported WW3 resolution = ${ww3_res}, ABORT!"
       exit 1
@@ -480,39 +440,42 @@ if [[ "${skip_gocart}" == "false" ]]; then
 fi
 
 # Set the name of the UFS (previously nems) configure template to use
+# Default ufs.configure templates for supported model configurations
 case "${model_list}" in
   atm)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atm.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atm.IN"
     ;;
   atm.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.atm_aero.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atmaero.IN"
     ;;
   atm.wave)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav.IN"
     ;;
   atm.ocean.ice)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2s_esmf.IN"
     ;;
   atm.ocean.ice.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sa_esmf.IN"
     ;;
   atm.ocean.ice.wave)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_outerwave.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sw_esmf.IN"
     ;;
   atm.ocean.ice.wave.aero)
-    export ufs_configure_template="${HOMEgfs}/parm/ufs/ufs.configure.cpld_aero_outerwave.IN"
+    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2swa_esmf.IN"
     ;;
   *)
-    echo "FATAL ERROR: Unable to determine appropriate UFS configure template for ${model_list}"
+    echo "FATAL ERROR: Unsupported UFSWM configuration for ${model_list}"
     exit 16
     ;;
 esac
+
+# Allow user to override the default template
+export ufs_configure_template=${ufs_configure_template:-${default_template:-"/dev/null"}}
+unset model_list default_template
 
 if [[ ! -r "${ufs_configure_template}" ]]; then
   echo "FATAL ERROR: ${ufs_configure_template} either doesn't exist or is not readable."
   exit 17
 fi
-
-unset model_list
 
 echo "END: config.ufs"

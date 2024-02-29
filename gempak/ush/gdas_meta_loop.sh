@@ -33,7 +33,7 @@ export pgm=gdplot2_nc;. prep_step; startmsg
 #
 # Copy in datatype table to define gdfile type
 #
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File datatype.tbl does not exist."

@@ -10,6 +10,11 @@ echo "BEGIN: config.nsst"
 # nstf_name(1) : NST_MODEL (NSST Model) : 0 = OFF, 1 = ON but uncoupled, 2 = ON and coupled
 export NST_MODEL=2
 
+# Set NST_MODEL for JEDIATMVAR or JEDIATMENS
+if [[ "${DO_JEDIATMVAR}" == "YES" || "${DO_JEDIATMENS}" == "YES" ]]; then
+   export NST_MODEL=1
+fi
+
 # nstf_name(2) : NST_SPINUP : 0 = OFF, 1 = ON,
 export NST_SPINUP=0
 cdate="${PDY}${cyc}"

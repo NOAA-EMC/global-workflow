@@ -27,53 +27,26 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
-source "${HOMEgfs}/modulefiles/module-setup.sh.inc"
+source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/module-setup.sh"
 
 # Load our modules:
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
-if [[ -d /lfs/f1 ]]; then
-  # We are on WCOSS2 (Cactus or Dogwood)
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /lfs3 ]] ; then
-  # We are on NOAA Jet
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /scratch1 ]] ; then
-  # We are on NOAA Hera
-  module load "${MODS}/hera"
-  # set NETCDF variable based on ncdump location
-  NETCDF=$( which ncdump )
-  export NETCDF
-  # prod_util stuff, find a better solution later...
-  module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
-  module load prod_util
-elif [[ -d /work ]] ; then
-  # We are on MSU Orion
-  # prod_util stuff, find a better solution later...
-  #module use /apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
-  #module load prod_util
-  export UTILROOT=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2
-  export MDATE=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/mdate
-  export NDATE=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/ndate
-  export NHOUR=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/nhour
-  export FSYNC=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/fsync_file
-  module load "${MODS}/orion"
-  # set NETCDF variable based on ncdump location
-  ncdump=$( which ncdump )
-  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
-  export NETCDF
-elif [[ -d /glade ]] ; then
-  # We are on NCAR Yellowstone
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /lustre && -d /ncrc ]] ; then
-  # We are on GAEA.
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-elif [[ -d /data/prod ]] ; then
-  # We are on SSEC S4
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-else
-  echo WARNING: UNKNOWN PLATFORM
-fi
+case "${MACHINE_ID}" in
+  ("hera" | "orion" | "hercules")
+    module load "${MODS}/${MACHINE_ID}"
+    ncdump=$( command -v ncdump )
+    NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
+    export NETCDF
+    ;;
+  ("wcoss2" | "acorn" | "jet" | "gaea" | "s4")
+    echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+    ;;  
+  *)
+    echo "WARNING: UNKNOWN PLATFORM"
+    ;;
+esac
 
 module list
 pip list
