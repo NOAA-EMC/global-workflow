@@ -1,0 +1,40 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Construct COM variables from templates
+YMD="${PDY}" HH="${cyc}" generate_com -rx "COM_${COMPONENT^^}_HISTORY"
+YMD="${PDY}" HH="${cyc}" generate_com -rx "COM_${COMPONENT^^}_GRIB"
+YMD="${PDY}" HH="${cyc}" generate_com -rx "COM_${COMPONENT^^}_NETCDF"
+
+###############################################################
+# Run exglobal script
+"${HOMEgfs}/scripts/exglobal_oceanice_products.py"
+status=$?
+(( status != 0 )) && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+  cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+[[ "${KEEPDATA:-NO}" == "NO" ]] && rm -rf "${DATA}"
+
+
+exit 0

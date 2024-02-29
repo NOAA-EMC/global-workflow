@@ -73,14 +73,14 @@ do
 
    if [ $do_all -eq 1 ] ; then
      do_all=0
-     awk '{print $1}' $FIXgempak/gfs_meta > $DATA/tmpscript
+     awk '{print $1}' ${HOMEgfs}/gempak/fix/gfs_meta > $DATA/tmpscript
    else
      #
      #     Do not try to grep out 12, it will grab the 12 from 126.
      #     This will work as long as we don't need 12 fhr metafiles
      #
      if [ $fhr -ne 12 ] ; then
-       grep $fhr $FIXgempak/gfs_meta |awk -F" [0-9]" '{print $1}' > $DATA/tmpscript
+       grep $fhr ${HOMEgfs}/gempak/fix/gfs_meta |awk -F" [0-9]" '{print $1}' > $DATA/tmpscript
      fi
    fi
 

@@ -24,7 +24,6 @@ export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
 export maxtries=${maxtries:-720}
 export cycle=${cycle:-t${cyc}z}
 export GEMwave=${GEMwave:-${HOMEgfs}/gempak}
-export FIXwave=${FIXwave:-${HOMEgfs}/fix/wave}
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
 if [ ! -d ${DATA} ];then
   mkdir -p ${DATA}

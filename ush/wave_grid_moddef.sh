@@ -59,7 +59,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$grdID" ] || [ -z "$EXECwave" ] || [ -z "$wave_sys_ver" ]
+  if [ -z "$grdID" ] || [ -z "$EXECwave" ]
   then
     set +x
     echo ' '
@@ -83,8 +83,16 @@ source "$HOMEgfs/ush/preamble.sh"
  
   rm -f ww3_grid.inp 
   ln -sf ../ww3_grid.inp.$grdID ww3_grid.inp
+
+  if [ -f ../${grdID}.msh ]
+  then
+     rm -f ${grdID}.msh 
+     ln -sf ../${grdID}.msh ${grdID}.msh 
+  fi
+
+
  
-  $EXECwave/ww3_grid 1> grid_${grdID}.out 2>&1
+  "${EXECwave}/ww3_grid" 1> "grid_${grdID}.out" 2>&1
   err=$?
 
   if [ "$err" != '0' ]
@@ -99,10 +107,10 @@ source "$HOMEgfs/ush/preamble.sh"
     exit 3
   fi
  
-  if [ -f mod_def.ww3 ]
+  if [[ -f mod_def.ww3 ]]
   then
     cp mod_def.ww3 "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}"
-    mv mod_def.ww3 ../mod_def.$grdID
+    mv mod_def.ww3 "../mod_def.${grdID}"
   else
     set +x
     echo ' '
@@ -118,6 +126,6 @@ source "$HOMEgfs/ush/preamble.sh"
 # 3.  Clean up
 
 cd ..
-rm -rf moddef_$grdID
+rm -rf "moddef_${grdID}"
 
 # End of ww3_mod_def.sh ------------------------------------------------- #

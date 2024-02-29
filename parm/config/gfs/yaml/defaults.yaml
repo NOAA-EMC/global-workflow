@@ -3,16 +3,20 @@ base:
   DO_JEDIATMVAR: "NO"
   DO_JEDIATMENS: "NO"
   DO_JEDIOCNVAR: "NO"
-  DO_JEDILANDDA: "NO"
+  DO_JEDISNOWDA: "NO"
   DO_MERGENSST: "NO"
   DO_GOES: "NO"
   FHMAX_GFS: 120
 
 atmanl:
+  LAYOUT_X_ATMANL: 8
+  LAYOUT_Y_ATMANL: 8
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
 atmensanl:
+  LAYOUT_X_ATMENSANL: 8
+  LAYOUT_Y_ATMENSANL: 8
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
@@ -20,7 +24,7 @@ aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
-landanl:
+snowanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 

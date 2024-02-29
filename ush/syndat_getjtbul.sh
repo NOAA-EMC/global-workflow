@@ -22,10 +22,6 @@
 #   TANK_TROPCY  - path to home directory containing tropical cyclone record
 #                  data base
 
-# Imported variables that can be passed in:
-#   jlogfile  - path to job log file (skipped over by this script if not
-#                 passed in)
-
 source "$HOMEgfs/ush/preamble.sh"
 
 EXECSYND=${EXECSYND:-${HOMESYND}/exec}
@@ -51,8 +47,6 @@ hour=$(echo $CDATE10 | cut -c9-10)
 
 echo $PDYm1
 pdym1=$PDYm1
-
-#pdym1=$(sh $utilscript/finddate.sh $pdy d-1)
 
 echo " " >> $pgmout
 echo "Entering sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
