@@ -75,7 +75,7 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 # if they are any the pr_list then becomes the list of PRs to kill
 get_pr_kill_list=""
 pr_kill_list=""
-if [[ -z "${pr_list+x}" ]]; then
+if [[ -z "${pr_list}" ]]; then
   get_pr_kill_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-Kill" --state "open" | awk '{print $1}') || true
   for pr in ${get_pr_kill_list}; do
     pr_in_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}") || true
@@ -151,10 +151,8 @@ for pr in ${pr_list}; do
     "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     if [[ -n "${pr_kill_list}" ]]; then
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-Kill"
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready"
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building"
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running"
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-Kill"
       rm -Rf "${GFS_CI_ROOT}/PR/${pr}"
     else
       "${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
@@ -166,7 +164,7 @@ pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
   pr_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display --dbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}') || true
 fi
-if [[ -z "${pr_list+x}" ]]; then
+if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"
   exit 0
 fi
@@ -180,7 +178,7 @@ fi
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
   pr_building=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
-  if [[ -z "${pr_building+x}" ]]; then
+  if [[ -z "${pr_building}" ]]; then
       continue
   fi
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
