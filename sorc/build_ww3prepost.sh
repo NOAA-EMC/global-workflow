@@ -6,7 +6,7 @@ cd "${script_dir}" || exit 1
 
 # Default settings
 APP="S2SWA"
-PDLIB="OFF" 
+PDLIB="OFF"
 
 while getopts ":j:a:dvw" option; do
   case "${option}" in
@@ -27,15 +27,15 @@ while getopts ":j:a:dvw" option; do
 done
 
 # Determine which switch to use
-if [[ "${APP}" == "ATMW" ]]; then 
+if [[ "${APP}" == "ATMW" ]]; then
   ww3switch="model/esmf/switch"
-else 
-  if [[ "${PDLIB}" == "ON" ]]; then 
+else
+  if [[ "${PDLIB}" == "ON" ]]; then
     ww3switch="model/bin/switch_meshcap_pdlib"
-  else 
+  else
     ww3switch="model/bin/switch_meshcap"
-  fi 
-fi 
+  fi
+fi
 
 # Check final exec folder exists
 if [[ ! -d "../exec" ]]; then
@@ -86,7 +86,7 @@ sed -e "s/DIST/SHRD/g"\
        "${path_build}/tempswitch" > "${path_build}/switch"
 rm "${path_build}/tempswitch"
 
-echo "Switch file is ${buildswitch} with switches:" 
+echo "Switch file is ${buildswitch} with switches:"
 cat "${buildswitch}"
 
 #define cmake build options
