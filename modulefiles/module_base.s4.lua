@@ -2,9 +2,8 @@ help([[
 Load environment to run GFS on S4
 ]])
 
-spack_stack_ver=(os.getenv("spack_stack_ver") or "None")
-spack_env=(os.getenv("spack_env") or "None")
-prepend_path("MODULEPATH", "/data/prod/jedi/spack-stack/spack-stack-" .. spack_stack_ver .. "/envs/" .. spack_env .. "/install/modulefiles/Core")
+local spack_mod_path=(os.getenv("spack_mod_path") or "None")
+prepend_path("MODULEPATH", spack_mod_path)
 
 load(pathJoin("stack-intel", (os.getenv("stack_intel_ver") or "None")))
 load(pathJoin("stack-intel-oneapi-mpi", (os.getenv("stack_impi_ver") or "None")))
@@ -30,6 +29,10 @@ load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
 load(pathJoin("py-netcdf4", (os.getenv("py_netcdf4_ver") or "None")))
 load(pathJoin("py-pyyaml", (os.getenv("py_pyyaml_ver") or "None")))
 load(pathJoin("py-jinja2", (os.getenv("py_jinja2_ver") or "None")))
+load(pathJoin("py-pandas", (os.getenv("py_pandas_ver") or "None")))
+load(pathJoin("py-python-dateutil", (os.getenv("py_python_dateutil_ver") or "None")))
+load(pathJoin("met", (os.getenv("met_ver") or "None")))
+load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
 setenv("WGRIB2","wgrib2")

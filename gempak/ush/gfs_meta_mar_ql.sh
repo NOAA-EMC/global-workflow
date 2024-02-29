@@ -12,7 +12,7 @@ set -x
 export PS4='MAR_QL_F${fend}:$SECONDS + '
 mkdir -p -m 775  $DATA/MAR_QL
 cd $DATA/MAR_QL
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 mdl=gfs
 MDL="GFS"

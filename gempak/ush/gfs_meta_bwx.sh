@@ -24,7 +24,7 @@ set -x
 export PS4='BWX:$SECONDS + '
 mkdir -p -m 775 $DATA/BWX
 cd $DATA/BWX
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 mdl=gfs
 MDL="GFS"

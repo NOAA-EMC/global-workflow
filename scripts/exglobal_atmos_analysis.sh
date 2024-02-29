@@ -289,21 +289,21 @@ else
 fi
 
 # GSI Fix files
-BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
-SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
-SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
-RADCLOUDINFO=${RADCLOUDINFO:-${FIXgsi}/cloudy_radiance_info.txt}
-ATMSFILTER=${ATMSFILTER:-${FIXgsi}/atms_beamwidth.txt}
-ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
-CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
-vqcdat=${vqcdat:-${FIXgsi}/vqctp001.dat}
-INSITUINFO=${INSITUINFO:-${FIXgsi}/global_insituinfo.txt}
-OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
-PCPINFO=${PCPINFO:-${FIXgsi}/global_pcpinfo.txt}
-AEROINFO=${AEROINFO:-${FIXgsi}/global_aeroinfo.txt}
-SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
-HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_info.l${LEVS}.txt}
-OBERROR=${OBERROR:-${FIXgsi}/prepobs_errtable.global}
+BERROR=${BERROR:-${FIXgfs}/gsi/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
+SATANGL=${SATANGL:-${FIXgfs}/gsi/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
+RADCLOUDINFO=${RADCLOUDINFO:-${FIXgfs}/gsi/cloudy_radiance_info.txt}
+ATMSFILTER=${ATMSFILTER:-${FIXgfs}/gsi/atms_beamwidth.txt}
+ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS}.txt}
+CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
+vqcdat=${vqcdat:-${FIXgfs}/gsi/vqctp001.dat}
+INSITUINFO=${INSITUINFO:-${FIXgfs}/gsi/global_insituinfo.txt}
+OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
+PCPINFO=${PCPINFO:-${FIXgfs}/gsi/global_pcpinfo.txt}
+AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
+SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
+OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
 
 # GSI namelist
 SETUP=${SETUP:-""}
@@ -381,8 +381,8 @@ ${NLN} ${OBERROR}      errtable
 #If using correlated error, link to the covariance files
 if [ ${USE_CORRELATED_OBERRS} == "YES" ];  then
   if grep -q "Rcov" ${ANAVINFO} ;  then
-     if ls ${FIXgsi}/Rcov* 1> /dev/null 2>&1; then
-       ${NLN} ${FIXgsi}/Rcov* ${DATA}
+     if ls ${FIXgfs}/gsi/Rcov* 1> /dev/null 2>&1; then
+       ${NLN} ${FIXgfs}/gsi/Rcov* ${DATA}
        echo "using correlated obs error"
      else
        echo "FATAL ERROR: Satellite error covariance files (Rcov) are missing."

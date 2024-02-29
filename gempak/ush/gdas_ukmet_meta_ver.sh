@@ -29,7 +29,7 @@ PDY2=$(echo ${PDY} | cut -c3-)
 #
 # Copy in datatype table to define gdfile type
 #
-cp $FIXgempak/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 #
 # DEFINE 1 CYCLE AGO

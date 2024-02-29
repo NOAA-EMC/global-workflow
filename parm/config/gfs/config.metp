@@ -23,6 +23,7 @@ export VERIF_GLOBALSH=${HOMEverif_global}/ush/run_verif_global_in_global_workflo
 export model=${PSLOT}
 export model_file_format="pgbf{lead?fmt=%2H}.${CDUMP}.{init?fmt=%Y%m%d%H}.grib2"
 export model_hpss_dir=${ATARDIR}/..
+export model_dir=${ARCDIR}/..
 export get_data_from_hpss="NO"
 export hpss_walltime="10"
 ## OUTPUT SETTINGS
