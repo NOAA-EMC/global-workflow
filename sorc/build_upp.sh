@@ -8,7 +8,8 @@ OPTIND=1
 _opts=""
 while getopts ":dj:v" option; do
 	case "${option}" in
-		d) _opts+="-d ";;
+		d) _opts+="-d "
+                   export BUILD_TYPE="Debug" ;;
 		j) export BUILD_JOBS="${OPTARG}" ;;
 		v) _opts+="-v ";;
 		:)

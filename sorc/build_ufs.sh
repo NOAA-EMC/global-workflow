@@ -9,7 +9,7 @@ CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: does 
 
 while getopts ":da:j:vw" option; do
   case "${option}" in
-    d) BUILD_TYPE="DEBUG";;
+    d) BUILD_TYPE="Debug";;
     a) APP="${OPTARG}";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
