@@ -37,7 +37,7 @@ cd $DATA/$m
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
        export FORT51=./bufrout
-       ${EXECbufrsnd}/${pgm} << EOF
+       ${EXECgfs}/${pgm} << EOF
  &INPUT
   BULHED="$WMOHEAD",KWBX="$CCCC",
   NCEP2STD=.TRUE.,
