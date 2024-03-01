@@ -89,8 +89,8 @@ fi
 # GET MACHINE
 #------------------------------------
 export COMPILER="intel"
-source ${HOMEgfs}/ush/detect_machine.sh
-source ${HOMEgfs}/ush/module-setup.sh
+source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/module-setup.sh"
 if [[ -z "${MACHINE_ID}" ]]; then
   echo "FATAL: Unable to determine target machine"
   exit 1
@@ -202,15 +202,13 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
          # Do we have enough processors to run it?
          if [[ ${_build_job_max} -ge $(( build_jobs[build] + procs_in_use )) ]]; then
             if [[ "${build}" == "upp" ]]; then
-               set -x
                "./build_${build}.sh" "${build_opts[${build}]}" > \
                   "${logs_dir}/build_${build}.log" 2>&1 &
-               set +x
-            else  # upp
-               set -x
+            else  # not upp
+               # double-quoting build_opts here will not work since it is a string of options
+               #shellcheck disable=SC2086
                "./build_${build}.sh" ${build_opts[${build}]:-} -j "${build_jobs[${build}]}" > \
                   "${logs_dir}/build_${build}.log" 2>&1 &
-               set +x
             fi
             build_ids["${build}"]=$!
             echo "Starting build_${build}.sh"

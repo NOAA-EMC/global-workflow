@@ -20,6 +20,8 @@ while getopts ":j:dv" option; do
 done
 shift $((OPTIND-1))
 
+# double quoting opts will not work since it is a string of options
+# shellcheck disable=SC2086
 BUILD_JOBS="${BUILD_JOBS:-8}" \
 WORKFLOW_BUILD="ON" \
 ./gdas.cd/build.sh ${_opts}
