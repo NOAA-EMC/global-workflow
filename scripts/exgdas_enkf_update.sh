@@ -247,10 +247,10 @@ for FHR in $nfhrs; do
    fi
 done
 
-if [ $USE_CFP = "YES" ]; then
+if [[ $USE_CFP = "YES" ]]; then
    chmod 755 $DATA/mp_untar.sh
    ncmd=$(cat $DATA/mp_untar.sh | wc -l)
-   if [ $ncmd -gt 0 ]; then
+   if [[ $ncmd -gt 0 ]]; then
       ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
@@ -407,8 +407,8 @@ cat stdout stderr > "${COM_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
 
 ################################################################################
 #  Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+cd "$pwd"
+[[ $mkdata = "YES" ]] && rm -rf "${DATA}"
 
 
-exit $err
+exit ${err}
