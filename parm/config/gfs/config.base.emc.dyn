@@ -337,7 +337,7 @@ fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
 
-export GSI_SOILANAL="NO"
+export GSI_SOILANAL=@GSI_SOILANAL@
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
