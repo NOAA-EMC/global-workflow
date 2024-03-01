@@ -7,23 +7,23 @@ cd "${script_dir}" || exit 1
 OPTIND=1
 _opts=""
 while getopts ":dj:v" option; do
-	case "${option}" in
-		d) _opts+="-d ";;
-		j) export BUILD_JOBS="${OPTARG}" ;;
-		v) _opts+="-v ";;
-		:)
-			echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-			;;
-		*)
-			echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-			;;
-	esac
+  case "${option}" in
+    d) _opts+="-d " ;;
+    j) BUILD_JOBS="${OPTARG}" ;;
+    v) _opts+="-v ";;
+    :)
+      echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+      ;;
+    *)
+      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
+      ;;
+  esac
 done
 shift $((OPTIND-1))
 
 # Check final exec folder exists
 if [[ ! -d "../exec" ]]; then
-  mkdir ../exec
+  mkdir -p ../exec
 fi
 
 cd ufs_model.fd/FV3/upp/tests
