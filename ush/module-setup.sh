@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u
 
-source "${HOMEgfs}/ush/detect_machine.sh" 
+source "${HOMEgfs}/ush/detect_machine.sh"
 
 if [[ ${MACHINE_ID} = jet* ]] ; then
     # We are on NOAA Jet
@@ -125,7 +125,7 @@ elif [[ ${MACHINE_ID} = "noaacloud" ]]; then
     export SPACK_ROOT=/contrib/global-workflow/spack-stack/spack
     export PATH=${PATH}:${SPACK_ROOT}/bin
     . "${SPACK_ROOT}"/share/spack/setup-env.sh
-    
+
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
