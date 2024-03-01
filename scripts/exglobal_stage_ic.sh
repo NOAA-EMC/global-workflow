@@ -112,6 +112,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
         ${NCP} "${src}" "${tgt}"
         rc=${?}
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+        err=$((err + rc))
     fi
 
     # TODO: Do mediator restarts exists in a ATMW configuration?
