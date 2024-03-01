@@ -5,7 +5,7 @@ OPTIND=1
 _opts="-f "  # forces a clean build
 while getopts ":j:dv" option; do
   case "${option}" in
-    d) _opts+="-c -DCMAKE_BUILD_TYPE=Debug" ;;
+    d) _opts+="-c -DCMAKE_BUILD_TYPE=Debug " ;;
     j) BUILD_JOBS=${OPTARG};;
     v) _opts+="-v ";;
     :)
