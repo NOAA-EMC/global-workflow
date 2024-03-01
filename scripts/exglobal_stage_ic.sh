@@ -105,7 +105,8 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     esac
 
     # Ocean Perturbation Files
-    if [[ "${MEMDIR}" != "mem000" ]] && [[ "${OCN_ENS_PERTURB_FILES:-}" == "true" ]]; then
+    # Extra zero on MEMDIR ensure we have a number even if the string is empty
+    if (( 0${MEMDIR:3} > 0 )) && [[ "${OCN_ENS_PERTURB_FILES:-false}" == "true" ]]; then
         src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.mom6_increment.nc"
         tgt="${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.mom6_increment.nc"
         ${NCP} "${src}" "${tgt}"
