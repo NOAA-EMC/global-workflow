@@ -50,7 +50,7 @@ pipeline {
                             pullRequest.removeLabel("CI-${Machine}-Ready")
                         }
                     }
-                    pullRequest.comment("Building and running on ${Machine} in directory ${HOME}")
+                    echo "Building and running on ${Machine} in directory ${HOME}"
                 }
             }
         }
@@ -76,7 +76,6 @@ pipeline {
                                 ws(HOMEgfs) {
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
                                         sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
-                                        pullRequest.comment("Cloned PR already built (or build skipped) on ${machine} in directory ${HOMEgfs}<br>Still doing a checkout to get the latest changes")
                                         checkout scm
                                         dir('sorc') {
                                             sh(script: './link_workflow.sh')
@@ -93,10 +92,14 @@ pipeline {
                                         }
                                     }
                                     if (env.CHANGE_ID && system == 'gfs') {
-                                       if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
-                                           pullRequest.removeLabel("CI-${Machine}-Building")
-                                       }
-                                       pullRequest.addLabel("CI-${Machine}-Running")
+                                        try {
+                                            if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
+                                               pullRequest.removeLabel("CI-${Machine}-Building")
+                                            }
+                                            pullRequest.addLabel("CI-${Machine}-Running")
+                                        } catch (Exception e) {
+                                            echo "Failed to update label from Buildng to Running: ${e.getMessage()}"
+                                        }
                                     }
                                     if (system == 'gfs') {
                                         caseList = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
@@ -146,11 +149,9 @@ pipeline {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                 ws(HOMEgfs) {
                                     pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
-                                    pullRequest.comment("**Running** experiment: ${Case} on ${Machine}<br>With the experiment in directory:<br>`${HOME}/RUNTESTS/${pslot}`")
                                     try {
                                        sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
                                     } catch (Exception e) {
-                                        pullRequest.comment("**FAILURE** running experiment: ${Case} on ${Machine}")
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
                                         ws(HOME) {
                                             if (fileExists('RUNTESTS/error.logs')) {
@@ -165,7 +166,6 @@ pipeline {
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
                                 }
-                                pullRequest.comment("**SUCCESS** running experiment: ${Case} on ${Machine}")
                             }
                         }
                     }
@@ -179,10 +179,14 @@ pipeline {
         always {
             script {
                 if(env.CHANGE_ID) {
-                    for (label in pullRequest.labels) {
-                        if (label.contains("${Machine}")) {
-                            pullRequest.removeLabel(label)
+                    try {
+                        for (label in pullRequest.labels) {
+                            if (label.contains("${Machine}")) {
+                                pullRequest.removeLabel(label)
+                            }
                         }
+                    }  catch (Exception e) {
+                    echo "Failed to remove labels: ${e.getMessage()}"
                     }
                 }
             }
@@ -190,18 +194,26 @@ pipeline {
         success {
             script {
                 if(env.CHANGE_ID) {
-                    pullRequest.addLabel("CI-${Machine}-Passed")
-                    def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
-                    pullRequest.comment("**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`")
+                    try {
+                        pullRequest.addLabel("CI-${Machine}-Passed")
+                        def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
+                        pullRequest.comment("**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`")
+                    } catch (Exception e) {
+                        echo "Failed to add success label or comment: ${e.getMessage()}"
+                    }
                 }
             }
         }
         failure {
             script {
                 if(env.CHANGE_ID) {
-                    pullRequest.addLabel("CI-${Machine}-Failed")
-                    def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
-                    pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
+                    try {
+                        pullRequest.addLabel("CI-${Machine}-Failed")
+                        def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
+                        pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
+                    } catch (Exception e) {
+                        echo "Failed to add failure label or comment: ${e.getMessage()}"
+                    }
                 }
             }
         }
