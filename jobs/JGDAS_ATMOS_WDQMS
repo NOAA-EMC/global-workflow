@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -x
+export PS4='$SECONDS + '
+date
+
+##############################
+# Source relevant config files
+##############################
+configs="base wdqms"
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+for config in ${configs}; do
+  source "${EXPDIR}/config.${config}"
+  status=$?
+  (( status != 0 )) && exit "${status}"
+done
+
+###############################################################
+source "${BASE_ENV}/${machine}.env" wdqms
+status=$?
+(( status != 0 )) && exit "${status}"
+
+
+##########################################################
+# obtain unique process id (pid) and make temp directory
+##########################################################
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p "${DATA}"
+cd "${DATA}"
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+setpdy.sh
+source ./PDY
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN="Where are the files in INPUT_LIST in COM?"
+export COMOUT="Where should we place the wdqms.py generated files in COM"
+
+mkdir -m 775 -p "${COMOUT}"
+
+########################################################
+# Execute the script for wdqms-degree grib
+"${HOMEgfs}/scripts/exgdas_atmos_wdqms.sh"
+########################################################
+
+echo "JOB ${job:-} HAS COMPLETED NORMALLY!"
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "${pgmout:-}" ] ; then
+  cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]] ; then
+  rm -rf "${DATA}"
+fi
+
+date
