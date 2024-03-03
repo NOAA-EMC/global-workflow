@@ -2251,6 +2251,8 @@ suite gfs_v16_3
                   trigger ./jgdas_atmos_analysis == complete
                 task jgdas_atmos_analysis_diag
                   trigger ./jgdas_atmos_analysis == complete
+                task jgdas_atmos_analysis_wdqms
+                  trigger ./jgdas_atmos_analysis_diag == complete
               endfamily
               family post
                 task jgdas_atmos_post_manager
@@ -4876,6 +4878,8 @@ suite gfs_v16_3
                   trigger ./jgdas_atmos_analysis == complete
                 task jgdas_atmos_analysis_diag
                   trigger ./jgdas_atmos_analysis == complete
+                task jgdas_atmos_analysis_wdqms
+                  trigger ./jgdas_atmos_analysis_diag == complete
               endfamily
               family post
                 task jgdas_atmos_post_manager
@@ -7501,6 +7505,8 @@ suite gfs_v16_3
                   trigger ./jgdas_atmos_analysis == complete
                 task jgdas_atmos_analysis_diag
                   trigger ./jgdas_atmos_analysis == complete
+                task jgdas_atmos_analysis_wdqms
+                  trigger ./jgdas_atmos_analysis_diag == complete
               endfamily
               family post
                 task jgdas_atmos_post_manager
@@ -10126,6 +10132,8 @@ suite gfs_v16_3
                   trigger ./jgdas_atmos_analysis == complete
                 task jgdas_atmos_analysis_diag
                   trigger ./jgdas_atmos_analysis == complete
+                task jgdas_atmos_analysis_wdqms
+                  trigger ./jgdas_atmos_analysis_diag == complete
               endfamily
               family post
                 task jgdas_atmos_post_manager

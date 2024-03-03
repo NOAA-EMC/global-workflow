@@ -49,7 +49,7 @@ mkdir -m 775 -p "${COMOUT}"
 
 ########################################################
 # Execute the script for wdqms-degree grib
-"${HOMEgfs}/scripts/exgdas_atmos_wdqms.sh"
+"${HOMEgfs}/scripts/exgdas_atmos_analysis_wdqms.sh"
 ########################################################
 
 echo "JOB ${job:-} HAS COMPLETED NORMALLY!"

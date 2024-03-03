@@ -9,6 +9,6 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGDAS_ATMOS_WDQMS
+$HOMEgfs/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS
 status=$?
 exit $status
