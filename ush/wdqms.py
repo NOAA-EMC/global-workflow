@@ -1,5 +1,6 @@
 import sys
 import os
+import argparse
 import logging
 import pandas as pd
 import numpy as np
@@ -9,7 +10,7 @@ from pathlib import Path
 
 class WDQMS:
 
-    def __init__(self, inputfiles, wdqms_type, outdir, 
+    def __init__(self, inputfiles, wdqms_type, outdir,
                  loglvl=logging.INFO):
 
         # Start logging
@@ -17,7 +18,7 @@ class WDQMS:
                             filemode='w',
                             level=loglvl,
                             format='%(levelname)s:%(message)s')
-        
+
         self.wdqms_type = wdqms_type
         self.outdir = outdir
 
@@ -54,7 +55,7 @@ class WDQMS:
             df_list.append(df)
 
         df_total = pd.concat(df_list)
-        
+
         logging.info('Files successfully read into dataframe!')
 
         # Grab data specific to WDQMS type
@@ -96,7 +97,8 @@ class WDQMS:
         """
         logging.info("Working in wdqms_type_requirements()")
         logging.debug(f"WDQMS Type: {self.wdqms_type}")
-        logging.debug(f"Total observations for {self.wdqms_type} before filter: {len(df)}")
+        logging.debug(f"Total observations for {
+                      self.wdqms_type} before filter: {len(df)}")
 
         obs_types = self.wdqms_type_dict[self.wdqms_type]['obs_types']
 
@@ -105,14 +107,15 @@ class WDQMS:
         if self.wdqms_type in ['SYNOP', 'MARINE']:
             # Only include -3 > val >= 3 to avoid overlapping in cycles
             df = df.loc[df['Time'] != -3.]
-            
+
             # Remove bad background departures for each variable
             df.loc[(df['var_id'] == 110) & (df['Obs_Minus_Forecast_adjusted'].abs() > 200),
                    'Obs_Minus_Forecast_adjusted'] = -999.9999
             df.loc[(df['var_id'] != 110) & (df['Obs_Minus_Forecast_adjusted'].abs() > 500),
                    'Obs_Minus_Forecast_adjusted'] = -999.9999
 
-        logging.debug(f"Total observations for {self.wdqms_type} after filter: {len(df)}")
+        logging.debug(f"Total observations for {
+                      self.wdqms_type} after filter: {len(df)}")
         logging.info("Exiting wdqms_type_requirements()")
 
         return df
@@ -160,19 +163,23 @@ class WDQMS:
         df['StatusFlag'] = np.nan
 
         # Obs used by GSI, Status_Flag=0
-        df.loc[(df['Prep_QC_Mark'] <= 8) & (df['Analysis_Use_Flag'] == 1), 'StatusFlag'] = 0
+        df.loc[(df['Prep_QC_Mark'] <= 8) & (
+            df['Analysis_Use_Flag'] == 1), 'StatusFlag'] = 0
 
         # Obs rejected by GSI, Status_Flag=0
-        df.loc[(df['Prep_QC_Mark'] <= 8) & (df['Analysis_Use_Flag'] == -1), 'StatusFlag'] = 2
+        df.loc[(df['Prep_QC_Mark'] <= 8) & (
+            df['Analysis_Use_Flag'] == -1), 'StatusFlag'] = 2
 
         # Obs never used by GSI, Status_Flag=3
-        df.loc[(df['Prep_QC_Mark'] > 8) & (df['Prep_Use_Flag'] >= 100), 'StatusFlag'] = 3
+        df.loc[(df['Prep_QC_Mark'] > 8) & (
+            df['Prep_Use_Flag'] >= 100), 'StatusFlag'] = 3
 
         # Obs is flagged for non-use by the analysis, Status_Flag=3
         df.loc[df['Prep_QC_Mark'] >= 15, 'StatusFlag'] = 3
 
         # Obs rejected by SDM or CQCPROF, Status_Flag=7
-        df.loc[(df['Prep_QC_Mark'] >= 12) & (df['Prep_QC_Mark'] <= 14), 'StatusFlag'] = 7
+        df.loc[(df['Prep_QC_Mark'] >= 12) & (
+            df['Prep_QC_Mark'] <= 14), 'StatusFlag'] = 7
 
         # Fill those that do not fit a condition with -999
         df.loc[df['StatusFlag'].isnull(), 'StatusFlag'] = -999
@@ -270,15 +277,18 @@ class WDQMS:
             if 110 in tmp['var_id'].unique():
                 logging.debug(f"Variable: p")
 
-                mean_bg_dep = tmp['Obs_Minus_Forecast_adjusted'].loc[tmp['var_id'] == 110].values[0]
+                mean_bg_dep = tmp['Obs_Minus_Forecast_adjusted'].loc[tmp['var_id']
+                                                                     == 110].values[0]
                 std_bg_dep = 0
                 level = 'Surf'
                 last_rep_lvl = -999.99
-                status_flag = tmp['StatusFlag'].loc[tmp['var_id'] == 110].values[0]
+                status_flag = tmp['StatusFlag'].loc[tmp['var_id']
+                                                    == 110].values[0]
 
                 d['var_id'].append(110)
                 d['Mean_Bg_dep'].append(mean_bg_dep)
-                d['Std_Bg_dep'].append(std_bg_dep)  # cannot compute std w/ one value so set to 0
+                # cannot compute std w/ one value so set to 0
+                d['Std_Bg_dep'].append(std_bg_dep)
                 d['Levels'].append(level)
                 d['LastRepLevel'].append(last_rep_lvl)
                 d['StatusFlag'].append(status_flag)
@@ -287,8 +297,10 @@ class WDQMS:
                 surf_lat = tmp['Latitude'].loc[tmp['var_id'] == 110].values[0]
                 surf_lon = tmp['Longitude'].loc[tmp['var_id'] == 110].values[0]
 
-                logging.debug("Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
-                logging.debug(f"{mean_bg_dep}, {std_bg_dep}, {level}, {last_rep_lvl}, {status_flag}")
+                logging.debug(
+                    "Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
+                logging.debug(f"{mean_bg_dep}, {std_bg_dep}, {
+                              level}, {last_rep_lvl}, {status_flag}")
 
             # Get unique variable ID's and remove 110 (surface pressure)
             var_ids = sorted(tmp['var_id'].unique())
@@ -298,17 +310,18 @@ class WDQMS:
                 logging.debug(f"Variable: {var}")
 
                 # Surface
-                
+
                 # Find max pressure of the surface 110 value
                 surf_p_max = tmp['Pressure'].loc[tmp['var_id'] == 110].max()
 
                 if (110 in tmp['var_id'].unique() and
-                    var in tmp['var_id'].loc[tmp['Pressure'] == surf_p_max].unique()):
+                        var in tmp['var_id'].loc[tmp['Pressure'] == surf_p_max].unique()):
 
                     surf_tmp = tmp.loc[(tmp['Pressure'] == surf_p_max) &
                                        (tmp['var_id'] == var)]
 
-                    surf_omf = surf_tmp['Obs_Minus_Forecast_adjusted'].values.mean()
+                    surf_omf = surf_tmp['Obs_Minus_Forecast_adjusted'].values.mean(
+                    )
                     surf_std = 0  # cannot compute std w/ one value so set to 0
                     level = 'Surf'
                     last_rep_lvl = -999.99
@@ -325,16 +338,20 @@ class WDQMS:
                     d['LastRepLevel'].append(last_rep_lvl)
                     d['StatusFlag'].append(status_flag)
 
-                    logging.debug("Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
-                    logging.debug(f"{surf_omf}, {surf_std}, {level}, {last_rep_lvl}, {status_flag}")
+                    logging.debug(
+                        "Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
+                    logging.debug(f"{surf_omf}, {surf_std}, {level}, {
+                                  last_rep_lvl}, {status_flag}")
 
                 # Troposphere
                 trop_tmp = tmp.loc[(tmp['var_id'] == var) &
                                    (tmp['Pressure'] >= 100)]
 
                 if len(trop_tmp) > 0:
-                    trop_avg_omf = trop_tmp['Obs_Minus_Forecast_adjusted'].mean()
-                    trop_std_omf = trop_tmp['Obs_Minus_Forecast_adjusted'].std()
+                    trop_avg_omf = trop_tmp['Obs_Minus_Forecast_adjusted'].mean(
+                    )
+                    trop_std_omf = trop_tmp['Obs_Minus_Forecast_adjusted'].std(
+                    )
                     level = 'Trop'
                     # Get lowest p for entire atmosphere
                     last_rep_lvl = tmp['Pressure'].min()
@@ -351,16 +368,20 @@ class WDQMS:
                     d['LastRepLevel'].append(last_rep_lvl)
                     d['StatusFlag'].append(status_flag)
 
-                    logging.debug("Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
-                    logging.debug(f"{trop_avg_omf}, {trop_std_omf}, {level}, {last_rep_lvl}, {status_flag}")
+                    logging.debug(
+                        "Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
+                    logging.debug(f"{trop_avg_omf}, {trop_std_omf}, {
+                                  level}, {last_rep_lvl}, {status_flag}")
 
                 # Stratosphere
                 stra_tmp = tmp.loc[(tmp['var_id'] == var) &
                                    (tmp['Pressure'] < 100)]
 
                 if len(stra_tmp) > 0:
-                    stra_avg_omf = stra_tmp['Obs_Minus_Forecast_adjusted'].mean()
-                    stra_std_omf = 0 if len(stra_tmp == 1) else stra_tmp['Obs_Minus_Forecast_adjusted'].std()
+                    stra_avg_omf = stra_tmp['Obs_Minus_Forecast_adjusted'].mean(
+                    )
+                    stra_std_omf = 0 if len(
+                        stra_tmp == 1) else stra_tmp['Obs_Minus_Forecast_adjusted'].std()
                     level = 'Stra'
                     # Get lowest p for entire atmosphere
                     last_rep_lvl = tmp['Pressure'].min()
@@ -377,14 +398,18 @@ class WDQMS:
                     d['LastRepLevel'].append(last_rep_lvl)
                     d['StatusFlag'].append(status_flag)
 
-                    logging.debug("Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
-                    logging.debug(f"{stra_avg_omf}, {stra_std_omf}, {level}, {last_rep_lvl}, {status_flag}")
+                    logging.debug(
+                        "Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
+                    logging.debug(f"{stra_avg_omf}, {stra_std_omf}, {
+                                  level}, {last_rep_lvl}, {status_flag}")
 
             sub_df = pd.DataFrame.from_dict(d)
             sub_df['Station_id'] = stn
             # Add lats and lons
-            lat = surf_lat if surf_lat else tmp['Latitude'].value_counts().index[0]
-            lon = surf_lon if surf_lon else tmp['Longitude'].value_counts().index[0]
+            lat = surf_lat if surf_lat else tmp['Latitude'].value_counts(
+            ).index[0]
+            lon = surf_lon if surf_lon else tmp['Longitude'].value_counts(
+            ).index[0]
             sub_df['latitude'] = lat
             sub_df['Longitude'] = lon
             # add datetime
@@ -469,15 +494,18 @@ class WDQMS:
                      q_tmp['Obs_Minus_Forecast_adjusted'].to_numpy()) * 1.0e6
             t_obs = t_tmp['Observation'].to_numpy() - 273.16
             t_ges = (t_tmp['Observation'].to_numpy() -
-                     t_tmp['Obs_Minus_Forecast_adjusted'].to_numpy()) -273.16
+                     t_tmp['Obs_Minus_Forecast_adjusted'].to_numpy()) - 273.16
             pressure = q_tmp['Pressure'].to_numpy()
 
-            qsat_obs = self._temp_2_saturation_specific_humidity(pressure, t_obs)
-            qsat_ges = self._temp_2_saturation_specific_humidity(pressure, t_ges)
+            qsat_obs = self._temp_2_saturation_specific_humidity(
+                pressure, t_obs)
+            qsat_ges = self._temp_2_saturation_specific_humidity(
+                pressure, t_ges)
 
             bg_dep = (q_obs/qsat_obs)-(q_ges/qsat_ges)
 
-            logging.debug(f"Original q background departure: {q_tmp['Obs_Minus_Forecast_adjusted'].values}")
+            logging.debug(f"Original q background departure: {
+                          q_tmp['Obs_Minus_Forecast_adjusted'].values}")
             logging.debug(f"New q background departure: {bg_dep}")
 
             # Replace the current background departure with the new calculated one
@@ -501,26 +529,26 @@ class WDQMS:
         """
         logging.debug("Working in temp_2_saturation_specific_humidity()")
 
-        ttp   = 2.7316e2      # temperature at h2o triple point (K)
-        psat  = 6.1078e1      # pressure at h2o triple point  (Pa)
-        cvap  = 1.8460e3      # specific heat of h2o vapor (J/kg/K)
-        csol  = 2.1060e3      # specific heat of solid h2o (ice)(J/kg/K)
-        hvap  = 2.5000e6      # latent heat of h2o condensation (J/kg)
-        hfus  = 3.3358e5      # latent heat of h2o fusion (J/kg)
-        rd    = 2.8705e2
-        rv    = 4.6150e2
-        cv    = 7.1760e2
-        cliq  = 4.1855e3
+        ttp = 2.7316e2      # temperature at h2o triple point (K)
+        psat = 6.1078e1      # pressure at h2o triple point  (Pa)
+        cvap = 1.8460e3      # specific heat of h2o vapor (J/kg/K)
+        csol = 2.1060e3      # specific heat of solid h2o (ice)(J/kg/K)
+        hvap = 2.5000e6      # latent heat of h2o condensation (J/kg)
+        hfus = 3.3358e5      # latent heat of h2o fusion (J/kg)
+        rd = 2.8705e2
+        rv = 4.6150e2
+        cv = 7.1760e2
+        cliq = 4.1855e3
 
-        dldt  = cvap-cliq
+        dldt = cvap-cliq
         dldti = cvap-csol
-        hsub  = hvap+hfus
-        tmix  = ttp-20.
-        xa    = -(dldt/rv)
-        xai   = -(dldti/rv)
-        xb    = xa+hvap/(rv*ttp)
-        xbi   = xai+hsub/(rv*ttp)
-        eps   = rd/rv
+        hsub = hvap+hfus
+        tmix = ttp-20.
+        xa = -(dldt/rv)
+        xai = -(dldti/rv)
+        xb = xa+hvap/(rv*ttp)
+        xbi = xai+hsub/(rv*ttp)
+        eps = rd/rv
         omeps = 1.0-eps
 
         tdry = tsen+ttp
@@ -542,10 +570,12 @@ class WDQMS:
             else:
                 w = (t-tmix) / (ttp-tmix)
                 estmax = w * psat * (tr[idx]**xa) * np.exp(xb*(1.0-tr[idx])) \
-                         + (1.0-w) * psat * (tr[idx]**xai) * np.exp(xbi*(1.0-tr[idx]))
+                    + (1.0-w) * psat * (tr[idx]**xai) * \
+                    np.exp(xbi*(1.0-tr[idx]))
 
                 es = w * psat * (tr[idx]**xa) * np.exp(xb*(1.0-tr[idx])) \
-                     + (1.0-w) * psat * (tr[idx]**xai) * np.exp(xbi*(1.0-tr[idx]))
+                    + (1.0-w) * psat * (tr[idx]**xai) * \
+                    np.exp(xbi*(1.0-tr[idx]))
 
             pw = pres[idx]
             esmax = pw
@@ -594,7 +624,8 @@ class WDQMS:
                 df_dict[wtype] = {}
                 for col in column_list:
                     col = f'{wtype}_'+col if col == 'Observation' else col
-                    col = f'{wtype}_'+col if col == 'Obs_Minus_Forecast_adjusted' else col
+                    col = f'{wtype}_' + \
+                        col if col == 'Obs_Minus_Forecast_adjusted' else col
                     data = self._grab_netcdf_data(file, col)
                     df_dict[wtype][col] = data
 
@@ -672,7 +703,8 @@ class WDQMS:
         Produce output .csv file from dataframe.
         """
         logging.info("Working in df_to_csv()")
-        logging.info(f'Coverting dataframe to .csv file for {self.wdqms_type} data ...')
+        logging.info(f'Coverting dataframe to .csv file for {
+                     self.wdqms_type} data ...')
 
         # Write dataframe to .csv
         date = self.datetime[:-2]
@@ -691,7 +723,8 @@ class WDQMS:
         f.write(f"# TYPE={self.wdqms_type}\n")
         f.write(f"#An_Date= {date}\n")
         f.write(f"#An_time= {cycle}\n")
-        f.write(f"#An_range=[ {hr_range[cycle][0]} to {hr_range[cycle][-1]} )\n")
+        f.write(f"#An_range=[ {hr_range[cycle][0]} to {
+                hr_range[cycle][-1]} )\n")
         f.write("#StatusFlag: 0(Used);1(Not Used);2(Rejected by DA);"
                 "3(Never Used by DA);4(Data Thinned);5(Rejected before DA);"
                 "6(Alternative Used);7(Quality Issue);8(Other Reason);9(No content)\n")
@@ -702,3 +735,32 @@ class WDQMS:
         logging.info('Exiting df_to_csv()')
 
         return filename
+
+
+if __name__ == "__main__":
+
+    # Parse command line
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-i", "--input_list", nargs='+', default=[],
+                    help="List of input GSI diagnostic files")
+    ap.add_argument("-t", "--type",
+                    help="WDQMS file type (SYNOP, TEMP, MARINE)")
+    ap.add_argument("-o", "--outdir",
+                    help="Out directory where files will be saved")
+    ap.add_argument('-d', '--debug',
+                    help="Print debugging statements to log file",
+                    action="store_const", dest="loglevel",
+                    const=logging.DEBUG,
+                    default=logging.WARNING)
+    ap.add_argument('-v', '--verbose',
+                    help="Print information statements about code",
+                    action="store_const", dest="loglevel",
+                    const=logging.INFO)
+
+    args = ap.parse_args()
+
+    if args.type not in ['SYNOP', 'TEMP', 'MARINE']:
+        raise ValueError(f'{args.type} not a correct input. Inputs include: '
+                         'SYNOP, TEMP, MARINE')
+
+    WDQMS(args.input_list, args.type, args.outdir, args.loglevel)
