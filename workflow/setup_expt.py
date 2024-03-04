@@ -252,12 +252,6 @@ def fill_EXPDIR(inputs):
     expdir = os.path.join(inputs.expdir, inputs.pslot)
 
     configs = glob.glob(f'{configdir}/config.*')
-    exclude_configs = ['base', 'base.emc.dyn', 'base.nco.static', 'fv3.nco.static']
-    for exclude in exclude_configs:
-        try:
-            configs.remove(f'{configdir}/config.{exclude}')
-        except ValueError:
-            pass
     if len(configs) == 0:
         raise IOError(f'no config files found in {configdir}')
     for config in configs:
@@ -295,7 +289,8 @@ def update_configs(host, inputs):
 
 def edit_baseconfig(host, inputs, yaml_dict):
     """
-    Parses and populates the templated `config.base.emc.dyn` to `config.base`
+    Parses and populates the templated `HOMEgfs/parm/config/<gfs|gefs>/config.base`
+    to `EXPDIR/pslot/config.base`
     """
 
     tmpl_dict = {
@@ -347,7 +342,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
     except KeyError:
         pass
 
-    base_input = f'{inputs.configdir}/config.base.emc.dyn'
+    base_input = f'{inputs.configdir}/config.base'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
     edit_config(base_input, base_output, tmpl_dict)
 

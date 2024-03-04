@@ -125,6 +125,7 @@ export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUM
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
 
+# shellcheck disable=SC2016
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
@@ -240,7 +241,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 export FHMAX_GFS=@FHMAX_GFS@
-export FHOUT_GFS=3 
+export FHOUT_GFS=3
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 export FHOUT_OCNICE_GFS=6

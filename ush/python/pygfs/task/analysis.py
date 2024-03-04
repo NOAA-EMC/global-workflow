@@ -25,6 +25,8 @@ class Analysis(Task):
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
         self.config.ntiles = 6
+        # Store location of GDASApp jinja2 templates
+        self.gdasapp_j2tmpl_dir = os.path.join(self.config.HOMEgfs, 'parm/gdas')
 
     def initialize(self) -> None:
         super().initialize()
@@ -56,7 +58,7 @@ class Analysis(Task):
             a dictionary containing the list of observation files to copy for FileHandler
         """
         logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
-        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config)
+        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
         logger.debug(f"obs_list_config: {obs_list_config}")
         # get observers from master dictionary
         observers = obs_list_config['observers']
@@ -88,7 +90,7 @@ class Analysis(Task):
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
         logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
-        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config)
+        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
         logger.debug(f"obs_list_config: {obs_list_config}")
         # get observers from master dictionary
         observers = obs_list_config['observers']
