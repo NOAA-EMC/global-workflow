@@ -11,7 +11,7 @@ from wxflow import (AttrDict,
                     FileHandler,
                     to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
                     rm_p,
-                    parse_j2yaml, parse_yamltmpl, save_as_yaml,
+                    parse_j2yaml, save_as_yaml,
                     Jinja,
                     logit,
                     Executable,
@@ -99,7 +99,7 @@ class SnowAnalysis(Analysis):
 
         def _gtsbufr2iodax(exe, yaml_file):
             if not os.path.isfile(yaml_file):
-                logger.exception(f"{yaml_file} not found")
+                logger.exception(f"FATAL ERROR: {yaml_file} not found")
                 raise FileNotFoundError(yaml_file)
 
             logger.info(f"Executing {exe}")
@@ -260,9 +260,9 @@ class SnowAnalysis(Analysis):
         FileHandler({'mkdir': dirlist}).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'snow_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'snow_jedi_fix.yaml.j2')
         logger.info(f"Staging JEDI fix files from {jedi_fix_list_path}")
-        jedi_fix_list = parse_yamltmpl(jedi_fix_list_path, self.task_config)
+        jedi_fix_list = parse_j2yaml(jedi_fix_list_path, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
         # stage backgrounds
@@ -271,10 +271,9 @@ class SnowAnalysis(Analysis):
 
         # generate letkfoi YAML file
         logger.info(f"Generate JEDI LETKF YAML file: {self.task_config.jedi_yaml}")
-        letkfoi_yaml = parse_j2yaml(self.task_config.JEDIYAML, self.task_config)
+        letkfoi_yaml = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
         save_as_yaml(letkfoi_yaml, self.task_config.jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.jedi_yaml}")
-
         # need output dir for diags and anl
         logger.info("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
