@@ -20,7 +20,6 @@
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
   url = https://github.com/NOAA-EMC/GDASApp.git
-  branch = feature/gdasapp-snowDA-jinja2
 [submodule "sorc/gsi_utils.fd"]
   path = sorc/gsi_utils.fd
   url = https://github.com/NOAA-EMC/GSI-Utils.git
