@@ -18,16 +18,9 @@
 [submodule "sorc/gdas.cd"]
 	path = sorc/gdas.cd
 	url = https://github.com/NOAA-EMC/GDASApp.git
-[submodule "sorc/gsi_utils.fd"]
-	path = sorc/gsi_utils.fd
-	url = https://github.com/NOAA-EMC/GSI-Utils.git
 [submodule "sorc/gsi_monitor.fd"]
 	path = sorc/gsi_monitor.fd
 	url = https://github.com/NOAA-EMC/GSI-Monitor.git
-#[submodule "sorc/ufs_utils.fd"]
-#	path = sorc/ufs_utils.fd
-#	url = https://github.com/HenryWinterbottom-NOAA/UFS_UTILS
-#	branch = feature/gwdev_issue_2329
 [submodule "sorc/ufs_utils.fd"]
 	path = sorc/ufs_utils.fd
 	url = https://github.com/HenryWinterbottom-NOAA/UFS_UTILS
