@@ -6,12 +6,12 @@ cd "${script_dir}" || exit 1
 
 # Default settings
 APP="S2SWA"
-PDLIB="OFF" 
+PDLIB="OFF"
 
 while getopts ":j:a:dvw" option; do
   case "${option}" in
     a) APP="${OPTARG}";;
-    d) BUILD_TYPE="DEBUG";;
+    d) BUILD_TYPE="Debug";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
     w) PDLIB="ON";;
@@ -27,15 +27,15 @@ while getopts ":j:a:dvw" option; do
 done
 
 # Determine which switch to use
-if [[ "${APP}" == "ATMW" ]]; then 
+if [[ "${APP}" == "ATMW" ]]; then
   ww3switch="model/esmf/switch"
-else 
-  if [[ "${PDLIB}" == "ON" ]]; then 
+else
+  if [[ "${PDLIB}" == "ON" ]]; then
     ww3switch="model/bin/switch_meshcap_pdlib"
-  else 
+  else
     ww3switch="model/bin/switch_meshcap"
-  fi 
-fi 
+  fi
+fi
 
 # Check final exec folder exists
 if [[ ! -d "../exec" ]]; then
@@ -86,15 +86,16 @@ sed -e "s/DIST/SHRD/g"\
        "${path_build}/tempswitch" > "${path_build}/switch"
 rm "${path_build}/tempswitch"
 
-echo "Switch file is ${buildswitch} with switches:" 
+echo "Switch file is ${buildswitch} with switches:"
 cat "${buildswitch}"
 
 #define cmake build options
 MAKE_OPT="-DCMAKE_INSTALL_PREFIX=install"
-[[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
+[[ ${BUILD_TYPE:-"Release"} = "Debug" ]] && MAKE_OPT+=" -DCMAKE_BUILD_TYPE=Debug"
 
 #Build executables:
-cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" "${MAKE_OPT}"
+# shellcheck disable=SC2086
+cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" ${MAKE_OPT}
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in cmake."

@@ -248,7 +248,7 @@ export imp_physics=8
 export DO_JEDIATMVAR="NO"
 export DO_JEDIATMENS="NO"
 export DO_JEDIOCNVAR="NO"
-export DO_JEDILANDDA="NO"
+export DO_JEDISNOWDA="NO"
 export DO_MERGENSST="NO"
 
 # Hybrid related
@@ -258,6 +258,10 @@ export NMEM_ENS=@NMEM_ENS@
 # this will be overwritten for the perturbed members
 export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
+
+# initialize ocean ensemble members with perturbations
+#   if true, only occurs for members greater than zero
+export OCN_ENS_PERTURB_FILES=false
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
