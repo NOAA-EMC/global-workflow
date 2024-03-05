@@ -43,8 +43,12 @@ fix/wave
 
 # Ignore parm file symlinks
 #--------------------------
-parm/config/config.base
-parm/gldas
+parm/gdas/aero
+parm/gdas/atm
+parm/gdas/io
+parm/gdas/ioda
+parm/gdas/snow
+parm/gdas/soca
 parm/monitor
 parm/post/AEROSOL_LUTS.dat
 parm/post/nam_micro_lookup.dat
