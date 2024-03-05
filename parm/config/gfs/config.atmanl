@@ -6,7 +6,7 @@
 echo "BEGIN: config.atmanl"
 
 if [[ ${DOHYBVAR} = "YES" ]]; then
-# shellcheck disable=SC2153
+    # shellcheck disable=SC2153
     export CASE_ANL=${CASE_ENS}
 else
     export CASE_ANL=${CASE}
