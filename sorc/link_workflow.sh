@@ -200,6 +200,18 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
 fi
 
 #------------------------------
+#--add GDASApp parm directory
+#------------------------------
+if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+  cd "${HOMEgfs}/parm/gdas" || exit 1
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca")
+  for comp in "${gdasapp_comps[@]}"; do
+    [[ -d "${comp}" ]] && rm -rf "${comp}"
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
+  done
+fi
+
+#------------------------------
 #--add GDASApp files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
