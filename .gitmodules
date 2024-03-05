@@ -1,28 +1,28 @@
 [submodule "sorc/ufs_model.fd"]
-	path = sorc/ufs_model.fd
-	url = https://github.com/ufs-community/ufs-weather-model
-	ignore = dirty
+  path = sorc/ufs_model.fd
+  url = https://github.com/ufs-community/ufs-weather-model
+  ignore = dirty
 [submodule "sorc/wxflow"]
-	path = sorc/wxflow
-	url = https://github.com/NOAA-EMC/wxflow
+  path = sorc/wxflow
+  url = https://github.com/NOAA-EMC/wxflow
 [submodule "sorc/gfs_utils.fd"]
-	path = sorc/gfs_utils.fd
-	url = https://github.com/NOAA-EMC/gfs-utils
+  path = sorc/gfs_utils.fd
+  url = https://github.com/NOAA-EMC/gfs-utils
 [submodule "sorc/ufs_utils.fd"]
-	path = sorc/ufs_utils.fd
-	url = https://github.com/ufs-community/UFS_UTILS.git
+  path = sorc/ufs_utils.fd
+  url = https://github.com/ufs-community/UFS_UTILS.git
 [submodule "sorc/verif-global.fd"]
-	path = sorc/verif-global.fd
-	url = https://github.com/NOAA-EMC/EMC_verif-global.git
+  path = sorc/verif-global.fd
+  url = https://github.com/NOAA-EMC/EMC_verif-global.git
 [submodule "sorc/gsi_enkf.fd"]
-	path = sorc/gsi_enkf.fd
-	url = https://github.com/NOAA-EMC/GSI.git
+  path = sorc/gsi_enkf.fd
+  url = https://github.com/NOAA-EMC/GSI.git
 [submodule "sorc/gdas.cd"]
-	path = sorc/gdas.cd
-	url = https://github.com/NOAA-EMC/GDASApp.git
+  path = sorc/gdas.cd
+  url = https://github.com/NOAA-EMC/GDASApp.git
 [submodule "sorc/gsi_utils.fd"]
-	path = sorc/gsi_utils.fd
-	url = https://github.com/NOAA-EMC/GSI-Utils.git
+  path = sorc/gsi_utils.fd
+  url = https://github.com/NOAA-EMC/GSI-Utils.git
 [submodule "sorc/gsi_monitor.fd"]
-	path = sorc/gsi_monitor.fd
-	url = https://github.com/NOAA-EMC/GSI-Monitor.git
+  path = sorc/gsi_monitor.fd
+  url = https://github.com/NOAA-EMC/GSI-Monitor.git
