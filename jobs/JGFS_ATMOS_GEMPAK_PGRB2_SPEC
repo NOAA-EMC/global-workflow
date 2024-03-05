@@ -21,11 +21,8 @@ export EXT=""
 # Define COM directories
 ##############################################
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
-for grid in 0p25; do
-  gempak_dir="COM_ATMOS_GEMPAK_${grid}"
-  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "${gempak_dir}:COM_ATMOS_GEMPAK_TMPL"
-  if [[ ! -d "${!gempak_dir}" ]]; then mkdir -m 775 -p "${!gempak_dir}"; fi
-done
+GRID=0p25 YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_0p25:COM_ATMOS_GEMPAK_TMPL"
+if [[ ! -d "${COM_ATMOS_GEMPAK_0p25}" ]]; then mkdir -m 775 -p "${COM_ATMOS_GEMPAK_0p25}"; fi
 
 export SENDDBN="${SENDDBN:-NO}"
 export DBNROOT="${DBNROOT:-${UTILROOT}/fakedbn}"
