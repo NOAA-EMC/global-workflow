@@ -5,12 +5,14 @@ import os
 from wxflow import SQLiteDB
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER, ZERO_OR_MORE
 
+
 def full_path(string):
     if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
         return os.path.abspath(string)
     else:
         raise NotADirectoryError(string)
-    
+
+
 def create(db):
     """
     Create a new database.
@@ -21,6 +23,7 @@ def create(db):
         The database to create.
     """
     db.create_table('pr_list', ['pr INTEGER PRIMARY KEY', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])
+
 
 def add_pr(db, pr):
     """
@@ -42,6 +45,7 @@ def add_pr(db, pr):
     entities = (args.add_pr[0], 'Open', 'Ready', 0, 'ci_repo')
     db.insert_data('pr_list', entities)
 
+
 def update_pr(db, args):
     """
     Update a pull request in the database.
@@ -52,7 +56,7 @@ def update_pr(db, args):
         The database to update the pull request in.
     args : argparse.Namespace
         The command line arguments.
-    """   
+    """
     if len(args.update_pr) < 2:
         print(f"update_pr must have at least one vaule to update")
         sys.exit(0)
@@ -61,6 +65,7 @@ def update_pr(db, args):
     for value in args.update_pr[1:]:
         update = update_list.pop(0)
         db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
+
 
 def remove_pr(db, args):
     """
@@ -72,8 +77,9 @@ def remove_pr(db, args):
         The database to remove the pull request from.
     pr : str
         The pull request to remove.
-    """   
+    """
     db.remove_column('pr_list', args.remove_pr[0])
+
 
 def display(db, args):
     """
@@ -101,6 +107,7 @@ def display(db, args):
 
     return values
 
+
 def input_args():
     """
     Parse command line arguments.
@@ -124,6 +131,7 @@ def input_args():
     args = parser.parse_args()
     return args
 
+
 if __name__ == '__main__':
 
     args = input_args()
@@ -145,7 +153,7 @@ if __name__ == '__main__':
     if args.remove_pr:
         remove_pr(ci_database, args.remove_pr[0])
     if args.display is not None:
-        for rows in display(ci_database,args):
+        for rows in display(ci_database, args):
             print(rows)
 
     ci_database.disconnect()
