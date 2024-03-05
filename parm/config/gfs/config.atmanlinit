@@ -5,7 +5,9 @@
 
 echo "BEGIN: config.atmanlinit"
 
-# Get task specific resources
+# Get task specific layout
 . "${EXPDIR}/config.atmanl"
+
+# Get task specific resources
 . "${EXPDIR}/config.resources" atmanlinit
 echo "END: config.atmanlinit"
