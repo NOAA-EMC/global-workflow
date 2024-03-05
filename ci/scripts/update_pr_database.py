@@ -31,6 +31,33 @@ def add_pr(db, pr):
     db.insert_data('pr_list', entities)
     db.disconnect()
 
+def update_pr(db, pr):        
+    if len(args.update_pr) < 2:
+        print(f"update_pr must have at least one vaule to update")
+        sys.exit(0)
+    pr = args.update_pr[0]
+
+    db.connect()
+    db.update_data('pr_list', pr, args.update_pr[1:])
+    db.disconnect()
+
+def remove_pr(db, pr):
+    db.connect()
+    db.remove_column('pr_list', args.remove_pr[0])
+    db.disconnect()
+
+def display(db):
+    db.connect()
+    rows = db.fetch_data('pr_list')
+    if len(args.display) == 1:
+        for row in rows:
+            if int(args.display[0]) == int(row[0]):
+                print(' '.join(map(str, row)))
+        else:
+            for row in rows:
+                print(' '.join(map(str, row)))
+    db.disconnect()
+
 
 def input_args():
 
@@ -62,40 +89,19 @@ if __name__ == '__main__':
 
     ci_database = SQLiteDB(args.dbfile)
 
-    match args:
+    match args.option:
         case 'create':
             create(ci_database)
         case 'add_pr':
             add_pr(ci_database, args.add_pr[0])
-
-    sys.exit(0)
-
-    if args.update_pr:
-        if len(args.update_pr) < 2:
-            print(f"update_pr must have at least one vaule to update")
-            sys.exit(0)
-        pr = args.update_pr[0]
-
-        ci_database.connect()
-        ci_database.update_data('pr_list', pr, args.update_pr[1:])
-        ci_database.disconnect()
-
-    if args.remove_pr:      
-        ci_database.connect()
-        ci_database.remove_column('pr_list', args.remove_pr[0])
-        ci_database.disconnect()
-
-    if args.display is not None:
-        ci_database.connect()
-        rows = ci_database.fetch_data('pr_list')
-        if len(args.display) == 1:
-            for row in rows:
-                if int(args.display[0]) == int(row[0]):
-                    print(' '.join(map(str, row)))
-        else:
-            for row in rows:
-                print(' '.join(map(str, row)))
-        ci_database.disconnect()
+        case 'update_pr':
+            update_pr(ci_database, args.update_pr[0])
+        case 'remove_pr':
+            remove_pr(ci_database, args.remove_pr[0])
+        case 'display':
+            display(ci_database)
+        case _:
+            print("No valid option selected")
 
     sys.exit(0)
 
