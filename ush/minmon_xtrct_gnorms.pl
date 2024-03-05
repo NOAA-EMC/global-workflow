@@ -185,8 +185,8 @@ sub  makeErrMsg {
 #
 #---------------------------------------------------------------------------
 
-if ($#ARGV != 4 ) {
-   print "usage: minmon_xtrct_gnorms.pl SUFFIX pdy cyc infile jlogfile\n";
+if ($#ARGV != 3 ) {
+   print "usage: minmon_xtrct_gnorms.pl SUFFIX pdy cyc infile \n";
    exit;
 }
 
@@ -195,7 +195,6 @@ my $suffix   = $ARGV[0];
 my $pdy      = $ARGV[1];
 my $cyc      = $ARGV[2];
 my $infile   = $ARGV[3];
-my $jlogfile = $ARGV[4];
 
 
 my $scr = "minmon_xtrct_gnorms.pl";

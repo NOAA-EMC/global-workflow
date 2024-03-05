@@ -20,7 +20,6 @@ export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
 export HOMERELO=$HOMEgfs
 export EXECRELO=${HOMERELO}/exec
-export FIXRELO=${HOMERELO}/fix/am
 export USHRELO=${HOMERELO}/ush
 
 # Adjust observation error for GFS v16 parallels
@@ -28,18 +27,18 @@ export USHRELO=${HOMERELO}/ush
 #   NOTE:  Remember to set OBERROR in config.anal as PRVT is set below
 #
 # Set default prepobs_errtable.global
-export PRVT=$FIXgsi/prepobs_errtable.global
+export PRVT=${FIXgfs}/gsi/prepobs_errtable.global
 
 
 # Set prepobs.errtable.global for GFS v16 retrospective parallels
 if [[ $RUN_ENVIR == "emc" ]]; then
   if [[ "${PDY}${cyc}" -ge "2019021900" && "${PDY}${cyc}" -lt "2019110706" ]]; then
-    export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019021900
+    export PRVT=${FIXgfs}/gsi/gfsv16_historical/prepobs_errtable.global.2019021900
   fi
 
 #   Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
   if [[ "${PDY}${cyc}" -ge "2019110706" && "${PDY}${cyc}" -lt "2020040718" ]]; then
-    export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
+    export PRVT=${FIXgfs}/gsi/gfsv16_historical/prepobs_errtable.global.2019110706
   fi
 
 #   NOTE:

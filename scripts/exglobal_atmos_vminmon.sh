@@ -44,15 +44,15 @@ if [[ -s ${gsistat} ]]; then
    #------------------------------------------------------------------
    #   Run the child sccripts.
    #------------------------------------------------------------------
-   "${USHgfs}/minmon_xtrct_costs.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
+   "${USHgfs}/minmon_xtrct_costs.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}"
    rc_costs=$?
    echo "rc_costs = ${rc_costs}"
 
-   "${USHgfs}/minmon_xtrct_gnorms.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
+   "${USHgfs}/minmon_xtrct_gnorms.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}"
    rc_gnorms=$?
    echo "rc_gnorms = ${rc_gnorms}"
 
-   "${USHgfs}/minmon_xtrct_reduct.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}" dummy
+   "${USHgfs}/minmon_xtrct_reduct.pl" "${MINMON_SUFFIX}" "${PDY}" "${cyc}" "${gsistat}"
    rc_reduct=$?
    echo "rc_reduct = ${rc_reduct}"
 

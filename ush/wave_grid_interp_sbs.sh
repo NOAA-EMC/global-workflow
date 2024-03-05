@@ -113,18 +113,18 @@ source "$HOMEgfs/ush/preamble.sh"
 
   wht_OK='no'
   if [ ! -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]; then
-    if [ -f $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} ]
+    if [ -f ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} ]
     then
       set +x
       echo ' '
-      echo " Copying $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} "
+      echo " Copying ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} "
       set_trace
-      cp $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} ${DATA}
+      cp ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} ${DATA}
       wht_OK='yes'
     else
       set +x
       echo ' '
-      echo " Not found: $FIXwave/ww3_gint.WHTGRIDINT.bin.${grdID} "
+      echo " Not found: ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} "
     fi
   fi
 # Check and link weights file
@@ -148,7 +148,7 @@ source "$HOMEgfs/ush/preamble.sh"
   if [ "wht_OK" = 'no' ]
   then
     cp -f ./WHTGRIDINT.bin ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}
-    cp -f ./WHTGRIDINT.bin ${FIXwave}/ww3_gint.WHTGRIDINT.bin.${grdID}
+    cp -f ./WHTGRIDINT.bin ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}
   fi
 
 

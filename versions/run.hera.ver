@@ -1,13 +1,11 @@
 export stack_intel_ver=2021.5.0
 export stack_impi_ver=2021.5.1
+export spack_env=gsi-addon-dev
 
 export hpss_ver=hpss
 export ncl_ver=6.6.2
 export R_ver=3.5.0
 export gempak_ver=7.4.2
 
-#For metplus jobs, not currently working with spack-stack
-#export met_ver=9.1.3
-#export metplus_ver=3.1.1
-
 source "${HOMEgfs:-}/versions/run.spack.ver"
+export spack_mod_path="/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"

@@ -1,6 +1,8 @@
 export stack_intel_ver=2021.5.0
 export stack_impi_ver=2021.5.0
+export spack_env=gsi-addon-env
 
 export ncl_ver=6.4.0-precompiled
 
 source "${HOMEgfs:-}/versions/run.spack.ver"
+export spack_mod_path="/data/prod/jedi/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"

@@ -16,9 +16,11 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w]
   -a UFS_app:
     Build a specific UFS app instead of the default
+  -d:
+    Build in debug mode
   -g:
     Build GSI
   -h:
@@ -29,28 +31,35 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-j n][-v]
     Build UFS-DA
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
+  -w:
+    Use unstructured wave grid
 EOF
   exit 1
 }
 
-script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-cd "${script_dir}" || exit 1
+# shellcheck disable=SC2155
+readonly HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+cd "${HOMEgfs}/sorc" || exit 1
 
 _build_ufs_opt=""
 _build_ufsda="NO"
 _build_gsi="NO"
+_build_debug=""
 _verbose_opt=""
+_wave_unst=""
 _build_job_max=20
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:ghj:uv" option; do
+while getopts ":a:dghj:uvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
+    d) _build_debug="-d" ;;
     g) _build_gsi="YES" ;;
     h) _usage;;
     j) _build_job_max="${OPTARG} ";;
     u) _build_ufsda="YES" ;;
     v) _verbose_opt="-v";;
+    w) _wave_unst="-w";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       _usage
@@ -64,24 +73,24 @@ done
 
 shift $((OPTIND-1))
 
-logs_dir="${script_dir}/logs"
+logs_dir="${HOMEgfs}/sorc/logs"
 if [[ ! -d "${logs_dir}" ]]; then
   echo "Creating logs folder"
-  mkdir "${logs_dir}" || exit 1
+  mkdir -p "${logs_dir}" || exit 1
 fi
 
 # Check final exec folder exists
-if [[ ! -d "../exec" ]]; then
-  echo "Creating ../exec folder"
-  mkdir ../exec
+if [[ ! -d "${HOMEgfs}/exec" ]]; then
+  echo "Creating ${HOMEgfs}/exec folder"
+  mkdir -p "${HOMEgfs}/exec"
 fi
 
 #------------------------------------
 # GET MACHINE
 #------------------------------------
 export COMPILER="intel"
-source gfs_utils.fd/ush/detect_machine.sh
-source gfs_utils.fd/ush/module-setup.sh
+source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/module-setup.sh"
 if [[ -z "${MACHINE_ID}" ]]; then
   echo "FATAL: Unable to determine target machine"
   exit 1
@@ -113,42 +122,42 @@ declare -A build_opts
 big_jobs=0
 build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
-build_opts["ufs"]="${_verbose_opt} ${_build_ufs_opt}"
+build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
 
-build_jobs["upp"]=6     # The UPP is hardcoded to use 6 cores
-build_opts["upp"]=""
+build_jobs["upp"]=2
+build_opts["upp"]="${_build_debug}"
 
-build_jobs["ufs_utils"]=3
-build_opts["ufs_utils"]="${_verbose_opt}"
+build_jobs["ufs_utils"]=2
+build_opts["ufs_utils"]="${_verbose_opt} ${_build_debug}"
 
 build_jobs["gfs_utils"]=1
-build_opts["gfs_utils"]="${_verbose_opt}"
+build_opts["gfs_utils"]="${_verbose_opt} ${_build_debug}"
 
-build_jobs["ww3prepost"]=3
-build_opts["ww3prepost"]="${_verbose_opt} ${_build_ufs_opt}"
+build_jobs["ww3prepost"]=2
+build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
-   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera.intel" && "${MACHINE_ID}" != "hercules" ]]; then
+   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" ]]; then
       echo "NOTE: The GDAS App is not supported on ${MACHINE_ID}.  Disabling build."
    else
       build_jobs["gdas"]=8
       big_jobs=$((big_jobs+1))
-      build_opts["gdas"]="${_verbose_opt}"
+      build_opts["gdas"]="${_verbose_opt} ${_build_debug}"
    fi
 fi
 if [[ "${_build_gsi}" == "YES" ]]; then
    build_jobs["gsi_enkf"]=8
-   build_opts["gsi_enkf"]="${_verbose_opt}"
+   build_opts["gsi_enkf"]="${_verbose_opt} ${_build_debug}"
 fi
 if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then
-   build_jobs["gsi_utils"]=2
-   build_opts["gsi_utils"]="${_verbose_opt}"
+   build_jobs["gsi_utils"]=1
+   build_opts["gsi_utils"]="${_verbose_opt} ${_build_debug}"
    if [[ "${MACHINE_ID}" == "hercules" ]]; then
       echo "NOTE: The GSI Monitor is not supported on Hercules.  Disabling build."
    else
       build_jobs["gsi_monitor"]=1
-      build_opts["gsi_monitor"]="${_verbose_opt}"
+      build_opts["gsi_monitor"]="${_verbose_opt} ${_build_debug}"
    fi
 fi
 
@@ -192,13 +201,10 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
       if [[ -n "${build_jobs[${build}]+0}" && -z "${build_ids[${build}]+0}" ]]; then
          # Do we have enough processors to run it?
          if [[ ${_build_job_max} -ge $(( build_jobs[build] + procs_in_use )) ]]; then
-            if [[ "${build}" != "upp" ]]; then
-               "./build_${build}.sh" -j "${build_jobs[${build}]}" "${build_opts[${build}]:-}" > \
-                  "${logs_dir}/build_${build}.log" 2>&1 &
-            else
-               "./build_${build}.sh" "${build_opts[${build}]}" > \
-                  "${logs_dir}/build_${build}.log" 2>&1 &
-            fi
+            # double-quoting build_opts here will not work since it is a string of options
+            #shellcheck disable=SC2086
+            "./build_${build}.sh" ${build_opts[${build}]:-} -j "${build_jobs[${build}]}" > \
+               "${logs_dir}/build_${build}.log" 2>&1 &
             build_ids["${build}"]=$!
             echo "Starting build_${build}.sh"
             procs_in_use=$(( procs_in_use + build_jobs[${build}] ))

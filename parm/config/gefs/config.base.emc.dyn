@@ -30,16 +30,6 @@ export UTILgfs=${HOMEgfs}/util
 export EXECgfs=${HOMEgfs}/exec
 export SCRgfs=${HOMEgfs}/scripts
 
-export FIXam="${FIXgfs}/am"
-export FIXaer="${FIXgfs}/aer"
-export FIXcpl="${FIXgfs}/cpl"
-export FIXlut="${FIXgfs}/lut"
-export FIXorog="${FIXgfs}/orog"
-export FIXcice="${FIXgfs}/cice"
-export FIXmom="${FIXgfs}/mom6"
-export FIXreg2grb2="${FIXgfs}/reg2grb2"
-export FIXugwd="${FIXgfs}/ugwd"
-
 ########################################################################
 
 # GLOBAL static environment parameters
@@ -144,7 +134,7 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
-export DOBNDPNT_WAVE="NO"
+export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
 export FRAC_GRID=".true."
 
 # Set operational resolution
@@ -220,9 +210,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 export FHMIN_GFS=0
 export FHMIN=${FHMIN_GFS}
 export FHMAX_GFS=@FHMAX_GFS@
-export FHOUT_GFS=6 # Must be 6 for S2S until #1629 is addressed; 3 for ops
+export FHOUT_GFS=6 
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
+export FHOUT_OCNICE_GFS=6
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
@@ -257,7 +248,7 @@ export imp_physics=8
 export DO_JEDIATMVAR="NO"
 export DO_JEDIATMENS="NO"
 export DO_JEDIOCNVAR="NO"
-export DO_JEDILANDDA="NO"
+export DO_JEDISNOWDA="NO"
 export DO_MERGENSST="NO"
 
 # Hybrid related
@@ -267,6 +258,10 @@ export NMEM_ENS=@NMEM_ENS@
 # this will be overwritten for the perturbed members
 export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
+
+# initialize ocean ensemble members with perturbations
+#   if true, only occurs for members greater than zero
+export OCN_ENS_PERTURB_FILES=false
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting

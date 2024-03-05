@@ -13,6 +13,9 @@ export STATICB_TYPE="gsibec"
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
 export INTERP_METHOD='barycentric'
 
+export layout_x_atmanl=@LAYOUT_X_ATMANL@
+export layout_y_atmanl=@LAYOUT_Y_ATMANL@
+
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 

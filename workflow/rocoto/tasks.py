@@ -20,10 +20,10 @@ class Tasks:
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'preplandobs', 'landanl',
+                   'prepsnowobs', 'snowanl',
                    'fcst',
-                   'atmanlupp', 'atmanlprod', 'atmupp', 'atmprod', 'goesupp',
-                   'ocnpost',
+                   'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
+                   'atmosprod', 'oceanprod', 'iceprod',
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
                    'tracker', 'genesis', 'genesis_fsu',
@@ -120,22 +120,36 @@ class Tasks:
                                              rocoto_conversion_dict.get)
 
     @staticmethod
-    def _get_forecast_hours(cdump, config) -> List[str]:
-        fhmin = config['FHMIN']
-        fhmax = config['FHMAX']
-        fhout = config['FHOUT']
+    def _get_forecast_hours(cdump, config, component='atmos') -> List[str]:
+        # Make a local copy of the config to avoid modifying the original
+        local_config = config.copy()
+
+        # Ocean/Ice components do not have a HF output option like the atmosphere
+        if component in ['ocean', 'ice']:
+            local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_OCNICE_GFS']
+            local_config['FHOUT_GFS'] = config['FHOUT_OCNICE_GFS']
+            local_config['FHOUT'] = config['FHOUT_OCNICE']
+
+        fhmin = local_config['FHMIN']
 
         # Get a list of all forecast hours
         fhrs = []
         if cdump in ['gdas']:
-            fhrs = range(fhmin, fhmax + fhout, fhout)
+            fhmax = local_config['FHMAX']
+            fhout = local_config['FHOUT']
+            fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif cdump in ['gfs', 'gefs']:
-            fhmax = config['FHMAX_GFS']
-            fhout = config['FHOUT_GFS']
-            fhmax_hf = config['FHMAX_HF_GFS']
-            fhout_hf = config['FHOUT_HF_GFS']
+            fhmax = local_config['FHMAX_GFS']
+            fhout = local_config['FHOUT_GFS']
+            fhmax_hf = local_config['FHMAX_HF_GFS']
+            fhout_hf = local_config['FHOUT_HF_GFS']
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+
+        # ocean/ice components do not have fhr 0 as they are averaged output
+        if component in ['ocean', 'ice']:
+            fhrs.remove(0)
 
         return fhrs
 
