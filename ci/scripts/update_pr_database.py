@@ -2,7 +2,7 @@
 
 import os,sys
 
-from github import Github
+#from pygithub import Github
 from wxflow import Executable, which, SQLiteDB
 from workflow.hosts import Host
 
@@ -46,18 +46,20 @@ def remove_pr(db, pr):
     db.remove_column('pr_list', args.remove_pr[0])
     db.disconnect()
 
-def display(db):
+def display(db,args):
+    values = []
     db.connect()
     rows = db.fetch_data('pr_list')
     if len(args.display) == 1:
         for row in rows:
             if int(args.display[0]) == int(row[0]):
-                print(' '.join(map(str, row)))
-        else:
-            for row in rows:
-                print(' '.join(map(str, row)))
-    db.disconnect()
+                values.append(' '.join(map(str, row)))
+    else:
+        for row in rows:
+            values.append(' '.join(map(str, row)))
 
+    db.disconnect()
+    return values        
 
 def input_args():
 
@@ -90,15 +92,16 @@ if __name__ == '__main__':
     ci_database = SQLiteDB(args.dbfile)
 
     if args.create:
-	create(ci_database)
+        create(ci_database)
     if args.add_pr:
         add_pr(ci_database, args.add_pr[0])
     if args.update_pr:
         update_pr(ci_database, args.update_pr[0])
-    if remove_pr:
-	remove_pr(ci_database, args.remove_pr[0])
-    if display:
-        display(ci_database)
+    if args.remove_pr:
+        remove_pr(ci_database, args.remove_pr[0])
+    if args.display is not None:
+        for rows in display(ci_database,args):
+            print(rows)
 
     sys.exit(0)
 
