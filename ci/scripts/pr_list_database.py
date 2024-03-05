@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import sys, os
+import sys
+import os
 from wxflow import SQLiteDB
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER, ZERO_OR_MORE
 
@@ -92,9 +93,9 @@ def display(db, args):
     """
     values = []
     if len(args.display) == 1:
-        rows = db.fetch_data('pr_list',['pr','state','status','reset_id','cases'],f'pr = {args.display[0]}')
+        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f'pr = {args.display[0]}')
     else:
-        rows = db.fetch_data('pr_list',['pr','state','status','reset_id','cases'])
+        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
     for row in rows:
         values.append(' '.join(map(str, row)))
 
