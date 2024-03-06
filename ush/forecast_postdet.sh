@@ -11,6 +11,8 @@
 ## for execution.
 #####
 
+# Disable variable not used warnings
+# shellcheck disable=SC2034
 FV3_postdet(){
   echo "SUB ${FUNCNAME[0]}: Entering for RUN = ${RUN}"
 
