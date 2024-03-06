@@ -36,7 +36,7 @@ export HPCGFS="${COM_ATMOS_GEMPAK_1p00}"
 grid1="F-GFSHPC | ${PDY:2}/${cyc}00"
 
 # DEFINE YESTERDAY
-PDYm1="$(date --utc +%Y%m%d%H -d "${PDY}${cyc} - 24 hours")"
+PDYm1="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 24 hours")"
 
 for symlink in ecwmf_m1 ukmet; do
     if [[ -L "${symlink}" ]]; then rm "${symlink}"; fi
