@@ -14,8 +14,8 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 # Link data into DATA to sidestep gempak path limits
 # TODO: Replace this
 #
-export COMIN="${RUN}.${PDY}${cyc}"
-ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+export HPCGFS="${RUN}.${PDY}${cyc}"
+ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
 
 mdl=gfs
 MDL=GFS
@@ -32,7 +32,6 @@ if [[ ${cyc} != "06" ]]; then
     exit
 fi
 
-export HPCGFS="${COM_ATMOS_GEMPAK_1p00}"
 grid1="F-GFSHPC | ${PDY:2}/${cyc}00"
 
 # DEFINE YESTERDAY
@@ -331,6 +330,7 @@ r
 ex
 EOF25
 done
+export err=$?;err_chk
 
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
