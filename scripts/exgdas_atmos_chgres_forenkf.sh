@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -40,7 +40,7 @@ export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 
 # IAU
 DOIAU=${DOIAU:-"NO"}
@@ -48,7 +48,7 @@ export IAUFHRS=${IAUFHRS:-"6"}
 
 # Dependent Scripts and Executables
 export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-$HOMEgfs/exec/enkf_chgres_recenter_nc.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 APRUNCFP=${APRUNCFP:-""}
 

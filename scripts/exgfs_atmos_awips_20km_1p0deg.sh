@@ -19,7 +19,7 @@
 # echo " "
 ###############################################################################
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 fcsthrs="$1"
 num=$#
@@ -38,7 +38,7 @@ fi
 cd "${DATA}" || exit 2
 
 # "Import" functions used in this script
-source "${HOMEgfs}/ush/product_functions.sh"
+source "${USHgfs}/product_functions.sh"
 
 ###############################################
 # Wait for the availability of the pgrb file

@@ -11,7 +11,7 @@
 #  March-2020 Roberto.Padilla@noaa.gov                                   
 #####################################################################
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 #export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
 export grids=${grids:-'glo_30m'}  #Native grids

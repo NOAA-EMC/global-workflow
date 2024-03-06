@@ -10,7 +10,7 @@
 # echo "            Oct 2013 - Use main USH vars as part of minor pkg cleanup"
 ############################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Make sure we are in the $DATA directory
 cd $DATA

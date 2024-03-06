@@ -20,7 +20,7 @@
 #   9) 2019-12-18       Guang Ping Lou generalizing to reading in NetCDF or nemsio
 ################################################################
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 cd $DATA
 
@@ -44,7 +44,7 @@ export NINT3=${FHOUT_GFS:-3}
 
 rm -f -r "${COM_ATMOS_BUFR}"
 mkdir -p "${COM_ATMOS_BUFR}"
-GETDIM="${HOMEgfs}/ush/getncdimlen"
+GETDIM="${USHgfs}/getncdimlen"
 LEVS=$(${GETDIM} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
 declare -x LEVS
 
