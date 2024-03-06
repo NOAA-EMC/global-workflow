@@ -21,6 +21,6 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
 
 ########################################################
 # Execute the script.
-${HOMEgfs}/scripts/exglobal_atmos_pmgr.sh
+${SCRgfs}/exglobal_atmos_pmgr.sh
 ########################################################
 

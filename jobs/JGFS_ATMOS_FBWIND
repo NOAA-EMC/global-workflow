@@ -29,7 +29,7 @@ mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
 
 ########################################################
 # Execute the script.
-${HOMEgfs}/scripts/exgfs_atmos_fbwind.sh
+${SCRgfs}/exgfs_atmos_fbwind.sh
 export err=$?;err_chk
 ########################################################
 

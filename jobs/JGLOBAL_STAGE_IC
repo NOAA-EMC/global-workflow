@@ -10,7 +10,7 @@ rCDUMP=${CDUMP}
 export rCDUMP
 
 # Execute the Script
-"${HOMEgfs}/scripts/exglobal_stage_ic.sh"
+"${SCRgfs}/exglobal_stage_ic.sh"
 
 ##########################################
 # Remove the Temporary working directory

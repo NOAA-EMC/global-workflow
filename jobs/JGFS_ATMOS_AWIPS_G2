@@ -35,7 +35,7 @@ export pgmout=OUTPUT.$$
 #########################################################
 mkdir -m 775 awips_g1
 cd ${DATA}/awips_g1
-${HOMEgfs}/scripts/exgfs_atmos_grib_awips.sh ${fcsthrs}
+"${SCRgfs}/exgfs_atmos_grib_awips.sh" "${fcsthrs}"
 export err=$?; err_chk
 
 ############################################

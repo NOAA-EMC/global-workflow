@@ -23,7 +23,7 @@ mkdir -m 755 -p "${COM_ATMOS_ANALYSIS_ENS}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSFINALPY:-${HOMEgfs}/scripts/exglobal_atmens_analysis_finalize.py}
+EXSCRIPT=${GDASATMENSFINALPY:-${SCRgfs}/exglobal_atmens_analysis_finalize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
