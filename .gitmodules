@@ -23,3 +23,6 @@
 	path = sorc/gsi_utils.fd
 	url = https://github.com/HenryWinterbottom-NOAA/GSI-utils
 	branch = feature/gwdev_issue_2329
+[submodule "sorc/sorc/gsi_enkf.fd"]
+	path = sorc/sorc/gsi_enkf.fd
+	url = https://github.com/HenryWinterbottom-NOAA/GSI
