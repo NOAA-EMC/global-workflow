@@ -26,3 +26,7 @@
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
   url = https://github.com/NOAA-EMC/GDASApp.git
+[submodule "sorc/ufs_model.fd"]
+	path = sorc/ufs_model.fd
+	url = https://github.com/HenryWinterbottom-NOAA/ufs-weather-model
+	branch = feature/gwdev_issue_2329
