@@ -9,9 +9,6 @@
 	path = sorc/gfs_utils.fd
 	url = https://github.com/HenryWinterbottom-NOAA/gfs-utils
 	branch = feature/gwdev_issue_2329
-[submodule "sorc/gsi_enkf.fd"]
-	path = sorc/gsi_enkf.fd
-	url = https://github.com/NOAA-EMC/GSI.git
 [submodule "sorc/gdas.cd"]
 	path = sorc/gdas.cd
 	url = https://github.com/NOAA-EMC/GDASApp.git
