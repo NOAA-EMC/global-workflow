@@ -52,7 +52,7 @@ class Host:
         elif container is not None:
             machine = 'CONTAINER'
         elif os.path.exists('/gpfs'):
-            machine = 'GAEA'
+            machine = 'GAEA-C5'
         elif pw_csp is not None:
             if pw_csp.lower() not in ['azure', 'aws', 'gcp']:
                 raise ValueError(
