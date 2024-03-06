@@ -183,7 +183,7 @@
 #
 ####
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 

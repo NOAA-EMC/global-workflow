@@ -19,7 +19,7 @@
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
 # echo "History: February 2003 - First implementation of this utility script"
 #
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 if test "$F00FLAG" = "YES"
 then

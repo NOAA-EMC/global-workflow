@@ -5,7 +5,7 @@
 #-- Fanglin Yang, October 2016
 #--------------------------------------
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 export CDATE=${CDATE:-"2016100300"}
 export CASE=${CASE:-"C192"}           # C48 C96 C192 C384 C768 C1152 C3072

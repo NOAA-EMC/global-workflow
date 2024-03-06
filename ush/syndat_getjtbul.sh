@@ -21,7 +21,7 @@
 #   TANK_TROPCY  - path to home directory containing tropical cyclone record
 #                  data base
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 cd $DATA
 

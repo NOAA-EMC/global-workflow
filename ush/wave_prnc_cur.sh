@@ -22,7 +22,7 @@
 ################################################################################
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ymdh_rtofs=$1
 curfile=$2
