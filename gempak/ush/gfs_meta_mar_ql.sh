@@ -166,6 +166,7 @@ li
 ru
 exit
 EOFplt
+export err=$?;err_chk
 
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
