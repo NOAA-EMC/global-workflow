@@ -47,6 +47,15 @@ for otype in "${OTYPES[@]}"; do
 done
 
 #-------------------------------------------------------------------------------
+# Send DBN alerts for dataflow to pick up data from COMOUT
+for otype in "${OTYPES[@]}"; do
+  file="NCEP_${otype}_${PDY}_${cyc}.csv"
+  if [[ -f "${COMOUT}/${file}" ]]; then
+    echo "Send DBN Alert"  # TODO
+  fi
+done
+
+#-------------------------------------------------------------------------------
 echo 'Job completed normally.'
 ################################################################################
 

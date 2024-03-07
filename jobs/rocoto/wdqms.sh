@@ -1,14 +1,13 @@
-#!/bin/bash
+#!/bin/ksh -x
 
-set -x
 ###############################################################
 # Source FV3GFS workflow modules
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
-[[ $status -ne 0 ]] && exit $status
+(( status != 0 )) && exit "${status}"
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS
+"${HOMEgfs}/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS"
 status=$?
-exit $status
+exit "${status}"

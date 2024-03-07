@@ -26,9 +26,7 @@ module load craype/${craype_ver}
 module load intel/${intel_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf_ver}
-# TODO: Needs the python modules. Review the above list (hdf5 and netcdf)
+module load python/${python_ver}
 module list
 
 #############################################################
