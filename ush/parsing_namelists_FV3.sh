@@ -631,6 +631,24 @@ EOF
   use_zmtnblck = ${use_zmtnblck:-".true."}
 EOF
   fi
+  
+  if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
+    cat >> input.nml <<EOF
+  OCNSPPT=${OCNSPPT:-1.0}
+  OCNSPPT_LSCALE=${OCNSPPT_LSCALE:-500e3}
+  OCNSPPT_TAU=${OCNSPPT_TAU:-21600}
+  ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
+EOF
+  fi
+
+  if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
+    cat >> input.nml <<EOF
+  EPBL=${EPBL:-1.0}
+  EPBL_LSCALE=${EPBL_LSCALE:-500e3}
+  EPBL_TAU=${EPBL_TAU:-21600}
+  ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
+EOF
+  fi
 
   cat >> input.nml << EOF
   ${nam_stochy_nml:-}

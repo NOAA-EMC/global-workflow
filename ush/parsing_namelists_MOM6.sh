@@ -25,24 +25,6 @@ EOF
 #  new_lscale=.true.
 #EOF
 
-if [[ "${DO_OCN_SPPT}" == "YES" ]]; then
-  cat >> input.nml <<EOF
-  OCNSPPT=${OCNSPPT:-1.0}
-  OCNSPPT_LSCALE=${OCNSPPT_LSCALE:-500e3}
-  OCNSPPT_TAU=${OCNSPPT_TAU:-21600}
-  ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
-EOF
-fi
-
-if [[ "${DO_OCN_PERT_EPBL}" == "YES" ]]; then
-  cat >> input.nml <<EOF
-  EPBL=${EPBL:-1.0}
-  EPBL_LSCALE=${EPBL_LSCALE:-500e3}
-  EPBL_TAU=${EPBL_TAU:-21600}
-  ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
-EOF
-fi
-
 #cat >> input.nml <<EOF
 #/
 #
@@ -85,12 +67,12 @@ else
   local MOM6_USE_WAVES="False"
 fi
 # == MOM_oda_incupd section ==
-local ODA_TEMPINC_VAR="Temp"
-local ODA_SALTINC_VAR="Salt"
-local ODA_THK_VAR="h"
+local ODA_TEMPINC_VAR=${ODA_TEMPINC_VAR:-"Temp"}
+local ODA_SALTINC_VAR=${ODA_SALTINC_VAR:-"Salt"}
+local ODA_THK_VAR=${ODA_THK_VAR:-"h"}
 local ODA_INCUPD_UV="True"
-local ODA_UINC_VAR="u"
-local ODA_VINC_VAR="v"
+local ODA_UINC_VAR=${ODA_UINC_VAR:-"u"}
+local ODA_VINC_VAR=${ODA_VINC_VAR:-"v"}
 # ODA_INCUPD
 # ODA_INCUPD_NHOURS
 # == MOM_surface_forcing section ==
