@@ -1,4 +1,4 @@
-BASE_GIT: '/gpfs/f5/epic/proj-shared/global/glopara/git'  #TODO: This does not yet exist.
+BASE_GIT: '/gpfs/f5/epic/proj-shared/global/glopara/git'
 DMPDIR: '/gpfs/f5/epic/proj-shared/global/glopara/dump'
 BASE_CPLIC: '/gpfs/f5/epic/proj-shared/global/glopara/ICSDIR/prototype_ICs'
 PACKAGEROOT: '/gpfs/f5/epic/proj-shared/global/glopara/nwpara'
