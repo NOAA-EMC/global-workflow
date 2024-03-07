@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -33,8 +33,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 #                       defaults to 1 (on)
 #     RADMON_SUFFIX	data source suffix
 #                       defauls to opr
-#     EXECgfs           executable directory
-#     PARMmonitor       parm data directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
 #     TANKverf_rad	data repository
@@ -77,7 +75,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 # File names
 
 radmon_err_rpt=${radmon_err_rpt:-${USHgfs}/radmon_err_rpt.sh}
-base_file=${base_file:-${PARMmonitor}/gdas_radmon_base.tar}
+base_file=${base_file:-${PARMgfs}/monitor/gdas_radmon_base.tar}
 report=report.txt
 disclaimer=disclaimer.txt
 

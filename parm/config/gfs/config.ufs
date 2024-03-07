@@ -443,25 +443,25 @@ fi
 # Default ufs.configure templates for supported model configurations
 case "${model_list}" in
   atm)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atm.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.atm.IN"
     ;;
   atm.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atmaero.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.atmaero.IN"
     ;;
   atm.wave)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.leapfrog_atm_wav.IN"
     ;;
   atm.ocean.ice)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2s_esmf.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.s2s_esmf.IN"
     ;;
   atm.ocean.ice.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sa_esmf.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.s2sa_esmf.IN"
     ;;
   atm.ocean.ice.wave)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sw_esmf.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.s2sw_esmf.IN"
     ;;
   atm.ocean.ice.wave.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2swa_esmf.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.s2swa_esmf.IN"
     ;;
   *)
     echo "FATAL ERROR: Unsupported UFSWM configuration for ${model_list}"

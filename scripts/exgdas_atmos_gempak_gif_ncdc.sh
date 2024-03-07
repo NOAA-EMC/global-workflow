@@ -10,7 +10,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
 
-export NTS=$USHgempak/restore
+export NTS=${HOMEgfs}/gempak/ush/restore
 
 if [ $MODEL = GDAS ]
 then
@@ -47,9 +47,9 @@ then
      
        if [ $cyc -eq 00 -o $cyc -eq 12 ]
        then
-          $USHgempak/gempak_${RUN}_f${fhr}_gif.sh
-          if [ ! -f $USHgempak/gempak_${RUN}_f${fhr}_gif.sh ] ; then
-             echo "WARNING: $USHgempak/gempak_${RUN}_f${fhr}_gif.sh FILE is missing"
+          ${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr}_gif.sh
+          if [ ! -f ${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr}_gif.sh ] ; then
+             echo "WARNING: ${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr}_gif.sh FILE is missing"
           fi
        fi
 

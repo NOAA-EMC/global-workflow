@@ -28,7 +28,7 @@ mkdir -m 775 -p "${COM_SNOW_ANALYSIS}" "${COM_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SNOWANLPY:-${HOMEgfs}/scripts/exglobal_snow_analysis.py}
+EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_analysis.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

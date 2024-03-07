@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 #------------------------------------------------------------------
 #  ozn_xtrct.sh
@@ -132,12 +132,12 @@ else
    #--------------------------------------------------------------------
    #   Copy extraction programs to working directory
    #
-   ${NCP} "${HOMEgfs}/exec/oznmon_time.x" ./oznmon_time.x
+   ${NCP} "${EXECgfs}/oznmon_time.x" ./oznmon_time.x
    if [[ ! -e oznmon_time.x ]]; then
       iret=2
       exit ${iret}
    fi
-   ${NCP} "${HOMEgfs}/exec/oznmon_horiz.x" ./oznmon_horiz.x
+   ${NCP} "${EXECgfs}/oznmon_horiz.x" ./oznmon_horiz.x
    if [[ ! -e oznmon_horiz.x ]]; then
       iret=3
       exit ${iret}

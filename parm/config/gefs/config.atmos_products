@@ -12,17 +12,17 @@ echo "BEGIN: config.atmos_products"
 export NFHRS_PER_GROUP=3
 
 # Scripts used by this job
-export INTERP_ATMOS_MASTERSH="${HOMEgfs}/ush/interp_atmos_master.sh"
-export INTERP_ATMOS_SFLUXSH="${HOMEgfs}/ush/interp_atmos_sflux.sh"
+export INTERP_ATMOS_MASTERSH="${USHgfs}/interp_atmos_master.sh"
+export INTERP_ATMOS_SFLUXSH="${USHgfs}/interp_atmos_sflux.sh"
 
 export downset=2
 export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
 export FLXGF="NO"  # Create interpolated sflux.1p00 file
 
 # paramlist files for the different forecast hours and downsets
-export paramlista="${HOMEgfs}/parm/product/gefs.0p25.fFFF.paramlist.a.txt"
-export paramlista_anl="${HOMEgfs}/parm/product/gefs.0p25.anl.paramlist.a.txt"
-export paramlista_f000="${HOMEgfs}/parm/product/gefs.0p25.f000.paramlist.a.txt"
-export paramlistb="${HOMEgfs}/parm/product/gefs.0p25.fFFF.paramlist.b.txt"
+export paramlista="${PARMgfs}/product/gefs.0p25.fFFF.paramlist.a.txt"
+export paramlista_anl="${PARMgfs}/product/gefs.0p25.anl.paramlist.a.txt"
+export paramlista_f000="${PARMgfs}/product/gefs.0p25.f000.paramlist.a.txt"
+export paramlistb="${PARMgfs}/product/gefs.0p25.fFFF.paramlist.b.txt"
 
 echo "END: config.atmos_products"
