@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -25,7 +25,7 @@ pwd=$(pwd)
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 nm=""
@@ -37,7 +37,7 @@ APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/enkf.x}
+ENKFEXEC=${ENKFEXEC:-${EXECgfs}/enkf.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}

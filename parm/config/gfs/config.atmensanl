@@ -16,6 +16,6 @@ export layout_y_atmensanl=@LAYOUT_Y_ATMENSANL@
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE=${HOMEgfs}/exec/fv3jedi_letkf.x
+export JEDIEXE=${EXECgfs}/fv3jedi_letkf.x
 
 echo "END: config.atmensanl"

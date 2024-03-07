@@ -79,8 +79,8 @@ WW3_namelists(){
 
   if [ $waveMULTIGRID = ".true." ]; then
     # ww3_multi template
-    if [ -f $PARMwave/ww3_multi.inp.tmpl ]; then
-      cp $PARMwave/ww3_multi.inp.tmpl ww3_multi.inp.tmpl
+    if [ -f ${PARMgfs}/wave/ww3_multi.inp.tmpl ]; then
+      cp ${PARMgfs}/wave/ww3_multi.inp.tmpl ww3_multi.inp.tmpl
     fi
     if [ ! -f ww3_multi.inp.tmpl ]; then
       echo "ABNORMAL EXIT: NO TEMPLATE FOR WW3 MULTI INPUT FILE" 
@@ -88,8 +88,8 @@ WW3_namelists(){
     fi
   else 
     # ww3_multi template
-    if [ -f $PARMwave/ww3_shel.inp.tmpl ]; then
-      cp $PARMwave/ww3_shel.inp.tmpl ww3_shel.inp.tmpl
+    if [ -f ${PARMgfs}/wave/ww3_shel.inp.tmpl ]; then
+      cp ${PARMgfs}/wave/ww3_shel.inp.tmpl ww3_shel.inp.tmpl
     fi
     if [ ! -f ww3_shel.inp.tmpl ]; then
       echo "ABNORMAL EXIT: NO TEMPLATE FOR WW3 SHEL INPUT FILE" 
@@ -99,18 +99,18 @@ WW3_namelists(){
 
 # Buoy location file
 
-  if [ -f $PARMwave/wave_${NET}.buoys ]
+  if [ -f ${PARMgfs}/wave/wave_${NET}.buoys ]
   then
-    cp $PARMwave/wave_${NET}.buoys buoy.loc
+    cp ${PARMgfs}/wave/wave_${NET}.buoys buoy.loc
   fi
 
   if [ -f buoy.loc ]
   then
     set +x
-    echo "   buoy.loc copied ($PARMwave/wave_${NET}.buoys)."
+    echo "   buoy.loc copied (${PARMgfs}/wave/wave_${NET}.buoys)."
     set_trace
   else
-    echo " FATAL ERROR : buoy.loc ($PARMwave/wave_${NET}.buoys) NOT FOUND"
+    echo " FATAL ERROR : buoy.loc (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
     exit 12 
   fi
 

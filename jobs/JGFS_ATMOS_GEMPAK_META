@@ -18,16 +18,7 @@ export MP_LABELIO=yes
 export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
-################################
-# Set up the HOME directory
-################################
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
-export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
-
-cp  ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
 #############################################
 #set the fcst hrs for all the cycles
@@ -66,7 +57,7 @@ mkdir -m 775 -p ${COMOUT}
 
 ########################################################
 # Execute the script.
-${SRCgfs}/exgfs_atmos_gempak_meta.sh
+${SCRgfs}/exgfs_atmos_gempak_meta.sh
 export err=$?; err_chk
 ########################################################
 

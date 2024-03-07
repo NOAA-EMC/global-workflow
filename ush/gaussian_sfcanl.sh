@@ -23,13 +23,7 @@
 #     OUTPUT_FILE   Output gaussian analysis file format.  Default is "nemsio"
 #                   Set to "netcdf" for netcdf output file
 #                   Otherwise, output in nemsio.
-#     BASEDIR       Root directory where all scripts and fixed files reside.
-#                   Default is /nwprod2.
-#     HOMEgfs       Directory for gfs version.  Default is
-#                   $BASEDIR/gfs_ver.v15.0.0}
 #     FIXWGTS       Weight file to use for interpolation
-#     EXECgfs       Directory of the program executable.  Defaults to
-#                   $HOMEgfs/exec
 #     DATA          Working directory
 #                   (if nonexistent will be made, used and deleted)
 #                   Defaults to current working directory
@@ -106,7 +100,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 CASE=${CASE:-C768}
 res=$(echo $CASE | cut -c2-)
@@ -117,11 +111,6 @@ LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
-#  Directories.
-gfs_ver=${gfs_ver:-v16.3.0}
-BASEDIR=${BASEDIR:-${PACKAGEROOT:-/lfs/h1/ops/prod/packages}}
-HOMEgfs=${HOMEgfs:-$BASEDIR/gfs.${gfs_ver}}
-EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 FIXWGTS=${FIXWGTS:-${FIXgfs}/orog/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 DATA=${DATA:-$(pwd)}
 
