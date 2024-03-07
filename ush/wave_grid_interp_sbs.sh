@@ -25,7 +25,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -65,7 +65,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Model ID         : $WAV_MOD_TAG"
   set_trace
 
-  if [[ -z "${PDY}" ]] || [[ -z "${cyc}" ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECwave}" ]] || \
+  if [[ -z "${PDY}" ]] || [[ -z "${cyc}" ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
 	 [[ -z "${COM_WAVE_PREP}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] || \
 	 [ -z "${waveGRD}" ]
   then
@@ -75,7 +75,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    echo "${PDY}${cyc} ${cycle} ${EXECwave} ${COM_WAVE_PREP} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
+    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${COM_WAVE_PREP} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
     set_trace
     exit 1
   fi
@@ -85,7 +85,7 @@ source "$HOMEgfs/ush/preamble.sh"
   rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
 
   if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
-    cp $PARMwave/${grdID}_interp.inp.tmpl ${DATA}
+    cp ${PARMgfs}/wave/${grdID}_interp.inp.tmpl ${DATA}
   fi
   ln -sf ${DATA}/${grdID}_interp.inp.tmpl .
 
@@ -137,11 +137,11 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo "   Run ww3_gint
-  echo "   Executing $EXECwave/ww3_gint
+  echo "   Executing ${EXECgfs}/ww3_gint
   set_trace
 
   export pgm=ww3_gint;. prep_step
-  $EXECwave/ww3_gint 1> gint.${grdID}.out 2>&1
+  ${EXECgfs}/ww3_gint 1> gint.${grdID}.out 2>&1
   export err=$?;err_chk
 
 # Write interpolation file to main TEMP dir area if not there yet

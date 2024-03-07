@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -29,7 +29,7 @@ PDY_MOS="${CDATE_MOS:0:8}"
 ###############################################################
 # Archive online for verification and diagnostics
 ###############################################################
-source "${HOMEgfs}/ush/file_utils.sh"
+source "${USHgfs}/file_utils.sh"
 
 [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
 nb_copy "${COM_ATMOS_ANALYSIS}/${APREFIX}gsistat" "${ARCDIR}/gsistat.${RUN}.${PDY}${cyc}"
@@ -158,10 +158,10 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
     cd "${DATA}" || exit 2
 
-    "${HOMEgfs}/ush/hpssarch_gen.sh" "${RUN}"
+    "${USHgfs}/hpssarch_gen.sh" "${RUN}"
     status=$?
     if [ "${status}" -ne 0  ]; then
-        echo "${HOMEgfs}/ush/hpssarch_gen.sh ${RUN} failed, ABORT!"
+        echo "${USHgfs}/hpssarch_gen.sh ${RUN} failed, ABORT!"
         exit "${status}"
     fi
 

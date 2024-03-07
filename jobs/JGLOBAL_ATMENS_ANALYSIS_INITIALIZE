@@ -25,7 +25,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSINITPY:-${HOMEgfs}/scripts/exglobal_atmens_analysis_initialize.py}
+EXSCRIPT=${GDASATMENSINITPY:-${SCRgfs}/exglobal_atmens_analysis_initialize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD mode"}
 
