@@ -191,11 +191,11 @@ case ${step} in
 
       if [[ "${_CDUMP}" =~ "gfs" ]]; then
         declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
-        declare -x "nth_${step}_gfs"=${UFS_THREADS}
+        declare -x "nth_${step}_gfs"="${UFS_THREADS}"
         declare -x "npe_node_${step}_gfs"="${npe_node_max}"
       else
         declare -x "npe_${step}"="${NTASKS_TOT}"
-        declare -x "nth_${step}"=${UFS_THREADS}
+        declare -x "nth_${step}"="${UFS_THREADS}"
         declare -x "npe_node_${step}"="${npe_node_max}"
       fi
 
