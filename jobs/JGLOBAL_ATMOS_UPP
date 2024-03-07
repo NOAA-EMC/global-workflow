@@ -19,7 +19,7 @@ if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -m 775 -p "${COM_ATMOS_MASTER}"; f
 ###############################################################
 # Run relevant exglobal script
 
-"${HOMEgfs}/scripts/exglobal_atmos_upp.py"
+"${SCRgfs}/exglobal_atmos_upp.py"
 status=$?
 (( status != 0 )) && exit "${status}"
 

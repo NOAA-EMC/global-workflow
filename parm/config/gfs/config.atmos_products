@@ -12,8 +12,8 @@ echo "BEGIN: config.atmos_products"
 export NFHRS_PER_GROUP=3
 
 # Scripts used by this job
-export INTERP_ATMOS_MASTERSH="${HOMEgfs}/ush/interp_atmos_master.sh"
-export INTERP_ATMOS_SFLUXSH="${HOMEgfs}/ush/interp_atmos_sflux.sh"
+export INTERP_ATMOS_MASTERSH="${USHgfs}/interp_atmos_master.sh"
+export INTERP_ATMOS_SFLUXSH="${USHgfs}/interp_atmos_sflux.sh"
 
 if [[ "${RUN:-}" == "gdas" ]]; then
   export downset=1
@@ -32,9 +32,9 @@ fi
 export APCP_MSG="597"  # Message number for APCP in GFSv16.  Look for TODO in exglobal_atmos_products.sh
 
 # paramlist files for the different forecast hours and downsets
-export paramlista="${HOMEgfs}/parm/product/gfs.fFFF.paramlist.a.txt"
-export paramlista_anl="${HOMEgfs}/parm/product/gfs.anl.paramlist.a.txt"
-export paramlista_f000="${HOMEgfs}/parm/product/gfs.f000.paramlist.a.txt"
-export paramlistb="${HOMEgfs}/parm/product/gfs.fFFF.paramlist.b.txt"
+export paramlista="${PARMgfs}/product/gfs.fFFF.paramlist.a.txt"
+export paramlista_anl="${PARMgfs}/product/gfs.anl.paramlist.a.txt"
+export paramlista_f000="${PARMgfs}/product/gfs.f000.paramlist.a.txt"
+export paramlistb="${PARMgfs}/product/gfs.fFFF.paramlist.b.txt"
 
 echo "END: config.atmos_products"

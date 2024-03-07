@@ -44,9 +44,6 @@
 #   COMSP  - path to both output jtwc-fnoc file and output tcvitals file (this
 #             tcvitals file is read by subsequent relocation processing and/or
 #             subsequent program SYNDAT_SYNDATA)
-#   PARMSYND  - path to syndat parm field directory
-#   EXECSYND  - path to syndat executable directory
-#   USHSYND   - path to syndat ush directory
 
 # Imported variables that can be passed in:
 #   ARCHSYND  - path to syndat archive directory
@@ -66,16 +63,11 @@
 #                (Default: not set)
 #   TIMEIT   - optional time and resource reporting (Default: not set)
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ARCHSYND=${ARCHSYND:-$COMROOTp3/gfs/prod/syndat}
-HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
-
-USHSYND=${USHSYND:-$HOMEgfs/ush}
-EXECSYND=${EXECSYND:-$HOMEgfs/exec}
-PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}
 
 slmask=${slmask:-${FIXgfs}/am/syndat_slmask.t126.gaussian}
 copy_back=${copy_back:-YES}
@@ -186,7 +178,7 @@ if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
 fi
 
 echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = $files " > vitchk.inp
-cat $PARMSYND/syndat_qctropcy.${RUN}.parm >> vitchk.inp
+cat ${PARMgfs}/relo/syndat_qctropcy.${RUN}.parm >> vitchk.inp
  
 #  Copy the fixed fields
  
@@ -203,12 +195,9 @@ rm -f nhc fnoc lthistry
 #  All are input to program syndat_qctropcy
 #  ------------------------------------------------------------------
 
-if [ -s $HOMENHC/tcvitals ]; then
+if [ -s ${HOMENHC}/tcvitals ]; then
    echo "tcvitals found" >> $pgmout
-   cp $HOMENHC/tcvitals nhc
-elif [ -s $HOMENHCp1/tcvitals ]; then
-   echo "tcvitals found" >> $pgmout
-   cp $HOMENHCp1/tcvitals nhc
+   cp ${HOMENHC}/tcvitals nhc
 else
    echo "WARNING: tcvitals not found, create empty tcvitals" >> $pgmout
    > nhc
@@ -219,17 +208,17 @@ touch nhc
 [ "$copy_back" = 'YES' ]  &&  cat nhc >> $ARCHSYND/syndat_tcvitals.$year
 
 mv -f nhc nhc1
-$USHSYND/parse-storm-type.pl nhc1 > nhc
+${USHgfs}/parse-storm-type.pl nhc1 > nhc
 
 cp -p nhc nhc.ORIG
 # JTWC/FNOC ... execute syndat_getjtbul script to write into working directory
 #               as fnoc; copy to archive
-$USHSYND/syndat_getjtbul.sh $CDATE10
+${USHgfs}/syndat_getjtbul.sh $CDATE10
 touch fnoc
 [ "$copy_back" = 'YES' ]  &&  cat fnoc >> $ARCHSYND/syndat_tcvitals.$year
 
 mv -f fnoc fnoc1
-$USHSYND/parse-storm-type.pl fnoc1 > fnoc
+${USHgfs}/parse-storm-type.pl fnoc1 > fnoc
 
 if [ $SENDDBN = YES ]; then
   $DBNROOT/bin/dbn_alert MODEL SYNDAT_TCVITALS $job $ARCHSYND/syndat_tcvitals.$year
@@ -243,7 +232,7 @@ cp $slmask slmask.126
  
 #  Execute program syndat_qctropcy
 
-pgm=$(basename $EXECSYND/syndat_qctropcy.x)
+pgm=$(basename ${EXECgfs}/syndat_qctropcy.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -257,7 +246,7 @@ fi
 echo "$CDATE10"      > cdate10.dat
 export FORT11=slmask.126
 export FORT12=cdate10.dat
-${EXECSYND}/${pgm} >> $pgmout 2> errfile
+${EXECgfs}/${pgm} >> $pgmout 2> errfile
 errqct=$?
 ###cat errfile
 cat errfile >> $pgmout
@@ -321,28 +310,25 @@ diff nhc nhc.ORIG > /dev/null
 errdiff=$?
 
 ###################################
-#  Update NHC file in $HOMENHC
+#  Update NHC file in ${HOMENHC}
 ###################################
 
 if test "$errdiff" -ne '0'
 then
 
    if [ "$copy_back" = 'YES' -a ${envir} = 'prod' ]; then
-      if [ -s $HOMENHC/tcvitals ]; then
-         cp nhc $HOMENHC/tcvitals
-      fi
-      if [ -s $HOMENHCp1/tcvitals ]; then
-         cp nhc $HOMENHCp1/tcvitals
+      if [ -s ${HOMENHC}/tcvitals ]; then
+         cp nhc ${HOMENHC}/tcvitals
       fi
 
       err=$?
 
       if [ "$err" -ne '0' ]; then
          msg="###ERROR: Previous NHC Synthetic Data Record File \
-$HOMENHC/tcvitals not updated by syndat_qctropcy"
+${HOMENHC}/tcvitals not updated by syndat_qctropcy"
       else
          msg="Previous NHC Synthetic Data Record File \
-$HOMENHC/tcvitals successfully updated by syndat_qctropcy"
+${HOMENHC}/tcvitals successfully updated by syndat_qctropcy"
       fi
 
       set +x
@@ -355,7 +341,7 @@ $HOMENHC/tcvitals successfully updated by syndat_qctropcy"
 
 else
 
-   msg="Previous NHC Synthetic Data Record File $HOMENHC/tcvitals \
+   msg="Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals \
 not changed by syndat_qctropcy"
    set +x
    echo
