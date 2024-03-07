@@ -27,7 +27,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -55,7 +55,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "Making ice fields."
 
   if [[ -z "${YMDH}" ]] || [[ -z "${cycle}" ]] || \
-     [[ -z "${COM_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECwave}" ]] || \
+     [[ -z "${COM_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECgfs}" ]] || \
      [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${WAVEICE_FID}" ]] || [[ -z "${COM_OBS}" ]]; then
   
     set +x
@@ -144,7 +144,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   export pgm=ww3_prnc;. prep_step
 
-  $EXECwave/ww3_prnc 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1 
+  ${EXECgfs}/ww3_prnc 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1
   export err=$?; err_chk
 
   if [ "$err" != '0' ]

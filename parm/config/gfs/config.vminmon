@@ -9,8 +9,7 @@ echo "BEGIN: config.vminmon"
 export MINMON_SUFFIX=${MINMON_SUFFIX:-${NET}}
 export CYCLE_INTERVAL=${assim_freq:-6}
 
-export PARMmonitor=${PARMgfs}/monitor
-export mm_gnormfile=${PARMmonitor}/${RUN}_minmon_gnorm.txt
-export mm_costfile=${PARMmonitor}/${RUN}_minmon_cost.txt
+export mm_gnormfile=${PARMgfs}/monitor/${RUN}_minmon_gnorm.txt
+export mm_costfile=${PARMgfs}/monitor/${RUN}_minmon_cost.txt
 
 echo "END: config.vminmon"

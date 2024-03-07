@@ -44,12 +44,12 @@ local OUTPUT_FH=${FV3_OUTPUT_FH}
 local IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Ensure the template exists
-template="${HOMEgfs}/parm/ufs/model_configure.IN"
+template="${PARMgfs}/ufs/model_configure.IN"
 if [[ ! -f ${template} ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi
-source "${HOMEgfs}/ush/atparse.bash"
+source "${USHgfs}/atparse.bash"
 rm -f "${DATA}/model_configure"
 atparse < "${template}" >> "${DATA}/model_configure"
 echo "Rendered model_configure"
