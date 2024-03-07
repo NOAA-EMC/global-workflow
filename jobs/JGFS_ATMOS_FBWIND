@@ -8,16 +8,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base"
 
-################################
-# Set up the HOME directory
-################################
-export USHgfs=${USHgfs:-${HOMEgfs}/ush}
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
-export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
-export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################
@@ -39,7 +29,7 @@ mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
 
 ########################################################
 # Execute the script.
-${HOMEgfs}/scripts/exgfs_atmos_fbwind.sh
+${SCRgfs}/exgfs_atmos_fbwind.sh
 export err=$?;err_chk
 ########################################################
 

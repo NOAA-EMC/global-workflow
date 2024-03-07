@@ -8,11 +8,14 @@ echo "BEGIN: config.prepsnowobs"
 # Get task specific resources
 . "${EXPDIR}/config.resources" prepsnowobs
 
-export GTS_OBS_LIST="${HOMEgfs}/sorc/gdas.cd/parm/snow/prep/prep_gts.yaml"
-export BUFR2IODAX="${HOMEgfs}/exec/bufr2ioda.x"
-export FIMS_NML_TMPL="${HOMEgfs}/sorc/gdas.cd/parm/snow/prep/fims.nml.j2"
-export IMS_OBS_LIST="${HOMEgfs}/sorc/gdas.cd/parm/snow/prep/prep_ims.yaml"
-export CALCFIMSEXE="${HOMEgfs}/exec/calcfIMS.exe"
-export IMS2IODACONV="${HOMEgfs}/ush/imsfv3_scf2ioda.py"
+export GTS_OBS_LIST="${PARMgfs}/gdas/snow/prep/prep_gts.yaml.j2"
+export IMS_OBS_LIST="${PARMgfs}/gdas/snow/prep/prep_ims.yaml.j2"
+
+export BUFR2IODAX="${EXECgfs}/bufr2ioda.x"
+
+export CALCFIMSEXE="${EXECgfs}/calcfIMS.exe"
+export FIMS_NML_TMPL="${PARMgfs}/gdas/snow/prep/fims.nml.j2"
+
+export IMS2IODACONV="${USHgfs}/imsfv3_scf2ioda.py"
 
 echo "END: config.prepsnowobs"

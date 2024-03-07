@@ -6,20 +6,20 @@ ocnicepost:
     mkdir:
       - "{{ DATA }}"
     copy:
-      - ["{{ HOMEgfs }}/exec/ocnicepost.x", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/parm/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/parm/post/{{ component }}.csv", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ EXECgfs }}/ocnicepost.x", "{{ DATA }}/"]
+      - ["{{ PARMgfs }}/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
+      - ["{{ PARMgfs }}/post/{{ component }}.csv", "{{ DATA }}/"]
+      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
       {% for grid in product_grids %}
-      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/fix/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/fix/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
+      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
+      - ["{{ FIXgfs }}/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
       {% endfor %}
 
 nc2grib2:
-  script: "{{ HOMEgfs }}/ush/oceanice_nc2grib2.sh"
+  script: "{{ USHgfs }}/oceanice_nc2grib2.sh"
 
 ocean:
   namelist:

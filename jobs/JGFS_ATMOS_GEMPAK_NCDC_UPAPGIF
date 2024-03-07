@@ -8,30 +8,10 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_gif" -c "base"
 
-
-################################
-# Set up the HOME directory
-################################
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
-export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
-export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
-
-######################################
-# Set up the GEMPAK directory
-#######################################
-export HOMEgempak=${HOMEgempak:-${HOMEgfs}/gempak}
-export USHgempak=${USHgempak:-${HOMEgempak}/ush}
-
 export MP_PULSE=0
 export MP_TIMEOUT=2000
 
-
-#
 # Set up model and cycle specific variables
-#
 export MODEL=GFS
 export fend=384
 
@@ -64,7 +44,7 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-${SRCgfs}/exgfs_atmos_gempak_gif_ncdc_skew_t.sh
+${SCRgfs}/exgfs_atmos_gempak_gif_ncdc_skew_t.sh
 export err=$?; err_chk
 ########################################################
 

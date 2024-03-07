@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Locally scoped variables and functions
 # shellcheck disable=SC2153
@@ -103,6 +103,17 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
         err=$((err + rc))
         ;;
     esac
+
+    # Ocean Perturbation Files
+    # Extra zero on MEMDIR ensure we have a number even if the string is empty
+    if (( 0${MEMDIR:3} > 0 )) && [[ "${OCN_ENS_PERTURB_FILES:-false}" == "true" ]]; then
+        src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.mom6_increment.nc"
+        tgt="${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.mom6_increment.nc"
+        ${NCP} "${src}" "${tgt}"
+        rc=${?}
+        ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+        err=$((err + rc))
+    fi
 
     # TODO: Do mediator restarts exists in a ATMW configuration?
     # TODO: No mediator is presumably involved in an ATMA configuration

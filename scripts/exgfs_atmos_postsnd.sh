@@ -20,7 +20,7 @@
 #   9) 2019-12-18       Guang Ping Lou generalizing to reading in NetCDF or nemsio
 ################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 cd $DATA
 
@@ -44,7 +44,7 @@ export NINT3=${FHOUT_GFS:-3}
 
 rm -f -r "${COM_ATMOS_BUFR}"
 mkdir -p "${COM_ATMOS_BUFR}"
-GETDIM="${HOMEgfs}/ush/getncdimlen"
+GETDIM="${USHgfs}/getncdimlen"
 LEVS=$(${GETDIM} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
 declare -x LEVS
 
@@ -88,8 +88,7 @@ export FINT=$NINT1
    if [ $FEND -gt $NEND1 ]; then
      export FINT=$NINT3
    fi
-##   $USHbufrsnd/gfs_bufr.sh
-   $USHbufrsnd/gfs_bufr.sh
+   ${USHgfs}/gfs_bufr.sh
   
    export FSTART=$FEND
 done
@@ -115,7 +114,7 @@ fi
 ########################################
 rm -rf poe_col
 for (( m = 1; m <10 ; m++ )); do
-    echo "sh ${USHbufrsnd}/gfs_sndp.sh ${m} " >> poe_col
+    echo "sh ${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
 done
 
 if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
@@ -129,7 +128,7 @@ chmod +x cmdfile
 
 ${APRUN_POSTSNDCFP} cmdfile
 
-sh "${USHbufrsnd}/gfs_bfr2gpk.sh"
+sh "${USHgfs}/gfs_bfr2gpk.sh"
 
 
 ############## END OF SCRIPT #######################

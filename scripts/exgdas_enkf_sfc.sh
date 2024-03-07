@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -31,7 +31,7 @@ ntiles=${ntiles:-6}
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 
 # Scripts
 
@@ -50,8 +50,8 @@ NMEM_ENS=${NMEM_ENS:-80}
 DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
-CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
+CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}

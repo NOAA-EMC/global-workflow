@@ -76,7 +76,7 @@
 ################################################################################
 #-------------------------------------------------------------------------------
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Set some default parameters.
 fhbeg=03                         # hour to begin searching backward for guess

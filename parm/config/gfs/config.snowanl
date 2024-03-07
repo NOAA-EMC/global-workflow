@@ -6,27 +6,21 @@
 echo "BEGIN: config.snowanl"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" snowanl
+source "${EXPDIR}/config.resources" snowanl
 
-obs_list_name=gdas_snow_gts_only.yaml
-if [[ "${cyc}" = "18" ]]; then
-    obs_list_name=gdas_snow_prototype.yaml
-fi
-
-export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/snow/obs/config/
-export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/snow/obs/lists/${obs_list_name}
+export OBS_LIST="${PARMgfs}/gdas/snow/obs/lists/gdas_snow.yaml.j2"
 
 # Name of the JEDI executable and its yaml template
-export JEDIEXE="${HOMEgfs}/exec/fv3jedi_letkf.x"
-export JEDIYAML="${HOMEgfs}/sorc/gdas.cd/parm/snow/letkfoi/letkfoi.yaml"
+export JEDIEXE="${EXECgfs}/fv3jedi_letkf.x"
+export JEDIYAML="${PARMgfs}/gdas/snow/letkfoi/letkfoi.yaml.j2"
 
 # Ensemble member properties
 export SNOWDEPTHVAR="snodl"
 export BESTDDEV="30."  # Background Error Std. Dev. for LETKFOI
 
 # Name of the executable that applies increment to bkg and its namelist template
-export APPLY_INCR_EXE="${HOMEgfs}/exec/apply_incr.exe"
-export APPLY_INCR_NML_TMPL="${HOMEgfs}/sorc/gdas.cd/parm/snow/letkfoi/apply_incr_nml.j2"
+export APPLY_INCR_EXE="${EXECgfs}/apply_incr.exe"
+export APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/letkfoi/apply_incr_nml.j2"
 
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@

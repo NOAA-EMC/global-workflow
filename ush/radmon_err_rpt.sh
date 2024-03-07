@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -54,9 +54,6 @@ cycle1=${4:-${cycle1:?}}
 cycle2=${5:-${cycle2:?}}
 diag_rpt=${6:-${diag_rpt:?}}
 outfile=${7:-${outfile:?}}
-
-# Directories
-HOMEradmon=${HOMEradmon:-$(pwd)}
 
 # Other variables
 err=0
