@@ -1,7 +1,10 @@
 #!/bin/bash
 set -x
 
-# Input files fed to wdqms.py
+# Input GSI diagnostic file containing inputs to wdqms.py
+CNVSTAT="${CDUMP}.t${cyc}z.cnvstat"
+
+# Input files from CNVSTAT fed to wdqms.py
 INPUT_LIST=("diag_conv_ps_ges.${PDY}${cyc}.nc4" \
             "diag_conv_t_ges.${PDY}${cyc}.nc4" \
             "diag_conv_q_ges.${PDY}${cyc}.nc4" \
@@ -22,9 +25,17 @@ echo "Begin job ${job:-}"
 cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd ${DATA}, ABORT!"; exit 2 )
 
 #-------------------------------------------------------------------------------
-# Copy inputs from COMIN to DATA for wdqms.py
+# Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py
+cp "${COMIN}/${CNVSTAT}" .
+rc=$?
+(( rc != 0 )) && ( echo "FATAL ERROR: Unable to copy ${diag_file} from ${COMIN}, ABORT!"; exit 2 )
 for file in "${INPUT_LIST[@]}"; do
-  cp "${COMIN}/${file}" "./${file}" || ( echo "FATAL ERROR: Unable to copy ${file} from ${COMIN}, ABORT!"; exit 2 )
+  tar -xzvf "${diag_file}" "${file}.gz"
+  rc=$?
+  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to extract ${file}.gz from ${diag_file}, ABORT!"; exit 3 )
+  gunzip "${file}.gz"
+  rc=$?
+  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to gunzip ${file}.gz, ABORT!"; exit 3 )
 done
 
 #-------------------------------------------------------------------------------
@@ -51,7 +62,9 @@ done
 for otype in "${OTYPES[@]}"; do
   file="NCEP_${otype}_${PDY}_${cyc}.csv"
   if [[ -f "${COMOUT}/${file}" ]]; then
-    echo "Send DBN Alert"  # TODO
+    echo "Send DBN Alert"  # TODO: Add appropriate DBNALERT call
+  else
+    echo "WARNING: wdqms.py did not produce '${file}'"  # TODO: Should this be a fatal error?
   fi
 done
 

@@ -42,8 +42,8 @@ source ./PDY
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN="Where are the files in INPUT_LIST in COM?"
-export COMOUT="Where should we place the wdqms.py generated files in COM"
+export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos"
+export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos/wdqms"
 
 mkdir -m 775 -p "${COMOUT}"
 
