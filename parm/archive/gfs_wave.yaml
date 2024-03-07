@@ -1,0 +1,8 @@
+gfswave:
+   mandatory:
+      com_wave_history:
+         - 'ww3_multi*'
+      com_wave_grid:
+         - 'gfswave.t${cyc}z.*'
+      com_wave_station:
+         - 'gfswave.t${cyc}z.*'

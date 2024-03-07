@@ -1,0 +1,84 @@
+gdas:
+   mandatory:
+      com_atmos_grib_0p25:
+         - 'gdas.t${cyc}z.pgrb2.0p25.anl'
+         - 'gdas.t${cyc}z.pgrb2.0p25.anl.idx'
+         forecast_hour:
+            - 'gdas.t${cyc}z.pgrb2.0p25.f${fhr}'
+            - 'gdas.t${cyc}z.pgrb2.0p25.f${fhr}.idx'
+      com_atmos_grib_1p00:
+         - 'gdas.t${cyc}z.pgrb2.1p00.anl'
+         - 'gdas.t${cyc}z.pgrb2.1p00.anl.idx'
+         forecast_hour:
+            - 'gdas.t${cyc}z.pgrb2.1p00.f${fhr}'
+            - 'gdas.t${cyc}z.pgrb2.1p00.f${fhr}.idx'
+      com_atmos_analysis:
+         - 'gdas.t${cyc}z.atmanl.nc'
+         - 'gdas.t${cyc}z.sfcanl.nc'
+      com_atmos_master:
+         forecast_hour:
+            - 'gdas.t${cyc}z.sfluxgrbf${fhr}.grib2'
+            - 'gdas.t${cyc}z.sfluxgrbf${fhr}.grib2.idx'
+      rotdir:
+         - './logs/gdas*prod*.log'
+      com_atmos_history:
+         forecast_hour:
+            - 'gdas.t${cyc}z.atm.logf${fhr}.txt'
+            - 'gdas.t${cyc}z.atmf${fhr}.nc'
+            - 'gdas.t${cyc}z.sfcf${fhr}.nc'
+   optional:
+      com_atmos_analysis:
+         - 'gdas.t${cyc}z.atmvar.yaml'
+         - 'gdas.t${cyc}z.atmstat'
+         - 'gdas.t${cyc}z.gsistat'
+         - 'gdas.t${cyc}z.atmanl.ensres.nc'
+         - 'gdas.t${cyc}z.atma003.ensres.nc'
+         - 'gdas.t${cyc}z.atma009.ensres.nc'
+         - 'gdas.t${cyc}z.cnvstat'
+         - 'gdas.t${cyc}z.oznstat'
+         - 'gdas.t${cyc}z.radstat'
+      rotdir:
+         - './logs/gdasprep.log'
+         - './logs/gdasanal.log'
+         - './logs/gdasfcst.log'
+         - './logs/gdasverfozn.log'
+         - './logs/gdasverfrad.log'
+         - './logs/gdasvminmon.log'
+      com_atmos_master:
+         forecast_hour:
+            - 'gdas.t${cyc}z.sfluxgrbf${fhr}.grib2'
+            - 'gdas.t${cyc}z.sfluxgrbf${fhr}.grib2.idx'
+
+gdas_restarta:
+   mandatory:
+      com_atmos_analysis:
+         - 'gdas.t${cyc}z.atmi*nc'
+      com_atmos_restart:
+         - '*0000.sfcanl_data.tile1.nc'
+         - '*0000.sfcanl_data.tile2.nc'
+         - '*0000.sfcanl_data.tile3.nc'
+         - '*0000.sfcanl_data.tile4.nc'
+         - '*0000.sfcanl_data.tile5.nc'
+         - '*0000.sfcanl_data.tile6.nc'
+   optional:
+      com_atmos_analysis:
+         - 'gdas.t${cyc}z.cnvstat'
+         - 'gdas.t${cyc}z.radstat'
+         - 'gdas.t${cyc}z.abias'
+         - 'gdas.t${cyc}z.abias_air'
+         - 'gdas.t${cyc}z.abias_int'
+         - 'gdas.t${cyc}z.abias_pc'
+         - 'gdas.t${cyc}z.dtfanl.nc'
+         - 'gdas.t${cyc}z.loginc.txt'
+         - 'gdas.t${cyc}z.amsua_n19.satbias.nc4'
+         - 'gdas.t${cyc}z.amsua_n19.satbias_cov.nc4'
+         - 'gdas.t${cyc}z.amsua_n19.tlapse.txt'
+      com_obs:
+         - 'gdas.t${cyc}z.nsstbufr'
+         - 'gdas.t${cyc}z.prepbur'
+         - 'gdas.t${cyc}z.prepbufr.acft_profiles'
+
+gdas_restartb:
+   mandatory:
+      com_atmos_restart:
+         - '.'

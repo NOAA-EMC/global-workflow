@@ -1,0 +1,16 @@
+gfs_restarta:
+   mandatory:
+      com_atmos_input:
+         - 'gfs_ctrl.nc'
+         - 'gfs_data.tile1.nc'
+         - 'gfs_data.tile2.nc'
+         - 'gfs_data.tile3.nc'
+         - 'gfs_data.tile4.nc'
+         - 'gfs_data.tile5.nc'
+         - 'gfs_data.tile6.nc'
+         - 'sfc_data.tile1.nc'
+         - 'sfc_data.tile2.nc'
+         - 'sfc_data.tile3.nc'
+         - 'sfc_data.tile4.nc'
+         - 'sfc_data.tile5.nc'
+         - 'sfc_data.tile6.nc'

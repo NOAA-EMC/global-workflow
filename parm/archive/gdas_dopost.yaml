@@ -1,0 +1,4 @@
+gdas:
+   optional:
+      rotdir:
+         - './logs/${PDY}${cyc}/gdas*upp*.log'

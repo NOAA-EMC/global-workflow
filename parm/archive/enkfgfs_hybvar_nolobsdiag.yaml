@@ -1,0 +1,19 @@
+enkfgfs_grpN:
+   mandatory:
+      com_atmos_restart_mem:
+         - 'enkfgfs.t${cyc}z.gsistat'
+   optional:
+      com_atmos_restart_mem:
+         - 'enkfgfs.t${cyc}z.cnvstat'
+
+enkfgfs_restarta_grpN:
+   mandatory:
+      com_atmos_restart_mem:
+         - 'enkfgfs.t${cyc}z.abias'
+         - 'enkfgfs.t${cyc}z.abias_air'
+         - 'enkfgfs.t${cyc}z.abias_int'
+         - 'enkfgfs.t${cyc}z.abias_pc'
+   optional:
+      com_atmos_restart_mem:
+         - 'enkfgfs.t${cyc}z.radstat'
+         - 'enkfgfs.t${cyc}z.cnvstat'

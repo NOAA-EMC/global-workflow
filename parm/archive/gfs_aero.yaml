@@ -1,0 +1,4 @@
+chem:
+   mandatory:
+      com_checm_history:
+         - 'gocart*'

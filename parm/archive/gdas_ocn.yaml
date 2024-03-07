@@ -1,0 +1,21 @@
+gdasocean:
+   mandatory:
+      com_ocean_history:
+         - 'gdas.t${cyc}z.*'
+      com_ocean_input:
+         - '.'
+
+gdasocean_restart:
+   mandatory:
+      com_ocean_restart:
+         - '*'
+      com_med_restart:
+         - '*'
+
+gdasocean_analysis:
+   mandatory:
+      com_ocean_analysis:
+         - 'gdas.t${cyc}z.*'
+         - 'gdas.t??z.ocngrid.nc'
+         - 'diags'
+         - 'yaml'

@@ -1,0 +1,10 @@
+gdaswave:
+   mandatory:
+      com_wave_grid:
+         - 'gdaswave.t${cyc}z.*'
+      com_wave_station:
+         - 'gdaswave.t${cyc}z.*'
+gdaswave_restart:
+   mandatory:
+      com_wave_restart:
+         - '*'

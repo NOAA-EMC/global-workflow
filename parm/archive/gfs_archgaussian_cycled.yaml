@@ -1,0 +1,10 @@
+gfs_netcdfa:
+   mandatory:
+      com_atmos_analysis:
+         - 'gfs.t${cyc}z.atmanl.nc'
+         - 'gfs.t${cyc}z.sfcanl.nc'
+         - 'gfs.t${cyc}z.atmi*.nc'
+   optional:
+      com_atmos_analysis:
+         - 'gfs.t${cyc}z.dtfanl.nc'
+         - 'gfs.t${cyc}z.loginc.txt'

@@ -1,0 +1,21 @@
+ocean_grib2:
+   optional:
+      com_ocean_grib:
+         - '5p00/gfs.ocean.t${cyc}z.5p00.f*.grib2'
+         - '5p00/gfs.ocean.t${cyc}z.5p00.f*.grib2.idx'
+         - '1p00/gfs.ocean.t${cyc}z.1p00.f*.grib2'
+         - '1p00/gfs.ocean.t${cyc}z.1p00.f*.grib2.idx'
+         - '0p25/gfs.ocean.t${cyc}z.0p25.f*.grib2'
+         - '0p25/gfs.ocean.t${cyc}z.0p25.f*.grib2.idx'
+
+ocean_6hravg:
+   mandatory:
+      com_ocean_history:
+         forecast_hour:
+            - 'gfs.ocean.t${cyc}z.6hr_avg.f*.nc'
+
+ocean_daily:
+   mandatory:
+      com_ocean_history:
+         forecast_hour:
+            - 'gfs.ocean.t${cyc}z.daily.f*.nc'

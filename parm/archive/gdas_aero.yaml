@@ -1,0 +1,4 @@
+gdas:
+   optional:
+      com_chem_analysis:
+         - 'gdas.t${cyc}z.aerostat'

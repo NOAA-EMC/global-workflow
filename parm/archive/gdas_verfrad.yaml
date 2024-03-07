@@ -1,0 +1,11 @@
+gdas:
+   mandatory:
+      com_atmos_radmon:
+         - 'bad_diag.${PDY}${cyc}'
+         - 'bad_pen.${PDY}${cyc}'
+         - 'low_count.${PDY}${cyc}'
+         - 'radmon_angle.tar.gz'
+         - 'radmon_bcoef.tar.gz'
+         - 'radmon_bcor.tar.gz'
+         - 'radmon_time.tar.gz'
+         - 'warning.${PDY}${cyc}'
