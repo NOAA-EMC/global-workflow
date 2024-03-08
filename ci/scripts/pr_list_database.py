@@ -35,12 +35,11 @@ def add_pr(db, pr):
     pr : str
         The pull request to add.
     """
-    rows = db.fetch_data('pr_list')
     entities = (args.add_pr[0], 'Open', 'Ready', 0, 'ci_repo')
     try:
         db.insert_data('pr_list', entities)
     except (SQLiteDB.Error.IntegrityError) as e:
-        if str(e) == "PRIMARY KEY must be unique":
+        if 'UNIQUE constraint failed' in str(e):
             print(f"pr {entities[0]} already is in list: nothing added")
 
 
