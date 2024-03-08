@@ -39,7 +39,7 @@ def add_pr(db, pr):
     try:
         db.insert_data('pr_list', entities)
     except (SQLiteDB.Error.IntegrityError) as e:
-        if 'UNIQUE constraint failed' in str(e):
+        if 'unique' in str(e).lower():
             print(f"pr {entities[0]} already is in list: nothing added")
 
 
