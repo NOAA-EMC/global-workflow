@@ -2,7 +2,7 @@
 
 import sys
 import os
-from wxflow import SQLiteDB
+from wxflow import SQLiteDB, SQLiteDBError
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER, ZERO_OR_MORE
 
 def full_path(string):
@@ -38,7 +38,7 @@ def add_pr(db: SQLiteDB, pr: str):
     entities = (pr, 'Open', 'Ready', 0, 'ci_repo')
     try:
         db.insert_data('pr_list', entities)
-    except (SQLiteDB.Error.IntegrityError) as e:
+    except (SQLiteDBError.IntegrityError) as e:
         if 'unique' in str(e).lower():
             print(f"pr {pr} already is in list: nothing added")
 
