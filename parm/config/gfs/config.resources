@@ -376,7 +376,7 @@ case ${step} in
     npes=16
     case ${OCNRES} in
       "025")
-        npes=40
+        npes=480
         memory_ocnanalrun="96GB"
         ;;
       "050")
