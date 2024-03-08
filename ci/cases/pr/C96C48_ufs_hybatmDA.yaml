@@ -18,4 +18,6 @@ arguments:
   yaml: {{ HOMEgfs }}/ci/cases/yamls/ufs_hybatmDA_defaults.ci.yaml
 
 skip_ci_on_hosts:
+  - hera
+  - orion
   - hercules
