@@ -22,7 +22,7 @@ def create(db):
     ci_database : SQLiteDB
         The database to create.
     """
-    db.create_table('pr_list', ['pr INTEGER PRIMARY KEY', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])
+    db.create_table('pr_list', ['pr INTEGER PRIMARY KEY UNIQUE', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])
 
 
 def add_pr(db, pr):
@@ -37,13 +37,12 @@ def add_pr(db, pr):
         The pull request to add.
     """
     rows = db.fetch_data('pr_list')
-    for row in rows:
-        if str(row[0]) == str(args.add_pr[0]):
-            print(f"pr {row[0]} already is in list: nothing added")
-            sys.exit(0)
-
     entities = (args.add_pr[0], 'Open', 'Ready', 0, 'ci_repo')
-    db.insert_data('pr_list', entities)
+    try:
+        db.insert_data('pr_list', entities)
+    except (SQLiteDB.IntegrityError) as e:
+        if str(e) == "PRIMARY KEY must be unique":
+            print(f"pr {entities[0]} already is in list: nothing added")
 
 
 def update_pr(db, args):
@@ -116,6 +115,9 @@ def input_args():
     -------
     argparse.Namespace
         The parsed command line arguments.
+    """
+
+    description = """Arguments for creating and updating db file for pr states
     """
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
