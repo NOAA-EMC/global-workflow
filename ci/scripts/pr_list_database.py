@@ -5,7 +5,6 @@ import os
 from wxflow import SQLiteDB
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER, ZERO_OR_MORE
 
-
 def full_path(string):
     if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
         return os.path.abspath(string)
@@ -40,7 +39,7 @@ def add_pr(db, pr):
     entities = (args.add_pr[0], 'Open', 'Ready', 0, 'ci_repo')
     try:
         db.insert_data('pr_list', entities)
-    except (SQLiteDB.IntegrityError) as e:
+    except (SQLiteDB.Error.IntegrityError) as e:
         if str(e) == "PRIMARY KEY must be unique":
             print(f"pr {entities[0]} already is in list: nothing added")
 
