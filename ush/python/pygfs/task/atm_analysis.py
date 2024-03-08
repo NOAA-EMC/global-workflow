@@ -103,7 +103,7 @@ class AtmAnalysis(Analysis):
 
         # generate variational YAML file
         logger.debug(f"Generate variational YAML file: {self.task_config.fv3jedi_yaml}")
-        varda_yaml = parse_j2yaml(self.task_config.ATMVARYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+        varda_yaml = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
         save_as_yaml(varda_yaml, self.task_config.fv3jedi_yaml)
         logger.info(f"Wrote variational YAML to: {self.task_config.fv3jedi_yaml}")
 
