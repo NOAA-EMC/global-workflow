@@ -12,7 +12,7 @@ def full_path(string):
         raise NotADirectoryError(string)
 
 
-def create(db):
+def create(db: SQLiteDB):
     """
     Create a new database.
 
@@ -24,7 +24,7 @@ def create(db):
     db.create_table('pr_list', ['pr INTEGER PRIMARY KEY UNIQUE', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])
 
 
-def add_pr(db, pr):
+def add_pr(db: SQLiteDB, pr: str):
     """
     Add a pull request to the database.
 
@@ -35,15 +35,15 @@ def add_pr(db, pr):
     pr : str
         The pull request to add.
     """
-    entities = (args.add_pr[0], 'Open', 'Ready', 0, 'ci_repo')
+    entities = (pr, 'Open', 'Ready', 0, 'ci_repo')
     try:
         db.insert_data('pr_list', entities)
     except (SQLiteDB.Error.IntegrityError) as e:
         if 'unique' in str(e).lower():
-            print(f"pr {entities[0]} already is in list: nothing added")
+            print(f"pr {pr} already is in list: nothing added")
 
 
-def update_pr(db, args):
+def update_pr(db: SQLiteDB, args):
     """
     Update a pull request in the database.
 
@@ -64,7 +64,7 @@ def update_pr(db, args):
         db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def remove_pr(db, args):
+def remove_pr(db: SQLiteDB, pr: str):
     """
     Remove a pull request from the database.
 
@@ -75,10 +75,10 @@ def remove_pr(db, args):
     pr : str
         The pull request to remove.
     """
-    db.remove_column('pr_list', args.remove_pr[0])
+    db.remove_data('pr_list','PR', pr)
 
 
-def display(db, args):
+def display(db, display):
     """
     Display the database.
 
@@ -95,8 +95,8 @@ def display(db, args):
         The rows of the database.
     """
     values = []
-    if len(args.display) == 1:
-        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f'pr = {args.display[0]}')
+    if len(display) == 1:
+        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f'pr = {display[0]}')
     else:
         rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
     for row in rows:
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     if args.remove_pr:
         remove_pr(ci_database, args.remove_pr[0])
     if args.display is not None:
-        for rows in display(ci_database, args):
+        for rows in display(ci_database, args.display):
             print(rows)
 
     ci_database.disconnect()
