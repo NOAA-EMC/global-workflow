@@ -4,6 +4,7 @@ import os
 import glob
 import tarfile
 from logging import getLogger
+from pprint import pformat
 from netCDF4 import Dataset
 from typing import List, Dict, Any, Union
 
@@ -30,6 +31,10 @@ class Analysis(Task):
 
     def initialize(self) -> None:
         super().initialize()
+
+        # all JEDI analyses need a JEDI config
+        self.task_config.jedi_config = self.get_jedi_config()
+
         # all analyses need to stage observations
         obs_dict = self.get_obs_dict()
         FileHandler(obs_dict).sync()
@@ -42,12 +47,32 @@ class Analysis(Task):
         self.link_jediexe()
 
     @logit(logger)
+    def get_jedi_config(self) -> Dict[str, Any]:
+        """Compile a dictionary of JEDI configuration from JEDIYAML template file
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        jedi_config : Dict
+            a dictionary containing the fully rendered JEDI yaml configuration
+        """
+
+        # generate JEDI YAML file
+        logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
+        jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+        logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
+
+        return jedi_config
+
+    @logit(logger)
     def get_obs_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
-        This method uses the OBS_LIST configuration variable to generate a dictionary
-        from a list of YAML files that specify what observation files are to be
-        copied to the run directory from the observation input directory
+        This method extracts 'observers' from the JEDI yaml and from that list, extracts a list
+        observation files that are to be copied to the run directory
+        from the observation input directory
 
         Parameters
         ----------
@@ -57,13 +82,13 @@ class Analysis(Task):
         obs_dict: Dict
             a dictionary containing the list of observation files to copy for FileHandler
         """
-        logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
-        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
-        logger.debug(f"obs_list_config: {obs_list_config}")
-        # get observers from master dictionary
-        observers = obs_list_config['observers']
+
+        logger.info(f"Extracting a list of observation files from {self.task_config.JEDIYAML}")
+        observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
+        logger.debug(f"observations:\n{pformat(observations)}")
+
         copylist = []
-        for ob in observers:
+        for ob in observations['observers']:
             obfile = ob['obs space']['obsdatain']['engine']['obsfile']
             basename = os.path.basename(obfile)
             copylist.append([os.path.join(self.task_config['COM_OBS'], basename), obfile])
@@ -77,9 +102,9 @@ class Analysis(Task):
     def get_bias_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
-        This method uses the OBS_LIST configuration variable to generate a dictionary
-        from a list of YAML files that specify what observation bias correction files
-        are to be copied to the run directory from the observation input directory
+        This method extracts 'observers' from the JEDI yaml and from that list, extracts a list
+        observation bias correction files that are to be copied to the run directory
+        from the observation input directory
 
         Parameters
         ----------
@@ -89,13 +114,13 @@ class Analysis(Task):
         bias_dict: Dict
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
-        logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
-        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
-        logger.debug(f"obs_list_config: {obs_list_config}")
-        # get observers from master dictionary
-        observers = obs_list_config['observers']
+
+        logger.info(f"Extracting a list of bias correction files from {self.task_config.JEDIYAML}")
+        observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
+        logger.debug(f"observations:\n{pformat(observations)}")
+
         copylist = []
-        for ob in observers:
+        for ob in observations['observers']:
             if 'obs bias' in ob.keys():
                 obfile = ob['obs bias']['input file']
                 obdir = os.path.dirname(obfile)
@@ -103,7 +128,7 @@ class Analysis(Task):
                 prefix = '.'.join(basename.split('.')[:-2])
                 for file in ['satbias.nc', 'satbias_cov.nc', 'tlapse.txt']:
                     bfile = f"{prefix}.{file}"
-                    copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
+                    copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])  # TODO: Why is this specific to ATMOS?
 
         bias_dict = {
             'mkdir': [os.path.join(self.runtime_config.DATA, 'bc')],
@@ -328,3 +353,31 @@ class Analysis(Task):
             # Add diag files to tarball
             for diagfile in diags:
                 tgz.add(diagfile, arcname=os.path.basename(diagfile))
+
+
+@logit(logger)
+def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
+   """
+    Recursively search through a nested dictionary and return the value for the target key.
+    Parameters
+    ----------
+    nested_dict : Dict
+        Dictionary to search
+    target_key : str
+        Key to search for
+
+    Returns
+    -------
+    Any
+        Value of the key
+
+    Raises
+    ------
+    KeyError
+        If key is not found in dictionary
+
+    TODO: move this to a utility module so it can be used elsewhere
+    """
+    if not isinstance(nested_dict, dict):
+        return None
+    return nested_dict.get(target_key) or next((find_value_in_nested_dict(value, target_key) for value in nested_dict.values() if isinstance(value, dict)), None)
