@@ -267,7 +267,11 @@ if (( gfs_cyc != 0 )); then
 else
     export STEP_GFS="0"
 fi
-export ILPOST=1           # gempak output frequency up to F120
+# TODO: Change gempak to use standard out variables (#2348)
+export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
+if (( FHMAX_HF_GFS < 120 )); then
+    export ILPOST=${FHOUT_GFS}
+fi
 
 # GFS restart interval in hours
 export restart_interval_gfs=12
