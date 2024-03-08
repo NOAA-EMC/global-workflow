@@ -22,7 +22,7 @@ mkdir -p "${COM_WAVE_WMO}"
 ###################################
 # Execute the Script
 ###################################
-${HOMEgfs}/scripts/exgfs_wave_prdgen_gridded.sh
+${SCRgfs}/exgfs_wave_prdgen_gridded.sh
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 

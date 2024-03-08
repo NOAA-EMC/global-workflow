@@ -22,7 +22,7 @@ export PREFIX="${RUN}.t${cyc}z."
 
 ###############################################################
 # Run exglobal script
-"${HOMEgfs}/scripts/exglobal_atmos_products.sh"
+"${SCRgfs}/exglobal_atmos_products.sh"
 status=$?
 (( status != 0 )) && exit "${status}"
 

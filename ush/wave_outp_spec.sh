@@ -22,7 +22,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
   bloc=$1
@@ -104,7 +104,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$CDATE" ] || [ -z "$dtspec" ] || [ -z "$EXECwave" ] || \
+  if [ -z "$CDATE" ] || [ -z "$dtspec" ] || [ -z "${EXECgfs}" ] || \
      [ -z "$WAV_MOD_TAG" ] || [ -z "${STA_DIR}" ]
   then
     set +x
@@ -170,11 +170,11 @@ source "$HOMEgfs/ush/preamble.sh"
 # 2.b Run the postprocessor
 
   set +x
-  echo "   Executing $EXECwave/ww3_outp"
+  echo "   Executing ${EXECgfs}/ww3_outp"
   set_trace
 
   export pgm=ww3_outp;. prep_step
-  $EXECwave/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
+  ${EXECgfs}/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
   export err=$?;err_chk
 
 

@@ -56,9 +56,8 @@ export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_O
 
 #######################################################################
 
-export FORECASTSH="${HOMEgfs}/scripts/exglobal_forecast.sh"
-#export FORECASTSH="${HOMEgfs}/scripts/exglobal_forecast.py"  # Temp. while this is worked on
-export FCSTEXECDIR="${HOMEgfs}/exec"
+export FORECASTSH="${SCRgfs}/exglobal_forecast.sh"
+#export FORECASTSH="${SCRgfs}/exglobal_forecast.py"  # Temp. while this is worked on
 export FCSTEXEC="ufs_model.x"
 
 #######################################################################
@@ -175,17 +174,17 @@ export random_clds=".true."
 case ${imp_physics} in
     99) # ZhaoCarr
         export ncld=1
-        export FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table_zhaocarr${tbf}${tbp}"
+        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_zhaocarr${tbf}${tbp}"
         export nwat=2
         ;;
     6)  # WSM6
         export ncld=2
-        export FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table_wsm6${tbf}${tbp}"
+        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_wsm6${tbf}${tbp}"
         export nwat=6
         ;;
     8)  # Thompson
         export ncld=2
-        export FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table_thompson_noaero_tke${tbp}"
+        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_thompson_noaero_tke${tbp}"
         export nwat=6
 
         export cal_pre=".false."
@@ -208,7 +207,7 @@ case ${imp_physics} in
         ;;
     11) # GFDL
         export ncld=5
-        export FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table_gfdl${tbf}${tbp}"
+        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_gfdl${tbf}${tbp}"
         export nwat=6
         export dnats=1
         export cal_pre=".false."
@@ -253,7 +252,7 @@ export FSICS="0"
 if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
-    export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table_da"
+    export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
 
     if [[ "${DOIAU}" == "YES" ]]; then
       export restart_interval="3"
@@ -267,7 +266,7 @@ if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 elif [[ "${CDUMP}" =~ "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
-    export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table"
+    export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
 
     # Write gfs restart files to rerun fcst from any break point
     export restart_interval=${restart_interval_gfs:-12}
