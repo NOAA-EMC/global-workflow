@@ -36,7 +36,7 @@ mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMINITPY:-${HOMEgfs}/scripts/exglobal_atm_analysis_initialize.py}
+EXSCRIPT=${GDASATMINITPY:-${SCRgfs}/exglobal_atm_analysis_initialize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

@@ -19,7 +19,7 @@ def create(db):
 
     Parameters
     ----------
-    ci_database : SQLiteDB
+    db : SQLiteDB
         The database to create.
     """
     db.create_table('pr_list', ['pr INTEGER PRIMARY KEY UNIQUE', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])

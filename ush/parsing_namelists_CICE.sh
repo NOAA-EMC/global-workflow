@@ -104,12 +104,12 @@ local CICE_BLCKY=${block_size_y}
 local CICE_DECOMP=${processor_shape}
 
 # Ensure the template exists
-local template=${CICE_TEMPLATE:-"${HOMEgfs}/parm/ufs/ice_in.IN"}
+local template=${CICE_TEMPLATE:-"${PARMgfs}/ufs/ice_in.IN"}
 if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi
-source "${HOMEgfs}/ush/atparse.bash"
+source "${USHgfs}/atparse.bash"
 rm -f "${DATA}/ice_in"
 atparse < "${template}" >> "${DATA}/ice_in"
 echo "Rendered ice_in:"

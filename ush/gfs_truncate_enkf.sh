@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 member=$1
 export SIGINP=$2

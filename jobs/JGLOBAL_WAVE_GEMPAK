@@ -19,7 +19,7 @@ if [[ ! -d ${COM_WAVE_GEMPAK} ]]; then mkdir -p "${COM_WAVE_GEMPAK}"; fi
 
 ########################################################
 # Execute the script.
-${HOMEgfs}/scripts/exgfs_wave_nawips.sh
+${SCRgfs}/exgfs_wave_nawips.sh
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 ###################################

@@ -10,16 +10,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
-################################
-# Set up the HOME directory
-################################
-export USHgfs=${USHgfs:-${HOMEgfs}/ush}
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
-export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################
@@ -38,7 +28,7 @@ mkdir -m 775 -p "${COM_ATMOS_GOES}"
 
 #############################################################
 # Execute the script
-"${HOMEgfs}/scripts/exgfs_atmos_grib2_special_npoess.sh"
+"${SCRgfs}/exgfs_atmos_grib2_special_npoess.sh"
 export err=$?;err_chk
 #############################################################
 

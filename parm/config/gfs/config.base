@@ -23,12 +23,11 @@ export HPSS_PROJECT="@HPSS_PROJECT@"
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
-export PARMgfs="${HOMEgfs}/parm"
-export FIXgfs="${HOMEgfs}/fix"
-export USHgfs="${HOMEgfs}/ush"
-export UTILgfs="${HOMEgfs}/util"
 export EXECgfs="${HOMEgfs}/exec"
+export FIXgfs="${HOMEgfs}/fix"
+export PARMgfs="${HOMEgfs}/parm"
 export SCRgfs="${HOMEgfs}/scripts"
+export USHgfs="${HOMEgfs}/ush"
 
 ########################################################################
 
@@ -363,7 +362,7 @@ export binary_diag=".false."
 # Verification options
 export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
-export DO_VRFY_OCEANDA="NO"  # Run SOCA Ocean DA verification tasks
+export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive

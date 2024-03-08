@@ -11,6 +11,8 @@
 ## for execution.
 #####
 
+# Disable variable not used warnings
+# shellcheck disable=SC2034
 FV3_postdet(){
   echo "SUB ${FUNCNAME[0]}: Entering for RUN = ${RUN}"
 
@@ -190,7 +192,7 @@ EOF
   fi
 
   # NoahMP table
-  local noahmptablefile="${HOMEgfs}/parm/ufs/noahmptable.tbl"
+  local noahmptablefile="${PARMgfs}/ufs/noahmptable.tbl"
   if [[ ! -f ${noahmptablefile} ]]; then
     echo "FATAL ERROR: missing noahmp table file ${noahmptablefile}"
     exit 1
@@ -488,7 +490,7 @@ FV3_nml(){
   # namelist output for a certain component
   echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
   # Call child scripts in current script directory
-  source "${HOMEgfs}/ush/parsing_namelists_FV3.sh"
+  source "${USHgfs}/parsing_namelists_FV3.sh"
   FV3_namelists
   echo "SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created"
 }
@@ -652,7 +654,7 @@ WW3_nml() {
       exit 4
     fi
   fi
-  source "${HOMEgfs}/ush/parsing_namelists_WW3.sh"
+  source "${USHgfs}/parsing_namelists_WW3.sh"
   WW3_namelists
 }
 
@@ -803,7 +805,7 @@ MOM6_postdet() {
 
 MOM6_nml() {
   echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-  source "${HOMEgfs}/ush/parsing_namelists_MOM6.sh"
+  source "${USHgfs}/parsing_namelists_MOM6.sh"
   MOM6_namelists
 }
 
@@ -884,7 +886,7 @@ CICE_postdet() {
 
 CICE_nml() {
   echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-  source "${HOMEgfs}/ush/parsing_namelists_CICE.sh"
+  source "${USHgfs}/parsing_namelists_CICE.sh"
   CICE_namelists
 }
 

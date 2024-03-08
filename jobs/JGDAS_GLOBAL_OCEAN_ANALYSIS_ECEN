@@ -1,27 +1,22 @@
-#! /usr/bin/env bash
-
+#!/bin/bash
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalecen" -c "base ocnanal ocnanalecen"
 
 ##############################################
-# Set variables used in the exglobal script
+# Set variables used in the script
 ##############################################
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Construct COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
-if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -m 775 -p "${COM_ATMOS_MASTER}"; fi
-
-
 ###############################################################
-# Run relevant exglobal script
+# Run relevant script
 
-"${SCRgfs}/exglobal_atmos_upp.py"
+EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/scripts/exgdas_global_marine_analysis_ecen.py}
+${EXSCRIPT}
 status=$?
-(( status != 0 )) && exit "${status}"
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 ##############################################
 # End JOB SPECIFIC work
@@ -30,7 +25,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]]; then
+if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
 
@@ -38,7 +33,6 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit 1
-[[ "${KEEPDATA:-NO}" = "NO" ]] && rm -rf "${DATA}"
-
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0

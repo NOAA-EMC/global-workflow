@@ -8,7 +8,7 @@ echo "BEGIN: config.upp"
 # Get task specific resources
 . "${EXPDIR}/config.resources" upp
 
-export UPP_CONFIG="${HOMEgfs}/parm/post/upp.yaml"
+export UPP_CONFIG="${PARMgfs}/post/upp.yaml"
 
 # No. of forecast hours to process in a single job
 export NFHRS_PER_GROUP=3

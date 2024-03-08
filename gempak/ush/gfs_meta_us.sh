@@ -53,7 +53,7 @@ GAREA	= 17.529;-129.296;53.771;-22.374
 PROJ	= str/90;-105;0
 LATLON	= 0
 
-restore $USHgempak/restore/pmsl_thkn.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/pmsl_thkn.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -62,7 +62,7 @@ l
 run
 
 
-restore $USHgempak/restore/850mb_hght_tmpc.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/850mb_hght_tmpc.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -71,7 +71,7 @@ l
 run
 
 
-restore $USHgempak/restore/700mb_hght_relh_omeg.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -80,7 +80,7 @@ l
 run
 
 
-restore $USHgempak/restore/500mb_hght_absv.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -89,7 +89,7 @@ l
 run
 
 
-restore $USHgempak/restore/250mb_hght_wnd.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -98,7 +98,7 @@ l
 run
 
  
-restore $USHgempak/restore/p06m_pmsl.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/p06m_pmsl.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 HLSYM   = 2;1.5//21//hw

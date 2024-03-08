@@ -4,7 +4,7 @@
 # Fanglin Yang, 20180318
 # --create bunches of files to be archived to HPSS
 ###################################################
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 type=${1:-gfs}                ##gfs, gdas, enkfgdas or enkfggfs
 

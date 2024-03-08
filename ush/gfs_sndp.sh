@@ -7,7 +7,7 @@
 #   1) 2004-09-10       Steve Gilbert       First Implementation
 ################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
   #  Create "collectives" consisting of groupings of the soundings
   #  into files designated by geographical region.   Each input
@@ -16,7 +16,7 @@ source "$HOMEgfs/ush/preamble.sh"
 export m=$1
 mkdir $DATA/$m
 cd $DATA/$m
-  cp ${HOMEgfs}/fix/product/gfs_collective${m}.list $DATA/$m/.
+  cp ${FIXgfs}/product/gfs_collective${m}.list $DATA/$m/.
   CCCC=KWBC
     file_list=gfs_collective${m}.list
 
@@ -37,7 +37,7 @@ cd $DATA/$m
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
        export FORT51=./bufrout
-       ${EXECbufrsnd}/${pgm} << EOF
+       ${EXECgfs}/${pgm} << EOF
  &INPUT
   BULHED="$WMOHEAD",KWBX="$CCCC",
   NCEP2STD=.TRUE.,

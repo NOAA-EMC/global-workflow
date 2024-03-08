@@ -9,16 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
-################################
-# Set up the HOME directory
-################################
-export USHgfs=${USHgfs:-${HOMEgfs}/ush}
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
-export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
-export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################
@@ -45,7 +35,7 @@ export pgmout=OUTPUT.$$
 #########################################################
 mkdir -m 775 awips_g1
 cd ${DATA}/awips_g1
-${HOMEgfs}/scripts/exgfs_atmos_grib_awips.sh ${fcsthrs}
+"${SCRgfs}/exgfs_atmos_grib_awips.sh" "${fcsthrs}"
 export err=$?; err_chk
 
 ############################################
