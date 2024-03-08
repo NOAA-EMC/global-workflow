@@ -128,7 +128,8 @@ class Analysis(Task):
                 prefix = '.'.join(basename.split('.')[:-2])
                 for file in ['satbias.nc', 'satbias_cov.nc', 'tlapse.txt']:
                     bfile = f"{prefix}.{file}"
-                    copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])  # TODO: Why is this specific to ATMOS?
+                    copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
+                    # TODO: Why is this specific to ATMOS?
 
         bias_dict = {
             'mkdir': [os.path.join(self.runtime_config.DATA, 'bc')],
@@ -356,14 +357,14 @@ class Analysis(Task):
 
 
 @logit(logger)
-def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
-   """
+def find_value_in_nested_dict(nested_dict: Dict, key: str) -> Any:
+    """
     Recursively search through a nested dictionary and return the value for the target key.
     Parameters
     ----------
     nested_dict : Dict
         Dictionary to search
-    target_key : str
+    key : str
         Key to search for
 
     Returns
@@ -380,4 +381,4 @@ def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
     if not isinstance(nested_dict, dict):
         return None
-    return nested_dict.get(target_key) or next((find_value_in_nested_dict(value, target_key) for value in nested_dict.values() if isinstance(value, dict)), None)
+    return nested_dict.get(key) or next((find_value_in_nested_dict(vv, key) for vv in nested_dict.values() if isinstance(vv, dict)), None)
