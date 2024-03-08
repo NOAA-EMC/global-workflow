@@ -694,7 +694,7 @@ MOM6_postdet() {
   fi
 
   # GEFS perturbations
-  if (( 0${MEMDIR:3} > 0 )) && [[ "${DO_INCUPD:-False}" == "True" ]]; then
+  if (( 0${MEMDIR:3} > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
      ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc"
   fi
   
