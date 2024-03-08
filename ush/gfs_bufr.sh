@@ -17,6 +17,7 @@
 # 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
 # 2018-05-30  Guang Ping Lou: Make sure all files are available.
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
+# 2024-03-03 Bo Cui: Add options to use different bufr table for different resolution NetCDF files
 # echo "History: February 2003 - First implementation of this utility script"
 #
 source "${USHgfs}/preamble.sh"
@@ -78,7 +79,19 @@ done
 #  define input BUFR table file.
 ln -sf "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
 ln -sf "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
-ln -sf "${PARMgfs}/product/bufr_ij13km.txt" fort.7
+
+case "${CASE}" in
+    "C768")
+        ln -sf "${PARMbufrsnd}/bufr_ij13km.txt" fort.7
+        ;;
+    "C1152")
+        ln -sf "${PARMbufrsnd}/bufr_ij9km.txt"  fort.7
+        ;;
+    *)
+        echo "FATAL ERROR: Unrecognized bufr_ij*km.txt For CASE ${CASE}, ABORT!"
+        exit 1
+        ;;
+esac
 
 ${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
 export err=$?
