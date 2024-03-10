@@ -3,7 +3,7 @@
 import sys
 import os
 from wxflow import SQLiteDB, SQLiteDBError
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER, ZERO_OR_MORE
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
 
 def full_path(string):
     if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
@@ -64,20 +64,6 @@ def update_pr(db: SQLiteDB, args):
         db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def remove_pr(db: SQLiteDB, pr: str):
-    """
-    Remove a pull request from the database.
-
-    Parameters
-    ----------
-    ci_database : SQLiteDB
-        The database to remove the pull request from.
-    pr : str
-        The pull request to remove.
-    """
-    db.remove_data('pr_list','PR', pr)
-
-
 def display(db, display):
     """
     Display the database.
@@ -127,7 +113,6 @@ def input_args():
     parser.add_argument('--update_pr', nargs=REMAINDER, metavar=('pr', 'state', 'status', 'reset_id', 'cases'),
                         help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', nargs='*', help='output pr table', required=False)
-
     args = parser.parse_args()
     return args
 
@@ -151,7 +136,7 @@ if __name__ == '__main__':
     if args.update_pr:
         update_pr(ci_database, args)
     if args.remove_pr:
-        remove_pr(ci_database, args.remove_pr[0])
+        ci_database.remove_data('pr_list','PR',args.remove_pr[0])
     if args.display is not None:
         for rows in display(ci_database, args.display):
             print(rows)
