@@ -68,7 +68,7 @@ def update_pr(db: SQLiteDB, args):
 
     Parameters
     ----------
-    ci_database : SQLiteDB
+    db : SQLiteDB
         The database to update the pull request in.
     args : argparse.Namespace
         The command line arguments.
