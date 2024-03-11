@@ -643,9 +643,9 @@ EOF
 
   if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
     cat >> input.nml <<EOF
-  EPBL=${EPBL:-1.0}
-  EPBL_LSCALE=${EPBL_LSCALE:-500e3}
-  EPBL_TAU=${EPBL_TAU:-21600}
+  EPBL=${EPBL}
+  EPBL_LSCALE=${EPBL_LSCALE}
+  EPBL_TAU=${EPBL_TAU}
   ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
 EOF
   fi
