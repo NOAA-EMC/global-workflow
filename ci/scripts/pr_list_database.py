@@ -15,7 +15,7 @@ def full_path(string):
 
 def create_table(db: SQLiteDB):
     """
-    Create a new database.
+    Create a new table in a database.
 
     Parameters
     ----------
