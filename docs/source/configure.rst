@@ -9,6 +9,8 @@ The global-workflow configs contain switches that change how the system runs. Ma
 +================+==================================+===============+=============+===================================================+
 | APP            | Model application                | ATM           | YES         | See case block in config.base for options         |
 +----------------+----------------------------------+---------------+-------------+---------------------------------------------------+
+| DEBUG_SCHEDULER| Debug option for PBS scheduler   | NO            | YES         | Sets debug=true for additional logging            |
++----------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | DOIAU          | Enable 4DIAU for control         | YES           | NO          | Turned off for cold-start first half cycle        |
 |                | with 3 increments                |               |             |                                                   |
 +----------------+----------------------------------+---------------+-------------+---------------------------------------------------+
