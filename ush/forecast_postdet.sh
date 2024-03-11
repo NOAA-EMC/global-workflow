@@ -694,6 +694,8 @@ MOM6_postdet() {
   fi
 
   # GEFS perturbations
+  # TODO if [[ $RUN} == "gefs" ]] block maybe be needed 
+  #     to ensure it does not interfere with the GFS
   if (( 0${MEMDIR:3} > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
      ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc"
   fi
@@ -712,17 +714,11 @@ MOM6_postdet() {
 
   # If using stochatic parameterizations, create a seed that does not exceed the
   # largest signed integer
-  if [[ ${DO_OCN_SPPT} = "YES" ]]; then
-    OCNSPPT=${OCNSPPT:-0.8,0.4,0.2,0.08,0.04}
-    OCNSPPT_TAU=${OCNSPPT_TAU:-2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7}
-    OCNSPPT_LSCALE=${OCNSPPT_LSCALE:-500.E3,1000.E3,2000.E3,2000.E3,2000.E3}
-    ISEED_OCNSPPT=$((CDATE*10000 + ${MEMBER#0}*100 + 8)),$((CDATE*10000 + ${MEMBER#0}*100 + 9)),$((CDATE*10000 + ${MEMBER#0}*100 + 10)),$((CDATE*10000 + ${MEMBER#0}*100 + 11)),$((CDATE*10000 + ${MEMBER#0}*100 + 12))
+  if [[ ${DO_OCN_SPPT} = "YES" ]]; then 
+    ISEED_OCNSPPT=$((current_cycle*10000 + ${MEMBER#0}*100 + 8)),$((current_cycle*10000 + ${MEMBER#0}*100 + 9)),$((current_cycle*10000 + ${MEMBER#0}*100 + 10)),$((current_cycle*10000 + ${MEMBER#0}*100 + 11)),$((current_cycle*10000 + ${MEMBER#0}*100 + 12))
   fi
   if [[ ${DO_OCN_PERT_EPBL} = "YES" ]]; then
-    EPBL=${EPBL:-0.8,0.4,0.2,0.08,0.04}
-    EPBL_TAU=${EPBL_TAU:-2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7}
-    EPBL_LSCALE=${EPBL_LSCALE:-500.E3,1000.E3,2000.E3,2000.E3,2000.E3}
-    ISEED_EPBL=$((CDATE*10000 + ${MEMBER#0}*100 + 13)),$((CDATE*10000 + ${MEMBER#0}*100 + 14)),$((CDATE*10000 + ${MEMBER#0}*100 + 15)),$((CDATE*10000 + ${MEMBER#0}*100 + 16)),$((CDATE*10000 + ${MEMBER#0}*100 + 17))
+    ISEED_EPBL=$((current_cycle*10000 + ${MEMBER#0}*100 + 13)),$((current_cycle*10000 + ${MEMBER#0}*100 + 14)),$((current_cycle*10000 + ${MEMBER#0}*100 + 15)),$((current_cycle*10000 + ${MEMBER#0}*100 + 16)),$((current_cycle*10000 + ${MEMBER#0}*100 + 17))
   fi
 
   # Link output files
