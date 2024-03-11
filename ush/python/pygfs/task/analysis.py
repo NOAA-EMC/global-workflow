@@ -105,7 +105,8 @@ class Analysis(Task):
         This method extracts 'observers' from the JEDI yaml and from that list, extracts a list of
         observation bias correction files that are to be copied to the run directory
         from the component directory.
-        TODO: COM_ATMOS_ANALYSIS_PREV is hardwired here and this method is not appropriate in `analysis.py` and should be implemented in the component where this is applicable.
+        TODO: COM_ATMOS_ANALYSIS_PREV is hardwired here and this method is not appropriate in
+        `analysis.py` and should be implemented in the component where this is applicable.
 
         Parameters
         ----------
