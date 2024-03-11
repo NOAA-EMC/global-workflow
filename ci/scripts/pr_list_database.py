@@ -136,7 +136,7 @@ if __name__ == '__main__':
     if args.update_pr:
         update_pr(ci_database, args)
     if args.remove_pr:
-        ci_database.remove_data('pr_list','PR',args.remove_pr[0])
+        ci_database.remove_data('pr_list', 'PR', args.remove_pr[0])
     if args.display is not None:
         for rows in display(ci_database, args.display):
             print(rows)
