@@ -91,7 +91,7 @@ def display_db(db, display):
     ----------
     ci_database : SQLiteDB
         The database to display.
-    display : list 
+    display : list
         The command line argument values.
 
     Returns
