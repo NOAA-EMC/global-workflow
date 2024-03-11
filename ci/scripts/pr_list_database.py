@@ -13,7 +13,7 @@ def full_path(string):
         raise NotADirectoryError(string)
 
 
-def create(db: SQLiteDB):
+def create_table(db: SQLiteDB):
     """
     Create a new database.
 
