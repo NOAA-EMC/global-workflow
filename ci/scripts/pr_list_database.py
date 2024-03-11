@@ -116,7 +116,7 @@ def display_db(db, display) -> list:
 
 def update_database(db: SQLiteDB) -> list:
     """
-    Update the database from the GitHub PRs
+    Update the database from the GitHub PR Lables
     - only PRs from host machine are added to the database
     - if the PR is already in the database it its added to the kill list
 
