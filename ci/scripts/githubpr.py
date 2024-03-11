@@ -59,7 +59,7 @@ class GitHubPR:
         list
             A list of pull request numbers that have the 'Kill' label.
         """
-        pulls = self.repo.get_pulls(state='closed', sort='updated', direction='desc')
+        pulls = self.repo.get_pulls(state='open', sort='updated', direction='desc')
         pr_list = []
         pr_kill_list = []
         for pull in pulls:
