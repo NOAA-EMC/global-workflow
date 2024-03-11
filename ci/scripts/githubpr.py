@@ -30,7 +30,7 @@ class GitHubPR:
         initializes the host machine.
         """
         gh_cli = which('gh')
-        gh_cli.add_default_arg(['auth', 'status','--show-token'])
+        gh_cli.add_default_arg(['auth', 'status', '--show-token'])
         gh_access_token=gh_cli(output=str, error=str).split('\n')[3].split(': ')[1]
         gh = Github(gh_access_token)
         self.gh = gh
@@ -42,7 +42,7 @@ class GitHubPR:
         self.repo = repo
         self.host = Host()
 
-    def get_open_pr_list(self,state='Ready'):
+    def get_open_pr_list(self, state='Ready'):
         """
         get_open_pr_list Get a list of open pull requests.
 
