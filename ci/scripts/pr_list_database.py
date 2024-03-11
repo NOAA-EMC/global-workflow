@@ -5,6 +5,7 @@ import os
 from wxflow import SQLiteDB, SQLiteDBError
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
 
+
 def full_path(string):
     if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
         return os.path.abspath(string)
