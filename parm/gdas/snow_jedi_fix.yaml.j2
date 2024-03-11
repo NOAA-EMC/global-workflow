@@ -1,0 +1,7 @@
+mkdir:
+- '{{ DATA }}/fv3jedi'
+copy:
+- ['{{ HOMEgfs }}/fix/gdas/fv3jedi/fv3files/akbk{{ npz }}.nc4', '{{ DATA }}/fv3jedi/akbk.nc4']
+- ['{{ HOMEgfs }}/fix/gdas/fv3jedi/fv3files/fmsmpp.nml', '{{ DATA }}/fv3jedi/fmsmpp.nml']
+- ['{{ HOMEgfs }}/fix/gdas/fv3jedi/fv3files/field_table_gfdl', '{{ DATA }}/fv3jedi/field_table']
+- ['{{ HOMEgfs }}/sorc/gdas.cd/parm/io/fv3jedi_fieldmetadata_restart.yaml', '{{ DATA }}/fv3jedi/fv3jedi_fieldmetadata_restart.yaml']

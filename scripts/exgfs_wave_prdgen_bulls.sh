@@ -18,7 +18,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -29,11 +29,6 @@ source "$HOMEgfs/ush/preamble.sh"
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
- #export CODEwave=${CODEwave:-${PACKAGEROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
- export EXECwave=${EXECwave:-$HOMEgfs/exec}
- export PARMwave=${PARMwave:-$HOMEgfs/parm/parm_wave}
- export USHwave=${USHwave:-$HOMEgfs/ush}
- #export EXECcode=${EXECcode:-CODEwave/exec}
 
  mkdir -p $DATA
  cd $DATA
@@ -116,8 +111,8 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '   --------------------------'
   echo ' '
 # 1.c Get the datat cards
- if [ -f $PARMwave/bull_awips_gfswave ]; then
-   cp $PARMwave/bull_awips_gfswave awipsbull.data
+ if [ -f ${PARMgfs}/wave/bull_awips_gfswave ]; then
+   cp ${PARMgfs}/wave/bull_awips_gfswave awipsbull.data
  else
    msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    set +x

@@ -25,7 +25,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
 
 ###############################################################
 # Run relevant script
-EXSCRIPT=${GDASSNOWPREPPY:-${HOMEgfs}/scripts/exglobal_prep_snow_obs.py}
+EXSCRIPT=${GDASSNOWPREPPY:-${SCRgfs}/exglobal_prep_snow_obs.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")

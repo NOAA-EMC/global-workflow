@@ -20,7 +20,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -59,7 +59,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$grdID" ] || [ -z "$EXECwave" ]
+  if [ -z "$grdID" ] || [ -z "${EXECgfs}" ]
   then
     set +x
     echo ' '
@@ -77,7 +77,7 @@ source "$HOMEgfs/ush/preamble.sh"
   set +x
   echo ' '
   echo '   Creating mod_def file ...'
-  echo "   Executing $EXECwave/ww3_grid"
+  echo "   Executing ${EXECgfs}/ww3_grid"
   echo ' '
   set_trace
  
@@ -92,7 +92,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 
  
-  "${EXECwave}/ww3_grid" 1> "grid_${grdID}.out" 2>&1
+  "${EXECgfs}/ww3_grid" 1> "grid_${grdID}.out" 2>&1
   err=$?
 
   if [ "$err" != '0' ]

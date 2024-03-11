@@ -9,7 +9,7 @@ CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: does 
 
 while getopts ":da:j:vw" option; do
   case "${option}" in
-    d) BUILD_TYPE="DEBUG";;
+    d) BUILD_TYPE="Debug";;
     a) APP="${OPTARG}";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
@@ -30,7 +30,7 @@ source "./tests/module-setup.sh"
 
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
 [[ ${PDLIB:-"OFF"} = "ON" ]] && MAKE_OPT+=" -DPDLIB=ON"
-[[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
+[[ ${BUILD_TYPE:-"Release"} = "Debug" ]] && MAKE_OPT+=" -DDEBUG=ON"
 COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO

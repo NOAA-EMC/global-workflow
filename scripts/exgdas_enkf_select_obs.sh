@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -26,7 +26,7 @@ pwd=$(pwd)
 export NLN=${NLN:-"/bin/ln -sf"}
 
 # Scripts.
-ANALYSISSH=${ANALYSISSH:-$HOMEgfs/scripts/exglobal_atmos_analysis.sh}
+ANALYSISSH=${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh}
 
 # Select obs
 export RUN_SELECT=${RUN_SELECT:-"YES"}

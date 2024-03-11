@@ -9,21 +9,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
-################################
-# Set up the HOME directory
-################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
-export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
-export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
-export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
-export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
-
-#
 # Now set up GEMPAK/NTRANS environment
-#
 
 cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
 
@@ -67,10 +53,10 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-${USHgempak}/gdas_meta_na.sh
-${USHgempak}/gdas_ecmwf_meta_ver.sh
-${USHgempak}/gdas_meta_loop.sh
-${USHgempak}/gdas_ukmet_meta_ver.sh
+${HOMEgfs}/gempak/ush/gdas_meta_na.sh
+${HOMEgfs}/gempak/ush/gdas_ecmwf_meta_ver.sh
+${HOMEgfs}/gempak/ush/gdas_meta_loop.sh
+${HOMEgfs}/gempak/ush/gdas_ukmet_meta_ver.sh
 export err=$?; err_chk
 ########################################################
 
@@ -80,7 +66,7 @@ export err=$?; err_chk
 
 ########################################################
 # Execute the script.
-${SRCgfs}/exgdas_atmos_gempak_gif_ncdc.sh
+${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh
 export err=$?; err_chk
 ########################################################
 

@@ -10,7 +10,7 @@
 # echo "                    data on the CCS is properly protected."
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh" "${2}"
+source "${USHgfs}/preamble.sh" "${2}"
 
 cd $DATA
 RUN2=$1

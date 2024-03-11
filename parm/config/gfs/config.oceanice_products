@@ -7,7 +7,7 @@ echo "BEGIN: config.oceanice_products"
 # Get task specific resources
 source "${EXPDIR}/config.resources" oceanice_products
 
-export OCEANICEPRODUCTS_CONFIG="${HOMEgfs}/parm/post/oceanice_products.yaml"
+export OCEANICEPRODUCTS_CONFIG="${PARMgfs}/post/oceanice_products.yaml"
 
 # No. of forecast hours to process in a single job
 export NFHRS_PER_GROUP=3

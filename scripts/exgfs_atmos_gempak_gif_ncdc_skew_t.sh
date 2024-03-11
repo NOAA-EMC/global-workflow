@@ -11,7 +11,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
 
-export NTS=$USHgempak/restore
+export NTS=${HOMEgfs}/gempak/ush/restore
 
 if [ $MODEL = GDAS -o $MODEL = GFS ]
 then
@@ -48,7 +48,7 @@ then
 
 #       if [ $cyc -eq 00 -o $cyc -eq 12 ]
        #then
-          $USHgempak/gempak_${RUN}_f${fhr}_gif.sh
+          ${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr}_gif.sh
        #fi
 
     done

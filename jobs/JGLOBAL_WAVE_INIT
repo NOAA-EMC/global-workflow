@@ -9,11 +9,6 @@ export errchk=${errchk:-err_chk}
 
 export MP_PULSE=0
 
-# Path to HOME Directory
-export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
-export USHwave=${USHwave:-${HOMEgfs}/ush}
-export EXECwave=${EXECwave:-${HOMEgfs}/exec}
-
 # Set COM Paths
 YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP
 
@@ -24,7 +19,7 @@ export wavempexec=${wavempexec:-"mpirun -n"}
 export wave_mpmd=${wave_mpmd:-"cfp"}
 
 # Execute the Script
-${HOMEgfs}/scripts/exgfs_wave_init.sh
+${SCRgfs}/exgfs_wave_init.sh
 
 ##########################################
 # Remove the Temporary working directory

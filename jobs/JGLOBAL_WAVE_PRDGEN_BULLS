@@ -20,7 +20,7 @@ if [[ ! -d ${COM_WAVE_WMO} ]]; then mkdir -p "${COM_WAVE_WMO}"; fi
 ###################################
 # Execute the Script
 
-${HOMEgfs}/scripts/exgfs_wave_prdgen_bulls.sh
+${SCRgfs}/exgfs_wave_prdgen_bulls.sh
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 

@@ -9,15 +9,14 @@ echo "BEGIN: config.verfozn"
 export DO_DATA_RPT=1
 export OZN_AREA="glb"
 export OZNMON_SUFFIX=${NET}
-export PARMmonitor=${PARMgfs}/monitor
-export SATYPE_FILE=${PARMmonitor}/gdas_oznmon_satype.txt
+export SATYPE_FILE=${PARMgfs}/monitor/gdas_oznmon_satype.txt
 
 # Source the parm file
-. "${PARMmonitor}/gdas_oznmon.parm"
+. "${PARMgfs}/monitor/gdas_oznmon.parm"
 
 # Set up validation file
 if [[ ${VALIDATE_DATA} -eq 1 ]]; then
-   export ozn_val_file=${PARMmonitor}/gdas_oznmon_base.tar
+   export ozn_val_file=${PARMgfs}/monitor/gdas_oznmon_base.tar
 fi
 
 echo "END: config.verfozn"
