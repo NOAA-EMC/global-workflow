@@ -70,7 +70,7 @@ class Analysis(Task):
     def get_obs_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
-        This method extracts 'observers' from the JEDI yaml and from that list, extracts a list
+        This method extracts 'observers' from the JEDI yaml and from that list, extracts a list of
         observation files that are to be copied to the run directory
         from the observation input directory
 
