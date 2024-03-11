@@ -193,8 +193,8 @@ class Tasks:
 
         native = None
         if scheduler in ['pbspro']:
-            # Set place=vscatter by default and debug=true if DEBUG_SCHEDULER="YES"
-            if self._base['DEBUG_SCHEDULER']:
+            # Set place=vscatter by default and debug=true if DEBUG_POSTSCRIPT="YES"
+            if self._base['DEBUG_POSTSCRIPT']:
                 native = '-l debug=true,place=vscatter'
             else:
                 native = '-l place=vscatter'
