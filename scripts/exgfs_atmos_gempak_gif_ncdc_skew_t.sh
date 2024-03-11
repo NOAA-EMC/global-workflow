@@ -61,7 +61,7 @@ fi
 # TODO: gfs_utils does not currently build rdbfmsua, so skip
 #   for now
 #
-# "${UTILgfs}/exec/rdbfmsua" >> "${pgmout}" 2> errfile
+# "${HOMEgfs}/exec/rdbfmsua" >> "${pgmout}" 2> errfile
 # err=$?;export err ;err_chk
 
 # shellcheck disable=SC2012,SC2155
@@ -72,11 +72,11 @@ export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
 ################################################################
 
 if (( filesize > 40 )); then
-    cp rdbfmsua.out "${COM_ATMOS_GEMPAK_UPPER}/${RUN}.${cycle}.msupperair"
-    cp sonde.idsms.tbl "${COM_ATMOS_GEMPAK_UPPER}/${RUN}.${cycle}.msupperairtble"
+    cp rdbfmsua.out "${COM_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
+    cp sonde.idsms.tbl "${COM_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
     if [[ ${SENDDBN} = "YES" ]]; then
-        "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIR "${job}" "${COM_ATMOS_GEMPAK_UPPER}/${RUN}.${cycle}.msupperair"
-        "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIRTBL "${job}" "${COM_ATMOS_GEMPAK_UPPER}/${RUN}.${cycle}.msupperairtble"
+        "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIR "${job}" "${COM_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
+        "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIRTBL "${job}" "${COM_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
     fi
 fi
 
