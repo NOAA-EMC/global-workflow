@@ -106,7 +106,6 @@ def display_db(db, display) -> list:
     if len(display) == 1:
         rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"pr = '{display[0]}'")
     if len(display) == 2:
-        #rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"state = '{display[0]}' AND status = '{display[1]}'")
         rows = db.fetch_data('pr_list', ['pr'], f"state = '{display[0]}' AND status = '{display[1]}'")
     if len(display) == 0:
         rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
