@@ -380,7 +380,46 @@ def find_value_in_nested_dict(nested_dict: Dict, key: str) -> Any:
         If key is not found in dictionary
 
     TODO: move this to a utility module so it can be used elsewhere
+
+    # Example usage:
+nested_dict = {
+    'a': {
+        'b': {
+            'c': 1,
+            'd': {
+                'e': 2,
+                'f': 3
+            }
+        },
+        'g': 4
+    },
+    'h': {
+        'i': 5
+    },
+    'j': {
+        'k': 6
+    }
+}
+
+user_key = input("Enter the key to search for: ")
+result = find_value_in_nested_dict(nested_dict, user_key)
     """
+
     if not isinstance(nested_dict, dict):
-        return None
-    return nested_dict.get(key) or next((find_value_in_nested_dict(vv, key) for vv in nested_dict.values() if isinstance(vv, dict)), None)
+        raise TypeError(f"Input is not of type(dict)")
+
+    result = nested_dict.get(target_key)
+    if result is not None:
+        return result
+
+    for value in nested_dict.values():
+        if isinstance(value, dict):
+            try:
+                result = find_value_in_nested_dict(value, target_key)
+                if result is not None:
+                    return result
+            except KeyError:
+                pass
+
+    raise KeyError(f"Key '{target_key}' not found in the nested dictionary")
+
