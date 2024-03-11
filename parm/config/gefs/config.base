@@ -74,7 +74,7 @@ export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="NO"
+export KEEPDATA="@KEEPDATA@"
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
@@ -258,10 +258,6 @@ export NMEM_ENS=@NMEM_ENS@
 # this will be overwritten for the perturbed members
 export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
-
-# initialize ocean ensemble members with perturbations
-#   if true, only occurs for members greater than zero
-export OCN_ENS_PERTURB_FILES=false
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting

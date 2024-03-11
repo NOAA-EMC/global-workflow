@@ -695,6 +695,13 @@ MOM6_postdet() {
       ${NLN} "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
   fi
 
+  # GEFS perturbations
+  # TODO if [[ $RUN} == "gefs" ]] block maybe be needed 
+  #     to ensure it does not interfere with the GFS
+  if (( 0${MEMDIR:3} > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+     ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc"
+  fi
+  
   # Copy MOM6 fixed files
   ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
 
@@ -709,13 +716,11 @@ MOM6_postdet() {
 
   # If using stochatic parameterizations, create a seed that does not exceed the
   # largest signed integer
-  if [[ "${DO_OCN_SPPT}" = "YES" ]] || [[ "${DO_OCN_PERT_EPBL}" = "YES" ]]; then
-    if [[ ${SET_STP_SEED:-"YES"} = "YES" ]]; then
-      ISEED_OCNSPPT=$(( (current_cycle*1000 + MEMBER*10 + 6) % 2147483647 ))
-      ISEED_EPBL=$(( (current_cycle*1000 + MEMBER*10 + 7) % 2147483647 ))
-    else
-      ISEED=${ISEED:-0}
-    fi
+  if [[ ${DO_OCN_SPPT} = "YES" ]]; then 
+    ISEED_OCNSPPT=$((current_cycle*10000 + ${MEMBER#0}*100 + 8)),$((current_cycle*10000 + ${MEMBER#0}*100 + 9)),$((current_cycle*10000 + ${MEMBER#0}*100 + 10)),$((current_cycle*10000 + ${MEMBER#0}*100 + 11)),$((current_cycle*10000 + ${MEMBER#0}*100 + 12))
+  fi
+  if [[ ${DO_OCN_PERT_EPBL} = "YES" ]]; then
+    ISEED_EPBL=$((current_cycle*10000 + ${MEMBER#0}*100 + 13)),$((current_cycle*10000 + ${MEMBER#0}*100 + 14)),$((current_cycle*10000 + ${MEMBER#0}*100 + 15)),$((current_cycle*10000 + ${MEMBER#0}*100 + 16)),$((current_cycle*10000 + ${MEMBER#0}*100 + 17))
   fi
 
   # Link output files
