@@ -44,7 +44,9 @@ for area in ${areas}; do
         dgdattim=$(printf "f%03d" "${fhr}")
         sdatenum=$(date --utc +%y%m%d -d "${PDY} ${cyc2} - ${fhr} hours")
 
-        ln -sf "${COMINecmwf}/ecmwf.20${sdatenum}/gempak" "ecmwf.20${sdatenum}"
+        if [[ ! -L "ecmwf.20${sdatenum}" ]]; then
+            ln -sf "${COMINecmwf}/ecmwf.20${sdatenum}/gempak" "ecmwf.20${sdatenum}"
+        fi
         gdfile="ecmwf.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
 
         # 500 MB HEIGHT METAFILE
