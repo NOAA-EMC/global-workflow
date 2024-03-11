@@ -11,10 +11,10 @@ if [[ ${DOHYBVAR} = "YES" ]]; then
 else
     export CASE_ANL=${CASE}
 fi
-export OBS_LIST="${HOMEgfs}/parm/gdas/atm/obs/lists/gdas_prototype_3d.yaml.j2"
-export JEDIYAML="${HOMEgfs}/parm/gdas/atm/variational/3dvar_drpcg.yaml.j2"
+export OBS_LIST="${PARMgfs}/gdas/atm/obs/lists/gdas_prototype_3d.yaml.j2"
+export JEDIYAML="${PARMgfs}/gdas/atm/variational/3dvar_drpcg.yaml.j2"
 export STATICB_TYPE="gsibec"
-export BERROR_YAML="${HOMEgfs}/parm/gdas/atm/berror/hybvar_${STATICB_TYPE}.yaml.j2"
+export BERROR_YAML="${PARMgfs}/gdas/atm/berror/hybvar_${STATICB_TYPE}.yaml.j2"
 export INTERP_METHOD='barycentric'
 
 export layout_x_atmanl=@LAYOUT_X_ATMANL@

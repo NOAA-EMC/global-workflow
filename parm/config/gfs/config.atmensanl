@@ -5,8 +5,8 @@
 
 echo "BEGIN: config.atmensanl"
 
-export OBS_LIST="${HOMEgfs}/parm/gdas/atm/obs/lists/lgetkf_prototype.yaml.j2"
-export JEDIYAML="${HOMEgfs}/parm/gdas/atm/lgetkf/lgetkf.yaml.j2"
+export OBS_LIST="${PARMgfs}/gdas/atm/obs/lists/lgetkf_prototype.yaml.j2"
+export JEDIYAML="${PARMgfs}/gdas/atm/lgetkf/lgetkf.yaml.j2"
 export INTERP_METHOD='barycentric'
 
 export layout_x_atmensanl=@LAYOUT_X_ATMENSANL@
