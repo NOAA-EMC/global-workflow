@@ -7,6 +7,24 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
 
 
 def full_path(string):
+    """
+    full_path Get the absolute path of a file or directory.
+
+    Parameters
+    ----------
+    string : str
+        The relative path of the file or directory.
+
+    Returns
+    -------
+    str
+        The absolute path of the file or directory.
+
+    Raises
+    ------
+    NotADirectoryError
+        If the provided string does not represent a valid file or directory.
+    """
     if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
         return os.path.abspath(string)
     else:
@@ -65,7 +83,7 @@ def update_pr(db: SQLiteDB, args):
         db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def display(db, display):
+def display_db(db, display):
     """
     Display the database.
 
@@ -73,8 +91,8 @@ def display(db, display):
     ----------
     ci_database : SQLiteDB
         The database to display.
-    args : argparse.Namespace
-        The command line arguments.
+    display : list 
+        The command line argument values.
 
     Returns
     -------
@@ -131,7 +149,7 @@ if __name__ == '__main__':
     ci_database.connect()
 
     if args.create:
-        create(ci_database)
+        create_table(ci_database)
     if args.add_pr:
         add_pr(ci_database, args.add_pr[0])
     if args.update_pr:
@@ -139,7 +157,7 @@ if __name__ == '__main__':
     if args.remove_pr:
         ci_database.remove_data('pr_list', 'PR', args.remove_pr[0])
     if args.display is not None:
-        for rows in display(ci_database, args.display):
+        for rows in display_db(ci_database, args.display):
             print(rows)
 
     ci_database.disconnect()
