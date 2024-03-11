@@ -21,7 +21,7 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
 done
 
 #
-NAGRIB_TABLE="${FIXgempak}/nagrib.tbl"
+NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
 NAGRIB="${GEMEXE}/nagrib2"
 
 # shellcheck disable=SC2312
