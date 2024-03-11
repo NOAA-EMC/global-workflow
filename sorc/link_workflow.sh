@@ -200,6 +200,18 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
 fi
 
 #------------------------------
+#--add GDASApp parm directory
+#------------------------------
+if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+  cd "${HOMEgfs}/parm/gdas" || exit 1
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca")
+  for comp in "${gdasapp_comps[@]}"; do
+    [[ -d "${comp}" ]] && rm -rf "${comp}"
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
+  done
+fi
+
+#------------------------------
 #--add GDASApp files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
@@ -311,6 +323,10 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "fv3jedi_enshofx.x" \
                        "fv3jedi_hofx_nomodel.x" \
                        "fv3jedi_testdata_downloader.py" \
+                       "gdas_ens_handler.x" \
+                       "gdas_incr_handler.x" \
+                       "gdas_obsprovider2ioda.x" \
+                       "gdas_socahybridweights.x" \
                        "soca_convertincrement.x" \
                        "soca_error_covariance_training.x" \
                        "soca_setcorscales.x" \

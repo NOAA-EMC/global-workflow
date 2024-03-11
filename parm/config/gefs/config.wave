@@ -6,11 +6,6 @@
 echo "BEGIN: config.wave"
 
 # Parameters that are common to all wave model steps
-
-export EXECwave="${HOMEgfs}/exec"
-export PARMwave="${HOMEgfs}/parm/wave"
-export USHwave="${HOMEgfs}/ush"
-
 # This config contains variables/parameters used in the fcst step
 # Some others are also used across the workflow in wave component scripts
 

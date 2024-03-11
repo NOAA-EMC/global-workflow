@@ -19,7 +19,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -31,8 +31,6 @@ source "$HOMEgfs/ush/preamble.sh"
  export FHOUT_WAV=${FHOUT_WAV:-6}         #from 72 to 180 inc=6
  export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
  export maxtries=720
- export PARMwave=${PARMwave:-$HOMEgfs/parm/parm_wave}
- export USHwave=${USHwave:-$HOMEgfs/ush}
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
@@ -157,7 +155,7 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
 
      #
 # 1.d Input template files
-     parmfile=$PARMwave/grib2_${RUNwave}.$grdOut.f${fhr}
+     parmfile=${PARMgfs}/wave/grib2_${RUNwave}.$grdOut.f${fhr}
      if [ -f $parmfile ]; then
        ln -s $parmfile awipsgrb.$grdID.f${fhr}
      else

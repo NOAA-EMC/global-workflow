@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -15,16 +15,16 @@ if [ "${EARCICS_CYC}" -lt 0 ]; then
   EARCICS_CYC=$((EARCICS_CYC+24))
 fi
 
-"${HOMEgfs}/ush/hpssarch_gen.sh" "${RUN}"
+"${USHgfs}/hpssarch_gen.sh" "${RUN}"
 status=$?
 if [ "${status}" -ne 0 ]; then
-   echo "${HOMEgfs}/ush/hpssarch_gen.sh ${RUN} failed, ABORT!"
+   echo "${USHgfs}/hpssarch_gen.sh ${RUN} failed, ABORT!"
    exit "${status}"
 fi
 
 cd "${ROTDIR}" || exit 2
 
-source "${HOMEgfs}/ush/file_utils.sh"
+source "${USHgfs}/file_utils.sh"
 
 ###################################################################
 # ENSGRP > 0 archives a group of ensemble members

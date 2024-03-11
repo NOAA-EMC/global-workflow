@@ -7,7 +7,7 @@
 # echo "-----------------------------------------------------"
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 cd $DATA
 
@@ -122,7 +122,7 @@ for (( fhr=$((10#${SHOUR})); fhr <= $((10#${FHOUR})); fhr = fhr + FHINC )); do
    ######################################################################
    # Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
    ######################################################################
-   paramlist=${PARMproduct}/global_npoess_paramlist_g2
+   paramlist=${PARMgfs}/product/global_npoess_paramlist_g2
    cp "${COM_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2.0p50.f${fhr3}" tmpfile2
    cp "${COM_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}" tmpfile2b
    cat tmpfile2 tmpfile2b > tmpfile
