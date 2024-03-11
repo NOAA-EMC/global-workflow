@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import os, sys
+import os
 import re
 
 from github import Github
 from wxflow import which
 from workflow.hosts import Host
+
 
 class GitHubPR:
     """
@@ -31,7 +32,7 @@ class GitHubPR:
         """
         gh_cli = which('gh')
         gh_cli.add_default_arg(['auth', 'status', '--show-token'])
-        gh_access_token=gh_cli(output=str, error=str).split('\n')[3].split(': ')[1]
+        gh_access_token = gh_cli(output=str, error=str).split('\n')[3].split(': ')[1]
         gh = Github(gh_access_token)
         self.gh = gh
 
