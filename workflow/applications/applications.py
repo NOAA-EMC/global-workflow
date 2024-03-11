@@ -145,6 +145,14 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += ['config.anal', 'config.eupd']
             elif config in ['efcs']:
                 files += ['config.fcst', 'config.efcs']
+            elif config in ['atmanlinit']:
+                files += ['config.atmanl', 'config.atmanlinit']
+            elif config in ['atmanlrun']:
+                files += ['config.atmanl', 'config.atmanlrun']
+            elif config in ['atmensanlinit']:
+                files += ['config.atmensanl', 'config.atmensanlinit']
+            elif config in ['atmensanlrun']:
+                files += ['config.atmensanl', 'config.atmensanlrun']
             elif 'wave' in config:
                 files += ['config.wave', f'config.{config}']
             else:
