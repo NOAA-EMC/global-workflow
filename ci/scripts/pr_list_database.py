@@ -114,6 +114,7 @@ def display_db(db, display) -> list:
 
     return values
 
+
 def update_database(db: SQLiteDB) -> list:
     """
     Update the database from the GitHub PR Lables
@@ -163,7 +164,8 @@ def input_args():
                         help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', nargs='*', help='output pr table', required=False)
     parser.add_argument('--list_open_ready', action='store_true', required=False)
-    parser.add_argument('--update_database', help='use labels from Open GitHub PRs to update database state and produces a kill list', action='store_true', required=False)
+    parser.add_argument('--update_database', help='use labels from Open GitHub PRs to update database state and produces a kill list',
+                        action='store_true', required=False)
     args = parser.parse_args()
     return args
 
