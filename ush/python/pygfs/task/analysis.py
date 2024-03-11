@@ -422,4 +422,3 @@ result = find_value_in_nested_dict(nested_dict, user_key)
                 pass
 
     raise KeyError(f"Key '{target_key}' not found in the nested dictionary")
-
