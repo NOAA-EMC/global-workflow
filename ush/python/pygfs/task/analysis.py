@@ -382,27 +382,27 @@ def find_value_in_nested_dict(nested_dict: Dict, key: str) -> Any:
     TODO: move this to a utility module so it can be used elsewhere
 
     # Example usage:
-nested_dict = {
-    'a': {
-        'b': {
-            'c': 1,
-            'd': {
-                'e': 2,
-                'f': 3
-            }
+    nested_dict = {
+        'a': {
+            'b': {
+                'c': 1,
+                'd': {
+                    'e': 2,
+                    'f': 3
+                }
+            },
+            'g': 4
         },
-        'g': 4
-    },
-    'h': {
-        'i': 5
-    },
-    'j': {
-        'k': 6
+        'h': {
+            'i': 5
+        },
+        'j': {
+            'k': 6
+        }
     }
-}
 
-user_key = input("Enter the key to search for: ")
-result = find_value_in_nested_dict(nested_dict, user_key)
+    user_key = input("Enter the key to search for: ")
+    result = find_value_in_nested_dict(nested_dict, user_key)
     """
 
     if not isinstance(nested_dict, dict):
