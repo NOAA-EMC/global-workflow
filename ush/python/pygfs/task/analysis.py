@@ -362,6 +362,9 @@ class Analysis(Task):
 def find_value_in_nested_dict(nested_dict: Dict, key: str) -> Any:
     """
     Recursively search through a nested dictionary and return the value for the target key.
+    This returns the first target key it finds.  So if a key exists in a subsequent
+    nested dictionary, it will not be found.
+
     Parameters
     ----------
     nested_dict : Dict
@@ -379,7 +382,9 @@ def find_value_in_nested_dict(nested_dict: Dict, key: str) -> Any:
     KeyError
         If key is not found in dictionary
 
-    TODO: move this to a utility module so it can be used elsewhere
+    TODO: if this gives issues due to landing on an incorrect key in the nested
+    dictionary, we will have to implement a more concrete method to search for a key
+    given a more complete address.  See resolved conversations in PR 2387
 
     # Example usage:
     nested_dict = {
