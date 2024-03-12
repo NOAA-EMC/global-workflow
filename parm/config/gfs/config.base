@@ -86,6 +86,7 @@ export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
 export KEEPDATA="NO"
+export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
