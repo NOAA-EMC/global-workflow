@@ -21,7 +21,7 @@
 # echo "         FEB 2019 - Removed grid 225"
 #####################################################################
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 fcsthrs="$1"
 num=$#
@@ -40,7 +40,7 @@ fi
 cd "${DATA}/awips_g1" || exit 2
 
 # "Import" functions used in this script
-source "${HOMEgfs}/ush/product_functions.sh"
+source "${USHgfs}/product_functions.sh"
 
 ###############################################
 # Wait for the availability of the pgrb file
@@ -75,14 +75,14 @@ set_trace
 cp "${COM_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}" "tmpfile2"
 cp "${COM_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}" "tmpfile2b"
 cat tmpfile2 tmpfile2b > tmpfile
-${WGRIB2} tmpfile | grep -F -f "${PARMproduct}/gfs_awips_parmlist_g2" | \
+${WGRIB2} tmpfile | grep -F -f "${PARMgfs}/product/gfs_awips_parmlist_g2" | \
    ${WGRIB2} -i -grib masterfile tmpfile
 scale_dec masterfile
 ${CNVGRIB} -g21 masterfile masterfile.grib1
 
 ln -s masterfile.grib1 fort.11
 
-"${HOMEgfs}/exec/overgridid.x" << EOF
+"${EXECgfs}/overgridid.x" << EOF
 255
 EOF
 
@@ -105,8 +105,8 @@ export GRID=211
 export FORT11="master.grbf${fcsthrs}"
 export FORT31="master.grbif${fcsthrs}"
 export FORT51="xtrn.awpgfs${fcsthrs}.${GRID}"
-#   $MKGFSAWPS < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
-"${HOMEgfs}/exec/mkgfsawps.x" < "${PARMwmo}/grib_awpgfs${fcsthrs}.${GRID}" parm=KWBC >> "${pgmout}" 2>errfile
+#   $MKGFSAWPS < ${PARMgfs}/wmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
+"${EXECgfs}/mkgfsawps.x" < "${PARMgfs}/wmo/grib_awpgfs${fcsthrs}.${GRID}" parm=KWBC >> "${pgmout}" 2>errfile
 export err=$?; err_chk 
 ##############################
 # Post Files to ${COM_ATMOS_WMO}

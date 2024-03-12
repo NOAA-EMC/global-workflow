@@ -30,7 +30,7 @@ mkdir -m 775 -p "${COM_CHEM_ANALYSIS}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROINITPY:-${HOMEgfs}/scripts/exglobal_aero_analysis_initialize.py}
+EXSCRIPT=${GDASAEROINITPY:-${SCRgfs}/exglobal_aero_analysis_initialize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

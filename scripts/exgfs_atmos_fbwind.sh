@@ -14,7 +14,7 @@
 # echo "         Nov 2019 - B Vuong  Removed WINTEMV bulletin (retired)"
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 cd $DATA
 
@@ -42,7 +42,7 @@ do
   cp $COMIN/gfs.${cycle}.pgrb2.0p25.f${fhr}   tmp_pgrb2_0p25${fhr} 
   cp $COMIN/gfs.${cycle}.pgrb2b.0p25.f${fhr}  tmp_pgrb2b_0p25${fhr} 
   cat tmp_pgrb2_0p25${fhr} tmp_pgrb2b_0p25${fhr} > tmp0p25filef${fhr} 
-  $WGRIB2 tmp0p25filef${fhr} | grep  -F -f $PARMproduct/gfs_fbwnd_parmlist_g2 | $WGRIB2 -i -grib tmpfilef${fhr} tmp0p25filef${fhr}
+  $WGRIB2 tmp0p25filef${fhr} | grep  -F -f ${PARMgfs}/product/gfs_fbwnd_parmlist_g2 | $WGRIB2 -i -grib tmpfilef${fhr} tmp0p25filef${fhr}
   $CNVGRIB -g21 tmpfilef${fhr} tmpfilef${fhr}.grib1
   $GRBINDEX tmpfilef${fhr}.grib1 tmpfilef${fhr}.grib1i
   mv tmpfilef${fhr}.grib1   gfs.t${cyc}z.grbf${fhr}_grb1
@@ -68,7 +68,7 @@ export FORT51="tran.fbwnd_pacific"
 
 startmsg
 
-$EXECgfs/fbwndgfs < $PARMproduct/fbwnd_pacific.stnlist >> $pgmout 2> errfile
+$EXECgfs/fbwndgfs < ${PARMgfs}/product/fbwnd_pacific.stnlist >> $pgmout 2> errfile
 export err=$?; err_chk
 
 

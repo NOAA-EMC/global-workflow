@@ -30,12 +30,12 @@ case ${machine} in
 esac
 export AERO_INPUTS_DIR
 
-export AERO_DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table.aero"
-export AERO_FIELD_TABLE="${HOMEgfs}/parm/ufs/fv3/field_table.aero"
+export AERO_DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table.aero"
+export AERO_FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table.aero"
 # Biomass burning emission dataset. Choose from: gbbepx, qfed, none
 export AERO_EMIS_FIRE="qfed"
 # Directory containing GOCART configuration files
-export AERO_CONFIG_DIR="${HOMEgfs}/parm/ufs/gocart"
+export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"
 
 # Aerosol convective scavenging factors (list of string array elements)
 # Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers

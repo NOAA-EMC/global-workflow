@@ -23,7 +23,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -356,12 +356,12 @@ case ${step} in
 
   "ocnanalbmat")
     npes=16
-    case ${CASE} in
-      "C384") npes=480;;
-      "C96")  npes=16;;
-      "C48")  npes=16;;
+    case ${OCNRES} in
+      "025") npes=480;;
+      "050")  npes=16;;
+      "500")  npes=16;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -374,20 +374,21 @@ case ${step} in
 
   "ocnanalrun")
     npes=16
-    case ${CASE} in
-      "C384")
+    case ${OCNRES} in
+      "025")
         npes=480
-        memory_ocnanalrun="128GB"
+        memory_ocnanalrun="96GB"
         ;;
-      "C96")
+      "050")
         npes=16
+        memory_ocnanalrun="96GB"
         ;;
-      "C48")
+      "500")
         npes=16
-        memory_ocnanalrun="64GB"
+        memory_ocnanalrun="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -399,23 +400,51 @@ case ${step} in
     export memory_ocnanalrun
     ;;
 
+  "ocnanalecen")
+    npes=16
+    case ${OCNRES} in
+      "025")
+        npes=40
+        memory_ocnanalecen="96GB"
+        ;;
+      "050")
+        npes=16
+        memory_ocnanalecen="96GB"
+        ;;
+      "500")
+        npes=16
+        memory_ocnanalecen="24GB"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        exit 4
+    esac
+
+    export wtime_ocnanalecen="00:10:00"
+    export npe_ocnanalecen=${npes}
+    export nth_ocnanalecen=1
+    export is_exclusive=True
+    export npe_node_ocnanalecen=$(( npe_node_max / nth_ocnanalecen ))
+    export memory_ocnanalecen
+    ;;
+
   "ocnanalchkpt")
     export wtime_ocnanalchkpt="00:10:00"
     export npe_ocnanalchkpt=1
     export nth_ocnanalchkpt=1
     export npe_node_ocnanalchkpt=$(( npe_node_max / nth_ocnanalchkpt ))
-    case ${CASE} in
-      "C384")
+    case ${OCNRES} in
+      "025")
         memory_ocnanalchkpt="128GB"
         npes=40;;
-      "C96")
+      "050")
         memory_ocnanalchkpt="32GB"
         npes=16;;
-      "C48")
+      "500")
         memory_ocnanalchkpt="32GB"
         npes=8;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
     export npe_ocnanalchkpt=${npes}

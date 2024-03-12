@@ -11,7 +11,7 @@
 # echo "C. Magee: 10/2013 - swap X and Y for rtgssthr Atl and Pac."
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 cd $DATA
 

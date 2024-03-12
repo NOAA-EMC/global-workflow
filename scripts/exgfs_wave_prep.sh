@@ -40,7 +40,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -207,16 +207,16 @@ source "$HOMEgfs/ush/preamble.sh"
               ;;
      esac 
 
-     if [ -f $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
+     if [ -f ${PARMgfs}/wave/ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
-       cp $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl .
+       cp ${PARMgfs}/wave/ww3_prnc.${type}.$grdID.inp.tmpl .
      fi
 
      if [ -f ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
        set +x
        echo ' '
-       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($PARMwave)."
+       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied (${PARMgfs}/wave)."
        echo ' '
        set_trace
      else
@@ -247,7 +247,7 @@ source "$HOMEgfs/ush/preamble.sh"
     if [ "${RUNMEM}" = "-1" ] || [ "${WW3ICEIENS}" = "T" ] || [ "$waveMEMB" = "00" ]
     then
 
-      $USHwave/wave_prnc_ice.sh > wave_prnc_ice.out 
+      ${USHgfs}/wave_prnc_ice.sh > wave_prnc_ice.out
       ERR=$?
     
       if [ -d ice ]
@@ -389,10 +389,10 @@ source "$HOMEgfs/ush/preamble.sh"
         fi
 
         if [ ${CFP_MP:-"NO"} = "YES" ]; then
-          echo "$nm $USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+          echo "$nm ${USHgfs}/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
           nm=$(expr $nm + 1)
         else
-          echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+          echo "${USHgfs}/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
         fi
 
         if [ "${FLGFIRST}" = "T" ] ; then

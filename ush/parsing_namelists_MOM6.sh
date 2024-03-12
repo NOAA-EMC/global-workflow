@@ -37,7 +37,7 @@ echo "Rendered input.nml:"
 cat input.nml
 
 # Source functions from this file for filling in templates
-source "${HOMEgfs}/ush/atparse.bash"
+source "${USHgfs}/atparse.bash"
 
 # ================================================================
 # MOM_input
@@ -89,7 +89,7 @@ else
   local PERT_EPBL="False"
 fi
 # Ensure the template exists
-local template=${MOM6_INPUT_TEMPLATE:-"${HOMEgfs}/parm/ufs/MOM_input_${OCNRES}.IN"}
+local template=${MOM6_INPUT_TEMPLATE:-"${PARMgfs}/ufs/MOM_input_${OCNRES}.IN"}
 if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
@@ -106,7 +106,7 @@ cat "${DATA}/INPUT/MOM_input"
 local MOM6_FRUNOFF=${FRUNOFF}
 
 # Ensure the template exists
-local template=${MOM6_DATA_TABLE_TEMPLATE:-"${HOMEgfs}/parm/ufs/MOM6_data_table.IN"}
+local template=${MOM6_DATA_TABLE_TEMPLATE:-"${PARMgfs}/ufs/MOM6_data_table.IN"}
 if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1

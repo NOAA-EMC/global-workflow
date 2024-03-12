@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -29,8 +29,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 #   Imported Shell Variables:
 #     RADMON_SUFFIX     data source suffix
 #                       defauls to opr
-#     EXECgfs           executable directory
-#     PARMmonitor       parm directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
 #     TANKverf_rad      data repository
@@ -100,7 +98,7 @@ fi
 
 err=0
 angle_exec=radmon_angle.x
-shared_scaninfo="${shared_scaninfo:-${PARMmonitor}/gdas_radmon_scaninfo.txt}"
+shared_scaninfo="${shared_scaninfo:-${PARMgfs}/monitor/gdas_radmon_scaninfo.txt}"
 scaninfo=scaninfo.txt
 
 #--------------------------------------------------------------------

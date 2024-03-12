@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Locally scoped variables and functions
 # shellcheck disable=SC2153

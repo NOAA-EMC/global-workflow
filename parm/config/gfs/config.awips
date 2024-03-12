@@ -8,9 +8,6 @@ echo "BEGIN: config.awips"
 # Get task specific resources
 . "${EXPDIR}/config.resources" awips
 
-export AWIPS20KM1P0DEGSH="${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
-export AWIPSG2SH="${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_G2"
-
 # No. of concurrent awips jobs
 export NAWIPSGRP=42
 

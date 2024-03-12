@@ -16,7 +16,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlrun" -c "base aeroanl aeroanlr
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAERORUNSH:-${HOMEgfs}/scripts/exglobal_aero_analysis_run.py}
+EXSCRIPT=${GDASAERORUNSH:-${SCRgfs}/exglobal_aero_analysis_run.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
