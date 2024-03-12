@@ -7,4 +7,5 @@ echo "BEGIN: config.atmensanlinit"
 
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmensanlinit
+
 echo "END: config.atmensanlinit"
