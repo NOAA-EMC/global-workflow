@@ -1,8 +1,0 @@
-gfsa:
-   mandatory:
-      com_atmos_minmon:
-         - '${PDY}${cyc}.costs.txt'
-         - '${PDY}${cyc}.cost_terms.txt'
-         - '${PDY}${cyc}.gnorms.ieee_d'
-         - '${PDY}${cyc}.reduction.ieee_d'
-         - 'gnorm_data.txt'

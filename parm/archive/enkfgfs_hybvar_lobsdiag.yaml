@@ -1,5 +1,0 @@
-enkfgfs:
-   mandatory:
-      rotdir:
-         full_cycle:
-            - 'logs/${PDY}${cyc}/enkfgfseomg*.log'

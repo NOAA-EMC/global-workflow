@@ -1,9 +1,0 @@
-enkfgdas:
-   mandatory:
-      rotdir:
-         - 'logs/${PDY}${cyc}/enkfgdasechgres.log'
-         full_cycle:
-            - 'logs/${PDY}${cyc}/enkfgdaseobs.log'
-            - 'logs/${PDY}${cyc}/enkfgdasecen*.log'
-            - 'logs/${PDY}${cyc}/enkfgdasesfc.log'
-            - 'logs/${PDY}${cyc}/enkfgdaseupd.log'
