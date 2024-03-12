@@ -57,12 +57,8 @@ if (( err != 0 )) ; then
    exit "${err}"
 fi
 
-#
-# TODO: gfs_utils does not currently build rdbfmsua, so skip
-#   for now
-#
-# "${HOMEgfs}/exec/rdbfmsua" >> "${pgmout}" 2> errfile
-# err=$?;export err ;err_chk
+"${HOMEgfs}/exec/rdbfmsua.x" >> "${pgmout}" 2> errfile
+err=$?;export err ;err_chk
 
 # shellcheck disable=SC2012,SC2155
 export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
