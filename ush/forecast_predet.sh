@@ -265,4 +265,6 @@ GOCART_predet(){
 
   if [[ ! -d "${COM_CHEM_HISTORY}" ]]; then mkdir -p "${COM_CHEM_HISTORY}"; fi
 
+  GOCART_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "6" "${FHMAX}")
+  # TODO: AERO_HISTORY.rc has hardwired output frequency to 6 hours
 }
