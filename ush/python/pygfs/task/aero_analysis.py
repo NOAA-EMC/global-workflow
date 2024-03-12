@@ -32,7 +32,7 @@ class AerosolAnalysis(Analysis):
         _res = int(self.config['CASE'][1:])
         _res_anl = int(self.config['CASE_ANL'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
-        _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
+        _jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -50,7 +50,7 @@ class AerosolAnalysis(Analysis):
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
-                'fv3jedi_yaml': _fv3jedi_yaml,
+                'jedi_yaml': _jedi_yaml,
             }
         )
 
@@ -93,10 +93,9 @@ class AerosolAnalysis(Analysis):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # generate variational YAML file
-        logger.debug(f"Generate variational YAML file: {self.task_config.fv3jedi_yaml}")
-        varda_yaml = parse_j2yaml(self.task_config['AEROVARYAML'], self.task_config)
-        save_as_yaml(varda_yaml, self.task_config.fv3jedi_yaml)
-        logger.info(f"Wrote variational YAML to: {self.task_config.fv3jedi_yaml}")
+        logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")
+        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
+        logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -114,7 +113,7 @@ class AerosolAnalysis(Analysis):
         exec_cmd = Executable(self.task_config.APRUN_AEROANL)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
         exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.fv3jedi_yaml)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
