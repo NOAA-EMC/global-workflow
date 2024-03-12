@@ -380,8 +380,8 @@ export FITSARC="YES"
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
-# The monitor jobs are not yet supported for JEDIATMVAR
-if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
+# The monitor jobs are not yet supported for JEDIATMVAR or RDHPCS Hera for Rocky-8.
+if [[ ${DO_JEDIATMVAR} = "YES" ]] || [[ ${machine} = "HERA" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
