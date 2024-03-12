@@ -63,6 +63,7 @@ class Tasks:
                       'cyc': '<cyclestr>@H</cyclestr>',
                       'COMROOT': self._base.get('COMROOT'),
                       'DATAROOT': self._base.get('DATAROOT')}
+
         self.envars = self._set_envars(envar_dict)
 
     @staticmethod
@@ -192,7 +193,11 @@ class Tasks:
 
         native = None
         if scheduler in ['pbspro']:
-            native = '-l debug=true,place=vscatter'
+            # Set place=vscatter by default and debug=true if DEBUG_POSTSCRIPT="YES"
+            if self._base['DEBUG_POSTSCRIPT']:
+                native = '-l debug=true,place=vscatter'
+            else:
+                native = '-l place=vscatter'
             # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
             if task_config.get('is_exclusive', False):
                 native += ':exclhost'
