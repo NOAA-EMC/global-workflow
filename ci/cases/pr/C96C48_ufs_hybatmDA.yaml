@@ -5,12 +5,13 @@ experiment:
 arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATM
-  resdetatmos: 48
+  resdetatmos: 96
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2021032312
-  edate: 2021032400
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48
+  idate: 2024022318
+  edate: 2024022400
   nens: 2
   gfs_cyc: 1
   start: warm
