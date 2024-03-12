@@ -147,7 +147,7 @@ export err=$?
 # FOR THIS CASE HERE.
 #####################################################
 if (( err != 0 )) || [[ ! -s ukmetver_12.meta ]]; then
-    echo "FATAL ERROR: Failed to create ecmwf meta file"
+    echo "FATAL ERROR: Failed to create ukmet meta file"
     exit "${err}"
 fi
 
@@ -160,7 +160,7 @@ fi
 
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL UKMETVER_HPCMETAFILE "${job}" \
-        "${COM_GEMPAK_META}/ukmetver_${PDY}_12"
+        "${COM_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
 fi
 
 exit
