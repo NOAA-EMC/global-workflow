@@ -6,6 +6,7 @@ import re
 from github import Github
 from wxflow import which
 
+
 class GitHubPR:
     """
     GitHubPR A class for interacting with GitHub pull requests.
