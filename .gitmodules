@@ -1,9 +1,9 @@
 [submodule "sorc/ufs_model.fd"]
-	path = sorc/ufs_model.fd
-	#url = https://github.com/ufs-community/ufs-weather-model
-	url = https://github.com/aerorahul/ufs-weather-model
+  path = sorc/ufs_model.fd
+  #url = https://github.com/ufs-community/ufs-weather-model
+  url = https://github.com/aerorahul/ufs-weather-model
   branch = feature/ufs-threading
-	ignore = dirty
+  ignore = dirty
 [submodule "sorc/wxflow"]
   path = sorc/wxflow
   url = https://github.com/NOAA-EMC/wxflow
