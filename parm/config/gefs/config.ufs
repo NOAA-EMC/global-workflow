@@ -452,25 +452,25 @@ if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
 fi
 case "${model_list}" in
   atm)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atm${tmpl_suffix:-}.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.atm${tmpl_suffix:-}.IN"
     ;;
   atm.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.atmaero${tmpl_suffix:-}.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.atmaero${tmpl_suffix:-}.IN"
     ;;
   atm.wave)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.leapfrog_atm_wav${tmpl_suffix:-}.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.leapfrog_atm_wav${tmpl_suffix:-}.IN"
     ;;
   atm.ocean.ice)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2s${tmpl_suffix:-}.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.s2s${tmpl_suffix:-}.IN"
     ;;
   atm.ocean.ice.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sa${tmpl_suffix:-}.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.s2sa${tmpl_suffix:-}.IN"
     ;;
   atm.ocean.ice.wave)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2sw${tmpl_suffix:-}.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.s2sw${tmpl_suffix:-}.IN"
     ;;
   atm.ocean.ice.wave.aero)
-    default_template="${HOMEgfs}/parm/ufs/ufs.configure.s2swa${tmpl_suffix:-}.IN"
+    default_template="${PARMgfs}/ufs/ufs.configure.s2swa${tmpl_suffix:-}.IN"
     ;;
   *)
     echo "FATAL ERROR: Unsupported UFSWM configuration for ${model_list}"
