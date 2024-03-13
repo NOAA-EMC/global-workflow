@@ -12,7 +12,7 @@ from wxflow import (AttrDict,
                     add_to_datetime, to_fv3time, to_timedelta,
                     chdir,
                     to_fv3time,
-                    YAMLFile, parse_yamltmpl, parse_j2yaml, save_as_yaml,
+                    YAMLFile, parse_j2yaml, save_as_yaml,
                     logit,
                     Executable,
                     WorkflowException)
@@ -73,15 +73,13 @@ class AerosolAnalysis(Analysis):
         super().initialize()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aero_crtm_coeff.yaml')
-        logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
-        crtm_fix_list = parse_j2yaml(crtm_fix_list_path, self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
+        crtm_fix_list = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aero_jedi_fix.yaml')
-        logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
-        jedi_fix_list = parse_j2yaml(jedi_fix_list_path, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
         # stage berror files
@@ -211,7 +209,7 @@ class AerosolAnalysis(Analysis):
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + increment_template)
         bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, restart_template)
         # get list of increment vars
-        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'gdas', 'aeroanl_inc_vars.yaml')
+        incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aeroanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
         super().add_fv3_increments(inc_template, bkg_template, incvars)
 

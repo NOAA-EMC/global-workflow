@@ -96,19 +96,17 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': dirlist}).sync()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_crtm_coeff.yaml')
-        logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
-        crtm_fix_list = parse_j2yaml(crtm_fix_list_path, self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
+        crtm_fix_list = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_jedi_fix.yaml')
-        logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
-        jedi_fix_list = parse_j2yaml(jedi_fix_list_path, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
         # stage backgrounds
-        logger.debug(f"Stage ensemble member background files")
+        logger.info(f"Stage ensemble member background files")
         localconf = AttrDict()
         keys = ['COM_ATMOS_RESTART_TMPL', 'previous_cycle', 'ROTDIR', 'RUN',
                 'NMEM_ENS', 'DATA', 'current_cycle', 'ntiles']

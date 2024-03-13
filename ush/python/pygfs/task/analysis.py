@@ -27,7 +27,7 @@ class Analysis(Task):
         super().__init__(config)
         self.config.ntiles = 6
         # Store location of GDASApp jinja2 templates
-        self.gdasapp_j2tmpl_dir = os.path.join(self.config.HOMEgfs, 'parm/gdas')
+        self.gdasapp_j2tmpl_dir = os.path.join(self.config.PARMgfs, 'gdas')
 
     def initialize(self) -> None:
         super().initialize()
@@ -359,7 +359,7 @@ class Analysis(Task):
 
 
 @logit(logger)
-def find_value_in_nested_dict(nested_dict: Dict, key: str) -> Any:
+def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
     Recursively search through a nested dictionary and return the value for the target key.
     This returns the first target key it finds.  So if a key exists in a subsequent
@@ -369,13 +369,13 @@ def find_value_in_nested_dict(nested_dict: Dict, key: str) -> Any:
     ----------
     nested_dict : Dict
         Dictionary to search
-    key : str
+    target_key : str
         Key to search for
 
     Returns
     -------
     Any
-        Value of the key
+        Value of the target key
 
     Raises
     ------
