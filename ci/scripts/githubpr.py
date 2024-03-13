@@ -5,8 +5,6 @@ import re
 
 from github import Github
 from wxflow import which
-from workflow.hosts import Host
-
 
 class GitHubPR:
     """
@@ -41,35 +39,48 @@ class GitHubPR:
         repo_identifier = match.group(1)[:-4]
         repo = gh.get_repo(repo_identifier)
         self.repo = repo
-        self.host = Host()
+        self.pulls = self.repo.get_pulls(state='close', sort='updated', direction='desc')
 
-    def get_open_pr_list(self, state='Ready'):
+    def get_pr_list(self):
         """
-        get_open_pr_list Get a list of open pull requests.
+        get_pr_list Get the numerical list of all pull requests.
+
+        Returns
+        -------
+        list
+            A list of all pull request numbers.
+        """
+        pr_list = []
+        for pull in self.pulls:
+            pr_list.append(pull.number)
+        return pr_list
+
+    def get_ci_pr_list(self, state='Ready', host=None):
+        """
+        get_ci_pr_list Get a list of pull requests that match a specified state and host.
 
         Parameters
         ----------
         state : str, optional
             The state of the pull requests to get (default is 'Ready').
+        host : str, optional
+            The host of the pull requests to get. If None, all hosts are included (default is None).
 
         Returns
         -------
         list
-            A list of pull request numbers that are open and match the specified state.
-        list
-            A list of pull request numbers that have the 'Kill' label.
+            A list of pull request numbers that match the specified state and host.
         """
-        pulls = self.repo.get_pulls(state='open', sort='updated', direction='desc')
         pr_list = []
-        pr_kill_list = []
-        for pull in pulls:
+        for pull in self.pulls:
             labels = pull.get_labels()
             ci_labels = [s for s in labels if 'CI' in s.name]
             for label in ci_labels:
-                if 'Kill' in label.name:
-                    pr_kill_list.append(pull.number)
-                    continue
-                if self.host.machine.capitalize() in label.name:
-                    if state in label.name:
+                if state in label.name:
+                    if host is not None:
+                        if host.lower() in label.name.lower():
+                            pr_list.append(pull.number)
+                    else:
                         pr_list.append(pull.number)
-        return pr_list, pr_kill_list
+
+        return pr_list

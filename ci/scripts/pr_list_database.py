@@ -132,7 +132,9 @@ def update_database(db: SQLiteDB) -> list:
         The kill list of pull requests.
     """
     gh = GitHubPR()
-    pr_ready_list, pr_kill_list = gh.get_open_pr_list()
+    host = os.environ.get('MACHINE_ID')
+    pr_ready_list = gh.get_ci_pr_list(host=host)
+    pr_kill_list = gh.get_ci_pr_list(state='Kill')
     for pr in pr_ready_list:
         if not add_pr(db, str(pr)):
             if pr not in pr_kill_list:
