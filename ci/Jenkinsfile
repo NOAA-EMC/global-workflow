@@ -157,7 +157,7 @@ pipeline {
                                             if (fileExists('RUNTESTS/error.logs')) {
                                                 def error_logs = sh(script: "cat RUNTESTS/error.logs", returnStdout: true).trim()
                                                 try {
-                                                    pullRequest.comment("Experment ${Case} failed on ${Machine}\n\nError logs:\n\n${error_logs}")
+                                                    pullRequest.comment("Experiment ${Case} failed on ${Machine}\n\nError logs:\n\n${error_logs}")
                                                 } catch (Exception error) {
                                                     echo "Failed to comment on PR: ${error.getMessage()}"
                                                 }
