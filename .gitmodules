@@ -27,3 +27,7 @@
 	path = sorc/ufs_model.fd
 	url = https://github.com/HenryWinterbottom-NOAA/ufs-weather-model
 	branch = feature/gwdev_issue_2329
+[submodule "sorc/gsi_monitor.fd"]
+	path = sorc/gsi_monitor.fd
+	url = https://github.com/HenryWinterbottom-NOAA/GSI-Monitor
+	branch = feature/gwdev_issue_2329
