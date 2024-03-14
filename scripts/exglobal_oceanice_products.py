@@ -19,7 +19,7 @@ def main():
 
     # Pull out all the configuration keys needed to run the rest of steps
     keys = ['HOMEgfs', 'DATA', 'current_cycle', 'RUN', 'NET',
-            f'COM_{component.upper()}_HISTORY', f'COM_{component.upper()}_GRIB',
+            f'COM_{ocnice.task_config.component.upper()}_HISTORY', f'COM_{ocnice.task_config.component.upper()}_GRIB',
             'APRUN_OCNICEPOST',
             'component', 'forecast_hour', 'valid_datetime', 'avg_period',
             'model_grid', 'product_grids', 'oceanice_yaml']
