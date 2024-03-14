@@ -51,6 +51,7 @@ Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs ar
    Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C96C48
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48
+   AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C96C48
 
 Start date = 2021122018
 
@@ -111,6 +112,7 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
    Jet: /lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/C48C48mx500
+   AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C48C48mx500
 
 Start date = 2021032312
 
