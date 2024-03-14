@@ -393,6 +393,14 @@ cat >> input.nml <<EOF
   cplwav2atm   = ${cplwav2atm:-".false."}
 EOF
 
+if [ ${DO_SPPT} = "YES" ];then
+cat >> input.nml <<EOF
+  pert_mp = .false.
+  pert_radtend = .false.
+  pert_clds = .true.
+EOF
+fi
+
 # Add namelist for IAU
 if [[ ${DOIAU} = "YES" ]]; then
   cat >> input.nml << EOF
@@ -606,7 +614,7 @@ EOF
   skeb_tau = ${SKEB_TAU:-"-999."}
   skeb_lscale = ${SKEB_LSCALE:-"-999."}
   skebnorm = ${SKEBNORM:-"1"}
-  skeb_npass = ${SKEB_nPASS:-"30"}
+  skeb_npass = ${SKEB_NPASS:-"30"}
   skeb_vdof = ${SKEB_VDOF:-"5"}
 EOF
   fi
@@ -629,6 +637,7 @@ EOF
   sppt_logit = ${SPPT_LOGIT:-".true."}
   sppt_sfclimit = ${SPPT_SFCLIMIT:-".true."}
   use_zmtnblck = ${use_zmtnblck:-".true."}
+  pbl_taper = ${pbl_taper:-"0,0,0,0.125,0.25,0.5,0.75"}
 EOF
   fi
   

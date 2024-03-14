@@ -432,11 +432,11 @@ EOF
   fi
 
   # Stochastic Physics Options
-  if [[ ${SET_STP_SEED:-"YES"} = "YES" ]]; then
+  if [[ ${DO_SPPT:-"NO"} = "YES" ]]; then
     ISEED_SKEB=$((current_cycle*1000 + MEMBER*10 + 1))
     ISEED_SHUM=$((current_cycle*1000 + MEMBER*10 + 2))
-    ISEED_SPPT=$((current_cycle*1000 + MEMBER*10 + 3))
-    ISEED_CA=$(( (current_cycle*1000 + MEMBER*10 + 4) % 2147483647 ))
+    ISEED_SPPT=$((current_cycle*10000 + ${MEMBER#0}*100 + 3)),$((current_cycle*10000 + ${MEMBER#0}*100 + 4)),$((current_cycle*10000 + ${MEMBER#0}*100 + 5)),$((current_cycle*10000 + ${MEMBER#0}*100 + 6)),$((current_cycle*10000 + ${MEMBER#0}*100 + 7))
+    ISEED_CA=$(( (current_cycle*10000 + ${MEMBER#0}*100 + 18) % 2147483647 ))
     ISEED_LNDP=$(( (current_cycle*1000 + MEMBER*10 + 5) % 2147483647 ))
   else
     ISEED=${ISEED:-0}
