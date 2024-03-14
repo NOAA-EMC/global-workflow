@@ -158,8 +158,8 @@ pipeline {
                                                 def error_logs = sh(script: "cat RUNTESTS/error.logs", returnStdout: true).trim()
                                                 try {
                                                     pullRequest.comment("Experment ${Case} failed on ${Machine}\n\nError logs:\n\n${error_logs}")
-                                                } catch (Exception e) {
-                                                    echo "Failed to comment on PR: ${e.getMessage()}"
+                                                } catch (Exception error) {
+                                                    echo "Failed to comment on PR: ${error.getMessage()}"
                                                 }
                                                 def fileContent = readFile 'RUNTESTS/error.logs'
                                                 def lines = fileContent.readLines()
