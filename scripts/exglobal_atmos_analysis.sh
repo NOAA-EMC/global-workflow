@@ -19,7 +19,7 @@
 
 #  Set environment.
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -42,7 +42,7 @@ export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-${HOMEgfs}/ush/getncdimlen}
+export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 APRUNCFP=${APRUNCFP:-""}
@@ -68,19 +68,19 @@ DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
 
 # Dependent Scripts and Executables
-GSIEXEC=${GSIEXEC:-${HOMEgfs}/exec/gsi.x}
+GSIEXEC=${GSIEXEC:-${EXECgfs}/gsi.x}
 export NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
 export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
-export CALCINCEXEC=${CALCINCEXEC:-${HOMEgfs}/exec/calc_increment_ens.x}
-export CALCINCNCEXEC=${CALCINCNCEXEC:-${HOMEgfs}/exec/calc_increment_ens_ncio.x}
-export CALCANLEXEC=${CALCANLEXEC:-${HOMEgfs}/exec/calc_analysis.x}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter_nc.x}
-export CHGRESINCEXEC=${CHGRESINCEXEC:-${HOMEgfs}/exec/interp_inc.x}
-CHGRESEXEC=${CHGRESEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter.x}
+export CALCINCEXEC=${CALCINCEXEC:-${EXECgfs}/calc_increment_ens.x}
+export CALCINCNCEXEC=${CALCINCNCEXEC:-${EXECgfs}/calc_increment_ens_ncio.x}
+export CALCANLEXEC=${CALCANLEXEC:-${EXECgfs}/calc_analysis.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-${EXECgfs}/interp_inc.x}
+CHGRESEXEC=${CHGRESEXEC:-${EXECgfs}/enkf_chgres_recenter.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
-CALCINCPY=${CALCINCPY:-${HOMEgfs}/ush/calcinc_gfs.py}
+CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
 
 # OPS flags
 RUN=${RUN:-""}

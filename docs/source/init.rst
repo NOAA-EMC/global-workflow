@@ -246,14 +246,15 @@ Automated Generation
 Cycled mode
 -----------
 
-Not yet supported. See :ref:`Manual Generation<manual-generation>` section below for how to create your ICs yourself (outside of workflow).
+Not yet supported.
 
 .. _forecastonly-coupled:
 
 ---------------------
 Forecast-only coupled
 ---------------------
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion/Hercules, Jet, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Hera, Orion/Hercules, Jet, and WCOSS2. The locations used are determined by ``parm/config/config.stage_ic``.
+Note however, that due to the rapid changes in the model configuration, some staged initial conditions may not work.
 
 .. _forecastonly-atmonly:
 
@@ -261,7 +262,7 @@ Coupled initial conditions are currently only generated offline and copied prior
 Forecast-only mode (atm-only)
 -----------------------------
 
-The table below lists the needed initial condition files from past GFS versions to be used by the UFS_UTILS gdas_init utility. The utility will pull these files for you. See the next section (Manual Generation) for how to run the UFS_UTILS gdas_init utility and create initial conditions for your experiment.
+The table below lists for reference the needed initial condition files from past GFS versions to be used by the UFS_UTILS gdas_init utility. The utility will pull these files for you. See the next section (Manual Generation) for how to run the UFS_UTILS gdas_init utility and create initial conditions for your experiment.
 
 Note for table: yyyy=year; mm=month; dd=day; hh=cycle
 
@@ -284,11 +285,11 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
 | v15 ops        |   gfs.t. ``hh`` z.atmanl.nemsio | gpfs_dell1_nco_ops_com_gfs_prod_gfs. ``yyyymmdd`` _ ``hh`` .gfs_nemsioa.tar | gfs. ``yyyymmdd`` /``hh``      |
 |                |                                 |                                                                             |                                |
-| pre-2020022600 |   gfs.t. ``hh`` z.sfcanl.nemsio |                                                                             |                                | 
+| pre-2020022600 |   gfs.t. ``hh`` z.sfcanl.nemsio |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
 | v15 ops        |   gfs.t. ``hh`` z.atmanl.nemsio | com_gfs_prod_gfs. ``yyyymmdd`` _ ``hh`` .gfs_nemsioa.tar                    | gfs. ``yyyymmdd`` /``hh``      |
 |                |                                 |                                                                             |                                |
-|                |   gfs.t. ``hh`` z.sfcanl.nemsio |                                                                             |                                |  
+|                |   gfs.t. ``hh`` z.sfcanl.nemsio |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
 | v16 retro      |   gfs.t. ``hh`` z.atmanl.nc     | gfs_netcdfa.tar*                                                            | gfs. ``yyyymmdd`` /``hh``/atmos|
 |                |                                 |                                                                             |                                |
@@ -318,82 +319,14 @@ Manual Generation
 
 The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
 
-The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users may clone the develop/HEAD branch or the same version used by global-workflow develop. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
+The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users should see the documentation to generation initial conditions in the UFS_UTILS repository. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
 
 * pre-GFSv14
 * GFSv14
 * GFSv15
 * GFSv16
 
-Users can use the copy of UFS_UTILS that is already cloned and built within their global-workflow clone or clone/build it separately:
-
-Within a built/linked global-workflow clone:
-
-::
-
-   cd sorc/ufs_utils.fd/util/gdas_init
-
-Clone and build separately:
-
-1. Clone UFS_UTILS:
-
-::
-
-   git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git
-
-Then switch to a different tag or use the default branch (develop).
-
-2. Build UFS_UTILS:
-
-::
-
-   sh build_all.sh
-   cd fix
-   sh link_fixdirs.sh emc $MACHINE
-
-where ``$MACHINE`` is ``wcoss2``, ``hera``, or ``jet``.
-
-.. note::
-   UFS-UTILS builds on Orion/Hercules but due to the lack of HPSS access on Orion/Hercules the ``gdas_init`` utility is not supported there.
-
-3. Configure your conversion:
-
-::
-
-   cd util/gdas_init
-   vi config
-
-Read the doc block at the top of the config and adjust the variables to meet you needs (e.g. ``yy, mm, dd, hh`` for ``SDATE``).
-
-Most users will want to adjust the following ``config`` settings for the current system design:
-
-#. EXTRACT_DATA=YES (to pull original ICs to convert off HPSS)
-#. RUN_CHGRES=YES (to run chgres_cube on the original ICs pulled off HPSS)
-#. LEVS=128 (for the L127 GFS)
-
-4. Submit conversion script:
-
-::
-
-   ./driver.$MACHINE.sh
-
-where ``$MACHINE`` is currently ``wcoss2``,  ``hera`` or ``jet``. Additional options will be available as support for other machines expands.
-
-.. note::
-   UFS-UTILS builds on Orion/Hercules but due to lack of HPSS access there is no ``gdas_init`` driver for Orion/Hercules nor support to pull initial conditions from HPSS for the ``gdas_init`` utility.
-
-Several small jobs will be submitted:
-
-  - 1 jobs to pull inputs off HPSS
-  - 1 or 2 jobs to run ``chgres_cube`` (1 for deterministic/hires and 1 for each EnKF ensemble member)
-
-The chgres jobs will have a dependency on the data-pull jobs and will wait to run until all data-pull jobs have completed.
-
-5. Check output:
-
-In the config you will have defined an output folder called ``$OUTDIR``. The converted output will be found there, including the needed abias and radstat initial condition files (if CDUMP=gdas). The files will be in the needed directory structure for the global-workflow system, therefore a user can move the contents of their ``$OUTDIR`` directly into their ``$ROTDIR``.
-
-Please report bugs to George Gayno (george.gayno@noaa.gov) and Kate Friedman (kate.friedman@noaa.gov).
+See instructions in UFS_UTILS to clone, build and generate initial conditions.
 
 .. _warmstarts-prod:
 
@@ -489,7 +422,7 @@ Tarballs per cycle:
    com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp7.tar
    com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp8.tar
 
-Go to the top of your ``ROTDIR`` and pull the contents of all tarballs there. The tarballs already contain the needed directory structure.
+Go to the top of your ``ROTDIR`` and pull the contents of all tarballs there. The tarballs already contain the needed directory structure.  Note that the directory structure has changed, so this may not be correct.
 
 .. _warmstarts-preprod-parallels:
 
@@ -517,6 +450,7 @@ Recent pre-implementation parallel series was for GFS v16 (implemented March 202
 * **Where do I put the warm-start initial conditions?** Extraction should occur right inside your ROTDIR. You may need to rename the enkf folder (enkf.gdas.$PDY -> enkfgdas.$PDY).
 
 Due to a recent change in the dycore, you may also need an additional offline step to fix the checksum of the NetCDF files for warm start. See the :ref:`Fix netcdf checksum section <gfsv17-checksum>`.
+The current model has undergone several updates and the files generated may not be completely usable by the model.
 
 .. _retrospective:
 

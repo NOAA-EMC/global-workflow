@@ -3,7 +3,7 @@
 # This script contains functions to convert ocean/ice rectilinear netCDF files to grib2 format
 # This script uses the wgrib2 utility to convert the netCDF files to grib2 format and then indexes it
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ################################################################################
 function _ice_nc2grib2 {

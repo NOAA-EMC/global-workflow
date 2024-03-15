@@ -15,7 +15,7 @@ YMD="${PDY}" HH="${cyc}" generate_com -rx "COM_${COMPONENT^^}_NETCDF"
 
 ###############################################################
 # Run exglobal script
-"${HOMEgfs}/scripts/exglobal_oceanice_products.py"
+"${SCRgfs}/exglobal_oceanice_products.py"
 status=$?
 (( status != 0 )) && exit "${status}"
 

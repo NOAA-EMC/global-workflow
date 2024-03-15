@@ -43,9 +43,9 @@ MAP	= 1
 CLEAR	= yes
 CLRBAR  = 1
 
-restore ${USHgempak}/restore/garea_nh.nts
+restore ${HOMEgfs}/gempak/ush/restore/garea_nh.nts
 
-restore ${USHgempak}/restore/500mb_hght_absv.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw 
 SKIP	= 0                  !0                  !1
@@ -65,7 +65,7 @@ l
 ru
 
 
-restore ${USHgempak}/restore/garea_sh.nts
+restore ${HOMEgfs}/gempak/ush/restore/garea_sh.nts
 
 DEVICE	= nc | Nmeta_sh
 TITLE	= 5//~ ? $m_title @ HEIGHTS AND VORTICITY|~ @ HGHT AND VORTICITY!0
@@ -73,10 +73,10 @@ l
 ru
 
 
-restore ${USHgempak}/restore/garea_nh.nts
+restore ${HOMEgfs}/gempak/ush/restore/garea_nh.nts
 DEVICE	= nc | Nmeta_nh
 
-restore ${USHgempak}/restore/250mb_hght_wnd.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 GDPFUN  = knts((mag(wnd)))            !sm9s(hght)
@@ -85,11 +85,11 @@ l
 ru
 
 
-restore ${USHgempak}/restore/garea_sh.nts
+restore ${HOMEgfs}/gempak/ush/restore/garea_sh.nts
 DEVICE	= nc | Nmeta_sh
 ru
 
-restore ${USHgempak}/restore/precip.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/precip.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 GDATTIM = F12-F240-12
@@ -99,7 +99,7 @@ TITLE   = 5//~ ? $m_title 12-HOUR TOTAL PRECIPITATION (IN)|~ 12-HOURLY TOTAL PCP
 l
 r
 
-restore ${USHgempak}/restore/garea_sh.nts
+restore ${HOMEgfs}/gempak/ush/restore/garea_sh.nts
 DEVICE	= nc | Nmeta_sh
 ru
 

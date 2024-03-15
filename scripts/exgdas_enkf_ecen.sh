@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -31,16 +31,16 @@ ntiles=${ntiles:-6}
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 
 # Scripts
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgfs/exec/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgfs/exec/getsfcensmeanp.x}
-RECENATMEXEC=${RECENATMEXEC:-$HOMEgfs/exec/recentersigp.x}
-CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-$HOMEgfs/exec/calc_increment_ens.x}
-CALCINCNCEXEC=${CALCINCEXEC:-$HOMEgfs/exec/calc_increment_ens_ncio.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgfs}/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECgfs}/getsfcensmeanp.x}
+RECENATMEXEC=${RECENATMEXEC:-${EXECgfs}/recentersigp.x}
+CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-${EXECgfs}/calc_increment_ens.x}
+CALCINCNCEXEC=${CALCINCEXEC:-${EXECgfs}/calc_increment_ens_ncio.x}
 
 # Files.
 OPREFIX=${OPREFIX:-""}
@@ -66,14 +66,14 @@ else
 fi
 
 # global_chgres stuff
-CHGRESNEMS=${CHGRESNEMS:-$HOMEgfs/exec/enkf_chgres_recenter.x}
-CHGRESNC=${CHGRESNC:-$HOMEgfs/exec/enkf_chgres_recenter_nc.x}
+CHGRESNEMS=${CHGRESNEMS:-${EXECgfs}/enkf_chgres_recenter.x}
+CHGRESNC=${CHGRESNC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
 NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
 APRUN_CHGRES=${APRUN_CHGRES:-""}
 
 # global_cycle stuff
-CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
+CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}

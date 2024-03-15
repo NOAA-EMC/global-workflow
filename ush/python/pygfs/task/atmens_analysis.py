@@ -11,7 +11,7 @@ from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD,
                     chdir,
-                    parse_yamltmpl, parse_j2yaml, save_as_yaml,
+                    parse_j2yaml, save_as_yaml,
                     logit,
                     Executable,
                     WorkflowException,
@@ -119,7 +119,7 @@ class AtmEnsAnalysis(Analysis):
 
         # generate ensemble da YAML file
         logger.debug(f"Generate ensemble da YAML file: {self.task_config.fv3jedi_yaml}")
-        ensda_yaml = parse_j2yaml(self.task_config.ATMENSYAML, self.task_config)
+        ensda_yaml = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
         save_as_yaml(ensda_yaml, self.task_config.fv3jedi_yaml)
         logger.info(f"Wrote ensemble da YAML to: {self.task_config.fv3jedi_yaml}")
 

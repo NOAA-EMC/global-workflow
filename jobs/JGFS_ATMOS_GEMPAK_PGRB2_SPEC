@@ -6,19 +6,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_spec" -c "base"
 
-
-################################
-# Set up the HOME directory
-################################
-export EXECgfs="${EXECgfs:-${HOMEgfs}/exec}"
-export PARMgfs="${PARMgfs:-${HOMEgfs}/parm}"
-export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
-export USHgempak="${USHgempak:-${HOMEgfs}/gempak/ush}"
-export SRCgfs="${SRCgfs:-${HOMEgfs}/scripts}"
-
-# For half-degree P Grib files
-#export DO_HD_PGRB=YES
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################
@@ -26,6 +13,9 @@ export COMPONENT="atmos"
 export finc=3
 export model=gfs
 export EXT=""
+
+# For half-degree P Grib files
+#export DO_HD_PGRB=YES
 
 ##############################################
 # Define COM directories
@@ -57,7 +47,7 @@ echo "RUNS the Program"
 
 ########################################################
 # Execute the script.
-"${SRCgfs}/exgfs_atmos_goes_nawips.sh"
+"${SCRgfs}/exgfs_atmos_goes_nawips.sh"
 
 #################################################################
 # Execute the script for the 221 grib
@@ -78,7 +68,7 @@ echo "RUNS the Program"
 
 ########################################################
 # Execute the script.
-"${SRCgfs}/exgfs_atmos_goes_nawips.sh"
+"${SCRgfs}/exgfs_atmos_goes_nawips.sh"
 export err=$?; err_chk
 ########################################################
 

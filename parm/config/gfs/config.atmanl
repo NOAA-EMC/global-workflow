@@ -5,13 +5,19 @@
 
 echo "BEGIN: config.atmanl"
 
-export CASE_ANL=${CASE}
-export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/config/
-export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype_3d.yaml
-export ATMVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/variational/3dvar_drpcg.yaml
+export OBS_LIST="${PARMgfs}/gdas/atm/obs/lists/gdas_prototype_3d.yaml.j2"
+export JEDIYAML="${PARMgfs}/gdas/atm/variational/3dvar_drpcg.yaml.j2"
 export STATICB_TYPE="gsibec"
-export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
 export INTERP_METHOD='barycentric'
+
+if [[ ${DOHYBVAR} = "YES" ]]; then
+    # shellcheck disable=SC2153
+    export CASE_ANL=${CASE_ENS}
+    export BERROR_YAML="${PARMgfs}/gdas/atm/berror/hybvar_${STATICB_TYPE}.yaml.j2"
+else
+    export CASE_ANL=${CASE}
+    export BERROR_YAML="${PARMgfs}/gdas/atm/berror/staticb_${STATICB_TYPE}.yaml.j2"
+fi
 
 export layout_x_atmanl=@LAYOUT_X_ATMANL@
 export layout_y_atmanl=@LAYOUT_Y_ATMANL@
@@ -19,6 +25,6 @@ export layout_y_atmanl=@LAYOUT_Y_ATMANL@
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE=${HOMEgfs}/exec/fv3jedi_var.x
+export JEDIEXE=${EXECgfs}/fv3jedi_var.x
 
 echo "END: config.atmanl"

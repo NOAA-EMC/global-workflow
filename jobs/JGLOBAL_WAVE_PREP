@@ -16,18 +16,13 @@ export MP_PULSE=0
 # CDO required for processing RTOFS currents
 export CDO=${CDO_ROOT}/bin/cdo
 
-# Path to HOME Directory
-export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
-export USHwave=${USHwave:-${HOMEgfs}/ush}
-export EXECwave=${EXECwave:-${HOMEgfs}/exec}
-
 # Set COM Paths and GETGES environment
 YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_WAVE_PREP
 generate_com -rx COM_RTOFS
 [[ ! -d ${COM_WAVE_PREP} ]] && mkdir -m 775 -p "${COM_WAVE_PREP}"
 
 # Execute the Script
-${HOMEgfs}/scripts/exgfs_wave_prep.sh
+${SCRgfs}/exgfs_wave_prep.sh
 
 ##########################################
 # Remove the Temporary working directory
