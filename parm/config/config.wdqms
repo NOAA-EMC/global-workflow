@@ -1,18 +1,14 @@
 #!/bin/bash
 
 ########## config.wdqms ##########
-# Wave steps specific
+# WDQMS steps specific
 
 echo "BEGIN: config.wdqms"
 
 # Get task specific resources
-. ${EXPDIR}/config.resources wdqms
+source "${EXPDIR}/config.resources" wdqms
 
 # WDQMS utility script
 export WDQMSPY="${HOMEgfs}/ush/wdqms.py"
-
-# Options for wdqms.py
-export DEBUG_WDQMS="NO"
-export VERBOSE_WDQMS="NO"
 
 echo "END: config.wdqms"

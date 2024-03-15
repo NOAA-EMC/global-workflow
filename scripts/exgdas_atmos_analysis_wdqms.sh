@@ -13,10 +13,6 @@ INPUT_LIST=("diag_conv_ps_ges.${PDY}${cyc}.nc4" \
 # Observation types being processed by wdqms.py
 OTYPES=(SYNOP TEMP MARINE)
 
-# debugging and verbose options for wdqms.py
-[[ ${DEBUG_WDQMS:-} == "YES" ]] && debug="-d"
-[[ ${VERBOSE_WDQMS:-} == "YES" ]] && verbose="-v"
-
 ################################################################################
 echo "Begin job ${job:-}"
 
@@ -28,11 +24,11 @@ cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd ${DATA}, ABORT!"; exit 2 )
 # Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py
 cp "${COMIN}/${CNVSTAT}" .
 rc=$?
-(( rc != 0 )) && ( echo "FATAL ERROR: Unable to copy ${diag_file} from ${COMIN}, ABORT!"; exit 2 )
+(( rc != 0 )) && ( echo "FATAL ERROR: Unable to copy ${CNVSTAT} from ${COMIN}, ABORT!"; exit 2 )
 for file in "${INPUT_LIST[@]}"; do
-  tar -xzvf "${diag_file}" "${file}.gz"
+  tar -xvf "${CNVSTAT}" "${file}.gz"
   rc=$?
-  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to extract ${file}.gz from ${diag_file}, ABORT!"; exit 3 )
+  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to extract ${file}.gz from ${CNVSTAT}, ABORT!"; exit 3 )
   gunzip "${file}.gz"
   rc=$?
   (( rc != 0 )) && ( echo "FATAL ERROR: Unable to gunzip ${file}.gz, ABORT!"; exit 3 )
@@ -42,7 +38,7 @@ done
 # Loop over observation types and produce csv files
 for otype in "${OTYPES[@]}"; do
   echo "Processing ... ${otype}"
-  ${WDQMSPY} -i ${INPUT_LIST[@]} -t "${otype}" -o "${DATA}" "${debug:-}" "${verbose:-}"
+  ${WDQMSPY} -i ${INPUT_LIST[@]} -t "${otype}" -o "${DATA}"
   rc=$?
   if (( rc != 0 )); then
     echo "FATAL ERROR: wdqms.py failed to process observation type ${otype}; ABORT!"

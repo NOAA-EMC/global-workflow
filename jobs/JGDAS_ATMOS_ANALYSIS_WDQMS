@@ -48,8 +48,11 @@ export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos/wdqms"
 mkdir -m 775 -p "${COMOUT}"
 
 ########################################################
-# Execute the script for wdqms-degree grib
+# Execute the script for generating WDQMS products
 "${HOMEgfs}/scripts/exgdas_atmos_analysis_wdqms.sh"
+export err=$?
+err_chk
+
 ########################################################
 
 echo "JOB ${job:-} HAS COMPLETED NORMALLY!"

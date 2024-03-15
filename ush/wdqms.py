@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import os
 import argparse
@@ -97,8 +99,7 @@ class WDQMS:
         """
         logging.info("Working in wdqms_type_requirements()")
         logging.debug(f"WDQMS Type: {self.wdqms_type}")
-        logging.debug(f"Total observations for {
-                      self.wdqms_type} before filter: {len(df)}")
+        logging.debug(f"Total observations for {self.wdqms_type} before filter: {len(df)}")
 
         obs_types = self.wdqms_type_dict[self.wdqms_type]['obs_types']
 
@@ -114,8 +115,7 @@ class WDQMS:
             df.loc[(df['var_id'] != 110) & (df['Obs_Minus_Forecast_adjusted'].abs() > 500),
                    'Obs_Minus_Forecast_adjusted'] = -999.9999
 
-        logging.debug(f"Total observations for {
-                      self.wdqms_type} after filter: {len(df)}")
+        logging.debug(f"Total observations for {self.wdqms_type} after filter: {len(df)}")
         logging.info("Exiting wdqms_type_requirements()")
 
         return df
@@ -138,7 +138,7 @@ class WDQMS:
         # Converts 'Time' column to time delta in hours
         hrs = pd.to_timedelta(df['Time'], unit='hours')
         # Actual datetime of ob adding datetime and timedelta in hours
-        new_dt = dates+hrs
+        new_dt = dates + hrs
 
         df['yyyymmdd'] = new_dt.dt.strftime('%Y%m%d')
         df['HHMMSS'] = new_dt.dt.strftime('%H%M%S')
@@ -277,13 +277,11 @@ class WDQMS:
             if 110 in tmp['var_id'].unique():
                 logging.debug(f"Variable: p")
 
-                mean_bg_dep = tmp['Obs_Minus_Forecast_adjusted'].loc[tmp['var_id']
-                                                                     == 110].values[0]
+                mean_bg_dep = tmp['Obs_Minus_Forecast_adjusted'].loc[tmp['var_id'] == 110].values[0]
                 std_bg_dep = 0
                 level = 'Surf'
                 last_rep_lvl = -999.99
-                status_flag = tmp['StatusFlag'].loc[tmp['var_id']
-                                                    == 110].values[0]
+                status_flag = tmp['StatusFlag'].loc[tmp['var_id'] == 110].values[0]
 
                 d['var_id'].append(110)
                 d['Mean_Bg_dep'].append(mean_bg_dep)
@@ -297,10 +295,8 @@ class WDQMS:
                 surf_lat = tmp['Latitude'].loc[tmp['var_id'] == 110].values[0]
                 surf_lon = tmp['Longitude'].loc[tmp['var_id'] == 110].values[0]
 
-                logging.debug(
-                    "Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
-                logging.debug(f"{mean_bg_dep}, {std_bg_dep}, {
-                              level}, {last_rep_lvl}, {status_flag}")
+                logging.debug("Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
+                logging.debug(f"{mean_bg_dep}, {std_bg_dep}, {level}, {last_rep_lvl}, {status_flag}")
 
             # Get unique variable ID's and remove 110 (surface pressure)
             var_ids = sorted(tmp['var_id'].unique())
@@ -338,10 +334,8 @@ class WDQMS:
                     d['LastRepLevel'].append(last_rep_lvl)
                     d['StatusFlag'].append(status_flag)
 
-                    logging.debug(
-                        "Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
-                    logging.debug(f"{surf_omf}, {surf_std}, {level}, {
-                                  last_rep_lvl}, {status_flag}")
+                    logging.debug("Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
+                    logging.debug(f"{surf_omf}, {surf_std}, {level}, {last_rep_lvl}, {status_flag}")
 
                 # Troposphere
                 trop_tmp = tmp.loc[(tmp['var_id'] == var) &
@@ -368,10 +362,8 @@ class WDQMS:
                     d['LastRepLevel'].append(last_rep_lvl)
                     d['StatusFlag'].append(status_flag)
 
-                    logging.debug(
-                        "Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
-                    logging.debug(f"{trop_avg_omf}, {trop_std_omf}, {
-                                  level}, {last_rep_lvl}, {status_flag}")
+                    logging.debug("Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
+                    logging.debug(f"{trop_avg_omf}, {trop_std_omf}, {level}, {last_rep_lvl}, {status_flag}")
 
                 # Stratosphere
                 stra_tmp = tmp.loc[(tmp['var_id'] == var) &
@@ -398,10 +390,8 @@ class WDQMS:
                     d['LastRepLevel'].append(last_rep_lvl)
                     d['StatusFlag'].append(status_flag)
 
-                    logging.debug(
-                        "Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
-                    logging.debug(f"{stra_avg_omf}, {stra_std_omf}, {
-                                  level}, {last_rep_lvl}, {status_flag}")
+                    logging.debug("Mean_Bg_dep, Std_Bg_dep, Levels, LastRepLevel, StatusFlag")
+                    logging.debug(f"{stra_avg_omf}, {stra_std_omf}, {level}, {last_rep_lvl}, {status_flag}")
 
             sub_df = pd.DataFrame.from_dict(d)
             sub_df['Station_id'] = stn
@@ -502,10 +492,9 @@ class WDQMS:
             qsat_ges = self._temp_2_saturation_specific_humidity(
                 pressure, t_ges)
 
-            bg_dep = (q_obs/qsat_obs)-(q_ges/qsat_ges)
+            bg_dep = (q_obs / qsat_obs) - (q_ges / qsat_ges)
 
-            logging.debug(f"Original q background departure: {
-                          q_tmp['Obs_Minus_Forecast_adjusted'].values}")
+            logging.debug(f"Original q background departure: {q_tmp['Obs_Minus_Forecast_adjusted'].values}")
             logging.debug(f"New q background departure: {bg_dep}")
 
             # Replace the current background departure with the new calculated one
@@ -540,21 +529,21 @@ class WDQMS:
         cv = 7.1760e2
         cliq = 4.1855e3
 
-        dldt = cvap-cliq
-        dldti = cvap-csol
-        hsub = hvap+hfus
-        tmix = ttp-20.
-        xa = -(dldt/rv)
-        xai = -(dldti/rv)
-        xb = xa+hvap/(rv*ttp)
-        xbi = xai+hsub/(rv*ttp)
-        eps = rd/rv
-        omeps = 1.0-eps
+        dldt = cvap - cliq
+        dldti = cvap - csol
+        hsub = hvap + hfus
+        tmix = ttp - 20.
+        xa = -(dldt / rv)
+        xai = -(dldti / rv)
+        xb = xa + hvap / (rv * ttp)
+        xbi = xai + hsub / (rv * ttp)
+        eps = rd / rv
+        omeps = 1.0 - eps
 
-        tdry = tsen+ttp
+        tdry = tsen + ttp
         tdry = np.array([1.0e-8 if np.abs(t) < 1.0e-8 else t for t in tdry])
 
-        tr = ttp/tdry
+        tr = ttp / tdry
 
         qsat_array = []
 
@@ -562,20 +551,20 @@ class WDQMS:
         for idx, t in enumerate(tdry):
             # Get correct estmax and es values based on conditions
             if t >= ttp:
-                estmax = psat * (tr[idx]**xa) * np.exp(xb*(1.0-tr[idx]))
+                estmax = psat * (tr[idx]**xa) * np.exp(xb * (1.0 - tr[idx]))
                 es = estmax
             elif t < tmix:
-                estmax = psat * (tr[idx]**xa) * np.exp(xbi*(1.0-tr[idx]))
+                estmax = psat * (tr[idx]**xa) * np.exp(xbi * (1.0 - tr[idx]))
                 es = estmax
             else:
-                w = (t-tmix) / (ttp-tmix)
-                estmax = w * psat * (tr[idx]**xa) * np.exp(xb*(1.0-tr[idx])) \
-                    + (1.0-w) * psat * (tr[idx]**xai) * \
-                    np.exp(xbi*(1.0-tr[idx]))
+                w = (t - tmix) / (ttp - tmix)
+                estmax = w * psat * (tr[idx]**xa) * np.exp(xb * (1.0 - tr[idx])) \
+                    + (1.0 - w) * psat * (tr[idx]**xai) * \
+                    np.exp(xbi * (1.0 - tr[idx]))
 
-                es = w * psat * (tr[idx]**xa) * np.exp(xb*(1.0-tr[idx])) \
-                    + (1.0-w) * psat * (tr[idx]**xai) * \
-                    np.exp(xbi*(1.0-tr[idx]))
+                es = w * psat * (tr[idx]**xa) * np.exp(xb * (1.0 - tr[idx])) \
+                    + (1.0 - w) * psat * (tr[idx]**xai) * \
+                    np.exp(xbi * (1.0 - tr[idx]))
 
             pw = pres[idx]
             esmax = pw
@@ -583,8 +572,8 @@ class WDQMS:
             esmax = np.min([esmax, estmax])
             es2 = np.min([es, esmax])
 
-            qsat = eps * es2 / ((pw*10.0) - (omeps*es2))
-            qsat2 = qsat*1e6
+            qsat = eps * es2 / ((pw * 10.0) - (omeps * es2))
+            qsat2 = qsat * 1e6
 
             qsat_array.append(qsat2)
 
@@ -623,7 +612,7 @@ class WDQMS:
             for wtype in ['u', 'v']:
                 df_dict[wtype] = {}
                 for col in column_list:
-                    col = f'{wtype}_'+col if col == 'Observation' else col
+                    col = f'{wtype}_' + col if col == 'Observation' else col
                     col = f'{wtype}_' + \
                         col if col == 'Obs_Minus_Forecast_adjusted' else col
                     data = self._grab_netcdf_data(file, col)
@@ -723,8 +712,7 @@ class WDQMS:
         f.write(f"# TYPE={self.wdqms_type}\n")
         f.write(f"#An_Date= {date}\n")
         f.write(f"#An_time= {cycle}\n")
-        f.write(f"#An_range=[ {hr_range[cycle][0]} to {
-                hr_range[cycle][-1]} )\n")
+        f.write(f"#An_range=[ {hr_range[cycle][0]} to {hr_range[cycle][-1]} )\n")
         f.write("#StatusFlag: 0(Used);1(Not Used);2(Rejected by DA);"
                 "3(Never Used by DA);4(Data Thinned);5(Rejected before DA);"
                 "6(Alternative Used);7(Quality Issue);8(Other Reason);9(No content)\n")
@@ -760,7 +748,6 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     if args.type not in ['SYNOP', 'TEMP', 'MARINE']:
-        raise ValueError(f'{args.type} not a correct input. Inputs include: '
-                         'SYNOP, TEMP, MARINE')
+        raise ValueError(f"FATAL ERROR: {args.type} not a correct input. Inputs include: 'SYNOP, TEMP, MARINE'")
 
     WDQMS(args.input_list, args.type, args.outdir, args.loglevel)
