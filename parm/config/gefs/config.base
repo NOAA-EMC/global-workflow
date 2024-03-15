@@ -260,6 +260,10 @@ export NMEM_ENS=@NMEM_ENS@
 export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
 
+# initialize ocean ensemble members with perturbations
+#   if true, only occurs for members greater than zero
+export USE_OCN_PERTURB_FILES=@STAGE_OCN_PERTURB_FILES@
+
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
 if [[ "${EXP_WARM_START}" = ".false." ]]; then
