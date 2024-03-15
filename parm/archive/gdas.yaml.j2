@@ -1,67 +1,96 @@
-gdas:
-   mandatory:
-      - '{{ COM_ATMOS_GRIB_0P25 }}/gdas.t{{ cyc }}z.pgrb2.0p25.anl'
-      - '{{ COM_ATMOS_GRIB_0P25 }}/gdas.t{{ cyc }}z.pgrb2.0p25.anl.idx'
-      - '{{ COM_ATMOS_GRIB_0P25 }}/gdas.t{{ cyc }}z.pgrb2.0p25.f{{ fhr }}'
-      - '{{ COM_ATMOS_GRIB_0P25 }}/gdas.t{{ cyc }}z.pgrb2.0p25.f{{ fhr }}.idx'
-      - '{{ COM_ATMOS_GRIB_1P00 }}/gdas.t{{ cyc }}z.pgrb2.1p00.anl'
-      - '{{ COM_ATMOS_GRIB_1P00 }}/gdas.t{{ cyc }}z.pgrb2.1p00.anl.idx'
-      - '{{ COM_ATMOS_GRIB_1P00 }}/gdas.t{{ cyc }}z.pgrb2.1p00.f{{ fhr }}'
-      - '{{ COM_ATMOS_GRIB_1P00 }}/gdas.t{{ cyc }}z.pgrb2.1p00.f{{ fhr }}.idx'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.atmanl.nc'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.sfcanl.nc'
-      - '{{ COM_ATMOS_MASTER }}/gdas.t{{ cyc }}z.sfluxgrbf{{ fhr }}.grib2'
-      - '{{ COM_ATMOS_MASTER }}/gdas.t{{ cyc }}z.sfluxgrbf{{ fhr }}.grib2.idx'
-      - '{{ ROTDIR }}/logs/{{ PDY }}{{ cyc }}/gdas*prod*.log'
-      - '{{ COM_ATMOS_HISTORY }}/gdas.t{{ cyc }}z.atm.logf{{ fhr }}.txt'
-      - '{{ COM_ATMOS_HISTORY }}/gdas.t{{ cyc }}z.atmf{{ fhr }}.nc'
-      - '{{ COM_ATMOS_HISTORY }}/gdas.t{{ cyc }}z.sfcf{{ fhr }}.nc'
-      {% if DO_VERFOZN = "YES" %}
-      - '{{ COM_ATMOS_OZNMON }}/bad_cnt.{{ PDY }}{{ cyc }}'
-      - '{{ COM_ATMOS_OZNMON }}/bad_diag.{{ PDY }}{{ cyc }}'
-      - '{{ COM_ATMOS_OZNMON }}/bad_pen.{{ PDY }}{{ cyc }}'
-      {% set oznmon_types = [
-         'gome_metop-b', 'omi_aura', 'ompslp_npp', 'ompsnp_n20',
-         'ompsnp_npp', 'ompstc8_n20', 'ompstc8_npp', 'sbuv2_n19'
-      ] %}
-      {% for type in oznmon_types %}
-      - '{{ COM_ATMOS_OZNMON }}/stdout.{{ type }}.tar.gz'
-      {% endfor %}
-      {% endif %}
-   optional:
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.atmvar.yaml'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.atmstat'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.gsistat'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.atmanl.ensres.nc'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.atma003.ensres.nc'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.atma009.ensres.nc'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.cnvstat'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.oznstat'
-      - '{{ COM_ATMOS_ANALYSIS }}/gdas.t{{ cyc }}z.radstat'
-      - '{{ ROTDIR }}/logs/{{ PDY }}{{ cyc }}/gdasprep.log'
-      - '{{ ROTDIR }}/logs/{{ PDY }}{{ cyc }}/gdasanal.log'
-      - '{{ ROTDIR }}/logs/{{ PDY }}{{ cyc }}/gdasfcst.log'
-      - '{{ ROTDIR }}/logs/{{ PDY }}{{ cyc }}/gdasverfozn.log'
-      - '{{ ROTDIR }}/logs/{{ PDY }}{{ cyc }}/gdasverfrad.log'
-      - '{{ ROTDIR }}/logs/{{ PDY }}{{ cyc }}/gdasvminmon.log'
-      - '{{ COM_ATMOS_MASTER }}/gdas.t{{ cyc }}z.sfluxgrbf{{ fhr }}.grib2'
-      - '{{ COM_ATMOS_MASTER }}/gdas.t{{ cyc }}z.sfluxgrbf{{ fhr }}.grib2.idx'
-      {% if DO_AERO = "YES" %}
-      - '{{ COM_CHEM_ANALYSIS }}/gdas.t{{ cyc }}z.aerostat'
-      {% endif }
-      {% if WRITE_DOPOST = ".true." %}
-      - '{{ ROTDIR }}/{{ PDY }}{{ cyc }}/gdas*upp*.log'
-      {% endif }
-      {% if DO_VERFOZN = "YES" %}
-      {% set oznmon_types = [
-         'gome_metop-b', 'omi_aura', 'ompslp_npp', 'ompsnp_n20',
-         'ompsnp_npp', 'ompstc8_n20', 'ompstc8_npp', 'sbuv2_n19'
-      ] %}
-      {% for type in oznmon_types %}
-      - '{{ type }}.anl.ctl'
-      - '{{ type }}.anl.{{ PDY }}{{ cyc }}.ieee_d'
-      - '{{ type }}.anl.{{ PDY }}{{ cyc }}.ieee_d.gz'
-      - '{{ type }}.ges.ctl'
-      - '{{ type }}.ges.{{ PDY }}{{ cyc }}.ieee_d'
-      - '{{ type }}.ges.{{ PDY }}{{ cyc }}.ieee_d.gz'
-      {% endfor %}
+name: "GDAS"
+description: "Basic GDAS analysis and forecast produts and data"
+{% set cycle_HH = current_cycle | strftime('%H') %}
+{% set cycle_YYYYMMDDHH = current_cycle | strftime('%Y%m%d%H') %}
+archive_name: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdas.tar"
+mandatory:
+    - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.anl"
+    - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.anl.idx"
+    - "{{ atmos_grib_1p00_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.1p00.anl"
+    - "{{ atmos_grib_1p00_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.1p00.anl.idx"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmanl.nc"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.sfcanl.nc"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}*prod*.log"
+    {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
+    - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.f{{ '%03d' % fhr }}"
+    - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
+    - "{{ atmos_grib_1p00_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.1p00.f{{ '%03d' % fhr }}"
+    - "{{ atmos_grib_1p00_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
+    - "{{ atmos_master_dir }}/{{ RUN }}.t{{ cycle_HH }}z.sfluxgrbf{{ '%03d' % fhr }}.grib2"
+    - "{{ atmos_master_dir }}/{{ RUN }}.t{{ cycle_HH }}z.sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
+    - "{{ atmos_history_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atm.logf{{ '%03d' % fhr }}.txt"
+    - "{{ atmos_history_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmf{{ '%03d' % fhr }}.nc"
+    - "{{ atmos_history_dir }}/{{ RUN }}.t{{ cycle_HH }}z.sfcf{{ '%03d' % fhr }}.nc"
+    {% endfor %}
+    {% if DO_VERFOZN %}
+    - "{{ atmos_oznmon_dir }}/time/bad_cnt.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_oznmon_dir }}/time/bad_diag.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_oznmon_dir }}/time/bad_pen.{{ cycle_YYYYMMDDHH }}"
+    {% set oznmon_types = [
+       "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",
+       "ompsnp_npp", "ompstc8_n20", "ompstc8_npp", "sbuv2_n19"
+    ] %}
+    {% for type in oznmon_types %}
+    - "{{ atmos_oznmon_dir }}/time/stdout.time.tar.gz"
+    - "{{ atmos_oznmon_dir }}/horiz/stdout.horiz.tar.gz"
+    {% endfor %}
+    {% endif %}
+    {% if DO_VERFRAD %}
+    - "{{ atmos_radmon_dir }}/bad_diag.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_radmon_dir }}/bad_pen.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_radmon_dir }}/low_count.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_radmon_dir }}/radmon_angle.tar.gz"
+    - "{{ atmos_radmon_dir }}/radmon_bcoef.tar.gz"
+    - "{{ atmos_radmon_dir }}/radmon_bcor.tar.gz"
+    - "{{ atmos_radmon_dir }}/radmon_time.tar.gz"
+    - "{{ atmos_radmon_dir }}/warning.{{ cycle_YYYYMMDDHH }}"
+    {% endif %}
+    {% if DO_VMINMON %}
+    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.costs.txt"
+    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.cost_terms.txt"
+    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.gnorms.ieee_d"
+    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.reduction.ieee_d"
+    - "{{ atmos_minmon_dir }}/gnorm_data.txt"
+    {% endif %}
+optional:
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmvar.yaml"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmstat"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.gsistat"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmanl.ensres.nc"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atma003.ensres.nc"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atma009.ensres.nc"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.cnvstat"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.oznstat"
+    - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.radstat"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}prep.log"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}anal.log"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}fcst.log"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}verfozn.log"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}verfrad.log"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}vminmon.log"
+    {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
+    - "{{ atmos_master_dir }}/{{ RUN }}.t{{ cycle_HH }}z.sfluxgrbf{{ '%03d' % fhr }}.grib2"
+    - "{{ atmos_master_dir }}/{{ RUN }}.t{{ cycle_HH }}z.sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
+    {% endfor %}
+    {% if DO_AERO %}
+    - "{{ chem_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.aerostat"
+    {% endif %}
+    {% if WRITE_DOPOST %}
+    - "{{ cycle_YYYYMMDDHH }}/{{ RUN }}*upp*.log"
+    {% endif %}
+    {% if DO_VERFOZN %}
+    {% set oznmon_types = [
+       "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",
+       "ompsnp_npp", "ompstc8_n20", "ompstc8_npp", "sbuv2_n19"
+    ] %}
+    {% for group in [ "horiz", "time" ] %}
+    {% for type in oznmon_types %}
+    - "{{ atmos_oznmon_dir }}/{{ group }}/{{ type }}.anl.ctl"
+    - "{{ atmos_oznmon_dir }}/{{ group }}/{{ type }}.anl.{{ cycle_YYYYMMDDHH }}.ieee_d"
+    - "{{ atmos_oznmon_dir }}/{{ group }}/{{ type }}.anl.{{ cycle_YYYYMMDDHH }}.ieee_d.gz"
+    - "{{ atmos_oznmon_dir }}/{{ group }}/{{ type }}.ges.ctl"
+    - "{{ atmos_oznmon_dir }}/{{ group }}/{{ type }}.ges.{{ cycle_YYYYMMDDHH }}.ieee_d"
+    - "{{ atmos_oznmon_dir }}/{{ group }}/{{ type }}.ges.{{ cycle_YYYYMMDDHH }}.ieee_d.gz"
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
