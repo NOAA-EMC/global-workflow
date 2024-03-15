@@ -692,8 +692,7 @@ class WDQMS:
         Produce output .csv file from dataframe.
         """
         logging.info("Working in df_to_csv()")
-        logging.info(f'Coverting dataframe to .csv file for {
-                     self.wdqms_type} data ...')
+        logging.info(f'Coverting dataframe to .csv file for {self.wdqms_type} data ...')
 
         # Write dataframe to .csv
         date = self.datetime[:-2]
