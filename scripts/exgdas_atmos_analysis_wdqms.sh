@@ -18,51 +18,63 @@ echo "Begin job ${job:-}"
 
 #-------------------------------------------------------------------------------
 # Enter working directory
-cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd ${DATA}, ABORT!"; exit 2 )
+cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd into '${DATA}', ABORT!"; exit 2 )
 
 #-------------------------------------------------------------------------------
 # Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py
+# These should always be available
 cp "${COMIN}/${CNVSTAT}" .
 rc=$?
-(( rc != 0 )) && ( echo "FATAL ERROR: Unable to copy ${CNVSTAT} from ${COMIN}, ABORT!"; exit 2 )
-for file in "${INPUT_LIST[@]}"; do
-  tar -xvf "${CNVSTAT}" "${file}.gz"
+(( rc != 0 )) && ( echo "FATAL ERROR: Unable to copy '${CNVSTAT}' from '${COMIN}', ABORT!"; exit 2 )
+for diagfile in "${INPUT_LIST[@]}"; do
+  tar -xvf "${CNVSTAT}" "${diagfile}.gz"
   rc=$?
-  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to extract ${file}.gz from ${CNVSTAT}, ABORT!"; exit 3 )
-  gunzip "${file}.gz"
+  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to extract '${diagfile}.gz' from '${CNVSTAT}', ABORT!"; exit 3 )
+  gunzip "${diagfile}.gz"
   rc=$?
-  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to gunzip ${file}.gz, ABORT!"; exit 3 )
+  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to gunzip '${diagfile}.gz', ABORT!"; exit 3 )
 done
 
 #-------------------------------------------------------------------------------
-# Loop over observation types and produce csv files
+# Loop over observation types, produce CSV files
+# Copy CSV files to COMOUT
+# Issue DBN alerts
+# Issue warnings if wdqms.py fails for any reason
+# These do not need to be a FATAL ERROR, but developers should be notified
 for otype in "${OTYPES[@]}"; do
+
   echo "Processing ... ${otype}"
+
+  #=============================================================================
+  # Process with wdqms.py
   ${WDQMSPY} -i ${INPUT_LIST[@]} -t "${otype}" -o "${DATA}"
   rc=$?
   if (( rc != 0 )); then
-    echo "FATAL ERROR: wdqms.py failed to process observation type ${otype}; ABORT!"
-    exit "${rc}"
+    echo "WARNING: wdqms.py failed to process observation type '${otype}'"
   fi
-done
+  #=============================================================================
 
-#-------------------------------------------------------------------------------
-# Copy output from wdqms.py to COMOUT
-for otype in "${OTYPES[@]}"; do
-  file="NCEP_${otype}_${PDY}_${cyc}.csv"
-  cp "./${file}" "${COMOUT}/${file}" || ( echo "FATAL ERROR: Unable to copy ${file} to ${COMOUT}, ABORT!"; exit 2 )
-done
+  #=============================================================================
+  # Copy to COMOUT if wdqms.py created the output file
+  csvfile="NCEP_${otype}_${PDY}_${cyc}.csv"
+  if [[ -f "${csvfile}" ]]; then
+    cp "./${csvfile}" "${COMOUT}/${csvfile}" || ( echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}'" )
+  else
+    echo "WARNING: wdqms.py failed to create csvfile '${csvfile}'"
+  fi
+  #=============================================================================
 
-#-------------------------------------------------------------------------------
-# Send DBN alerts for dataflow to pick up data from COMOUT
-for otype in "${OTYPES[@]}"; do
-  file="NCEP_${otype}_${PDY}_${cyc}.csv"
-  if [[ -f "${COMOUT}/${file}" ]]; then
+  #=============================================================================
+  # Send DBN alerts
+  if [[ -f "${COMOUT}/${csvfile}" ]]; then
     echo "Send DBN Alert"  # TODO: Add appropriate DBNALERT call
   else
-    echo "WARNING: wdqms.py did not produce '${file}'"  # TODO: Should this be a fatal error?
+    echo "WARNING: wdqms.py did not produce '${csvfile}'.  No DBN Alert!"  # TODO: Is there such a thing as a DBN Warning?
   fi
-done
+  #=============================================================================
+
+done  # for otype
+#-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 echo 'Job completed normally.'
