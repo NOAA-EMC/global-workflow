@@ -32,7 +32,7 @@ snowanl:
 ocnanal:
   SOCA_INPUT_FIX_DIR: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca"  # TODO: These need to go to glopara fix space.
   CASE_ANL: "C48"  # TODO: Check in gdasapp if used anywhere for SOCA
-  SOCA_OBS_LIST: "${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
+  SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
   SOCA_NINNER: 100
   SABER_BLOCKS_YAML: ""
   NICAS_RESOL: 1
