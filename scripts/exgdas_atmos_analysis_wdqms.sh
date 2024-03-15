@@ -41,6 +41,7 @@ done
 # Issue DBN alerts
 # Issue warnings if wdqms.py fails for any reason
 # These do not need to be a FATAL ERROR, but developers should be notified
+error=0
 for otype in "${OTYPES[@]}"; do
 
   echo "Processing ... ${otype}"
@@ -51,6 +52,7 @@ for otype in "${OTYPES[@]}"; do
   rc=$?
   if (( rc != 0 )); then
     echo "WARNING: wdqms.py failed to process observation type '${otype}'"
+    error=$((error + 1))
   fi
   #=============================================================================
 
@@ -61,6 +63,7 @@ for otype in "${OTYPES[@]}"; do
     cp "./${csvfile}" "${COMOUT}/${csvfile}" || ( echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}'" )
   else
     echo "WARNING: wdqms.py failed to create csvfile '${csvfile}'"
+    error=$((error + 1))
   fi
   #=============================================================================
 
@@ -70,6 +73,7 @@ for otype in "${OTYPES[@]}"; do
     echo "Send DBN Alert"  # TODO: Add appropriate DBNALERT call
   else
     echo "WARNING: wdqms.py did not produce '${csvfile}'.  No DBN Alert!"  # TODO: Is there such a thing as a DBN Warning?
+    error=$((error + 1))
   fi
   #=============================================================================
 
@@ -77,7 +81,11 @@ done  # for otype
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-echo 'Job completed normally.'
+if (( error == 0 )); then
+  echo "Job completed normally."
+else
+  echo "WARNING: Job completed with non-fatal errors."
+fi
 ################################################################################
 
 exit 0
