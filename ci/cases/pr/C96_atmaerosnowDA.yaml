@@ -14,7 +14,7 @@ arguments:
   nens: 0
   gfs_cyc: 1
   start: cold
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/atm-aero-snowDA_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
 
 skip_ci_on_hosts:
   - orion
