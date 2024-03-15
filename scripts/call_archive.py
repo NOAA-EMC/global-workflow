@@ -14,10 +14,10 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the UPP object
+    # Instantiate the Archive object
     archive = Archive(config)
 
-    # Pull out all the configuration keys needed to run the rest of UPP steps
+    # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
         'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_AERO', 'PARMgfs',
         'DO_OCN', 'WRITE_DOPOST', 'cyc', 'atmos_analysis_dir',
@@ -37,8 +37,11 @@ def main():
     for key in keys:
         archive_dict[key] = archive.task_config[key]
 
-    # Determine which archives to create and create them
-    archive.execute(archive_dict)
+    # Determine which archives to create
+    archive_sets = archive.configure(archive_dict)
+
+    # Create the archives
+    archive.execute(archive_sets)
 
 if __name__ == '__main__':
     main()

@@ -1,16 +1,18 @@
 #!/usr/bin/bash
 # Change to a directory that you can write to
 export ATARDIR=/work/noaa/global/dhuber/para/stmp/test_arch
+# Change to the head of your clone
+export HOMEgfs=/work/noaa/global/dhuber/GW/gw_arch
 
 set -e
 module use /work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core
 module load stack-intel stack-python py-jinja2 py-pyyaml
-export HOMEgfs=/work/noaa/global/dhuber/GW/gw_arch
+export PARMgfs=$HOMEgfs/parm
 export wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
 
-export ROTDIR=/work2/noaa/global/dhuber/para/com/herc_mon
 export RUN=gdas
+export ROTDIR=/work2/noaa/global/dhuber/para/com/herc_mon
 export PDY=20211111
 export cyc=00
 export COM_ATMOS_ANALYSIS=$ROTDIR/$RUN.$PDY/$cyc/analysis/atmos
@@ -59,7 +61,6 @@ export DO_VERFOZN=YES
 export DO_ICE=NO
 export WRITE_DOPOST=YES
 export ARCHIVE_RUN=$RUN
-export PARMgfs=/work/noaa/global/dhuber/GW/gw_arch/parm
 # Not needed for task, but required by wxflow
 export DATA=""
 export CDUMP=""

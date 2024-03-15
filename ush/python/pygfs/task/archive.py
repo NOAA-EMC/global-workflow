@@ -71,30 +71,7 @@ class Archive(Task):
 
     @staticmethod
     @logit(logger)
-    def execute(arch_dict: Dict[str, Any]) -> None:
-        """Run the UPP executable and index the output master and flux files
-
-        Parameters
-        ----------
-        workdir : str | os.PathLike
-            work directory with the staged data, parm files, namelists, etc.
-        aprun_cmd : str
-            launcher command for UPP.x
-        forecast_hour : int
-            default: 0
-            forecast hour being processed
-
-        Returns
-        -------
-        None
-        """
-
-        archive_sets = Archive._get_archive_sets(arch_dict)
-
-        Archive._create_archives(archive_sets)
-
-    @logit(logger)
-    def _get_archive_sets(arch_dict: Dict[str, Any]) -> None:
+    def configure(arch_dict: Dict[str, Any]) -> None:
         """Determine which tarballs will need to be created.
 
         Parameters
@@ -136,7 +113,6 @@ class Archive(Task):
 
             archive_filename = os.path.join(archive_parm, dataset + ".yaml.j2")
 
-            print(archive_filename)
             archive_set = parse_j2yaml(archive_filename, arch_dict)
 
             archive_set = Archive._create_fileset(archive_set)
@@ -144,6 +120,30 @@ class Archive(Task):
             archive_sets.append(archive_set)
 
         return archive_sets
+
+    @staticmethod
+    @logit(logger)
+    def execute(archive_sets: list[Dict[str, Any]]) -> None:
+        """Create the tarballs from the list of yaml dicts.
+
+        Parameters
+        ----------
+        arch_dict : Dict
+            Task specific keys, e.g. runtime options (DO_AERO, DO_ICE, etc)
+        """
+
+        import tarfile
+
+        for archive_set in archive_sets:
+            archive_name = archive_set.archive_name
+
+            if not os.path.exists(os.path.dirname(archive_name)):
+                os.mkdir(os.path.dirname(archive_name))
+
+            with tarfile.open(archive_name, "w") as tar:
+                for file in archive_set.fileset:
+                    tar.add(file)
+
 
     @logit(logger)
     def _create_fileset(archive_set: Dict[str, Any]) -> None:
@@ -211,25 +211,3 @@ class Archive(Task):
         if os.path.isdir(filename):
             raise IsADirectoryError(f'{file} is a directory\n' + 
                   f'only files are allowed to be archived.')
-
-    @logit(logger)
-    def _create_archives(archive_sets: list[Dict[str, Any]]) -> None:
-        """Create the tarballs from the list of yaml dicts.
-
-        Parameters
-        ----------
-        arch_dict : Dict
-            Task specific keys, e.g. runtime options (DO_AERO, DO_ICE, etc)
-        """
-
-        import tarfile
-
-        for archive_set in archive_sets:
-            archive_name = archive_set.archive_name
-
-            if not os.path.exists(os.path.dirname(archive_name)):
-                os.mkdir(os.path.dirname(archive_name))
-
-            with tarfile.open(archive_name, "w") as tar:
-                for file in archive_set.fileset:
-                    tar.add(file)
