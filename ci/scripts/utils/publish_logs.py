@@ -14,5 +14,5 @@ with open(file_content_path, 'r') as file:
 
 file_path=f"ci/error_logs/{file_subdir}/"+file_content_path.split("/")[-1]
 print(f"Uploading {file_path} to {emcbot_url}")
-emcbot_gh.repo.create_file(file_path,"adding log file" , file_content, branch="error_logs")
+emcbot_gh.repo.create_file(file_path, "adding log file", file_content, branch="error_logs")
 
