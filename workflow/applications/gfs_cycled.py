@@ -44,7 +44,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_jediocnvar:
             configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
-                        'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost']
+                        'ocnanalrun', 'ocnanalecen', 'ocnanalchkpt', 'ocnanalpost']
             if self.do_vrfy_oceanda:
                 configs += ['ocnanalvrfy']
 
@@ -139,7 +139,8 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_jediocnvar:
             gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep',
                                                   'ocnanalbmat', 'ocnanalrun',
-                                                  'ocnanalchkpt', 'ocnanalpost']
+                                                  'ocnanalecen', 'ocnanalchkpt',
+                                                  'ocnanalpost']
             if self.do_vrfy_oceanda:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 

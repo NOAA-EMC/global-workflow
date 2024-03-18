@@ -5,6 +5,13 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalecen" -c "base ocnanal ocnanal
 ##############################################
 # Set variables used in the script
 ##############################################
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+
+YMD=${gPDY} HH=${gcyc} generate_com -rx \
+   COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+   COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
 ##############################################
 # Begin JOB SPECIFIC work
