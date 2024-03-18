@@ -31,7 +31,7 @@ class AtmAnalysis(Analysis):
         _res = int(self.config.CASE[1:])
         _res_anl = int(self.config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config.assim_freq}H") / 2)
-        _fv3jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
+        _jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -48,7 +48,7 @@ class AtmAnalysis(Analysis):
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
-                'fv3jedi_yaml': _fv3jedi_yaml,
+                'jedi_yaml': _jedi_yaml,
             }
         )
 
@@ -71,19 +71,17 @@ class AtmAnalysis(Analysis):
         super().initialize()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_crtm_coeff.yaml')
-        logger.debug(f"Staging CRTM fix files from {crtm_fix_list_path}")
-        crtm_fix_list = parse_j2yaml(crtm_fix_list_path, self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
+        crtm_fix_list = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'atm_jedi_fix.yaml')
-        logger.debug(f"Staging JEDI fix files from {jedi_fix_list_path}")
-        jedi_fix_list = parse_j2yaml(jedi_fix_list_path, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
         # stage static background error files, otherwise it will assume ID matrix
-        logger.debug(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
+        logger.info(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
         FileHandler(self.get_berror_dict(self.task_config)).sync()
 
         # stage ensemble files for use in hybrid background error
@@ -102,10 +100,9 @@ class AtmAnalysis(Analysis):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config))).sync()
 
         # generate variational YAML file
-        logger.debug(f"Generate variational YAML file: {self.task_config.fv3jedi_yaml}")
-        varda_yaml = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
-        save_as_yaml(varda_yaml, self.task_config.fv3jedi_yaml)
-        logger.info(f"Wrote variational YAML to: {self.task_config.fv3jedi_yaml}")
+        logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")
+        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
+        logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -123,7 +120,7 @@ class AtmAnalysis(Analysis):
         exec_cmd = Executable(self.task_config.APRUN_ATMANL)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
         exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.fv3jedi_yaml)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
@@ -170,7 +167,7 @@ class AtmAnalysis(Analysis):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.task_config.fv3jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
+        logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
         src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         logger.debug(f"Copying {src} to {dest}")
