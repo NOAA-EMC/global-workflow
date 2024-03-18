@@ -3,7 +3,6 @@
 import sys
 import os
 from wxflow import SQLiteDB, SQLiteDBError
-from githubpr import GitHubPR
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
 
 
@@ -44,7 +43,7 @@ def create_table(db: SQLiteDB):
     db.create_table('pr_list', ['pr INTEGER PRIMARY KEY UNIQUE', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])
 
 
-def add_pr(db: SQLiteDB, pr: str) -> bool:
+def add_pr(db: SQLiteDB, pr: str):
     """
     Add a pull request to the database.
 
@@ -58,11 +57,9 @@ def add_pr(db: SQLiteDB, pr: str) -> bool:
     entities = (pr, 'Open', 'Ready', 0, 'ci_repo')
     try:
         db.insert_data('pr_list', entities)
-        return True
     except (SQLiteDBError.IntegrityError) as e:
         if 'unique' in str(e).lower():
             print(f"pr {pr} already is in list: nothing added")
-            return False
 
 
 def update_pr(db: SQLiteDB, args):
@@ -71,7 +68,7 @@ def update_pr(db: SQLiteDB, args):
 
     Parameters
     ----------
-    ci_database : SQLiteDB
+    db : SQLiteDB
         The database to update the pull request in.
     args : argparse.Namespace
         The command line arguments.
@@ -86,16 +83,16 @@ def update_pr(db: SQLiteDB, args):
         db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def display_db(db, display) -> list:
+def display_db(db, display):
     """
     Display the database.
 
     Parameters
     ----------
-    db: SQLiteDB
+    ci_database : SQLiteDB
         The database to display.
-    args : argparse.Namespace
-        The command line arguments.
+    display : list
+        The command line argument values.
 
     Returns
     -------
@@ -104,43 +101,13 @@ def display_db(db, display) -> list:
     """
     values = []
     if len(display) == 1:
-        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"pr = '{display[0]}'")
-    if len(display) == 2:
-        rows = db.fetch_data('pr_list', ['pr'], f"state = '{display[0]}' AND status = '{display[1]}'")
-    if len(display) == 0:
+        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f'pr = {display[0]}')
+    else:
         rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
     for row in rows:
         values.append(' '.join(map(str, row)))
 
     return values
-
-
-def update_database(db: SQLiteDB) -> list:
-    """
-    Update the database from the GitHub PR Lables
-    - only PRs from host machine are added to the database
-    - if the PR is already in the database it its added to the kill list
-
-    Parameters
-    ----------
-    ci_database : SQLiteDB
-        The database to update.
-
-    Returns
-    -------
-    list
-        The kill list of pull requests.
-    """
-    gh = GitHubPR()
-    host = os.environ.get('MACHINE_ID')
-    pr_ready_list = gh.get_ci_pr_list(host=host)
-    pr_kill_list = gh.get_ci_pr_list(state='Kill')
-    for pr in pr_ready_list:
-        if not add_pr(db, str(pr)):
-            if pr not in pr_kill_list:
-                pr_kill_list.append(pr)
-    pr_kill_list = list(set(pr_kill_list))
-    return pr_kill_list
 
 
 def input_args():
@@ -165,9 +132,6 @@ def input_args():
     parser.add_argument('--update_pr', nargs=REMAINDER, metavar=('pr', 'state', 'status', 'reset_id', 'cases'),
                         help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', nargs='*', help='output pr table', required=False)
-    parser.add_argument('--list_open_ready', action='store_true', required=False)
-    parser.add_argument('--update_database', help='use labels from Open GitHub PRs to update database state and produces a kill list',
-                        action='store_true', required=False)
     args = parser.parse_args()
     return args
 
@@ -195,14 +159,5 @@ if __name__ == '__main__':
     if args.display is not None:
         for rows in display_db(ci_database, args.display):
             print(rows)
-    if args.list_open_ready:
-        for rows in display_db(ci_database, ['Open', 'Ready']):
-            print(rows, end=' ')
-        print()
-    if args.update_database:
-        pr_kill_list = update_database(ci_database)
-        for pr in pr_kill_list:
-            print(pr, end=' ')
-        print()
 
     ci_database.disconnect()
