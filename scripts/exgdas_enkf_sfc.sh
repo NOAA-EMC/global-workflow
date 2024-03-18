@@ -24,6 +24,7 @@ pwd=$(pwd)
 
 # Base variables
 DONST=${DONST:-"NO"}
+GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
 DOSFCANL_ENKF=${DOSFCANL_ENKF:-"YES"}
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
@@ -60,7 +61,6 @@ export DELTSFC=${DELTSFC:-6}
 
 APRUN_ESFC=${APRUN_ESFC:-${APRUN:-""}}
 NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
-
 
 ################################################################################
 # Preprocessing
@@ -142,8 +142,10 @@ if [ $DOIAU = "YES" ]; then
             MEMDIR=${memchar} RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} generate_com \
                 COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
-            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
+                COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
+            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
             ${NCP} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
                 "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
             ${NLN} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
@@ -153,7 +155,12 @@ if [ $DOIAU = "YES" ]; then
             ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
             ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-        done
+            if [[ ${GSI_SOILANAL} = "YES" ]]; then
+                FHR=6
+                ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+                   "${DATA}/lnd_incr.${cmem}"
+            fi
+        done # ensembles
 
         CDATE="${PDY}${cyc}" ${CYCLESH}
         export err=$?; err_chk
