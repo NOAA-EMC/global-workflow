@@ -260,20 +260,18 @@ class SnowAnalysis(Analysis):
         FileHandler({'mkdir': dirlist}).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config.HOMEgfs, 'parm', 'gdas', 'snow_jedi_fix.yaml.j2')
-        logger.info(f"Staging JEDI fix files from {jedi_fix_list_path}")
-        jedi_fix_list = parse_j2yaml(jedi_fix_list_path, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
         # stage backgrounds
         logger.info("Staging ensemble backgrounds")
         FileHandler(self.get_ens_bkg_dict(localconf)).sync()
 
-        # generate letkfoi YAML file
-        logger.info(f"Generate JEDI LETKF YAML file: {self.task_config.jedi_yaml}")
-        letkfoi_yaml = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
-        save_as_yaml(letkfoi_yaml, self.task_config.jedi_yaml)
+        # Write out letkfoi YAML file
+        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.jedi_yaml}")
+
         # need output dir for diags and anl
         logger.info("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
