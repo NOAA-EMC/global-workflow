@@ -2413,6 +2413,45 @@ class GFSTasks(Tasks):
 
         return task
 
+    def epsn(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        epsnenvars = self.envars.copy()
+        epsnenvars_dict = {'ENSMEM': '#member#',
+                           'MEMDIR': 'mem#member#'
+                           }
+        for key, value in epsnenvars_dict.items():
+            epsnenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('epsn')
+        task_name = f'{self.cdump}prepsnowobs_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': epsnenvars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/prepsnowobs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
+        metatask_dict = {'task_name': f'{self.cdump}prepsnowobs',
+                         'var_dict': member_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = rocoto.create_task(metatask_dict)
+
+        return task
+
     def ecen(self):
 
         def _get_ecengroups():

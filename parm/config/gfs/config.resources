@@ -18,7 +18,7 @@ if (( $# != 1 )); then
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
-    echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
+    echo "eobs ediag eomg eupd ecen esfc efcs epos earc epsn"
     echo "init_chem mom6ic oceanice_products"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
@@ -83,11 +83,11 @@ case ${step} in
     fi
     ;;
 
-  "prepsnowobs")
-    export wtime_prepsnowobs="00:05:00"
-    export npe_prepsnowobs=1
-    export nth_prepsnowobs=1
-    export npe_node_prepsnowobs=1
+  "prepsnowobs" | "epsn")
+    declare -x "wtime_${step}"="00:05:00"
+    declare -x "npe_${step}"=1
+    declare -x "nth_${step}"=1
+    declare -x "npe_node_${step}"=1
     ;;
 
   "prepatmiodaobs")
