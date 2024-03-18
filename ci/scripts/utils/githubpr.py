@@ -4,7 +4,6 @@ import os
 import re
 
 from github import Github
-from github.Repository import Repository
 from wxflow import which
 
 
@@ -22,7 +21,7 @@ class GitHubPR:
         The host machine.
     """
 
-    def __init__(self, repo_url=None):
+    def __init__(self, repo_url=None, TOKEN=None):
         """
         __init__ Initialize a new GitHubPR instance.
 
@@ -30,13 +29,15 @@ class GitHubPR:
         gets the repository from the 'REPO_URL' environment variable, and
         initializes the host machine.
         """
-        gh_cli = which('gh')
-        gh_cli.add_default_arg(['auth', 'status', '--show-token'])
-        gh_access_token = gh_cli(output=str, error=str).split('\n')[3].split(': ')[1]
-        self._gh = Github(gh_access_token)
-        repo = self.get_repo_url(repo_url)
-        self.pulls = repo.get_pulls(state='open', sort='updated', direction='desc')
-        self.repo = repo
+        if TOKEN is not None:
+            self._gh = Github(TOKEN)
+        else:
+            gh_cli = which('gh')
+            gh_cli.add_default_arg(['auth', 'status', '--show-token'])
+            gh_access_token = gh_cli(output=str, error=str).split('\n')[3].split(': ')[1]
+            self._gh = Github(gh_access_token)
+        self.repo = self.get_repo_url(repo_url)
+        self.pulls = self.repo.get_pulls(state='open', sort='updated', direction='desc')
 
     def get_repo_url(self, repo_url=None):
         """
