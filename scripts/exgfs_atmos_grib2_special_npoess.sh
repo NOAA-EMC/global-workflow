@@ -154,7 +154,7 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    ###############################
    export pgm="postcheck"
    grib_file="${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.goesmasterf${fhr3}.grb2"
-   if ! wait_for_file "${grib_file}" "${SLEEP_TIME}" "${SLEEP_LOOP_MAX}"; then
+   if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
       echo "FATAL ERROR: GOES master grib file ${grib_file} not available after max sleep time"
       export err=9
       err_chk || exit "${err}"

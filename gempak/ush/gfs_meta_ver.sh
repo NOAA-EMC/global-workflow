@@ -29,8 +29,8 @@ fcsthr="f00"
 MDL2="GFSHPC"
 #GENERATING THE METAFILES.
 # seq won't give us any splitting problems, ignore warnings
-# shellcheck disable=SC2207
-IFS=$'\n' lookbacks=($(seq 6 6 198))
+# shellcheck disable=SC2207,SC2312
+IFS=$'\n' lookbacks=($(seq 6 6 180) $(seq 192 12 216))
 for lookback in "${lookbacks[@]}"; do
     init_time="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${lookback} hours")"
     init_PDY=${init_time:0:8}

@@ -26,7 +26,7 @@ if [[ "${MODEL}" == GDAS ]] || [[ "${MODEL}" == GFS ]]; then
     sleep_interval=20
     max_tries=180
     for fhr in ${fcsthrs}; do
-        fhr3=$(printf %03i "${fhr}")
+        fhr3=$(printf %03d "${fhr}")
         export GRIBFILE=${COM_ATMOS_GEMPAK_1p00}/${RUN}_1p00_${PDY}${cyc}f${fhr3}
         if ! wait_for_file "${GRIBFILE}" "${sleep_interval}" "${max_tries}" ; then
             echo "FATAL ERROR: ${GRIBFILE} not found after ${max_tries} iterations"

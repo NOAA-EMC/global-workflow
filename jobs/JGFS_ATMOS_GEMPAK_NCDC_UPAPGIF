@@ -39,7 +39,7 @@ for grid in gif upper_air; do
 done
 
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_WMO
-if [[ ! -d "${COM_ATMOS_WMO}" ]]; then mkdir m 775 -p "${COM_ATMOS_WMO}"; fi
+if [[ ! -d "${COM_ATMOS_WMO}" ]]; then mkdir -m 775 -p "${COM_ATMOS_WMO}"; fi
 
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}

@@ -37,7 +37,7 @@ grid1="F-GFSHPC | ${PDY:2}/${cyc}00"
 # DEFINE YESTERDAY
 PDYm1="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 24 hours")"
 
-for symlink in ecwmf_m1 ukmet; do
+for symlink in "ecmwf.${PDYm1}" "ukmet.${PDY}"; do
     if [[ -L "${symlink}" ]]; then rm "${symlink}"; fi
 done
 ln -sf "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "ecmwf.${PDYm1}"
