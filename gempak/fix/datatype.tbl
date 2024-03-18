@@ -156,7 +156,7 @@ F-NAMP20     $COMIN                    nam20_YYYYMMDDHHfFFF      CAT_GRD  SCAT_F
 F-NAMP44     $COMIN                    nam44_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
 F-THREATS    $COMIN                    ${NEST}_YYYYMMDDHHfFFF    CAT_GRD  SCAT_FCT   -1     -1     -1
 F-NAMHPC     $HPCNAM                   nam_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
-GDAS         $MODEL/gdas               gdas_1p00_YYMMDDHH        CAT_GRD  SCAT_FCT   -1     -1     -1
+GDAS         $MODEL/gdas               gdas_1p00_YYYYMMDDHH      CAT_GRD  SCAT_FCT   -1     -1     -1
 F-GDAS       $COMIN                    gdas_1p00_YYYYMMDDHHfFFF  CAT_GRD  SCAT_FCT   -1     -1     -1
 F-GFS        $COMIN                    gfs_1p00_YYYYMMDDHHfFFF   CAT_GRD  SCAT_FCT   -1     -1     -1
 F-HWRF       $COMIN                    hwrfp_YYYYMMDDHHfFFF_*    CAT_GRD  SCAT_FCT   -1     -1     -1
