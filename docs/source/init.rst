@@ -248,7 +248,7 @@ Automated Generation
 Cycled mode
 -----------
 
-Not yet supported.
+Not yet supported. See the UFS_UTILS documentation on the gdas_init utility to generate your own ICs for cycled or forecast-only mode: https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init
 
 .. _forecastonly-coupled:
 
@@ -321,14 +321,14 @@ Manual Generation
 
 The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
 
-The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users should see the documentation to generation initial conditions in the UFS_UTILS repository. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
+The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users should see the `documentation to generation initial conditions in the UFS_UTILS repository <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init>`_. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
 
 * pre-GFSv14
 * GFSv14
 * GFSv15
 * GFSv16
 
-See instructions in UFS_UTILS to clone, build and generate initial conditions.
+See instructions in UFS_UTILS to clone, build and generate initial conditions: https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init
 
 .. _warmstarts-prod:
 
