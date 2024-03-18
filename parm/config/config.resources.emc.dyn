@@ -176,6 +176,14 @@ elif [ $step = "analdiag" ]; then
     if [[ "$npe_node_analdiag" -gt "$npe_node_max" ]]; then export npe_node_analdiag=$npe_node_max ; fi
     export memory_analdiag="48GB"
 
+elif [ $step = "wdqms" ]; then
+
+    export wtime_wdqms="00:20:00"
+    export npe_wdqms=1
+    export nth_wdqms=1
+    export npe_node_wdqms=1
+    export memory_wdqms="48GB"
+
 elif [ $step = "gldas" ]; then
 
     export wtime_gldas="00:10:00"
