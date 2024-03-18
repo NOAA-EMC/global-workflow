@@ -21,7 +21,7 @@ cp "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
 
 echo "0000${PDY}${cyc}" > dates
 export FORT55="title.output"
-"${HOMEgfs}/exec/webtitle" < dates
+"${HOMEgfs}/exec/webtitle.x" < dates
 
 TITLE="$(cat title.output)"
 echo "TITLE = ${TITLE}"
