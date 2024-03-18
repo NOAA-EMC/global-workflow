@@ -705,7 +705,10 @@ class GFSTasks(Tasks):
     def ocnanalchkpt(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalecen'}
+        if self.app_config.do_ocnanalecen:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalecen'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_mergensst:
             data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.sfcanl.nc'

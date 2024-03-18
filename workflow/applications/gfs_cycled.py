@@ -30,6 +30,10 @@ class GFSCycledAppConfig(AppConfig):
             elif eupd_cdump in ['gfs', 'gdas']:
                 self.eupd_cdumps = [eupd_cdump]
 
+        self.do_ocnanalecen = False
+        if self.nens > 3:
+            self.do_ocnanalecen = True
+
     def _get_app_configs(self):
         """
         Returns the config_files that are involved in the cycled app
@@ -43,8 +47,10 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['anal', 'analdiag']
 
         if self.do_jediocnvar:
-            configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
-                        'ocnanalrun', 'ocnanalecen', 'ocnanalchkpt', 'ocnanalpost']
+            configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat', 'ocnanalrun']
+            if self.do_ocnanalecen:
+                configs += ['ocnanalecen']
+            configs += ['ocnanalchkpt', 'ocnanalpost']
             if self.do_vrfy_oceanda:
                 configs += ['ocnanalvrfy']
 
@@ -137,10 +143,10 @@ class GFSCycledAppConfig(AppConfig):
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
         if self.do_jediocnvar:
-            gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep',
-                                                  'ocnanalbmat', 'ocnanalrun',
-                                                  'ocnanalecen', 'ocnanalchkpt',
-                                                  'ocnanalpost']
+            gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat', 'ocnanalrun']
+            if self.do_ocnanalecen:
+                gdas_gfs_common_tasks_before_fcst += ['ocnanalecen']
+            gdas_gfs_common_tasks_before_fcst += ['ocnanalchkpt', 'ocnanalpost']
             if self.do_vrfy_oceanda:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 
