@@ -10,7 +10,7 @@ if (( $# != 1 )); then
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init"
     echo "prep prepsnowobs prepatmiodaobs"
-    echo "atmanlinit atmanlrun atmanlfinal"
+    echo "atmanlinit atmanlrun atmanlinc atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "snowanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
@@ -220,6 +220,20 @@ case ${step} in
     export nth_atmanlrun_gfs=${nth_atmanlrun}
     export npe_node_atmanlrun=$(( npe_node_max / nth_atmanlrun ))
     export memory_atmanlrun="96GB"
+    export is_exclusive=True
+    ;;
+
+  "atmanlinc")
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
+
+    export wtime_atmanlinc="00:30:00"
+    export npe_atmanlinc=$(( layout_x * layout_y * 1 ))
+    export npe_atmanlinc_gfs=$(( layout_x * layout_y * 1 ))
+    export nth_atmanlinc=1
+    export nth_atmanlinc_gfs=${nth_atmanlinc}
+    export npe_node_atmanlinc=$(( npe_node_max / nth_atmanlinc ))
+    export memory_atmanlinc="96GB"
     export is_exclusive=True
     ;;
 

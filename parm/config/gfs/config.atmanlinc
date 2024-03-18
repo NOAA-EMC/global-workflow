@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.atmanlinc ##########
+# Atm Var Analysis specific
+
+echo "BEGIN: config.atmanlinc"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmanlinc
+
+echo "END: config.atmanlinc"

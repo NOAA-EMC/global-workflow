@@ -41,6 +41,9 @@ class Analysis(Task):
         # link jedi executable to run directory
         self.link_jediexe()
 
+        # link jediinc2fv3 app to run directory
+        self.link_jediinc2fv3exe()
+
     @logit(logger)
     def get_obs_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
@@ -192,6 +195,32 @@ class Analysis(Task):
         None
         """
         exe_src = self.task_config.JEDIEXE
+
+        # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
+        logger.info(f"Link executable {exe_src} to DATA/")
+        logger.warn("Linking is not permitted per EE2.")
+        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        return
+
+    @logit(logger)
+    def link_jediinc2fv3exe(self) -> None:
+        """Compile a dictionary of background error files to copy
+
+        This method links the jediinc2fv3 OOPS app to the run directory
+
+        Parameters
+        ----------
+        Task: GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        exe_src = self.task_config.JEDIINC2FV3EXE
 
         # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
         logger.info(f"Link executable {exe_src} to DATA/")
