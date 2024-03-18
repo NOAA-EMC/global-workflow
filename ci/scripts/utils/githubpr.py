@@ -26,7 +26,7 @@ class GitHubPR:
         __init__ Initialize a new GitHubPR instance.
 
         This method authenticates with the GitHub API using the 'gh' CLI tool
-        when the TOKEN is not provided. The epository comes from from the 'REPO_URL'
+        when the TOKEN is not provided. The repository comes from from the 'REPO_URL'
         environment variable when repo_url is not provided.
         """
         if TOKEN is not None:
