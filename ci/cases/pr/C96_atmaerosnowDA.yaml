@@ -4,7 +4,7 @@ experiment:
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: ATM
+  app: ATMA
   resdetatmos: 96
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
@@ -14,7 +14,7 @@ arguments:
   nens: 0
   gfs_cyc: 1
   start: cold
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/atmsnowDA_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
 
 skip_ci_on_hosts:
   - orion
