@@ -701,7 +701,6 @@ class GFSTasks(Tasks):
 
         return task
 
-
     def ocnanalchkpt(self):
 
         deps = []
