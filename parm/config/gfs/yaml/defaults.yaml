@@ -9,6 +9,7 @@ base:
   FHMAX_GFS: 120
   DO_VRFY_OCEANDA: "NO"
   GSI_SOILANAL: "NO"
+  EUPD_CYC: "gdas"
 
 atmanl:
   LAYOUT_X_ATMANL: 8
