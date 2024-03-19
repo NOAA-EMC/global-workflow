@@ -9,6 +9,9 @@ export OBS_LIST="${PARMgfs}/gdas/atm/obs/lists/lgetkf_prototype.yaml.j2"
 export JEDIYAML="${PARMgfs}/gdas/atm/lgetkf/lgetkf.yaml.j2"
 export INTERP_METHOD='barycentric'
 
+export CRTM_FIX_YAML="${PARMgfs}/gdas/atm_crtm_coeff.yaml.j2"
+export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
+
 export layout_x_atmensanl=@LAYOUT_X_ATMENSANL@
 export layout_y_atmensanl=@LAYOUT_Y_ATMENSANL@
 

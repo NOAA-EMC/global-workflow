@@ -50,6 +50,13 @@ export OZINFO=${FIXgfs}/gsi/global_ozinfo.txt
 export SATINFO=${FIXgfs}/gsi/global_satinfo.txt
 export OBERROR=${FIXgfs}/gsi/prepobs_errtable.global
 
+if [[ ${GSI_SOILANAL} = "YES" ]]; then
+    export hofx_2m_sfcfile=".true."
+    export reducedgrid=".false." # not possible for sfc analysis, Jeff Whitaker says it's not useful anyway
+    export paranc=".false." # temporary until sfc io coded for parance (PR being prepared by T. Gichamo)
+    export CONVINFO=${FIXgfs}/gsi/global_convinfo_2mObs.txt
+    export ANAVINFO=${FIXgfs}/gsi/global_anavinfo_soilanal.l127.txt
+fi
 
 # Use experimental dumps in EMC GFS v16 parallels
 if [[ ${RUN_ENVIR} == "emc" ]]; then

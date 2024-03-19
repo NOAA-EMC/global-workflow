@@ -251,8 +251,15 @@ EOF
 
   ${NLN} "${FIXgfs}/am/global_co2historicaldata_glob.txt" "${DATA}/co2historicaldata_glob.txt"
   ${NLN} "${FIXgfs}/am/co2monthlycyc.txt"                 "${DATA}/co2monthlycyc.txt"
-  if [[ ${ICO2} -gt 0 ]]; then
-    for file in $(ls "${FIXgfs}/am/fix_co2_proj/global_co2historicaldata"*) ; do
+  # Set historical CO2 values based on whether this is a reforecast run or not
+  # Ref. issue 2403
+  local co2dir
+  co2dir="fix_co2_proj"
+  if [[ ${reforecast:-"NO"} == "YES" ]]; then
+    co2dir="co2dat_4a"
+  fi
+  if (( ICO2 > 0 )); then
+    for file in $(ls "${FIXgfs}/am/${co2dir}/global_co2historicaldata"*) ; do
       ${NLN} "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
@@ -695,6 +702,13 @@ MOM6_postdet() {
       ${NLN} "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
   fi
 
+  # GEFS perturbations
+  # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
+  #     to ensure it does not interfere with the GFS
+  if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+     ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc"
+  fi
+
   # Copy MOM6 fixed files
   ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
 
@@ -709,13 +723,11 @@ MOM6_postdet() {
 
   # If using stochatic parameterizations, create a seed that does not exceed the
   # largest signed integer
-  if [[ "${DO_OCN_SPPT}" = "YES" ]] || [[ "${DO_OCN_PERT_EPBL}" = "YES" ]]; then
-    if [[ ${SET_STP_SEED:-"YES"} = "YES" ]]; then
-      ISEED_OCNSPPT=$(( (current_cycle*1000 + MEMBER*10 + 6) % 2147483647 ))
-      ISEED_EPBL=$(( (current_cycle*1000 + MEMBER*10 + 7) % 2147483647 ))
-    else
-      ISEED=${ISEED:-0}
-    fi
+  if [[ ${DO_OCN_SPPT} = "YES" ]]; then
+    ISEED_OCNSPPT=$((current_cycle*10000 + ${MEMBER#0}*100 + 8)),$((current_cycle*10000 + ${MEMBER#0}*100 + 9)),$((current_cycle*10000 + ${MEMBER#0}*100 + 10)),$((current_cycle*10000 + ${MEMBER#0}*100 + 11)),$((current_cycle*10000 + ${MEMBER#0}*100 + 12))
+  fi
+  if [[ ${DO_OCN_PERT_EPBL} = "YES" ]]; then
+    ISEED_EPBL=$((current_cycle*10000 + ${MEMBER#0}*100 + 13)),$((current_cycle*10000 + ${MEMBER#0}*100 + 14)),$((current_cycle*10000 + ${MEMBER#0}*100 + 15)),$((current_cycle*10000 + ${MEMBER#0}*100 + 16)),$((current_cycle*10000 + ${MEMBER#0}*100 + 17))
   fi
 
   # Link output files
@@ -931,7 +943,7 @@ GOCART_rc() {
 GOCART_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
 
-  for fhr in ${FV3_OUTPUT_FH}; do
+  for fhr in ${GOCART_OUTPUT_FH}; do
     local vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
 
     # Temporarily delete existing files due to noclobber in GOCART
@@ -952,7 +964,7 @@ GOCART_out() {
   # TO DO: this should be linked but there were issues where gocart was crashing if it was linked
   local fhr
   local vdate
-  for fhr in ${FV3_OUTPUT_FH}; do
+  for fhr in ${GOCART_OUTPUT_FH}; do
     if (( fhr == 0 )); then continue; fi
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
     ${NCP} "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \

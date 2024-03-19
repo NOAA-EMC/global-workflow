@@ -12,13 +12,19 @@ echo "BEGIN: config.esfc"
 # Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 
 # center of analysis window.  
 
-if [ $DOIAU_ENKF = "YES" ]; then
+if [[ ${DOIAU_ENKF} = "YES" ]]; then
    export DOSFCANL_ENKF="NO"
 fi
 
 # Turn off NST in JEDIATMENS
 if [[ "${DO_JEDIATMENS}" == "YES" ]]; then
    export DONST="NO"
+fi
+
+# set up soil analysis
+if [[ ${GSI_SOILANAL} = "YES" ]]; then
+    export DO_LNDINC=".true."
+    export LND_SOI_FILE="lnd_incr"
 fi
 
 echo "END: config.esfc"
