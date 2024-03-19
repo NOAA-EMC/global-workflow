@@ -212,8 +212,9 @@ EOF
         ukmet_PDY=${ukmet_date:0:8}
         ukmet_cyc=${ukmet_date:8:2}
 
-        ln -sf "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" ukmet
-        export HPCUKMET=ukmet
+        if [[ -L "ukmet.${ukmet_PDY}" ]]; then rm "ukmet.${ukmet_PDY}"; fi
+        ln -sf "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "ukmet.${ukmet_PDY}"
+        export HPCUKMET="ukmet.${ukmet_PDY}"
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
 
         for fhr in 00 12 24 84 108; do
