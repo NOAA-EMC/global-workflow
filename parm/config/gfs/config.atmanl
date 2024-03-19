@@ -19,6 +19,9 @@ else
     export BERROR_YAML="${PARMgfs}/gdas/atm/berror/staticb_${STATICB_TYPE}.yaml.j2"
 fi
 
+export CRTM_FIX_YAML="${PARMgfs}/gdas/atm_crtm_coeff.yaml.j2"
+export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
+
 export layout_x_atmanl=@LAYOUT_X_ATMANL@
 export layout_y_atmanl=@LAYOUT_Y_ATMANL@
 
