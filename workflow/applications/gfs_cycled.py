@@ -31,7 +31,7 @@ class GFSCycledAppConfig(AppConfig):
                 self.eupd_cdumps = [eupd_cdump]
 
         self.do_ocnanalecen = False
-        if self.nens > 3:
+        if self.nens > 0:
             self.do_ocnanalecen = True
 
     def _get_app_configs(self):
