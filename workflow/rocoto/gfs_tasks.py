@@ -704,7 +704,7 @@ class GFSTasks(Tasks):
     def ocnanalchkpt(self):
 
         deps = []
-        if self.app_config.do_ocnanalecen:
+        if self.app_config.do_hybvar:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalecen'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
