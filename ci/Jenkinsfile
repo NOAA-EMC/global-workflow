@@ -160,7 +160,7 @@ pipeline {
                                                 def lines = fileContent.readLines()
                                                 for (line in lines) {
                                                     echo "archiving: ${line}"
-                                                    sh(script: "${HOMEgfs}/ci/sripts/utils/publish_error_logs.py PR_${env.CHANGE_ID} ${HOME}/${line}")
+                                                    sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py PR_${env.CHANGE_ID} ${HOME}/${line}")
                                                     archiveArtifacts artifacts: "${line}", fingerprint: true
                                                 }
                                                 try {
