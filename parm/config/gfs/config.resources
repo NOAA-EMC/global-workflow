@@ -228,8 +228,8 @@ case ${step} in
     export layout_y=${layout_y_atmanl}
 
     export wtime_atmanlinc="00:30:00"
-    export npe_atmanlinc=$(( layout_x * layout_y * 1 ))
-    export npe_atmanlinc_gfs=$(( layout_x * layout_y * 1 ))
+    export npe_atmanlinc=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlinc_gfs=$(( layout_x * layout_y * 6 ))
     export nth_atmanlinc=1
     export nth_atmanlinc_gfs=${nth_atmanlinc}
     export npe_node_atmanlinc=$(( npe_node_max / nth_atmanlinc ))
