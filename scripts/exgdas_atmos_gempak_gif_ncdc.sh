@@ -32,11 +32,8 @@ if [[ ${MODEL} == GDAS ]]; then
             exit "${err}"
         fi
 
-        if (( cyc%12 == 0 )); then
-            "${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh"
-        fi
+        "${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh"
     done
 fi
-
 
 exit

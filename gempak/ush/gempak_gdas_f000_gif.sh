@@ -7,6 +7,8 @@
 #
 #########################################################################
 
+source "${HOMEgfs}/ush/preamble.sh"
+
 LATVAL="1/1/1/1/5;5"
 LATSOUTH="1/1/1/1;4/5;5"
 pixels="1728;1472"
@@ -53,7 +55,7 @@ mslpthksfcdev="gdas_sfc_mslp_thk_nh_anl_${cyc}.gif"
 # Set grid date and input file name
 
 gdattim="${PDY:2:6}/${cyc}00F000"
-gdfile=gem_grids${fhr}.gem
+gdfile=gem_grids${fhr3}.gem
 
 
 #  Execute the GEMPAK program

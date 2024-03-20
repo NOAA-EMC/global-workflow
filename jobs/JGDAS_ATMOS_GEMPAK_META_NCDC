@@ -67,7 +67,9 @@ fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh"
+if (( cyc%12 == 0 )); then
+  "${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh"
+fi
 export err=$?; err_chk
 ########################################################
 
