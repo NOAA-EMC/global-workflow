@@ -68,8 +68,8 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if args.repo:
-        file_path_in_repo = f"{args.repo[0]}/" + basename
-        file_url = f"{emcbot_ci_url}/blob/error_logs/ci/error_logs/{args.repo[0]}"
+        file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + basename
+        file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/ci/error_logs/{args.repo[0]}"
         emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
         print(file_url)
 
