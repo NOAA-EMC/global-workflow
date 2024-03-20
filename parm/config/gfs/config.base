@@ -142,6 +142,7 @@ export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 # APP settings
 export APP=@APP@
 
+shopt -s extglob
 # Adjust APP based on RUN
 case "${RUN}" in
     gfs)   # Turn off aerosols
@@ -153,6 +154,7 @@ case "${RUN}" in
     *)     # Keep app unchanged
         ;;
 esac
+shopt -u extglob
 
 # Defaults:
 export DO_ATM="YES"
