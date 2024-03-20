@@ -155,7 +155,7 @@ class AtmEnsAnalysis(Analysis):
         try:
             logger.debug(f"Executing {exec_cmd}")
             logger.debug(f"SKIP executing {exec_cmd} at present - need observer yaml")
-            #exec_cmd()
+            # exec_cmd()
         except OSError:
             raise OSError(f"Failed to execute {exec_cmd}")
         except Exception:
