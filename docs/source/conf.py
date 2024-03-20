@@ -19,7 +19,7 @@ from datetime import datetime
 
 project = 'Global-workflow'
 year = datetime.now().year
-copyright = f"2015-{year} NOAA/NWS/NCEP/EMC, Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan"
+copyright = f"2015-{year} NOAA/NWS/NCEP/EMC"
 author = 'Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan'
 
 # The full version, including alpha/beta/rc tags
