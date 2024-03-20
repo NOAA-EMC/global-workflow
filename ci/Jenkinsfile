@@ -180,6 +180,7 @@ pipeline {
                                     try {
                                        sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
                                     } catch (Exception error_experment) {
+                                        sleep(time: 5, unit: 'MINUTES')
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
                                         ws(HOME) {
                                             if (fileExists('RUNTESTS/error.logs')) {
@@ -189,7 +190,7 @@ pipeline {
                                                 def lines = fileContent.readLines()
                                                 for (line in lines) {
                                                     echo "archiving: ${line}"
-                                                    if (fileExists("${HOME}/${line}")) {
+                                                    if (fileExists('${HOME}/${line}' && readFile('${HOME}/${line}').length() > 0)) {
                                                         try {
                                                             archiveArtifacts artifacts: "${line}", fingerprint: true
                                                             error_logs = error_logs + "${HOME}/${line} "
