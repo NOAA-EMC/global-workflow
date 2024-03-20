@@ -208,13 +208,13 @@ check_builds()
             if [[ ${build_stat} != 0 ]]; then
                echo "build_${build}.sh failed!  Exiting!"
                echo "Check logs/build_${build}.log for details."
-               cat "logs/build_${build}.log" > "$HOMEgfs/sorc/logs/error.logs"
+               echo "logs/build_${build}.log" > "${HOMEgfs}/sorc/logs/error.logs"
                for build in "${!build_jobs[@]}"; do
                   if [[ -n "${build_ids[${build}]+0}" ]]; then
-                     pkill -P "${build_ids[$build]}"
+                     pkill -P "${build_ids[${build}]}"
                   fi
                done
-               return ${build_stat}
+               return "${build_stat}"
             fi
          fi
       fi
@@ -262,7 +262,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
       check_builds
       build_stat=$?
       if [[ ${build_stat} != 0 ]]; then
-         exit ${build_stat}
+         exit "${build_stat}"
       fi
    fi
 
@@ -271,7 +271,7 @@ done
 
 
 # Wait for all jobs to complete and check return statuses
-while [[ ${#build_jobs[@]} -gt 0 ]]; do
+while [[ "${#build_jobs[@]}" -gt 0 ]]; do
 
    # If requested, check if any build has failed and exit if so
    if [[ "${_quick_kill}" == "YES" ]]; then
