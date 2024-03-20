@@ -22,6 +22,8 @@ export BESTDDEV="30."  # Background Error Std. Dev. for LETKFOI
 export APPLY_INCR_EXE="${EXECgfs}/apply_incr.exe"
 export APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/letkfoi/apply_incr_nml.j2"
 
+export JEDI_FIX_YAML="${PARMgfs}/gdas/snow_jedi_fix.yaml.j2"
+
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 

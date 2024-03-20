@@ -6,7 +6,5 @@ base:
   DO_MERGENSST: "NO"
   KEEPDATA: "NO" 
   FHMAX_GFS: 120
-
-stage_ic:
-  STAGE_OCN_PERTURB_FILES: "false"
+  USE_OCN_PERTURB_FILES: "false"
 

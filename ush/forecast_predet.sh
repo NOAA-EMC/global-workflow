@@ -10,30 +10,33 @@
 
 to_seconds() {
   # Function to convert HHMMSS to seconds since 00Z
-  local hhmmss=${1:?}
-  local hh=${hhmmss:0:2}
-  local mm=${hhmmss:2:2}
-  local ss=${hhmmss:4:2}
-  local seconds=$((10#${hh}*3600+10#${mm}*60+10#${ss}))
-  local padded_seconds=$(printf "%05d" "${seconds}")
+  local hhmmss hh mm ss seconds padded_seconds
+  hhmmss=${1:?}
+  hh=${hhmmss:0:2}
+  mm=${hhmmss:2:2}
+  ss=${hhmmss:4:2}
+  seconds=$((10#${hh}*3600+10#${mm}*60+10#${ss}))
+  padded_seconds=$(printf "%05d" "${seconds}")
   echo "${padded_seconds}"
 }
 
 middle_date(){
   # Function to calculate mid-point date in YYYYMMDDHH between two dates also in YYYYMMDDHH
-  local date1=${1:?}
-  local date2=${2:?}
-  local date1s=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
-  local date2s=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
-  local dtsecsby2=$(( $((date2s - date1s)) / 2 ))
-  local mid_date=$(date --utc -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
+  local date1 date2 date1s date2s dtsecsby2 mid_date
+  date1=${1:?}
+  date2=${2:?}
+  date1s=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
+  date2s=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
+  dtsecsby2=$(( $((date2s - date1s)) / 2 ))
+  mid_date=$(date --utc -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
   echo "${mid_date:0:10}"
 }
 
 nhour(){
   # Function to calculate hours between two dates (This replicates prod-util NHOUR)
-  local date1=${1:?}
-  local date2=${2:?}
+  local date1 date2 seconds1 seconds2 hours
+  date1=${1:?}
+  date2=${2:?}
   # Convert dates to UNIX timestamps
   seconds1=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
   seconds2=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
@@ -41,21 +44,17 @@ nhour(){
   echo "${hours}"
 }
 
+# shellcheck disable=SC2034
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through model components"
-  # Ignore "not used" warning
-  # shellcheck disable=SC2034
   pwd=$(pwd)
   CDUMP=${CDUMP:-gdas}
-  CASE=${CASE:-C96}
   CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
 
   # Define significant cycles
   current_cycle="${PDY}${cyc}"
   previous_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
-  # ignore errors that variable isn't used
-  # shellcheck disable=SC2034
   next_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
@@ -89,6 +88,7 @@ common_predet(){
   cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
 
+# shellcheck disable=SC2034
 FV3_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
 
@@ -105,8 +105,6 @@ FV3_predet(){
   fi
 
   # Convert output settings into an explicit list for FV3
-  # Ignore "not used" warning
-  # shellcheck disable=SC2034
   FV3_OUTPUT_FH=""
   local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
@@ -116,8 +114,6 @@ FV3_predet(){
   FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
   # Other options
-  # ignore errors that variable isn't used
-  # shellcheck disable=SC2034
   MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
@@ -169,7 +165,6 @@ FV3_predet(){
   nstf_name=${nstf_name:-"${NST_MODEL},${NST_SPINUP},${NST_RESV},${ZSEA1},${ZSEA2}"}
   nst_anl=${nst_anl:-".false."}
 
-
   # blocking factor used for threading and general physics performance
   #nyblocks=$(expr \( $npy - 1 \) \/ $layout_y )
   #nxblocks=$(expr \( $npx - 1 \) \/ $layout_x \/ 32)
@@ -215,6 +210,7 @@ WW3_predet(){
   ${NLN} "${COM_WAVE_RESTART}" "restart_wave"
 }
 
+# shellcheck disable=SC2034
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
 
@@ -227,12 +223,11 @@ CICE_predet(){
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
-  # Ignore "not used" warning
-  # shellcheck disable=SC2034
   CICE_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_OCNICE}" "${FHMAX}")
 
 }
 
+# shellcheck disable=SC2034
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
 
@@ -245,8 +240,6 @@ MOM6_predet(){
 
   # MOM6 does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for MOM6
-  # Ignore "not used" warning
-  # shellcheck disable=SC2034
   MOM6_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_OCNICE}" "${FHMAX}")
 
 }
@@ -260,9 +253,12 @@ CMEPS_predet(){
 
 }
 
+# shellcheck disable=SC2034
 GOCART_predet(){
   echo "SUB ${FUNCNAME[0]}: GOCART before run type determination"
 
   if [[ ! -d "${COM_CHEM_HISTORY}" ]]; then mkdir -p "${COM_CHEM_HISTORY}"; fi
 
+  GOCART_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "6" "${FHMAX}")
+  # TODO: AERO_HISTORY.rc has hardwired output frequency to 6 hours
 }

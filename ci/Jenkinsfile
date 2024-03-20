@@ -119,7 +119,7 @@ pipeline {
                     axis {
                         name 'Case'
                         // TODO add dynamic list of cases from env vars (needs addtional plugins)
-                        values 'C48C48_ufs_hybatmDA', 'C48_ATM', 'C48_S2SW', 'C48_S2SWA_gefs', 'C48mx500_3DVarAOWCDA', 'C96C48_hybatmDA', 'C96_atm3DVar', 'C96_atmsnowDA'
+                        values 'C48C48_ufs_hybatmDA', 'C48_ATM', 'C48_S2SW', 'C48_S2SWA_gefs', 'C48mx500_3DVarAOWCDA', 'C96C48_hybatmDA', 'C96_atm3DVar', 'C96_atmaerosnowDA'
                     }
                 }
                 stages {
@@ -155,12 +155,18 @@ pipeline {
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
                                         ws(HOME) {
                                             if (fileExists('RUNTESTS/error.logs')) {
+                                                def error_logs = sh(script: "cat RUNTESTS/error.logs", returnStdout: true).trim()
+                                                try {
+                                                    pullRequest.comment("Experiment ${Case} failed on ${Machine}\n\nError logs:\n\n${error_logs}")
+                                                } catch (Exception error) {
+                                                    echo "Failed to comment on PR: ${error.getMessage()}"
+                                                }
                                                 def fileContent = readFile 'RUNTESTS/error.logs'
                                                 def lines = fileContent.readLines()
                                                 for (line in lines) {
                                                     echo "archiving: ${line}"
                                                     archiveArtifacts artifacts: "${line}", fingerprint: true
-                                                }   
+                                                }
                                             }
                                         }
                                         error("Failed to run experiments ${Case} on ${Machine}")
