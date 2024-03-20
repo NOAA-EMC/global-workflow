@@ -60,7 +60,27 @@ export SPPT_TAU=21600.
 export SPPT_LSCALE=500000.
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
+# OCN options
+export DO_OCN_SPPT="YES"
+export OCNSPPT="0.8,0.4,0.2,0.08,0.04"
+export OCNSPPT_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
+export OCNSPPT_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
+export DO_OCN_PERT_EPBL="YES"
+export EPBL="0.8,0.4,0.2,0.08,0.04"
+export EPBL_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
+export EPBL_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
 
+if [[ "${USE_OCN_PERTURB_FILES:-false}" == "true" ]]; then
+    export ODA_INCUPD="True"
+    export ODA_TEMPINC_VAR='t_pert'
+    export ODA_SALTINC_VAR='s_pert'
+    export ODA_THK_VAR='h_anl'
+    export ODA_UINC_VAR='u_pert'
+    export ODA_VINC_VAR='v_pert'
+    export ODA_INCUPD_NHOURS=0.0
+else
+    export ODA_INCUPD="False"
+fi
 export restart_interval="${restart_interval_gfs}"
 
 echo "END: config.efcs"
