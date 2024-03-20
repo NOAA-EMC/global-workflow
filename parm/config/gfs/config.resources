@@ -11,7 +11,7 @@ if (( $# != 1 )); then
     echo "stage_ic aerosol_init"
     echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
-    echo "atmensanlinit atmensanlrun atmensanlfinal"
+    echo "atmensanlinit atmensanlobs atmensanlrun atmensanlfinal"
     echo "snowanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
@@ -864,6 +864,20 @@ case ${step} in
     export nth_atmensanlinit=1
     export npe_node_atmensanlinit=$(( npe_node_max / nth_atmensanlinit ))
     export memory_atmensanlinit="3072M"
+    ;;
+
+  "atmensanlobs")
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
+
+    export wtime_atmensanlobs="00:30:00"
+    export npe_atmensanlobs=$(( layout_x * layout_y * 6 ))
+    export npe_atmensanlobs_gfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmensanlobs=1
+    export nth_atmensanlobs_gfs=${nth_atmensanlobs}
+    export npe_node_atmensanlobs=$(( npe_node_max / nth_atmensanlobs ))
+    export memory_atmensanlobs="96GB"
+    export is_exclusive=True
     ;;
 
   "atmensanlrun")

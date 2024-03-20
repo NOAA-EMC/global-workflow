@@ -129,6 +129,41 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
+    def observer(self: Analysis) -> None:
+        """Execute a global atmens analysis observer
+
+        This method will execute a global atmens analysis observer using JEDI.
+        This includes:
+        - changing to the run directory
+        - running the global atmens analysis executable in observer mode
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        chdir(self.task_config.DATA)
+
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANL)
+        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            logger.debug(f"SKIP executing {exec_cmd} at present - need observer yaml")
+            #exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
+    @logit(logger)
     def execute(self: Analysis) -> None:
         """Execute a global atmens analysis
 

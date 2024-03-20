@@ -147,7 +147,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += ['config.fcst', 'config.efcs']
             elif config in ['atmanlinit', 'atmanlrun']:
                 files += ['config.atmanl', f'config.{config}']
-            elif config in ['atmensanlinit', 'atmensanlrun']:
+            elif config in ['atmensanlinit', 'atmensanlobs', 'atmensanlrun']:
                 files += ['config.atmensanl', f'config.{config}']
             elif 'wave' in config:
                 files += ['config.wave', f'config.{config}']
