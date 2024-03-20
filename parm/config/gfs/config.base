@@ -148,7 +148,7 @@ case "${RUN}" in
         APP="${APP/%A}"
         ;;
     enkf*) # Turn off aerosols and waves
-        APP="${APP/%+[WA]}"
+        APP="${APP/%+([WA])}"
         ;;
     *)     # Keep app unchanged
         ;;
