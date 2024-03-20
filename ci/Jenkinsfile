@@ -150,7 +150,7 @@ pipeline {
                                     pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
                                     try {
                                        sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
-                                    } catch (Exception e) {
+                                    } catch (Exception error_experment) {
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
                                         ws(HOME) {
                                             if (fileExists('RUNTESTS/error.logs')) {
@@ -166,7 +166,7 @@ pipeline {
                                                             error_logs = error_logs + "${HOME}/${line} "
                                                             error_logs_message = error_logs_message + "${HOME}/${line}\n"
                                                         }
-                                                        catch (Exception e) { echo "Failed to archive error log ${line}: ${e.getMessage()}" }
+                                                        catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
                                                     }
                                                 }
                                                 repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
@@ -175,8 +175,8 @@ pipeline {
                                         }
                                         try {
                                             pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\n[Error Logs](${repo_url})\n[Gist](${gist_url})")
-                                        } catch (Exception error) {
-                                            echo "Failed to comment on PR: ${error.getMessage()}"
+                                        } catch (Exception error_comment) {
+                                            echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                         }                                              
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
