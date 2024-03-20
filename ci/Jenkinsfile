@@ -160,8 +160,15 @@ pipeline {
                                                 def lines = fileContent.readLines()
                                                 for (line in lines) {
                                                     echo "archiving: ${line}"
-                                                    sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py PR_${env.CHANGE_ID} ${HOME}/${line}")
-                                                    archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                    if (fileExists("${HOME}/${line}")) {
+                                                        try {
+                                                            sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py --file ${HOME}/${line} --repo PR_${env.CHANGE_ID}")
+                                                            sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py --file ${HOME}/${line} --gist PR_${env.CHANGE_ID}")
+                                                            archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                        } catch (Exception e) {
+                                                            echo "Failed to publish or archive error log ${line}: ${e.getMessage()}"
+                                                        }
+                                                    }
                                                 }
                                                 try {
                                                     pullRequest.comment("Experiment ${Case} failed on ${Machine}\n\n[Error logs](https://github.com/emcbot/global-workflow/tree/error_logs/ci/error_logs/PR_${env.CHANGE_ID}):\n\n${HOME}/${error_logs}")
