@@ -9,16 +9,32 @@ from wxflow import which
 
 class GitHubPR(Github):
     """
-    GitHubPR A class for interacting with GitHub pull requests.
+    GitHubPR is an inherited class from GitHub in pyGitHub for interacting with GitHub pull requests.
 
     Attributes
     ----------
-    gh : Github
-        The Github instance for interacting with the GitHub API.
-    repo : Repository
-        The GitHub repository.
-    host : Host
-        The host machine.
+    repo : github.Repository.Repository
+        The GitHub repository to interact with.
+    pulls : github.PaginatedList.PaginatedList of github.PullRequest.PullRequest
+        The list of open pull requests in the repository, sorted by last updated.
+    user : github.AuthenticatedUser.AuthenticatedUser
+        The authenticated user.
+    InputFileContent : github.InputFileContent.InputFileContent
+        The class used to create file content for gists.
+
+    Methods
+    -------
+    __init__(self, repo_url=None, TOKEN=None)
+        Initialize a new GitHubPR instance.
+    get_repo_url(self, repo_url=None)
+        Set the repository for the GitHubPR instance
+        using an URL directly or from 'REPO_URL' environment variable.
+    get_pr_list(self)
+        Get the numerical list of all pull requests.
+    get_ci_pr_list(self, state='Ready', host=None)
+        Get the numerical list of all pull requests with a specific state from labels.
+        for example if a PR has a label 'CI-Ready-Hera' of the form CI-[state]-[host]
+        its corresponding PR number will be included in the list.
     """
 
     def __init__(self, repo_url=None, TOKEN=None):
