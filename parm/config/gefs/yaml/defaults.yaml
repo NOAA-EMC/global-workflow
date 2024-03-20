@@ -4,4 +4,9 @@ base:
   DO_JEDIOCNVAR: "NO"
   DO_JEDISNOWDA: "NO"
   DO_MERGENSST: "NO"
+  KEEPDATA: "NO" 
   FHMAX_GFS: 120
+
+stage_ic:
+  USE_OCN_PERTURB_FILES: "false"
+
