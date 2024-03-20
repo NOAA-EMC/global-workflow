@@ -15,6 +15,7 @@ fi
 rCDUMP=${RUN}
 [[ ${RUN} == "gfs" ]] && export rCDUMP="gdas"
 [[ ${RUN} == "enkfgfs" ]] && export rCDUMP="enkfgdas"
+
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
