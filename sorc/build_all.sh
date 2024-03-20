@@ -202,7 +202,7 @@ check_builds()
    for build in "${!build_jobs[@]}"; do
       # Check if the build is complete and if so what the status was
       if [[ -n "${build_ids[${build}]+0}" ]]; then
-         if ! ps -p "${build_ids[$build]}" > /dev/null; then
+         if ! ps -p "${build_ids[${build}]}" > /dev/null; then
             wait "${build_ids[${build}]}"
             build_stat=$?
             if [[ ${build_stat} != 0 ]]; then
@@ -278,7 +278,7 @@ while [[ "${#build_jobs[@]}" -gt 0 ]]; do
       check_builds
       build_stat=$?
       if [[ ${build_stat} != 0 ]]; then
-         exit ${build_stat}
+         exit "${build_stat}"
       fi
    fi
 
