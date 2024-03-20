@@ -17,9 +17,6 @@
 	path = sorc/gsi_enkf.fd
 	url = https://github.com/HenryWinterbottom-NOAA/GSI
 	branch = feature/gwdev_issue_2329
-[submodule "sorc/verif-global.fd"]
-  path = sorc/verif-global.fd
-  url = https://github.com/NOAA-EMC/EMC_verif-global.git
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
   url = https://github.com/NOAA-EMC/GDASApp.git
