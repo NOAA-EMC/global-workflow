@@ -3,7 +3,7 @@
 import sys
 import os
 from githubpr import GitHubPR
-from argparse import ArgumentParser, ArgumentTypeError
+from argparse import ArgumentParser, ArgumentTypeError, FileType
 
 def is_file(path):
     """
@@ -43,8 +43,9 @@ def input_args():
     """
     parser = ArgumentParser(description=description)
 
-    parser.add_argument('--file', help='path to file for uploading to GitHub', required=True, type=is_file)
-    parser.add_argument('--gist', help='create a gist of the file', action='store_true', required=False)
+
+    parser.add_argument('--file', help='path to file for uploading to GitHub', required=True, type=FileType('r'), nargs='+')
+    parser.add_argument('--gist', help='create a gist of the file', nargs=1, metavar='identifier_string', required=False)
     parser.add_argument('--repo', help='create a file in a repo', nargs=1, metavar='path_in_repo', required=False)
     args = parser.parse_args()
     return args
@@ -58,19 +59,23 @@ if __name__ == '__main__':
     full_file_path = os.path.abspath(args.file)
     basename = os.path.basename(full_file_path)
 
-    with open(full_file_path, 'r') as file:
-        file_content = file.read()
-
     if args.gist:
-        print(f"Creating gist of {args.file}")
-        gist = emcbot_gh.user.create_gist(public=False, files={basename: emcbot_gh.InputFileContent(file_content)}, description="error log file from CI run")
+
+        gist_files = {}
+        for file in args.file:
+            with open(file, 'r') as f:
+                file_content = f.read()
+            gist_files[os.path.basename(file)] = emcbot_gh.InputFileContent(file_content)
+
+        gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description="error log file from CI run {args.gist[0]}")
         print(gist.html_url)
         sys.exit(0)
 
     if args.repo:
-        file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + basename
+        for file in args.file:
+            with open(file, 'r') as f:
+                file_content = f.read()
+            file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + os.path.basename(file)
+            emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/ci/error_logs/{args.repo[0]}"
-        emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
         print(file_url)
-
-
