@@ -56,26 +56,20 @@ if __name__ == '__main__':
     emcbot_ci_url = "https://github.com/emcbot/ci-global-workflows.git"
     emcbot_gh = GitHubPR(repo_url=emcbot_ci_url)
 
-    full_file_path = os.path.abspath(args.file)
-    basename = os.path.basename(full_file_path)
-
     if args.gist:
 
         gist_files = {}
         for file in args.file:
-            with open(file, 'r') as f:
-                file_content = f.read()
-            gist_files[os.path.basename(file)] = emcbot_gh.InputFileContent(file_content)
+            file_content = file.read()
+            gist_files[file.name] = emcbot_gh.InputFileContent(file_content)
 
-        gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description="error log file from CI run {args.gist[0]}")
+        gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description=f"error log file from CI run {args.gist[0]}")
         print(gist.html_url)
-        sys.exit(0)
 
     if args.repo:
         for file in args.file:
-            with open(file, 'r') as f:
-                file_content = f.read()
-            file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + os.path.basename(file)
+            file_content = file.read()
+            file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + str(os.path.basename(file.name))
             emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/ci/error_logs/{args.repo[0]}"
         print(file_url)
