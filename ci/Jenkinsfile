@@ -168,31 +168,30 @@ pipeline {
                                                             error_logs_message = error_logs_message + "${HOME}/${line}\n"
                                                         }
                                                         } catch (Exception e) {
-                                                            echo "Failed to publish or archive error log ${line}: ${e.getMessage()}"
+                                                            echo "Failed to archive error log ${line}: ${e.getMessage()}"
                                                         }
-                                                    repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                    gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                    }
                                                 }
-                                                try {
-                                                    pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\n[Error Logs](${repo_url})\n[Gist](${gist_url})")
-                                                } catch (Exception error) {
-                                                    echo "Failed to comment on PR: ${error.getMessage()}"
-                                                }                                              
+                                                repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_error_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                             }
                                         }
+                                        try {
+                                            pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\n[Error Logs](${repo_url})\n[Gist](${gist_url})")
+                                        } catch (Exception error) {
+                                            echo "Failed to comment on PR: ${error.getMessage()}"
+                                        }                                              
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
-                                }
-                            }
+                                        }
+                                        error("Failed to run experiments ${Case} on ${Machine}")
+                           }
                         }
                     }
-
                 }
             }
         }
     }
-
+                    
     post {
         always {
             script {
