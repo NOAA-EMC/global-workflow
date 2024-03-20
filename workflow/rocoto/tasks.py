@@ -48,7 +48,7 @@ class Tasks:
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
         if self.cdump == "enkfgfs":
-            self.nmem=int(self._base['NMEM_ENS_GFS'])
+            self.nmem = int(self._base['NMEM_ENS_GFS'])
         else:
             self.nmem = int(self._base['NMEM_ENS'])
         self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
