@@ -50,7 +50,7 @@ GPREFIX_ENS=${GPREFIX_ENS:-${GPREFIX}}
 if [ $RUN = "enkfgfs" ]; then
 NMEM_ENS=${NMEM_ENS_GFS:-30}
 ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
-mem_offset=$(($ec_offset*$cyc/6))
+mem_offset=$(($ec_offset * $cyc/6))
 else
 NMEM_ENS=${NMEM_ENS:-80}
 mem_offset=0
@@ -139,9 +139,9 @@ if [ $DOIAU = "YES" ]; then
         export TILE_NUM=$n
 
         for imem in $(seq 1 $NMEM_ENS); do
-            smem=$(($imem+$mem_offset))
+            smem=$(($imem + $mem_offset))
             if (($smem > 80)); then
-               smem=$(($smem-80))
+               smem=$(($smem - 80))
             fi
             gmemchar="mem"$(printf %03i $smem)
             cmem=$(printf %03i $imem)
