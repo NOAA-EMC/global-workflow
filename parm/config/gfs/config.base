@@ -304,7 +304,6 @@ export NMEM_ENS_GFS=30
 export NMEM_ENS_GFS_OFFSET=20
 export DO_CALC_INCREMENT_ENKF_GFS="NO"
 
-
 # EnKF output frequency
 if [[ ${DOHYBVAR} = "YES" ]]; then
     export FHMIN_ENKF=3
