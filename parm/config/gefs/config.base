@@ -74,7 +74,7 @@ export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="NO"
+export KEEPDATA="@KEEPDATA@"
 export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
@@ -262,7 +262,7 @@ export MEMDIR="mem${ENSMEM}"
 
 # initialize ocean ensemble members with perturbations
 #   if true, only occurs for members greater than zero
-export OCN_ENS_PERTURB_FILES=false
+export USE_OCN_PERTURB_FILES=@STAGE_OCN_PERTURB_FILES@
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
