@@ -69,6 +69,7 @@ if __name__ == '__main__':
         print(gist.html_url)
 
     if args.repo:
+
         for file in args.file:
             file_content = file.read()
             file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + str(os.path.basename(file.name))
@@ -77,6 +78,7 @@ if __name__ == '__main__':
         print(file_url)
 
     if args.delete_gists:
+
         confirm = input(f"Are you sure you want to delete all gists from {emcbot_gh.repo.full_name} as {emcbot_gh.user.login} ? Type 'yes' to confirm: ")
         if confirm.lower() != 'yes':
             print("Aborted.")
