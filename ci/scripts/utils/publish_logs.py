@@ -4,6 +4,7 @@ import os
 from githubpr import GitHubPR
 from argparse import ArgumentParser, ArgumentTypeError, FileType
 
+
 def is_file(path):
     """
     Check if path is an existing file.
@@ -28,6 +29,7 @@ def is_file(path):
         raise ArgumentTypeError(f"{path} does not exist or is not a file.")
     return path
 
+
 def input_args():
     """
     Parse command line arguments.
@@ -42,15 +44,15 @@ def input_args():
     """
     parser = ArgumentParser(description=description)
 
-
     parser.add_argument('--file', help='path to file for uploading to GitHub', required=False, type=FileType('r'), nargs='+')
     parser.add_argument('--gist', help='create a gist of the file', nargs=1, metavar='identifier_string', required=False)
     parser.add_argument('--repo', help='create a file in a repo', nargs=1, metavar='path_in_repo', required=False)
-    parser.add_argument('--delete_gists', help='deletes all the gits from authenticated user', action='store_true',default=False, required=False)
+    parser.add_argument('--delete_gists', help='deletes all the gits from authenticated user', action='store_true', default=False, required=False)
     args = parser.parse_args()
     if not args.delete_gists and not args.file:
         parser.error("--file is required when --delete_gists is not used")
     return args
+
 
 if __name__ == '__main__':
 
