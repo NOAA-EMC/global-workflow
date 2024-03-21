@@ -22,6 +22,7 @@ string="--fv3 ${CASE}"
 [[ "${DO_AERO}" == "YES" ]] && string="${string} --gocart"
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
+source "${EXPDIR}/config.fcst"
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" efcs
@@ -37,10 +38,6 @@ export FHMAX=${FHMAX_ENKF:-9}
 if [[ "${RUN}" == "enkfgfs" ]]; then
    export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX}}
 fi
-
-# Use serial I/O for ensemble (lustre?)
-export OUTPUT_FILETYPE_ATM="netcdf"
-export OUTPUT_FILETYPE_SFC="netcdf"
 
 # Stochastic physics parameters (only for ensemble forecasts)
 export DO_SKEB="YES"
