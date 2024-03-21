@@ -84,7 +84,7 @@ if [ $RUN = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
    NMEM_ENS=${NMEM_ENS_GFS:-30}
    ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
-   mem_offset=$(($ec_offset * $cyc/6))
+   mem_offset=$((ec_offset * cyc/6))
 else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
    NMEM_ENS=${NMEM_ENS:-80}
@@ -183,9 +183,9 @@ else
 fi
 nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
 for imem in $(seq 1 $NMEM_ENS); do
-   smem=$(($imem + $mem_offset))
-   if (($smem > 80)); then
-      smem=$(($smem - 80))
+   smem=$((imem + mem_offset))
+   if [[ $smem > 80 ]]; then
+      smem=$((smem - 80))
    fi
    gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
