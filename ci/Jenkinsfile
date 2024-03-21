@@ -200,11 +200,14 @@ pipeline {
                                                 }
                                                 repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                                 gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                try {
+                                                    pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\n[Error Logs](${repo_url})\n[Gist](${gist_url})")
+                                                } catch (Exception error_comment) {
+                                                    echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                                }
                                             }
-                                            try {
-                                                pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\n[Error Logs](${repo_url})\n[Gist](${gist_url})")
-                                            } catch (Exception error_comment) {
-                                                echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                            else {
+                                                echo "No error logs found for failed cases in $HOME/RUNTESTS/error.logs"
                                             }
                                             error("Failed to run experiments ${Case} on ${Machine}")
                                         }
