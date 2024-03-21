@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
 import os
 from githubpr import GitHubPR
 from argparse import ArgumentParser, ArgumentTypeError, FileType
@@ -61,7 +60,7 @@ if __name__ == '__main__':
         gist_files = {}
         for file in args.file:
             file_content = file.read()
-            gist_files[file.name] = emcbot_gh.InputFileContent(file_content)
+            gist_files[os.path.basename(file.name)] = emcbot_gh.InputFileContent(file_content)
 
         gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description=f"error log file from CI run {args.gist[0]}")
         print(gist.html_url)
