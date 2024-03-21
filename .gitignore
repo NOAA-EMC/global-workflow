@@ -156,20 +156,8 @@ sorc/ocnicepost.fd
 # Ignore scripts from externals
 #------------------------------
 # jobs symlinks
-jobs/JGFS_ATMOS_WAFS
-jobs/JGFS_ATMOS_WAFS_BLENDING
-jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
-jobs/JGFS_ATMOS_WAFS_GCIP
-jobs/JGFS_ATMOS_WAFS_GRIB2
-jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
-scripts/exgfs_atmos_wafs_blending.sh
-scripts/exgfs_atmos_wafs_blending_0p25.sh
-scripts/exgfs_atmos_wafs_gcip.sh
-scripts/exgfs_atmos_wafs_grib.sh
-scripts/exgfs_atmos_wafs_grib2.sh
-scripts/exgfs_atmos_wafs_grib2_0p25.sh
 # ush symlinks
 ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
@@ -185,11 +173,7 @@ ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/jediinc2fv3.py
-ush/mkwfsgbl.sh
 ush/ufsda
-ush/wafs_blending.sh
-ush/wafs_grib2.regrid.sh
-ush/wafs_intdsk.sh
 ush/finddate.sh
 ush/make_NTC_file.pl
 ush/make_ntc_bull.pl
