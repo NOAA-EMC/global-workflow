@@ -2661,7 +2661,7 @@ class GFSTasks(Tasks):
 
         # Integer division is floor division, but we need ceiling division
         n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
-        groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups)])
+        groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump.replace('enkf', '')
 

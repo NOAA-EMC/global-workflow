@@ -89,6 +89,8 @@ SENDDBN=${SENDDBN:-"NO"}
 RUN_GETGES=${RUN_GETGES:-"NO"}
 GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
+ 
+export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 # Observations
 OPREFIX=${OPREFIX:-""}
@@ -748,6 +750,7 @@ cat > gsiparm.anl << EOF
 /
 &OBS_INPUT
   dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,dmesh(4)=50.0,time_window_max=3.0,
+  hofx_2m_sfcfile=${hofx_2m_sfcfile},
   ${OBSINPUT}
 /
 OBS_INPUT::

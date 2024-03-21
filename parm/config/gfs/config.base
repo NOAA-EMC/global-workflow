@@ -86,6 +86,7 @@ export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
 export KEEPDATA="NO"
+export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
@@ -329,6 +330,8 @@ if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} =
 fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
+
+export GSI_SOILANAL=@GSI_SOILANAL@
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"

@@ -6,9 +6,13 @@ Experiment Setup
 
  ::
 
-   # Note: this will wipe your existing lmod environment
    source workflow/gw_setup.sh
 
+.. warning::
+   Sourcing gw_setup.sh will wipe your existing lmod environment
+
+.. note::
+   Bash shell is required to source gw_setup.sh
 
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Forecast-only experiment
