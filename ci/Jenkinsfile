@@ -97,7 +97,7 @@ pipeline {
                                                     def lines = fileContent.readLines()
                                                     for (line in lines) {
                                                         echo "archiving: ${line}"
-                                                        if (fileExists("sorc/logs/${line}")) {
+                                                        if (fileExists("sorc/logs/${line}" && readFile("sorc/logs/${line}").length() > 0 )){
                                                             try {
                                                                 archiveArtifacts artifacts: "${line}", fingerprint: true
                                                                 error_logs = error_logs + "${HOMEgfs}/sorc/logs/${line} "
@@ -183,20 +183,22 @@ pipeline {
                                         sleep(time: 5, unit: 'MINUTES')
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
                                         ws(HOME) {
-                                            if (fileExists('RUNTESTS/error.logs')) {
+                                            if (fileExists("RUNTESTS/error.logs")) {
                                                 def error_logs = ""
                                                 def error_logs_message = ""
                                                 def fileContent = readFile 'RUNTESTS/error.logs'
                                                 def lines = fileContent.readLines()
                                                 for (line in lines) {
                                                     echo "archiving: ${line}"
-                                                    if (fileExists('${HOME}/${line}' && readFile('${HOME}/${line}').length() > 0)) {
+                                                    if (fileExists("${line}") {
+                                                        if( ReadFile("${line}").length() > 0)) {
                                                         try {
                                                             archiveArtifacts artifacts: "${line}", fingerprint: true
                                                             error_logs = error_logs + "${HOME}/${line} "
                                                             error_logs_message = error_logs_message + "${HOME}/${line}\n"
                                                         }
                                                         catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
+                                                        }
                                                     }
                                                 }
                                                 repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
