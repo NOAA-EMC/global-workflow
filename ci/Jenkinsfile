@@ -82,6 +82,8 @@ pipeline {
                                         }
                                     } else {
                                         checkout scm
+                                        def error_logs = ""
+                                        def error_logs_message = ""
                                         def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
@@ -91,8 +93,6 @@ pipeline {
                                             } catch (Exception error_build) {
                                                 echo "Failed to build system: ${error_build.getMessage()}"
                                                 if ( fileExists("logs/error_log.logs") ) {
-                                                    def error_logs = ""
-                                                    def error_logs_message = ""
                                                     def fileContent = readFile 'logs/error_log.logs'
                                                     def lines = fileContent.readLines()
                                                     for (line in lines) {
