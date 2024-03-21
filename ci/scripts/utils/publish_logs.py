@@ -43,10 +43,13 @@ def input_args():
     parser = ArgumentParser(description=description)
 
 
-    parser.add_argument('--file', help='path to file for uploading to GitHub', required=True, type=FileType('r'), nargs='+')
+    parser.add_argument('--file', help='path to file for uploading to GitHub', required=False, type=FileType('r'), nargs='+')
     parser.add_argument('--gist', help='create a gist of the file', nargs=1, metavar='identifier_string', required=False)
     parser.add_argument('--repo', help='create a file in a repo', nargs=1, metavar='path_in_repo', required=False)
+    parser.add_argument('--delete_gists', help='deletes all the gits from authenticated user', action='store_true',default=False, required=False)
     args = parser.parse_args()
+    if not args.delete_gists and not args.file:
+        parser.error("--file is required when --delete_gists is not used")
     return args
 
 if __name__ == '__main__':
@@ -72,3 +75,13 @@ if __name__ == '__main__':
             emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/ci/error_logs/{args.repo[0]}"
         print(file_url)
+
+    if args.delete_gists:
+        confirm = input(f"Are you sure you want to delete all gists from {emcbot_gh.repo.full_name} as {emcbot_gh.user.login} ? Type 'yes' to confirm: ")
+        if confirm.lower() != 'yes':
+            print("Aborted.")
+            exit(0)
+        for gist in emcbot_gh.user.get_gists():
+            gist.delete()
+            print(f"Gist {gist.id} deleted")
+        print(f"All gists deleted for authenticated user {emcbot_gh.user.login} in the repository {emcbot_gh.repo.full_name}")
