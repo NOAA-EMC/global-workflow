@@ -706,9 +706,13 @@ case ${step} in
       "C48" | "C96")
         export npe_upp=${CASE:1}
       ;;
-      "C192" | "C384" | "C768")
+      "C192" | "C384")
         export npe_upp=120
-        export memory_upp="48GB"
+        export memory_upp="96GB"
+      ;;
+      "C768")
+        export npe_upp=120
+        if [[ ${machine} == "WCOSS2" ]]; then export memory_upp="480GB" ; fi
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
