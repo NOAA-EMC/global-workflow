@@ -191,7 +191,7 @@ pipeline {
                                                 for (line in lines) {
                                                     echo "archiving: ${line}"
                                                     if (fileExists("${line}") {
-                                                        if( ReadFile("${line}").length() > 0)) {
+                                                        if(ReadFile("${line}").length() > 0) {
                                                         try {
                                                             archiveArtifacts artifacts: "${line}", fingerprint: true
                                                             error_logs = error_logs + "${HOME}/${line} "
