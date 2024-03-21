@@ -36,7 +36,7 @@ CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
-  ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+  BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
