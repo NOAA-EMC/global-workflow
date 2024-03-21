@@ -19,6 +19,11 @@ DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${PARMgfs}/ufs/fv3/diag_table_aod}
 DATA_TABLE=${DATA_TABLE:-${PARMgfs}/ufs/MOM6_data_table.IN}
 FIELD_TABLE=${FIELD_TABLE:-${PARMgfs}/ufs/fv3/field_table}
 
+# set cdmbgwd
+if [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
+ export cdmbgwd=${cdmbgwd_gsl}
+fi
+
 # ensure non-prognostic tracers are set
 dnats=${dnats:-0}
 

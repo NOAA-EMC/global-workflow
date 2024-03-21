@@ -22,7 +22,6 @@ string="--fv3 ${CASE}"
 [[ "${DO_AERO}" == "YES" ]] && string="${string} --gocart"
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
-source "${EXPDIR}/config.fcst"
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" efcs
