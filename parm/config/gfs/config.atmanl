@@ -6,8 +6,8 @@
 echo "BEGIN: config.atmanl"
 
 export OBS_LIST="${PARMgfs}/gdas/atm/obs/lists/gdas_prototype_3d.yaml.j2"
-export JEDIYAML="${PARMgfs}/gdas/atm/variational/3dvar_drpcg.yaml.j2"
-export JEDIINC2FV3YAML="${PARMgfs}/gdas/atm/utils/gdas_jediinc2fv3.yaml.j2"
+export VARYAML="${PARMgfs}/gdas/atm/variational/3dvar_drpcg.yaml.j2"
+export FV3INCYAML="${PARMgfs}/gdas/atm/utils/fv3jedi_fv3inc.yaml.j2"
 export STATICB_TYPE="gsibec"
 export INTERP_METHOD='barycentric'
 
@@ -29,7 +29,7 @@ export layout_y_atmanl=@LAYOUT_Y_ATMANL@
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE=${EXECgfs}/fv3jedi_var.x
-export JEDIINC2FV3EXE=${EXECgfs}/gdas_fv3jedi_jediinc2fv3.x
+export VAREXE=${EXECgfs}/fv3jedi_var.x
+export FV3INCEXE=${EXECgfs}/fv3jedi_fv3inc.x
 
 echo "END: config.atmanl"

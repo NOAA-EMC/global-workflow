@@ -10,7 +10,7 @@ if (( $# != 1 )); then
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init"
     echo "prep prepsnowobs prepatmiodaobs"
-    echo "atmanlinit atmanlrun atmanlinc atmanlfinal"
+    echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "snowanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
@@ -209,31 +209,31 @@ case ${step} in
     export memory_atmanlinit="3072M"
     ;;
 
-  "atmanlrun")
+  "atmanlvar")
     export layout_x=${layout_x_atmanl}
     export layout_y=${layout_y_atmanl}
 
-    export wtime_atmanlrun="00:30:00"
-    export npe_atmanlrun=$(( layout_x * layout_y * 6 ))
-    export npe_atmanlrun_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlrun=1
-    export nth_atmanlrun_gfs=${nth_atmanlrun}
-    export npe_node_atmanlrun=$(( npe_node_max / nth_atmanlrun ))
-    export memory_atmanlrun="96GB"
+    export wtime_atmanlvar="00:30:00"
+    export npe_atmanlvar=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlvar_gfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmanlvar=1
+    export nth_atmanlvar_gfs=${nth_atmanlvar}
+    export npe_node_atmanlvar=$(( npe_node_max / nth_atmanlvar ))
+    export memory_atmanlvar="96GB"
     export is_exclusive=True
     ;;
 
-  "atmanlinc")
+  "atmanlfv3inc")
     export layout_x=${layout_x_atmanl}
     export layout_y=${layout_y_atmanl}
 
-    export wtime_atmanlinc="00:30:00"
-    export npe_atmanlinc=$(( layout_x * layout_y * 6 ))
-    export npe_atmanlinc_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlinc=1
-    export nth_atmanlinc_gfs=${nth_atmanlinc}
-    export npe_node_atmanlinc=$(( npe_node_max / nth_atmanlinc ))
-    export memory_atmanlinc="96GB"
+    export wtime_atmanlfv3inc="00:30:00"
+    export npe_atmanlfv3inc=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlfv3inc_gfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmanlfv3inc=1
+    export nth_atmanlfv3inc_gfs=${nth_atmanlfv3inc}
+    export npe_node_atmanlfv3inc=$(( npe_node_max / nth_atmanlfv3inc ))
+    export memory_atmanlfv3inc="96GB"
     export is_exclusive=True
     ;;
 

@@ -31,8 +31,8 @@ class AtmAnalysis(Analysis):
         _res = int(self.config.CASE[1:])
         _res_anl = int(self.config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config.assim_freq}H") / 2)
-        _jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
-        _jediinc2fv3_yaml = os.path.join(self.runtime_config.DATA, 'gdas_fv3jedi_jediinc2fv3.yaml')
+        _var_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
+        _fv3inc_yaml = os.path.join(self.runtime_config.DATA, 'fv3jedi_fv3inc.yaml')
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -49,8 +49,8 @@ class AtmAnalysis(Analysis):
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
-                'jedi_yaml': _jedi_yaml,
-                'jediinc2fv3_yaml': _jediinc2fv3_yaml,
+                'var_yaml': _var_yaml,
+                'fv3inc_yaml': _fv3inc_yaml,
             }
         )
 
@@ -102,15 +102,15 @@ class AtmAnalysis(Analysis):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config))).sync()
 
         # generate variational YAML file
-        logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")
-        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
-        logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
+        logger.debug(f"Generate variational YAML file: {self.task_config.var_yaml}")
+        save_as_yaml(self.task_config.jedi_config, self.task_config.var_yaml)
+        logger.info(f"Wrote variational YAML to: {self.task_config.var_yaml}")
 
-        # generate jediinc2fv3 YAML file
-        logger.debug(f"Generate jediinc2fv3 YAML file: {self.task_config.jediinc2fv3_yaml}")
-        jediinc2fv3_yaml = parse_j2yaml(self.task_config.JEDIINC2FV3YAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
-        save_as_yaml(jediinc2fv3_yaml, self.task_config.jediinc2fv3_yaml)
-        logger.info(f"Wrote jediinc2fv3 YAML to: {self.task_config.jediinc2fv3_yaml}")
+        # generate FV3 increment converter YAML file
+        logger.debug(f"Generate FV3 increment converter YAML file: {self.task_config.fv3inc_yaml}")
+        fv3inc_yaml = parse_j2yaml(self.task_config.FV3INCYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+        save_as_yaml(fv3inc_yaml, self.task_config.fv3inc_yaml)
+        logger.info(f"Wrote FV3 increment converter YAML to: {self.task_config.fv3inc_yaml}")
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -121,14 +121,14 @@ class AtmAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self: Analysis) -> None:
+    def variational(self: Analysis) -> None:
 
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_ATMANL)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
         exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+        exec_cmd.add_default_arg(self.task_config.var_yaml)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
@@ -141,14 +141,14 @@ class AtmAnalysis(Analysis):
         pass
 
     @logit(logger)
-    def increment(self: Analysis) -> None:
+    def fv3_increment(self: Analysis) -> None:
 
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_ATMANLINC)
-        exec_name = os.path.join(self.task_config.DATA, 'gdas_fv3jedi_jediinc2fv3.x')
+        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_fv3inc.x')
         exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.jediinc2fv3_yaml)
+        exec_cmd.add_default_arg(self.task_config.fv3inc_yaml)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
@@ -195,7 +195,7 @@ class AtmAnalysis(Analysis):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
+        logger.info(f"Copying {self.task_config.var_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
         src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         logger.debug(f"Copying {src} to {dest}")

@@ -43,11 +43,11 @@ class Analysis(Task):
         bias_dict = self.get_bias_dict()
         FileHandler(bias_dict).sync()
 
-        # link jedi executable to run directory
-        self.link_jediexe()
+        # link jedi variational executable to run directory
+        self.link_varexe()
 
-        # link jediinc2fv3 app to run directory
-        self.link_jediinc2fv3exe()
+        # link fv3 increment converter executable to run directory
+        self.link_fv3incexe()
 
     @logit(logger)
     def get_jedi_config(self) -> Dict[str, Any]:
@@ -209,7 +209,7 @@ class Analysis(Task):
         return berror_dict
 
     @logit(logger)
-    def link_jediexe(self) -> None:
+    def link_varexe(self) -> None:
         """Compile a dictionary of background error files to copy
 
         This method links a JEDI executable to the run directory
@@ -222,7 +222,7 @@ class Analysis(Task):
         ----------
         None
         """
-        exe_src = self.task_config.JEDIEXE
+        exe_src = self.task_config.VAREXE
 
         # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
         logger.info(f"Link executable {exe_src} to DATA/")
@@ -235,7 +235,7 @@ class Analysis(Task):
         return
 
     @logit(logger)
-    def link_jediinc2fv3exe(self) -> None:
+    def link_fv3incexe(self) -> None:
         """Compile a dictionary of background error files to copy
 
         This method links the jediinc2fv3 OOPS app to the run directory
@@ -248,7 +248,7 @@ class Analysis(Task):
         ----------
         None
         """
-        exe_src = self.task_config.JEDIINC2FV3EXE
+        exe_src = self.task_config.FV3INCEXE
 
         # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
         logger.info(f"Link executable {exe_src} to DATA/")

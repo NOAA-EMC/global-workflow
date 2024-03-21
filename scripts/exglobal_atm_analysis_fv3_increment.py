@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_atm_analysis_increment.py
+# exglobal_atm_analysis_fv3_increment.py
 # This script creates an AtmAnalysis object
 # and runs the increment method
 # which converts the JEDI increment into an FV3 increment
@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     # Instantiate the atm analysis task
     AtmAnl = AtmAnalysis(config)
-    AtmAnl.increment()
+    AtmAnl.fv3_increment()
