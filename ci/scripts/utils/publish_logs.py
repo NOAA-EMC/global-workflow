@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os
+import os, sys
 from githubpr import GitHubPR
 from argparse import ArgumentParser, ArgumentTypeError, FileType
 
@@ -71,6 +71,16 @@ if __name__ == '__main__':
         print(gist.html_url)
 
     if args.repo:
+
+        try:
+            file_path_in_repo = f"ci/error_logs/{args.repo[0]}"
+            print(file_path_in_repo)
+            file_content = emcbot_gh.repo.get_contents(file_path_in_repo)
+            print(f"The file {file_path_in_repo} already exists in the repository {emcbot_gh.repo.full_name}")
+        except emcbot_gh.UnknownObjectException:
+            print(f"The file {file_path_in_repo} does not exist in the repository {emcbot_gh.repo.full_name}")
+
+        sys.exit(0)    
 
         for file in args.file:
             file_content = file.read()
