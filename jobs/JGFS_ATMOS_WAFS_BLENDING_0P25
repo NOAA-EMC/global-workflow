@@ -1,0 +1,153 @@
+#!/bin/sh
+########################################################
+# This job runs the code to blend US's and UK's WAFS products at 0.25 deg 
+########################################################
+
+date
+export PS4='$SECONDS + ' 
+set -x
+
+# keep the working directory or not
+export KEEPDATA=${KEEPDATA:-NO}
+
+############################################
+# Working Directory
+############################################
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+############################################
+# Output for executables
+############################################
+export pgmout=OUTPUT.$$
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=t${cyc}z 
+setpdy.sh
+. ./PDY
+
+export RERUN=${RERUN:-NO}
+
+############################################
+# Set up the NET and RUN
+############################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
+
+############################################
+# Specify HOME Directory
+############################################
+export gfs_ver=${gfs_ver:-v16.3.0}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=$HOMEgfs/exec
+export FIXgfs=$HOMEgfs/fix/wafs
+export PARMgfs=$HOMEgfs/parm/wafs
+export USHgfs=$HOMEgfs/ush
+export SCRIPTSgfs=$HOMEgfs/scripts
+
+################################################
+# Set up the INPUT and OUTPUT directories
+################################################
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
+export PCOM=${PCOM:-$COMOUT/wmo}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+export COMINus=${COMINus:-$COMIN}
+export COMINuk=${COMINuk:-$DCOMROOT/$PDY/wgrbbul/ukmet_wafs}
+
+############################################
+# print current environment
+############################################
+env
+
+##############################################
+# Set up the forecast hours
+##############################################
+export SHOUR=${SHOUR:-06}
+export EHOUR=${EHOUR:-48}
+export FHOUT_GFS=${FHOUT_GFS:-1}
+
+###############################################
+# Specify Timeout Behavior of WAFS blending
+#
+# SLEEP_TIME - Amount of time to wait for
+#              a input file before exiting
+# SLEEP_INT  - Amount of time to wait between
+#              checking for input files
+###############################################
+# export SLEEP_TIME=300   # changed to 60 to avoid hitting wall_clock when miss umket wafs files ... 
+# JY -0129: export SLEEP_TIME=600
+export SLEEP_TIME=900
+export SLEEP_INT=10
+
+####################################
+# Check if this is a restart
+####################################
+if test -f $COMOUT/$RUN.t${cyc}z.control.wafsblending_0p25
+then
+  modelrecvy=`cat < $COMOUT/${RUN}.t${cyc}z.control.wafsblending_0p25`
+  recvy_pdy=`echo $modelrecvy | cut -c1-8`
+  recvy_cyc=`echo $modelrecvy | cut -c9-10`
+  recvy_shour=`echo $modelrecvy | cut -c11-`
+
+  if [ $FHOUT_GFS -eq 3 ] ; then
+      FHINC=03
+  else
+      if [ $recvy_shour -lt 24 ] ; then
+	  FHINC=01
+      else
+	  FHINC=03
+      fi
+  fi
+
+  if test $RERUN = "NO"
+  then
+    if [ $recvy_shour -lt $EHOUR ]
+    then
+      new_shour=`expr $recvy_shour + $FHINC`
+    fi
+    if test $new_shour -ge $SHOUR
+    then
+      export SHOUR=$new_shour
+      if [ $SHOUR -lt 10 ]; then SHOUR=0$SHOUR; fi
+    fi
+    if test $recvy_shour -ge $EHOUR
+    then
+      echo "WAFS blending Already Completed to $EHOUR"
+    else
+      echo "Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
+    fi
+  fi
+fi
+
+############################################
+# Execute the script.
+############################################
+${SCRIPTSgfs}/exgfs_atmos_wafs_blending_0p25.sh
+export err=$?; err_chk
+
+echo "JOB $job HAS COMPLETED NORMALLY."
+
+############################################
+# print exec output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+############################################
+# remove temporary working directory
+############################################
+if [ $KEEPDATA != YES ] ; then
+    rm -rf $DATA
+fi
+
+date
