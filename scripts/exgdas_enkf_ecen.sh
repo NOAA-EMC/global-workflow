@@ -111,7 +111,7 @@ for FHR in $(seq $FHMIN $FHOUT $FHMAX); do
 
 for imem in $(seq 1 $NMEM_ENS); do
    smem=$((imem + mem_offset))
-   if [[ $smem > 80 ]]; then
+   if [[ $smem -gt 80 ]]; then
       smem=$((smem - 80))
    fi
    gmemchar="mem"$(printf %03i $smem)
