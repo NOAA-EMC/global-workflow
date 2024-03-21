@@ -712,6 +712,7 @@ case ${step} in
       ;;
       "C768")
         export npe_upp=120
+        export memory_upp="96GB"
         if [[ ${machine} == "WCOSS2" ]]; then export memory_upp="480GB" ; fi
       ;;
       *)
