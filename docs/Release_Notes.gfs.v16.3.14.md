@@ -93,7 +93,8 @@ MODULE CHANGES
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes from GFS v16.3.13
+* No changes of existing file sizes from GFS v16.3.13
+* The `gdaswdqms` job creates three 
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
