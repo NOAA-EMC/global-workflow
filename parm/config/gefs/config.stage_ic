@@ -4,10 +4,6 @@
 
 echo "BEGIN: config.stage_ic"
 
-# initialize ocean ensemble members with perturbations
-#   if true, only occurs for members greater than zero
-export STAGE_OCN_PERTURB_FILES=@STAGE_OCN_PERTURB_FILES@
-
 # Get task specific resources
 source "${EXPDIR}/config.resources" stage_ic
 
