@@ -21,7 +21,7 @@ FIELD_TABLE=${FIELD_TABLE:-${PARMgfs}/ufs/fv3/field_table}
 
 # set cdmbgwd
 if [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
- export cdmbgwd=${cdmbgwd_gsl}
+  cdmbgwd=${cdmbgwd_gsl}
 fi
 
 # ensure non-prognostic tracers are set
