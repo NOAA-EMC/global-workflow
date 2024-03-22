@@ -451,7 +451,7 @@ EOF
   fi
   if [[ ${DO_SKEB} = "YES" ]]; then
     do_skeb=".true."
-    ISEED_SKEB=$((current_cycle*10000 + ${MEMBER#0}*100 + 3)),$((current_cycle*10000 + ${MEMBER#0}*100 + 4)),$((current_cycle*10000 + ${MEMBER#0}*100 + 5)),$((current_cycle*10000 + ${MEMBER#0}*100 + 6)),$((current_cycle*10000 + ${MEMBER#0}*100 + 7))
+    ISEED_SKEB=$((current_cycle*10000 + ${MEMBER#0}*100 + 1))
   fi
   if [[ ${DO_SHUM} = "YES" ]]; then
     do_shum=".true."
