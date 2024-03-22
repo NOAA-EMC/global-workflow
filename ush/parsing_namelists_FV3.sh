@@ -20,7 +20,7 @@ DATA_TABLE=${DATA_TABLE:-${PARMgfs}/ufs/MOM6_data_table.IN}
 FIELD_TABLE=${FIELD_TABLE:-${PARMgfs}/ufs/fv3/field_table}
 
 # set cdmbgwd
-if [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
+if (( gwd_opt == 2 )) && [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
   cdmbgwd=${cdmbgwd_gsl}
 fi
 
