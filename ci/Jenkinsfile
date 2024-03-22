@@ -106,11 +106,11 @@ pipeline {
                                                             catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
                                                         }
                                                     }
-                                                    repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                    gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                    repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                    gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
                                                 }
                                                 try {
-                                                    pullRequest.comment("Build failed on ${Machine} with error logs: ${error_logs_message}\n\n[Error Logs](${repo_url})\n[Gist](${gist_url})")
+                                                    pullRequest.comment("Build failed on **${Machine}** with error logs: ```${error_logs_message}```\nFollow link here to view: [(link)](${gist_url})")
                                                 } catch (Exception error_comment) {
                                                     echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                 }
@@ -201,7 +201,7 @@ pipeline {
                                                 repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                                 gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                                 try {
-                                                    pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\n[Error Logs](${repo_url})\n[Gist](${gist_url})")
+                                                    pullRequest.comment("Experiment **${Case}** failed on **${Machine}**with error logs: ```${error_logs_message}```\nFollow link here to view: [(link)](${gist_url})")
                                                 } catch (Exception error_comment) {
                                                     echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                 }

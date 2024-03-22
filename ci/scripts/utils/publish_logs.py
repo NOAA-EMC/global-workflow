@@ -66,7 +66,7 @@ if __name__ == '__main__':
     emcbot_ci_url = "https://github.com/emcbot/ci-global-workflows.git"
     emcbot_gh = GitHubPR(repo_url=emcbot_ci_url)
 
-    if args.gist:
+    if args.gist: # Add error logs to a gist in GitHub emcbot's account
 
         gist_files = {}
         for file in args.file:
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description=f"error log file from CI run {args.gist[0]}")
         print(gist.html_url)
 
-    if args.repo:
+    if args.repo: # Add error logs to emcbot/ci-global-workflows in the error_logs branch under a folder with the name {path_in_repo} 
 
         for file in args.file:
             file_content = file.read()
@@ -84,6 +84,7 @@ if __name__ == '__main__':
             file_path_in_repo = f"{file_path}/" + str(os.path.basename(file.name))
             try:
                emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
+            # If the branch error_logs file with {path_in_repo} all ready exists, add a random string to {path_in_repo} and try again
             except GitHubDBError.GithubException as e:
                if e.status == 422:
                     file_path = f"ci/error_logs/{args.repo[0]}_{random_string()}/"
@@ -93,7 +94,7 @@ if __name__ == '__main__':
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/{file_path}"
         print(file_url)
 
-    if args.delete_gists:
+    if args.delete_gists:  # Helper feature to delete all gists from authenticated user account
 
         confirm = input(f"Are you sure you want to delete all gists from {emcbot_gh.repo.full_name} as {emcbot_gh.user.login} ? Type 'yes' to confirm: ")
         if confirm.lower() != 'yes':
