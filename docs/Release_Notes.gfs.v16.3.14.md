@@ -60,8 +60,7 @@ SORC CHANGES
 JOBS CHANGES
 ------------
 
-* Added a new `j-job` `JGDAS_ATMOS_ANALYSIS_WDQMS`, corresponding `exscript` `exgdas_atmos_analysis_wdqms.sh` and a utility in `ush` `wdqms.py`.
-* Added `ecf` script `jgdas_atmos_analysis_wdqms.ecf` and updated the `ecflow` suite definition files.
+* Added a new `j-job` `JGDAS_ATMOS_ANALYSIS_WDQMS`
 
 PARM/CONFIG CHANGES
 -------------------
