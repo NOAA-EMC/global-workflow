@@ -2,6 +2,7 @@
 
 import os, sys
 import secrets
+import re
 import string
 from githubpr import GitHubPR, GitHubDBError
 from argparse import ArgumentParser, ArgumentTypeError, FileType
@@ -57,7 +58,7 @@ def input_args():
 
 def random_string() -> str:
     characters = string.ascii_letters + string.digits + string.punctuation
-    return ''.join(secrets.choice(characters) for _ in range(6))
+    return re.sub('[^A-Za-z0-9 ]+', '', ''.join(secrets.choice(characters) for _ in range(6)))
 
 if __name__ == '__main__':
 
@@ -90,17 +91,17 @@ if __name__ == '__main__':
 
         for file in args.file:
             file_content = file.read()
-            file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + str(os.path.basename(file.name))
-            print(file_path_in_repo)
+            file_path = f"ci/error_logs/{args.repo[0]}/"
+            file_path_in_repo = f"{file_path}/" + str(os.path.basename(file.name))
             try:
                emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
             except GitHubDBError.GithubException as e:
                if e.status == 404:
-                    file_path_in_repo = f"ci/error_logs/{args.repo[0]}_{random_string()}/" + str(os.path.basename(file.name))
-                    print(file_path_in_repo)
+                    file_path = f"ci/error_logs/{args.repo[0]}_{random_string()}/"
+                    file_path_in_repo = f"{file_path}" + str(os.path.basename(file.name))
                     emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
 
-        file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/ci/error_logs/{args.repo[0]}"
+        file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/{file_path}"
         print(file_url)
 
     if args.delete_gists:
