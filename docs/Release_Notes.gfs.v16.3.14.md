@@ -135,7 +135,7 @@ HPSS ARCHIVE
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* Add a new job `gdaswdqms` after `gdasanaldiag` with dependency on the completion of `gdasanaldiag` job.
+* Added a new job `gdaswdqms` after `gdasanaldiag` with dependency on the completion of `gdasanaldiag` job.
 
 DOCUMENTATION
 -------------
