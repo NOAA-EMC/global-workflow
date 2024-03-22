@@ -10,3 +10,15 @@
 [submodule "sorc/verif-global.fd"]
 	path = sorc/verif-global.fd
 	url = https://github.com/NOAA-EMC/EMC_verif-global.git
+[submodule "sorc/gsi_monitor.fd"]
+	path = sorc/gsi_monitor.fd
+	url = https://github.com/NOAA-EMC/GSI-Monitor
+[submodule "sorc/gfs_utils.fd"]
+	path = sorc/gfs_utils.fd
+	url = https://github.com/NOAA-EMC/gfs-utils
+[submodule "sorc/ufs_utils.fd"]
+	path = sorc/ufs_utils.fd
+	url = https://github.com/ufs-community/UFS_UTILS
+[submodule "sorc/ufs_model.fd"]
+	path = sorc/ufs_model.fd
+	url = https://github.com/ufs-community/ufs-weather-model
