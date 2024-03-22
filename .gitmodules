@@ -22,3 +22,9 @@
 [submodule "sorc/ufs_model.fd"]
 	path = sorc/ufs_model.fd
 	url = https://github.com/ufs-community/ufs-weather-model
+[submodule "sorc/gsi_utils.fd"]
+	path = sorc/gsi_utils.fd
+	url = https://github.com/NOAA-EMC/GSI-utils
+[submodule "sorc/upp.fd"]
+	path = sorc/upp.fd
+	url = https://github.com/NOAA-EMC/UPP
