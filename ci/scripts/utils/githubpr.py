@@ -3,7 +3,7 @@
 import os
 import re
 
-from github import Github, InputFileContent, UnknownObjectException
+from github import Github, GithubException,  InputFileContent, UnknownObjectException
 from wxflow import which
 
 class GitHubDBError(Exception):
@@ -11,6 +11,7 @@ class GitHubDBError(Exception):
     Base class for GitHubDB exceptions.
     """
     UnknownObjectException = UnknownObjectException
+    GithubException = GithubException
 
 class GitHubPR(Github):
     """

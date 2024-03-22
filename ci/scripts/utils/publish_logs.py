@@ -94,9 +94,12 @@ if __name__ == '__main__':
             print(file_path_in_repo)
             try:
                emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
-            except GitHubDBError.UnknownObjectException:
-               file_path_in_repo = f"ci/error_logs/{args.repo[0]}_{random_string()}/" + str(os.path.basename(file.name))
-               emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
+            except GitHubDBError.GithubException as e:
+               if e.status == 404:
+                    file_path_in_repo = f"ci/error_logs/{args.repo[0]}_{random_string()}/" + str(os.path.basename(file.name))
+                    print(file_path_in_repo)
+                    emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
+
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/ci/error_logs/{args.repo[0]}"
         print(file_url)
 
