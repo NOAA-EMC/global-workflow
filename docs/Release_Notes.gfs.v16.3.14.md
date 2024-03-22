@@ -67,6 +67,12 @@ PARM/CONFIG CHANGES
 -------------------
 
 * Added a `config.wdqms` file for the new j-job added.
+* Added new configuration parameter `DO_WDQMS` and set it to `YES` in the following configuration files
+  - `config.base.emc.dyn`
+  - `config.base.nco.static`
+* Added resource parameters for `WDQMS` job in the following resource configuration files
+  - `config.resource.emc.dyn`
+  - `config.resource.nco.static`
 
 SCRIPT CHANGES
 --------------
