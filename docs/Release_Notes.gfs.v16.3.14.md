@@ -77,6 +77,8 @@ SCRIPT CHANGES
 --------------
 
 * Added `exscript` `exgdas_atmos_analysis_wdqms.sh`
+* Added a utility in `ush` `wdqms.py` called by the new job.
+* Added `ecf` script `jgdas_atmos_analysis_wdqms.ecf` and updated the `ecflow` suite definition files.
 
 FIX CHANGES
 -----------
