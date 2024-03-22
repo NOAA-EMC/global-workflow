@@ -102,7 +102,15 @@ CHANGES TO FILE SIZES
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.13
+* Computing resource added for the `gdaswdqms` job for each gdas cycle: 
+
+  ```
+    export wtime_wdqms="00:20:00"
+    export npe_wdqms=1
+    export nth_wdqms=1
+    export npe_node_wdqms=1
+    export memory_wdqms="48GB"
+  ```
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
