@@ -4,7 +4,9 @@ GFS V16.3.14 RELEASE NOTES
 PRELUDE
 -------
 
-TODO: Fill in prelude short description of change
+This upgrade adds a new GDAS job, `gdaswdqms`. It generates 6-hourly summaries of observation reports, which contain information on time, location, station ID, and quality (usage flag and innovations) from GDAS analysis. The objective of this new job is to support the WMO WDQMS (WIGOS Data Quality Monitoring System) project and ensure that MWO observational data and products are reliable and correspond to agreed-upon needs.  
+
+The 6-hourly summaries include surface (synop), upper-air, and surface marine (ship and buoy) observations. 
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
