@@ -199,19 +199,19 @@ declare -A build_ids
 
 check_builds()
 {
-   for build in "${!build_jobs[@]}"; do
+   for chk_build in "${!build_jobs[@]}"; do
       # Check if the build is complete and if so what the status was
-      if [[ -n "${build_ids[${build}]+0}" ]]; then
-         if ! ps -p "${build_ids[${build}]}" > /dev/null; then
-            wait "${build_ids[${build}]}"
+      if [[ -n "${build_ids[${chk_build}]+0}" ]]; then
+         if ! ps -p "${build_ids[${chk_build}]}" > /dev/null; then
+            wait "${build_ids[${chk_build}]}"
             build_stat=$?
             if [[ ${build_stat} != 0 ]]; then
-               echo "build_${build}.sh failed!  Exiting!"
-               echo "Check logs/build_${build}.log for details."
-               echo "logs/build_${build}.log" > "${HOMEgfs}/sorc/logs/error.logs"
-               for build in "${!build_jobs[@]}"; do
-                  if [[ -n "${build_ids[${build}]+0}" ]]; then
-                     pkill -P "${build_ids[${build}]}"
+               echo "build_${chk_build}.sh failed!  Exiting!"
+               echo "Check logs/build_${chk_build}.log for details."
+               echo "logs/build_${chk_build}.log" > "${HOMEgfs}/sorc/logs/error.logs"
+               for kill_build in "${!build_jobs[@]}"; do
+                  if [[ -n "${build_ids[${kill_build}]+0}" ]]; then
+                     pkill -P "${build_ids[${kill_build}]}"
                   fi
                done
                return "${build_stat}"
