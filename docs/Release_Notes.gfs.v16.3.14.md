@@ -94,7 +94,10 @@ CHANGES TO FILE SIZES
 ---------------------
 
 * No changes of existing file sizes from GFS v16.3.13
-* The `gdaswdqms` job creates three 
+* The `gdaswdqms` job creates three observation quality reports in CSV format for the following data types
+  - Upper air (~0.5 MB)
+  - Marine (-6.5 MB)
+  - Synop (~ 22 MB)
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
