@@ -441,25 +441,25 @@ EOF
 
   # Stochastic Physics Options
   if [[ ${DO_SPPT:-"NO"} = "YES" ]]; then
-    ISEED_SKEB=$((current_cycle*10000 + ${MEMBER#0}*100 + 3)),$((current_cycle*10000 + ${MEMBER#0}*100 + 4)),$((current_cycle*10000 + ${MEMBER#0}*100 + 5)),$((current_cycle*10000 + ${MEMBER#0}*100 + 6)),$((current_cycle*10000 + ${MEMBER#0}*100 + 7))
-    ISEED_SHUM=$((current_cycle*1000 + MEMBER*10 + 2))
+    do_sppt=".true."
     ISEED_SPPT=$((current_cycle*10000 + ${MEMBER#0}*100 + 3)),$((current_cycle*10000 + ${MEMBER#0}*100 + 4)),$((current_cycle*10000 + ${MEMBER#0}*100 + 5)),$((current_cycle*10000 + ${MEMBER#0}*100 + 6)),$((current_cycle*10000 + ${MEMBER#0}*100 + 7))
-    ISEED_CA=$(( (current_cycle*10000 + ${MEMBER#0}*100 + 18) % 2147483647 ))
-    ISEED_LNDP=$(( (current_cycle*1000 + MEMBER*10 + 5) % 2147483647 ))
   else
     ISEED=${ISEED:-0}
   fi
+  if [[ ${DO_CA:-"NO"} = "YES" ]]; then
+    ISEED_CA=$(( (current_cycle*10000 + ${MEMBER#0}*100 + 18) % 2147483647 ))
+  fi
   if [[ ${DO_SKEB} = "YES" ]]; then
     do_skeb=".true."
-  fi
-  if [[ ${DO_SPPT} = "YES" ]]; then
-    do_sppt=".true."
+    ISEED_SKEB=$((current_cycle*10000 + ${MEMBER#0}*100 + 3)),$((current_cycle*10000 + ${MEMBER#0}*100 + 4)),$((current_cycle*10000 + ${MEMBER#0}*100 + 5)),$((current_cycle*10000 + ${MEMBER#0}*100 + 6)),$((current_cycle*10000 + ${MEMBER#0}*100 + 7))
   fi
   if [[ ${DO_SHUM} = "YES" ]]; then
     do_shum=".true."
+    ISEED_SHUM=$((current_cycle*1000 + MEMBER*10 + 2))
   fi
   if [[ ${DO_LAND_PERT} = "YES" ]]; then
     lndp_type=${lndp_type:-2}
+    ISEED_LNDP=$(( (current_cycle*1000 + MEMBER*10 + 5) % 2147483647 ))
     LNDP_TAU=${LNDP_TAU:-21600}
     LNDP_SCALE=${LNDP_SCALE:-500000}
     ISEED_LNDP=${ISEED_LNDP:-${ISEED}}
