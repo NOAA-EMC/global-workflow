@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys
-from githubpr import GitHubPR
+from githubpr import GitHubPR, GitHubDBError
 from argparse import ArgumentParser, ArgumentTypeError, FileType
 
 
@@ -73,18 +73,20 @@ if __name__ == '__main__':
     if args.repo:
 
         try:
-            file_path_in_repo = f"ci/error_logs/{args.repo[0]}"
+            file_path_in_repo = f"ci/error_logs/{args.repo[0]}/"+ str(os.path.basename(args.file[0].name))
             print(file_path_in_repo)
             file_content = emcbot_gh.repo.get_contents(file_path_in_repo)
             print(f"The file {file_path_in_repo} already exists in the repository {emcbot_gh.repo.full_name}")
-        except emcbot_gh.UnknownObjectException:
+        except GitHubDBError.UnknownObjectException:
             print(f"The file {file_path_in_repo} does not exist in the repository {emcbot_gh.repo.full_name}")
 
-        sys.exit(0)    
+        #sys.exit(0)
+        print(f"Creating the file {file_path_in_repo} in the repository {emcbot_gh.repo.full_name} {emcbot_gh.user.login} {emcbot_gh.user}")
 
         for file in args.file:
             file_content = file.read()
             file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + str(os.path.basename(file.name))
+            print(file_path_in_repo)
             emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/ci/error_logs/{args.repo[0]}"
         print(file_url)
