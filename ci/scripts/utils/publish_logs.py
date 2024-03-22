@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import os, sys
+import secrets
+import string
 from githubpr import GitHubPR, GitHubDBError
 from argparse import ArgumentParser, ArgumentTypeError, FileType
 
@@ -53,6 +55,9 @@ def input_args():
         parser.error("--file is required when --delete_gists is not used")
     return args
 
+def random_string() -> str:
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(secrets.choice(characters) for _ in range(6))
 
 if __name__ == '__main__':
 
@@ -87,7 +92,11 @@ if __name__ == '__main__':
             file_content = file.read()
             file_path_in_repo = f"ci/error_logs/{args.repo[0]}/" + str(os.path.basename(file.name))
             print(file_path_in_repo)
-            emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
+            try:
+               emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
+            except GitHubDBError.UnknownObjectException:
+               file_path_in_repo = f"ci/error_logs/{args.repo[0]}_{random_string()}/" + str(os.path.basename(file.name))
+               emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/ci/error_logs/{args.repo[0]}"
         print(file_url)
 
