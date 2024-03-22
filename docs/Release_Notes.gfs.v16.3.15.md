@@ -60,17 +60,18 @@ SORC CHANGES
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.13
+* Added a new `j-job` `JGDAS_ATMOS_ANALYSIS_WDQMS`, corresponding `exscript` `exgdas_atmos_analysis_wdqms.sh` and a utility in `ush` `wdqms.py`.
+* Added `ecf` script `jgdas_atmos_analysis_wdqms.ecf` and updated the `ecflow` suite definition files.
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.13
+* Added a `config.wdqms` file for the new j-job added.
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.13
+* Added `exscript` `exgdas_atmos_analysis_wdqms.sh`
 
 FIX CHANGES
 -----------
@@ -80,7 +81,7 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.13
+* New job loads `python` module in the ecf script.
 
 CHANGES TO FILE SIZES
 ---------------------
