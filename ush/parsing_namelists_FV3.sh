@@ -398,7 +398,7 @@ cat >> input.nml <<EOF
   cplwav2atm   = ${cplwav2atm:-".false."}
 EOF
 
-if [ ${DO_SPPT} = "YES" ];then
+if [[ ${DO_SPPT} = "YES" ]]; then
 cat >> input.nml <<EOF
   pert_mp = .false.
   pert_radtend = .false.
