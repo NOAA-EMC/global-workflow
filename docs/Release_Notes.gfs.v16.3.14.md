@@ -120,7 +120,7 @@ HPSS ARCHIVE
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.13
+* Add a new job `gdaswdqms` after `gdasanaldiag` with dependency on the completion of `gdasanaldiag` job.
 
 DOCUMENTATION
 -------------
