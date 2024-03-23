@@ -3,7 +3,13 @@
 from yaml import load
 from yaml import CLoader as Loader
 from typing import Dict, Any
-from wxflow import logit, cast_strdict_as_dtypedict, AttrDict, Task, parse_j2yaml
+from wxflow import (
+         logit,
+         cast_strdict_as_dtypedict,
+         AttrDict,
+         Task,
+         parse_j2yaml,
+         archive_utils)
 from logging import getLogger
 import os
 
@@ -105,6 +111,10 @@ class Archive(Task):
         else:
             raise NotImplementedError(f'Archiving is not enabled for {arch_dict.RUN} runs')
 
+        tar_cmd = 'tar'
+        if arch_dict.HPSSARCH:
+            tar_cmd = 'htar'
+
         archive_sets = []
 
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
@@ -112,10 +122,9 @@ class Archive(Task):
         for dataset in datasets:
 
             archive_filename = os.path.join(archive_parm, dataset + ".yaml.j2")
-
             archive_set = parse_j2yaml(archive_filename, arch_dict)
-
             archive_set = Archive._create_fileset(archive_set)
+            archive_set['protocol'] = tar_cmd
 
             archive_sets.append(archive_set)
 
@@ -135,15 +144,7 @@ class Archive(Task):
         import tarfile
 
         for archive_set in archive_sets:
-            archive_name = archive_set.archive_name
-
-            if not os.path.exists(os.path.dirname(archive_name)):
-                os.mkdir(os.path.dirname(archive_name))
-
-            with tarfile.open(archive_name, "w") as tar:
-                for file in archive_set.fileset:
-                    tar.add(file)
-
+            archive_utils.ArchiveHandler(archive_set).create()
 
     @logit(logger)
     def _create_fileset(archive_set: Dict[str, Any]) -> None:
