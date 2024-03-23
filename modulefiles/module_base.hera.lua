@@ -42,10 +42,13 @@ setenv("WGRIB2","wgrib2")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
 --prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
-prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/dev-gfsv17/modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
-prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
-load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
+--prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
+--load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
+-- TODO: After v1.1.0 is installed on Orion/WCOSS2/Hercules and run.spack.ver is updated, the following 2 lines can be removed and the above uncommented
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v1.1.0/modulefiles"))
+load(pathJoin("fit2obs", "1.1.0"))
 
 whatis("Description: GFS run environment")
