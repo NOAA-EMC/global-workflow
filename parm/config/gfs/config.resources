@@ -570,6 +570,20 @@ case ${step} in
         ntasks_fv3=${ntasks_fv3_gfs}
         ntasks_quilt=${ntasks_quilt_gfs}
         nthreads_fv3=${nthreads_fv3_gfs}
+        nthreads_ufs=${nthreads_ufs_gfs}
+      fi
+
+      # Determine if using ESMF-managed threading or traditional threading
+      # If using traditional threading, set them to 1
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        export UFS_THREADS=1
+      else  # traditional threading
+        export UFS_THREADS=${nthreads_ufs:-1}
+        nthreads_fv3=1
+        nthreads_mediator=1
+        [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
+        [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
+        [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
       fi
 
       # PETS for the atmosphere dycore
@@ -646,11 +660,11 @@ case ${step} in
 
       if [[ "${_CDUMP}" =~ "gfs" ]]; then
         declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
-        declare -x "nth_${step}_gfs"=1  # ESMF handles threading for the UFS-weather-model
+        declare -x "nth_${step}_gfs"="${UFS_THREADS}"
         declare -x "npe_node_${step}_gfs"="${npe_node_max}"
       else
         declare -x "npe_${step}"="${NTASKS_TOT}"
-        declare -x "nth_${step}"=1  # ESMF handles threading for the UFS-weather-model
+        declare -x "nth_${step}"="${UFS_THREADS}"
         declare -x "npe_node_${step}"="${npe_node_max}"
       fi
 
@@ -692,9 +706,14 @@ case ${step} in
       "C48" | "C96")
         export npe_upp=${CASE:1}
       ;;
-      "C192" | "C384" | "C768")
+      "C192" | "C384")
         export npe_upp=120
-        export memory_upp="48GB"
+        export memory_upp="96GB"
+      ;;
+      "C768")
+        export npe_upp=120
+        export memory_upp="96GB"
+        if [[ ${machine} == "WCOSS2" ]]; then export memory_upp="480GB" ; fi
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
