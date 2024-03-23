@@ -345,7 +345,7 @@ fi
 #--link source code directories
 #------------------------------
 cd "${HOMEgfs}/sorc" || exit 8
-# TODO: Commenting out until UPP is up-to-date with Rocky-8.
+# TODO: Commenting out until UPP is up-to-date with Rocky-8 in the UFSWM.
 #if [[ -d ufs_model.fd ]]; then
 #  [[ -d upp.fd ]] && rm -rf upp.fd
 #  ${LINK} ufs_model.fd/FV3/upp upp.fd
