@@ -14,7 +14,7 @@ export jobid="${job}.$$"
 ###############################################################
 # setup python path for workflow utilities and tasks
 wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-gdasappPATH="${HOMEgfs}/sorc/gdas.cd/iodaconv/src:${HOMEgfs}/sorc/gdas.cd/build/lib/python3.7"
+gdasappPATH="${HOMEgfs}/sorc/gdas.cd/bundle/iodaconv/src:${HOMEgfs}/sorc/gdas.cd/build/lib/python3.10"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}:${gdasappPATH}"
 export PYTHONPATH
 
