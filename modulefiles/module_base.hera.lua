@@ -49,6 +49,6 @@ load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 --load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 -- TODO: After v1.1.0 is installed on Orion/WCOSS2/Hercules and run.spack.ver is updated, the following 2 lines can be removed and the above uncommented
 prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v1.1.0/modulefiles"))
-load(pathJoin("fit2obs", "1.1.0"))
+load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 whatis("Description: GFS run environment")
