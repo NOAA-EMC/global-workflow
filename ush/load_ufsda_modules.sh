@@ -42,14 +42,14 @@ case "${MACHINE_ID}" in
     ;;
   ("wcoss2" | "acorn" | "jet" | "gaea" | "s4")
     echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-    ;;  
+    ;;
   *)
     echo "WARNING: UNKNOWN PLATFORM"
     ;;
 esac
 
 module list
-pip list
+#pip list
 
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
