@@ -46,8 +46,10 @@ prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepob
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 --prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
---load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
--- TODO: After v1.1.0 is installed on Orion/WCOSS2/Hercules and run.spack.ver is updated, the following 2 lines can be removed and the above uncommented
+-- TODO: After v1.1.0 is installed on Orion/WCOSS2/Hercules and run.spack.ver is updated, the following  lines can be removed and the above uncommented
+-- Also, the modulefile for v1.1.0 needs to be created for Hera under
+-- /scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v1.1.0/modulefiles/fit2obs
+-- currently there is only one for v1.0.0
 prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v1.1.0/modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
