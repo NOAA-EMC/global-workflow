@@ -45,7 +45,6 @@ setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/feature-hera-rocky8/modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
-prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/feature-hera-rocky8/modulefiles"))
-load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 
 whatis("Description: GFS run environment")
