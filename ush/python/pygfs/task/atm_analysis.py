@@ -67,7 +67,8 @@ class AtmAnalysis(Analysis):
         - staging FV3-JEDI fix files
         - staging B error files
         - staging model backgrounds
-        - generating a YAML file for the JEDI executable
+        - generating a YAML file for the JEDI variational executable
+        - generating a YAML file for the JEDI FV3 increment converter executable
         - creating output directories
         """
         super().initialize()
