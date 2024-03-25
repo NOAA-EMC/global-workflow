@@ -4,7 +4,9 @@ GFS V16.3.14 RELEASE NOTES
 PRELUDE
 -------
 
-TODO: Fill in prelude short description of change
+This upgrade adds a new GDAS job - `gdaswdqms`. It generates 6-hourly summaries of observation reports, which contain information on time, location, station ID, and quality (usage flag and innovations) from GDAS analysis. The objective of this new job is to support the WMO WDQMS (WIGOS Data Quality Monitoring System) project and ensure that WMO observational data and products are reliable and correspond to agreed-upon needs.  
+
+The 6-hourly summaries include surface (synop), upper-air, and surface marine (ship and buoy) observations. 
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -60,17 +62,25 @@ SORC CHANGES
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.13
+* Added a new `j-job` `JGDAS_ATMOS_ANALYSIS_WDQMS`
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.13
+* Added a `config.wdqms` file for the new j-job added.
+* Added new configuration parameter `DO_WDQMS` in the following configuration files
+  - `config.base.emc.dyn` (default to NO)
+  - `config.base.nco.static` (default to YES)
+* Added resource parameters for `WDQMS` job in the following resource configuration files
+  - `config.resource.emc.dyn`
+  - `config.resource.nco.static`
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.13
+* Added `exscript` `exgdas_atmos_analysis_wdqms.sh`
+* Added a utility in `ush` `wdqms.py` called by the new job.
+* Added `ecf` script `jgdas_atmos_analysis_wdqms.ecf` and updated the `ecflow` suite definition files.
 
 FIX CHANGES
 -----------
@@ -80,17 +90,23 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.13
+* New job loads `python` module in the ecf script.
 
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes from GFS v16.3.13
+* No changes of existing file sizes from GFS v16.3.13
+* The `gdaswdqms` job creates three observation quality reports in CSV format for the following data types:
+  - Upper air (~0.5 MB)
+  - Marine (-6.5 MB)
+  - Synop (~ 22 MB)
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.13
+* Computing resource added for the `gdaswdqms` job for each gdas cycle: 
+
+The new job `gdaswdqms` requests a single (1) core with `48GB` memory for 20 minutes
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -113,7 +129,7 @@ HPSS ARCHIVE
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.13
+* Added a new job `gdaswdqms` after `gdasanaldiag` with dependency on the completion of `gdasanaldiag` job.
 
 DOCUMENTATION
 -------------
@@ -122,4 +138,4 @@ DOCUMENTATION
 
 PREPARED BY
 -----------
-Kate.Friedman@noaa.gov
+Kate.Friedman@noaa.gov Rahul.Mahajan@noaa.gov Emily.Liu@noaa.gov
