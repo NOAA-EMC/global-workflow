@@ -22,7 +22,7 @@
   url = https://github.com/NOAA-EMC/GDASApp.git
 [submodule "sorc/gsi_utils.fd"]
   path = sorc/gsi_utils.fd
-  url = https://github.com/NOAA-EMC/GSI-utils.git
+  url = https://github.com/NOAA-EMC/GSI-Utils.git
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
