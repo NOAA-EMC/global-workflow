@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, sys
+import os
 import secrets
 import re
 import string
@@ -56,9 +56,11 @@ def input_args():
         parser.error("--file is required when --delete_gists is not used")
     return args
 
+
 def random_string() -> str:
     characters = string.ascii_letters + string.digits + string.punctuation
     return re.sub('[^A-Za-z0-9 ]+', '', ''.join(secrets.choice(characters) for _ in range(6)))
+
 
 if __name__ == '__main__':
 
@@ -66,7 +68,7 @@ if __name__ == '__main__':
     emcbot_ci_url = "https://github.com/emcbot/ci-global-workflows.git"
     emcbot_gh = GitHubPR(repo_url=emcbot_ci_url)
 
-    if args.gist: # Add error logs to a gist in GitHub emcbot's account
+    if args.gist:  # Add error logs to a gist in GitHub emcbot's account
 
         gist_files = {}
         for file in args.file:
@@ -76,11 +78,11 @@ if __name__ == '__main__':
         gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description=f"error log file from CI run {args.gist[0]}")
         print(gist.html_url)
 
-    if args.repo: # Upload error logs to emcbot's ci-global-workflows error_logs branch
+    if args.repo:  # Upload error logs to emcbot's ci-global-workflows error_logs branch
         path_header = args.repo[0]
         file_path_in_repo = f"ci/error_logs/{path_header}/" + str(os.path.basename(args.file[0].name))
         try:
-            content = emcbot_gh.repo.get_contents(file_path_in_repo,ref='error_logs')
+            content = emcbot_gh.repo.get_contents(file_path_in_repo, ref='error_logs')
             path_header = f'{path_header}_{random_string()}'
         except GitHubDBError.GithubException as e:
             pass
