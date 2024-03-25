@@ -51,7 +51,7 @@ class Analysis(Task):
 
     @logit(logger)
     def get_jedi_config(self) -> Dict[str, Any]:
-        """Compile a dictionary of JEDI configuration from JEDIYAML template file
+        """Compile a dictionary of JEDI configuration from VARYAML template file
 
         Parameters
         ----------
@@ -63,8 +63,8 @@ class Analysis(Task):
         """
 
         # generate JEDI YAML file
-        logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
-        jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+        logger.info(f"Generate JEDI variational YAML config: {self.task_config.var_yaml}")
+        jedi_config = parse_j2yaml(self.task_config.VARYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
         logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
 
         return jedi_config
@@ -86,7 +86,7 @@ class Analysis(Task):
             a dictionary containing the list of observation files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of observation files from {self.task_config.JEDIYAML}")
+        logger.info(f"Extracting a list of observation files from {self.task_config.VARYAML}")
         observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
         logger.debug(f"observations:\n{pformat(observations)}")
 
@@ -120,7 +120,7 @@ class Analysis(Task):
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of bias correction files from {self.task_config.JEDIYAML}")
+        logger.info(f"Extracting a list of bias correction files from {self.task_config.VARYAML}")
         observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
         logger.debug(f"observations:\n{pformat(observations)}")
 

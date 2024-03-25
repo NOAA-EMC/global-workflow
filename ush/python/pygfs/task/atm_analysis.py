@@ -125,7 +125,7 @@ class AtmAnalysis(Analysis):
 
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMANL)
+        exec_cmd = Executable(self.task_config.APRUN_ATMANLVAR)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg(self.task_config.var_yaml)
@@ -145,7 +145,7 @@ class AtmAnalysis(Analysis):
 
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMANLINC)
+        exec_cmd = Executable(self.task_config.APRUN_ATMANLFV3INC)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_fv3inc.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg(self.task_config.fv3inc_yaml)
