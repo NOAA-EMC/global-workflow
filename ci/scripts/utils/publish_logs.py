@@ -28,7 +28,7 @@ def parse_args():
     #    parser.error("--file is required when --delete_gists is not used")
     if not args.gist or not args.repo:  # At least one of the two is required
         parser.error("--gist or --repo is required")
-    if args.gist and args.repo:  # At least one of the two is required
+    if args.gist and args.repo:  # can not use booth
         parser.error("only use --gist or --repo")
     return args
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/{path_header}"
         print(file_url)
 
-    #if args.delete_gists:  # Helper feature to delete all gists from authenticated user account
+    # if args.delete_gists:  # Helper feature to delete all gists from authenticated user account
     #
     #    confirm = input(f"Are you sure you want to delete all gists from {emcbot_gh.repo.full_name} as {emcbot_gh.user.login} ? Type 'yes' to confirm: ")
     #    if confirm.lower() != 'yes':
