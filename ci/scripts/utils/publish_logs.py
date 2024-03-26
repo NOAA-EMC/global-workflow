@@ -8,31 +8,6 @@ from githubpr import GitHubPR, GitHubDBError
 from argparse import ArgumentParser, ArgumentTypeError, FileType
 
 
-def is_file(path):
-    """
-    Check if path is an existing file.
-
-    Parameters
-    ----------
-    path : str
-        The path to check.
-
-    Returns
-    -------
-    str
-        The path, if it is an existing file.
-
-    Raises
-    ------
-    argparse.ArgumentTypeError
-        If the path is not an existing file.
-    """
-
-    if not os.path.isfile(path):
-        raise ArgumentTypeError(f"{path} does not exist or is not a file.")
-    return path
-
-
 def input_args():
     """
     Parse command line arguments.
