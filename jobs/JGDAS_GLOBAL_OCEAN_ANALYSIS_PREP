@@ -34,6 +34,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
 
 # Add UFSDA to PYTHONPATH
 ufsdaPATH="${HOMEgfs}/sorc/gdas.cd/ush/"
+# shellcheck disable=SC2311
 pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${ufsdaPATH}:${pyiodaPATH}"
 export PYTHONPATH
