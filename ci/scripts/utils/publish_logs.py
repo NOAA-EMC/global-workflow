@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import random
-import string
 from githubpr import GitHubPR, GitHubDBError
 from argparse import ArgumentParser, FileType
 
@@ -35,11 +33,6 @@ def parse_args():
     return args
 
 
-def random_string(length=6) -> str:
-    characters = string.ascii_letters + string.digits
-    return ''.join(random.choices(characters, k=length))
-
-
 if __name__ == '__main__':
 
     args = parse_args()
@@ -59,13 +52,13 @@ if __name__ == '__main__':
     if args.repo:  # Upload error logs to emcbot's ci-global-workflows error_logs branch
         path_header = args.repo[0]
         repo_path = "ci/error_logs"
-        file_path_in_repo = f"{repo_path}/{path_header}/" + str(os.path.basename(args.file[0].name))
         extra = 0
         while True:
             try:
                 extra += 1
+                file_path_in_repo = f"{repo_path}/{path_header}/" + str(os.path.basename(args.file[0].name))
                 content = emcbot_gh.repo.get_contents(file_path_in_repo, ref='error_logs')
-                path_header = f'{path_header}_{str(extra)}'
+                path_header = f'{args.repo[0]}_{str(extra)}'
             except GitHubDBError.GithubException as e:
                 break
 
