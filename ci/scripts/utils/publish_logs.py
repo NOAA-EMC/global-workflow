@@ -5,10 +5,10 @@ import secrets
 import re
 import string
 from githubpr import GitHubPR, GitHubDBError
-from argparse import ArgumentParser, ArgumentTypeError, FileType
+from argparse import ArgumentParser, FileType
 
 
-def input_args():
+def parse_args():
     """
     Parse command line arguments.
 
@@ -25,23 +25,25 @@ def input_args():
     parser.add_argument('--file', help='path to file for uploading to GitHub', required=False, type=FileType('r'), nargs='+')
     parser.add_argument('--gist', help='create a gist of the file', nargs=1, metavar='identifier_string', required=False)
     parser.add_argument('--repo', help='create a file in a repo', nargs=1, metavar='path_header', required=False)
-    parser.add_argument('--delete_gists', help='deletes all the gits from authenticated user', action='store_true', default=False, required=False)
+    # parser.add_argument('--delete_gists', help='deletes all the gits from authenticated user', action='store_true', default=False, required=False)
     args = parser.parse_args()
-    if not args.delete_gists and not args.file:
-        parser.error("--file is required when --delete_gists is not used")
+    #if not args.delete_gists and not args.file:
+    #    parser.error("--file is required when --delete_gists is not used")
     if not args.gist and not args.repo:  # At least one of the two is required
         parser.error("--gist or --repo is required")
+    if args.gist and args.repo:  # At least one of the two is required
+        parser.error("only use --gist or --repo")
     return args
 
 
-def random_string(length=6) -> str:
+def random_string() -> str:
     characters = string.ascii_letters + string.digits + string.punctuation
-    return ''.join(secrets.choice(characters) for _ in range(length))
+    return re.sub('[^A-Za-z0-9 ]+', '', ''.join(secrets.choice(characters) for _ in range(6)))
 
 
 if __name__ == '__main__':
 
-    args = input_args()
+    args = parse_args()
     emcbot_ci_url = "https://github.com/emcbot/ci-global-workflows.git"
     emcbot_gh = GitHubPR(repo_url=emcbot_ci_url)
 
@@ -72,13 +74,13 @@ if __name__ == '__main__':
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/{path_header}"
         print(file_url)
 
-    if args.delete_gists:  # Helper feature to delete all gists from authenticated user account
-
-        confirm = input(f"Are you sure you want to delete all gists from {emcbot_gh.repo.full_name} as {emcbot_gh.user.login} ? Type 'yes' to confirm: ")
-        if confirm.lower() != 'yes':
-            print("Aborted.")
-            exit(0)
-        for gist in emcbot_gh.user.get_gists():
-            gist.delete()
-            print(f"Gist {gist.id} deleted")
-        print(f"All gists deleted for authenticated user {emcbot_gh.user.login} in the repository {emcbot_gh.repo.full_name}")
+    #if args.delete_gists:  # Helper feature to delete all gists from authenticated user account
+    #
+    #    confirm = input(f"Are you sure you want to delete all gists from {emcbot_gh.repo.full_name} as {emcbot_gh.user.login} ? Type 'yes' to confirm: ")
+    #    if confirm.lower() != 'yes':
+    #        print("Aborted.")
+    #        exit(0)
+    #    for gist in emcbot_gh.user.get_gists():
+    #        gist.delete()
+    #        print(f"Gist {gist.id} deleted")
+    #    print(f"All gists deleted for authenticated user {emcbot_gh.user.login} in the repository {emcbot_gh.repo.full_name}")
