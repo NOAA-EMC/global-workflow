@@ -261,7 +261,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
    if [[ "${_quick_kill}" == "YES" ]]; then
       check_builds
       build_stat=$?
-      if [[ ${build_stat} != 0 ]]; then
+      if (( build_stat != 0 )); then
          exit "${build_stat}"
       fi
    fi
