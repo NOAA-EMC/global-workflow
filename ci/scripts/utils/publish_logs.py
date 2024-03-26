@@ -36,9 +36,9 @@ def parse_args():
     return args
 
 
-def random_string() -> str:
+def random_string(length=6) -> str:
     characters = string.ascii_letters + string.digits + string.punctuation
-    return re.sub('[^A-Za-z0-9 ]+', '', ''.join(secrets.choice(characters) for _ in range(6)))
+    return ''.join(secrets.choice(characters) for _ in range(length))
 
 
 if __name__ == '__main__':
