@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import os, sys
+import os
 import random
-import re
 import string
 from githubpr import GitHubPR, GitHubDBError
 from argparse import ArgumentParser, FileType
@@ -27,7 +26,7 @@ def parse_args():
     parser.add_argument('--repo', help='create a file in a repo', nargs=1, metavar='path_header', required=False)
     # parser.add_argument('--delete_gists', help='deletes all the gits from authenticated user', action='store_true', default=False, required=False)
     args = parser.parse_args()
-    #if not args.delete_gists and not args.file:
+    # if not args.delete_gists and not args.file:
     #    parser.error("--file is required when --delete_gists is not used")
     if not args.gist and not args.repo:  # At least one of the two is required
         parser.error("--gist or --repo is required")
@@ -61,11 +60,14 @@ if __name__ == '__main__':
         path_header = args.repo[0]
         repo_path = "ci/error_logs"
         file_path_in_repo = f"{repo_path}/{path_header}/" + str(os.path.basename(args.file[0].name))
-        try:
-            content = emcbot_gh.repo.get_contents(file_path_in_repo, ref='error_logs')
-            path_header = f'{path_header}_{random_string()}'
-        except GitHubDBError.GithubException as e:
-            pass
+        extra = 0
+        while True:
+            try:
+                extra += 1
+                content = emcbot_gh.repo.get_contents(file_path_in_repo, ref='error_logs')
+                path_header = f'{path_header}_{str(extra)}'
+            except GitHubDBError.GithubException as e:
+                break
 
         for file in args.file:
             file_content = file.read()
