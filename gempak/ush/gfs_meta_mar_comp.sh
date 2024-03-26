@@ -17,7 +17,12 @@ export COMIN="gfs.multi"
 mkdir -p "${COMIN}"
 for cycle in $(seq -f "%02g" -s ' ' 0 "${STEP_GFS}" "${cyc}"); do
     YMD=${PDY} HH=${cycle} GRID="1p00" generate_com gempak_dir:COM_ATMOS_GEMPAK_TMPL
-    ln -sf "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"* "${COMIN}/"
+    for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
+        file_out="${COMIN}/$(basename "${file_in}")"
+        if [[ -L "${file_out}" ]]; then
+            ln -sf "${file_in}" "${file_out}"
+        fi
+    done
 done
 
 #
@@ -25,7 +30,9 @@ done
 # TODO: Replace this
 #
 export HPCNAM="nam.${PDY}"
-ln -sf "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
+if [[ ! -L ${HPCNAM} ]]; then
+    ln -sf "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
+fi
 
 mdl=gfs
 MDL="GFS"
@@ -68,9 +75,10 @@ for garea in NAtl NPac; do
 
         # Create symlink in DATA to sidestep gempak path limits
         HPCGFS="${RUN}.${init_time}"
-        if [[ -L ${HPCGFS} ]]; then rm "${HPCGFS}"; fi
-        YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" generate_com source_dir:COM_ATMOS_GEMPAK_TMPL
-        ln -sf "${source_dir}" "${HPCGFS}"
+        if [[ ! -L ${HPCGFS} ]]; then
+            YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" generate_com source_dir:COM_ATMOS_GEMPAK_TMPL
+            ln -sf "${source_dir}" "${HPCGFS}"
+        fi
 
         case ${cyc} in
             00 | 12)
@@ -212,9 +220,10 @@ EOF
         ukmet_PDY=${ukmet_date:0:8}
         ukmet_cyc=${ukmet_date:8:2}
 
-        if [[ -L "ukmet.${ukmet_PDY}" ]]; then rm "ukmet.${ukmet_PDY}"; fi
-        ln -sf "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "ukmet.${ukmet_PDY}"
         export HPCUKMET="ukmet.${ukmet_PDY}"
+        if [[ ! -L "${HPCUKMET}" ]]; then
+            ln -sf "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
+        fi
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
 
         for fhr in 00 12 24 84 108; do
@@ -297,9 +306,13 @@ EOF
         ecmwf_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${offset} hours")
         ecmwf_PDY=${ecmwf_date:0:8}
         # ecmwf_cyc=${ecmwf_date:8:2}
-        if [[ -L ecmwf ]]; then rm ecmwf; fi
-        ln -sf "${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak" ecmwf
-        grid2="ecmwf/ecmwf_glob_${ecmwf_date}"
+
+
+        HPCECMWF=ecmwf.${PDY}
+        if [[ ! -L "${HPCECMWF}" ]]; then
+            ln -sf "${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak" "${HPCECMWF}"
+        fi
+        grid2="${HPCECMWF}/ecmwf_glob_${ecmwf_date}"
 
         for fhr in $(seq -s ' ' $(( offset%24 )) 24 120 ); do
             gfsfhr=F$(printf "%02g" "${fhr}")

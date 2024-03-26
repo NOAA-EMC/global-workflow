@@ -16,7 +16,9 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL="GFS"
@@ -60,9 +62,10 @@ for lookback in "${lookbacks[@]}"; do
 
     # Create symlink in DATA to sidestep gempak path limits
     HPCGFS="${RUN}.${init_time}"
-    if [[ -L ${HPCGFS} ]]; then rm "${HPCGFS}"; fi
-    YMD=${init_PDY} HH=${init_cyc} GRID="1p00" generate_com source_dir:COM_ATMOS_GEMPAK_TMPL
-    ln -sf "${source_dir}" "${HPCGFS}"
+    if [[ ! -L ${HPCGFS} ]]; then
+        YMD=${init_PDY} HH=${init_cyc} GRID="1p00" generate_com source_dir:COM_ATMOS_GEMPAK_TMPL
+        ln -sf "${source_dir}" "${HPCGFS}"
+    fi
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
 

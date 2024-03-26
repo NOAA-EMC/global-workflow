@@ -14,8 +14,10 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 # Link data into DATA to sidestep gempak path limits
 # TODO: Replace this
 #
-export HPCGFS="${RUN}.${PDY}${cyc}"
-ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL=GFS
@@ -37,11 +39,14 @@ grid1="F-GFSHPC | ${PDY:2}/${cyc}00"
 # DEFINE YESTERDAY
 PDYm1="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 24 hours")"
 
-for symlink in "ecmwf.${PDYm1}" "ukmet.${PDY}"; do
-    if [[ -L "${symlink}" ]]; then rm "${symlink}"; fi
-done
-ln -sf "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "ecmwf.${PDYm1}"
-ln -sf "${COMINukmet}/ukmet.${PDY}/gempak" "ukmet.${PDY}"
+HPCECMWF="ecmwf.${PDYm1}"
+HPCUKMET="ukmet.${PDY}"
+if [[ ! -L "${HPCECMWF}" ]]; then
+    ln -sf "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
+fi
+if [[ ! -L "${HPCUKMET}" ]]; then
+    ln -sf "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
+fi
 
 "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
@@ -198,7 +203,7 @@ for fhr in $(seq -s ' ' 6 24 126); do
         offset=18
     fi
     ecmwffhr="F$(printf "%03g" $((fhr + offset)))"
-    grid2="ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12"
+    grid2="${HPCECMWF}/ecmwf_glob_${PDYm1}12"
 
     "${GEMEXE}/gdplot2_nc" << EOF10
 \$MAPFIL = mepowo.gsf
@@ -267,7 +272,7 @@ done
 for fhr in $(seq -s ' ' 6 12 138); do
     gfsfhr="F$(printf "%03g" "${fhr}")"
     ukmetfhr="F$(printf "%03g" $((fhr + 6)))"
-    grid3="ukmet.${PDY}/ukmet_${PDY}00f${ukmetfhr}"
+    grid3="${HPCUKMET}/ukmet_${PDY}00f${ukmetfhr}"
 
     "${GEMEXE}/gdplot2_nc" << EOF25
 \$MAPFIL = mepowo.gsf

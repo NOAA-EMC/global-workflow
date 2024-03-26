@@ -19,8 +19,10 @@ device="nc | ${metaname}"
 # Link data into DATA to sidestep gempak path limits
 # TODO: Replace this
 #
-export COMIN="${RUN}.${PDY}${cyc}"
-ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+COMIN="gdas.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 fend=F180
 

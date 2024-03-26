@@ -38,9 +38,11 @@ for (( fhr=24; fhr<=144; fhr+=24 )); do
     for cycle in ${cycles}; do
         #  Test with GDAS in PROD
         YMD=${day} HH=${cyc} GRID=1p00 generate_com "COM_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
-        if [[ -L "${RUN}.${day}${cycle}" ]]; then rm "${RUN}.${day}${cycle}"; fi
-        ln -sf "${COM_ATMOS_GEMPAK_1p00_past}" "${RUN}.${day}${cycle}"
-        gdfile="${RUN}.${day}${cycle}/gdas_1p00_${day}${cycle}f000"
+        COMIN="${RUN}.${day}${cycle}"
+        if [[ ! -L "${COMIN}" ]]; then
+            ln -sf "${COM_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
+        fi
+        gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
         "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL = mepowo.gsf
@@ -118,7 +120,7 @@ r
 exit
 EOF
 
-        gdfile="${COM_ATMOS_GEMPAK_1p00_past}/gdas_1p00_${day}${cycle}f000"
+        gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
 "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL = mepowo.gsf

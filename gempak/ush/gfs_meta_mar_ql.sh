@@ -16,7 +16,9 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL="GFS"

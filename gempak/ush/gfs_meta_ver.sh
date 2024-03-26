@@ -19,8 +19,10 @@ device="nc | ${metaname}"
 # Link data into DATA to sidestep gempak path limits
 # TODO: Replace this
 #
-ln -s "${COM_ATMOS_GEMPAK_1p00}" "${RUN}.${PDY}${cyc}"
 export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 vergrid="F-${MDL} | ${PDY:2}/${cyc}00"
@@ -50,9 +52,10 @@ for lookback in "${lookbacks[@]}"; do
 
     # Create symlink in DATA to sidestep gempak path limits
     HPCGFS="${RUN}.${init_time}"
-    if [[ -L ${HPCGFS} ]]; then rm "${HPCGFS}"; fi
-    YMD=${init_PDY} HH=${init_cyc} GRID="1p00" generate_com source_dir:COM_ATMOS_GEMPAK_TMPL
-    ln -sf "${source_dir}" "${HPCGFS}"
+    if [[ ! -L "${HPCGFS}" ]]; then
+        YMD=${init_PDY} HH=${init_cyc} GRID="1p00" generate_com source_dir:COM_ATMOS_GEMPAK_TMPL
+        ln -sf "${source_dir}" "${HPCGFS}"
+    fi
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
 

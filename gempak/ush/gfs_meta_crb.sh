@@ -22,7 +22,9 @@ device="nc | ${metaname}"
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 # DEFINE YESTERDAY
 PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
@@ -248,15 +250,21 @@ export err=$?;err_chk
 
 
 if [[ ${cyc} == 00 ]] ; then
-    ln -sf "${COMINecmwf}ecmwf.${PDY}/gempak" "ecmwf.${PDY}"
-    export HPCECMWF=ecmwf
-    ln -sf "${COMINecmwf}ecmwf.${PDYm1}/gempak" "ecmwf.${PDYm1}"
-    export HPCECMWF=ecmwf_m1
-    ln -sf "${COMINukmet}/ukmet.${PDYm1}/gempak" "ukmet.${PDYm1}"
-    export HPCUKMET=ukmet
+    export HPCECMWF=ecmwf.${PDY}
+    HPCECMWF_m1=ecmwf.${PDY}
+    export HPCUKMET=ukmet.${PDYm1}
+    if [[ ! -L "${HPCECMWF}" ]]; then
+        ln -sf "${COMINecmwf}ecmwf.${PDY}/gempak" "${HPCECMWF}"
+    fi
+    if [[ ! -L "${HPCECMWF_m1}" ]]; then
+        ln -sf "${COMINecmwf}ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
+    fi
+    if [[ ! -L "${HPCUKMET}" ]]; then
+        ln -sf "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
+    fi
 
     grid1="F-${MDL} | ${PDY:2}/${cyc}00"
-    grid2="ecmwf_m1/ecmwf_glob_${PDYm1}12"
+    grid2="${HPCECMWF_m1}/ecmwf_glob_${PDYm1}12"
     grid3="F-UKMETHPC | ${PDYm1:2}/1200"
     for fhr in $(seq -s ' ' 12 24 108); do
         gfsfhr=F$(printf "%02g" "${fhr}")
