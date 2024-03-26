@@ -238,7 +238,7 @@ class Analysis(Task):
     def link_fv3incexe(self) -> None:
         """Compile a dictionary of background error files to copy
 
-        This method links the jediinc2fv3 OOPS app to the run directory
+        This method links the FV3 increment converter app to the run directory
 
         Parameters
         ----------

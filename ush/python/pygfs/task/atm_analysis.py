@@ -170,7 +170,7 @@ class AtmAnalysis(Analysis):
         - tar output diag files and place in ROTDIR
         - copy the generated YAML file from initialize to the ROTDIR
         - copy the updated bias correction files to ROTDIR
-        - write UFS model readable atm incrment file
+        - copy UFS model readable atm FV3 increment file to ROTDIR
 
         """
         # ---- tar up diags
