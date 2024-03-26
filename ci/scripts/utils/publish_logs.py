@@ -37,8 +37,8 @@ def parse_args():
 
 
 def random_string(length=6) -> str:
-	    characters = string.ascii_letters + string.digits
-	    return ''.join(random.choices(characters, k=length))
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choices(characters, k=length))
 
 
 if __name__ == '__main__':
