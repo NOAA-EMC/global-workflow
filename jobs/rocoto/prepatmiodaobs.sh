@@ -14,9 +14,8 @@ export jobid="${job}.$$"
 ###############################################################
 # setup python path for workflow and ioda utilities
 wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-py_ver=$(regex="[0-9]+\.[0-9]+"; if [[ $(python --version) =~ ${regex} ]]; then echo "${BASH_REMATCH[0]}"; fi)
-PYIODALIB="${HOMEgfs}/sorc/gdas.cd/build/lib/python${py_ver}"
-PYTHONPATH="${PYIODALIB}:${wxflowPATH}:${PYTHONPATH}"
+pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
+PYTHONPATH="${pyiodaPATH}:${wxflowPATH}:${PYTHONPATH}"
 export PYTHONPATH
 
 ###############################################################
