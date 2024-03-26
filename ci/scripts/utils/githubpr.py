@@ -89,7 +89,7 @@ class GitHubPR(Github):
         list
             A list of all pull request numbers.
         """
-        return [ pull.number for pull in self.pulls ]
+        return [pull.number for pull in self.pulls]
 
     def get_ci_pr_list(self, state='Ready', host=None):
         """
