@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import os
-import secrets
+import os, sys
+import random
 import re
 import string
 from githubpr import GitHubPR, GitHubDBError
@@ -37,8 +37,8 @@ def parse_args():
 
 
 def random_string(length=6) -> str:
-    characters = string.ascii_letters + string.digits + string.punctuation
-    return ''.join(secrets.choice(characters) for _ in range(length))
+	    characters = string.ascii_letters + string.digits
+	    return ''.join(random.choices(characters, k=length))
 
 
 if __name__ == '__main__':
@@ -59,7 +59,8 @@ if __name__ == '__main__':
 
     if args.repo:  # Upload error logs to emcbot's ci-global-workflows error_logs branch
         path_header = args.repo[0]
-        file_path_in_repo = f"ci/error_logs/{path_header}/" + str(os.path.basename(args.file[0].name))
+        repo_path = "ci/error_logs"
+        file_path_in_repo = f"{repo_path}/{path_header}/" + str(os.path.basename(args.file[0].name))
         try:
             content = emcbot_gh.repo.get_contents(file_path_in_repo, ref='error_logs')
             path_header = f'{path_header}_{random_string()}'
@@ -68,7 +69,7 @@ if __name__ == '__main__':
 
         for file in args.file:
             file_content = file.read()
-            file_path_in_repo = f"{path_header}/" + str(os.path.basename(file.name))
+            file_path_in_repo = f"{repo_path}/{path_header}/" + str(os.path.basename(file.name))
             emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
 
         file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/error_logs/{path_header}"
