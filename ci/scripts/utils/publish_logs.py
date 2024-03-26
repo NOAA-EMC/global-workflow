@@ -54,6 +54,8 @@ def input_args():
     args = parser.parse_args()
     if not args.delete_gists and not args.file:
         parser.error("--file is required when --delete_gists is not used")
+    if not args.gist or not args.repo:  # At least one of the two is required
+        parser.error("--gist or --repo is required")
     return args
 
 
