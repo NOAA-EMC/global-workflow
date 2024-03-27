@@ -8,15 +8,19 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
+mkdir SA2
+cd SA2 || exit 1
+
+
 cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits
 # TODO: Replace this
 #
-export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+export HPCGFS="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${HPCGFS} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
 fi
 
 mdl=gfs
@@ -37,7 +41,7 @@ fi
 grid1="F-GFSHPC | ${PDY:2}/${cyc}00"
 
 # DEFINE YESTERDAY
-PDYm1="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 24 hours")"
+PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
 
 HPCECMWF="ecmwf.${PDYm1}"
 HPCUKMET="ukmet.${PDY}"
