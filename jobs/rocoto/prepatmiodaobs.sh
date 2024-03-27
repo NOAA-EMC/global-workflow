@@ -14,8 +14,9 @@ export jobid="${job}.$$"
 ###############################################################
 # setup python path for workflow and ioda utilities
 wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-PYIODALIB="${HOMEgfs}/sorc/gdas.cd/build/lib/python3.7"
-PYTHONPATH="${PYIODALIB}:${wxflowPATH}:${PYTHONPATH}"
+# shellcheck disable=SC2311
+pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
+PYTHONPATH="${pyiodaPATH}:${wxflowPATH}:${PYTHONPATH}"
 export PYTHONPATH
 
 ###############################################################
