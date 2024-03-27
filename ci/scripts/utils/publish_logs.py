@@ -46,7 +46,7 @@ def add_logs_to_gist(args, emcbot_gh):
     Prints
     ------
     The URL of the created gist.
-    """ 
+    """
 
     gist_files = {}
     for file in args.file:
