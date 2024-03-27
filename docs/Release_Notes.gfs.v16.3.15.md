@@ -1,4 +1,4 @@
-GFS V16.3.14 RELEASE NOTES
+GFS V16.3.15 RELEASE NOTES
 
 -------
 PRELUDE
@@ -15,9 +15,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub .com are u
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.14
-cd gfs.v16.3.14
-git clone -b EMC-v16.3.14 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.15
+cd gfs.v16.3.15
+git clone -b EMC-v16.3.15 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -52,12 +52,12 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.14` and `gfs_ver=v16.3.14`
+* `versions/run.ver` - change `version=v16.3.15` and `gfs_ver=v16.3.15`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.13
+* No changes from GFS v16.3.14
 
 JOBS CHANGES
 ------------
@@ -85,7 +85,7 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.13
+* No changes from GFS v16.3.14
 
 MODULE CHANGES
 --------------
@@ -95,7 +95,7 @@ MODULE CHANGES
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes of existing file sizes from GFS v16.3.13
+* No changes of existing file sizes from GFS v16.3.14
 * The `gdaswdqms` job creates three observation quality reports in CSV format for the following data types:
   - Upper air (~0.5 MB)
   - Marine (-6.5 MB)
@@ -105,6 +105,7 @@ ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
 * Computing resource added for the `gdaswdqms` job for each gdas cycle: 
+* Added "shared" to PBS place setting for jobs that are run shared since exclusive will now be the default when not set on WCOSS2
 
 The new job `gdaswdqms` requests a single (1) core with `48GB` memory for 20 minutes
 
@@ -119,12 +120,12 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.13
+* No changes from GFS v16.3.14
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.13
+* No changes from GFS v16.3.14
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
@@ -134,7 +135,7 @@ JOB DEPENDENCIES AND FLOW DIAGRAM
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.13
+* No changes from GFS v16.3.14
 
 PREPARED BY
 -----------
