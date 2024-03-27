@@ -47,13 +47,13 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-${GPREFIX}}
 
 # Variables
-if [ $RUN = "enkfgfs" ]; then
-NMEM_ENS=${NMEM_ENS_GFS:-30}
-ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
-mem_offset=$((ec_offset * cyc/6))
+if [ "${RUN}" = "enkfgfs" ]; then
+   NMEM_ENS=${NMEM_ENS_GFS:-30}
+   ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
+   mem_offset=$((ec_offset * cyc/6))
 else
-NMEM_ENS=${NMEM_ENS:-80}
-mem_offset=0
+   NMEM_ENS=${NMEM_ENS:-80}
+   mem_offset=0
 fi
 DOIAU=${DOIAU_ENKF:-"NO"}
 

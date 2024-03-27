@@ -46,7 +46,7 @@ FHMIN=${FHMIN_EPOS:-3}
 FHMAX=${FHMAX_EPOS:-9}
 FHOUT=${FHOUT_EPOS:-3}
 
-if [[ $RUN == "enkfgfs" ]]; then
+if [[ "${RUN}" == "enkfgfs" ]]; then
    NMEM_ENS=${NMEM_ENS_GFS:-${NMEM_ENS:-30}}
 else
    NMEM_ENS=${NMEM_ENS:-80}
