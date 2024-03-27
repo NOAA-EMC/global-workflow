@@ -11,9 +11,10 @@ device="nc | gdasloop.meta"
 # Link data into DATA to sidestep gempak path limits
 # TODO: Replace this
 #
-if [[ -L "${RUN}.${PDY}${cyc}" ]]; then rm "${RUN}.${PDY}${cyc}"; fi
-ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${RUN}.${PDY}${cyc}"
 export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L "${COMIN}" ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 if [[ "${envir}" == "para" ]] ; then
    export m_title="GDASP"

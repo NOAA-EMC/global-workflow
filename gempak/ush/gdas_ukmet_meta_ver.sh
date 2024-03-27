@@ -53,7 +53,7 @@ for area in ${areas}; do
         sdatenum=${stime:0:6}
         cyclenum=${stime:6}
 
-        if [[ -L "ukmet.20${sdatenum}" ]]; then
+        if [[ ! -L "ukmet.20${sdatenum}" ]]; then
             ln -sf "${COMINukmet}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
         fi
         gdfile="ukmet.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"
