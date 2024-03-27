@@ -36,10 +36,10 @@ elif [[ ${MACHINE_ID} = orion* ]] ; then
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/bash
     fi
-    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
-    set +u
-    module reset
-    set -u
+    #export LMOD_SYSTEM_DEFAULT_MODULES=git/2.28.0  # contrib has a lot of stuff we shouldn't put in MODULEPATH
+    #set +u
+    module purge # reset causes issues on Orion sometimes.
+    #set -u
 
 elif [[ ${MACHINE_ID} = s4* ]] ; then
     # We are on SSEC Wisconsin S4
