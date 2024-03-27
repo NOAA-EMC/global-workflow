@@ -38,7 +38,7 @@ for (( fhr=24; fhr<=144; fhr+=24 )); do
     for cycle in ${cycles}; do
         #  Test with GDAS in PROD
         YMD=${day} HH=${cyc} GRID=1p00 generate_com "COM_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
-        COMIN="${RUN}.${day}${cycle}"
+        export COMIN="${RUN}.${day}${cycle}"
         if [[ ! -L "${COMIN}" ]]; then
             ln -sf "${COM_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
         fi

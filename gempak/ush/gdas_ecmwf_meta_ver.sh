@@ -22,7 +22,7 @@ if (( err != 0 )) ; then
    exit "${err}"
 fi
 
-COMIN="gdas.${PDY}${cyc}"
+export COMIN="gdas.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
     ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
