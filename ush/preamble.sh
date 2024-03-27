@@ -172,6 +172,22 @@ function generate_com() {
 # shellcheck disable=
 declare -xf generate_com
 
+function detect_py_ver() {
+    # 
+    # Returns the major.minor version of the currently active python executable
+    #
+    regex="[0-9]+\.[0-9]+"
+    # shellcheck disable=SC2312
+    if [[ $(python --version) =~ ${regex} ]]; then
+	    echo "${BASH_REMATCH[0]}"
+    else
+	    echo "FATAL ERROR: Could not detect the python version"
+	    exit 1
+    fi
+}
+# shellcheck disable=
+declare -xf detect_py
+
 # Turn on our settings
 set_strict
 set_trace
