@@ -50,93 +50,75 @@ if (( ocean_domain_max > FHMAX_GFS )); then
   ocean_domain_max=${FHMAX_GFS}
 fi
 
-#################################################################
-# Execute the script for the 384 hour 1 degree grib
-##################################################################
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} &> ${DATA}/gfs_1p0.$$.1 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} &> ${DATA}/gfs_1p0.$$.2 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} &> ${DATA}/gfs_1p0.$$.3 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} &> ${DATA}/gfs_1p0.$$.4 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} &> ${DATA}/gfs_1p0.$$.5 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} &> ${DATA}/gfs_1p0.$$.6 " >> poescript
+{
+  #################################################################
+  # Execute the script for the 384 hour 1 degree grib
+  ##################################################################
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
 
-#################################################################
-# Execute the script for the half-degree grib
-##################################################################
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} &> ${DATA}/gfs_0p5.$$.1 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} &> ${DATA}/gfs_0p5.$$.2 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} &> ${DATA}/gfs_0p5.$$.3 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} &> ${DATA}/gfs_0p5.$$.4 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} &> ${DATA}/gfs_0p5.$$.5 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} &> ${DATA}/gfs_0p5.$$.6 " >> poescript
+  #################################################################
+  # Execute the script for the half-degree grib
+  ##################################################################
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
 
-#################################################################
-# Execute the script for the quater-degree grib
-####################################################################
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.1 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.2 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.3 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.4 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.5 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.6 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.7 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.8 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.9 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs_0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}&> ${DATA}/gfs_0p25.$$.10 " >> poescript
+  #################################################################
+  # Execute the script for the quater-degree grib
+  ####################################################################
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
 
-####################################################################
-# Execute the script to create the 35km Pacific grids for OPC
-#####################################################################
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs35_pac ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_pac} &> ${DATA}/gfs35_pac.$$.1 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs35_pac ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_pac} &> ${DATA}/gfs35_pac.$$.2 " >> poescript
+  ####################################################################
+  # Execute the script to create the 35km Pacific grids for OPC
+  #####################################################################
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_pac ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_pac}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_pac ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_pac}"
 
-####################################################################
-# Execute the script to create the 35km Atlantic grids for OPC
-#####################################################################
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs35_atl ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_atl} &> ${DATA}/gfs35_atl.$$.1 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs35_atl ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_atl} &> ${DATA}/gfs35_atl.$$.2 " >> poescript
+  ####################################################################
+  # Execute the script to create the 35km Atlantic grids for OPC
+  #####################################################################
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_atl ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_atl}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_atl ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_atl}"
 
-#####################################################################
-# Execute the script to create the 40km grids for HPC
-######################################################################
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs40 ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_40km} &> ${DATA}/gfs40.$$.1 " >> poescript
-echo "time ${SCRgfs}/exgfs_atmos_nawips.sh gfs40 ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_40km} &> ${DATA}/gfs40.$$.2 " >> poescript
-
-if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
-  # Add task number to the MPMD script
-  nl -n ln -v 0 poescript > poescript.new
-  mv poescript.new poescript
-fi
+  #####################################################################
+  # Execute the script to create the 40km grids for HPC
+  ######################################################################
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 40km ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_40km}"
+  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 40km ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_40km}"
+} > poescript
 
 cat poescript
 
-chmod 775 ${DATA}/poescript
-export MP_PGMMODEL=mpmd
-export MP_CMDFILE=${DATA}/poescript
-
-ntasks=$(cat ${DATA}/poescript | wc -l)
-ptile=${PTILE_GEMPAK:-4}
-threads=${NTHREADS_GEMPAK:-1}
-export OMP_NUM_THREADS=${threads}
-APRUN=${APRUN:-"mpiexec -l -np ${ntasks} --cpu-bind verbose,core cfp"}
-
-APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-${APRUN}}
-APRUNCFP=${APRUN_GEMPAKCFP}
-
-${APRUNCFP} ${DATA}/poescript
+"${HOMEgfs}/ush/run_mpmd.sh" poescript
 export err=$?; err_chk
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "${KEEPDATA}" != "YES" ] ; then
-  rm -rf ${DATA}
+if [[ "${KEEPDATA}" != "YES" ]] ; then
+  rm -rf "${DATA}"
 fi
-

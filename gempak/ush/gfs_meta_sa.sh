@@ -1,52 +1,37 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_sa.sh
 #
-# Log :
-# D.W.Plummer/NCEP   2/97   Add log header
-# J.W.Carr/HPC       4/97   Changed Comparison to 1200 UTC UKMET instead of 0000 UTC UKMET
-# J.W.Carr/HPC       4/97   Added UKMET2 --- past 72 hours to the comparison
-# J.W.Carr/HPC       2/98   changed garea of sfc conv, bl dwpt and wind product
-# J.W.Carr/HPC       5/98   converted gdplot to gdplot2
-# J.W.Carr/HPC       8/98   Changed map to medium resolution
-# J. Carr/HPC        7/99   Put a filter on map.
-# J. Carr/HPC       02/2001 Updated to run on IBM and send to ncodas
-# J. Carr/HPC       04/2001 Remove old metafiles from metaout before creating new ones.
-# J. Carr/HPC        5/2001 Added a mn variable for a/b side dbnet root variable.
-# J. Carr/HPC        6/2001 Converted to a korn shell prior to delivering script to Production.
-# J. Carr/HPC        8/2001 Submitted.
-# J. Carr/HPC        3/2002 Tweaked a few products.
-#
 # Set Up Local Variables
 #
-set -x
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/SA"
+cd "${DATA}/SA" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
 #
-export PS4='SA:$SECONDS + '
-mkdir -p -m 775 $DATA/SA
-cd $DATA/SA
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL=GFS
 metatype="sa"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo ${PDY} | cut -c3-)
-#
-#if [ ${cyc} -eq 00 ] ; then
-#    fend=F126
-#elif [ ${cyc} -eq 12 ] ; then
-#    fend=F126
-#else
-#    fend=F126
-#fi
 
 fend=F126
 #
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
-GDFILE	= F-${MDL} | ${PDY2}/${cyc}00
-GDATTIM	= F00-${fend}-06 
+export pgm=gdplot2_nc;. prep_step
+"${GEMEXE}/gdplot2_nc" << EOF
+GDFILE	= F-${MDL} | ${PDY:2}/${cyc}00
+GDATTIM	= F00-${fend}-06
 DEVICE	= ${device}
 PANEL	= 0
 TEXT	= 1/21//hw
@@ -72,8 +57,8 @@ FLINE   =
 HILO    = !!26;2/H#;L#/1020-1070;900-1012//30;30/y
 HLSYM   = 1.3;1.3//21//hw
 CLRBAR  = 1
-WIND    = !                         ! 
-REFVEC  = 
+WIND    = !                         !
+REFVEC  =
 TITLE	= 1/-2/~ ${MDL} MSLP, 1000-500mb THICK|~MSLP, 1000-500 THKN!
 ru
 
@@ -104,30 +89,30 @@ type    = c/f!c!c!c
 cint    = 13;25;38;50;62!4!4/0/540!4/544/600
 line    = 32/1/1!6/1/3!5/5/2!17/5/2
 fint    = 13;25;38;50
-fline   = 0;23;22;21;2      
+fline   = 0;23;22;21;2
 hilo    = 26;2/H#;L#/1017-1050;930-1004/2//y
 HLSYM   = 0!1.5;1.5//22;22/3;3/hw!0
 clrbar  = 1/V/LL!0
-wind    =  
+wind    =
 refvec  =
 title   = 1/-2/~ ${MDL} PW, EST MSLP, THICKNESS|~PRECIP WATER, MSLP!0
 r
 
-glevel  = 0!0 
-gvcord  = none 
-skip    = 0 
+glevel  = 0!0
+gvcord  = none
+skip    = 0
 scale   = 0
 gdpfun  = sm5s(lft4)!sm5s(lft4)!sm5s(lft4)!kntv(wnd@9950%sgma)
 type    = c/f       !c         !c         !b
 cint    = 3/3       !1/-0.5/0.5!3/-15/-3
-line    = 25/1/1    !22/1/2    !21/1/1  
-fint    = -9;-6;-3;3;6 
+line    = 25/1/1    !22/1/2    !21/1/1
+fint    = -9;-6;-3;3;6
 fline   = 2;15;22;0;0;24
 hilo    = 0!0
 hlsym   = 1;1//22;22/2;2/hw
 clrbar  = 1/V/LL!0
 wind    = bk0!bk0!bk0!bk9/0.9/2/112
-refvec  = 
+refvec  =
 title   = 1/-2/~ ${MDL} LI AND BL WINDS|~LIFTED INDEX!0
 r
 
@@ -142,7 +127,7 @@ scale   = 7   !0   !0
 gdpfun  = sm5s(sdiv(mixr(dwpc;pres@0%none);wnd)!sm5s(dwpc)!sm5s(dwpc)!kntv(wnd@9950%sgma)
 type    = f                               !c         !c         !b
 cint    = 1//-1                           !3/12      !3/21
-line    = 32                              !5//2      !6//2                      
+line    = 32                              !5//2      !6//2
 clrbar  = 1/V/LL!0
 fint    = -8;-6;-4;-2
 fline   = 2;23;22;3;0
@@ -159,13 +144,13 @@ GAREA   = -66;-127;14.5;-19
 GLEVEL  = 0            !0      !0         !0
 GVCORD  = none         !none   !none      !none
 SKIP    = 0
-SCALE   = 0               
+SCALE   = 0
 GDPFUN  = sm5s(tmpc)!sm5s(tmpc)!sm5s(tmpc)!sm5s(pmsl)!kntv(wnd@9950%sgma)
 TYPE    = c/f          !c      !c         !c         !b
 CINT    = 3/-99/0      !3/3/21 !3/24/99   !4
 LINE    = 27/1/2       !2/1/2  !16/1/2    !19//3
-FINT    = -18;-15;-12;-9;-6;-3;0      
-FLINE   = 30;29;7;6;4;25;24;0       
+FINT    = -18;-15;-12;-9;-6;-3;0
+FLINE   = 30;29;7;6;4;25;24;0
 HILO    = 0            !0      !0         !26;2/H#;L#/1016-1050;930-1006/2//y
 HLSYM   = 0            !0      !0         !1.5;1.5//22;22/3;3/hw
 CLRBAR  = 1/V/LL       !0
@@ -188,13 +173,13 @@ GAREA   = -66;-127;14.5;-19
 GLEVEL  = 9950         !9950   !9950      !0
 GVCORD  = sgma!sgma!sgma!none
 SKIP    = 0
-SCALE   = 0               
+SCALE   = 0
 GDPFUN  = sm5s(tmpc)!sm5s(tmpc)!sm5s(tmpc)!sm5s(pmsl)!kntv(wnd@9950%sgma)
 TYPE    = c/f          !c      !c         !c         !b
 CINT    = 3/-99/0      !3/3/21 !3/24/99   !4
 LINE    = 27/1/2       !2/1/2  !16/1/2    !19//3
-FINT    = -18;-15;-12;-9;-6;-3;0      
-FLINE   = 30;29;7;6;4;25;24;0       
+FINT    = -18;-15;-12;-9;-6;-3;0
+FLINE   = 30;29;7;6;4;25;24;0
 HILO    = 0            !0      !0         !26;2/H#;L#/1016-1050;930-1006/2//y
 HLSYM   = 0            !0      !0         !1.5;1.5//22;22/3;3/hw
 CLRBAR  = 1/V/LL       !0
@@ -220,7 +205,7 @@ type    = c/f           !b
 cint    = 13;25;38;50;62!
 line    = 32/1/2/1
 fint    = 13;25;38;50
-fline   = 0;23;22;21;2       
+fline   = 0;23;22;21;2
 hilo    = 0             !0
 HLSYM   = 0             !0
 clrbar  = 1
@@ -239,11 +224,11 @@ CINT    = 10;20;80;90  !30;40;50;60;70
 LINE    = 32//2        !23//2
 FINT    = 10;30;70;90
 FLINE   = 18;8;0;22;23
-HILO    = 
+HILO    =
 HLSYM   =
 CLRBAR  = 1
-WIND    = 
-REFVEC  = 
+WIND    =
+REFVEC  =
 TITLE	= 1/-2/~ ${MDL} @ MEAN LAYER RH|~MEAN LAYER RH!0
 ru
 
@@ -276,7 +261,7 @@ LINE    = 7/5/1/2            !29/5/1/2!7/5/1/2            !29/5/1/2 !20/1/2/1
 FINT    = 16;20;24;28;32;36;40;44
 FLINE   = 0;23-15
 HILO    = 2;6/X;N/10-99;10-99!        !2;6/X;N/10-99;10-99!         !
-HLSYM   = 
+HLSYM   =
 CLRBAR  = 1
 WIND    = bk0
 REFVEC  =
@@ -308,7 +293,7 @@ gvcord   = pres
 SKIP     = 0/2;2
 scale    = 0                       !5/0               !5/0    !-1
 gdpfun   = sm5s(mag(kntv(wnd))//jet!sm5s(div(wnd)//dvg!dvg    !sm5s(hght)
-type     = c/f                     !c                 !c      !c 
+type     = c/f                     !c                 !c      !c
 cint     = 70;90;110;130;150;170   !-11;-9;-7;-5;-3;-1!2/2/100!12
 line     = 32/1                    !20/-2/2           !3/1/2  !1//2
 fint     = 70;90;110;130;150;170;190!
@@ -375,15 +360,15 @@ CINT    = 20/70//                   !2/2
 LINE    = 32/1/2/1                  !5/2/2/2
 FINT    = 80;90;110;130;150;170;190 !1;2;3;4;5;6;7
 FLINE   = 0;25;24;29;7;15;20;14     !0;23;22;21;17;16;2;1
-HILO    = 
-HLSYM   = 
+HILO    =
+HLSYM   =
 CLRBAR  = 1/v/ll                    !0
 WIND    = bk0                       !am16/0.3//211/0.4!Bk9/0.75/2
-REFVEC  = 
+REFVEC  =
 TITLE   = 1/-2/~ @ ISOTACHS AND WIND (KTS)|~200 MB WIND!0
 FILTER  = yes
 ru
- 
+
 GAREA   = -66;-127;14.5;-19
 LATLON	= 1//1/1/10
 
@@ -401,7 +386,7 @@ FLINE	= 0;21-30;14-20;5
 HILO	= 31;0/x#/10-500///y
 HLSYM	= 1.5
 CLRBAR	= 1/V/LL
-WIND	= 
+WIND	=
 REFVEC	=
 TITLE	= 1/-2/~ ${MDL} 12-HR TOTAL PCPN|~12-HR TOTAL PCPN!0
 r
@@ -415,25 +400,26 @@ exit
 EOF
 
 export err=$?;err_chk
+
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-      ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-      if [ $DBN_ALERT_TYPE = "GFS_METAFILE_LAST" ] ; then
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
-        ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-        ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-      fi
-   fi
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+            "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+    fi
 fi
 
 exit

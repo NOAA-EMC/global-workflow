@@ -1,138 +1,91 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-cd $DATA
-
-GEMGRD1=${RUN}_${PDY}${cyc}f
-#find out what fcst hr to start processing
-fhr=$fhend
+GEMGRD1="${RUN}_1p00_${PDY}${cyc}f"
 
 export numproc=23
 
-while [ $fhr -ge $fhbeg ] ; do
-  fhr=$(printf "%03d" $fhr)
-  ls -l $COMIN/$GEMGRD1${fhr}
-  err1=$?
-  if [ $err1 -eq 0 -o $fhr -eq $fhbeg ] ; then
+# Find the last hour available
+for (( fhr = fhend; fhr >= fhbeg; fhr = fhr - fhinc )) ; do
+  fhr3=$(printf "%03d" "${fhr}")
+  if [[ -r "${COM_ATMOS_GEMPAK_1p00}/${GEMGRD1}${fhr3}" ]]; then
     break
   fi
-  fhr=$(expr $fhr - $fhinc)
 done
 
-maxtries=180
+sleep_interval=20
+max_tries=180
 first_time=0
 do_all=0
 
 #loop through and process needed forecast hours
-while [ $fhr -le $fhend ]
-do
-   #
-   # First check to see if this is a rerun.  If so make all Meta files
-   if [ $fhr -gt 126 -a $first_time -eq 0 ] ; then
-     do_all=1
-   fi
-   first_time=1
+while (( fhr <= fhend )); do
+  #
+  # First check to see if this is a rerun.  If so make all Meta files
+  if (( fhr > 126 )) && (( first_time == 0 )); then
+    do_all=1
+  fi
+  first_time=1
 
-   if [ $fhr -eq 120 ] ; then
-      fhr=126
-   fi
-   icnt=1
+  if (( fhr == 120 )); then
+    fhr=126
+  fi
 
-   while [ $icnt -lt 1000 ]
-   do
-      ls -l $COMIN/$GEMGRD1${fhr}
-      err1=$?
-      if [ $err1 -eq 0 ] ; then
-         break
-      else
-         sleep 20
-         let "icnt= icnt + 1"
-      fi
-      if [ $icnt -ge $maxtries ]
-      then
-         echo "ABORTING after 1 hour of waiting for gempak grid F$fhr to end."
-         export err=7 ; err_chk
-         exit $err
-      fi
-   done
+  gempak_file="${COM_ATMOS_GEMPAK_1p00}/${GEMGRD1}${fhr3}"
+  if ! wait_for_file "${gempak_file}" "${sleep_interval}" "${max_tries}"; then
+    echo "FATAL ERROR: gempak grid file ${gempak_file} not available after maximum wait time."
+    exit 7
+  fi
 
-   export fhr
+  export fhr
 
-   ########################################################
-   # Create a script to be poe'd
-   #
-   #  Note:  The number of scripts to be run MUST match the number
-   #  of total_tasks set in the ecf script, or the job will fail.
-   #
-#   if [ -f $DATA/poescript ]; then
-      rm $DATA/poescript
-#   fi
+  ########################################################
+  # Create a script to be poe'd
+  #
+  #  Note:  The number of scripts to be run MUST match the number
+  #  of total_tasks set in the ecf script, or the job will fail.
+  #
+  if [[ -f poescript ]]; then
+    rm poescript
+  fi
 
-   fhr=$(printf "%02d" $fhr)
+  fhr3=$(printf "%03d" "${fhr}")
 
-   if [ $do_all -eq 1 ] ; then
-     do_all=0
-     awk '{print $1}' ${HOMEgfs}/gempak/fix/gfs_meta > $DATA/tmpscript
-   else
-     #
-     #     Do not try to grep out 12, it will grab the 12 from 126.
-     #     This will work as long as we don't need 12 fhr metafiles
-     #
-     if [ $fhr -ne 12 ] ; then
-       grep $fhr ${HOMEgfs}/gempak/fix/gfs_meta |awk -F" [0-9]" '{print $1}' > $DATA/tmpscript
-     fi
-   fi
+  if (( do_all == 1 )) ; then
+    do_all=0
+    # shellcheck disable=SC2312
+    awk '{print $1}' "${HOMEgfs}/gempak/fix/gfs_meta" | envsubst > "poescript"
+  else
+    #
+    #    Do not try to grep out 12, it will grab the 12 from 126.
+    #    This will work as long as we don't need 12 fhr metafiles
+    #
+    if (( fhr != 12 )) ; then
+      # shellcheck disable=SC2312
+      grep "${fhr}" "${HOMEgfs}/gempak/fix/gfs_meta" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript"
+    fi
+  fi
 
-   for script in $(cat $DATA/tmpscript)
-   do
-     eval "echo $script" >> $DATA/poescript
-   done
+  #  If this is the final fcst hour, alert the
+  #  file to all centers.
+  #
+  if (( fhr >= fhend )) ; then
+    export DBN_ALERT_TYPE=GFS_METAFILE_LAST
+  fi
 
-   num=$(cat $DATA/poescript |wc -l)
+  export fend=${fhr}
 
-   while [ $num -lt $numproc ] ; do
-      echo "hostname" >>poescript
-      num=$(expr $num + 1)
-   done
+  cat poescript
 
-   chmod 775 $DATA/poescript
-   cat $DATA/poescript
-   export MP_PGMMODEL=mpmd
-   export MP_CMDFILE=$DATA/poescript
-
-#  If this is the final fcst hour, alert the
-#  file to all centers.
-#
-   if [ 10#$fhr -ge $fhend ] ; then
-      export DBN_ALERT_TYPE=GFS_METAFILE_LAST
-   fi
-
-   export fend=$fhr
-
-  sleep 20
-  ntasks=${NTASKS_META:-$(cat $DATA/poescript | wc -l)}
-  ptile=${PTILE_META:-4}
-  threads=${NTHREADS_META:-1}
-  export OMP_NUM_THREADS=$threads
-  APRUN="mpiexec -l -n $ntasks -ppn $ntasks --cpu-bind verbose,core cfp"
-
-  APRUN_METACFP=${APRUN_METACFP:-$APRUN}
-  APRUNCFP=$(eval echo $APRUN_METACFP)
-
-  $APRUNCFP $DATA/poescript
+  "${HOMEgfs}/ush/run_mpmd.sh" poescript
   export err=$?; err_chk
 
-      fhr=$(printf "%03d" $fhr)
-      if [ $fhr -eq 126 ] ; then
-        let fhr=fhr+6
-      else
-	let fhr=fhr+fhinc
-      fi
+  if (( fhr == 126 )) ; then
+    fhr=$((fhr + 6))
+  else
+    fhr=$((fhr + fhinc))
+  fi
 done
 
-#####################################################################
-
-
 exit
-#

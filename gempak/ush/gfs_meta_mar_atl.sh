@@ -1,31 +1,36 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_mar_atl.sh
 #
-# Log :
-# J. Carr/PMB    12/08/2004    Pushed into production.
-#
 # Set up Local Variables
 #
-set -x
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/MAR_ATL"
+cd "${DATA}/MAR_ATL" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
 #
-export PS4='MAR_ATL:$SECONDS + '
-mkdir -p -m 775 $DATA/MAR_ATL
-cd $DATA/MAR_ATL
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL="GFS"
 metatype="mar_atl"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo $PDY | cut -c3-)
 
-export pgm=gdplot2_nc;. prep_step; startmsg
+export pgm=gdplot2_nc;. prep_step
 
-$GEMEXE/gdplot2_nc << EOFplt
+"${GEMEXE}/gdplot2_nc" << EOFplt
 \$MAPFIL=mepowo.gsf+mehsuo.ncp+mereuo.ncp+mefbao.ncp
-gdfile     = F-${MDL} | ${PDY2}/${cyc}00
+gdfile     = F-${MDL} | ${PDY:2}/${cyc}00
 gdattim    = f00-f180-6
 GAREA      = 16;-100;71;5
 PROJ       = mer//3;3;0;1
@@ -34,7 +39,7 @@ LATLON	   = 18/2///10
 CONTUR	   = 0
 clear      = y
 
-device     = $device 
+device     = ${device}
 
 GLEVEL	= 850:1000                  !0
 GVCORD	= pres                      !none
@@ -69,8 +74,8 @@ fline      = 29;30;24;0 !
 hilo       = 0!0!0!20/H#;L#/1020-1070;900-1012
 hlsym      = 0!0!0!1;1//22;22/3;3/hw
 clrbar     = 1/V/LL!0
-wind       = bk9/0.8/1/112! 
-refvec     = 
+wind       = bk9/0.8/1/112!
+refvec     =
 title      = 1/-2/~ ? |~ PMSL, BL TEMP, WIND!1//${MDL} MSL PRES,BL TEMP,WIND (KTS)!0
 text       = 1.2/22/2/hw
 clear      = y
@@ -113,9 +118,9 @@ LINE    = 7/5/1/2            !20/1/2/1
 FINT    = 15;21;27;33;39;45;51;57
 FLINE   = 0;23-15
 HILO    = 2;6/X;N/10-99;10-99!          !
-HLSYM   = 
+HLSYM   =
 CLRBAR  = 1
-WIND    =  
+WIND    =
 REFVEC  =
 TITLE   = 5//~ ? ${MDL} @ HEIGHTS AND VORTICITY|~ @ HGHT AND VORTICITY!0
 TEXT    = 1/21//hw
@@ -146,22 +151,22 @@ CLEAR	= yes
 li
 r
 
-glevel     = 300!300!300 
-gvcord     = pres!pres!pres 
+glevel     = 300!300!300
+gvcord     = pres!pres!pres
 panel      = 0
 skip       = 1!1!1/3/3!1
 scale      = 0!0!5!5!-1
 GDPFUN      = mag(kntv(wnd))//jet!jet!div(wnd)//dvg!dvg!sm5s(hght)
 TYPE      = c!c/f!c/f!c!c
 cint       = 30;50!70;90;110;130;150;170;190!-11;-9;-7;-5;-3!2/3/18!12/720
-line       = 26!32//2!19/-2//2!20!1//2 
-fint       = !70;90;110;130;150;170;190!3;5;7;9;11;13!  
+line       = 26!32//2!19/-2//2!20!1//2
+fint       = !70;90;110;130;150;170;190!3;5;7;9;11;13!
 fline      = !0;24;25;29;7;15;14;2!0;23;22;21;17;16;2!
 hilo       = 0!0!0!0!1/H;L/3
 hlsym      = 0!0!0!0!1.5;1.5//22;22/2;2/hw
 clrbar     = 0!0!1/V/LL!0
-wind       = !!am16/0.3//211/0.4! 
-refvec     = 10 
+wind       = !!am16/0.3//211/0.4!
+refvec     = 10
 title      = 1/-2/~ ?|~ @ SPEED & DIVERG!1//${MDL} @ HGHTS, ISOTACHS, & DIVERGENCE!0
 text       = 1.2/22/2/hw
 clear      = y
@@ -262,14 +267,15 @@ export err=$?;err_chk
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_mar_atl
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job ${COMOUT}/${mdl}_${PDY}_${cyc}_mar_atl
-   fi
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_atl"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+   "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+      "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_atl"
 fi
 
 

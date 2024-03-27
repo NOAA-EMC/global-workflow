@@ -1,58 +1,48 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_qpf.sh
 #
-# Log :
-# D.W.Plummer/NCEP   2/97   Add log header
-# J. Carr/HPC      7/7/97   Changed script so that it uses gdplot2 instead of gdplot
-# J. Carr/HPC      8/5/98   Removed pcpn potential product and changed map to a medium resolution
-# J. Carr/HPC      2/2/99   Changed skip to 0
-# J. Carr/HPC     2/10/99   Changed type c/f to just f for pcpn
-# J. Carr/HPC     4/12/99   Added 84-hr time for the gfs.
-# J. Carr/HPC        6/99   Added a filter on map
-# J. Carr/HPC      2/2001   Edited to run on IBM.
-# J. Carr/HPC      5/2001   Added a mn variable for a/b side dbnet root variable.
-# J. Carr/HPC      6/2001   Converted to a korn shell prior to delivering script to Production.
-# J. Carr/HPC      7/2001   Submitted.
-# J. Carr/HPC     11/2004   Changed contur from 1 to a 2.
-#                           Inserted a ? in all title lines.
-#                           Commented out if statement for cycles since this is old code based on when various runs of GFS ran
-#                           out to differing times.
-# M. Klein/HPC    02/2010   Run 48-hour QPF out to F216 for medium-range.
-#
 # Set up Local Variables
 #
-set -x
-export PS4='qpf:$SECONDS + '
-mkdir -p -m 775 $DATA/qpf
-cd $DATA/qpf
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/qpf"
+cd "${DATA}/qpf" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
+#
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL=GFS
 metatype="qpf"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo $PDY | cut -c3-)
-    gdat="F000-F126-06"
-    gdatpcpn06="F006-F126-06"
-    gdatpcpn12="F012-F126-06"
-    gdatpcpn24="F024-F126-06"
-    gdatpcpn48="F048-F216-06"
-    gdatpcpn60="F060-F126-06"
-    gdatpcpn72="F072-F126-06"
-    gdatpcpn84="F084-F126-06"
-    gdatpcpn96="F096-F126-06"
-    gdatpcpn120="F120-F126-06"
-    gdatpcpn126="F126"
-    run="r"
+gdat="F000-F126-06"
+gdatpcpn06="F006-F126-06"
+gdatpcpn12="F012-F126-06"
+gdatpcpn24="F024-F126-06"
+gdatpcpn48="F048-F216-06"
+gdatpcpn60="F060-F126-06"
+gdatpcpn72="F072-F126-06"
+gdatpcpn84="F084-F126-06"
+gdatpcpn96="F096-F126-06"
+gdatpcpn120="F120-F126-06"
+run="r"
 
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOFplt
-gdfile   = F-${MDL} | ${PDY2}/${cyc}00
+export pgm=gdplot2_nc;. prep_step
+"${GEMEXE}/gdplot2_nc" << EOFplt
+gdfile   = F-${MDL} | ${PDY:2}/${cyc}00
 gdattim  = ${gdat}
 garea    = us
-proj     = 
+proj     =
 map      = 1/1/2/yes
 device   = ${device}
 clear    = yes
@@ -63,20 +53,20 @@ latlon   = 0
 filter   = yes
 
 glevel   = 0
-gvcord   = none 
+gvcord   = none
 skip     = 0
 scale    = 0
 gdpfun   = sm5s(lft4)!sm5s(lft4)  !sm5s(lft4)!kntv(wnd@9950%sgma)
 type     = c/f       !c           !c         !b
 cint     = 2/2       !-10000;0.05 !2/-100/-2
-line     = 20/-32/2  !0;5//0;4/0;0!32//2  
-fint     = -8;-6;-4;-2;0.05;10 
+line     = 20/-32/2  !0;5//0;4/0;0!32//2
+fint     = -8;-6;-4;-2;0.05;10
 fline    = 2;15;21;22;23;0;24
 hilo     = 0         !0
 hlsym    = 1;1//22;22/2;2/hw!0
 clrbar   = 1/V/LL    !0
-wind     = bk0       !bk0          !bk0       !bk10/0.8/2/112!bk0 
-refvec   = 
+wind     = bk0       !bk0          !bk0       !bk10/0.8/2/112!bk0
+refvec   =
 title    = 1/-2/~ ? ${MDL} Best LI AND BL WINDS|~BEST LI!0
 r
 
@@ -89,7 +79,7 @@ type     = c                      !c/f !c         !c             !c             
 cint     = 0.25/0.25/0.5          !0.25/0.75/6.0!4!3/0/540!3/543/1000
 line     = 22///2                 !32//2/2!6//3!4/5/2!5/5/2
 fint     = 0                      !0.5;1.0;1.5;2.0
-fline    = 0                      !0;23;22;30;14       
+fline    = 0                      !0;23;22;30;14
 hilo     = 0                      !0!6/H#;L#/1020-1070;900-1012!0
 HLSYM    = 0                      !0!1.5;1.5//22;22/3;3/hw!0
 clrbar   = 0                      !1/V/LL!0!0
@@ -143,7 +133,7 @@ type     = c!c/f!b
 cint     = 0.25/0.25/0.5!0.25/0.75/6.0
 line     = 22///2!32//2/2
 fint     = !0.5;1.0;1.5;2.0
-fline    = !0;23;22;21;2       
+fline    = !0;23;22;21;2
 hilo     = 0!0
 HLSYM    = 0!0
 clrbar   = 0!1/V/LL
@@ -169,7 +159,7 @@ WIND     = !
 REFVEC   =
 TITLE    = 1/-2/~ ? ${MDL} PCPN POTENTIAL (PW X (1000-440 MB RH)) INCHES OF PW|~PCPN POT!0
 r
- 
+
 glevel   = 850!850!850
 gvcord   = pres!pres!pres
 skip     = 0/1;1
@@ -180,11 +170,11 @@ cint     = -4;-2;0;2;4!2/6/28!3
 line     = 3//1!32//1!6//3
 fint     = 4;8;12;16;20
 fline    = 0;23;22;30;14;2
-hilo     = 0!0!6/H#;L#  
+hilo     = 0!0!6/H#;L#
 hlsym    = 0!0!1.5;1.5//22;22/2;2/hw
 clrbar   = 1/V/LL!0
-wind     = bk0!bk0!bk0!bk9/0.8/2/212 
-refvec   = 
+wind     = bk0!bk0!bk0!bk9/0.8/2/212
+refvec   =
 title    = 1/-2/~ ? ${MDL} @ DEW POINT, WIND, AND HGHT|~@ DEW POINT!0
 r
 
@@ -205,25 +195,25 @@ refvec   =
 title    = 1/-2/~ ? ${MDL} @ DEWPOINT, WIND, AND HGHT|~@ DEWPOINT!0
 r
 
-glevel   = 850                    !850       !0         !850   
+glevel   = 850                    !850       !0         !850
 gvcord   = pres                   !pres      !none      !pres
 skip     = 0/1;2
 scale    = 2                      !-1/2      !0                                    !2
 gdpfun   = sm5s(mag(smul(mixr;wnd)!sm5s(hght)!sm5s(thte)!smul(mixr;wnd)
 type     = c/f                    !c         !c         !a
 cint     = 3                      !3         !5
-line     = 3                      !6//2      !25/10/2   
+line     = 3                      !6//2      !25/10/2
 fint     = 6;12;18;24;30
 fline    = 0;23;22;21;14;15;2
 hilo     = 0!6/H#;L#!0
 hlsym    = 0!1;1//22;22/2;2/hw
 clrbar   = 1/V/LL!0
-wind     = bk0!bk0!bk0!am16/0.6/2/211/0.3!bk0 
-refvec   = 10 
+wind     = bk0!bk0!bk0!am16/0.6/2/211/0.3!bk0
+refvec   = 10
 text     = s/22/2/hw
 title    = 1/-2/~ ? ${MDL} @ MOIST. TRNSPT, HGHT, BL THTE|~@ H2O TRANSPORT!0
 r
- 
+
 glevel	 = 850
 gvcord	 = pres
 skip     = 0/1;1
@@ -234,8 +224,8 @@ cint	 = 2                 !4//304    !4/308/324 !4/328
 line	 = 32/1/2            !23/10/3   !22/10/3   !21/1/2
 fint	 = -14;-10;-6;-2;2;6;10;14!
 fline	 = 7;29;30;24;0;14;15;18;5!
-hilo	 = 
-hlsym	 = 
+hilo	 =
+hlsym	 =
 clrbar	 = 1/V/LL!0
 wind	 = bk0               !bk0       !bk0        !bk0       !bk9/0.8/2/112!bk0
 refvec	 = 10
@@ -343,13 +333,13 @@ refvec   =
 title    = 1/-2/~ ? ${MDL} 6-HOUR TOTAL PCPN, MSLP |~6-HR TOTAL PCPN!0
 r
 
-gdattim  = ${gdatpcpn12} 
+gdattim  = ${gdatpcpn12}
 gdpfun   = p12i
 type     = f
 title    = 1/-2/~ ? ${MDL} 12-HOUR TOTAL PCPN|~12-HR TOTAL PCPN!0
 r
 
-gdattim  = ${gdatpcpn24}       
+gdattim  = ${gdatpcpn24}
 gdpfun   = p24i
 title    = 1/-2/~ ? ${MDL} 24-HOUR TOTAL PCPN|~24-HR TOTAL PCPN!0
 r
@@ -364,12 +354,12 @@ gdpfun   = p60i
 title    = 1/-2/~ ? ${MDL} 60 HOUR TOTAL PCPN|~60-HR TOTAL PCPN!0
 r
 
-gdattim  = ${gdatpcpn72}       
+gdattim  = ${gdatpcpn72}
 gdpfun   = p72i
 title    = 1/-2/~ ? ${MDL} 72 HOUR TOTAL PCPN|~72-HR TOTAL PCPN!0
 r
 
-gdattim  = ${gdatpcpn84}       
+gdattim  = ${gdatpcpn84}
 gdpfun   = p84i
 title    = 1/-2/~ ? ${MDL} 84 HOUR TOTAL PCPN|~84-HR TOTAL PCPN!0
 r
@@ -403,19 +393,19 @@ export err=$?;err_chk
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_us_${metatype}
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-      ${COMOUT}/${mdl}_${PDY}_${cyc}_us_${metatype}
-      if [ $DBN_ALERT_TYPE = "GFS_METAFILE_LAST" ] ; then
-        DBN_ALERT_TYPE=GFS_METAFILE
-        ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-        ${COMOUT}/${mdl}_${PDY}_${cyc}_us_${metatype}
-      fi
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+   "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+      "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
+   if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
+      DBN_ALERT_TYPE=GFS_METAFILE
+      "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+         "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
    fi
 fi
 

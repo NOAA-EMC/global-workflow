@@ -22,3 +22,6 @@ ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
 SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
+COMINecmwf: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ecmwf
+COMINnam: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam
+COMINukmet: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ukmet

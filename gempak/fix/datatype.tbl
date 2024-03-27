@@ -102,10 +102,10 @@ LTNG         $OBS/ltng                 YYYYMMDDHH.ltng           CAT_MSC  SCAT_N
 !
 CLIMO        $GEMPAK/climo             climate_MM.mos            CAT_NIL  SCAT_NIL    1     -1     -1
 !
-GFS          $MODEL/gfs                gfs_YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
-F-GFS        $COMIN                    gfs_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
-F-GFSP       $COMIN                    gfs_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
-F-GFSHPC     $HPCGFS                   gfs_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+GFS          $MODEL/gfs                gfs_1p00_YYYYMMDDHH       CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GFS        $COMIN                    gfs_1p00_YYYYMMDDHHfFFF   CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GFSP       $COMIN                    gfs_1p00_YYYYMMDDHHfFFF   CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GFSHPC     $HPCGFS                   gfs_1p00_YYYYMMDDHHfFFF   CAT_GRD  SCAT_FCT   -1     -1     -1
 GFSEXT       $MODEL/ens                gfs.YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
 GFS1         $MODEL/ens                gfs1.YYYYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1
 GFS2         $MODEL/ens                gfs2.YYYYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1
@@ -156,9 +156,9 @@ F-NAMP20     $COMIN                    nam20_YYYYMMDDHHfFFF      CAT_GRD  SCAT_F
 F-NAMP44     $COMIN                    nam44_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
 F-THREATS    $COMIN                    ${NEST}_YYYYMMDDHHfFFF    CAT_GRD  SCAT_FCT   -1     -1     -1
 F-NAMHPC     $HPCNAM                   nam_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
-GDAS         $MODEL/gdas               gdas_YYMMDDHH             CAT_GRD  SCAT_FCT   -1     -1     -1
-F-GDAS       $COMIN                    gdas_YYYYMMDDHHfFFF       CAT_GRD  SCAT_FCT   -1     -1     -1
-F-GFS        $COMIN                    gfs_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+GDAS         $MODEL/gdas               gdas_1p00_YYYYMMDDHH      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GDAS       $COMIN                    gdas_1p00_YYYYMMDDHHfFFF  CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GFS        $COMIN                    gfs_1p00_YYYYMMDDHHfFFF   CAT_GRD  SCAT_FCT   -1     -1     -1
 F-HWRF       $COMIN                    hwrfp_YYYYMMDDHHfFFF_*    CAT_GRD  SCAT_FCT   -1     -1     -1
 F-HWRFN       $COMIN                   hwrfn_YYYYMMDDHHfFFF_*    CAT_GRD  SCAT_FCT   -1     -1     -1
 F-GHM        $COMIN                    ghmg_YYYYMMDDHHfFFF_*     CAT_GRD  SCAT_FCT   -1     -1     -1

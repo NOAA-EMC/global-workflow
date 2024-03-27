@@ -1,31 +1,35 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_mar_skewt.sh
 #
-# Log :
-# J. Carr/PMB     12/08/2004    Pushed into production
-
 # Set up Local Variables
 #
-set -x
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/MAR_SKEWT"
+cd "${DATA}/MAR_SKEWT" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
 #
-export PS4='MAR_SKEWT:$SECONDS + '
-mkdir -p -m 775 $DATA/MAR_SKEWT
-cd $DATA/MAR_SKEWT
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL="GFS"
 metatype="mar_skewt"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo $PDY | cut -c3-)
 
-for fhr in 000 006 012 018 024 030 036 042 048 054 060 066 072
-do
-    export pgm=gdprof;. prep_step; startmsg
+for fhr in $(seq -f "%03g" -s ' ' 0 6 72); do
+    export pgm=gdprof;. prep_step
 
-$GEMEXE/gdprof << EOFplt
+   "${GEMEXE}/gdprof" << EOFplt
 GDATTIM  = F${fhr}
 GVCORD   = PRES
 GDFILE   = F-${MDL}
@@ -38,12 +42,12 @@ SCALE    = 0
 XAXIS    = -40/50/10/1;1;1
 YAXIS    = 1050/100//1;1;1
 WIND     = bk1
-REFVEC   = 
+REFVEC   =
 WINPOS   = 1
 FILTER   = no
 PANEL    = 0
 TEXT     = 1.2/22/2/hw
-DEVICE   = $device
+DEVICE   = ${device}
 OUTPUT   = T
 THTALN   = 18/1/1
 THTELN   = 23/2/1
@@ -272,25 +276,26 @@ ru
 
 exit
 EOFplt
-export err=$?;err_chk
+   export err=$?;err_chk
 
 done
 
-$GEMEXE/gpend
+"${GEMEXE}/gpend"
 
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_mar_skewt
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job ${COMOUT}/${mdl}_${PDY}_${cyc}_mar_skewt
-   fi
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_skewt"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_skewt"
 fi
 
 exit

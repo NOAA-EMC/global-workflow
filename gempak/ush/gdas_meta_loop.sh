@@ -1,91 +1,59 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gdas_meta_loop
 #
-# Log :
-# D.W.Plummer/NCEP   2/97      Add log header
-# J. Carr/HPC        3/98      Changed to gdplot2
-# J. Carr/HPC        8/98      Changed map to medium resolution
-# J. Carr/HPC        2/99      Changed skip to 0
-# J. Carr/HPC        2/01      Implemented usage on IBM operationally.
-# J. Carr/HPC        5/2001    Added a mn variable for a/b side dbnet root variable.
-# M. Klein/HPC      11/2004    Change fnl to gdas
-# M. Klein/HPC       2/2005    Changed location of working directory to /ptmp 
-# M. Klein/HPC      11/2006    Modify for production on CCS
 
-#cd $DATA
-
-set -xa
+source "${HOMEgfs}/ush/preamble.sh"
 
 device="nc | gdasloop.meta"
 
-PDY2=$(echo $PDY | cut -c3-)
+#
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L "${COMIN}" ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
-if [ "$envir" = "para" ] ; then
+if [[ "${envir}" == "para" ]] ; then
    export m_title="GDASP"
 else
    export m_title="GDAS"
 fi
 
-export COMPONENT=${COMPONENT:-atmos}
-export pgm=gdplot2_nc;. prep_step; startmsg
+export pgm=gdplot2_nc;. prep_step
 
-#
-# Copy in datatype table to define gdfile type
-#
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
-export err=$?
-if [[ $err -ne 0 ]] ; then
-   echo " File datatype.tbl does not exist."
-   exit $err
-fi
-
-#
-# Define previous days
-#
-PDYm1=$($NDATE -24 ${PDY}${cyc} | cut -c -8)
-PDYm2=$($NDATE -48 ${PDY}${cyc} | cut -c -8)
-PDYm3=$($NDATE -72 ${PDY}${cyc} | cut -c -8)
-PDYm4=$($NDATE -96 ${PDY}${cyc} | cut -c -8)
-PDYm5=$($NDATE -120 ${PDY}${cyc} | cut -c -8)
-PDYm6=$($NDATE -144 ${PDY}${cyc} | cut -c -8)
-#
-
-verdays="$PDYm6 $PDYm5 $PDYm4 $PDYm3 $PDYm2 $PDYm1 $PDY"
-
-for day in $verdays
-    do
-    PDY2=$(echo $day | cut -c 3-)
-    if [ $day -eq $PDY ] ; then
-        if [ $cyc -eq "00" ] ; then
-            cycles="00"   
-        elif [ $cyc -eq "06" ] ; then
-            cycles="00 06"
-        elif [ $cyc -eq "12" ] ; then
-            cycles="00 06 12"
-        elif [ $cyc -eq "18" ] ; then
-            cycles="00 06 12 18"
+for (( fhr=24; fhr<=144; fhr+=24 )); do
+    day=$(date --utc +%Y%m%d -d "${PDY} ${cyc} - ${fhr} hours")
+    if (( ${day}${cyc} < SDATE )); then
+        # Stop looking because these cycles weren't run
+        if (( fhr == 24 )); then
+            exit
+        else
+            break
         fi
-    else
-        cycles="00 06 12 18"
     fi
 
-    for cycle in $cycles
-        do
-#  Test with GDAS in PROD
-#        grid="${COMROOT}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
-         export COMIN=${COMINgdas}.${day}/${cycle}/${COMPONENT}/gempak
-         grid="${COMINgdas}.${day}/${cycle}/${COMPONENT}/gempak/gdas_${day}${cycle}f000"
+    cycles=$(seq -s ' ' -f "%02g" 0 6 "${cyc}")
+    for cycle in ${cycles}; do
+        #  Test with GDAS in PROD
+        YMD=${day} HH=${cyc} GRID=1p00 generate_com "COM_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
+        export COMIN="${RUN}.${day}${cycle}"
+        if [[ ! -L "${COMIN}" ]]; then
+            ln -sf "${COM_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
+        fi
+        gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
-$GEMEXE/gdplot2_nc << EOF
+        "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL = mepowo.gsf
-GDFILE	= $grid
-GDATTIM	= F00
-DEVICE	= $device
+GDFILE	= ${gdfile}
+GDATTIM	= F000
+DEVICE	= ${device}
 PANEL	= 0
 TEXT	= m/21//hw
 CONTUR	= 2
-PROJ    =  
+PROJ    =
 GAREA   = nam
 LATLON	= 0
 CLEAR	= yes
@@ -106,9 +74,9 @@ CLRBAR  = 1/V/LL              !0
 WIND    = am0
 MAP	= 1/1/1
 REFVEC  =
-TITLE   = 1/0/~ $m_title PW, EST MSLP, THICKNESS|~NAM PRCP WATER!0
+TITLE   = 1/0/~ ${m_title} PW, EST MSLP, THICKNESS|~NAM PRCP WATER!0
 r
- 
+
 PROJ    = STR/90;-105;0
 GAREA   = 2;-139;27;-22
 LATLON  = 1/1/1//15;15
@@ -124,11 +92,11 @@ LINE    = 7/5/1/2            !20/1/2/1
 FINT    = 15;21;27;33;39;45;51;57
 FLINE   = 0;23-15
 HILO    = 2;6/X;N/10-99;10-99!
-HLSYM   = 
+HLSYM   =
 CLRBAR  = 1
 WIND    = 0
 REFVEC  =
-TITLE   = 5/-2/~ $m_title @ HGT AND VORTICITY|~NAM @ HGT AND VORT!0
+TITLE   = 5/-2/~ ${m_title} @ HGT AND VORTICITY|~NAM @ HGT AND VORT!0
 r
 
 GLEVEL	= 250
@@ -146,50 +114,24 @@ HLSYM	=
 CLRBAR	= 1
 WIND	= 0                !Bk9/.7/2/b/!
 REFVEC	=
-TITLE	= 5/-2/~ $m_title @ HGHT, ISOTACHS AND WIND (KTS)|~NAM @ HGT & WIND!0
+TITLE	= 5/-2/~ ${m_title} @ HGHT, ISOTACHS AND WIND (KTS)|~NAM @ HGT & WIND!0
 FILTER  = n
 r
 
 exit
 EOF
 
-    done
+        gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
-done
-
-for day in $verdays
-    do
-    PDY2=$(echo $day | cut -c 3-)
-    if [ $day -eq $PDY ] ; then
-        if [ $cyc -eq "00" ] ; then
-            cycles="00"
-        elif [ $cyc -eq "06" ] ; then
-            cycles="00 06"
-        elif [ $cyc -eq "12" ] ; then
-            cycles="00 06 12"
-        elif [ $cyc -eq "18" ] ; then
-            cycles="00 06 12 18"
-        fi
-    else
-        cycles="00 06 12 18"
-    fi
-
-    for cycle in $cycles
-        do
-#  Test with GDAS in PROD
-#        grid="${COMROOT}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
-         export COMIN=${COMINgdas}.${day}/${cycle}/${COMPONENT}/gempak
-         grid="${COMINgdas}.${day}/${cycle}/${COMPONENT}/gempak/gdas_${day}${cycle}f000"
-   
-$GEMEXE/gdplot2_nc << EOF
+"${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL = mepowo.gsf
-GDFILE	= $grid
-GDATTIM	= F00
-DEVICE	= $device
+GDFILE	= ${gdfile}
+GDATTIM	= F000
+DEVICE	= ${device}
 PANEL	= 0
 TEXT	= m/21//hw
 CONTUR	= 1
-PROJ    =  
+PROJ    =
 GAREA   = samps
 LATLON	= 1/1/1//15;15
 CLEAR	= yes
@@ -210,9 +152,9 @@ CLRBAR  = 1/V/LL             !0
 WIND    = am0
 MAP	= 1/1/1
 REFVEC  =
-TITLE   = 1/0/~ $m_title PW, MSLP, THICKNESS|~SAM PRCP WATER!0
+TITLE   = 1/0/~ ${m_title} PW, MSLP, THICKNESS|~SAM PRCP WATER!0
 r
- 
+
 GLEVEL  = 500
 GVCORD  = PRES
 SKIP    = 0                  !0       !0                  !0        !0
@@ -225,11 +167,11 @@ LINE    = 7/5/1/2            !29/5/1/2!7/5/1/2            !29/5/1/2 !20/1/2/1
 FINT    = 16;20;24;28;32;36;40;44
 FLINE   = 0;23-15
 HILO    = 2;6/X;N/10-99;10-99!        !2;6/X;N/10-99;10-99!         !
-HLSYM   = 
+HLSYM   =
 CLRBAR  = 1
 WIND    = 0
 REFVEC  =
-TITLE   = 5/-2/~ $m_title @ HGT AND VORTICITY|~SAM @ HGT & VORT!0
+TITLE   = 5/-2/~ ${m_title} @ HGT AND VORTICITY|~SAM @ HGT & VORT!0
 r
 
 GLEVEL	= 250
@@ -247,7 +189,7 @@ HLSYM	=
 CLRBAR	= 1
 WIND	= 0                !Bk9/.7/2/b/!
 REFVEC	=
-TITLE	= 5/-2/~ $m_title @ HGHT, ISOTACHS AND WIND (KTS)|~SAM @ HGT & WIND!0
+TITLE	= 5/-2/~ ${m_title} @ HGHT, ISOTACHS AND WIND (KTS)|~SAM @ HGT & WIND!0
 FILTER  = n
 r
 
@@ -261,11 +203,11 @@ TYPE    = c                            !c
 CINT    = 1                            !4
 LINE    = 22/5/2/1                     !10/1/1
 FINT    =
-FLINE   = 
+FLINE   =
 HILO    =                              !26;2/H#;L#/1020-1070;900-1012/3/30;30/y
 HLSYM   =                              !2;1.5//21//hw
 WIND    = 0
-TITLE   = 1/-1/~ $m_title PMSL, 1000-850mb THKN|~SAM PMSL, 1000-850 TK!0
+TITLE   = 1/-1/~ ${m_title} PMSL, 1000-850mb THKN|~SAM PMSL, 1000-850 TK!0
 r
 
 exit
@@ -274,27 +216,28 @@ EOF
     done
 done
 
-export err=$?;err_chk
+export err=$?
+
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l gdasloop.meta
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s gdasloop.meta ]]; then
+    echo "FATAL ERROR: Failed to create gdasloop meta file"
+    exit "${err}"
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-    mv gdasloop.meta ${COMOUT}/gdas_${PDY}_${cyc}_loop
-    export err=$?
-    if [[ $err -ne 0 ]] ; then
-      echo " File gdasloop.meta does not exist."
-      exit $err
-    fi
+mv gdasloop.meta "${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
+export err=$?
+if (( err != 0 )) ; then
+    echo "FATAL ERROR: Failed to move meta file to ${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
+    exit "${err}"
+fi
 
-    if [ $SENDDBN = "YES" ] ; then
-        ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-        $COMOUT/gdas_${PDY}_${cyc}_loop
-    fi
+if [[ ${SENDDBN} == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
 fi
 
 exit

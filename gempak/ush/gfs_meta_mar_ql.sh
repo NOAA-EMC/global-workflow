@@ -1,39 +1,43 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_mar_ql.sh
 #
-# Log :
-# J. Carr/PMB    12/07/2004   Pushed into production
-#
 # Set up Local Variables
 #
-set -x
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/MAR_QL"
+cd "${DATA}/MAR_QL" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
 #
-export PS4='MAR_QL_F${fend}:$SECONDS + '
-mkdir -p -m 775  $DATA/MAR_QL
-cd $DATA/MAR_QL
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL="GFS"
 metatype="mar_ql"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo $PDY | cut -c3-)
-# fend=180
 
-export pgm=gdplot2_nc;. prep_step; startmsg
+export pgm=gdplot2_nc;. prep_step
 
-$GEMEXE/gdplot2_nc << EOFplt
+"${GEMEXE}/gdplot2_nc" << EOFplt
 \$MAPFIL=mepowo.gsf+mehsuo.ncp+mereuo.ncp+mefbao.ncp
-gdfile	= F-${MDL} | ${PDY2}/${cyc}00
+gdfile	= F-${MDL} | ${PDY:2}/${cyc}00
 gdattim	= f00-f${fend}-6
 GAREA	= 15;-100;70;5
 PROJ	= mer//3;3;0;1
 MAP	= 31 + 6 + 3 + 5
 LATLON	= 18/2/1/1/10
 CONTUR	= 0
-device	= $device 
+device	= ${device}
 GLEVEL	= 9950!0
 GVCORD	= sgma!none
 PANEL	= 0
@@ -83,7 +87,7 @@ ru
 
 GLEVEL  = 500
 GVCORD  = PRES
-SKIP    = 0                  
+SKIP    = 0
 SCALE   = 5                  !-1
 GDPFUN   = (avor(wnd))        !hght
 TYPE   = c/f                !c
@@ -92,7 +96,7 @@ LINE    = 7/5/1/2            !20/1/2/1
 FINT    = 15;21;27;33;39;45;51;57
 FLINE   = 0;23-15
 HILO    = 2;6/X;N/10-99;10-99!          !
-HLSYM   = 
+HLSYM   =
 WIND    = 0
 TITLE   = 5//~ ? GFS @ HEIGHTS AND VORTICITY|~WATL @ HGHT AND VORT!0
 li
@@ -148,7 +152,7 @@ ru
 
 GLEVEL  = 500
 GVCORD  = PRES
-SKIP    = 0                  
+SKIP    = 0
 SCALE   = 5                  !-1
 GDPFUN  = (avor(wnd))        !hght
 TYPE    = c/f                !c
@@ -157,27 +161,29 @@ LINE    = 7/5/1/2            !20/1/2/1
 FINT    = 15;21;27;33;39;45;51;57
 FLINE   = 0;23-15
 HILO    = 2;6/X;N/10-99;10-99!          !
-HLSYM   = 
+HLSYM   =
 WIND    = 0
 TITLE   = 5//~ ? GFS @ HEIGHTS AND VORTICITY|~EPAC @ HGHT AND VORT!0
 li
 ru
 exit
 EOFplt
+export err=$?;err_chk
 
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_mar_ql
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job ${COMOUT}/${mdl}_${PDY}_${cyc}_mar_ql
-   fi
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_ql"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_ql"
 fi
 
 exit

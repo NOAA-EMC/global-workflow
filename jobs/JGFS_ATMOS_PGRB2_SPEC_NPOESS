@@ -21,7 +21,7 @@ export model=${model:-gfs}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_MASTER COM_ATMOS_GOES
 GRID="0p50" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GRIB_0p50:COM_ATMOS_GRIB_GRID_TMPL
 
 mkdir -m 775 -p "${COM_ATMOS_GOES}"

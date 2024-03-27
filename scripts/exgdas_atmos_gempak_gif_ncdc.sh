@@ -6,55 +6,34 @@
 # in the future, we should move it above somewhere else.
 ##############################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-cd $DATA
+cd "${DATA}" || exit 2
 
-export NTS=${HOMEgfs}/gempak/ush/restore
+export NTS="${HOMEgfs}/gempak/ush/restore"
 
-if [ $MODEL = GDAS ]
-then
-    case $MODEL in
-      GDAS) fcsthrs="000";;
-    esac
+if [[ ${MODEL} == GDAS ]]; then
+    fcsthrs="000"
 
-    export fhr
-    for fhr in $fcsthrs
-    do
-        icnt=1
-        maxtries=180
-        while [ $icnt -lt 1000 ]
-        do
-          if [ -r ${COMIN}/${RUN}_${PDY}${cyc}f${fhr} ] ; then
-            break
-          else
-            sleep 20
-            let "icnt=icnt+1"
-          fi
-          if [ $icnt -ge $maxtries ]
-          then
-            msg="ABORTING after 1 hour of waiting for F$fhr to end."
-            err_exit $msg
-          fi
-        done
+    sleep_interval=20
+    max_tries=180
+    export fhr3
+    for fhr3 in ${fcsthrs}; do
+        gempak_file="${COM_ATMOS_GEMPAK_1p00}/${RUN}_1p00_${PDY}${cyc}f${fhr3}"
+        if ! wait_for_file "${gempak_file}" "${sleep_interval}" "${max_tries}" ; then
+            echo "FATAL ERROR: ${gempak_file} not found after ${max_tries} iterations"
+            exit 10
+        fi
 
-       cp ${COMIN}/${RUN}_${PDY}${cyc}f${fhr} gem_grids${fhr}.gem
-       export err=$?
-       if [[ $err -ne 0 ]] ; then
-          echo " File: ${COMIN}/${RUN}_${PDY}${cyc}f${fhr} does not exist."
-          exit $err
-       fi
-     
-       if [ $cyc -eq 00 -o $cyc -eq 12 ]
-       then
-          ${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr}_gif.sh
-          if [ ! -f ${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr}_gif.sh ] ; then
-             echo "WARNING: ${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr}_gif.sh FILE is missing"
-          fi
-       fi
+        cp "${gempak_file}" "gem_grids${fhr3}.gem"
+        export err=$?
+        if (( err != 0 )) ; then
+            echo "FATAL: Could not copy ${gempak_file}"
+            exit "${err}"
+        fi
 
+        "${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh"
     done
 fi
-
 
 exit
