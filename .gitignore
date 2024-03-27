@@ -162,6 +162,7 @@ scripts/exemcsfc_global_sfc_prep.sh
 ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
+ush/exgdas_global_marine_analysis_ecen.py
 ush/exglobal_prep_ocean_obs.py
 ush/fix_precip.sh
 ush/fv3gfs_driver_grid.sh

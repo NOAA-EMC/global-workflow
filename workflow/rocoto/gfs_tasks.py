@@ -677,10 +677,37 @@ class GFSTasks(Tasks):
 
         return task
 
-    def ocnanalchkpt(self):
+    def ocnanalecen(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('ocnanalecen')
+        task_name = f'{self.cdump}ocnanalecen'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalecen.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def ocnanalchkpt(self):
+
+        deps = []
+        if self.app_config.do_hybvar:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalecen'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_mergensst:
             data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.sfcanl.nc'
