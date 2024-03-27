@@ -23,12 +23,8 @@ def parse_args():
     parser.add_argument('--gist', help='create a gist of the file', nargs=1, metavar='identifier_string', required=False)
     parser.add_argument('--repo', help='create a file in a repo', nargs=1, metavar='path_header', required=False)
     args = parser.parse_args()
-    # if not args.delete_gists and not args.file:
-    #    parser.error("--file is required when --delete_gists is not used")
-    if not args.gist and not args.repo:  # At least one of the two is required
-        parser.error("--gist or --repo is required")
-    if args.gist and args.repo:  # can not use booth
-        parser.error("only use --gist or --repo")
+    if bool(args.gist) != bool(args.repo):  # Exactly one of the two is required
+        parser.error("Exactly one of --gist and --repo is required")
     return args
 
 
