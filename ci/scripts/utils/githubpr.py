@@ -119,5 +119,6 @@ class GitHubPR(Github):
                             break
                     else:
                         pr_list.append(pull.number)
+                        break
 
         return pr_list
