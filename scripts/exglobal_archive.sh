@@ -33,6 +33,7 @@ source "${USHgfs}/file_utils.sh"
 
 [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
 nb_copy "${COM_ATMOS_ANALYSIS}/${APREFIX}gsistat" "${ARCDIR}/gsistat.${RUN}.${PDY}${cyc}"
+nb_copy "${COM_SNOW_ANALYSIS}/${APREFIX}snowstat" "${ARCDIR}/snowstat.${RUN}.${PDY}${cyc}"
 if [[ ${DO_AERO} = "YES" ]]; then
    nb_copy "${COM_CHEM_ANALYSIS}/${APREFIX}aerostat" "${ARCDIR}/aerostat.${RUN}.${PDY}${cyc}"
 fi
@@ -291,7 +292,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
             stat_chgrp=$?
             ${HSICMD} chmod 640 "${tar_fl}"
             stat_chgrp=$((stat_chgrp+$?))
-            if [ "${stat_chgrp}" -gt 0 ]; then
+            if [[ "${stat_chgrp}" -gt 0 ]]; then
                 echo "FATAL ERROR: Unable to properly restrict ${tar_fl}!"
                 echo "Attempting to delete ${tar_fl}"
                 ${HSICMD} rm "${tar_fl}"
