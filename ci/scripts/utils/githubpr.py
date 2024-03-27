@@ -116,6 +116,7 @@ class GitHubPR(Github):
                     if host is not None:
                         if host.lower() in label.name.lower():
                             pr_list.append(pull.number)
+                            break
                     else:
                         pr_list.append(pull.number)
 
