@@ -94,8 +94,8 @@ pipeline {
                                                 sh(script: "${build_args}")
                                             } catch (Exception error_build) {
                                                 echo "Failed to build system: ${error_build.getMessage()}"
-                                                if ( fileExists("logs/error_log.logs") ) {
-                                                    def fileContent = readFile 'logs/error_log.logs'
+                                                if ( fileExists("logs/error.logs") ) {
+                                                    def fileContent = readFile 'logs/error.logs'
                                                     def lines = fileContent.readLines()
                                                     for (line in lines) {
                                                         echo "archiving: ${line}"
