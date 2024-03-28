@@ -446,7 +446,7 @@ EOF
   else
     ISEED=${ISEED:-0}
   fi
-  if [[ ${DO_CA:-"NO"} = "YES" ]]; then
+  if (( MEMBER > 0 )) && [[ ${DO_CA:-"NO"} = "YES" ]]; then
     ISEED_CA=$(( (current_cycle*10000 + ${MEMBER#0}*100 + 18) % 2147483647 ))
   fi
   if [[ ${DO_SKEB} = "YES" ]]; then
