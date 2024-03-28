@@ -13,7 +13,7 @@ fi
 
 # Restart conditions for GFS cycle come from GDAS
 rCDUMP=${RUN}
-[[ ${RUN} == "gfs" ]] && export rCDUMP="gdas"
+export rCDUMP="${RUN/gfs/gdas}"
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
