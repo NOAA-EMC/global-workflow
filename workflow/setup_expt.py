@@ -385,7 +385,7 @@ def input_args(*argv):
     Method to collect user arguments for `setup_expt.py`
     """
 
-    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW']
+    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW', 'S2SWA']
 
     def _common_args(parser):
         parser.add_argument('--pslot', help='parallel experiment name',
@@ -433,7 +433,7 @@ def input_args(*argv):
 
     def _gfs_or_gefs_forecast_args(parser):
         parser.add_argument('--app', help='UFS application', type=str,
-                            choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
+                            choices=ufs_apps, required=False, default='ATM')
         parser.add_argument('--gfs_cyc', help='Number of forecasts per day', type=int,
                             choices=[1, 2, 4], default=1, required=False)
         return parser
