@@ -3,7 +3,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlrun" -c "base atmanl atmanlrun"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlvar" -c "base atmanl atmanlvar"
 
 ##############################################
 # Set variables used in the script
@@ -18,7 +18,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlrun" -c "base atmanl atmanlrun"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_analysis_run.py}
+EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_analysis_variational.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

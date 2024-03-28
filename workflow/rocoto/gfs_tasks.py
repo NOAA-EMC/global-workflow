@@ -411,21 +411,45 @@ class GFSTasks(Tasks):
 
         return task
 
-    def atmanlrun(self):
+    def atmanlvar(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('atmanlrun')
-        task_name = f'{self.cdump}atmanlrun'
+        resources = self.get_resource('atmanlvar')
+        task_name = f'{self.cdump}atmanlvar'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmanlrun.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmanlvar.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def atmanlfv3inc(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlvar'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('atmanlfv3inc')
+        task_name = f'{self.cdump}atmanlfv3inc'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmanlfv3inc.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -438,7 +462,7 @@ class GFSTasks(Tasks):
     def atmanlfinal(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlrun'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlfv3inc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

@@ -31,7 +31,8 @@ class AtmAnalysis(Analysis):
         _res = int(self.config.CASE[1:])
         _res_anl = int(self.config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config.assim_freq}H") / 2)
-        _jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
+        _var_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
+        _fv3inc_yaml = os.path.join(self.runtime_config.DATA, 'fv3jedi_fv3inc.yaml')
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -48,7 +49,8 @@ class AtmAnalysis(Analysis):
                 'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
-                'jedi_yaml': _jedi_yaml,
+                'var_yaml': _var_yaml,
+                'fv3inc_yaml': _fv3inc_yaml,
             }
         )
 
@@ -65,7 +67,8 @@ class AtmAnalysis(Analysis):
         - staging FV3-JEDI fix files
         - staging B error files
         - staging model backgrounds
-        - generating a YAML file for the JEDI executable
+        - generating a YAML file for the JEDI variational executable
+        - generating a YAML file for the JEDI FV3 increment converter executable
         - creating output directories
         """
         super().initialize()
@@ -100,9 +103,15 @@ class AtmAnalysis(Analysis):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config))).sync()
 
         # generate variational YAML file
-        logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")
-        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
-        logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
+        logger.debug(f"Generate variational YAML file: {self.task_config.var_yaml}")
+        save_as_yaml(self.task_config.jedi_config, self.task_config.var_yaml)
+        logger.info(f"Wrote variational YAML to: {self.task_config.var_yaml}")
+
+        # generate FV3 increment converter YAML file
+        logger.debug(f"Generate FV3 increment converter YAML file: {self.task_config.fv3inc_yaml}")
+        fv3inc_yaml = parse_j2yaml(self.task_config.FV3INCYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+        save_as_yaml(fv3inc_yaml, self.task_config.fv3inc_yaml)
+        logger.info(f"Wrote FV3 increment converter YAML to: {self.task_config.fv3inc_yaml}")
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -113,14 +122,34 @@ class AtmAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self: Analysis) -> None:
+    def variational(self: Analysis) -> None:
 
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMANL)
+        exec_cmd = Executable(self.task_config.APRUN_ATMANLVAR)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
         exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+        exec_cmd.add_default_arg(self.task_config.var_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
+    @logit(logger)
+    def fv3_increment(self: Analysis) -> None:
+
+        chdir(self.task_config.DATA)
+
+        exec_cmd = Executable(self.task_config.APRUN_ATMANLFV3INC)
+        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_fv3inc.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg(self.task_config.fv3inc_yaml)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
@@ -141,7 +170,7 @@ class AtmAnalysis(Analysis):
         - tar output diag files and place in ROTDIR
         - copy the generated YAML file from initialize to the ROTDIR
         - copy the updated bias correction files to ROTDIR
-        - write UFS model readable atm incrment file
+        - copy UFS model readable atm FV3 increment file to ROTDIR
 
         """
         # ---- tar up diags
@@ -167,7 +196,7 @@ class AtmAnalysis(Analysis):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
+        logger.info(f"Copying {self.task_config.var_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
         src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         logger.debug(f"Copying {src} to {dest}")
@@ -209,9 +238,16 @@ class AtmAnalysis(Analysis):
         }
         FileHandler(bias_copy).sync()
 
-        # Create UFS model readable atm increment file from UFS-DA atm increment
-        logger.info("Create UFS model readable atm increment file from UFS-DA atm increment")
-        self.jedi2fv3inc()
+        # Copy FV3 atm increment to comrot directory
+        cdate = to_fv3time(self.task_config.current_cycle)
+        cdate_inc = cdate.replace('.', '_')
+        src = os.path.join(self.task_config.DATA, 'anl', f"atminc.{cdate_inc}z.nc4")
+        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f'{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc')
+        logger.debug(f"Copying {src} to {dest}")
+        inc_copy = {
+            'copy': [[src, dest]]
+        }
+        FileHandler(inc_copy).sync()
 
     def clean(self):
         super().clean()
@@ -401,43 +437,3 @@ class AtmAnalysis(Analysis):
             'copy': berror_list,
         }
         return berror_dict
-
-    @logit(logger)
-    def jedi2fv3inc(self: Analysis) -> None:
-        """Generate UFS model readable analysis increment
-
-        This method writes a UFS DA atm increment in UFS model readable format.
-        This includes:
-        - write UFS-DA atm increments using variable names expected by UFS model
-        - compute and write delp increment
-        - compute and write hydrostatic delz increment
-
-        Please note that some of these steps are temporary and will be modified
-        once the modle is able to directly read atm increments.
-
-        """
-        # Select the atm guess file based on the analysis and background resolutions
-        # Fields from the atm guess are used to compute the delp and delz increments
-        case_anl = int(self.task_config.CASE_ANL[1:])
-        case = int(self.task_config.CASE[1:])
-
-        file = f"{self.task_config.GPREFIX}" + "atmf006" + f"{'' if case_anl == case else '.ensres'}" + ".nc"
-        atmges_fv3 = os.path.join(self.task_config.COM_ATMOS_HISTORY_PREV, file)
-
-        # Set the path/name to the input UFS-DA atm increment file (atminc_jedi)
-        # and the output UFS model atm increment file (atminc_fv3)
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
-        atminc_jedi = os.path.join(self.task_config.DATA, 'anl', f'atminc.{cdate_inc}z.nc4')
-        atminc_fv3 = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc")
-
-        # Reference the python script which does the actual work
-        incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
-
-        # Execute incpy to create the UFS model atm increment file
-        cmd = Executable(incpy)
-        cmd.add_default_arg(atmges_fv3)
-        cmd.add_default_arg(atminc_jedi)
-        cmd.add_default_arg(atminc_fv3)
-        logger.debug(f"Executing {cmd}")
-        cmd(output='stdout', error='stderr')

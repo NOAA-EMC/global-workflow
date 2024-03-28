@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# exglobal_atm_analysis_run.py
+# exglobal_atm_analysis_fv3_increment.py
 # This script creates an AtmAnalysis object
-# and runs the execute method
-# which executes the global atm variational analysis
+# and runs the increment method
+# which converts the JEDI increment into an FV3 increment
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     # Instantiate the atm analysis task
     AtmAnl = AtmAnalysis(config)
-    AtmAnl.execute()
+    AtmAnl.fv3_increment()

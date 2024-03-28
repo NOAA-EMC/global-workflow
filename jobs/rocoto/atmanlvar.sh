@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="atmanlrun"
+export job="atmanlvar"
 export jobid="${job}.$$"
 
 ###############################################################
@@ -19,6 +19,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_ATM_ANALYSIS_RUN"
+"${HOMEgfs}/jobs/JGLOBAL_ATM_ANALYSIS_VARIATIONAL"
 status=$?
 exit "${status}"
