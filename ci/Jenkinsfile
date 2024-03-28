@@ -102,7 +102,7 @@ pipeline {
                                                         if (fileExists("${line}") && readFile("${line}").length() > 0 ){
                                                             try {
                                                                 archiveArtifacts artifacts: "${line}", fingerprint: true
-                                                                error_logs = error_logs + "${HOMEgfs}/sorc/logs/${line} "
+                                                                error_logs = error_logs + "${HOMEgfs}/sorc/${line} "
                                                                 error_logs_message = error_logs_message + "${HOMEgfs}/sorc/logs/${line}\n"
                                                             }
                                                             catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
