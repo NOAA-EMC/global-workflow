@@ -51,7 +51,6 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-$GPREFIX}
 
 # Variables
-NMEM_ENS=${NMEM_ENS:-80}
 imp_physics=${imp_physics:-99}
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 DOIAU=${DOIAU_ENKF:-"NO"}
@@ -59,10 +58,15 @@ FHMIN=${FHMIN_ECEN:-3}
 FHMAX=${FHMAX_ECEN:-9}
 FHOUT=${FHOUT_ECEN:-3}
 FHSFC=${FHSFC_ECEN:-$FHMIN}
-if [ $RUN = "enkfgfs" ]; then
+if [ "${RUN}" = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
+   NMEM_ENS=${NMEM_ENS_GFS:-30}
+   ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
+   mem_offset=$((ec_offset * cyc/6))
 else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
+   NMEM_ENS=${NMEM_ENS:-80}
+   mem_offset=0
 fi
 
 # global_chgres stuff
@@ -106,12 +110,17 @@ ENKF_SUFFIX="s"
 for FHR in $(seq $FHMIN $FHOUT $FHMAX); do
 
 for imem in $(seq 1 $NMEM_ENS); do
+   smem=$((imem + mem_offset))
+   if (( smem > 80 )); then
+      smem=$((smem - 80))
+   fi
+   gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
 
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
       COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-   MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
+   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
       COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
    ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atmf00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
