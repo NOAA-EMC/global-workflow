@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+########## config.epsn ##########
+# Snow Obs Prep specific
+
+echo "BEGIN: config.epsn"
+
+source "${EXPDIR}/config.prepsnowobs"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" epsn
+
+echo "END: config.epsn"

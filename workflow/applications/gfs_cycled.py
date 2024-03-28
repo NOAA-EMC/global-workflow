@@ -58,6 +58,8 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
+            if self.do_jedisnowda:
+                configs += ['epsn']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
         if self.do_fit2obs:
@@ -163,6 +165,8 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            if self.do_jedisnowda:
+                hybrid_tasks += ['epsn']
             hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks

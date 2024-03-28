@@ -1,8 +1,20 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA=${DATA:-${DATAROOT}/${RUN}snowanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prepsnowobs" -c "base prepsnowobs"
+if (( 10#${ENSMEM:-0} > 0 )); then
+  source "${HOMEgfs}/ush/jjob_header.sh" -e "epsn" -c "base prepsnowobs epsn"
+  export CASE=${CASE_ENS}
+else
+  source "${HOMEgfs}/ush/jjob_header.sh" -e "prepsnowobs" -c "base prepsnowobs"
+fi
+
+# Restart conditions for GFS cycle come from GDAS
+rCDUMP=${RUN}
+[[ ${RUN} == "gfs" ]] && export rCDUMP="gdas"
+
+# Get OBS for ENKFGDAS run from GDAS
+oCDUMP=${RUN}
+[[ ${RUN} == "enkfgdas" ]] && export oCDUMP="gdas"
 
 ##############################################
 # Set variables used in the script
@@ -12,16 +24,18 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepsnowobs" -c "base prepsnowobs"
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
-GDUMP="gdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
+RUN=${oCDUMP} MEMDIR="" YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS_IN:COM_OBS_TMPL
+RUN=${RUN} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS_OUT:COM_OBS_TMPL
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+mkdir -m 775 -p "${COM_OBS_OUT}"
 
 ###############################################################
 # Run relevant script
@@ -40,5 +54,11 @@ status=$?
 if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
