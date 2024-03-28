@@ -186,7 +186,11 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
         export TILE_NUM=$n
 
         for imem in $(seq 1 $NMEM_ENS); do
-
+            smem=$((imem + mem_offset))
+            if (( smem > 80 )); then
+               smem=$((smem - 80))
+            fi
+            gmemchar="mem"$(printf %03i "$smem")
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 
