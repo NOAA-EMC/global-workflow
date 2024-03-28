@@ -233,7 +233,7 @@ export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set 
 export FHOUT_OCNICE=3
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
-export EUPD_CYC="gdas"
+export EUPD_CYC="@EUPD_CYC@"
 
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
@@ -295,16 +295,20 @@ export DO_MERGENSST="@DO_MERGENSST@"
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
 export NMEM_ENS=@NMEM_ENS@
-export NMEM_ENS_GFS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
+
+# Early-cycle EnKF parameters
+export NMEM_ENS_GFS=30
+export NMEM_ENS_GFS_OFFSET=20
+export DO_CALC_INCREMENT_ENKF_GFS="NO"
 
 # EnKF output frequency
 if [[ ${DOHYBVAR} = "YES" ]]; then
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
-    export FHMAX_ENKF_GFS=120
+    export FHMAX_ENKF_GFS=@FHMAX_ENKF_GFS@
     export FHOUT_ENKF_GFS=3
     if [[ ${l4densvar} = ".true." ]]; then
         export FHOUT=1
@@ -349,9 +353,6 @@ export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 
-# Write analysis files for early cycle EnKF
-export DO_CALC_INCREMENT_ENKF_GFS="YES"
-
 # Stratospheric increments to zero
 export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 export INCVARS_EFOLD="5"
@@ -383,10 +384,13 @@ export FITSARC="YES"
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
-# The monitor jobs are not yet supported for JEDIATMVAR
+# The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
+   export DO_VMINMON="NO"     # GSI minimization monitoring
+# The minimization monitor is not yet supported on RDHPCS Hera for Rocky-8
+elif [[ ${machine} = "HERA" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
 
