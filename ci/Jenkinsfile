@@ -2,6 +2,7 @@ def Machine = 'none'
 def machine = 'none'
 def HOME = 'none'
 def caseList = ''
+// Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
 
 pipeline {
@@ -82,11 +83,40 @@ pipeline {
                                         }
                                     } else {
                                         checkout scm
+                                        def error_logs = ""
+                                        def error_logs_message = ""
                                         def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
                                         def build_args_list = builds_file['builds']
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
                                         dir("${HOMEgfs}/sorc") {
-                                            sh(script: "${build_args}")
+                                            try {
+                                                sh(script: "${build_args}")
+                                            } catch (Exception error_build) {
+                                                echo "Failed to build system: ${error_build.getMessage()}"
+                                                if ( fileExists("logs/error_log.logs") ) {
+                                                    def fileContent = readFile 'logs/error_log.logs'
+                                                    def lines = fileContent.readLines()
+                                                    for (line in lines) {
+                                                        echo "archiving: ${line}"
+                                                        if (fileExists("sorc/logs/${line}") && readFile("sorc/logs/${line}").length() > 0 ){
+                                                            try {
+                                                                archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                                error_logs = error_logs + "${HOMEgfs}/sorc/logs/${line} "
+                                                                error_logs_message = error_logs_message + "${HOMEgfs}/sorc/logs/${line}\n"
+                                                            }
+                                                            catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
+                                                        }
+                                                    }
+                                                    repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                    gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                }
+                                                try {
+                                                    pullRequest.comment("Build failed on **${Machine}** with error logs:\n\n```${error_logs_message}```\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
+                                                } catch (Exception error_comment) {
+                                                    echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                                }
+                                                error("Failed to build system on ${Machine}")
+                                            }
                                             sh(script: './link_workflow.sh')
                                             sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
                                         }
@@ -147,27 +177,38 @@ pipeline {
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
-                                ws(HOMEgfs) {
-                                    pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
-                                    try {
-                                       sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
-                                    } catch (Exception e) {
-                                        sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
-                                        ws(HOME) {
-                                            if (fileExists('RUNTESTS/error.logs')) {
-                                                def error_logs = sh(script: "cat RUNTESTS/error.logs", returnStdout: true).trim()
-                                                try {
-                                                    pullRequest.comment("Experiment ${Case} failed on ${Machine}\n\nError logs:\n\n${error_logs}")
-                                                } catch (Exception error) {
-                                                    echo "Failed to comment on PR: ${error.getMessage()}"
-                                                }
-                                                def fileContent = readFile 'RUNTESTS/error.logs'
-                                                def lines = fileContent.readLines()
-                                                for (line in lines) {
-                                                    echo "archiving: ${line}"
-                                                    archiveArtifacts artifacts: "${line}", fingerprint: true
+                                pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
+                                try {
+                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
+                                } catch (Exception error_experment) {
+                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
+                                    ws(HOME) {
+                                        def error_logs = ""
+                                        def error_logs_message = ""
+                                        if (fileExists("RUNTESTS/error.logs")) {
+                                            def fileContent = readFile 'RUNTESTS/error.logs'
+                                            def lines = fileContent.readLines()
+                                            for (line in lines) {
+                                                echo "archiving: ${line}"
+                                                if (fileExists("${HOME}/${line}") && readFile("${HOME}/${line}").length() > 0) {
+                                                    try {
+                                                        archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                        error_logs = error_logs + "${HOME}/${line} "
+                                                        error_logs_message = error_logs_message + "${HOME}/${line}\n"
+                                                    } catch (Exception error_arch) {
+                                                        echo "Failed to archive error log ${line}: ${error_arch.getMessage()}"
+                                                    }
                                                 }
                                             }
+                                            repo_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                            gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                            try {
+                                                pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
+                                            } catch (Exception error_comment) {
+                                                echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                            }
+                                        } else {
+                                            echo "No error logs found for failed cases in $HOME/RUNTESTS/error.logs"
                                         }
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
@@ -175,12 +216,11 @@ pipeline {
                             }
                         }
                     }
-
                 }
             }
         }
     }
-
+                    
     post {
         always {
             script {

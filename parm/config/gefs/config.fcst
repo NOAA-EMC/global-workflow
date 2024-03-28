@@ -5,6 +5,8 @@
 
 echo "BEGIN: config.fcst"
 
+export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
+
 # Turn off waves if not used for this CDUMP
 case ${WAVE_CDUMP} in
   both | "${CDUMP/enkf}" ) ;; # Don't change
