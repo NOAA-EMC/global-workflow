@@ -681,7 +681,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
     touch "${DATA}/${RUN}_restartb_grp${n}.txt"
 
     m=1
-    while (( m <= NMEM_EARCGRP )); do
+    while (( m <= NMEM_EARCGRP && (n-1)*NMEM_EARCGRP+m <= NMEM_ENS )); do
       nm=$(((n-1)*NMEM_EARCGRP+m))
       mem=$(printf %03i ${nm})
       head="${RUN}.t${cyc}z."
