@@ -99,7 +99,7 @@ pipeline {
                                                     def lines = fileContent.readLines()
                                                     for (line in lines) {
                                                         echo "archiving: ${line}"
-                                                        if (fileExists("logs/${line}") && readFile("logs/${line}").length() > 0 ){
+                                                        if (fileExists("${line}") && readFile("${line}").length() > 0 ){
                                                             try {
                                                                 archiveArtifacts artifacts: "${line}", fingerprint: true
                                                                 error_logs = error_logs + "${HOMEgfs}/sorc/logs/${line} "
