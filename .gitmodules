@@ -26,3 +26,6 @@
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
+[submodule "sorc/upp.fd"]
+  path = sorc/upp.fd
+  url = https://github.com/NOAA-EMC/UPP.git

@@ -26,6 +26,6 @@ if [[ ! -d "../exec" ]]; then
   mkdir -p ../exec
 fi
 
-cd ufs_model.fd/FV3/upp/tests
+cd upp.fd/tests
 # shellcheck disable=SC2086
 BUILD_JOBS=${BUILD_JOBS:-8} ./compile_upp.sh ${_opts}
