@@ -83,6 +83,7 @@ pipeline {
                                         }
                                     } else {
                                         checkout scm
+                                        def gist_url = ""
                                         def error_logs = ""
                                         def error_logs_message = ""
                                         def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
