@@ -1,48 +1,41 @@
-#!/bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_ak.sh
 #
-# Log :
-# D.W.Plummer/NCEP   2/97   Add log header
-# D.W.Plummer/NCEP   3/97   Added ecmwf comparison.
-# D.W.Plummer/NCEP   3/97   Added $MAPFIL specification for lower resolution
-# D.W.Plummer/NCEP   4/97   Removed run from 3-HOURLY PRECIP
-# J. Carr/HPC        2/99   Changed skip to 0
-# B. Gordon/NCO      5/00   Modified for production on IBM-SP
-#                           Changed gdplot_nc -> gdplot2_nc
-# D. Michaud/NCO     4/01   Modified to Reflect Different Title for
-#                           Parallel runs
-# J. Carr/PMB       11/04   Added a ? to all title lines
-#                           Changed contur from a 1 to a 2.
-# M. Klein/HPC       6/07   Modify for Alaska medium-range desk and rename script.
-#
 
-cd $DATA
+source "${HOMEgfs}/ush/preamble.sh"
 
-set -xa
+cd "${DATA}" || exit 2
 
-rm -rf $DATA/ak
-mkdir -p -m 775 $DATA/ak
-cd $DATA/ak
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+rm -rf "${DATA}/ak"
+mkdir -p -m 775 "${DATA}/ak"
+cd "${DATA}/ak" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 device="nc | gfs.meta.ak"
-PDY2=$(echo $PDY | cut -c3-)
+
+#
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 fend=F216
 
-if [ "$envir" = "para" ] ; then
+if [[ "${envir}" == "para" ]] ; then
    export m_title="GFSP"
 else
    export m_title="GFS"
 fi
 
 export pgm=gdplot2_nc;. prep_step
-startmsg
 
-$GEMEXE/gdplot2_nc << EOF
-GDFILE	= F-GFS | ${PDY2}/${cyc}00
-GDATTIM	= F00-$fend-6
+"${GEMEXE}/gdplot2_nc" << EOF
+GDFILE	= F-GFS | ${PDY:2}/${cyc}00
+GDATTIM	= F00-${fend}-6
 DEVICE	= ${device}
 PANEL	= 0
 TEXT	= 1/21//hw
@@ -71,13 +64,13 @@ HLSYM   = 2;1.5//21//hw
 CLRBAR  = 1
 WIND    =
 REFVEC  =
-TITLE	= 5/-2/~ ? $m_title PMSL, 1000-500 MB THICKNESS|~MSLP, 1000-500 THKN!0
+TITLE	= 5/-2/~ ? ${m_title} PMSL, 1000-500 MB THICKNESS|~MSLP, 1000-500 THKN!0
 l
 run
 
 GLEVEL  = 4400:10000    !0
 GVCORD  = sgma          !none
-SKIP    = 0 
+SKIP    = 0
 SCALE   = 0
 GDPFUN  = sm5s(relh)     !pmsl
 TYPE    = c/f            !c
@@ -88,11 +81,11 @@ FLINE   = 0;24;23;22
 HILO    = 26;2/H#;L#/1018-1070;900-1012//30;30/y
 HLSYM   = 2;1.5//21//hw
 CLRBAR  = 1
-TITLE   = 5/-2/~ ? $m_title PMSL, 1000-500MB MEAN RH|~MSLP, 1000-500 MEAN RH!0
+TITLE   = 5/-2/~ ? ${m_title} PMSL, 1000-500MB MEAN RH|~MSLP, 1000-500 MEAN RH!0
 run
 
 GLEVEL  = 850
-GVCORD  = pres 
+GVCORD  = pres
 SKIP    = 0         !0         !0         !0         !0/1;-1
 SCALE   = 0         !0         !0         !-1        !0
 GDPFUN  = sm9s(tmpc)!sm9s(tmpc)!sm9s(tmpc)!sm5s(hght)!kntv(wnd)
@@ -105,7 +98,7 @@ FLINE   = 24;30;28;29;25;0;17
 HILO    =
 HLSYM   =
 WIND    = 18//1
-TITLE	= 5/-2/~ ? $m_title @ HGT, TEMPERATURE AND WIND (KTS)|~@ HGT, TMP, WIND!0
+TITLE	= 5/-2/~ ? ${m_title} @ HGT, TEMPERATURE AND WIND (KTS)|~@ HGT, TMP, WIND!0
 l
 run
 
@@ -119,7 +112,7 @@ LINE    = 8//2/0         !23//2/0        !20/1/1/1 !6/1/1/1 ! 24/5/1/1
 FINT    = 70;90
 FLINE   = 0;23;22
 WIND    =
-TITLE	= 5/-2/~ ? $m_title @ HGT, REL HUMIDITY AND OMEGA|~@ HGT, RH AND OMEGA!0
+TITLE	= 5/-2/~ ? ${m_title} @ HGT, REL HUMIDITY AND OMEGA|~@ HGT, RH AND OMEGA!0
 l
 run
 
@@ -133,8 +126,8 @@ LINE    = 7/5/1/2            ! 29/5/1/2     !5/1/2/1
 FINT    = 16;20;24;28;32;36;40;44
 FLINE   = 0;23-15
 HILO    = 2;6/X;N/10-99;10-99!
-HLSYM   = 
-TITLE	= 5/-2/~ ? $m_title @ HGT AND VORTICITY|~@ HGT AND VORTICITY!0
+HLSYM   =
+TITLE	= 5/-2/~ ? ${m_title} @ HGT AND VORTICITY|~@ HGT AND VORTICITY!0
 l
 run
 
@@ -150,7 +143,7 @@ FLINE   = 0;25;24;29;7;15
 HILO    =
 HLSYM   =
 WIND    = 18//1
-TITLE	= 5/-2/~ ? $m_title @ HGT, ISOTACHS AND WIND (KTS)|~@ HGT AND WIND!0
+TITLE	= 5/-2/~ ? ${m_title} @ HGT, ISOTACHS AND WIND (KTS)|~@ HGT AND WIND!0
 l
 run
 
@@ -158,87 +151,88 @@ GDATTIM = F06-F180-6
 GLEVEL  = 0
 SKIP    = 0
 GVCORD  = none
-SCALE   = 0   
+SCALE   = 0
 GDPFUN  = p06i !pmsl
 TYPE    = f    !c
-CONTUR  = 2    
+CONTUR  = 2
 CINT    =      !4
 LINE    =      !5/1/1/0
 FINT    = .01;.1;.25;.5;.75;1;1.25;1.5;1.75;2;2.5;3;4;5;6;7;8;9
 FLINE   = 0;21-30;14-20;5
 HILO    =      !26;2////30;30/y
 HLSYM   =      2;1.5//21//hw
-WIND    = 
-TITLE	= 5/-2/~ ? $m_title 6-HR TOTAL PCPN, MSLP|~6-HR TOTAL PCPN, MSLP!0
+WIND    =
+TITLE	= 5/-2/~ ? ${m_title} 6-HR TOTAL PCPN, MSLP|~6-HR TOTAL PCPN, MSLP!0
 l
 run
 
-GDPFUN  = p06i 
-TYPE    = f  
+GDPFUN  = p06i
+TYPE    = f
 HILO    = 31;0/x#2////y
 HLSYM   = 1.5
-TITLE   = 5/-2/~ ? $m_title 6-HR TOTAL PCPN |~6-HR TOTAL PCPN!0
+TITLE   = 5/-2/~ ? ${m_title} 6-HR TOTAL PCPN |~6-HR TOTAL PCPN!0
 run
 
-GDATTIM = F12-$fend-06
+GDATTIM = F12-${fend}-06
 GDPFUN  = p12i  !pmsl
 TYPE    = f     !c
 HILO    =       !26;2////30;30/y
 HLSYM   =       2;1.5//21//hw
-TITLE   = 5/-2/~ ? $m_title 12-HR TOTAL PCPN, MSLP|~12-HR TOTAL PCPN, MSLP!0
+TITLE   = 5/-2/~ ? ${m_title} 12-HR TOTAL PCPN, MSLP|~12-HR TOTAL PCPN, MSLP!0
 run
 
-GDPFUN  = p12i 
+GDPFUN  = p12i
 TYPE    = f
 HILO    = 31;0/x#2////y
 HLSYM   = 1.5
-TITLE	= 5/-2/~ ? $m_title 12-HR TOTAL PCPN (IN)|~12-HR TOTAL PCPN!0
+TITLE	= 5/-2/~ ? ${m_title} 12-HR TOTAL PCPN (IN)|~12-HR TOTAL PCPN!0
 l
 run
 
 
-GDATTIM	= F24-$fend-06
+GDATTIM	= F24-${fend}-06
 GDPFUN  = p24i  !pmsl
 TYPE    = f     !c
 HILO    =       !26;2////30;30/y
 HLSYM   =       2;1.5//21//hw
-TITLE   = 5/-2/~ ? $m_title 24-HR TOTAL PCPN, MSLP|~24-HR TOTAL PCPN, MSLP!0
-run 
+TITLE   = 5/-2/~ ? ${m_title} 24-HR TOTAL PCPN, MSLP|~24-HR TOTAL PCPN, MSLP!0
+run
 
-GDPFUN  = p24i      
+GDPFUN  = p24i
 TYPE    = f
 HILO    = 31;0/x#2////y
 HLSYM   = 1.5
-TITLE	= 5/-2/~ ? $m_title 24-HR TOTAL PCPN (IN)|~24-HR TOTAL PCPN
+TITLE	= 5/-2/~ ? ${m_title} 24-HR TOTAL PCPN (IN)|~24-HR TOTAL PCPN
 run
 
 exit
 EOF
-export err=$?;err_chk
+export err=$?
 
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l gfs.meta.ak
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s gfs.meta.ak ]]; then
+  echo "FATAL ERROR: Failed to create alaska meta file"
+  exit "${err}"
+fi
 
+mv gfs.meta.ak "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
+export err=$?
+if (( err != 0 )) ; then
+    echo "FATAL ERROR: Failed to move meta file to ${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-  mv gfs.meta.ak ${COMOUT}/gfs_${PDY}_${cyc}_ak
-  if [ $SENDDBN = "YES" ] ; then
-    $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-     $COMOUT/gfs_${PDY}_${cyc}_ak
-    if [ $DBN_ALERT_TYPE = "GFS_METAFILE_LAST" ] ; then
-      DBN_ALERT_TYPE=GFS_METAFILE
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-       ${COMOUT}/gfs_${PDY}_${cyc}_ak
+if [[ "${SENDDBN}" == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
+    if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]] ; then
+        DBN_ALERT_TYPE=GFS_METAFILE
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+            "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
     fi
-    if [ $fhr -eq 216 ] ; then
-     ${DBNROOT}/bin/dbn_alert MODEL GFS_METAFILE_LAST $job \
-       ${COMOUT}/gfs_${PDY}_${cyc}_ak
-    fi
-  fi
 fi
 

@@ -14,3 +14,6 @@ disable=SC1091
 
 # Disable -p -m only applies to deepest directory
 disable=SC2174
+
+# Disable warning of functions in test statements
+disable=SC2310
