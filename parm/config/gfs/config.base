@@ -160,6 +160,20 @@ export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 # APP settings
 export APP=@APP@
 
+shopt -s extglob
+# Adjust APP based on RUN
+case "${RUN}" in
+    gfs)   # Turn off aerosols
+        APP="${APP/%A}"
+        ;;
+    enkf*) # Turn off aerosols and waves
+        APP="${APP/%+([WA])}"
+        ;;
+    *)     # Keep app unchanged
+        ;;
+esac
+shopt -u extglob
+
 # Defaults:
 export DO_ATM="YES"
 export DO_COUPLED="NO"
@@ -180,6 +194,7 @@ export CASE="@CASECTL@"
 export CASE_ENS="@CASEENS@"
 export OCNRES="@OCNRES@"
 export ICERES="${OCNRES}"
+
 # These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
