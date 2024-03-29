@@ -5,6 +5,9 @@
 
 echo "BEGIN: config.atmanlfv3inc"
 
+export FV3INCYAML=${PARMgfs}/gdas/atm/utils/fv3jedi_fv3inc.yaml.j2
+export FV3INCEXE=${EXECgfs}/fv3jedi_fv3inc.x
+
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmanlfv3inc
 

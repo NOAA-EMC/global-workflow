@@ -2,7 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlinit" -c "base atmanl atmanlinit"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlinit" -c "base atmanl atmanlinit atmanlfv3inc"
 
 ##############################################
 # Set variables used in the script

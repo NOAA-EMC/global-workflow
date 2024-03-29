@@ -43,15 +43,12 @@ class Analysis(Task):
         bias_dict = self.get_bias_dict()
         FileHandler(bias_dict).sync()
 
-        # link jedi variational executable to run directory
-        self.link_varexe()
-
-        # link fv3 increment converter executable to run directory
-        self.link_fv3incexe()
+        # link jedi executable to run directory
+        self.link_jediexe()
 
     @logit(logger)
     def get_jedi_config(self) -> Dict[str, Any]:
-        """Compile a dictionary of JEDI configuration from VARYAML template file
+        """Compile a dictionary of JEDI configuration from JEDIYAML template file
 
         Parameters
         ----------
@@ -63,8 +60,8 @@ class Analysis(Task):
         """
 
         # generate JEDI YAML file
-        logger.info(f"Generate JEDI variational YAML config: {self.task_config.var_yaml}")
-        jedi_config = parse_j2yaml(self.task_config.VARYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+        logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
+        jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
         logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
 
         return jedi_config
@@ -86,7 +83,7 @@ class Analysis(Task):
             a dictionary containing the list of observation files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of observation files from {self.task_config.VARYAML}")
+        logger.info(f"Extracting a list of observation files from {self.task_config.JEDIYAML}")
         observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
         logger.debug(f"observations:\n{pformat(observations)}")
 
@@ -120,7 +117,7 @@ class Analysis(Task):
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of bias correction files from {self.task_config.VARYAML}")
+        logger.info(f"Extracting a list of bias correction files from {self.task_config.JEDIYAML}")
         observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
         logger.debug(f"observations:\n{pformat(observations)}")
 
@@ -209,7 +206,7 @@ class Analysis(Task):
         return berror_dict
 
     @logit(logger)
-    def link_varexe(self) -> None:
+    def link_jediexe(self) -> None:
         """Compile a dictionary of background error files to copy
 
         This method links a JEDI executable to the run directory
@@ -222,33 +219,7 @@ class Analysis(Task):
         ----------
         None
         """
-        exe_src = self.task_config.VAREXE
-
-        # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
-        logger.info(f"Link executable {exe_src} to DATA/")
-        logger.warn("Linking is not permitted per EE2.")
-        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
-        if os.path.exists(exe_dest):
-            rm_p(exe_dest)
-        os.symlink(exe_src, exe_dest)
-
-        return
-
-    @logit(logger)
-    def link_fv3incexe(self) -> None:
-        """Compile a dictionary of background error files to copy
-
-        This method links the FV3 increment converter app to the run directory
-
-        Parameters
-        ----------
-        Task: GDAS task
-
-        Returns
-        ----------
-        None
-        """
-        exe_src = self.task_config.FV3INCEXE
+        exe_src = self.task_config.JEDIEXE
 
         # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
         logger.info(f"Link executable {exe_src} to DATA/")
