@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument('--gist', help='create a gist of the file', nargs=1, metavar='identifier_string', required=False)
     parser.add_argument('--repo', help='create a file in a repo', nargs=1, metavar='path_header', required=False)
     args = parser.parse_args()
-    if bool(args.gist) != bool(args.repo):  # Exactly one of the two is required
+    if bool(args.gist) == bool(args.repo):  # Exactly one of the two is required
         parser.error("Exactly one of --gist and --repo is required")
     return args
 

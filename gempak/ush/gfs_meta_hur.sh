@@ -1,87 +1,56 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_hur_new
 #
-# Log :
-# D.W. Plummer/NCEP   2/97   Add log header
-# J.W. Carr/HPC    4/15/97   changed the skip parameter
-# J.W. Carr/HPC    4/06/98   Converted from gdplot to gdplot2
-# J.L. Partain/MPC 5/25/98   Chg VOR to AVOR @ 500mb,chg 200 to 250mb to match ETA,NGM
-# J.W. Carr/HPC    8/05/98   Changed map to medium resolution
-# J.W. Carr/HPC    2/02/99   Changed skip to 0
-# J.W. Carr/HPC    4/12/99   Added 84-hr time step.
-# J. Carr/HPC         6/99   Added a filter to map.
-# J. Carr/HPC       2/2001   Edited to run on the IBM.
-# J. Carr/HPC       5/2001   Added a mn variable for a/b side dbnet root variable.
-# J. Carr/HPC       6/2001   Incorporated the crb metafile into this one.
-# J. Carr/HPC       6/2001   Converted to a korn shell prior to delivering script to Production.
-# J. Carr/HPC       7/2001   Submitted.
-# J. Carr/PMB      11/2004   Added a ? to all title lines. Changed contur to a 2 from a 1.
-#
 # Set up Local Variables
 #
-set -x
-#
-export PS4='hur:$SECONDS + '
-mkdir  -p -m 775 $DATA/hur
-cd $DATA/hur
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir  -p -m 775 "${DATA}/hur"
+cd "${DATA}/hur" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 mdl=gfs
 MDL=GFS
 metatype="hur"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo ${PDY} | cut -c3-)
+
 #
-# DEFINE YESTERDAY
-PDYm1=$($NDATE -24 ${PDY}${cyc} | cut -c -8)
-PDY2m1=$(echo ${PDYm1} | cut -c 3-)
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
 #
-if [ ${cyc} -eq 00 ] ; then
-    gdat="F000-F126-06"
-    gdatpcpn06="F006-F126-06"
-    gdatpcpn12="F012-F126-06"
-    gdatpcpn24="F024-F126-06"
-    gdatpcpn48="F048-F126-06"
-    gdatpcpn60="F060-F126-06"
-    gdatpcpn72="F072-F126-06"
-    gdatpcpn84="F084-F126-06"
-    gdatpcpn96="F096-F126-06"
-    gdatpcpn120="F120-F126-06"
-    gdatpcpn126="F126"
-    run="r"
-elif [ ${cyc} -eq 12 ] ; then
-    gdat="F000-F126-06"
-    gdatpcpn06="F006-F126-06"
-    gdatpcpn12="F012-F126-06"
-    gdatpcpn24="F024-F126-06"
-    gdatpcpn48="F048-F126-06"
-    gdatpcpn60="F060-F126-06"
-    gdatpcpn72="F072-F126-06"
-    gdatpcpn84="F084-F126-06"
-    gdatpcpn96="F096-F126-06"
-    gdatpcpn120="F120-F126-06"
-    gdatpcpn126="F126"
-    run="r"
-else
-    gdat="F000-F126-06"
-    gdatpcpn06="F006-F126-06"
-    gdatpcpn12="F012-F126-06"
-    gdatpcpn24="F024-F126-06"
-    gdatpcpn48="F048-F126-06"
-    gdatpcpn60="F060-F126-06"
-    gdatpcpn72="F072-F126-06"
-    gdatpcpn84="F084-F126-06"
-    gdatpcpn96="F096-F126-06"
-    gdatpcpn120="F120-F126-06"
-    gdatpcpn126="F126"
-    run="r"
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
-gdfile  = F-${MDL} | ${PDY2}/${cyc}00
+#
+# DEFINE YESTERDAY
+PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
+#
+case ${cyc} in
+    00)
+        gdat="F000-F126-06"
+        gdatpcpn12="F012-F126-06"
+        gdatpcpn24="F024-F126-06"
+        ;;
+    12)
+        gdat="F000-F126-06"
+        gdatpcpn12="F012-F126-06"
+        gdatpcpn24="F024-F126-06"
+        ;;
+    *)
+        gdat="F000-F126-06"
+        gdatpcpn12="F012-F126-06"
+        gdatpcpn24="F024-F126-06"
+        ;;
+esac
+
+export pgm=gdplot2_nc;. prep_step
+"${GEMEXE}/gdplot2_nc" << EOF
+gdfile  = F-${MDL} | ${PDY:2}/${cyc}00
 gdattim = ${gdat}
 GAREA   = -6;-111;52;-14
 PROJ    = MER/0.0;-49.5;0.0
@@ -89,7 +58,7 @@ MAP     = 1/1/1/yes
 LATLON  = 1//1/1/10
 CONTUR	= 2
 clear   = y
-device  = ${device} 
+device  = ${device}
 TEXT	= 1/22/2/hw
 PANEL	= 0
 filter  = yes
@@ -205,10 +174,10 @@ GDPFUN	= vor(wnd)           !vor(wnd) !sm5s(pmsl)!kntv(wnd)
 TYPE	= c/f                !c        !c         !b
 CINT	= 2/-99/-2           !2/2/99   !2//1008
 LINE	= 29/5/1/2           !7/5/1/2  !6/1/1
-HILO	= 2;6/X;N/-99--4;4-99!         !6/L#/880-1004///1         
+HILO	= 2;6/X;N/-99--4;4-99!         !6/L#/880-1004///1
 HLSYM	= 1;1//22;22/3;3/hw
 SCALE	= 5                  !5        !0
-WIND    = bk0                !bk0      !bk0       !bk9/.8/1.4/112 
+WIND    = bk0                !bk0      !bk0       !bk9/.8/1.4/112
 TITLE	= 1/-2/~ ? ${MDL} @ WIND AND REL VORT|~@ WIND AND REL VORT!0
 FINT    = 4;6;8;10;12;14;16;18
 FLINE	= 0;14-21
@@ -222,7 +191,7 @@ LINE	= 29/5/1/2           !7/5/1/2  !6//1
 HILO	= 2;6/X;N/-99--4;4-99!         !6/L#/880-1004///1
 HLSYM	= 1;1//22;22/3;3/hw
 SCALE	= 5                  !5        !0
-WIND    = bk0                !bk0      !bk0       !bk9/.8/1.4/112 
+WIND    = bk0                !bk0      !bk0       !bk9/.8/1.4/112
 TITLE	= 1/-2/~ ? ${MDL} @ WIND AND REL VORT|~@ WIND AND REL VORT!0
 FINT    = 4;6;8;10;12;14;16;18
 FLINE	= 0;14-21
@@ -238,12 +207,12 @@ LINE	= 29/5/1/2           !7/5/1/2   !20/1/2/1
 HILO	= 2;6/X;N/-99--4;4-99!          !
 HLSYM	= 1;1//22;22/3;3/hw  !
 SCALE	= 5                  !5         !-1
-WIND    = bk0                !bk0       !bk0       !bk9/.8/1.4/112 
+WIND    = bk0                !bk0       !bk0       !bk9/.8/1.4/112
 TITLE	= 1/-2/~ ? ${MDL} @ WIND AND ABS VORT|~@ WIND AND ABS VORT!0
 FINT    = 16;20;24;28;32;36;40;44
 FLINE	= 0;23-15
 TYPE	= c/f                !c         !c         !b
-r 
+r
 
 GLEVEL  = 250
 GVCORD  = PRES
@@ -260,14 +229,14 @@ CINT    = 5/20
 LINE    = 26//1
 FINT    = 5/25
 FLINE   = 0;24;30;29;23;22;14;15;16;17;20;5
-HILO    = 
+HILO    =
 HLSYM   =
 CLRBAR  = 1
 WIND    = ak0!ak7/.1/1/221/.2!ak6/.1/1/221/.2
-REFVEC  = 
+REFVEC  =
 TITLE   = 1/-2/~ ? ${MDL} @  WIND SHEAR (850=Purple, 300=Cyan) |~850-300MB WIND SHEAR!0
 filter  = no
-r 
+r
 
 glevel   = 250
 gvcord   = pres
@@ -295,13 +264,13 @@ type    = b                                                       !c
 cint    = 0!4
 line    = 0!20//3
 SKIP    = 0/2;2
-fint    = 
-fline   = 
+fint    =
+fline   =
 hilo    = 0!26;2/H#;L#/1020-1070;900-1012//30;30/y
 hlsym   = 0!2;1.5//21//hw
 clrbar  = 0
 wind    = bk10/0.9/1.4/112!bk0
-refvec  = 
+refvec  =
 title   = 1/-2/~ ? ${MDL} 850-400mb MLW and MSLP|~850-400mb MLW & MSLP!0
 r
 
@@ -333,22 +302,28 @@ exit
 EOF
 export err=$?;err_chk
 
-if [ ${cyc} -eq 00 ] ; then
-    # BV export MODEL=/com/nawips/prod
-    # JY export HPCECMWF=${MODEL}/ecmwf.${PDY}
-    # JY export HPCUKMET=${MODEL}/ukmet.${PDY}
-    export HPCECMWF=${COMINecmwf}.${PDY}/gempak
-    export HPCUKMET=${COMINukmet}.${PDY}/gempak
-    grid1="F-${MDL} | ${PDY2}/${cyc}00"
-    grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
-    grid3="F-UKMETHPC | ${PDY2}/${cyc}00"
-    for gfsfhr in 12 36 60 84 108
-    do
-        ecmwffhr="F$(expr ${gfsfhr} + 12)"
-        gfsfhr="F${gfsfhr}"
+if [[ ${cyc} -eq 00 ]] ; then
+    export HPCECMWF=ecmwf.${PDY}
+    HPCECMWF_m1=ecmwf.${PDY}
+    export HPCUKMET=ukmet.${PDYm1}
+    if [[ ! -L "${HPCECMWF}" ]]; then
+        ln -sf "${COMINecmwf}ecmwf.${PDY}/gempak" "${HPCECMWF}"
+    fi
+    if [[ ! -L "${HPCECMWF_m1}" ]]; then
+        Ln -sf "${COMINecmwf}ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
+    fi
+    if [[ ! -L "${HPCUKMET}" ]]; then
+        ln -sf "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
+    fi
+    grid1="F-${MDL} | ${PDY:2}/${cyc}00"
+    grid2="${HPCECMWF_m1}/ecmwf_glob_${PDYm1}12"
+    grid3="F-UKMETHPC | ${PDY:2}/${cyc}00"
+    for fhr in $(seq -s ' ' 12 24 108); do
+        gfsfhr=F$(printf "%02g" "${fhr}")
+        ecmwffhr=F$(printf "%02g" $((fhr + 12)))
 
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
+        export pgm=gdplot2_nc;. prep_step
+        "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE  = ${grid1} !${grid2}
 GDATTIM = ${gfsfhr}!${ecmwffhr}
 DEVICE  = ${device}
@@ -405,16 +380,15 @@ r
 
 ex
 EOF
-export err=$?;err_chk
+        export err=$?;err_chk
 
     done
-    for gfsfhr in 12 24 36 48 60 72 96 120
-    do
-        ukmetfhr=F${gfsfhr}
-        gfsfhr=F${gfsfhr}
+    for gfsfhr in 12 24 36 48 60 72 96 120; do
+        gfsfhr=F$(printf "%02g" "${fhr}")
+        ukmetfhr=F$(printf "%02g" $((fhr)))
 
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
+        export pgm=gdplot2_nc;. prep_step
+        "${GEMEXE}/gdplot2_nc" << EOF
 DEVICE  = ${device}
 PANEL   = 0
 TEXT    = 1/21//hw
@@ -468,7 +442,7 @@ r
 
 ex
 EOF
-export err=$?;err_chk
+        export err=$?;err_chk
 
     done
 fi
@@ -477,19 +451,19 @@ fi
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-      ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-      if [ $DBN_ALERT_TYPE = "GFS_METAFILE_LAST" ] ; then
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
-        ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-        ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-      fi
-   fi
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+            "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+    fi
 fi
 exit
