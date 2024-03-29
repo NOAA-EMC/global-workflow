@@ -83,6 +83,7 @@ pipeline {
                                         }
                                     } else {
                                         checkout scm
+                                        def gist_url = ""
                                         def error_logs = ""
                                         def error_logs_message = ""
                                         def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
@@ -93,29 +94,29 @@ pipeline {
                                                 sh(script: "${build_args}")
                                             } catch (Exception error_build) {
                                                 echo "Failed to build system: ${error_build.getMessage()}"
-                                                if ( fileExists("logs/error_log.logs") ) {
-                                                    def fileContent = readFile 'logs/error_log.logs'
+                                                if ( fileExists("logs/error.logs") ) {
+                                                    def fileContent = readFile 'logs/error.logs'
                                                     def lines = fileContent.readLines()
                                                     for (line in lines) {
                                                         echo "archiving: ${line}"
-                                                        if (fileExists("sorc/logs/${line}") && readFile("sorc/logs/${line}").length() > 0 ){
+                                                        if (fileExists("${line}") && readFile("${line}").length() > 0 ){
                                                             try {
                                                                 archiveArtifacts artifacts: "${line}", fingerprint: true
-                                                                error_logs = error_logs + "${HOMEgfs}/sorc/logs/${line} "
-                                                                error_logs_message = error_logs_message + "${HOMEgfs}/sorc/logs/${line}\n"
+                                                                error_logs = error_logs + "${HOMEgfs}/sorc/${line} "
+                                                                error_logs_message = error_logs_message + "${HOMEgfs}/sorc/${line}\n"
                                                             }
                                                             catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
                                                         }
                                                     }
                                                     repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
                                                     gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                    try {
+                                                        pullRequest.comment("Build failed on **${Machine}** with error logs:${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
+                                                    } catch (Exception error_comment) {
+                                                        echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                                    }
+                                                    error("Failed to build system on ${Machine}")
                                                 }
-                                                try {
-                                                    pullRequest.comment("Build failed on **${Machine}** with error logs:\n\n```${error_logs_message}```\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
-                                                } catch (Exception error_comment) {
-                                                    echo "Failed to comment on PR: ${error_comment.getMessage()}"
-                                                }
-                                                error("Failed to build system on ${Machine}")
                                             }
                                             sh(script: './link_workflow.sh')
                                             // sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
