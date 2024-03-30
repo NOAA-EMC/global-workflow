@@ -1,31 +1,36 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_mar_ver.sh
 #
-# Log :
-# J. Carr/PMB    12/08/2004    Pushed into production
-#
 # Set up Local Variables
 #
-set -x
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/MAR_VER"
+cd "${DATA}/MAR_VER" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
 #
-export PS4='MAR_VER:$SECONDS + '
-mkdir -p -m 775 $DATA/MAR_VER
-cd $DATA/MAR_VER
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL="GFS"
 metatype="mar_ver"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo $PDY | cut -c3-)
 
-export pgm=gdplot2_nc;. prep_step; startmsg
+export pgm=gdplot2_nc;. prep_step
 
-$GEMEXE/gdplot2_nc << EOFplt
+"${GEMEXE}/gdplot2_nc" << EOFplt
 \$MAPFIL=hipowo.gsf+mefbao.ncp
-gdfile	= F-${MDL} | ${PDY2}/${cyc}00
+gdfile	= F-${MDL} | ${PDY:2}/${cyc}00
 gdattim	= f00-f48-6
 GLEVEL  = 9950
 GVCORD  = sgma
@@ -42,7 +47,7 @@ FLINE   =
 HILO    =
 HLSYM   =
 CLRBAR  =
-WIND    = 
+WIND    =
 REFVEC  =
 TITLE   = 31/-2/~ ? ${MDL} Gridded BL Wind Direction (40m AGL)|~ WATL GRIDDED WIND DIR!0
 TEXT    = 0.8/21/1/hw
@@ -51,7 +56,7 @@ GAREA   = 27.2;-81.9;46.7;-61.4
 PROJ    = STR/90.0;-67.0;1.0
 MAP     = 31+6
 LATLON  = 18/1/1/1;1/5;5
-DEVICE  = $device
+DEVICE  = ${device}
 STNPLT  = 31/1.3/22/1.6/hw|25/19/1.3/1.6|buoys.tbl
 SATFIL  =
 RADFIL  =
@@ -86,19 +91,21 @@ exit
 EOFplt
 
 export err=$?;err_chk
+
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_mar_ver
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job ${COMOUT}/${mdl}_${PDY}_${cyc}_mar_ver
-   fi
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_ver"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_ver"
 fi
 
 exit
