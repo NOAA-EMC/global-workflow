@@ -12,6 +12,11 @@ export CLEANUP_COM="YES"   # NO=retain ROTDIR.  YES default in cleanup.sh
 export RMOLDSTD=144
 export RMOLDEND=24
 
+if [[ "${DO_GEMPAK}" == "YES" ]]; then
+    export RMOLDSTD=346
+    export RMOLDEND=222
+fi
+
 # Specify the list of files to exclude from the first stage of cleanup
 # Because arrays cannot be exported, list is a single string of comma-
 # separated values. This string is split to form an array at runtime.

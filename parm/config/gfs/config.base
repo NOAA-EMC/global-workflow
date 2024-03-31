@@ -29,6 +29,17 @@ export PARMgfs="${HOMEgfs}/parm"
 export SCRgfs="${HOMEgfs}/scripts"
 export USHgfs="${HOMEgfs}/ush"
 
+export FIXam="${FIXgfs}/am"
+export FIXaer="${FIXgfs}/aer"
+export FIXcpl="${FIXgfs}/cpl"
+export FIXlut="${FIXgfs}/lut"
+export FIXorog="${FIXgfs}/orog"
+export FIXcice="${FIXgfs}/cice"
+export FIXmom="${FIXgfs}/mom6"
+export FIXreg2grb2="${FIXgfs}/reg2grb2"
+export FIXugwd="${FIXgfs}/ugwd"
+export FIXgdas="${FIXgfs}/gdas"
+
 ########################################################################
 
 # GLOBAL static environment parameters
@@ -37,6 +48,12 @@ export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 export BASE_CPLIC="@BASE_CPLIC@"
+
+# Gempak from external models
+# Default locations are to dummy locations for testing
+export COMINecmwf=@COMINecmwf@
+export COMINnam=@COMINnam@
+export COMINukmet=@COMINukmet@
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -77,6 +94,7 @@ export MODE="@MODE@" # cycled/forecast-only
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
+export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
 
@@ -142,6 +160,20 @@ export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 # APP settings
 export APP=@APP@
 
+shopt -s extglob
+# Adjust APP based on RUN
+case "${RUN}" in
+    gfs)   # Turn off aerosols
+        APP="${APP/%A}"
+        ;;
+    enkf*) # Turn off aerosols and waves
+        APP="${APP/%+([WA])}"
+        ;;
+    *)     # Keep app unchanged
+        ;;
+esac
+shopt -u extglob
+
 # Defaults:
 export DO_ATM="YES"
 export DO_COUPLED="NO"
@@ -162,6 +194,7 @@ export CASE="@CASECTL@"
 export CASE_ENS="@CASEENS@"
 export OCNRES="@OCNRES@"
 export ICERES="${OCNRES}"
+
 # These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
@@ -241,7 +274,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 export FHMAX_GFS=@FHMAX_GFS@
-export FHOUT_GFS=3
+export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 export FHOUT_OCNICE_GFS=6
@@ -250,7 +283,11 @@ if (( gfs_cyc != 0 )); then
 else
     export STEP_GFS="0"
 fi
-export ILPOST=1           # gempak output frequency up to F120
+# TODO: Change gempak to use standard out variables (#2348)
+export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
+if (( FHMAX_HF_GFS < 120 )); then
+    export ILPOST=${FHOUT_GFS}
+fi
 
 # GFS restart interval in hours
 export restart_interval_gfs=12
@@ -289,7 +326,7 @@ export imp_physics=8
 export DO_JEDIATMVAR="@DO_JEDIATMVAR@"
 export DO_JEDIATMENS="@DO_JEDIATMENS@"
 export DO_JEDIOCNVAR="@DO_JEDIOCNVAR@"
-export DO_JEDISNOWDA="@DO_JEDISNOWDA@"
+export DO_JEDILANDDA="@DO_JEDILANDDA@"
 export DO_MERGENSST="@DO_MERGENSST@"
 
 # Hybrid related
@@ -364,7 +401,7 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
 export DO_FIT2OBS="YES"      # Run fit to observations package
 export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
