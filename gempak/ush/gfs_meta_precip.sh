@@ -1,17 +1,24 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_precip.sh
 #
-# Log :
-# M. Klein/WPC    01/29/2014   Created.  Adapted from gfs_meta_qpf.sh
-#
 # Set up Local Variables
 #
-set -x
-export PS4='qpf:$SECONDS + '
-mkdir -p -m 775 $DATA/precip
-cd $DATA/precip
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/precip"
+cd "${DATA}/precip" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
+#
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 #
 # Set model and metafile naming conventions
@@ -21,13 +28,12 @@ MDL=GFS
 metatype="precip"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo $PDY | cut -c3-)
 
 #
-# Set range of forecast hours.  GFS is available every 6 hours through F192, then 
+# Set range of forecast hours.  GFS is available every 6 hours through F192, then
 # every 12 hours after.  The request was to have the fields go to F216, so will run
 # the gdplot for the ranges set below, then for the 12-hour and greater QPF periods,
-# run the gdplot2 from F204-F216.  6-hour QPF will stop at F192. 
+# run the gdplot2 from F204-F216.  6-hour QPF will stop at F192.
 #
 
 gdatpcpn06="F006-F192-06"
@@ -41,7 +47,6 @@ gdatpcpn96="F096-F192-06"
 gdatpcpn120="F120-F192-06"
 gdatpcpn144="F144-F192-06"
 gdatpcpn168="F168-F192-06"
-run="r"
 
 #
 # For CPC - Day 6-10 and Day 8-14 QPFs using a North American regional display
@@ -49,49 +54,50 @@ run="r"
 garea_cpc="17.529;-129.296;53.771;-22.374"
 proj_cpc="str/90;-105;0"
 
-# Notes -- 
+# Notes --
 #  00Z cycle - 8-14 Day -- No F198 file, so started at F204. Makes a P156I, not P162I.
 #  06Z cycle - 6-10 Day -- No F258 file, so ended at F252.  Makes a P108I, not P114I.
-#            - 8-14 Day -- No F354 file, so ended at F348.  Makes a P156I, not P162I.            
+#            - 8-14 Day -- No F354 file, so ended at F348.  Makes a P156I, not P162I.
 #  12Z cycle - 8-14 Day -- No F210 file, so started at F216. Makes a P156I, not P162I.
 #  18Z cycle - 6-10 Day -- No F270 file, so ended at F264.  Makes a P108I, not P114I.
 #            - 8-14 Day -- No F366 file, so ended at F360. Makes a P156I, not P162I.
 
-gdattim_6to10=""
-gdattim_8to14=""
-gdpfun_6to10="p114i"
-gdpfun_8to14="p162i"
-if [ ${cyc} = "00" ] ; then
-    gdattim_6to10="${PDY2}/${cyc}00F264"
-    gdattim_8to14="${PDY2}/${cyc}00F360"
-    gdpfun_6to10="p114i"
-    gdpfun_8to14="p156i"
-elif [ ${cyc} = "06" ] ; then
-    #gdattim_6to10="${PDY2}/${cyc}00F258"
-    #gdattim_8to14="${PDY2}/${cyc}00F354"
-    gdattim_6to10="${PDY2}/${cyc}00F252"
-    gdattim_8to14="${PDY2}/${cyc}00F348"
-    gdpfun_6to10="p108i"
-    gdpfun_8to14="p156i"
-elif [ ${cyc} = "12" ] ; then
-    gdattim_6to10="${PDY2}/${cyc}00F276"
-    gdattim_8to14="${PDY2}/${cyc}00F372"
-    gdpfun_6to10="p114i"
-    gdpfun_8to14="p156i"
-elif [ ${cyc} = "18" ] ; then
-    #gdattim_6to10="${PDY2}/${cyc}00F270"
-    #gdattim_8to14="${PDY2}/${cyc}00F366"
-    gdattim_6to10="${PDY2}/${cyc}00F264"
-    gdattim_8to14="${PDY2}/${cyc}00F360"
-    gdpfun_6to10="p108i"
-    gdpfun_8to14="p156i"
-fi
+case ${cyc} in
+    00)
+        gdattim_6to10="${PDY:2}/${cyc}00F264"
+        gdattim_8to14="${PDY:2}/${cyc}00F360"
+        gdpfun_6to10="p114i"
+        gdpfun_8to14="p156i"
+        ;;
+    06)
+        gdattim_6to10="${PDY:2}/${cyc}00F252"
+        gdattim_8to14="${PDY:2}/${cyc}00F348"
+        gdpfun_6to10="p108i"
+        gdpfun_8to14="p156i"
+        ;;
+    12)
+        gdattim_6to10="${PDY:2}/${cyc}00F276"
+        gdattim_8to14="${PDY:2}/${cyc}00F372"
+        gdpfun_6to10="p114i"
+        gdpfun_8to14="p156i"
+        ;;
+    18)
+        gdattim_6to10="${PDY:2}/${cyc}00F264"
+        gdattim_8to14="${PDY:2}/${cyc}00F360"
+        gdpfun_6to10="p108i"
+        gdpfun_8to14="p156i"
+        ;;
+    *)
+        echo "FATAL ERROR: InvaLid cycle ${cyc} passed to ${BASH_SOURCE[0]}"
+        exit 100
+        ;;
+esac
 
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOFplt
-gdfile   = F-${MDL} | ${PDY2}/${cyc}00
+export pgm=gdplot2_nc;. prep_step
+"${GEMEXE}/gdplot2_nc" << EOFplt
+gdfile   = F-${MDL} | ${PDY:2}/${cyc}00
 garea    = us
-proj     = 
+proj     =
 map      = 1/1/2/yes
 device   = ${device}
 clear    = yes
@@ -131,15 +137,15 @@ scale    = 0
 gdpfun   = p06i
 type     = f
 cint     =
-line     = 
+line     =
 hilo     = 31;0/x#2/.01-20//50;50/y
 hlsym    = 1.5
-wind     = 
+wind     =
 title    = 1/-2/~ ? ${MDL} 6-HOUR TOTAL PCPN|~6-HR TOTAL PCPN!0
 l
 r
 
-gdattim  = ${gdatpcpn12} 
+gdattim  = ${gdatpcpn12}
 gdpfun   = p12i
 title    = 1/-2/~ ? ${MDL} 12-HOUR TOTAL PCPN|~12-HR TOTAL PCPN!0
 l
@@ -149,7 +155,7 @@ gdattim  = F204-F216-12
 l
 r
 
-gdattim  = ${gdatpcpn24}       
+gdattim  = ${gdatpcpn24}
 gdpfun   = p24i
 title    = 1/-2/~ ? ${MDL} 24-HOUR TOTAL PCPN|~24-HR TOTAL PCPN!0
 l
@@ -177,7 +183,7 @@ r
 gdattim  = F204-F216-12
 r
 
-gdattim  = ${gdatpcpn72}       
+gdattim  = ${gdatpcpn72}
 gdpfun   = p72i
 title    = 1/-2/~ ? ${MDL} 72 HOUR TOTAL PCPN|~72-HR TOTAL PCPN!0
 r
@@ -185,7 +191,7 @@ r
 gdattim  = F204-F216-12
 r
 
-gdattim  = ${gdatpcpn84}       
+gdattim  = ${gdatpcpn84}
 gdpfun   = p84i
 title    = 1/-2/~ ? ${MDL} 84 HOUR TOTAL PCPN|~84-HR TOTAL PCPN!0
 r
@@ -249,20 +255,20 @@ export err=$?;err_chk
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_us_${metatype}
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-      ${COMOUT}/${mdl}_${PDY}_${cyc}_us_${metatype}
-      if [ $DBN_ALERT_TYPE = "GFS_METAFILE_LAST" ] ; then
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
+    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
-        ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-        ${COMOUT}/${mdl}_${PDY}_${cyc}_us_${metatype}
-      fi
-   fi
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+            "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
+    fi
 fi
 
 exit
