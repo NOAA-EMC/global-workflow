@@ -132,8 +132,9 @@ for pr in ${pr_list}; do
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       # Check if the experiment failed due to a missing dependency and is stalled
       if [[ "${rocoto_error}" -eq -3 ]]; then
+        date=$(date +'%D %r')
         echo "Experiment ${pslot}  **${rocoto_state}** on ${MACHINE_ID^}" >> "${output_ci_single}"
-        echo "Experiment ${pslot} with ${rocoto_error} at $(date +'%D %r') on ${MACHINE_ID^}" >> "${output_ci}"
+        echo "Experiment ${pslot} with ${rocoto_error} at ${date} on ${MACHINE_ID^}" >> "${output_ci}"
         # TODO used rocotocheck to find the missing dependency
       else
         error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
