@@ -58,7 +58,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Running) || true
+  pr_list=$("${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Running) || true
 fi
 if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
@@ -90,7 +90,7 @@ for pr in ${pr_list}; do
     sed -i "1 i\`\`\`" "${output_ci}"
     sed -i "1 i\All CI Test Cases Passed on ${MACHINE_ID^}:" "${output_ci}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
     weekly_labels=$(${GH} pr view "${pr}" --repo "${REPO_URL}"  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci")) | .labels[].name ') || true
     if [[ -n "${weekly_labels}" ]]; then
@@ -147,7 +147,7 @@ for pr in ${pr_list}; do
       fi
       sed -i "1 i\`\`\`" "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
-      "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+      "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
       for kill_cases in "${pr_dir}/RUNTESTS/"*; do
          pslot=$(basename "${kill_cases}")
          cancel_slurm_jobs "${pslot}"
