@@ -155,7 +155,7 @@ for pr in ${pr_list}; do
     fi
     echo "${rocoto_stat}"
     rocoto_state=$(echo -e "${rocoto_stat}" | tail -1)
-    if [[ "${rocoto_state}" -eq "DONE" ]]; then
+    if [[ "${rocoto_state}" == "DONE" ]]; then
       #Remove Experment cases that completed successfully
       rm -Rf "${pslot_dir}"
       rm -Rf "${pr_dir}/RUNTESTS/COMROOT/${pslot}"
