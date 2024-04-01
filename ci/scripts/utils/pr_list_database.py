@@ -104,7 +104,6 @@ def display_db(db, display) -> list:
     if len(display) == 1:
         rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"pr = '{display[0]}'")
     if len(display) == 2:
-        #rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"state = '{display[0]}' AND status = '{display[1]}'")
         rows = db.fetch_data('pr_list', ['pr'], f"state = '{display[0]}' AND status = '{display[1]}'")
     if len(display) == 0:
         rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
@@ -112,6 +111,7 @@ def display_db(db, display) -> list:
         values.append(' '.join(map(str, row)))
 
     return values
+
 
 def update_database(db: SQLiteDB) -> list:
     """
@@ -162,7 +162,8 @@ def input_args():
                         help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', nargs='*', help='output pr table', required=False)
     parser.add_argument('--list', nargs=2, metavar=('state', 'status'), required=False)
-    parser.add_argument('--update_database', help='use labels from Open GitHub PRs to update database state and produces a kill list', action='store_true', required=False)
+    parser.add_argument('--update_database', help='use labels from Open GitHub PRs to update database state and produces a kill list',
+                         action='store_true', required=False)
     args = parser.parse_args()
     return args
 
