@@ -6,24 +6,26 @@
 echo "BEGIN: config.aeroanl"
 
 export CASE_ANL=${CASE}
-export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/aero/obs/config/
-export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/aero/obs/lists/gdas_aero_prototype.yaml
+export OBS_LIST="${PARMgfs}/gdas/aero/obs/lists/gdas_aero.yaml.j2"
 export STATICB_TYPE='identity'
-export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/berror/staticb_${STATICB_TYPE}.yaml
-export BERROR_DATA_DIR=${FIXgfs}/gdas/bump/aero/${CASE_ANL}/
+export BERROR_YAML="${PARMgfs}/gdas/aero/berror/staticb_${STATICB_TYPE}.yaml.j2"
+export BERROR_DATA_DIR="${FIXgfs}/gdas/bump/aero/${CASE_ANL}/"
 export BERROR_DATE="20160630.000000"
+
+export CRTM_FIX_YAML="${PARMgfs}/gdas/aero_crtm_coeff.yaml.j2"
+export JEDI_FIX_YAML="${PARMgfs}/gdas/aero_jedi_fix.yaml.j2"
 
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE=${EXECgfs}/fv3jedi_var.x
+export JEDIEXE="${EXECgfs}/fv3jedi_var.x"
 
 if [[ "${DOIAU}" == "YES" ]]; then
   export aero_bkg_times="3,6,9"
-  export AEROVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/variational/3dvar_fgat_gfs_aero.yaml
+  export JEDIYAML="${PARMgfs}/gdas/aero/variational/3dvar_fgat_gfs_aero.yaml.j2"
 else
   export aero_bkg_times="6"
-  export AEROVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/variational/3dvar_gfs_aero.yaml
+  export JEDIYAML="${PARMgfs}/gdas/aero/variational/3dvar_gfs_aero.yaml.j2"
 fi
 
 echo "END: config.aeroanl"

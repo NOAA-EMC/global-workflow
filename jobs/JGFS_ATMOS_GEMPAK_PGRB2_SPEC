@@ -20,13 +20,12 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN="${COMIN:-$(compath.py "${envir}"/"${NET}"/"${gfs_ver}")/${RUN}.${PDY}/${cyc}/${COMPONENT}}"
-export COMOUT="${COMOUT:-$(compath.py -o "${NET}"/"${gfs_ver}"/"${NET}"."${PDY}")/${cyc}/${COMPONENT}/gempak}"
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
+GRID=0p25 YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_0p25:COM_ATMOS_GEMPAK_TMPL"
+if [[ ! -d "${COM_ATMOS_GEMPAK_0p25}" ]]; then mkdir -m 775 -p "${COM_ATMOS_GEMPAK_0p25}"; fi
 
 export SENDDBN="${SENDDBN:-NO}"
 export DBNROOT="${DBNROOT:-${UTILROOT}/fakedbn}"
-
-mkdir -m 775 -p "${COMOUT}"
 
 #################################################################
 # Execute the script for the regular grib
@@ -38,10 +37,13 @@ cd "${DATA_SPECIAL}" || exit 1
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
 export RUN2=gfs_goessim
 export GRIB=goessimpgrb2.0p25.f
-export EXT=" "
+export EXT=""
 export fend=180
+if (( fend > FHMAX_GFS )); then
+  fend=${FHMAX_GFS}
+fi
 export finc=3
-export fstart=000
+export fstart=0
 
 echo "RUNS the Program"
 
@@ -61,8 +63,11 @@ export RUN2=gfs_goessim221
 export GRIB=goessimpgrb2f
 export EXT=".grd221"
 export fend=180
+if (( fend > FHMAX_GFS )); then
+  fend=${FHMAX_GFS}
+fi
 export finc=3
-export fstart=000
+export fstart=0
 
 echo "RUNS the Program"
 

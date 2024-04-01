@@ -23,7 +23,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -356,12 +356,12 @@ case ${step} in
 
   "ocnanalbmat")
     npes=16
-    case ${CASE} in
-      "C384") npes=480;;
-      "C96")  npes=16;;
-      "C48")  npes=16;;
+    case ${OCNRES} in
+      "025") npes=480;;
+      "050")  npes=16;;
+      "500")  npes=16;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -374,20 +374,21 @@ case ${step} in
 
   "ocnanalrun")
     npes=16
-    case ${CASE} in
-      "C384")
+    case ${OCNRES} in
+      "025")
         npes=480
-        memory_ocnanalrun="128GB"
+        memory_ocnanalrun="96GB"
         ;;
-      "C96")
+      "050")
         npes=16
+        memory_ocnanalrun="96GB"
         ;;
-      "C48")
+      "500")
         npes=16
-        memory_ocnanalrun="64GB"
+        memory_ocnanalrun="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -399,23 +400,51 @@ case ${step} in
     export memory_ocnanalrun
     ;;
 
+  "ocnanalecen")
+    npes=16
+    case ${OCNRES} in
+      "025")
+        npes=40
+        memory_ocnanalecen="96GB"
+        ;;
+      "050")
+        npes=16
+        memory_ocnanalecen="96GB"
+        ;;
+      "500")
+        npes=16
+        memory_ocnanalecen="24GB"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        exit 4
+    esac
+
+    export wtime_ocnanalecen="00:10:00"
+    export npe_ocnanalecen=${npes}
+    export nth_ocnanalecen=1
+    export is_exclusive=True
+    export npe_node_ocnanalecen=$(( npe_node_max / nth_ocnanalecen ))
+    export memory_ocnanalecen
+    ;;
+
   "ocnanalchkpt")
     export wtime_ocnanalchkpt="00:10:00"
     export npe_ocnanalchkpt=1
     export nth_ocnanalchkpt=1
     export npe_node_ocnanalchkpt=$(( npe_node_max / nth_ocnanalchkpt ))
-    case ${CASE} in
-      "C384")
+    case ${OCNRES} in
+      "025")
         memory_ocnanalchkpt="128GB"
         npes=40;;
-      "C96")
+      "050")
         memory_ocnanalchkpt="32GB"
         npes=16;;
-      "C48")
+      "500")
         memory_ocnanalchkpt="32GB"
         npes=8;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
     export npe_ocnanalchkpt=${npes}
@@ -541,6 +570,20 @@ case ${step} in
         ntasks_fv3=${ntasks_fv3_gfs}
         ntasks_quilt=${ntasks_quilt_gfs}
         nthreads_fv3=${nthreads_fv3_gfs}
+        nthreads_ufs=${nthreads_ufs_gfs}
+      fi
+
+      # Determine if using ESMF-managed threading or traditional threading
+      # If using traditional threading, set them to 1
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        export UFS_THREADS=1
+      else  # traditional threading
+        export UFS_THREADS=${nthreads_ufs:-1}
+        nthreads_fv3=1
+        nthreads_mediator=1
+        [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
+        [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
+        [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
       fi
 
       # PETS for the atmosphere dycore
@@ -617,11 +660,11 @@ case ${step} in
 
       if [[ "${_CDUMP}" =~ "gfs" ]]; then
         declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
-        declare -x "nth_${step}_gfs"=1  # ESMF handles threading for the UFS-weather-model
+        declare -x "nth_${step}_gfs"="${UFS_THREADS}"
         declare -x "npe_node_${step}_gfs"="${npe_node_max}"
       else
         declare -x "npe_${step}"="${NTASKS_TOT}"
-        declare -x "nth_${step}"=1  # ESMF handles threading for the UFS-weather-model
+        declare -x "nth_${step}"="${UFS_THREADS}"
         declare -x "npe_node_${step}"="${npe_node_max}"
       fi
 
@@ -663,9 +706,14 @@ case ${step} in
       "C48" | "C96")
         export npe_upp=${CASE:1}
       ;;
-      "C192" | "C384" | "C768")
+      "C192" | "C384")
         export npe_upp=120
-        export memory_upp="48GB"
+        export memory_upp="96GB"
+      ;;
+      "C768")
+        export npe_upp=120
+        export memory_upp="96GB"
+        if [[ ${machine} == "WCOSS2" ]]; then export memory_upp="480GB" ; fi
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"

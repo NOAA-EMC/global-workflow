@@ -4,14 +4,13 @@
 # GDAS GEMPAK META NCDC PRODUCT GENERATION
 ############################################
 
-# TODO (#1222) This j-job is not part of the rocoto
-
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
 # Now set up GEMPAK/NTRANS environment
 
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+# datatype.tbl specifies the paths and filenames of files
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 ###################################
 # Specify NET and RUN Name and model
@@ -35,29 +34,37 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak}
-export COMINgdas=${COMINgdas:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}/gempak/meta}
-export COMOUTncdc=${COMOUTncdc:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
+GRID=1p00 YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_1p00:COM_ATMOS_GEMPAK_TMPL"
 
-export COMINukmet=${COMINukmet:-$(compath.py ${envir}/ukmet/${ukmet_ver})/ukmet}
-export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
+GRID="meta" YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_META:COM_ATMOS_GEMPAK_TMPL"
+if [[ ! -d "${COM_ATMOS_GEMPAK_META}" ]]; then
+  mkdir -m 775 -p "${COM_ATMOS_GEMPAK_META}"
+fi
 
-export COMOUTukmet=${COMOUT}
-export COMOUTecmwf=${COMOUT}
+if (( cyc%12 == 0 )); then
+  GRID="gif" YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_GIF:COM_ATMOS_GEMPAK_TMPL"
+  if [[ ! -d "${COM_ATMOS_GEMPAK_GIF}" ]]; then
+    mkdir -m 775 -p "${COM_ATMOS_GEMPAK_GIF}"
+  fi
+fi
 
-mkdir -m 775 -p ${COMOUT} ${COMOUTncdc} ${COMOUTukmet} ${COMOUTecmwf}
+export COMINukmet="${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}"
+export COMINecmwf="${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}"
 
 export pgmout=OUTPUT.$$
 
-
 ########################################################
 # Execute the script.
-${HOMEgfs}/gempak/ush/gdas_meta_na.sh
-${HOMEgfs}/gempak/ush/gdas_ecmwf_meta_ver.sh
-${HOMEgfs}/gempak/ush/gdas_meta_loop.sh
-${HOMEgfs}/gempak/ush/gdas_ukmet_meta_ver.sh
+"${HOMEgfs}/gempak/ush/gdas_meta_na.sh"
 export err=$?; err_chk
+"${HOMEgfs}/gempak/ush/gdas_meta_loop.sh"
+export err=$?; err_chk
+if [[ "${cyc}" == '06' ]]; then
+  "${HOMEgfs}/gempak/ush/gdas_ecmwf_meta_ver.sh"
+  export err=$?; err_chk
+  "${HOMEgfs}/gempak/ush/gdas_ukmet_meta_ver.sh"
+  export err=$?; err_chk
+fi
 ########################################################
 
 ############################################
@@ -66,21 +73,23 @@ export err=$?; err_chk
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh
+if (( cyc%12 == 0 )); then
+  "${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh"
+fi
 export err=$?; err_chk
 ########################################################
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "${KEEPDATA}" != "YES" ] ; then
-  rm -rf ${DATA}
+if [[ "${KEEPDATA}" != "YES" ]] ; then
+  rm -rf "${DATA}"
 fi
 
