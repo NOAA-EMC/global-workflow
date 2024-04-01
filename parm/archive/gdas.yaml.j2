@@ -2,6 +2,13 @@ name: "GDAS"
 description: "Basic GDAS analysis and forecast produts and data"
 {% set cycle_HH = current_cycle | strftime('%H') %}
 {% set cycle_YYYYMMDDHH = current_cycle | strftime('%Y%m%d%H') %}
+{% set first_cycle = cycle_YYYYMMDDHH == SDATE %}
+{% set n_fhrs = (FHMAX - FHMIN + 1) / FHOUT %}
+{% if n_fhrs % NFHRS_PER_GROUP == 0 %}
+{% set n_post_groups = n_fhrs // NFHRS_PER_GROUP %}
+{% else %}
+{% set n_post_groups = n_fhrs // NFHRS_PER_GROUP + 1 %}
+{% endif %}
 target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdas.tar"
 mandatory:
     - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.anl"
@@ -10,7 +17,21 @@ mandatory:
     - "{{ atmos_grib_1p00_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.1p00.anl.idx"
     - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmanl.nc"
     - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.sfcanl.nc"
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}*prod*.log"
+    {% if not first_cycle }
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmanlprod.log"
+    {% endif %}
+    {% for post_group in range(n_post_groups) %}
+    {% set grp_st_fhr = post_group * NFHRS_PER_GROUP * FHOUT + FHMIN %}
+    {% set grp_en_fhr = (post_group + 1) * NFHRS_PER_GROUP * FHOUT + FHMIN - 1 %}
+    {% if grp_en_fhr > FHMAX %}
+    {% set grp_en_fhr = FHMAX %}
+    {% endif %}
+    {% if grp_en_fhr != grp_st_fhr %}
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_prod_f{{ '%03d' % grp_st_fhr }}-f{{ '%03d' %grp_en_fhr}}.log"
+    {% else %}
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_prod_f{{ '%03d' % grp_st_fhr }}.log"
+    {% endif %}
+    {% endfor %}
     {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
     - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.f{{ '%03d' % fhr }}"
     - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
@@ -75,9 +96,21 @@ optional:
     {% if DO_AERO %}
     - "{{ chem_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.aerostat"
     {% endif %}
+    - "{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmanlupp.log"
     {% if WRITE_DOPOST %}
-    - "{{ cycle_YYYYMMDDHH }}/{{ RUN }}*upp*.log"
+    {% for post_group in range(n_post_groups) %}
+    {% set grp_st_fhr = post_group * NFHRS_PER_GROUP * FHOUT + FHMIN %}
+    {% set grp_en_fhr = (post_group + 1) * NFHRS_PER_GROUP * FHOUT + FHMIN - 1 %}
+    {% if grp_en_fhr > FHMAX %}
+    {% set grp_en_fhr = FHMAX %}
     {% endif %}
+    {% if grp_en_fhr != grp_st_fhr %}
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_upp_f{{ '%03d' % grp_st_fhr }}-f{{ '%03d' %grp_en_fhr}}.log"
+    {% else %}
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_upp_f{{ '%03d' % grp_st_fhr }}.log"
+    {% endif %}
+    {% endfor %}
+    {% endif %} # WRITE_DOPOST
     {% if DO_VERFOZN %}
     {% set oznmon_types = [
        "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",

@@ -7,7 +7,10 @@ from wxflow import (
          logit,
          cast_strdict_as_dtypedict,
          AttrDict,
+         get_gid,
          Task,
+         htar,
+         hsi,
          parse_j2yaml,
          archive_utils)
 from logging import getLogger
@@ -75,9 +78,9 @@ class Archive(Task):
 
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
 
-    @staticmethod
+    @classmethod
     @logit(logger)
-    def configure(arch_dict: Dict[str, Any]) -> None:
+    def configure(cls, arch_dict: Dict[str, Any]) -> None:
         """Determine which tarballs will need to be created.
 
         Parameters
@@ -123,7 +126,8 @@ class Archive(Task):
 
             archive_filename = os.path.join(archive_parm, dataset + ".yaml.j2")
             archive_set = parse_j2yaml(archive_filename, arch_dict)
-            archive_set = Archive._create_fileset(archive_set)
+            archive_set = cls._create_fileset(archive_set)
+            archive_set['has_rstprod'] = cls._has_rstprod(archive_set.fileset)
             archive_set['protocol'] = tar_cmd
 
             archive_sets.append(archive_set)
@@ -141,13 +145,21 @@ class Archive(Task):
             Task specific keys, e.g. runtime options (DO_AERO, DO_ICE, etc)
         """
 
-        import tarfile
-
         for archive_set in archive_sets:
-            archive_utils.ArchiveHandler(archive_set).create()
+
+            if archive_set.has_rstprod:
+
+                try:
+                    archive_utils.ArchiveHandler(archive_set).create()
+                    success = True
+                except:
+                    success = False
+
+                cls._protect_rstprod(archive_set)
 
     @logit(logger)
-    def _create_fileset(archive_set: Dict[str, Any]) -> None:
+    @classmethod
+    def _create_fileset(cls, archive_set: Dict[str, Any]) -> None:
         """
         Collect the list of all available files from the parsed yaml dict.
         Globs are expanded and if mandatory files are missing, an error is
@@ -172,7 +184,7 @@ class Archive(Task):
                 if len(glob_set) == 0:
                     raise FileNotFoundError(f'Mandatory file or glob {item} not found!')
                 for file in glob_set:
-                    Archive._check_isfile(file)
+                    cls._check_isfile(file)
                     archive_set.fileset.append(file)
 
         if 'optional' in archive_set:
@@ -182,7 +194,7 @@ class Archive(Task):
                     print (f'WARNING: optional file/glob {item} not found!')
                 else:
                     for file in glob_set:
-                        Archive._check_isfile(file,False)
+                        cls._check_isfile(file,False)
                         archive_set.fileset.append(file)
 
         if len(archive_set.fileset) == 0:
@@ -210,5 +222,62 @@ class Archive(Task):
         """
 
         if os.path.isdir(filename):
-            raise IsADirectoryError(f'{file} is a directory\n' + 
+            raise IsADirectoryError(f'{file} is a directory\n' +
                   f'only files are allowed to be archived.')
+
+
+    @logit(logger)
+    def _has_rstprod(fileset: list) -> bool:
+        """
+        Checks if any files in the input fileset belongs to rstprod.
+
+        Parameters
+        ----------
+        fileset : list
+            List of filenames to check.
+        """
+
+        try:
+            rstprod_gid = get_gid("rstprod")
+        except KeyError:
+            # rstprod does not exist on this machine
+            return False
+
+        # Expand globs and check each file for group ownership
+        for file in fileset:
+            if os.stat(filename).st_gid == rstprod_gid:
+                return True
+
+        return False
+
+
+
+    @logit(logger)
+    def _protect_rstprod(self, archive_set) -> None:
+        """
+        Changes the group of the target tarball to rstprod and the permissions to
+        640.  If this fails for any reason, attempt to delete the file before exiting.
+
+        """
+
+        if archive_set.protocol = "htar":
+            chgrp = hsi.chgrp
+            chmod = hsi.chmod
+            rm = hsi.rm
+        else:
+            # TODO verify these are correct
+            chgrp = f_chgrp
+            chmod = os.chmod
+            rm = os.rm
+
+        try:
+            chgrp("rstprod", archive_set.target)
+            chmod("640", archive_set.target)
+        except
+            try:
+                rm(archive_set.target)
+            except:
+                pass
+
+            raise OSError(f"Failed to protect {archive_set.target}!\n"
+                          f"Please verify that it has been deleted!!")
