@@ -81,9 +81,10 @@ def rocoto_statcount():
 if __name__ == '__main__':
 
     args = input_args()
- 
+
     error_return = 0
     rocoto_status = rocoto_statcount()
+
     if rocoto_status['Cycles'] == rocoto_status['Done_Cycles']:
         print(f'All {rocoto_status['Cycles']} Cycles are Done')
         rocoto_state = 'DONE'
