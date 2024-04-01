@@ -172,7 +172,7 @@ if __name__ == '__main__':
 
     args = input_args()
 
-    if not args.create_table:
+    if not args.create:
         if not os.path.isfile(args.dbfile):
             print(f'Error: {args.dbfile} does not exsist')
             sys.exit(-1)
