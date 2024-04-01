@@ -58,7 +58,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display | grep -v Failed | grep Running | awk '{print $1}') || true
+  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Running) || true
 fi
 if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
@@ -123,21 +123,27 @@ for pr in ${pr_list}; do
     if [[ ! -f "${db}" ]]; then
        continue
     fi
-    rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
-    num_cycles=$(echo "${rocoto_stat_output}" | wc -l) || true
-    num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
-    # num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED) || true
-    echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_done}" || true
-    num_failed=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD') || true
-    if [[ ${num_failed} -ne 0 ]]; then
+
+    set +e
+    rocoto_stat=$("${HOMEgfs}/ci/scripts/utils/rocoto_statcount.py" -w "${xml}" -d "${db}") || true
+    set -e
+    rocoto_error=$?
+    if [[ "${rocoto_error}" -ne 0 ]]; then
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
-      error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
-      {
-       echo "Experiment ${pslot}  *** FAILED *** on ${MACHINE_ID^}"
-       echo "Experiment ${pslot}  with ${num_failed} tasks failed at $(date +'%D %r')" || true
-       echo "Error logs:"
-       echo "${error_logs}"
-      } >> "${output_ci}"
+      # Check if the experiment failed due to a missing dependency and is stalled
+      if [[ "${rocoto_error}" -eq -3 ]]; then
+        echo "Experiment ${pslot}  **${rocoto_state}** on ${MACHINE_ID^}" >> "${output_ci_single}"
+        echo "Experiment ${pslot} with ${rocoto_error} at $(date +'%D %r') on ${MACHINE_ID^}" >> "${output_ci}"
+        # TODO used rocotocheck to find the missing dependency
+      else
+        error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
+        {
+          echo "Experiment ${pslot}  *** ${rocoto_state} *** on ${MACHINE_ID^}"
+          echo "Experiment ${pslot} with ${rocoto_error} tasks failed at $(date +'%D %r')" || true
+          echo "Error logs:"
+          echo "${error_logs}"
+        } >> "${output_ci}"
+      fi
       sed -i "1 i\`\`\`" "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
       "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
@@ -147,7 +153,9 @@ for pr in ${pr_list}; do
       done
       break
     fi
-    if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
+    echo ${rocoto_stat}
+    rocoto_state=$(echo -e "${rocoto_stat}" | tail -1)
+    if [[ "${rocoto_state}" -eq "DONE" ]]; then
       #Remove Experment cases that completed successfully
       rm -Rf "${pslot_dir}"
       rm -Rf "${pr_dir}/RUNTESTS/COMROOT/${pslot}"
@@ -157,7 +165,6 @@ for pr in ${pr_list}; do
       echo "Experiment ${pslot} **SUCCESS** on ${MACHINE_ID^} at ${DATE}" >> "${output_ci_single}"
       echo "Experiment ${pslot} *** SUCCESS *** at ${DATE}" >> "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
-
     fi
   done
 done

@@ -64,14 +64,14 @@ unset HOMEgfs
 pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 if [[ ! -f "${pr_list_dbfile}" ]]; then
-  "${ROOT_DIR}/ci/scripts/pr_list_database.py" --create --dbfile "${pr_list_dbfile}"
+  "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --create --dbfile "${pr_list_dbfile}"
 fi
 
 pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
 
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  db_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
+  db_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
   output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_single.log"
   #############################################################
   # Check if a Ready labeled PR has changed back from once set
@@ -82,7 +82,7 @@ for pr in ${pr_list}; do
   if [[ "${db_list}" == *"already is in list"* ]]; then
     # Get the the PID and HOST of the driver.sh cron job
     # that is stored int he CI database for this PR
-    driver_ID=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
+    driver_ID=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
     driver_PID=$(echo "${driver_ID}" | cut -d":" -f1) || true
     driver_HOST=$(echo "${driver_ID}" | cut -d":" -f2) || true
     host_name=$(hostname -s)
@@ -121,14 +121,14 @@ for pr in ${pr_list}; do
     fi
     sed -i "1 i\`\`\`" "${output_ci_single}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
   fi
 done
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display --dbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Ready | awk '{print $1}') || true
+  pr_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Ready) || true
 fi
 if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"
@@ -143,7 +143,7 @@ fi
 
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
-  pr_building=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
+  pr_building=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
   if [[ -z "${pr_building+x}" ]]; then
       continue
   fi
@@ -154,7 +154,7 @@ for pr in ${pr_list}; do
   driver_build_PID=$$
   driver_build_HOST=$(hostname -s)
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
-  "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building "${driver_build_PID}:${driver_build_HOST}"
+  "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building "${driver_build_PID}:${driver_build_HOST}"
   rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
   {
@@ -176,7 +176,7 @@ for pr in ${pr_list}; do
   # we need to exit this instance of the driver script
   #################################################################
   if [[ ${ci_status} -ne 0 ]]; then
-     build_PID_check=$("${ROOT_DIR}/ci/scripts/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | awk '{print $4}' | cut -d":" -f1) || true
+     build_PID_check=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | awk '{print $4}' | cut -d":" -f1) || true
      if [[ "${build_PID_check}" -ne "$$" ]]; then
         echo "Driver build PID: ${build_PID_check} no longer running this build ... exiting"
         exit 0
@@ -184,7 +184,7 @@ for pr in ${pr_list}; do
   fi
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built "0:0"
+    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built "0:0"
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
@@ -226,14 +226,14 @@ for pr in ${pr_list}; do
           cat "${LOGFILE_PATH}"
         } >> "${output_ci}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-        "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+        "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
         "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
         exit 1
       fi
     done
 
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running "0:0"
+    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running "0:0"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
 
   else
@@ -242,7 +242,7 @@ for pr in ${pr_list}; do
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
     } >> "${output_ci}"
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-    "${ROOT_DIR}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
   fi
 
