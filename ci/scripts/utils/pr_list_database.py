@@ -8,15 +8,31 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
 
 
 def full_path(string):
+    """
+    full_path Get the absolute path of a file or directory.
+    Parameters
+    ----------
+    string : str
+        The relative path of the file or directory.
+    Returns
+    -------
+    str
+        The absolute path of the file or directory.
+    Raises
+    ------
+    NotADirectoryError
+        If the provided string does not represent a valid file or directory.
+    """
+
     if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
         return os.path.abspath(string)
     else:
         raise NotADirectoryError(string)
 
 
-def create(db: SQLiteDB):
+def create_table(db: SQLiteDB):
     """
-    Create a new database.
+    Create a new table in a database.
 
     Parameters
     ----------
@@ -68,7 +84,7 @@ def update_pr(db: SQLiteDB, args):
         db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def display(db, display) -> list:
+def display_db(db, display) -> list:
     """
     Display the database.
 
@@ -155,7 +171,7 @@ if __name__ == '__main__':
 
     args = input_args()
 
-    if not args.create:
+    if not args.create_table:
         if not os.path.isfile(args.dbfile):
             print(f'Error: {args.dbfile} does not exsist')
             sys.exit(-1)
@@ -164,7 +180,7 @@ if __name__ == '__main__':
     ci_database.connect()
 
     if args.create:
-        create(ci_database)
+        create_table(ci_database)
     if args.add_pr:
         add_pr(ci_database, args.add_pr[0])
     if args.update_pr:
@@ -172,10 +188,10 @@ if __name__ == '__main__':
     if args.remove_pr:
         ci_database.remove_data('pr_list', 'PR', args.remove_pr[0])
     if args.display is not None:
-        for rows in display(ci_database, args.display):
+        for rows in display_db(ci_database, args.display):
             print(rows)
     if args.list:
-        for rows in display(ci_database, [args.list[0], args.list[1]]):
+        for rows in display_db(ci_database, [args.list[0], args.list[1]]):
             print(rows, end=' ')
         print()
     if args.update_database:
