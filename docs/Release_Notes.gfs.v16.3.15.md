@@ -104,10 +104,7 @@ CHANGES TO FILE SIZES
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* Computing resource added for the `gdaswdqms` job for each gdas cycle: 
-* Added "shared" to PBS place setting for jobs that are run shared since exclusive will now be the default when not set on WCOSS2
-
-The new job `gdaswdqms` requests a single (1) core with `48GB` memory for 20 minutes
+* Computing resource added for the `gdaswdqms` job for each gdas cycle: The new job `gdaswdqms` requests a single (1) core with `48GB` memory for 20 minutes
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -139,4 +136,6 @@ DOCUMENTATION
 
 PREPARED BY
 -----------
-Kate.Friedman@noaa.gov Rahul.Mahajan@noaa.gov Emily.Liu@noaa.gov
+Kate.Friedman@noaa.gov
+Rahul.Mahajan@noaa.gov
+Emily.Liu@noaa.gov
