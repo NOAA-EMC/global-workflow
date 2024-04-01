@@ -163,7 +163,7 @@ def input_args():
     parser.add_argument('--display', nargs='*', help='output pr table', required=False)
     parser.add_argument('--list', nargs=2, metavar=('state', 'status'), required=False)
     parser.add_argument('--update_database', help='use labels from Open GitHub PRs to update database state and produces a kill list',
-                         action='store_true', required=False)
+                        action='store_true', required=False)
     args = parser.parse_args()
     return args
 

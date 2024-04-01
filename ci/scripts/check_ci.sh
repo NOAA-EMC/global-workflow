@@ -153,7 +153,7 @@ for pr in ${pr_list}; do
       done
       break
     fi
-    echo ${rocoto_stat}
+    echo "${rocoto_stat}"
     rocoto_state=$(echo -e "${rocoto_stat}" | tail -1)
     if [[ "${rocoto_state}" -eq "DONE" ]]; then
       #Remove Experment cases that completed successfully
