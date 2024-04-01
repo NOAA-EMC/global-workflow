@@ -58,12 +58,11 @@ function generate_com() {
         value=$(echo "${!template}" | envsubst)
         # shellcheck disable=SC2086
         declare ${opts} "${com_var}"="${value}"
+        # shellcheck disable=
         echo "generate_com :: ${com_var}=${value}"
     done
     set_trace
 }
-# shellcheck disable=
-declare -xf generate_com
 
 function wait_for_file() {
     #
@@ -107,7 +106,6 @@ function wait_for_file() {
     set_trace
     return 1
 }
-declare -xf wait_for_file
 
 function detect_py_ver() {
     # 
@@ -123,4 +121,7 @@ function detect_py_ver() {
     fi
 }
 # shellcheck disable=
+
+declare -xf generate_com
+declare -xf wait_for_file
 declare -xf detect_py
