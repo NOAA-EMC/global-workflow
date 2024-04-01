@@ -82,14 +82,14 @@ ln -sf "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
 
 case "${CASE}" in
     "C768")
-        ln -sf "${PARMbufrsnd}/bufr_ij13km.txt" fort.7
+        ln -sf "${PARMgfs}/product/bufr_ij13km.txt" fort.7
         ;;
     "C1152")
-        ln -sf "${PARMbufrsnd}/bufr_ij9km.txt"  fort.7
+        ln -sf "${PARMgfs}/product/bufr_ij9km.txt"  fort.7
         ;;
     *)
-        echo "FATAL ERROR: Unrecognized bufr_ij*km.txt For CASE ${CASE}, ABORT!"
-        exit 1
+        echo "WARNING: No bufr table for this resolution, using the one for C768"
+        ln -sf "${PARMgfs}/product/bufr_ij13km.txt" fort.7
         ;;
 esac
 
