@@ -125,37 +125,34 @@ for pr in ${pr_list}; do
     fi
 
     set +e
-    rocoto_stat=$("${HOMEgfs}/ci/scripts/utils/rocoto_statcount.py" -w "${xml}" -d "${db}") || true
-    set -e
+    rocoto_state=$("${HOMEgfs}/ci/scripts/utils/rocoto_statcount.py" -w "${xml}" -d "${db}")
     rocoto_error=$?
+    rm -f "${output_ci_single}"
     if [[ "${rocoto_error}" -ne 0 ]]; then
       "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       # Check if the experiment failed due to a missing dependency and is stalled
-      if [[ "${rocoto_error}" -eq -3 ]]; then
+      if [[ "${rocoto_state}" == "STALLED" ]]; then
         date=$(date +'%D %r')
-        echo "Experiment ${pslot}  **${rocoto_state}** on ${MACHINE_ID^}" >> "${output_ci_single}"
-        echo "Experiment ${pslot} with ${rocoto_error} at ${date} on ${MACHINE_ID^}" >> "${output_ci}"
+        echo "Experiment ${pslot} with **${rocoto_state}** at ${date} on ${MACHINE_ID^}" >> "${output_ci_single}"
+        "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
         # TODO used rocotocheck to find the missing dependency
       else
         error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
         {
           echo "Experiment ${pslot}  *** ${rocoto_state} *** on ${MACHINE_ID^}"
-          echo "Experiment ${pslot} with ${rocoto_error} tasks failed at $(date +'%D %r')" || true
+          echo "Experiment ${pslot} with ${rocoto_state} tasks failed at $(date +'%D %r')" || true
           echo "Error logs:"
           echo "${error_logs}"
         } >> "${output_ci}"
+        sed -i "1 i\`\`\`" "${output_ci}"
+        "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
       fi
-      sed -i "1 i\`\`\`" "${output_ci}"
-      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
       "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
-      for kill_cases in "${pr_dir}/RUNTESTS/"*; do
-         pslot=$(basename "${kill_cases}")
-         cancel_slurm_jobs "${pslot}"
-      done
-      break
+      cancel_all_batch_jobs "${pr_dir}/RUNTESTS"
+      exit "${rocoto_error}"
     fi
-    echo "${rocoto_stat}"
-    rocoto_state=$(echo -e "${rocoto_stat}" | tail -1)
+    echo "${rocoto_state}"
+    rocoto_state=$(echo -e "${rocoto_state}" | tail -1)
     if [[ "${rocoto_state}" == "DONE" ]]; then
       #Remove Experment cases that completed successfully
       rm -Rf "${pslot_dir}"
