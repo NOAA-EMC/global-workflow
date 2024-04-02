@@ -18,7 +18,7 @@ set -eux
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 export GH=${HOME}/bin/gh
-export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+export REPO_URL=git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging
@@ -96,7 +96,10 @@ for pr in ${pr_list}; do
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
         # shellcheck disable=SC2312
-        pstree -A -p "${driver_PID}" | grep -Pow "(?<=\()[0-9]+(?=\))" | xargs kill
+        pstree_out=$(pstree -A -p "${driver_PID}")
+        if [[ -n "${pstree_out}" ]]; then
+           echo -e "${pstree_out}" | grep -Pow "(?<=\()[0-9]+(?=\))"  | xargs kill
+        fi
       else
         # shellcheck disable=SC2312
         ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
@@ -113,13 +116,16 @@ for pr in ${pr_list}; do
     else
       for case in ${experiments}; do
         case_name=$(basename "${case}")
-        cancel_slurm_jobs "${case_name}"
+        cancel_batch_jobs "${case_name}"
         {
           echo "Canceled all jobs for experiment ${case_name} in PR:${pr} on ${MACHINE_ID^}"
         } >> "${output_ci_single}"
       done
     fi
-    sed -i "1 i\`\`\`" "${output_ci_single}"
+    first_line=$(head -n 1 "${output_ci_single}")
+    if [[ "$first_line" != '```' ]]; then
+      sed -i "1 i\`\`\`" "${output_ci_single}"
+    fi
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
     "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
@@ -164,7 +170,10 @@ for pr in ${pr_list}; do
     echo "with PID: ${driver_build_PID} on host: ${driver_build_HOST}"
     echo ""
   } >> "${output_ci_single}"
-  sed -i "1 i\`\`\`" "${output_ci_single}"
+  first_line=$(head -n 1 "${output_ci_single}")
+  if [[ "$first_line" != '```' ]]; then
+    sed -i "1 i\`\`\`" "${output_ci_single}"
+  fi
   "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
   set +e
   "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${output_ci}"
