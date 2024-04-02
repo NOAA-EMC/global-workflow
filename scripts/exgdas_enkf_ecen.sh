@@ -58,6 +58,7 @@ FHMIN=${FHMIN_ECEN:-3}
 FHMAX=${FHMAX_ECEN:-9}
 FHOUT=${FHOUT_ECEN:-3}
 FHSFC=${FHSFC_ECEN:-$FHMIN}
+NMEM_ENS_MAX=${NMEM_ENS:-80}
 if [ "${RUN}" = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
    NMEM_ENS=${NMEM_ENS_GFS:-30}
@@ -111,8 +112,8 @@ for FHR in $(seq $FHMIN $FHOUT $FHMAX); do
 
 for imem in $(seq 1 $NMEM_ENS); do
    smem=$((imem + mem_offset))
-   if (( smem > 80 )); then
-      smem=$((smem - 80))
+   if (( smem > NMEM_ENS_MAX )); then
+      smem=$((smem - NMEM_ENS_MAX))
    fi
    gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
