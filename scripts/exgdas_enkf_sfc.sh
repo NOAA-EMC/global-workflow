@@ -47,6 +47,7 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-${GPREFIX}}
 
 # Variables
+NMEM_ENS_MAX=${NMEM_ENS:-80}
 if [ "${RUN}" = "enkfgfs" ]; then
    NMEM_ENS=${NMEM_ENS_GFS:-30}
    ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
@@ -140,8 +141,8 @@ if [ $DOIAU = "YES" ]; then
 
         for imem in $(seq 1 $NMEM_ENS); do
             smem=$((imem + mem_offset))
-            if (( smem > 80 )); then
-               smem=$((smem - 80))
+            if (( smem > NMEM_ENS_MAX )); then
+               smem=$((smem - NMEM_ENS_MAX))
             fi
             gmemchar="mem"$(printf %03i "$smem")
             cmem=$(printf %03i $imem)
@@ -186,7 +187,11 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
         export TILE_NUM=$n
 
         for imem in $(seq 1 $NMEM_ENS); do
-
+            smem=$((imem + mem_offset))
+            if (( smem > NMEM_ENS_MAX )); then
+               smem=$((smem - NMEM_ENS_MAX))
+            fi
+            gmemchar="mem"$(printf %03i "$smem")
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 

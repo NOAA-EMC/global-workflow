@@ -115,7 +115,7 @@ cat > input.nml <<EOF
   range_warn = ${range_warn:-".true."}
   reset_eta = .false.
   n_sponge = ${n_sponge:-"10"}
-  nudge_qv = ${nudge_qv:-".true."}
+  nudge_qv = ${nudge_qv:-".false."}
   nudge_dz = ${nudge_dz:-".false."}
   tau = ${tau:-10.}
   rf_cutoff = ${rf_cutoff:-"7.5e2"}
