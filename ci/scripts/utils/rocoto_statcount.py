@@ -26,11 +26,11 @@ def input_args():
         rocoto_state is Stalled if there are no jobs that are RUNNING, SUBMITTING, or QUEUED.
         """
 
-    parser = ArgumentParser(description=description,
-                            formatter_class=ArgumentDefaultsHelpFormatter)
+    parser = ArgumentParser(description=description)
 
-    parser.add_argument('-w', help='workflow_document', type=str)
-    parser.add_argument('-d', help='database_file', type=str)
+    parser.add_argument('-w', help='workflow_document', nargs=1, metavar='XML Workflow File', type=str, required=True)
+    parser.add_argument('-d', help='database_file', nargs=1, metavar='Database File', type=str, required=True)
+    parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
 
     args = parser.parse_args()
 
@@ -98,9 +98,11 @@ if __name__ == '__main__':
         error_return = -3
         rocoto_state = 'STALLED'
     else:
+        rocoto_state = 'RUNNING'
+
+    if args.verbose:
         for status in rocoto_status:
-            print(f'Number of {status} : {rocoto_status[status]}')
-            rocoto_state = 'RUNNING'
+            print(f'Number of {status} : {rocoto_status[status]}\n')
 
     print(rocoto_state)
     sys.exit(error_return)
