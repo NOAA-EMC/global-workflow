@@ -16,6 +16,7 @@ load(pathJoin("jasper", (os.getenv("jasper_ver") or "None")))
 load(pathJoin("libpng", (os.getenv("libpng_ver") or "None")))
 load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))
 load(pathJoin("R", (os.getenv("R_ver") or "None")))
+load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 
 load(pathJoin("hdf5", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("netcdf-c", (os.getenv("netcdf_c_ver") or "None")))
