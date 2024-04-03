@@ -28,8 +28,8 @@ def input_args():
 
     parser = ArgumentParser(description=description)
 
-    parser.add_argument('-w', help='workflow_document', nargs=1, metavar='XML Workflow File', type=FileType('r'), required=True)
-    parser.add_argument('-d', help='database_file', nargs=1, metavar='Database File', type=FileType('r'), required=True)
+    parser.add_argument('-w', help='workflow_document', type=FileType('r'), required=True)
+    parser.add_argument('-d', help='database_file', metavar='Database File', type=FileType('r'), required=True)
     parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
 
     args = parser.parse_args()
@@ -54,8 +54,8 @@ def rocoto_statcount():
     db_file_path = os.path.abspath(args.d.name)
 
     rocotostat_all = which("rocotostat")
-    rocotostat.add_default_arg(['-w', xml_file_path, '-d', db_file_path, '-s'])
-    rocotostat_all.add_default_arg(['-w', xml_file_path, '-d', db_file_path, '-a'])
+    rocotostat.add_default_arg(['-w',os.path.abspath(args.w.name), '-d', db_file_path, '-s'])
+    rocotostat_all.add_default_arg(['-w',os.path.abspath(args.d.name), '-d', db_file_path, '-a'])
 
     rocotostat_output = rocotostat(output=str)
     rocotostat_output = rocotostat_output.splitlines()[1:]
