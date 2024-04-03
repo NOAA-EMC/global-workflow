@@ -94,16 +94,16 @@ for pr in ${pr_list}; do
     } >> "${output_ci_single}"
     if [[ "${driver_PID}" -ne 0 ]]; then
       echo "Driver PID: ${driver_PID} no longer running this build having it killed"
+      # shellcheck disable=SC2312
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
-        # shellcheck disable=SC2312
         pstree_out=$(pstree -A -p "${driver_PID}")
         if [[ -n "${pstree_out}" ]]; then
            echo -e "${pstree_out}" | grep -Pow "(?<=\()[0-9]+(?=\))"  | xargs kill
         fi
       else
         ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
-        # shellcheck enable=SC2312
       fi
+      # shellcheck enable=SC2312
       {
         echo "Driver PID: Requested termination of ${driver_PID} and children on ${driver_HOST}"
         echo "Driver PID: has restarted as $$ on ${host_name}"
