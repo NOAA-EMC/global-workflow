@@ -123,7 +123,7 @@ for pr in ${pr_list}; do
       done
     fi
     first_line=$(head -n 1 "${output_ci_single}")
-    if [[ "$first_line" != '```' ]]; then
+    if [[ "${first_line}" != '```' ]]; then
       sed -i "1 i\`\`\`" "${output_ci_single}"
     fi
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
@@ -171,7 +171,7 @@ for pr in ${pr_list}; do
     echo ""
   } >> "${output_ci_single}"
   first_line=$(head -n 1 "${output_ci_single}")
-  if [[ "$first_line" != '```' ]]; then
+  if [[ "${first_line}" != '```' ]]; then
     sed -i "1 i\`\`\`" "${output_ci_single}"
   fi
   "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
