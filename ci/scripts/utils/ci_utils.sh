@@ -126,3 +126,28 @@ function create_experiment () {
   "${HOMEgfs}/${system}/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
 
 }
+
+function publish_logs() {
+# publish_logs function
+# This function takes a directory path and a list of files as arguments.
+# It calls the publish_logs.py script to publish the logs and returns its gist URL.
+# Usage: publish_logs <dir_path> <file1> <file2> ... <fileN>
+    local file="$1"
+    local dir_path="$2"
+
+    local full_paths=""
+    while IFS= read -r line; do
+        full_path="${dir_path}/${line}"
+        if [[ -f "$full_path" ]]; then
+            full_paths+="$full_path "
+        else
+            echo "File $full_path does not exist"
+        fi
+    done < "$file"
+
+    if [[ -n "$full_paths" ]]; then
+        python publish_logs.py --file $full_paths --repo > /dev/null
+        URL=$(python publish_logs.py --file $full_paths --gist)
+    fi
+    echo "$URL"
+}
