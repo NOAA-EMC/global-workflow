@@ -9,16 +9,16 @@ upp:
       - "{{ DATA }}"
     copy:
       - ["{{ 'g2tmpl_ROOT' | getenv }}/share/params_grib2_tbl_new", "{{ DATA }}/params_grib2_tbl_new"]
-      - ["{{ HOMEgfs }}/parm/post/nam_micro_lookup.dat", "{{ DATA }}/eta_micro_lookup.dat"]
-      - ["{{ HOMEgfs }}/exec/upp.x", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/parm/post/itag.jinja", "{{ DATA }}/"]
+      - ["{{ PARMgfs }}/post/nam_micro_lookup.dat", "{{ DATA }}/eta_micro_lookup.dat"]
+      - ["{{ EXECgfs }}/upp.x", "{{ DATA }}/"]
+      - ["{{ PARMgfs }}/post/itag.jinja", "{{ DATA }}/"]
 
 analysis:
   config:
     rdaod: True
   data_in:
     copy:
-      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-ANL.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ PARMgfs }}/post/postxconfig-NT-GFS-ANL.txt", "{{ DATA }}/postxconfig-NT.txt"]
       - ["{{ COM_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmanl.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COM_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcanl.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:
@@ -32,9 +32,9 @@ forecast:
   data_in:
     copy:
       {% if forecast_hour == 0 %}
-      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-F00-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ PARMgfs }}/post/postxconfig-NT-GFS-F00-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
       {% else %}
-      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ PARMgfs }}/post/postxconfig-NT-GFS-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
       {% endif %}
       - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
@@ -81,7 +81,7 @@ goes:
       {% endfor %}
       - ["{{ 'CRTM_FIX' | getenv }}/AerosolCoeff.bin", "{{ DATA }}/"]
       - ["{{ 'CRTM_FIX' | getenv }}/CloudCoeff.bin", "{{ DATA }}/"]
-      - ["{{ HOMEgfs }}/parm/post/postxconfig-NT-GFS-GOES.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ PARMgfs }}/post/postxconfig-NT-GFS-GOES.txt", "{{ DATA }}/postxconfig-NT.txt"]
       - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COM_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:

@@ -18,13 +18,10 @@
 # Imported variables that must be passed in:
 #   DATA         - path to working directory
 #   pgmout       - string indicating path to for standard output file
-#   EXECSYND     - path to syndat executable directory
 #   TANK_TROPCY  - path to home directory containing tropical cyclone record
 #                  data base
 
-source "$HOMEgfs/ush/preamble.sh"
-
-EXECSYND=${EXECSYND:-${HOMESYND}/exec}
+source "${USHgfs}/preamble.sh"
 
 cd $DATA
 
@@ -117,7 +114,7 @@ fi
 
 [ -s jtwcbul ] && echo "Processing JTWC bulletin halfs into tcvitals records" >> $pgmout
 
-pgm=$(basename $EXECSYND/syndat_getjtbul.x)
+pgm=$(basename ${EXECgfs}/syndat_getjtbul.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -132,7 +129,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p ${EXECSYND}/${pgm} >> $pgmout 2> errfile
+time -p ${EXECgfs}/${pgm} >> $pgmout 2> errfile
 errget=$?
 ###cat errfile
 cat errfile >> $pgmout

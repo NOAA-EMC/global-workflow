@@ -12,14 +12,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
-####################################
-# Specify Execution Areas
-####################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
-export EXECgfs=${HOMEgfs:-${HOMEgfs}/exec}
-export PARMgfs=${HOMEgfs:-${HOMEgfs}/parm}
-export USHgfs=${HOMEgfs:-${HOMEgfs}/ush}
-
 ###########################
 # Set up EXT variable
 ###########################
@@ -29,6 +21,6 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
 
 ########################################################
 # Execute the script.
-${HOMEgfs}/scripts/exglobal_atmos_pmgr.sh
+${SCRgfs}/exglobal_atmos_pmgr.sh
 ########################################################
 

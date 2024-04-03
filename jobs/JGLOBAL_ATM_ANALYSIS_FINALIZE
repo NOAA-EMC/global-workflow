@@ -33,7 +33,7 @@ mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMFINALPY:-${HOMEgfs}/scripts/exglobal_atm_analysis_finalize.py}
+EXSCRIPT=${GDASATMFINALPY:-${SCRgfs}/exglobal_atm_analysis_finalize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

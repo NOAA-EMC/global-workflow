@@ -23,12 +23,11 @@ export HPSS_PROJECT="@HPSS_PROJECT@"
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
-export PARMgfs="${HOMEgfs}/parm"
-export FIXgfs="${HOMEgfs}/fix"
-export USHgfs="${HOMEgfs}/ush"
-export UTILgfs="${HOMEgfs}/util"
 export EXECgfs="${HOMEgfs}/exec"
+export FIXgfs="${HOMEgfs}/fix"
+export PARMgfs="${HOMEgfs}/parm"
 export SCRgfs="${HOMEgfs}/scripts"
+export USHgfs="${HOMEgfs}/ush"
 
 ########################################################################
 
@@ -57,16 +56,9 @@ export DO_NPOESS="NO"      # NPOESS products
 export DO_TRACKER="YES"    # Hurricane track verification
 export DO_GENESIS="YES"    # Cyclone genesis verification
 export DO_GENESIS_FSU="NO" # Cyclone genesis verification (FSU)
-# The monitor is not yet supported on Hercules
-if [[ "${machine}" == "HERCULES" ]]; then
-   export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
-   export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
-   export DO_VMINMON="NO"     # GSI minimization monitoring
-else
-   export DO_VERFOZN="YES"    # Ozone data assimilation monitoring
-   export DO_VERFRAD="YES"    # Radiance data assimilation monitoring
-   export DO_VMINMON="YES"    # GSI minimization monitoring
-fi
+export DO_VERFOZN="YES"    # Ozone data assimilation monitoring
+export DO_VERFRAD="YES"    # Radiance data assimilation monitoring
+export DO_VMINMON="YES"    # GSI minimization monitoring
 export DO_MOS="NO"         # GFS Model Output Statistics - Only supported on WCOSS2
 
 # NO for retrospective parallel; YES for real-time parallel
@@ -94,6 +86,7 @@ export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
 export KEEPDATA="NO"
+export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
@@ -338,6 +331,8 @@ fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
 
+export GSI_SOILANAL=@GSI_SOILANAL@
+
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
 if [[ ${DONST} = "YES" ]]; then export FNTSFA="        "; fi
@@ -370,7 +365,7 @@ export binary_diag=".false."
 # Verification options
 export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
-export DO_VRFY_OCEANDA="NO"  # Run SOCA Ocean DA verification tasks
+export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive

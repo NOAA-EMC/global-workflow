@@ -71,7 +71,7 @@ GAREA	= 17.529;-129.296;53.771;-22.374
 PROJ	= str/90;-105;0
 LATLON	= 18/2
 
-restore ${USHgempak}/restore/pmsl_thkn.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/pmsl_thkn.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -79,35 +79,35 @@ TITLE	= 1/-2/~ ? $m_title PMSL, 1000-500 MB THICKNESS|~MSLP, 1000-500 THKN!0
 l
 run
 
-restore ${USHgempak}/restore/850mb_hght_tmpc.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/850mb_hght_tmpc.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 1/-2/~ ? $m_title @ HGT, TEMPERATURE AND WIND (KTS)|~@ HGT, TMP, WIND!0
 l
 run
 
-restore ${USHgempak}/restore/700mb_hght_relh_omeg.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 1/-2/~ ? $m_title @ HGT, REL HUMIDITY AND OMEGA|~@ HGT, RH AND OMEGA!0
 l
 run
 
-restore ${USHgempak}/restore/500mb_hght_absv.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 1/-2/~ ? $m_title @ HGT AND VORTICITY|~@ HGT AND VORTICITY!0
 l
 run
 
-restore ${USHgempak}/restore/500mb_hght_gabsv.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/500mb_hght_gabsv.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 1/-2/~ ? $m_title @ HGT AND GEO ABS VORT|~@ HGT, GEO ABS VORT!0
 l
 run
 
-restore ${USHgempak}/restore/250mb_hght_wnd.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 1/-2/~ ? $m_title @ HGT, ISOTACHS AND WIND (KTS)|~@ HGT AND WIND!0
@@ -137,7 +137,7 @@ CLEAR   = YES
 l
 run
 
-restore ${USHgempak}/restore/precip.2.nts
+restore ${HOMEgfs}/gempak/ush/restore/precip.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 HILO    = 31;0/x#2/.25-10///y

@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -25,7 +25,7 @@ pwd=$(pwd)
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 nm=""
@@ -37,7 +37,7 @@ APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/enkf.x}
+ENKFEXEC=${ENKFEXEC:-${EXECgfs}/enkf.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
@@ -87,6 +87,7 @@ else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
+GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
 
 ################################################################################
 
@@ -203,6 +204,10 @@ for imem in $(seq 1 $NMEM_ENS); do
    for FHR in $nfhrs; do
       ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      if [ $GSI_SOILANAL = "YES" ]; then
+         ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
+             "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      fi
       if [ $cnvw_option = ".true." ]; then
          ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}.nc" \
             "sfgsfc_${PDY}${cyc}_fhr0${FHR}_${memchar}"
@@ -224,6 +229,10 @@ for imem in $(seq 1 $NMEM_ENS); do
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       fi
+      if [ $GSI_SOILANAL = "YES" ]; then
+          ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
+           "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      fi
    done
 done
 
@@ -238,10 +247,10 @@ for FHR in $nfhrs; do
    fi
 done
 
-if [ $USE_CFP = "YES" ]; then
+if [[ $USE_CFP = "YES" ]]; then
    chmod 755 $DATA/mp_untar.sh
    ncmd=$(cat $DATA/mp_untar.sh | wc -l)
-   if [ $ncmd -gt 0 ]; then
+   if [[ $ncmd -gt 0 ]]; then
       ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
@@ -398,8 +407,8 @@ cat stdout stderr > "${COM_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
 
 ################################################################################
 #  Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+cd "$pwd"
+[[ $mkdata = "YES" ]] && rm -rf "${DATA}"
 
 
-exit $err
+exit ${err}
