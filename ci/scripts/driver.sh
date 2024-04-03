@@ -101,8 +101,8 @@ for pr in ${pr_list}; do
            echo -e "${pstree_out}" | grep -Pow "(?<=\()[0-9]+(?=\))"  | xargs kill
         fi
       else
-        # shellcheck disable=SC2312
         ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
+        # shellcheck enable=SC2312
       fi
       {
         echo "Driver PID: Requested termination of ${driver_PID} and children on ${driver_HOST}"
