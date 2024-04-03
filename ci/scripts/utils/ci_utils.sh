@@ -142,9 +142,9 @@ function publish_logs() {
         if [[ -f "${full_path}" ]]; then
             full_paths+="${full_path} "
         else
-            echo "File "${full_path}" does not exist"
+            echo "File ${full_path} does not exist"
         fi
-    done < "$file"
+    done < "${file}"
 
     if [[ -n "${full_paths}" ]]; then
         ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo "${PR_header}" > /dev/null
