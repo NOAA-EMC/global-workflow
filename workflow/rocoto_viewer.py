@@ -1360,7 +1360,7 @@ def main(screen):
         screen.refresh()
         curses.mousemask(1)
         curses.noecho()
-        for i in range(0, curses.COLORS):
+        for i in range(0, curses.COLORS-1):
             curses.init_pair(i + 1, i, curses.COLOR_BLACK)
             if i == 4:
                 curses.init_pair(i + 1, i, curses.COLOR_WHITE)
