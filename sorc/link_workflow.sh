@@ -107,7 +107,6 @@ for dir in aer \
             lut \
             mom6 \
             orog \
-            reg2grb2 \
             sfc_climo \
             ugwd \
             verif \
@@ -135,15 +134,19 @@ for file in postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-G
     postxconfig-NT-GFS-ANL.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt \
     postxconfig-NT-GFS.txt postxconfig-NT-GFS-FLUX.txt postxconfig-NT-GFS-GOES.txt \
     postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-TWO.txt \
-    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat 
+    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
 done
 for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
     optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
-    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat    
+    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
+done
+for file in ice.csv ocean.csv ocnicepost.nml.jinja2
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
 done
 
 cd "${HOMEgfs}/scripts" || exit 8
@@ -152,7 +155,7 @@ cd "${HOMEgfs}/ush" || exit 8
 for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
 done
-for file in finddate.sh make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name.sh ; do
+for file in make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name.sh ; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/ush/${file}" .
 done
 
@@ -163,12 +166,19 @@ declare -a ufs_templates=("model_configure.IN" \
                           "MOM6_data_table.IN" \
                           "ice_in.IN" \
                           "ufs.configure.atm.IN" \
+                          "ufs.configure.atm_esmf.IN" \
                           "ufs.configure.atmaero.IN" \
-                          "ufs.configure.leapfrog_atm_wav.IN" \
+                          "ufs.configure.atmaero_esmf.IN" \
+                          "ufs.configure.s2s.IN" \
                           "ufs.configure.s2s_esmf.IN" \
+                          "ufs.configure.s2sa.IN" \
                           "ufs.configure.s2sa_esmf.IN" \
+                          "ufs.configure.s2sw.IN" \
                           "ufs.configure.s2sw_esmf.IN" \
-                          "ufs.configure.s2swa_esmf.IN" )
+                          "ufs.configure.s2swa.IN" \
+                          "ufs.configure.s2swa_esmf.IN" \
+                          "ufs.configure.leapfrog_atm_wav.IN" \
+                          "ufs.configure.leapfrog_atm_wav_esmf.IN" )
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
@@ -187,12 +197,24 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/fix" || exit 1
   [[ ! -d gdas ]] && mkdir -p gdas
   cd gdas || exit 1
-  for gdas_sub in fv3jedi gsibec; do
+  for gdas_sub in fv3jedi gsibec obs; do
     if [[ -d "${gdas_sub}" ]]; then
        rm -rf "${gdas_sub}"
     fi
     fix_ver="gdas_${gdas_sub}_ver"
     ${LINK_OR_COPY} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
+  done
+fi
+
+#------------------------------
+#--add GDASApp parm directory
+#------------------------------
+if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+  cd "${HOMEgfs}/parm/gdas" || exit 1
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca")
+  for comp in "${gdasapp_comps[@]}"; do
+    [[ -d "${comp}" ]] && rm -rf "${comp}"
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
   done
 fi
 
@@ -242,8 +264,8 @@ if [[ ! -d "${HOMEgfs}/exec" ]]; then mkdir "${HOMEgfs}/exec" || exit 1 ; fi
 cd "${HOMEgfs}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
-  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x \
-  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x reg2grb2.x
+  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x rdbfmsua.x \
+  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x webtitle.x
 do
   [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
@@ -308,6 +330,10 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "fv3jedi_enshofx.x" \
                        "fv3jedi_hofx_nomodel.x" \
                        "fv3jedi_testdata_downloader.py" \
+                       "gdas_ens_handler.x" \
+                       "gdas_incr_handler.x" \
+                       "gdas_obsprovider2ioda.x" \
+                       "gdas_socahybridweights.x" \
                        "soca_convertincrement.x" \
                        "soca_error_covariance_training.x" \
                        "soca_setcorscales.x" \
@@ -326,10 +352,11 @@ fi
 #--link source code directories
 #------------------------------
 cd "${HOMEgfs}/sorc" || exit 8
-if [[ -d ufs_model.fd ]]; then
-  [[ -d upp.fd ]] && rm -rf upp.fd
-  ${LINK} ufs_model.fd/FV3/upp upp.fd
-fi
+# TODO: Commenting out until UPP is up-to-date with Rocky-8.
+#if [[ -d ufs_model.fd ]]; then
+#  [[ -d upp.fd ]] && rm -rf upp.fd
+#  ${LINK} ufs_model.fd/FV3/upp upp.fd
+#fi
 
 if [[ -d gsi_enkf.fd ]]; then
   [[ -d gsi.fd ]] && rm -rf gsi.fd
@@ -397,7 +424,6 @@ for prog in enkf_chgres_recenter_nc.fd \
   mkgfsawps.fd \
   overgridid.fd \
   rdbfmsua.fd \
-  reg2grb2.fd \
   supvit.fd \
   syndat_getjtbul.fd \
   syndat_maksynrc.fd \
@@ -405,7 +431,8 @@ for prog in enkf_chgres_recenter_nc.fd \
   tave.fd \
   tocsbufr.fd \
   vint.fd \
-  webtitle.fd
+  webtitle.fd \
+  ocnicepost.fd
 do
   if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
   ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -69,7 +69,6 @@ fi
 echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, ${netcdf_boolean}"
 
 # File names
-pgmout=${pgmout:-${jlogfile}}
 touch "${pgmout}"
 
 # Other variables

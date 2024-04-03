@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -25,7 +25,7 @@ pwd=$(pwd)
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 nm=""
@@ -37,7 +37,7 @@ APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/enkf.x}
+ENKFEXEC=${ENKFEXEC:-${EXECgfs}/enkf.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
@@ -56,7 +56,6 @@ ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
 # Namelist parameters
 USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"NO"}
-NMEM_ENS=${NMEM_ENS:-80}
 NAM_ENKF=${NAM_ENKF:-""}
 SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
@@ -81,12 +80,19 @@ cnvw_option=${cnvw_option:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
 IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
-if [ $RUN = "enkfgfs" ]; then
+NMEM_ENS_MAX=${NMEM_ENS:-80}
+if [ "${RUN}" = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
+   NMEM_ENS=${NMEM_ENS_GFS:-30}
+   ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
+   mem_offset=$((ec_offset * cyc/6))
 else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
+   NMEM_ENS=${NMEM_ENS:-80}
+   mem_offset=0
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
+GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
 
 ################################################################################
 
@@ -105,14 +111,14 @@ else
 fi
 LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
 LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
-SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
-SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
-CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
-OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
-SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
-HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_info.l${LEVS_ENKF}.txt}
-ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS_ENKF}.txt}
-VLOCALEIG=${VLOCALEIG:-${FIXgsi}/vlocal_eig_l${LEVS_ENKF}.dat}
+SATANGL=${SATANGL:-${FIXgfs}/gsi/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
+CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
+OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
+SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS_ENKF}.txt}
+ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS_ENKF}.txt}
+VLOCALEIG=${VLOCALEIG:-${FIXgfs}/gsi/vlocal_eig_l${LEVS_ENKF}.dat}
 ENKF_SUFFIX="s"
 [[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
 
@@ -178,9 +184,14 @@ else
 fi
 nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
 for imem in $(seq 1 $NMEM_ENS); do
+   smem=$((imem + mem_offset))
+   if (( smem > NMEM_ENS_MAX )); then
+      smem=$((smem - NMEM_ENS_MAX))
+   fi
+   gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
 
-   MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
+   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
       COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
@@ -203,6 +214,10 @@ for imem in $(seq 1 $NMEM_ENS); do
    for FHR in $nfhrs; do
       ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      if [ $GSI_SOILANAL = "YES" ]; then
+         ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
+             "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      fi
       if [ $cnvw_option = ".true." ]; then
          ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}.nc" \
             "sfgsfc_${PDY}${cyc}_fhr0${FHR}_${memchar}"
@@ -224,6 +239,10 @@ for imem in $(seq 1 $NMEM_ENS); do
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       fi
+      if [ $GSI_SOILANAL = "YES" ]; then
+          ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
+           "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      fi
    done
 done
 
@@ -238,10 +257,10 @@ for FHR in $nfhrs; do
    fi
 done
 
-if [ $USE_CFP = "YES" ]; then
+if [[ $USE_CFP = "YES" ]]; then
    chmod 755 $DATA/mp_untar.sh
    ncmd=$(cat $DATA/mp_untar.sh | wc -l)
-   if [ $ncmd -gt 0 ]; then
+   if [[ $ncmd -gt 0 ]]; then
       ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
@@ -398,8 +417,8 @@ cat stdout stderr > "${COM_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
 
 ################################################################################
 #  Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+cd "$pwd"
+[[ $mkdata = "YES" ]] && rm -rf "${DATA}"
 
 
-exit $err
+exit ${err}

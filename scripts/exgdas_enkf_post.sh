@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -34,11 +34,11 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Fix files
 LEVS=${LEVS:-64}
-HYBENSMOOTH=${HYBENSMOOTH:-$FIXgsi/global_hybens_smoothinfo.l${LEVS}.txt}
+HYBENSMOOTH=${HYBENSMOOTH:-${FIXgfs}/gsi/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgfs/exec/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgfs/exec/getsfcensmeanp.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgfs}/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECgfs}/getsfcensmeanp.x}
 
 # Other variables.
 PREFIX=${PREFIX:-""}
@@ -46,10 +46,11 @@ FHMIN=${FHMIN_EPOS:-3}
 FHMAX=${FHMAX_EPOS:-9}
 FHOUT=${FHOUT_EPOS:-3}
 
-if [[ $CDUMP == "gfs" ]]; then
+if [[ "${RUN}" == "enkfgfs" ]]; then
    NMEM_ENS=${NMEM_ENS_GFS:-${NMEM_ENS:-30}}
+else
+   NMEM_ENS=${NMEM_ENS:-80}
 fi
-NMEM_ENS=${NMEM_ENS:-80}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 ENKF_SPREAD=${ENKF_SPREAD:-"NO"}
 

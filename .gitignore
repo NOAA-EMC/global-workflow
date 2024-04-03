@@ -30,13 +30,11 @@ fix/chem
 fix/cice
 fix/cpl
 fix/datm
-fix/gldas
 fix/gdas
 fix/gsi
 fix/lut
 fix/mom6
 fix/orog
-fix/reg2grb2
 fix/sfc_climo
 fix/ugwd
 fix/verif
@@ -44,8 +42,12 @@ fix/wave
 
 # Ignore parm file symlinks
 #--------------------------
-parm/config/config.base
-parm/gldas
+parm/gdas/aero
+parm/gdas/atm
+parm/gdas/io
+parm/gdas/ioda
+parm/gdas/snow
+parm/gdas/soca
 parm/monitor
 parm/post/AEROSOL_LUTS.dat
 parm/post/nam_micro_lookup.dat
@@ -99,6 +101,9 @@ parm/post/postxconfig-NT-GFS-WAFS.txt
 parm/post/postxconfig-NT-GFS.txt
 parm/post/postxconfig-NT-gefs-aerosol.txt
 parm/post/postxconfig-NT-gefs-chem.txt
+parm/post/ocean.csv
+parm/post/ice.csv
+parm/post/ocnicepost.nml.jinja2
 parm/ufs/noahmptable.tbl
 parm/ufs/model_configure.IN
 parm/ufs/MOM_input_*.IN
@@ -137,7 +142,6 @@ sorc/radmon_bcor.fd
 sorc/radmon_time.fd
 sorc/rdbfmsua.fd
 sorc/recentersigp.fd
-sorc/reg2grb2.fd
 sorc/supvit.fd
 sorc/syndat_getjtbul.fd
 sorc/syndat_maksynrc.fd
@@ -147,24 +151,13 @@ sorc/tocsbufr.fd
 sorc/upp.fd
 sorc/vint.fd
 sorc/webtitle.fd
+sorc/ocnicepost.fd
 
 # Ignore scripts from externals
 #------------------------------
 # jobs symlinks
-jobs/JGFS_ATMOS_WAFS
-jobs/JGFS_ATMOS_WAFS_BLENDING
-jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
-jobs/JGFS_ATMOS_WAFS_GCIP
-jobs/JGFS_ATMOS_WAFS_GRIB2
-jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
-scripts/exgfs_atmos_wafs_blending.sh
-scripts/exgfs_atmos_wafs_blending_0p25.sh
-scripts/exgfs_atmos_wafs_gcip.sh
-scripts/exgfs_atmos_wafs_grib.sh
-scripts/exgfs_atmos_wafs_grib2.sh
-scripts/exgfs_atmos_wafs_grib2_0p25.sh
 # ush symlinks
 ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
@@ -180,11 +173,7 @@ ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/jediinc2fv3.py
-ush/mkwfsgbl.sh
 ush/ufsda
-ush/wafs_blending.sh
-ush/wafs_grib2.regrid.sh
-ush/wafs_intdsk.sh
 ush/finddate.sh
 ush/make_NTC_file.pl
 ush/make_ntc_bull.pl

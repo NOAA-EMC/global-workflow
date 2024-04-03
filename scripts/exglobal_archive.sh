@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -29,10 +29,11 @@ PDY_MOS="${CDATE_MOS:0:8}"
 ###############################################################
 # Archive online for verification and diagnostics
 ###############################################################
-source "${HOMEgfs}/ush/file_utils.sh"
+source "${USHgfs}/file_utils.sh"
 
 [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
 nb_copy "${COM_ATMOS_ANALYSIS}/${APREFIX}gsistat" "${ARCDIR}/gsistat.${RUN}.${PDY}${cyc}"
+nb_copy "${COM_SNOW_ANALYSIS}/${APREFIX}snowstat" "${ARCDIR}/snowstat.${RUN}.${PDY}${cyc}"
 if [[ ${DO_AERO} = "YES" ]]; then
    nb_copy "${COM_CHEM_ANALYSIS}/${APREFIX}aerostat" "${ARCDIR}/aerostat.${RUN}.${PDY}${cyc}"
 fi
@@ -158,10 +159,10 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
     cd "${DATA}" || exit 2
 
-    "${HOMEgfs}/ush/hpssarch_gen.sh" "${RUN}"
+    "${USHgfs}/hpssarch_gen.sh" "${RUN}"
     status=$?
     if [ "${status}" -ne 0  ]; then
-        echo "${HOMEgfs}/ush/hpssarch_gen.sh ${RUN} failed, ABORT!"
+        echo "${USHgfs}/hpssarch_gen.sh ${RUN} failed, ABORT!"
         exit "${status}"
     fi
 
@@ -182,12 +183,12 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
             targrp_list="${targrp_list} gfswave"
         fi
 
-        if [ "${DO_OCN}" = "YES" ]; then
-            targrp_list="${targrp_list} ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily gfs_flux_1p00"
+        if [[ "${DO_OCN}" == "YES" ]]; then
+            targrp_list="${targrp_list} ocean_6hravg ocean_daily ocean_grib2 gfs_flux_1p00"
         fi
 
-        if [ "${DO_ICE}" = "YES" ]; then
-            targrp_list="${targrp_list} ice"
+        if [[ "${DO_ICE}" == "YES" ]]; then
+            targrp_list="${targrp_list} ice_6hravg ice_grib2"
         fi
 
         # Aerosols
@@ -291,7 +292,7 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
             stat_chgrp=$?
             ${HSICMD} chmod 640 "${tar_fl}"
             stat_chgrp=$((stat_chgrp+$?))
-            if [ "${stat_chgrp}" -gt 0 ]; then
+            if [[ "${stat_chgrp}" -gt 0 ]]; then
                 echo "FATAL ERROR: Unable to properly restrict ${tar_fl}!"
                 echo "Attempting to delete ${tar_fl}"
                 ${HSICMD} rm "${tar_fl}"

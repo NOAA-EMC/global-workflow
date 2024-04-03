@@ -61,8 +61,8 @@ local CICE_RESTART_DIR="./CICE_RESTART/"
 local CICE_RESTART_FILE="cice_model.res"
 local CICE_DUMPFREQ="y"  # "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 local CICE_DUMPFREQ_N=10000  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
-local CICE_DIAGFREQ=6
-local CICE_HISTFREQ_N="0, 0, ${FHOUT}, 1, 1"
+local CICE_DIAGFREQ=$(( 86400 / DT_CICE ))  # frequency of diagnostic output in timesteps, recommended for 1x per day 
+local CICE_HISTFREQ_N="0, 0, ${FHOUT_OCNICE}, 1, 1"
 if [[ "${RUN}" =~ "gdas" ]]; then
   local CICE_HIST_AVG=".false., .false., .false., .false., .false."   # DA needs instantaneous
 else
@@ -104,12 +104,12 @@ local CICE_BLCKY=${block_size_y}
 local CICE_DECOMP=${processor_shape}
 
 # Ensure the template exists
-local template=${CICE_TEMPLATE:-"${HOMEgfs}/parm/ufs/ice_in.IN"}
+local template=${CICE_TEMPLATE:-"${PARMgfs}/ufs/ice_in.IN"}
 if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi
-source "${HOMEgfs}/ush/atparse.bash"
+source "${USHgfs}/atparse.bash"
 rm -f "${DATA}/ice_in"
 atparse < "${template}" >> "${DATA}/ice_in"
 echo "Rendered ice_in:"

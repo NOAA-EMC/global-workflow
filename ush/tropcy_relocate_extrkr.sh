@@ -3,7 +3,7 @@
 # This script is executed by the script tropcy_relocate.sh
 # --------------------------------------------------------
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 export machine=${machine:-ZEUS}
 export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
@@ -1538,9 +1538,9 @@ ln -s -f ${vdir}/trak.${cmodel}.radii.${symdh}         fort.63
 ln -s -f ${vdir}/trak.${cmodel}.atcfunix.${symdh}      fort.64
 
 if [ $BKGFREQ -eq 1 ]; then
-  ln -s -f ${FIXRELO}/${cmodel}.tracker_leadtimes_hrly fort.15
+  ln -s -f ${FIXgfs}/am/${cmodel}.tracker_leadtimes_hrly fort.15
 elif [ $BKGFREQ -eq 3 ]; then
-  ln -s -f ${FIXRELO}/${cmodel}.tracker_leadtimes      fort.15
+  ln -s -f ${FIXgfs}/am/${cmodel}.tracker_leadtimes      fort.15
 fi
 
 ##$XLF_LINKSSH

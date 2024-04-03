@@ -9,21 +9,21 @@ if (( $# != 1 )); then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init"
-    echo "prep preplandobs prepatmiodaobs"
+    echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "landanl"
+    echo "snowanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
-    echo "init_chem mom6ic ocnpost"
+    echo "init_chem mom6ic oceanice_products"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -83,15 +83,15 @@ case ${step} in
     fi
     ;;
 
-  "preplandobs")
-    export wtime_preplandobs="00:05:00"
-    export npe_preplandobs=1
-    export nth_preplandobs=1
-    export npe_node_preplandobs=1
+  "prepsnowobs")
+    export wtime_prepsnowobs="00:05:00"
+    export npe_prepsnowobs=1
+    export nth_prepsnowobs=1
+    export npe_node_prepsnowobs=1
     ;;
 
   "prepatmiodaobs")
-    export wtime_prepatmiodaobs="00:10:00"
+    export wtime_prepatmiodaobs="00:30:00"
     export npe_prepatmiodaobs=1
     export nth_prepatmiodaobs=1
     export npe_node_prepatmiodaobs=$(( npe_node_max / nth_prepatmiodaobs ))
@@ -195,9 +195,8 @@ case ${step} in
     ;;
 
   "atmanlinit")
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
 
     export layout_gsib_x=$(( layout_x * 3 ))
     export layout_gsib_y=$(( layout_y * 2 ))
@@ -211,9 +210,8 @@ case ${step} in
     ;;
 
   "atmanlrun")
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
 
     export wtime_atmanlrun="00:30:00"
     export npe_atmanlrun=$(( layout_x * layout_y * 6 ))
@@ -221,6 +219,7 @@ case ${step} in
     export nth_atmanlrun=1
     export nth_atmanlrun_gfs=${nth_atmanlrun}
     export npe_node_atmanlrun=$(( npe_node_max / nth_atmanlrun ))
+    export memory_atmanlrun="96GB"
     export is_exclusive=True
     ;;
 
@@ -232,7 +231,7 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "landanl")
+  "snowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
       "C768")
@@ -255,10 +254,10 @@ case ${step} in
     export layout_x
     export layout_y
 
-    export wtime_landanl="00:15:00"
-    export npe_landanl=$(( layout_x * layout_y * 6 ))
-    export nth_landanl=1
-    export npe_node_landanl=$(( npe_node_max / nth_landanl ))
+    export wtime_snowanl="00:15:00"
+    export npe_snowanl=$(( layout_x * layout_y * 6 ))
+    export nth_snowanl=1
+    export npe_node_snowanl=$(( npe_node_max / nth_snowanl ))
     ;;
 
   "aeroanlinit")
@@ -352,17 +351,17 @@ case ${step} in
     export npe_prepoceanobs=1
     export nth_prepoceanobs=1
     export npe_node_prepoceanobs=$(( npe_node_max / nth_prepoceanobs ))
-    export memory_prepoceanobs="24GB"
+    export memory_prepoceanobs="48GB"
     ;;
 
   "ocnanalbmat")
     npes=16
-    case ${CASE} in
-      "C384") npes=480;;
-      "C96")  npes=16;;
-      "C48")  npes=16;;
+    case ${OCNRES} in
+      "025") npes=480;;
+      "050")  npes=16;;
+      "500")  npes=16;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -375,20 +374,21 @@ case ${step} in
 
   "ocnanalrun")
     npes=16
-    case ${CASE} in
-      "C384")
+    case ${OCNRES} in
+      "025")
         npes=480
-        memory_ocnanalrun="128GB"
+        memory_ocnanalrun="96GB"
         ;;
-      "C96")
+      "050")
         npes=16
+        memory_ocnanalrun="96GB"
         ;;
-      "C48")
+      "500")
         npes=16
-        memory_ocnanalrun="64GB"
+        memory_ocnanalrun="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -400,19 +400,54 @@ case ${step} in
     export memory_ocnanalrun
     ;;
 
+  "ocnanalecen")
+    npes=16
+    case ${OCNRES} in
+      "025")
+        npes=40
+        memory_ocnanalecen="96GB"
+        ;;
+      "050")
+        npes=16
+        memory_ocnanalecen="96GB"
+        ;;
+      "500")
+        npes=16
+        memory_ocnanalecen="24GB"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        exit 4
+    esac
+
+    export wtime_ocnanalecen="00:10:00"
+    export npe_ocnanalecen=${npes}
+    export nth_ocnanalecen=1
+    export is_exclusive=True
+    export npe_node_ocnanalecen=$(( npe_node_max / nth_ocnanalecen ))
+    export memory_ocnanalecen
+    ;;
+
   "ocnanalchkpt")
     export wtime_ocnanalchkpt="00:10:00"
     export npe_ocnanalchkpt=1
     export nth_ocnanalchkpt=1
     export npe_node_ocnanalchkpt=$(( npe_node_max / nth_ocnanalchkpt ))
-    case ${CASE} in
-      "C384") memory_ocnanalchkpt="128GB";;
-      "C96")  memory_ocnanalchkpt="32GB";;
-      "C48")  memory_ocnanalchkpt="32GB";;
+    case ${OCNRES} in
+      "025")
+        memory_ocnanalchkpt="128GB"
+        npes=40;;
+      "050")
+        memory_ocnanalchkpt="32GB"
+        npes=16;;
+      "500")
+        memory_ocnanalchkpt="32GB"
+        npes=8;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
         exit 4
     esac
+    export npe_ocnanalchkpt=${npes}
     export memory_ocnanalchkpt
     ;;
 
@@ -535,6 +570,20 @@ case ${step} in
         ntasks_fv3=${ntasks_fv3_gfs}
         ntasks_quilt=${ntasks_quilt_gfs}
         nthreads_fv3=${nthreads_fv3_gfs}
+        nthreads_ufs=${nthreads_ufs_gfs}
+      fi
+
+      # Determine if using ESMF-managed threading or traditional threading
+      # If using traditional threading, set them to 1
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        export UFS_THREADS=1
+      else  # traditional threading
+        export UFS_THREADS=${nthreads_ufs:-1}
+        nthreads_fv3=1
+        nthreads_mediator=1
+        [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
+        [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
+        [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
       fi
 
       # PETS for the atmosphere dycore
@@ -611,11 +660,11 @@ case ${step} in
 
       if [[ "${_CDUMP}" =~ "gfs" ]]; then
         declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
-        declare -x "nth_${step}_gfs"=1  # ESMF handles threading for the UFS-weather-model
+        declare -x "nth_${step}_gfs"="${UFS_THREADS}"
         declare -x "npe_node_${step}_gfs"="${npe_node_max}"
       else
         declare -x "npe_${step}"="${NTASKS_TOT}"
-        declare -x "nth_${step}"=1  # ESMF handles threading for the UFS-weather-model
+        declare -x "nth_${step}"="${UFS_THREADS}"
         declare -x "npe_node_${step}"="${npe_node_max}"
       fi
 
@@ -627,7 +676,7 @@ case ${step} in
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384")
-        declare -x "wtime_${step}"="00:10:00"
+        declare -x "wtime_${step}"="00:30:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       "C768" | "C1152")
@@ -644,17 +693,12 @@ case ${step} in
     unset NTASKS_TOT
     ;;
 
-  "ocnpost")
-    export wtime_ocnpost="00:30:00"
-    export npe_ocnpost=1
-    export npe_node_ocnpost=1
-    export nth_ocnpost=1
-    export memory_ocnpost="96G"
-    if [[ ${machine} == "JET" ]]; then
-      # JET only has 88GB of requestable memory per node
-      # so a second node is required to meet the requiremtn
-      npe_ocnpost=2
-    fi
+  "oceanice_products")
+    export wtime_oceanice_products="00:15:00"
+    export npe_oceanice_products=1
+    export npe_node_oceanice_products=1
+    export nth_oceanice_products=1
+    export memory_oceanice_products="96GB"
     ;;
 
   "upp")
@@ -662,8 +706,14 @@ case ${step} in
       "C48" | "C96")
         export npe_upp=${CASE:1}
       ;;
-      "C192" | "C384" | "C768")
+      "C192" | "C384")
         export npe_upp=120
+        export memory_upp="96GB"
+      ;;
+      "C768")
+        export npe_upp=120
+        export memory_upp="96GB"
+        if [[ ${machine} == "WCOSS2" ]]; then export memory_upp="480GB" ; fi
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
@@ -734,7 +784,7 @@ case ${step} in
     export npe_genesis=1
     export nth_genesis=1
     export npe_node_genesis=1
-    export memory_genesis="4G"
+    export memory_genesis="10G"
     ;;
 
   "genesis_fsu")
@@ -742,7 +792,7 @@ case ${step} in
     export npe_genesis_fsu=1
     export nth_genesis_fsu=1
     export npe_node_genesis_fsu=1
-    export memory_genesis_fsu="4G"
+    export memory_genesis_fsu="10G"
     ;;
 
   "fit2obs")
@@ -825,9 +875,8 @@ case ${step} in
     ;;
 
   "atmensanlinit")
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlinit="00:10:00"
     export npe_atmensanlinit=1
@@ -837,9 +886,8 @@ case ${step} in
     ;;
 
   "atmensanlrun")
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlrun="00:30:00"
     export npe_atmensanlrun=$(( layout_x * layout_y * 6 ))
@@ -847,6 +895,7 @@ case ${step} in
     export nth_atmensanlrun=1
     export nth_atmensanlrun_gfs=${nth_atmensanlrun}
     export npe_node_atmensanlrun=$(( npe_node_max / nth_atmensanlrun ))
+    export memory_atmensanlrun="96GB"
     export is_exclusive=True
     ;;
 
@@ -926,7 +975,7 @@ case ${step} in
           export nth_eupd=4
         fi
         ;;
-      *)        
+      *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
         ;;

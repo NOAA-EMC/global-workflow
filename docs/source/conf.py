@@ -13,13 +13,14 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
-
+from datetime import datetime
 
 # -- Project information -----------------------------------------------------
 
 project = 'Global-workflow'
-copyright = '2023, Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan, Arun Chawla'
-author = 'Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan, Arun Chawla'
+year = datetime.now().year
+copyright = f"2015-{year} NOAA/NWS/NCEP/EMC"
+author = 'Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan, and numerous collaborators and contributors'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1'

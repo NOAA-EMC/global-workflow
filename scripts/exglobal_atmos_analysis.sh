@@ -19,7 +19,7 @@
 
 #  Set environment.
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -42,7 +42,7 @@ export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-${HOMEgfs}/ush/getncdimlen}
+export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 APRUNCFP=${APRUNCFP:-""}
@@ -68,19 +68,19 @@ DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
 
 # Dependent Scripts and Executables
-GSIEXEC=${GSIEXEC:-${HOMEgfs}/exec/gsi.x}
+GSIEXEC=${GSIEXEC:-${EXECgfs}/gsi.x}
 export NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
 export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
-export CALCINCEXEC=${CALCINCEXEC:-${HOMEgfs}/exec/calc_increment_ens.x}
-export CALCINCNCEXEC=${CALCINCNCEXEC:-${HOMEgfs}/exec/calc_increment_ens_ncio.x}
-export CALCANLEXEC=${CALCANLEXEC:-${HOMEgfs}/exec/calc_analysis.x}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter_nc.x}
-export CHGRESINCEXEC=${CHGRESINCEXEC:-${HOMEgfs}/exec/interp_inc.x}
-CHGRESEXEC=${CHGRESEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter.x}
+export CALCINCEXEC=${CALCINCEXEC:-${EXECgfs}/calc_increment_ens.x}
+export CALCINCNCEXEC=${CALCINCNCEXEC:-${EXECgfs}/calc_increment_ens_ncio.x}
+export CALCANLEXEC=${CALCANLEXEC:-${EXECgfs}/calc_analysis.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-${EXECgfs}/interp_inc.x}
+CHGRESEXEC=${CHGRESEXEC:-${EXECgfs}/enkf_chgres_recenter.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
-CALCINCPY=${CALCINCPY:-${HOMEgfs}/ush/calcinc_gfs.py}
+CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
 
 # OPS flags
 RUN=${RUN:-""}
@@ -89,6 +89,8 @@ SENDDBN=${SENDDBN:-"NO"}
 RUN_GETGES=${RUN_GETGES:-"NO"}
 GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
+ 
+export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 # Observations
 OPREFIX=${OPREFIX:-""}
@@ -289,21 +291,21 @@ else
 fi
 
 # GSI Fix files
-BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
-SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
-SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
-RADCLOUDINFO=${RADCLOUDINFO:-${FIXgsi}/cloudy_radiance_info.txt}
-ATMSFILTER=${ATMSFILTER:-${FIXgsi}/atms_beamwidth.txt}
-ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
-CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
-vqcdat=${vqcdat:-${FIXgsi}/vqctp001.dat}
-INSITUINFO=${INSITUINFO:-${FIXgsi}/global_insituinfo.txt}
-OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
-PCPINFO=${PCPINFO:-${FIXgsi}/global_pcpinfo.txt}
-AEROINFO=${AEROINFO:-${FIXgsi}/global_aeroinfo.txt}
-SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
-HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_info.l${LEVS}.txt}
-OBERROR=${OBERROR:-${FIXgsi}/prepobs_errtable.global}
+BERROR=${BERROR:-${FIXgfs}/gsi/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
+SATANGL=${SATANGL:-${FIXgfs}/gsi/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
+RADCLOUDINFO=${RADCLOUDINFO:-${FIXgfs}/gsi/cloudy_radiance_info.txt}
+ATMSFILTER=${ATMSFILTER:-${FIXgfs}/gsi/atms_beamwidth.txt}
+ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS}.txt}
+CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
+vqcdat=${vqcdat:-${FIXgfs}/gsi/vqctp001.dat}
+INSITUINFO=${INSITUINFO:-${FIXgfs}/gsi/global_insituinfo.txt}
+OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
+PCPINFO=${PCPINFO:-${FIXgfs}/gsi/global_pcpinfo.txt}
+AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
+SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
+OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
 
 # GSI namelist
 SETUP=${SETUP:-""}
@@ -381,8 +383,8 @@ ${NLN} ${OBERROR}      errtable
 #If using correlated error, link to the covariance files
 if [ ${USE_CORRELATED_OBERRS} == "YES" ];  then
   if grep -q "Rcov" ${ANAVINFO} ;  then
-     if ls ${FIXgsi}/Rcov* 1> /dev/null 2>&1; then
-       ${NLN} ${FIXgsi}/Rcov* ${DATA}
+     if ls ${FIXgfs}/gsi/Rcov* 1> /dev/null 2>&1; then
+       ${NLN} ${FIXgfs}/gsi/Rcov* ${DATA}
        echo "using correlated obs error"
      else
        echo "FATAL ERROR: Satellite error covariance files (Rcov) are missing."
@@ -748,6 +750,7 @@ cat > gsiparm.anl << EOF
 /
 &OBS_INPUT
   dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,dmesh(4)=50.0,time_window_max=3.0,
+  hofx_2m_sfcfile=${hofx_2m_sfcfile},
   ${OBSINPUT}
 /
 OBS_INPUT::

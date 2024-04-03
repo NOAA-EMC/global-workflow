@@ -19,7 +19,7 @@
 
 #  Set environment.
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -37,7 +37,7 @@ export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 APRUNCFP=${APRUNCFP:-""}
@@ -47,16 +47,14 @@ DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
 
 # Surface cycle related parameters
-CYCLESH=${CYCLESH:-${HOMEgfs}/ush/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-${HOMEgfs}/exec/global_cycle}
+CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
 export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
-export FIXam=${FIXam:-${HOMEgfs}/fix/am}
-export FIXorog=${FIXorog:-${HOMEgfs}/fix/orog}
 
 # FV3 specific info (required for global_cycle)
 export CASE=${CASE:-"C384"}
@@ -72,15 +70,15 @@ export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
 export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
 
-export CALCANLEXEC=${CALCANLEXEC:-${HOMEgfs}/exec/calc_analysis.x}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter_nc.x}
-export CHGRESINCEXEC=${CHGRESINCEXEC:-${HOMEgfs}/exec/interp_inc.x}
+export CALCANLEXEC=${CALCANLEXEC:-${EXECgfs}/calc_analysis.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-${EXECgfs}/interp_inc.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
-CALCINCPY=${CALCINCPY:-${HOMEgfs}/ush/calcinc_gfs.py}
-CALCANLPY=${CALCANLPY:-${HOMEgfs}/ush/calcanl_gfs.py}
+CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
+CALCANLPY=${CALCANLPY:-${USHgfs}/calcanl_gfs.py}
 
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
-CHGRESEXEC=${CHGRESEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter.x}
+CHGRESEXEC=${CHGRESEXEC:-${EXECgfs}/enkf_chgres_recenter.x}
 
 # OPS flags
 RUN=${RUN:-""}
@@ -176,8 +174,8 @@ if [[ ${DOIAU} = "YES" ]]; then
                 "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
         ${NLN} "${COM_ATMOS_RESTART_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
         ${NLN} "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
-        ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"                         "${DATA}/fngrid.00${n}"
-        ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                     "${DATA}/fnorog.00${n}"
+        ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"                         "${DATA}/fngrid.00${n}"
+        ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                     "${DATA}/fnorog.00${n}"
     done
 
     export APRUNCY=${APRUN_CYCLE}
@@ -190,8 +188,8 @@ fi
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do
-    if [[ ${DO_JEDILANDDA:-"NO"} = "YES" ]]; then
-        ${NCP} "${COM_LAND_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+    if [[ ${DO_JEDISNOWDA:-"NO"} = "YES" ]]; then
+        ${NCP} "${COM_SNOW_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
                "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
     else
         ${NCP} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
@@ -199,8 +197,8 @@ for n in $(seq 1 ${ntiles}); do
     fi
     ${NLN} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
     ${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
-    ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"                       "${DATA}/fngrid.00${n}"
-    ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                   "${DATA}/fnorog.00${n}"
+    ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"                       "${DATA}/fngrid.00${n}"
+    ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                   "${DATA}/fnorog.00${n}"
 done
 
 export APRUNCY=${APRUN_CYCLE}

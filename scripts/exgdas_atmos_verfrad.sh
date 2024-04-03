@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -37,9 +37,9 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    #------------------------------------------------------------------
    #  SATYPE is the list of expected satellite/instrument sources
-   #  in the radstat file.  It should be stored in the $TANKverf
-   #  directory.  If it isn't there then use the $FIXgdas copy.  In all
-   #  cases write it back out to the radmon.$PDY directory.  Add any
+   #  in the radstat file. It should be stored in the $TANKverf
+   #  directory. If it isn't there then use the gdas fix copy. In all
+   #  cases write it back out to the radmon.$PDY directory. Add any
    #  new sources to the list before writing back out.
    #------------------------------------------------------------------
 
@@ -130,15 +130,6 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
     "${USHgfs}/radmon_verf_time.sh"
     rc_time=$?
-
-    #--------------------------------------
-    #  optionally run clean_tankdir script
-    #
-    if [[ ${CLEAN_TANKVERF:-0} -eq 1 ]]; then
-       "${USHradmon}/clean_tankdir.sh" glb 60
-       rc_clean_tankdir=$?
-       echo "rc_clean_tankdir = ${rc_clean_tankdir}"
-    fi
 
 fi
 

@@ -8,7 +8,7 @@ echo "BEGIN: config.stage_ic"
 source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
-  "C48" | "C96")
+  "C48" | "C96" | "C192")
     export CPL_ATMIC="workflow_${CASE}_refactored"
     export CPL_ICEIC="workflow_${CASE}_refactored"
     export CPL_OCNIC="workflow_${CASE}_refactored"
@@ -21,16 +21,16 @@ case "${CASE}" in
     export CPL_WAVIC=workflow_C384_refactored
     ;;
   "C768")
-    export CPL_ATMIC=HR2_refactored
-    export CPL_ICEIC=HR1_refactored
-    export CPL_OCNIC=HR1_refactored
-    export CPL_WAVIC=HR1_refactored
+    export CPL_ATMIC=HR3C768
+    export CPL_ICEIC=HR3marine
+    export CPL_OCNIC=HR3marine
+    export CPL_WAVIC=HR3marine
     ;;
   "C1152")
-    export CPL_ATMIC=HR2_C1152_refactored
-    export CPL_ICEIC=HR3_refactored
-    export CPL_OCNIC=HR3_refactored
-    export CPL_WAVIC=HR1_refactored
+    export CPL_ATMIC=HR3C1152
+    export CPL_ICEIC=HR3marine
+    export CPL_OCNIC=HR3marine
+    export CPL_WAVIC=HR3marine
     ;;
   *)
     echo "FATAL ERROR Unrecognized resolution: ${CASE}"

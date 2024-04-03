@@ -16,7 +16,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlrun" -c "base atmensanl atme
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSRUNSH:-${HOMEgfs}/scripts/exglobal_atmens_analysis_run.py}
+EXSCRIPT=${GDASATMENSRUNSH:-${SCRgfs}/exglobal_atmens_analysis_run.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

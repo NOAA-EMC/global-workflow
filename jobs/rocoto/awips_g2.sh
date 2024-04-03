@@ -44,7 +44,8 @@ for fhr3 in ${fhrlst}; do
     fhmax=240
     if (( fhr >= fhmin && fhr <= fhmax )); then
         if ((fhr % 6 == 0)); then
-            "${AWIPSG2SH}"
+            export fcsthrs="${fhr3}"
+            "${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_G2"
         fi
     fi
 done

@@ -8,6 +8,12 @@ echo "BEGIN: config.stage_ic"
 source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
+  "C384")
+    export CPL_ATMIC=""
+    export CPL_ICEIC=""
+    export CPL_OCNIC=""
+    export CPL_WAVIC=""
+    ;;
   "C48")
     export CPL_ATMIC="gefs_test"
     export CPL_ICEIC="gefs_test"

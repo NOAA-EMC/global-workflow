@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-if (( ${ENSMEM:-0} > 0 )); then
+if (( 10#${ENSMEM:-0} > 0 )); then
   source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
   source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
@@ -13,7 +13,7 @@ fi
 
 # Restart conditions for GFS cycle come from GDAS
 rCDUMP=${RUN}
-[[ ${RUN} == "gfs" ]] && export rCDUMP="gdas"
+export rCDUMP="${RUN/gfs/gdas}"
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153

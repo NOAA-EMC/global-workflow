@@ -5,12 +5,6 @@
 
 echo "BEGIN: config.efcs"
 
-# Turn off components in ensemble
-# export DO_AERO="NO"
-# export DO_OCN="NO"
-# export DO_ICE="NO"
-export DO_WAVE="NO"
-
 export CASE="${CASE_ENS}"
 
 # Source model specific information that is resolution dependent
@@ -67,9 +61,9 @@ export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 
 if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
-    export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table_da"
+    export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
 else
-    export DIAG_TABLE="${HOMEgfs}/parm/ufs/fv3/diag_table_da_orig"
+    export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da_orig"
 fi
 
 # Model config option for Ensemble

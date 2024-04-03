@@ -3,7 +3,7 @@
 # This script takes in a master flux file and creates interpolated flux files at various interpolated resolutions
 # Generate 0.25 / 0.5 / 1 degree interpolated grib2 flux files for each input sflux grib2 file
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 input_file=${1:-"sfluxfile_in"}  # Input sflux grib2 file
 output_file_prefix=${2:-"sfluxfile_out"}  # Prefix for output sflux grib2 file; the prefix is appended by resolution e.g. _0p25

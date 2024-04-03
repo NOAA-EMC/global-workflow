@@ -22,7 +22,7 @@
 ################################################################################
 #
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ymdh_rtofs=$1
 curfile=$2
@@ -46,7 +46,7 @@ mv -f "cur_temp3.nc" "cur_uv_${PDY}_${fext}${fh3}_flat.nc"
 # Convert to regular lat lon file
 # If weights need to be regenerated due to CDO ver change, use:
 # $CDO genbil,r4320x2160 rtofs_glo_2ds_f000_3hrly_prog.nc weights.nc
-cp ${FIXwave}/weights_rtofs_to_r4320x2160.nc ./weights.nc
+cp ${FIXgfs}/wave/weights_rtofs_to_r4320x2160.nc ./weights.nc
 
 # Interpolate to regular 5 min grid
 ${CDO} remap,r4320x2160,weights.nc "cur_uv_${PDY}_${fext}${fh3}_flat.nc" "cur_5min_01.nc"
@@ -65,9 +65,9 @@ rm -f cur_temp[123].nc cur_5min_??.nc "cur_glo_uv_${PDY}_${fext}${fh3}.nc weight
 
 if [ ${flagfirst}  = "T" ]
 then
-  sed -e "s/HDRFL/T/g" ${PARMwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
+  sed -e "s/HDRFL/T/g" ${PARMgfs}/wave/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
 else
-  sed -e "s/HDRFL/F/g" ${PARMwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
+  sed -e "s/HDRFL/F/g" ${PARMgfs}/wave/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
 fi
 
 rm -f cur.nc
@@ -75,7 +75,7 @@ ln -s "cur_glo_uv_${PDY}_${fext}${fh3}_5min.nc" "cur.nc"
 ln -s "${DATA}/mod_def.${WAVECUR_FID}" ./mod_def.ww3
 
 export pgm=ww3_prnc;. prep_step
-$EXECwave/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
+${EXECgfs}/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
 
 export err=$?; err_chk
 

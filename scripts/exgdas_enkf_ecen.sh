@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -31,16 +31,16 @@ ntiles=${ntiles:-6}
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 
 # Scripts
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgfs/exec/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgfs/exec/getsfcensmeanp.x}
-RECENATMEXEC=${RECENATMEXEC:-$HOMEgfs/exec/recentersigp.x}
-CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-$HOMEgfs/exec/calc_increment_ens.x}
-CALCINCNCEXEC=${CALCINCEXEC:-$HOMEgfs/exec/calc_increment_ens_ncio.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgfs}/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECgfs}/getsfcensmeanp.x}
+RECENATMEXEC=${RECENATMEXEC:-${EXECgfs}/recentersigp.x}
+CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-${EXECgfs}/calc_increment_ens.x}
+CALCINCNCEXEC=${CALCINCEXEC:-${EXECgfs}/calc_increment_ens_ncio.x}
 
 # Files.
 OPREFIX=${OPREFIX:-""}
@@ -51,7 +51,6 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-$GPREFIX}
 
 # Variables
-NMEM_ENS=${NMEM_ENS:-80}
 imp_physics=${imp_physics:-99}
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 DOIAU=${DOIAU_ENKF:-"NO"}
@@ -59,25 +58,29 @@ FHMIN=${FHMIN_ECEN:-3}
 FHMAX=${FHMAX_ECEN:-9}
 FHOUT=${FHOUT_ECEN:-3}
 FHSFC=${FHSFC_ECEN:-$FHMIN}
-if [ $RUN = "enkfgfs" ]; then
+NMEM_ENS_MAX=${NMEM_ENS:-80}
+if [ "${RUN}" = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
+   NMEM_ENS=${NMEM_ENS_GFS:-30}
+   ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
+   mem_offset=$((ec_offset * cyc/6))
 else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
+   NMEM_ENS=${NMEM_ENS:-80}
+   mem_offset=0
 fi
 
 # global_chgres stuff
-CHGRESNEMS=${CHGRESNEMS:-$HOMEgfs/exec/enkf_chgres_recenter.x}
-CHGRESNC=${CHGRESNC:-$HOMEgfs/exec/enkf_chgres_recenter_nc.x}
+CHGRESNEMS=${CHGRESNEMS:-${EXECgfs}/enkf_chgres_recenter.x}
+CHGRESNC=${CHGRESNC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
 NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
 APRUN_CHGRES=${APRUN_CHGRES:-""}
 
 # global_cycle stuff
-CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
+CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
-export FIXorog=${FIXorog:-$HOMEgfs/fix/orog}
-export FIXam=${FIXam:-$HOMEgfs/fix/am}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
@@ -108,12 +111,17 @@ ENKF_SUFFIX="s"
 for FHR in $(seq $FHMIN $FHOUT $FHMAX); do
 
 for imem in $(seq 1 $NMEM_ENS); do
+   smem=$((imem + mem_offset))
+   if (( smem > NMEM_ENS_MAX )); then
+      smem=$((smem - NMEM_ENS_MAX))
+   fi
+   gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
 
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
       COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-   MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
+   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
       COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
    ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atmf00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
@@ -241,7 +249,7 @@ if [ $RECENTER_ENKF = "YES" ]; then
 
       $NLN $ATMANL_GSI        atmanl_gsi
       $NLN $ATMANL_GSI_ENSRES atmanl_gsi_ensres
-      SIGLEVEL=${SIGLEVEL:-${FIXam}/global_hyblev.l${LEVS}.txt}
+      SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS}.txt}
       $NLN $CHGRESNC chgres.x
       chgresnml=chgres_nc_gauss.nml
       nmltitle=chgres

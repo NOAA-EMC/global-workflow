@@ -224,6 +224,13 @@ def fill_ROTDIR_cycled(host, inputs):
         src_file = os.path.join(src_dir, fname)
         if os.path.exists(src_file):
             os.symlink(src_file, os.path.join(dst_dir, fname))
+    # First 1/2 cycle also needs a atmos increment if doing warm start
+    if inputs.start in ['warm']:
+        for ftype in ['atmi003.nc', 'atminc.nc', 'atmi009.nc']:
+            fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
+            src_file = os.path.join(src_dir, fname)
+            if os.path.exists(src_file):
+                os.symlink(src_file, os.path.join(dst_dir, fname))
 
     return
 
@@ -245,12 +252,6 @@ def fill_EXPDIR(inputs):
     expdir = os.path.join(inputs.expdir, inputs.pslot)
 
     configs = glob.glob(f'{configdir}/config.*')
-    exclude_configs = ['base', 'base.emc.dyn', 'base.nco.static', 'fv3.nco.static']
-    for exclude in exclude_configs:
-        try:
-            configs.remove(f'{configdir}/config.{exclude}')
-        except ValueError:
-            pass
     if len(configs) == 0:
         raise IOError(f'no config files found in {configdir}')
     for config in configs:
@@ -288,7 +289,8 @@ def update_configs(host, inputs):
 
 def edit_baseconfig(host, inputs, yaml_dict):
     """
-    Parses and populates the templated `config.base.emc.dyn` to `config.base`
+    Parses and populates the templated `HOMEgfs/parm/config/<gfs|gefs>/config.base`
+    to `EXPDIR/pslot/config.base`
     """
 
     tmpl_dict = {
@@ -340,7 +342,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
     except KeyError:
         pass
 
-    base_input = f'{inputs.configdir}/config.base.emc.dyn'
+    base_input = f'{inputs.configdir}/config.base'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
     edit_config(base_input, base_output, tmpl_dict)
 
@@ -383,7 +385,7 @@ def input_args(*argv):
     Method to collect user arguments for `setup_expt.py`
     """
 
-    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW']
+    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW', 'S2SWA']
 
     def _common_args(parser):
         parser.add_argument('--pslot', help='parallel experiment name',
@@ -431,7 +433,7 @@ def input_args(*argv):
 
     def _gfs_or_gefs_forecast_args(parser):
         parser.add_argument('--app', help='UFS application', type=str,
-                            choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
+                            choices=ufs_apps, required=False, default='ATM')
         parser.add_argument('--gfs_cyc', help='Number of forecasts per day', type=int,
                             choices=[1, 2, 4], default=1, required=False)
         return parser
