@@ -426,9 +426,6 @@ if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
-# The minimization monitor is not yet supported on RDHPCS Hera for Rocky-8
-elif [[ ${machine} = "HERA" ]]; then
-   export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
 
 echo "END: config.base"
