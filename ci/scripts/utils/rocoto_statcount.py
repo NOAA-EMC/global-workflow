@@ -51,8 +51,8 @@ def rocoto_statcount():
         raise CommandNotFoundError("rocotostat not found in PATH")
 
     rocotostat_all = which("rocotostat")
-    rocotostat.add_default_arg(['-w',os.path.abspath(args.w.name), '-d',os.path.abspath(args.d.name), '-s'])
-    rocotostat_all.add_default_arg(['-w',os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name), '-a'])
+    rocotostat.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name), '-s'])
+    rocotostat_all.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name), '-a'])
 
     rocotostat_output = rocotostat(output=str)
     rocotostat_output = rocotostat_output.splitlines()[1:]
