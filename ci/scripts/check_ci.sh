@@ -14,7 +14,8 @@ echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 GH=${HOME}/bin/gh
-REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+#REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+REPO_URL="git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git"
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
@@ -125,7 +126,7 @@ for pr in ${pr_list}; do
     fi
 
     set +e
-    rocoto_state=$("${HOMEgfs}/ci/scripts/utils/rocoto_statcount.py" -w ${xml} -d ${db})
+    rocoto_state="$("${HOMEgfs}/ci/scripts/utils/rocoto_statcount.py" -w "${xml}" -d "${db}")"
     rocoto_error=$?
     rm -f "${output_ci_single}"
     if [[ "${rocoto_error}" -ne 0 ]]; then
