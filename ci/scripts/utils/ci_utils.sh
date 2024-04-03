@@ -149,7 +149,7 @@ function publish_logs() {
     if [[ -n "${full_paths}" ]]; then
         # shellcheck disable=SC2027,SC2086
         ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
-        URL="$(${HOMEgfs}/ci/scripts/utils/publish_logs.py --file "${full_paths}" --gist "${PR_header}")"
+        URL="$("${HOMEgfs}/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
     fi
     echo "${URL}"
 }
