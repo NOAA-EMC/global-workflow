@@ -131,23 +131,24 @@ function publish_logs() {
 # publish_logs function
 # This function takes a directory path and a list of files as arguments.
 # It calls the publish_logs.py script to publish the logs and returns its gist URL.
-# Usage: publish_logs <dir_path> <file1> <file2> ... <fileN>
-    local file="$1"
+# Usage: publish_logs <ID> <dir_path> <file1> <file2> ... <fileN>
+    local PR_header="$1"
     local dir_path="$2"
+    local file="$3"
 
     local full_paths=""
     while IFS= read -r line; do
         full_path="${dir_path}/${line}"
-        if [[ -f "$full_path" ]]; then
-            full_paths+="$full_path "
+        if [[ -f "${full_path}" ]]; then
+            full_paths+="${full_path} "
         else
-            echo "File $full_path does not exist"
+            echo "File "${full_path}" does not exist"
         fi
     done < "$file"
 
-    if [[ -n "$full_paths" ]]; then
-        python publish_logs.py --file $full_paths --repo > /dev/null
-        URL=$(python publish_logs.py --file $full_paths --gist)
+    if [[ -n "${full_paths}" ]]; then
+        ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo "${PR_header}" > /dev/null
+        URL=$(${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${full_paths} --gist "${PR_header}")
     fi
-    echo "$URL"
+    echo "${URL}"
 }
