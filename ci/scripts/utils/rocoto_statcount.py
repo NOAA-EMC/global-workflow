@@ -4,7 +4,7 @@ import sys
 import os
 
 from wxflow import Executable, which, Logger, CommandNotFoundError
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser, FileType
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
@@ -28,8 +28,8 @@ def input_args():
 
     parser = ArgumentParser(description=description)
 
-    parser.add_argument('-w', help='workflow_document', nargs=1, metavar='XML Workflow File', type=str, required=True)
-    parser.add_argument('-d', help='database_file', nargs=1, metavar='Database File', type=str, required=True)
+    parser.add_argument('-w', help='workflow_document', nargs=1, metavar='XML Workflow File', type=FileType('r'), required=True)
+    parser.add_argument('-d', help='database_file', nargs=1, metavar='Database File', type=FileType('r'), required=True)
     parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
 
     args = parser.parse_args()
