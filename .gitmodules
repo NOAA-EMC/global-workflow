@@ -32,3 +32,4 @@
 [submodule "sorc/jcb"]
   path = sorc/jcb
   url = https://github.com/noaa-emc/jcb
+  fetchRecurseSubmodules = false
