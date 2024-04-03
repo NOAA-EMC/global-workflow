@@ -245,14 +245,25 @@ for pr in ${pr_list}; do
     "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running "0:0"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
 
-  else
+  else # failed to clone and build
+
     {
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}" || true
     } >> "${output_ci}"
+
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
     "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+
+    if [[ -f "${HOMEgfs}/sorc/logs/error.logs" ]]; then
+      gist_URL=$("${ROOT_DIR}/ci/scripts/utils/ci_utils_wrapper.sh" publish_logs "PR_${pr}" "${HOMEgfs}/sorc"  "${HOMEgfs}/sorc/logs/error.logs")
+      {
+        echo -e "\nError logs from build"
+        echo "Gist URL: ${gist_URL}"
+      } >> "${output_ci}"
+    fi
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
+
   fi
 
 done # looping over each open and labeled PR
