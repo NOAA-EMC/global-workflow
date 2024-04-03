@@ -50,8 +50,8 @@ def rocoto_statcount():
         logger.exception("rocotostat not found in PATH")
         raise CommandNotFoundError("rocotostat not found in PATH")
 
-    xml_file_path = os.path.abspath(args.w)
-    db_file_path = os.path.abspath(args.d)
+    xml_file_path = os.path.abspath(args.w.name)
+    db_file_path = os.path.abspath(args.d.name)
 
     rocotostat_all = which("rocotostat")
     rocotostat.add_default_arg(['-w', xml_file_path, '-d', db_file_path, '-s'])
