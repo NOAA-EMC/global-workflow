@@ -25,7 +25,7 @@ device="nc | ${metaname}"
 export COMIN="gfs.multi"
 mkdir "${COMIN}"
 for cycle in $(seq -f "%02g" -s ' ' 0  "${STEP_GFS}" "${cyc}"); do
-    YMD=${PDY} HH=${cycle} GRID="1p00" generate_com gempak_dir:COM_ATMOS_GEMPAK_TMPL
+    YMD=${PDY} HH=${cycle} GRID="1p00" declare_from_tmpl gempak_dir:COM_ATMOS_GEMPAK_TMPL
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
         file_out="${COMIN}/$(basename "${file_in}")"
         if [[ ! -L "${file_out}" ]]; then
@@ -99,7 +99,7 @@ for gareas in US NP; do
         # Create symlink in DATA to sidestep gempak path limits
         HPCGFS="${RUN}.${init_time}"
         if [[ ! -L ${HPCGFS} ]]; then
-            YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" generate_com source_dir:COM_ATMOS_GEMPAK_TMPL
+            YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
             ln -sf "${source_dir}" "${HPCGFS}"
         fi
 
