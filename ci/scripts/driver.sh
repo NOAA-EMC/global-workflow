@@ -97,7 +97,8 @@ for pr in ${pr_list}; do
       if [[ "${driver_HOST}" == "${host_name}"  ]]; then
         pstree_out="$(pstree -A -p "${driver_PID}")"
         if [[ -n "${pstree_out}" ]]; then
-           echo -e "${pstree_out}" | grep -Pow "(?<=\()[0-9]+(?=\))"  | xargs kill
+           #shellcheck disable=SC2312
+           echo -e "${pstree_out}" | grep -Pow "(?<=\()[0-9]+(?=\))" | xargs kill
         fi
       else
         ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
