@@ -49,8 +49,8 @@ fi
 
 # Launch experiment
 echo "Launch experiment with Rocoto."
-rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
-sleep 30
+#rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
+#sleep 30
 if [[ ! -f "${db}" ]]; then
   echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
   exit 2
@@ -58,52 +58,51 @@ fi
 
 # Experiment launched
 rc=99
+set +e
 while true; do
 
   echo "Run rocotorun."
-  rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
+  #rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 
   # Wait before running rocotostat
-  sleep 30
+  #sleep 30
 
   # Get job statistics
   echo "Gather Rocoto statistics"
+  rocotostat_output="$(${ROOT_DIR}/ci/scripts/utils/rocotostat.py -w "${xml}" -d "${db}" -v)"
+  error_stat=$?
 
-  $
-
-  rocotostat_output="$(${ROOT_DIR}/ci/scripts/utils/rocotostat.py -w "${xml}" -d "${db}" -v)" || true
   num_cycles=$(echo "${rocotostat_output}" | grep "Cycles:" | cut -d: -f2 ) || true
   num_cycles_done=$(echo "${rocotostat_output}" | grep Cycles_Done | cut -d: -f2) || true
   num_succeeded=$(echo "${rocotostat_output}" | grep SUCCEEDED | cut -d: -f2) || true
   num_failed=$(echo "${rocotostat_output}" | grep FAIL | cut -d: -f2) || true
+  rocoto_stat=$(echo "${rocotostat_output}" | tail -1) || true
 
   echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_cycles_done}"
 
-  echo $num_succeeded $num_failed
-
-  exit 0
-
-  if [[ ${num_failed} -ne 0 ]]; then
+  if [[ ${error_stat} -ne 0 ]]; then
     {
-      echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed at $(date)" || true
-      echo "Experiment ${pslot} Terminated: *FAILED*"
+      echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed or dead at $(date)" || true
+      echo "Experiment ${pslot} Terminated: *${rocoto_stat}*"
     } | tee -a "${run_check_logfile}"
-    error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
-    {
-     echo "Error logs:"
-     echo "${error_logs}"
-    } | tee -a  "${run_check_logfile}"
-    rm -f "${RUNTESTS}/error.logs"
-    for log in ${error_logs}; do
-      echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/error.logs"
-    done
-    rc=1
-    break
+    if [[ "${num_failed}" -ne 0 ]]; then
+      error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
+      {
+        echo "Error logs:"
+        echo "${error_logs}"
+      } | tee -a  "${run_check_logfile}"
+      rm -f "${RUNTESTS}/error.logs"
+      for log in ${error_logs}; do
+        echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/error.logs"
+      done
+   fi
+   rc=1
+   break
   fi
 
-  if [[ "${num_done}" -eq "${num_cycles}" ]]; then
+  if [[ "${rocoto_stat}" == "DONE" ]]; then
     {
-      echo "Experiment ${pslot} Completed at $(date)" || true
+      echo "Experiment ${pslot} Completed ${num_cycles_done} Cycles at $(date)" || true
       echo "with ${num_succeeded} successfully completed jobs" || true
       echo "Experiment ${pslot} Completed: *SUCCESS*"
     } | tee -a "${run_check_logfile}"
