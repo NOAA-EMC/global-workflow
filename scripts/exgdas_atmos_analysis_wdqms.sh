@@ -70,9 +70,14 @@ for otype in "${OTYPES[@]}"; do
   #=============================================================================
   # Send DBN alerts
   if [[ -f "${COMOUT}/${csvfile}" ]]; then
-    echo "Send DBN Alert"  # TODO: Add appropriate DBNALERT call
+    if [[ "${SENDDBN:-}" == "YES" ]]; then
+      "${DBNROOT}/bin/dbn_alert" MODEL SUB_TYPE "${job}" "${COMOUT}/${csvfile}"  # TODO: NCO SPA will coordinate w/ Dataflow to identify the appropriate SUB_TYPE
+    fi
   else
-    echo "WARNING: wdqms.py did not produce '${csvfile}'.  No DBN Alert!"  # TODO: Is there such a thing as a DBN Warning?
+    echo "WARNING: wdqms.py did not produce '${csvfile}'"
+    if [[ "${SENDDBN:-}" == "YES" ]]; then
+      echo "WARNING: No DBN alert.  File missing: '${COMOUT}/${csvfile}'"
+    fi
     error=$((error + 1))
   fi
   #=============================================================================
