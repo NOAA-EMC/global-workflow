@@ -49,8 +49,8 @@ fi
 
 # Launch experiment
 echo "Launch experiment with Rocoto."
-#rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
-#sleep 30
+rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
+sleep 30
 if [[ ! -f "${db}" ]]; then
   echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
   exit 2
@@ -62,10 +62,10 @@ set +e
 while true; do
 
   echo "Run rocotorun."
-  #rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
+  rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 
   # Wait before running rocotostat
-  #sleep 30
+  sleep 30
 
   # Get job statistics
   echo "Gather Rocoto statistics"
@@ -78,7 +78,7 @@ while true; do
   num_failed=$(echo "${rocotostat_output}" | grep FAIL | cut -d: -f2) || true
   rocoto_stat=$(echo "${rocotostat_output}" | tail -1) || true
 
-  echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_cycles_done}"
+  echo "(${pslot}) Total Cycles: ${num_cycles} number done: ${num_cycles_done} ${rocoto_stat} on ${MACHINE_ID^}"
 
   if [[ ${error_stat} -ne 0 ]]; then
     {
