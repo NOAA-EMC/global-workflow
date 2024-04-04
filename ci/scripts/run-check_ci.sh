@@ -69,7 +69,7 @@ while true; do
 
   # Get job statistics
   echo "Gather Rocoto statistics"
-  rocotostat_output="$(${ROOT_DIR}/ci/scripts/utils/rocotostat.py -w "${xml}" -d "${db}" -v)"
+  rocotostat_output="$("${ROOT_DIR}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)"
   error_stat=$?
 
   num_cycles=$(echo "${rocotostat_output}" | grep "Cycles:" | cut -d: -f2 ) || true
