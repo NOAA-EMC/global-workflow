@@ -22,7 +22,7 @@ export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda:${PYTHONPATH}
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPOCNOBSPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exglobal_prep_ocean_obs.py}
+EXSCRIPT=${GDASPREPOCNOBSPY:-${USHgfs}/exglobal_prep_ocean_obs.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
