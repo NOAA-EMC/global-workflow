@@ -4,6 +4,7 @@ def HOME = 'none'
 def caseList = ''
 // Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
+def repo_url = 'git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git'
 
 pipeline {
     agent { label 'built-in' }
@@ -47,8 +48,8 @@ pipeline {
                         HOME = "${WORKSPACE}"
                         sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
                         // pullRequest.addLabel("CI-${Machine}-Building")
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${GIT_URL} --add-label "CI-${Machine}-Building" """)
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${GIT_URL} --remove-label "CI-${Machine}-Ready" """)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" """)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Ready" """)
                         //if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
                         //    pullRequest.removeLabel("CI-${Machine}-Ready")
                         //}
@@ -126,10 +127,12 @@ pipeline {
                                     }
                                     if (env.CHANGE_ID && system == 'gfs') {
                                         try {
-                                            if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
-                                               pullRequest.removeLabel("CI-${Machine}-Building")
-                                            }
-                                            pullRequest.addLabel("CI-${Machine}-Running")
+                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Running" """)
+                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
+                                            //if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
+                                            //   pullRequest.removeLabel("CI-${Machine}-Building")
+                                            //}
+                                            //pullRequest.addLabel("CI-${Machine}-Running")
                                         } catch (Exception e) {
                                             echo "Failed to update label from Buildng to Running: ${e.getMessage()}"
                                         }
@@ -207,7 +210,7 @@ pipeline {
                                             gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                             try {
                                                 // pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
-                                                sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${GIT_URL} --body "Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url}")""")
+                                                sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url}")""")
 
                                             } catch (Exception error_comment) {
                                                 echo "Failed to comment on PR: ${error_comment.getMessage()}"
@@ -231,11 +234,13 @@ pipeline {
             script {
                 if(env.CHANGE_ID) {
                     try {
-                        for (label in pullRequest.labels) {
-                            if (label.contains("${Machine}")) {
-                                pullRequest.removeLabel(label)
-                            }
-                        }
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
+                        //for (label in pullRequest.labels) {
+                        //    if (label.contains("${Machine}")) {
+                        //        pullRequest.removeLabel(label)
+                        //    }
+                        //}
                     }  catch (Exception e) {
                     echo "Failed to remove labels: ${e.getMessage()}"
                     }
@@ -246,9 +251,11 @@ pipeline {
             script {
                 if(env.CHANGE_ID) {
                     try {
-                        pullRequest.addLabel("CI-${Machine}-Passed")
+                        //pullRequest.addLabel("CI-${Machine}-Passed")
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """)
                         def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
-                        pullRequest.comment("**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`")
+                        //pullRequest.comment("**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`")
+                        sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`" """)
                     } catch (Exception e) {
                         echo "Failed to add success label or comment: ${e.getMessage()}"
                     }
@@ -259,9 +266,11 @@ pipeline {
             script {
                 if(env.CHANGE_ID) {
                     try {
-                        pullRequest.addLabel("CI-${Machine}-Failed")
+                        //pullRequest.addLabel("CI-${Machine}-Failed")
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """)
                         def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
-                        pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
+                        //pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
+                        sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`" """)
                     } catch (Exception e) {
                         echo "Failed to add failure label or comment: ${e.getMessage()}"
                     }
