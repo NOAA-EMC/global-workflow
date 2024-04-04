@@ -31,6 +31,7 @@ def input_args():
     parser.add_argument('-w', help='workflow_document', type=FileType('r'), required=True)
     parser.add_argument('-d', help='database_file', metavar='Database File', type=FileType('r'), required=True)
     parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
+    parser.add_argument('-v', action='store_true', help='List the states and the number of jobs that are in each', required=False)
 
     args = parser.parse_args()
 
@@ -97,9 +98,12 @@ if __name__ == '__main__':
     else:
         rocoto_state = 'RUNNING'
 
-    if args.verbose:
+    if args.verbose or args.v:
         for status in rocoto_status:
-            print(f'Number of {status} : {rocoto_status[status]}')
+            if args.v:
+                print(f'{status}:{rocoto_status[status]}')
+            else:
+                print(f'Number of {status} : {rocoto_status[status]}')
 
     print(rocoto_state)
     sys.exit(error_return)
