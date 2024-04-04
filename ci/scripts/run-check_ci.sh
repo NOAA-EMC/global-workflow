@@ -73,11 +73,13 @@ while true; do
 
   rocotostat_output="$(${ROOT_DIR}/ci/scripts/utils/rocotostat.py -w "${xml}" -d "${db}" -v)" || true
   num_cycles=$(echo "${rocotostat_output}" | grep "Cycles:" | cut -d: -f2 ) || true
-  num_cycles_done=$(echo "${rocotostat_output}" | grep Cycles_Done) | cut -d: -f2) || true
-  num_succeeded=$(echo "${rocotostat_output}" | grep SUCCEEDED) | cut -d: -f2) || true
-  num_failed=$(echo "${rocotostat_output}" | grep FAIL) | cut -d: -f2) || true
+  num_cycles_done=$(echo "${rocotostat_output}" | grep Cycles_Done | cut -d: -f2) || true
+  num_succeeded=$(echo "${rocotostat_output}" | grep SUCCEEDED | cut -d: -f2) || true
+  num_failed=$(echo "${rocotostat_output}" | grep FAIL | cut -d: -f2) || true
 
   echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_cycles_done}"
+
+  echo $num_succeeded $num_failed
 
   exit 0
 
