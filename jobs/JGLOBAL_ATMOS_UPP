@@ -12,7 +12,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
 ##############################################
 
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
 if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -m 775 -p "${COM_ATMOS_MASTER}"; fi
 
 

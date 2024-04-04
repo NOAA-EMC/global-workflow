@@ -698,7 +698,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
       mem=$(printf %03i ${nm})
       head="${RUN}.t${cyc}z."
 
-      MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} generate_com \
+      MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} declare_from_tmpl \
         COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL \
         COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL \
         COM_ATMOS_HISTORY_MEM:COM_ATMOS_HISTORY_TMPL
