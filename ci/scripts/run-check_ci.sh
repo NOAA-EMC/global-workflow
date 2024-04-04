@@ -25,7 +25,7 @@ ROOT_DIR=${3:-${ROOT_DIR:-?}}  # Location of the root of the global-workflow rep
 #         └── ${pslot}
 # Two system build directories created at build time gfs, and gdas
 # TODO: Make this configurable (for now all scripts run from gfs for CI at runtime)
-HOMEgfs="${TEST_DIR}/gfs"
+HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR:-global-workflow}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
