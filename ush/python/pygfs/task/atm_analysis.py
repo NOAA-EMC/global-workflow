@@ -32,7 +32,7 @@ class AtmAnalysis(Analysis):
         _res_anl = int(self.config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config.assim_freq}H") / 2)
         _jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
-        _fv3inc_yaml = os.path.join(self.runtime_config.DATA, 'fv3jedi_fv3inc.yaml')
+        _fv3inc_yaml = os.path.join(self.runtime_config.DATA, 'fv3jedi_fv3inc_variational.yaml')
         _fv3inc_exe = os.path.join(self.runtime_config.DATA, 'fv3jedi_fv3inc.x')
 
         # Create a local dictionary that is repeatedly used across this class
