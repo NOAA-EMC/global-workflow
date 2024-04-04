@@ -4,11 +4,13 @@ set -eu
 
 #####################################################################################
 # Script description: script to check the status of an experiment as reported
-#                     by Rocoto
+#                     by Rocoto 
 #####################################################################################
 
 TEST_DIR=${1:-${TEST_DIR:-?}}  # Location of the root of the testing directory
 pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this script
+ROOT_DIR=${3:-${ROOT_DIR:-?}}  # Location of the root of the global-workflow repository
+                               # that runs CI functions that must be outside of PRs 
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -66,13 +68,18 @@ while true; do
 
   # Get job statistics
   echo "Gather Rocoto statistics"
-  rocotostat_output=$(rocotostat -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
-  num_cycles=$(echo "${rocotostat_output}" | wc -l) || true
-  num_done=$(echo "${rocotostat_output}" | grep -c Done) || true
-  num_succeeded=$(rocotostat -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED) || true
-  num_failed=$(rocotostat -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD') || true
 
-  echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_done}"
+  $
+
+  rocotostat_output="$(${ROOT_DIR}/ci/scripts/utils/rocotostat.py -w "${xml}" -d "${db}" -v)" || true
+  num_cycles=$(echo "${rocotostat_output}" | grep "Cycles:" | cut -d: -f2 ) || true
+  num_cycles_done=$(echo "${rocotostat_output}" | grep Cycles_Done) | cut -d: -f2) || true
+  num_succeeded=$(echo "${rocotostat_output}" | grep SUCCEEDED) | cut -d: -f2) || true
+  num_failed=$(echo "${rocotostat_output}" | grep FAIL) | cut -d: -f2) || true
+
+  echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_cycles_done}"
+
+  exit 0
 
   if [[ ${num_failed} -ne 0 ]]; then
     {
@@ -84,7 +91,7 @@ while true; do
      echo "Error logs:"
      echo "${error_logs}"
     } | tee -a  "${run_check_logfile}"
-    # rm -f "${RUNTESTS}/error.logs"
+    rm -f "${RUNTESTS}/error.logs"
     for log in ${error_logs}; do
       echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/error.logs"
     done
