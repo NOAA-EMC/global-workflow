@@ -28,7 +28,7 @@ Components included as submodules:
 * **GSI Monitor** (https://github.com/NOAA-EMC/GSI-Monitor): These tools monitor the GSI package's data assimilation, detecting and reporting missing data sources, low observation counts, and high penalty values
 * **GDAS** (https://github.com/NOAA-EMC/GDASApp): Jedi based Data Assimilation system. This system is currently being developed for marine Data Assimilation and in time will replace GSI for atmospheric data assimilation as well
 * **UFS UTILS** (https://github.com/ufs-community/UFS_UTILS): Utility codes needed for UFS-weather-model
-* **wxflow** Collection of python utilities for weather workflows (https://github.com/NOAA-EMC/wxflow) 
+* **wxflow** (https://github.com/NOAA-EMC/wxflow): Collection of python utilities for weather workflows
 * **Verif global** (https://github.com/NOAA-EMC/EMC_verif-global): Verification package to evaluate GFS parallels. It uses MET and METplus. At this moment the verification package is limited to providing atmospheric metrics only
 
 .. note::
@@ -57,19 +57,20 @@ Data
 
 Observation data, also known as dump data, is prepared in production and then archived in a global dump archive (GDA) for use by users when running cycled experiments. The GDA (identified as ``$DMPDIR`` in the workflow) is available on supported platforms and the workflow system knows where to find the data.
 
-* Hera: /scratch1/NCEPDEV/global/glopara/dump
-* Orion/Hercules: /work/noaa/rstprod/dump
-* Jet: /mnt/lfs4/HFIP/hfv3gfs/glopara/dump
-* WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/dump
-* S4: /data/prod/glopara/dump
+* Hera: ``/scratch1/NCEPDEV/global/glopara/dump``
+* Orion/Hercules: ``/work/noaa/rstprod/dump``
+* Jet: ``/mnt/lfs4/HFIP/hfv3gfs/glopara/dump``
+* WCOSS2: ``/lfs/h2/emc/global/noscrub/emc.global/dump``
+* S4: ``/data/prod/glopara/dump``
 
 -----------------------------
 Global Dump Archive Structure
 -----------------------------
 
-The global dump archive (GDA) mimics the structure of its production source: ``DMPDIR/CDUMP.PDY/[CC/atmos/]FILES``
+The global dump archive (GDA) mimics the structure of its production source:
 
-The ``CDUMP`` is either gdas, gfs, or rtofs. All three contain production output for each day (``PDY``). The gdas and gfs folders are further broken into cycle (``CC``) and component (``atmos``).
+* GDAS/GFS: ``DMPDIR/gdas[gfs].PDY/CC/atmos/FILES``
+* RTOFS: ``DMPDIR/rtofs.PDY/FILES``
 
 The GDA also contains special versions of some datasets and experimental data that is being evaluated ahead of implementation into production. The following subfolder suffixes exist:
 
@@ -81,6 +82,7 @@ The GDA also contains special versions of some datasets and experimental data th
 +--------+------------------------------------------------------------------------------------------------------+
 | ur     | Un-restricted versions of restricted files in production. Produced and archived on a 48hrs delay.    |
 |        | Some restricted datasets are unrestricted. Data amounts: restricted > un-restricted > non-restricted |
+|        | Limited availability. Discontinued producing mid-2023.                                               |
 +--------+------------------------------------------------------------------------------------------------------+
 | x      | Experimental global datasets being evaluated for production. Dates and types vary depending on       |
 |        | upcoming global upgrades.                                                                            |

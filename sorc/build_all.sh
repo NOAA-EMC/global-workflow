@@ -27,6 +27,8 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w]
     Print this help message and exit
   -j:
     Specify maximum number of build jobs (n)
+  -k:
+    Kill all builds if any build fails
   -u:
     Build UFS-DA
   -v:
@@ -48,15 +50,17 @@ _build_debug=""
 _verbose_opt=""
 _wave_unst=""
 _build_job_max=20
+_quick_kill="NO"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:dghj:uvw" option; do
+while getopts ":a:dghj:kuvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     d) _build_debug="-d" ;;
     g) _build_gsi="YES" ;;
     h) _usage;;
     j) _build_job_max="${OPTARG} ";;
+    k) _quick_kill="YES" ;;
     u) _build_ufsda="YES" ;;
     v) _verbose_opt="-v";;
     w) _wave_unst="-w";;
@@ -193,6 +197,31 @@ fi
 procs_in_use=0
 declare -A build_ids
 
+check_builds()
+{
+   for chk_build in "${!build_jobs[@]}"; do
+      # Check if the build is complete and if so what the status was
+      if [[ -n "${build_ids[${chk_build}]+0}" ]]; then
+         if ! ps -p "${build_ids[${chk_build}]}" > /dev/null; then
+            wait "${build_ids[${chk_build}]}"
+            build_stat=$?
+            if [[ ${build_stat} != 0 ]]; then
+               echo "build_${chk_build}.sh failed!  Exiting!"
+               echo "Check logs/build_${chk_build}.log for details."
+               echo "logs/build_${chk_build}.log" > "${HOMEgfs}/sorc/logs/error.logs"
+               for kill_build in "${!build_jobs[@]}"; do
+                  if [[ -n "${build_ids[${kill_build}]+0}" ]]; then
+                     pkill -P "${build_ids[${kill_build}]}"
+                  fi
+               done
+               return "${build_stat}"
+            fi
+         fi
+      fi
+   done
+   return 0
+}
+
 builds_started=0
 # Now start looping through all of the jobs until everything is done
 while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
@@ -228,11 +257,31 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
       fi
    done
 
+   # If requested, check if any build has failed and exit if so
+   if [[ "${_quick_kill}" == "YES" ]]; then
+      check_builds
+      build_stat=$?
+      if (( build_stat != 0 )); then
+         exit "${build_stat}"
+      fi
+   fi
+
    sleep 5s
 done
 
+
 # Wait for all jobs to complete and check return statuses
-while [[ ${#build_jobs[@]} -gt 0 ]]; do
+while [[ "${#build_jobs[@]}" -gt 0 ]]; do
+
+   # If requested, check if any build has failed and exit if so
+   if [[ "${_quick_kill}" == "YES" ]]; then
+      check_builds
+      build_stat=$?
+      if [[ ${build_stat} != 0 ]]; then
+         exit "${build_stat}"
+      fi
+   fi
+
    for build in "${!build_jobs[@]}"; do
       # Test if each job is complete and if so, notify and remove from the array
       if [[ -n "${build_ids[${build}]+0}" ]]; then
