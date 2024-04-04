@@ -126,7 +126,7 @@ for pr in ${pr_list}; do
     fi
 
     set +e
-    rocoto_state="$("${HOMEgfs}/ci/scripts/utils/rocoto_statcount.py" -w "${xml}" -d "${db}")"
+    rocoto_state="$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}")"
     rocoto_error=$?
     rm -f "${output_ci_single}"
     if [[ "${rocoto_error}" -ne 0 ]]; then
