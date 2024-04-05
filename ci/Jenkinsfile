@@ -8,6 +8,8 @@ def repo_url = 'git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git'
 
 pipeline {
 
+    agent { label 'built-in' }
+
     options {
         skipDefaultCheckout()
         parallelsAlwaysFailFast()
