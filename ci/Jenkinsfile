@@ -7,7 +7,6 @@ def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa
 def repo_url = 'git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git'
 
 pipeline {
-    agent { label 'built-in' }
 
     options {
         skipDefaultCheckout()
@@ -221,7 +220,6 @@ pipeline {
     }
                     
     post {
-        agent { label 'built-in' }
         always {
             script {
                 if(env.CHANGE_ID) {
