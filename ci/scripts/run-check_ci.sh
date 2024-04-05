@@ -78,8 +78,9 @@ while true; do
 
   num_cycles=$(echo "${rocotostat_output}" | grep "Cycles:" | cut -d: -f2 ) || true
   num_cycles_done=$(echo "${rocotostat_output}" | grep Cycles_Done | cut -d: -f2) || true
-  num_succeeded=$(echo "${rocotostat_output}" | grep SUCCEEDED | cut -d: -f2) || true
-  num_failed=$(echo "${rocotostat_output}" | grep FAIL | cut -d: -f2) || true
+  num_succeeded=$(echo "${rocotostat_output}" | grep "SUCCEEDED:" | cut -d: -f2) || true
+  num_failed=$(echo "${rocotostat_output}" | grep "FAIL:" | cut -d: -f2) || true
+  num_dead=$(echo "${rocotostat_output}" | grep "DEAD:" | cut -d: -f2) || true
   rocoto_stat=$(echo "${rocotostat_output}" | tail -1) || true
 
   echo "(${pslot}) Total Cycles: ${num_cycles} number done: ${num_cycles_done} ${rocoto_stat} on ${MACHINE_ID^}"
@@ -89,7 +90,7 @@ while true; do
       echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed or dead at $(date)" || true
       echo "Experiment ${pslot} Terminated: *${rocoto_stat}*"
     } | tee -a "${run_check_logfile}"
-    if [[ "${num_failed}" -ne 0 ]]; then
+    if [[ "${num_dead}" -ne 0 ]]; then
       error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       {
         echo "Error logs:"
