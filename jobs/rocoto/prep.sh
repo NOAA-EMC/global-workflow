@@ -27,9 +27,9 @@ GDUMP="gdas"
 
 export OPREFIX="${CDUMP}.t${cyc}z."
 
-YMD=${PDY} HH=${cyc} DUMP=${CDUMP} generate_com -rx COM_OBS COM_OBSDMP
+YMD=${PDY} HH=${cyc} DUMP=${CDUMP} declare_from_tmpl -rx COM_OBS COM_OBSDMP
 
-RUN=${GDUMP} DUMP=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+RUN=${GDUMP} DUMP=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_OBS_PREV:COM_OBS_TMPL \
     COM_OBSDMP_PREV:COM_OBSDMP_TMPL
 
@@ -96,8 +96,8 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
     export job="j${CDUMP}_prep_${cyc}"
     export COMIN=${COM_OBS}
     export COMOUT=${COM_OBS}
-    RUN="gdas" YMD=${PDY} HH=${cyc} generate_com -rx COMINgdas:COM_ATMOS_HISTORY_TMPL
-    RUN="gfs" YMD=${PDY} HH=${cyc} generate_com -rx COMINgfs:COM_ATMOS_HISTORY_TMPL
+    RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINgdas:COM_ATMOS_HISTORY_TMPL
+    RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINgfs:COM_ATMOS_HISTORY_TMPL
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
         export COMSP=${COMSP:-"${COM_OBSDMP}/${CDUMP}.t${cyc}z."}
     else

@@ -1,22 +1,21 @@
 #! /usr/bin/env bash
 
-function generate_com() {
+function declare_from_tmpl() {
     #
-    # Generate a list COM variables from a template by substituting in env variables.
+    # Define variables from corresponding templates by substituting in env variables.
     #
-    # Each argument must have a corresponding template with the name ${ARG}_TMPL. Any 
-    #   variables in the template are replaced with their values. Undefined variables
-    #   are just removed without raising an error.
+    # Each template must already be defined. Any variables in the template are replaced
+    #   with their values. Undefined variables are just removed WITHOUT raising an error.
     #
     # Accepts as options `-r` and `-x`, which do the same thing as the same options in
     #   `declare`. Variables are automatically marked as `-g` so the variable is visible
     #   in the calling script.
     #
     # Syntax:
-    #   generate_com [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
+    #   declare_from_tmpl [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
     #
     #   options:
-    #       -r: Make variable read-only (same as `decalre -r`)
+    #       -r: Make variable read-only (same as `declare -r`)
     #       -x: Mark variable for export (same as `declare -x`)
     #   var1, var2, etc: Variable names whose values will be generated from a template
     #                    and declared
@@ -24,14 +23,14 @@ function generate_com() {
     #
     #   Examples:
     #       # Current cycle and RUN, implicitly using template COM_ATMOS_ANALYSIS_TMPL
-    #       YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+    #       YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
     #
     #       # Previous cycle and gdas using an explicit template
-    #       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    #       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     #           COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
     #
     #       # Current cycle and COM for first member
-    #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
+    #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY
     #
     if [[ ${DEBUG_WORKFLOW:-"NO"} == "NO" ]]; then set +x; fi
     local opts="-g"
@@ -52,14 +51,14 @@ function generate_com() {
             template="${com_var}_TMPL"
         fi
         if [[ ! -v "${template}" ]]; then
-            echo "FATAL ERROR in generate_com: Requested template ${template} not defined!"
+            echo "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
             exit 2
         fi
         value=$(echo "${!template}" | envsubst)
         # shellcheck disable=SC2086
         declare ${opts} "${com_var}"="${value}"
         # shellcheck disable=
-        echo "generate_com :: ${com_var}=${value}"
+        echo "declare_from_tmpl :: ${com_var}=${value}"
     done
     set_trace
 }
@@ -122,6 +121,6 @@ function detect_py_ver() {
 }
 # shellcheck disable=
 
-declare -xf generate_com
+declare -xf declare_from_tmpl
 declare -xf wait_for_file
 declare -xf detect_py

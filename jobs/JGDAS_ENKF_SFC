@@ -33,10 +33,10 @@ export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS \
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS \
   COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
   COM_OBS_PREV:COM_OBS_TMPL \
   COM_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
 

@@ -528,7 +528,7 @@ if [ ${DOHYBVAR} = "YES" ]; then
 
    for imem in $(seq 1 ${NMEM_ENS}); do
       memchar="mem$(printf %03i "${imem}")"
-      MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com COM_ATMOS_HISTORY
+      MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ATMOS_HISTORY
 
       for fhr in ${fhrs}; do
          ${NLN} ${COM_ATMOS_HISTORY}/${GPREFIX_ENS}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
