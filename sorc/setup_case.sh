@@ -1,19 +1,17 @@
 #!/bin/bash
 #https://global-workflow.readthedocs.io/en/latest/setup.html
 
- GLOBALWORKFLOWHOME=/scratch2/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud
-
  set -x
 
+ GLOBALWORKFLOWHOME=/scratch2/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud
  PSLOT=exp_c48
  CONFIGDIR=${GLOBALWORKFLOWHOME}/parm/config
- IDATE=2020060100
- EDATE=2020060200
+ IDATE=2021032312
+ EDATE=2021032312
  COMROOT=${GLOBALWORKFLOWHOME}/comroot
  EXPDIR=${GLOBALWORKFLOWHOME}/expdir
 
  cd ${GLOBALWORKFLOWHOME}/workflow
-
  source ${GLOBALWORKFLOWHOME}/workflow/gw_setup.sh
 
  ${GLOBALWORKFLOWHOME}/workflow/setup_expt.py gfs forecast-only \
@@ -22,11 +20,11 @@
         --app ATM \
         --pslot ${PSLOT} \
         --configdir ${CONFIGDIR}/gfs \
-        --resdetatmos 96 \
-        --resdetocean 1.0 \
+        --resdetatmos 48 \
         --comroot ${COMROOT} \
         --expdir ${EXPDIR}
 
+#        --resdetocean 1.0 \
 #${GLOBALWORKFLOWHOME}/workflow/setup_expt.py gfs forecast-only \
 #       --idate $IDATE \
 #       --edate $EDATE \
