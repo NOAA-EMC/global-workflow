@@ -96,9 +96,9 @@ while true; do
         echo "Error logs:"
         echo "${error_logs}"
       } | tee -a  "${run_check_logfile}"
-      rm -f "${RUNTESTS}/error.logs"
+      rm -f "${RUNTESTS}/${pslot}_error.logs"
       for log in ${error_logs}; do
-        echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/error.logs"
+        echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/${pslot}_error.logs"
       done
    fi
    rc=1
