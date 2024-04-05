@@ -10,7 +10,7 @@ set -eu
 TEST_DIR=${1:-${TEST_DIR:-?}}  # Location of the root of the testing directory
 pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this script
 ROOT_DIR=${3:-${ROOT_DIR:-?}}  # Location of the root of the global-workflow repository
-                               # that runs CI functions that must be outside of PRs 
+                               # that runs CI functions that may be outside of PRs 
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -28,6 +28,10 @@ ROOT_DIR=${3:-${ROOT_DIR:-?}}  # Location of the root of the global-workflow rep
 HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR:-global-workflow}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
+
+if [[ "${ROOT_DIR}" == "?" ]]; then
+    ROOT_DIR="${HOMEgfs}"
+fi
 
 # Source modules and setup logging
 echo "Source modules."
