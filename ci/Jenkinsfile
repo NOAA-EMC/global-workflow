@@ -12,7 +12,7 @@ pipeline {
 
     options {
         skipDefaultCheckout()
-        parallelsAlwaysFailFast()
+        //parallelsAlwaysFailFast()
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -70,6 +70,9 @@ pipeline {
                 }
                 stages {
                     stage('build system') {
+                        options {
+                            parallelsAlwaysFailFast()
+                        }
                         steps {
                             script {
                                 def HOMEgfs = "${HOME}/${system}" // local HOMEgfs is used to build the system on per system basis under the common workspace HOME
