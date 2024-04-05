@@ -15,7 +15,7 @@ case $(hostname -f) in
   gaea9.ncrc.gov)      MACHINE_ID=gaea ;; ### gaea9
   gaea1[0-6].ncrc.gov) MACHINE_ID=gaea ;; ### gaea10-16
 
-  gaea5[0-9].ncrc.gov) MACHINE_ID=gaea-c5 ;; ### gaea10-16  
+  gaea5[0-9].ncrc.gov) MACHINE_ID=gaea ;; ### gaea10-16  
 
   hfe0[1-9]) MACHINE_ID=hera ;; ### hera01-9
   hfe1[0-2]) MACHINE_ID=hera ;; ### hera10-12
@@ -80,11 +80,8 @@ elif [[ -d /glade ]] ; then
   MACHINE_ID=cheyenne
 elif [[ -d /gpfs && -d /ncrc ]] ; then
   # We are on GAEA C5.
-  MACHINE_ID=gaea-c5
-elif [[ -d /lustre && -d /ncrc ]] ; then
-  # We are on GAEA.
   MACHINE_ID=gaea
-elif [[ -d /data/prod ]] ; then
+elif [[ -d /lustre && -d /ncrc ]] ; then
   # We are on SSEC's S4
   MACHINE_ID=s4
 else

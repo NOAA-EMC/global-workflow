@@ -40,10 +40,7 @@ elif [[ -d /glade ]] ; then
   # We are on NCAR Yellowstone
   module load module_base.cheyenne
 elif [[ -d /gpfs && -d /ncrc ]] ; then
-  # We are on GAEA-C5.
-  module load module_base.gaea-c5
-elif [[ -d /lustre && -d /ncrc ]] ; then
-  # We are on GAEA.
+  # We are on GAEA C5.
   module load module_base.gaea
 elif [[ -d /data/prod ]] ; then
   # We are on SSEC S4
