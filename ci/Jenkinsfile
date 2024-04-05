@@ -227,18 +227,20 @@ pipeline {
             agent { label "${machine}-emc" }
             stages {
                 stage ('Always') {
-                    script {
-                        if(env.CHANGE_ID) {
-                            try {
-                                sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """)
-                                sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
-                                //for (label in pullRequest.labels) {
-                                //    if (label.contains("${Machine}")) {
-                                //        pullRequest.removeLabel(label)
-                                //    }
-                                //}
-                            }  catch (Exception e) {
-                            echo "Failed to remove labels: ${e.getMessage()}"
+                    steps {
+                        script {
+                            if(env.CHANGE_ID) {
+                                try {
+                                    sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """)
+                                    sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
+                                    //for (label in pullRequest.labels) {
+                                    //    if (label.contains("${Machine}")) {
+                                    //        pullRequest.removeLabel(label)
+                                    //    }
+                                    //}
+                                }  catch (Exception e) {
+                                echo "Failed to remove labels: ${e.getMessage()}"
+                                }
                             }
                         }
                     }
@@ -247,16 +249,18 @@ pipeline {
                     when {
                         expression { return FINAL_STATE == 'PASSED' }
                     }
-                    script {
-                        if(env.CHANGE_ID) {
-                            try {
-                                //pullRequest.addLabel("CI-${Machine}-Passed")
-                                sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """)
-                                def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
-                                //pullRequest.comment("**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`")
-                                sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`" """)
-                            } catch (Exception e) {
-                                echo "Failed to add success label or comment: ${e.getMessage()}"
+                    steps {
+                        script {
+                            if(env.CHANGE_ID) {
+                                try {
+                                    //pullRequest.addLabel("CI-${Machine}-Passed")
+                                    sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """)
+                                    def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
+                                    //pullRequest.comment("**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`")
+                                    sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`" """)
+                                } catch (Exception e) {
+                                    echo "Failed to add success label or comment: ${e.getMessage()}"
+                                }
                             }
                         }
                     }
@@ -265,16 +269,18 @@ pipeline {
                     when {
                         expression { return FINAL_STATE == 'FAILED' }
                     }
-                    script {
-                        if(env.CHANGE_ID) {
-                            try {
-                                //pullRequest.addLabel("CI-${Machine}-Failed")
-                                sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """)
-                                def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
-                                //pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
-                                sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`" """)
-                            } catch (Exception e) {
-                                echo "Failed to add failure label or comment: ${e.getMessage()}"
+                    steps {
+                        script {
+                            if(env.CHANGE_ID) {
+                                try {
+                                    //pullRequest.addLabel("CI-${Machine}-Failed")
+                                    sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """)
+                                    def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
+                                    //pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
+                                    sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`" """)
+                                } catch (Exception e) {
+                                    echo "Failed to add failure label or comment: ${e.getMessage()}"
+                                }
                             }
                         }
                     }
