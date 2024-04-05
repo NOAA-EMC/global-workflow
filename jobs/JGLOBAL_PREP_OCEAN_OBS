@@ -16,8 +16,6 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 
 # Add prep_marine_obs.py to PYTHONPATH
 export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush:${PYTHONPATH}
-## Add gen_bufr2ioda.py to PYTHONPATH
-#export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script
