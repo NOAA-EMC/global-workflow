@@ -6,7 +6,7 @@ echo "BEGIN: config.prepoceanobs"
 
 export OCNOBS2IODAEXEC=${HOMEgfs}/sorc/gdas.cd/build/bin/gdas_obsprovider2ioda.x
 
-[[ -n "${JSON_TMPL_DIR}" ]] || export JSON_TMPL_DIR=${PARMgfs}/gdas/ioda/bufr2ioda
+export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config
 export OBSPREP_YAML=@OBSPREP_YAML@
 export OBS_LIST=@SOCA_OBS_LIST@
@@ -17,7 +17,7 @@ export OBS_YAML=${OBS_LIST}
 export DMPDIR=@DMPDIR@
 
 # For BUFR2IODA json and python scripts
-export JSON_TMPL_DIR=${HOMEgfs}/sorc/gdas.cd/parm/ioda/bufr2ioda
+[[ -n "${JSON_TMPL_DIR}" ]] || export JSON_TMPL_DIR=${PARMgfs}/gdas/ioda/bufr2ioda
 export BUFR2IODA_PY_DIR=${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda
 export KEEPDATA='YES'
 # Get task specific resources
