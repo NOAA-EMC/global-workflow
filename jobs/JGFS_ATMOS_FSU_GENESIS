@@ -33,8 +33,8 @@ export PYTHONPATH=${USHens_tracker}/FSUgenesisPY:${PYTHONPATH}
 ##############################################
 # Define COM and Data directories
 ##############################################
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GENESIS
-YMD=${PDY} HH=${cyc} GRID="0p25" generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_GENESIS
+YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
 
 # The following variables are used by the tracker scripts which are outside
 #   of global-workflow and therefore can't be standardized at this time

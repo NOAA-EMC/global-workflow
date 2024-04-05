@@ -22,7 +22,7 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ##############################
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
   COM_ATMOS_WMO COM_ATMOS_GEMPAK
 
 [[ ! -d ${COM_ATMOS_BUFR} ]] && mkdir -p "${COM_ATMOS_BUFR}"
