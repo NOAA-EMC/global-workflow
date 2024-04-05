@@ -72,7 +72,7 @@ case "${machine}" in
   "WCOSS2")
     npe_node_max=128
     ;;
-  "HERA" | "ORION" )
+  "HERA" | "ORION" | "GAEA" )
     npe_node_max=40
     ;;
   "HERCULES" )
@@ -282,7 +282,7 @@ model_list="atm"
 if [[ "${skip_mediator}" == "false" ]]; then
   export cpl=".true."
   export nthreads_mediator=${nthreads_fv3}  # Use same threads as FV3
-  export CCPP_SUITE="FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8?
+  export CCPP_SUITE="FV3_GFS_v17_p8"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8?
 fi
 
 # MOM6 specific settings
