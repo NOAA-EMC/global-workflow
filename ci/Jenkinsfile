@@ -173,9 +173,7 @@ pipeline {
                         when {
                             expression { return caseList.contains(Case) }
                         }
-                        options { 
-                            failFast false 
-                        }
+                        failFast false 
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
