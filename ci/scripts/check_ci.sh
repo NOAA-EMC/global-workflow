@@ -139,13 +139,17 @@ for pr in ${pr_list}; do
         # TODO used rocotocheck to find the missing dependency
       else
         error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
+        ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo "PR_${pr}" > /dev/null
+        gist_url="$("${HOMEgfs}/ci/scripts/utils/publish_logs.py" --file "${error_logs}" --gist "PR_${pr}")"
         {
-          echo "Experiment ${pslot}  *** ${rocoto_state} *** on ${MACHINE_ID^}"
+          echo "Experiment ${pslot}  **${rocoto_state}** on ${MACHINE_ID^}"
           echo "Experiment ${pslot} with ${rocoto_state} tasks failed at $(date +'%D %r')" || true
           echo "Error logs:"
+          echo "```"
           echo "${error_logs}"
+          echo "```"
+          echo "Follow link here to view the contents of the above file(s): [(link)](${gist_url})"
         } >> "${output_ci}"
-        sed -i "1 i\`\`\`" "${output_ci}"
         "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
       fi
       "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
