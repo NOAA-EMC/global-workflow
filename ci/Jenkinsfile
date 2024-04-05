@@ -143,6 +143,7 @@ pipeline {
 
         stage('Run Tests') {
             matrix {
+                agent { label "${machine}-emc" }
                 axes {
                     axis {
                         name 'Case'
