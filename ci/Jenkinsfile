@@ -226,19 +226,19 @@ pipeline {
                     }
                 }
             }
-            stage( 'FINALIZE' ) {
-                agent { label "${machine}-emc" }
-                steps {
-                    script {
-                        if (STATUS == 'PASSED') {
-                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """)
-                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
-                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """)
-                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI PASSED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`" """)
-                        }
+        }
+        stage( 'FINALIZE' ) {
+            agent { label "${machine}-emc" }
+            steps {
+                script {
+                    if (STATUS == 'PASSED') {
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """)
+                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI PASSED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`" """)
                     }
                 }
-            }   
-        }
+            }
+        }   
     }
 }
