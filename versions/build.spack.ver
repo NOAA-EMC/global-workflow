@@ -1,6 +1,6 @@
 export spack_stack_ver=1.6.0
 
-export cmake_ver=3.23.1
+export cmake_ver=3.28.1
 
 export jasper_ver=2.0.32
 export libpng_ver=1.6.37
