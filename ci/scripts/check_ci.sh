@@ -145,9 +145,9 @@ for pr in ${pr_list}; do
           echo "Experiment ${pslot}  **${rocoto_state}** on ${MACHINE_ID^}"
           echo "Experiment ${pslot} with ${rocoto_state} tasks failed at $(date +'%D %r')" || true
           echo "Error logs:"
-          echo "```"
+          echo "\`\`\`"
           echo ${error_logs}
-          echo "```"
+          echo "\`\`\`"
           echo "Follow link here to view the contents of the above file(s): [(link)](${gist_url})"
         } >> "${output_ci}"
         "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
