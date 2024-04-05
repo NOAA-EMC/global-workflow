@@ -47,12 +47,8 @@ pipeline {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         HOME = "${WORKSPACE}"
                         sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
-                        // pullRequest.addLabel("CI-${Machine}-Building")
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" """)
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Ready" """)
-                        //if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
-                        //    pullRequest.removeLabel("CI-${Machine}-Ready")
-                        //}
                     }
                     echo "Building and running on ${Machine} in directory ${HOME}"
                 }
@@ -129,10 +125,6 @@ pipeline {
                                         try {
                                             sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Running" """)
                                             sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
-                                            //if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
-                                            //   pullRequest.removeLabel("CI-${Machine}-Building")
-                                            //}
-                                            //pullRequest.addLabel("CI-${Machine}-Running")
                                         } catch (Exception e) {
                                             echo "Failed to update label from Buildng to Running: ${e.getMessage()}"
                                         }
@@ -183,6 +175,7 @@ pipeline {
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
+                                env.SYSTEM_BUILD_DIR=system // used to set the system build directory in the run scripts 
                                 pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
                                 try {
                                     sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
@@ -209,7 +202,6 @@ pipeline {
                                             repo_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                             gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                             try {
-                                                // pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
                                                 sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url}")""")
 
                                             } catch (Exception error_comment) {
@@ -230,6 +222,7 @@ pipeline {
     }
                     
     post {
+        agent { label "${machine}-emc" }
         always {
             script {
                 if(env.CHANGE_ID) {
