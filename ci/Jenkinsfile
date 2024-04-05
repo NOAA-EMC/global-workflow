@@ -203,7 +203,7 @@ pipeline {
                                             repo_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                             gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
                                             try {
-                                                sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url}")""")
+                                                sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url}")""")
 
                                             } catch (Exception error_comment) {
                                                 echo "Failed to comment on PR: ${error_comment.getMessage()}"
