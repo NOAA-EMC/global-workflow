@@ -28,6 +28,6 @@ export wrf_io_ver=1.2.0
 export ncio_ver=1.1.2
 export ncdiag_ver=1.0.0
 export g2tmpl_ver=1.10.2
-export crtm_ver=2.4.0
+export crtm_ver=2.4.0.1
 
 export upp_ver=10.0.8
