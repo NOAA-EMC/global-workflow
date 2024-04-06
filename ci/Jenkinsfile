@@ -216,7 +216,7 @@ pipeline {
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """, returnStatus: true)
-                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "CI **FAILED** on ${Machine} at $(date +'%D %r')<br>Built and ran in directory \\`${HOME}\\`" """, returnStatus: true)
+                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "CI **FAILED** on ${Machine}<br>Built and ran in directory \\`${HOME}\\`" """, returnStatus: true)
                                         STATUS = 'FAILED'
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
