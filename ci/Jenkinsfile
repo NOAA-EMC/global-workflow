@@ -187,7 +187,7 @@ pipeline {
                                     ws(HOME) {
                                         def error_logs = ""
                                         def error_logs_message = ""
-                                        def error_file = "RUNTESTS/${pslot}_error.logs"
+                                        def error_file = "${HOME}/RUNTESTS/${pslot}_error.logs"
                                         if (fileExists(error_file)) {
                                             def fileContent = readFile error_file
                                             def lines = fileContent.readLines()
@@ -216,7 +216,7 @@ pipeline {
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """, returnStatus: true)
-                                        sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} <br>Built and ran in directory `${HOME}`" """, returnStatus: true)
+                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} <br>Built and ran in directory `${HOME}`" """, returnStatus: true)
                                         STATUS = 'FAILED'
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
