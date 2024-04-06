@@ -109,10 +109,10 @@ pipeline {
                                                             catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
                                                         }
                                                     }
-                                                    sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}")
-                                                    gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
                                                     try {
-                                                        pullRequest.comment("Build failed on **${Machine}** with error logs:${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
+                                                        sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}")
+                                                        gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build failed on **${Machine}** with error logs:${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                     } catch (Exception error_comment) {
                                                         echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                     }
@@ -205,7 +205,7 @@ pipeline {
                                             }
                                             try {
                                                 gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url}")""")
+                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                 sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}")
                                             } catch (Exception error_comment) {
                                                 echo "Failed to comment on PR: ${error_comment.getMessage()}"
@@ -216,7 +216,7 @@ pipeline {
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
                                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """, returnStatus: true)
-                                        sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`" """, returnStatus: true)
+                                        sh(sript:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} <br>Built and ran in directory \`${HOME}\`" """, returnStatus: true)
                                         STATUS = 'FAILED'
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
@@ -232,10 +232,10 @@ pipeline {
             steps {
                 script {
                     if (STATUS == 'PASSED') {
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """)
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """)
-                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI PASSED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`" """)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """, returnStatus: true)
+                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI PASSED** ${Machine} at <br>Built and ran in directory \`${HOME}\`" """, returnStatus: true)
                     }
                 }
             }
