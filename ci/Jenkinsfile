@@ -13,7 +13,7 @@ pipeline {
 
     options {
         skipDefaultCheckout()
-        parallelsAlwaysFailFast()
+        //parallelsAlwaysFailFast()
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -215,7 +215,7 @@ pipeline {
                                             echo "No error logs found for failed cases in $HOME/RUNTESTS/${pslot}_error.logs"
                                         }
                                         STATUS = 'FAILED'
-                                        error("Failed to run experiments ${Case} on ${Machine}")
+                                        echo "Failed to run experiments ${Case} on ${Machine}"
                                     }
                                 }
                             }
