@@ -29,13 +29,13 @@ gcyc=${GDATE:8:2}
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-RUN=${oCDUMP} MEMDIR="" YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS_IN:COM_OBS_TMPL
-RUN=${RUN} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS_OUT:COM_OBS_TMPL
+RUN=${oCDUMP} MEMDIR="" YMD=${PDY} HH=${cyc} generate_com -rx COMIN_OBS:COM_OBS_TMPL
+RUN=${RUN} YMD=${PDY} HH=${cyc} generate_com -rx COMOUT_OBS:COM_OBS_TMPL
 
 RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-mkdir -m 775 -p "${COM_OBS_OUT}"
+mkdir -m 775 -p "${COMOUT_OBS}"
 
 ###############################################################
 # Run relevant script

@@ -74,7 +74,7 @@ class SnowAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'COM_OBS_IN', 'COM_OBS_OUT', 'COM_ATMOS_RESTART_PREV',
+        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'COMIN_OBS', 'COMOUT_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX_IN', 'OPREFIX_OUT', 'CASE', 'OCNRES', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -153,7 +153,7 @@ class SnowAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS_IN', 'COM_OBS_OUT', 'COM_ATMOS_RESTART_PREV',
+        keys = ['DATA', 'current_cycle', 'COMIN_OBS', 'COMOUT_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX_IN', 'OPREFIX_OUT', 'CASE', 'OCNRES', 'ntiles', 'FIXgfs']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -228,7 +228,7 @@ class SnowAnalysis(Analysis):
             logger.exception(f"{self.task_config.IMS2IODACONV} failed to produce {output_file}")
             raise FileNotFoundError(f"{os.path.join(localconf.DATA, output_file)}")
         else:
-            logger.info(f"Copy {output_file} to {self.task_config.COM_OBS_OUT}")
+            logger.info(f"Copy {output_file} to {self.task_config.COMOUT_OBS}")
             FileHandler(prep_ims_config.ims2ioda).sync()
 
     @logit(logger)
