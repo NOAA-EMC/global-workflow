@@ -205,7 +205,7 @@ pipeline {
                                             }
                                             try {
                                                 gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs: \\`\\`\\`\\\n${error_logs_message}\\\n\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs:\\\n\\\n\\`\\`\\`\\\n${error_logs_message}\\\n\\`\\`\\`\\\n\\\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                 sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}")
                                             } catch (Exception error_comment) {
                                                 echo "Failed to comment on PR: ${error_comment.getMessage()}"
@@ -213,10 +213,6 @@ pipeline {
                                         } else {
                                             echo "No error logs found for failed cases in $HOME/RUNTESTS/${pslot}_error.logs"
                                         }
-                                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
-                                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
-                                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """, returnStatus: true)
-                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "CI **FAILED** on ${Machine}<br>Built and ran in directory \\`${HOME}\\`" """, returnStatus: true)
                                         STATUS = 'FAILED'
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
@@ -236,6 +232,12 @@ pipeline {
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """, returnStatus: true)
                         sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI PASSED** ${Machine} at <br>Built and ran in directory `${HOME}`" """, returnStatus: true)
+                    }
+                    else {
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
+                        sh(script: """${GH} pr edit ${env.CHCHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """, returnStatus: true)
+                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} at <br>Built and ran in directory `${HOME}`" """, returnStatus: true)
                     }
                 }
             }
