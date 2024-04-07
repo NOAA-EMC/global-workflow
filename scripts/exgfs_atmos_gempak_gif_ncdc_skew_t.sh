@@ -7,107 +7,79 @@
 # in the future, we should move it above somewhere else.
 ##############################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-cd $DATA
+cd "${DATA}" || exit 1
 
-export NTS=${HOMEgfs}/gempak/ush/restore
+export NTS="${HOMEgfs}/gempak/ush/restore"
 
-if [ $MODEL = GDAS -o $MODEL = GFS ]
-then
-    case $MODEL in
-      GDAS) fcsthrs="00";;
-      GFS)  fcsthrs="00 12 24 36 48";;
+if [[ "${MODEL}" == GDAS ]] || [[ "${MODEL}" == GFS ]]; then
+    case "${MODEL}" in
+        GDAS) fcsthrs="0";;
+        GFS)  fcsthrs="0 12 24 36 48";;
+        *)
+            echo "FATAL ERROR: Unrecognized model type ${MODEL}"
+            exit 5
+            ;;
     esac
 
-    export fhr
-    for fhr in $fcsthrs
-    do
-        icnt=1
-        maxtries=180
-        export GRIBFILE=${COMIN}/${RUN}_${PDY}${cyc}f0${fhr}
-        while [ $icnt -lt 1000 ]
-        do
-          if [ -r ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} ] ; then
-            sleep 5
-            break
-          else
-            echo "The process is waiting ... ${GRIBFILE} file to proceed."
-            sleep 20
-            let "icnt=icnt+1"
-          fi
-          if [ $icnt -ge $maxtries ]
-          then
-            echo "ABORTING: after 1 hour of waiting for ${GRIBFILE} file at F$fhr to end."
-            export err=7 ; err_chk
-            exit $err
-          fi
-        done
+    sleep_interval=20
+    max_tries=180
+    for fhr in ${fcsthrs}; do
+        fhr3=$(printf %03d "${fhr}")
+        export GRIBFILE=${COM_ATMOS_GEMPAK_1p00}/${RUN}_1p00_${PDY}${cyc}f${fhr3}
+        if ! wait_for_file "${GRIBFILE}" "${sleep_interval}" "${max_tries}" ; then
+            echo "FATAL ERROR: ${GRIBFILE} not found after ${max_tries} iterations"
+            exit 10
+        fi
 
-       cp ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} gem_grids${fhr}.gem
-
-#       if [ $cyc -eq 00 -o $cyc -eq 12 ]
-       #then
-          ${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr}_gif.sh
-       #fi
-
+        cp "${GRIBFILE}" "gem_grids${fhr3}.gem"
+        export fhr3
+        if (( fhr == 0 )); then
+            "${HOMEgfs}/gempak/ush/gempak_${RUN}_f000_gif.sh"
+        else
+            "${HOMEgfs}/gempak/ush/gempak_${RUN}_fhhh_gif.sh"
+        fi
     done
 fi
 
-####################################################################################
-# echo "-----------------------------------------------------------------------------"
-# echo "GFS MAG postprocessing script exmag_sigman_skew_k_gfs_gif_ncdc_skew_t.sh "
-# echo "-----------------------------------------------------------------------------"
-# echo "History: Mar 2012 added to processing for enhanced MAG skew_t"
-# echo "2012-03-11 Mabe -- reworked script to add significant level "
-# echo "  data to existing mandatory level data in a new file"
-# echo "2013-04-24 Mabe -- Reworked to remove unneeded output with "
-# echo "  conversion to WCOSS"
-# Add ms to filename to make it different since it has both mandatory
-# and significant level data      $COMOUT/${RUN}.${cycle}.msupperair
-#                             $COMOUT/${RUN}.${cycle}.msupperairtble
-#####################################################################################
+cd "${DATA}" || exit 1
 
-cd $DATA
+export RSHPDY="${PDY:4:}${PDY:2:2}"
 
-export RSHPDY=$(echo $PDY | cut -c5-)$(echo $PDY | cut -c3-4)
-
-cp $HOMEgfs/gempak/dictionaries/sonde.land.tbl .
-cp $HOMEgfs/gempak/dictionaries/metar.tbl .
+cp "${HOMEgfs}/gempak/dictionaries/sonde.land.tbl" sonde.land.tbl
+cp "${HOMEgfs}/gempak/dictionaries/metar.tbl" metar.tbl
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
-cp $COMINobsproc/${model}.$cycle.adpupa.tm00.bufr_d fort.40
-export err=$?
-if [[ $err -ne 0 ]] ; then
-   echo " File ${model}.$cycle.adpupa.tm00.bufr_d does not exist."
-   exit $err
+cp "${COM_OBS}/${model}.${cycle}.adpupa.tm00.bufr_d" fort.40
+err=$?
+if (( err != 0 )) ; then
+   echo "FATAL ERROR: File ${model}.${cycle}.adpupa.tm00.bufr_d could not be copied (does it exist?)."
+   exit "${err}"
 fi
-# $RDBFMSUA  >> $pgmout 2> errfile
-${UTILgfs}/exec/rdbfmsua >> $pgmout 2> errfile
 
+"${HOMEgfs}/exec/rdbfmsua.x" >> "${pgmout}" 2> errfile
 err=$?;export err ;err_chk
 
+# shellcheck disable=SC2012,SC2155
 export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
 
 ################################################################
 #   only run script if rdbfmsua.out contained upper air data.
 ################################################################
 
-if [ $filesize -gt 40 ]
-then
-
-    cp rdbfmsua.out $COMOUT/${RUN}.${cycle}.msupperair
-    cp sonde.idsms.tbl $COMOUT/${RUN}.${cycle}.msupperairtble
-    if [ $SENDDBN = "YES" ]; then
-        $DBNROOT/bin/dbn_alert DATA MSUPPER_AIR $job $COMOUT/${RUN}.${cycle}.msupperair
-        $DBNROOT/bin/dbn_alert DATA MSUPPER_AIRTBL $job $COMOUT/${RUN}.${cycle}.msupperairtble
+if (( filesize > 40 )); then
+    cp rdbfmsua.out "${COM_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
+    cp sonde.idsms.tbl "${COM_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
+    if [[ ${SENDDBN} = "YES" ]]; then
+        "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIR "${job}" "${COM_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
+        "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIRTBL "${job}" "${COM_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
     fi
-
 fi
 
 ############################################################
 
-if [ -e "$pgmout" ] ; then
-   cat $pgmout
+if [[ -e "${pgmout}" ]] ; then
+   cat "${pgmout}"
 fi
 
 

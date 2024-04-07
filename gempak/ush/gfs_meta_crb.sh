@@ -1,50 +1,40 @@
-#! /bin/sh
+#! /usr/bin/env bash
 #
 # Metafile Script : gfs_meta_crb_new
 #
-# Log :
-# J.Carr/HPC         03/13/2001   New script for the Caribbean desk.
-# J. Carr/HPC            5/2001   Added a mn variable for a/b side dbnet root variable.
-# J. Carr/HPC            6/2001   Converted to a korn shell prior to delivering script to Production.
-# J. Carr/HPC            7/2001   Submitted.
-# J. Carr/PMB        11/15/2004   Added a ? to all title/TITLE lines. Changed contur parameter to 2.
-#                                 Changed 12-hr increments to 6-hr with regards to 12-hr and 24-hr pcpn.
-#
 # Set Up Local Variables
 #
-set -x
-#
-export PS4='crb:$SECONDS + '
-mkdir -p -m 775 $DATA/crb
-cd $DATA/crb
-cp ${HOMEgfs}/gempak/fix/datatype.tbl datatype.tbl
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/crb"
+cd "${DATA}/crb" || exit 2
+cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 mdl=gfs
 MDL=GFS
 metatype="crb"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=$(echo ${PDY} | cut -c3-)
+
 #
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
+
 # DEFINE YESTERDAY
-PDYm1=$($NDATE -24 ${PDY}${cyc} | cut -c -8)
-PDY2m1=$(echo ${PDYm1} | cut -c 3-)
-#
-#if [ ${cyc} -eq 00 ] ; then
-#    fend=F126
-#elif [ ${cyc} -eq 12 ] ; then
-#    fend=F126
-#else
-#    fend=F126
-#    fend=F84
-#fi
+PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
 
 fend=F126
 
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
-GDFILE	= F-${MDL} | ${PDY2}/${cyc}00
-GDATTIM	= F00-${fend}-06 
+export pgm=gdplot2_nc;. prep_step
+"${GEMEXE}/gdplot2_nc" << EOF
+GDFILE	= F-${MDL} | ${PDY:2}/${cyc}00
+GDATTIM	= F00-${fend}-06
 DEVICE	= ${device}
 PANEL	= 0
 TEXT	= 1/21//hw
@@ -70,13 +60,13 @@ HILO    = !!26;2/H#;L#/1020-1070;900-1012//30;30/y
 HLSYM   = !!2;1.5//21//hw
 CLRBAR  = 1
 WIND    =                        !                       !bk9/0.7/2/112
-REFVEC  = 
+REFVEC  =
 TITLE	= 5/-2/~ ? ${MDL} MSLP, 1000-500mb THICK & 850mb WIND|~MSLP, 1000-500 THKN!
 ru
 
 glevel  = 9950
 gvcord  = sgma
-scale   = 7                         !0 
+scale   = 7                         !0
 gdpfun  = sm5s(sdiv(mixr@0%none;wnd)!kntv(wnd)
 type    = f                         !b
 cint    = 0                         !
@@ -90,22 +80,22 @@ wind    = am0!bk9/0.8/2/112
 refvec  =
 title   = 1/-2/~ ? ${MDL} BL MOIST CONV & WIND|~BL MOISTURE CONV!0
 r
- 
+
 glevel  = 0         !9950
 gvcord  = none      !sgma
 scale   = 0
 skip    = 0/1
 gdpfun  = sm5s(thte)!kntv(wnd)
 type    = c/f       !b
-cint    = 4/200/336 
-line 	= 5/1/1 
+cint    = 4/200/336
+line 	= 5/1/1
 fint    = 336;340;344;348;352;356;360;364;368;372;376
 fline   = 0 ; 21; 22; 23; 24; 25; 26; 27; 28; 29; 30; 14
-hilo    = 
-hlsym   = 
+hilo    =
+hlsym   =
 clrbar  = 1/V/LL!0
 wind    = bk0        !bk9/0.9/2/112
-refvec  = 
+refvec  =
 title   = 1/-2/~ ? ${MDL} BL THTE & WIND (KTS)|~BL THTE & WIND
 r
 
@@ -115,9 +105,9 @@ SKIP    = 0/1;2
 GDPFUN	= vor(wnd)              !vor(wnd)!kntv(wnd)
 CINT	= 2/-99/-2              !2/2/99
 LINE	= 29/5/1/2              !7/5/1/2
-HILO	= 2;6/X;N/-99--4;4-99   !                   
-SCALE	= 5                     !5 
-WIND    = !!bk6/.8/2/112!0 
+HILO	= 2;6/X;N/-99--4;4-99   !
+SCALE	= 5                     !5
+WIND    = !!bk6/.8/2/112!0
 TITLE	= 1//~ ? ${MDL} @ WIND AND REL VORT|~@ WIND AND REL VORT!0
 FINT    = 4;6;8;10;12;14;16;18
 FLINE	= 0;14-21
@@ -134,23 +124,23 @@ CINT    = 5/20
 LINE    = 26//1
 FINT    = 5/20
 FLINE   = 0;24;30;29;23;22;14;15;16;17;20;5
-HILO    = 
+HILO    =
 HLSYM   =
 CLRBAR  = 1
 WIND    = bk0!ak7/.3/1/221/.4!ak6/.3/1/221/.4
 REFVEC  = 0
 TITLE   = 1/-2/~ ? ${MDL} @ WIND SHEAR (KNTS)|~850MB-300MB WIND SHEAR!0
 filter  = no
- 
+
 
 GLEVEL	= 700
 GVCORD  = pres
 GDPFUN	= vor(wnd)              !vor(wnd)!kntv(wnd)
 CINT	= 2/-99/-2              !2/2/99
 LINE	= 29/5/1/2              !7/5/1/2
-HILO	= 2;6/X;N/-99--4;4-99   !                   
-SCALE	= 5                     !5 
-WIND    = !!bk6/.8/2/112!0 
+HILO	= 2;6/X;N/-99--4;4-99   !
+SCALE	= 5                     !5
+WIND    = !!bk6/.8/2/112!0
 TITLE	= 1/-2/~ ? ${MDL} @ WIND AND REL VORT|~@ WIND AND REL VORT!0
 FINT    = 6;8;10;12;14;16;18;20
 FLINE	= 0;14-21
@@ -167,8 +157,8 @@ LINE    = 7/5/1/2        !29/5/1/2!7/5/1/2   !29/5/1/2 !20/1/2/1
 FINT    = 16;20;24;28;32;36;40;44
 FLINE   = 0;23-15
 HILO    = 2;6/X;N/10-99;10-99!        !2;6/X;N/10-99;10-99!       !
-HLSYM   = 
-WIND    = bk0            !bk0     !bk0       !bk0      !bk0       !bk9/0.7/2/112!0 
+HLSYM   =
+WIND    = bk0            !bk0     !bk0       !bk0      !bk0       !bk9/0.7/2/112!0
 TITLE   = 1/-2/~ ? ${MDL} @ HEIGHT AND VORTICITY|~@ HGT AND VORTICITY!0
 ru
 
@@ -209,7 +199,7 @@ FLINE	= 0;21-30;14-20;5
 HILO	= 31;0/x#/10-400///y
 HLSYM	= 1.5
 CLRBAR	= 1/V/LL
-WIND	= 
+WIND	=
 REFVEC	=
 TITLE	= 1/-2/~ ? ${MDL} 12-HR TOTAL PCPN|~12-HR TOTAL PCPN
 r
@@ -228,7 +218,7 @@ type    = c   !c/f !b
 cint    = 6/6/18!6/24
 line    = 22///2!32//2/2
 fint    = !13;25;38;50
-fline   = !0;23;22;21;2       
+fline   = !0;23;22;21;2
 hilo    = 0!0
 HLSYM   = 0!0
 clrbar  = 0!1
@@ -246,11 +236,11 @@ CINT    = 10;20;80;90 !30;40;50;60;70
 LINE    = 32//2       !23//2
 FINT    = 10;30;70;90
 FLINE   = 18;8;0;22;23
-HILO    = 
+HILO    =
 HLSYM   =
 CLRBAR  = 1
-WIND    = 
-REFVEC  = 
+WIND    =
+REFVEC  =
 TITLE	= 1/-2/~ ? ${MDL} @ LYR RH|~MEAN RH!0
 ru
 
@@ -259,19 +249,29 @@ EOF
 export err=$?;err_chk
 
 
-if [ ${cyc} -eq 00 ] ; then
-    export HPCECMWF=${COMINecmwf}.${PDY}/gempak
-    export HPCUKMET=${COMINukmet}.${PDYm1}/gempak
-    grid1="F-${MDL} | ${PDY2}/${cyc}00"
-    grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
-    grid3="F-UKMETHPC | ${PDY2m1}/1200"
-    for gfsfhr in 12 36 60 84 108
-    do
-        ecmwffhr="F$(expr ${gfsfhr} + 12)"
-        gfsfhr="F${gfsfhr}"
+if [[ ${cyc} == 00 ]] ; then
+    export HPCECMWF=ecmwf.${PDY}
+    HPCECMWF_m1=ecmwf.${PDY}
+    export HPCUKMET=ukmet.${PDYm1}
+    if [[ ! -L "${HPCECMWF}" ]]; then
+        ln -sf "${COMINecmwf}ecmwf.${PDY}/gempak" "${HPCECMWF}"
+    fi
+    if [[ ! -L "${HPCECMWF_m1}" ]]; then
+        ln -sf "${COMINecmwf}ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
+    fi
+    if [[ ! -L "${HPCUKMET}" ]]; then
+        ln -sf "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
+    fi
 
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF10
+    grid1="F-${MDL} | ${PDY:2}/${cyc}00"
+    grid2="${HPCECMWF_m1}/ecmwf_glob_${PDYm1}12"
+    grid3="F-UKMETHPC | ${PDYm1:2}/1200"
+    for fhr in $(seq -s ' ' 12 24 108); do
+        gfsfhr=F$(printf "%02g" "${fhr}")
+        ecmwffhr=F$(printf "%02g" $((fhr + 12)))
+
+        export pgm=gdplot2_nc;. prep_step
+        "${GEMEXE}/gdplot2_nc" << EOF10
 GDFILE  = ${grid1} !${grid2}
 GDATTIM = ${gfsfhr}!${ecmwffhr}
 DEVICE  = ${device}
@@ -280,8 +280,8 @@ TEXT    = 1/21//hw
 MAP     = 6/1/1/yes
 CLEAR   = yes
 CLRBAR  = 1
-PROJ    = mer//3;3;0;1 
-GAREA   = -25;-130;40;-15 
+PROJ    = mer//3;3;0;1
+GAREA   = -25;-130;40;-15
 LATLON  = 18//1/1/10
 
 GLEVEL  = 500
@@ -327,16 +327,15 @@ r
 
 ex
 EOF10
-export err=$?;err_chk
+        export err=$?;err_chk
 
     done
-    for gfsfhr in 00 12 24 36 48 60 84 108 132
-    do
-        ukmetfhr="F$(expr ${gfsfhr} + 12)"
-        gfsfhr=F${gfsfhr}
+    for fhr in 0 12 24 36 48 60 84 108 132; do
+        gfsfhr=F$(printf "%02g" "${fhr}")
+        ukmetfhr=F$(printf "%02g" $((fhr + 12)))
 
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF25
+        export pgm=gdplot2_nc;. prep_step
+        "${GEMEXE}/gdplot2_nc" << EOF25
 DEVICE  = ${device}
 PANEL   = 0
 TEXT    = 1/21//hw
@@ -390,7 +389,7 @@ r
 
 ex
 EOF25
-export err=$?;err_chk
+        export err=$?;err_chk
 
     done
 fi
@@ -400,20 +399,20 @@ fi
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-ls -l $metaname
-export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit $(( err + 100 ))
+fi
 
-if [ $SENDCOM = "YES" ] ; then
-   mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-   if [ $SENDDBN = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-      ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-      if [ $DBN_ALERT_TYPE = "GFS_METAFILE_LAST" ] ; then
+mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+if [[ "${SENDDBN}" == "YES" ]] ; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
-        ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-        ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
-      fi
-   fi
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+            "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+    fi
 fi
 
 exit
