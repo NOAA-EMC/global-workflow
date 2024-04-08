@@ -10,7 +10,7 @@ from typing import List, Dict, Any, Union
 import yaml
 
 from jcb import render
-from wxflow import (parse_j2yaml, save_as_yaml, FileHandler, rm_p, logit,
+from wxflow import (parse_j2yaml, FileHandler, rm_p, logit,
                     Task, Executable, WorkflowException, to_fv3time, to_YMD,
                     Template, TemplateConstants)
 
