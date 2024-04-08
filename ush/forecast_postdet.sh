@@ -602,7 +602,7 @@ WW3_postdet() {
   if [[ "${WW3CURINP}" = "YES" ]]; then
     local wavcurfile="${COM_WAVE_PREP}/${RUNwave}.${WAVECUR_FID}.${cycle}.cur"
     if [[ ! -f ${wavcurfile} ]]; then
-      echo "FATA: ERROR: WW3CURINP = ${WW3CURINP}, but missing current file ${wavcurfile}"
+      echo "FATAL: ERROR: WW3CURINP = ${WW3CURINP}, but missing current file ${wavcurfile}"
       echo "Abort!"
       exit 1
     fi
