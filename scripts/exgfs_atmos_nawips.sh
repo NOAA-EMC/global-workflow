@@ -18,12 +18,12 @@ source "${USHgfs}/preamble.sh" "${2}"
 export ILPOST=${ILPOST:-1}
 
 cd "${DATA}" || exit 1
-RUN2=$1
+grid=$1
 fend=$2
 DBN_ALERT_TYPE=$3
 destination=$4
 
-DATA_RUN="${DATA}/${RUN2}"
+DATA_RUN="${DATA}/${grid}"
 mkdir -p "${DATA_RUN}"
 cd "${DATA_RUN}" || exit 1
 
@@ -44,20 +44,22 @@ proj=
 output=T
 pdsext=no
 
-maxtries=360
-fhcnt=${fstart}
-while (( fhcnt <= fend )) ; do
+sleep_interval=10
+max_tries=360
+fhr=$(( 10#${fstart} ))
+while (( fhr <= 10#${fend} )) ; do
 
-  if mkdir "lock.${fhcnt}" ; then
-    cd "lock.${fhcnt}" || exit 1
-    cp "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "g2varswmo2.tbl"
-    cp "${HOMEgfs}/gempak/fix/g2vcrdwmo2.tbl" "g2vcrdwmo2.tbl"
-    cp "${HOMEgfs}/gempak/fix/g2varsncep1.tbl" "g2varsncep1.tbl"
-    cp "${HOMEgfs}/gempak/fix/g2vcrdncep1.tbl" "g2vcrdncep1.tbl"
+  fhr3=$(printf "%03d" "${fhr}")
 
-    fhr=$(printf "%03d" "${fhcnt}")
+  if mkdir "lock.${fhr3}" ; then
+    cd "lock.${fhr3}" || exit 1
 
-    GEMGRD="${RUN2}_${PDY}${cyc}f${fhr}"
+    for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
+      cp "${HOMEgfs}/gempak/fix/${table}" "${table}" || \
+        ( echo "FATAL ERROR: ${table} is missing" && exit 2 )
+    done
+
+    GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
 
     # Set type of Interpolation for WGRIB2
     export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -71,63 +73,42 @@ while (( fhcnt <= fend )) ; do
     export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
     export opt28=' -new_grid_interpolation budget -fi '
 
-    case ${RUN2} in
+    case ${grid} in
       # TODO: Why aren't we interpolating from the 0p25 grids for 35-km and 40-km?
-      'gfs_0p50' | 'gfs_0p25') res=${RUN2: -4};;
-      *) res="1p00";;
+      '0p50' | '0p25') grid_in=${grid};;
+      *) grid_in="1p00";;
     esac
 
-    source_var="COM_ATMOS_GRIB_${res}"
-    export GRIBIN="${!source_var}/${model}.${cycle}.pgrb2.${res}.f${fhr}"
-    GRIBIN_chk="${!source_var}/${model}.${cycle}.pgrb2.${res}.f${fhr}.idx"
+    source_var="COM_ATMOS_GRIB_${grid_in}"
+    export GRIBIN="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}"
+    GRIBIN_chk="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}.idx"
 
-    icnt=1
-    while (( icnt < 1000 )); do
-      if [[ -r "${GRIBIN_chk}" ]] ; then
-        # File available, wait 5 seconds then proceed
-        sleep 5
-        break
-      else
-        # File not available yet, wait 10 seconds and try again
-        echo "The process is waiting ... ${GRIBIN_chk} file to proceed."
-        sleep 10
-        icnt=$((icnt+1))
-      fi
-      if (( icnt >= maxtries )); then
-        echo "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr} to end."
-        export err=7 ; err_chk
-        exit "${err}"
-      fi
-    done
+    if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
+      echo "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr3} to end."
+      export err=7 ; err_chk
+      exit "${err}"
+    fi
 
-    case "${RUN2}" in
-      gfs35_pac)
-        export gfs35_pac='latlon 130.0:416:0.312 75.125:186:-0.312'
-        # shellcheck disable=SC2086,SC2248
-        "${WGRIB2}" "${GRIBIN}" ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} ${opt27} ${opt28} -new_grid ${gfs35_pac} "grib${fhr}"
-        trim_rh "grib${fhr}"
-        ;;
-      gfs35_atl)
-        export gfs35_atl='latlon 230.0:480:0.312 75.125:242:-0.312'
-        # shellcheck disable=SC2086,SC2248
-        "${WGRIB2}" "${GRIBIN}" ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} ${opt27} ${opt28} -new_grid ${gfs35_atl} "grib${fhr}"
-        trim_rh "grib${fhr}"
-        ;;
-      gfs40)
-        export gfs40='lambert:265.0:25.0:25.0 226.541:185:40635.0 12.19:129:40635.0'
-        # shellcheck disable=SC2086,SC2248
-        "${WGRIB2}" "${GRIBIN}" ${opt1uv} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} ${opt27} ${opt28} -new_grid ${gfs40} "grib${fhr}"
-        trim_rh "grib${fhr}"
-        ;;
-     *)
-        cp "${GRIBIN}" "grib${fhr}"
+    case "${grid}" in
+      35km_pac) grid_spec='latlon 130.0:416:0.312 75.125:186:-0.312';;
+      35km_atl) grid_spec='latlon 230.0:480:0.312 75.125:242:-0.312';;
+      40km)     grid_spec='lambert:265.0:25.0:25.0 226.541:185:40635.0 12.19:129:40635.0';;
+      *)        grid_spec='';;
     esac
 
-    export pgm="nagrib2 F${fhr}"
+    if [[ "${grid_spec}" != "" ]]; then
+      # shellcheck disable=SC2086,SC2248
+      "${WGRIB2}" "${GRIBIN}" ${opt1uv} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} ${opt27} ${opt28} -new_grid ${grid_spec} "grib${fhr3}"
+      trim_rh "grib${fhr3}"
+    else
+      cp "${GRIBIN}" "grib${fhr3}"
+    fi
+
+    export pgm="nagrib2 F${fhr3}"
     startmsg
 
     ${NAGRIB} << EOF
-GBFILE   = grib${fhr}
+GBFILE   = grib${fhr3}
 INDXFL   = 
 GDOUTF   = ${GEMGRD}
 PROJ     = ${proj}
@@ -148,21 +129,20 @@ EOF
     cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
     if [[ ${SENDDBN} == "YES" ]] ; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-				   "${destination}/${GEMGRD}"
+           "${destination}/${GEMGRD}"
     fi
     cd "${DATA_RUN}" || exit 1
   else
-    if (( fhcnt <= 240 )) ; then
-    	if (( fhcnt < 276 )) && [[ "${RUN2}" = "gfs_0p50" ]] ; then
-    	    fhcnt=$((fhcnt+6))
-    	else
-    	    fhcnt=$((fhcnt+12))
-    	fi
-    elif ((fhcnt < 120)) && [[ "${RUN2}" = "gfs_0p25" ]] ; then
-      ####    let fhcnt=fhcnt+1
-    	fhcnt=$((hcnt + ILPOST))
+    if (( fhr >= 240 )) ; then
+      if (( fhr < 276 )) && [[ "${grid}" = "0p50" ]] ; then
+          fhr=$((fhr+6))
+      else
+          fhr=$((fhr+12))
+      fi
+    elif ((fhr < 120)) && [[ "${grid}" = "0p25" ]] ; then
+      fhr=$((fhr + ILPOST))
     else
-      fhcnt=$((ILPOST > finc ? fhcnt+ILPOST : fhcnt+finc ))
+      fhr=$((ILPOST > finc ? fhr+ILPOST : fhr+finc ))
     fi
   fi
 done

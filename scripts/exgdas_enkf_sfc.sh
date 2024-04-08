@@ -47,7 +47,15 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-${GPREFIX}}
 
 # Variables
-NMEM_ENS=${NMEM_ENS:-80}
+NMEM_ENS_MAX=${NMEM_ENS:-80}
+if [ "${RUN}" = "enkfgfs" ]; then
+   NMEM_ENS=${NMEM_ENS_GFS:-30}
+   ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
+   mem_offset=$((ec_offset * cyc/6))
+else
+   NMEM_ENS=${NMEM_ENS:-80}
+   mem_offset=0
+fi
 DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
@@ -132,17 +140,21 @@ if [ $DOIAU = "YES" ]; then
         export TILE_NUM=$n
 
         for imem in $(seq 1 $NMEM_ENS); do
-
+            smem=$((imem + mem_offset))
+            if (( smem > NMEM_ENS_MAX )); then
+               smem=$((smem - NMEM_ENS_MAX))
+            fi
+            gmemchar="mem"$(printf %03i "$smem")
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            MEMDIR=${memchar} RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} generate_com \
+            MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
@@ -175,14 +187,18 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
         export TILE_NUM=$n
 
         for imem in $(seq 1 $NMEM_ENS); do
-
+            smem=$((imem + mem_offset))
+            if (( smem > NMEM_ENS_MAX )); then
+               smem=$((smem - NMEM_ENS_MAX))
+            fi
+            gmemchar="mem"$(printf %03i "$smem")
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            RUN="${GDUMP_ENS}" MEMDIR=${memchar} YMD=${gPDY} HH=${gcyc} generate_com \
+            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"

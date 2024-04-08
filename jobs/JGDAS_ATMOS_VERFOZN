@@ -17,8 +17,8 @@ export gcyc=${GDATE:8:2}
 #---------------------------------------------
 # OZN_TANKDIR - WHERE OUTPUT DATA WILL RESIDE
 #
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_OZNMON
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_OZNMON
 
 export oznstat="${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.oznstat"
 export TANKverf_ozn=${TANKverf_ozn:-${COM_ATMOS_OZNMON}}
