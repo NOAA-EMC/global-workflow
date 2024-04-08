@@ -58,6 +58,7 @@ FHMIN=${FHMIN_ECEN:-3}
 FHMAX=${FHMAX_ECEN:-9}
 FHOUT=${FHOUT_ECEN:-3}
 FHSFC=${FHSFC_ECEN:-$FHMIN}
+NMEM_ENS_MAX=${NMEM_ENS:-80}
 if [ "${RUN}" = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
    NMEM_ENS=${NMEM_ENS_GFS:-30}
@@ -111,16 +112,16 @@ for FHR in $(seq $FHMIN $FHOUT $FHMAX); do
 
 for imem in $(seq 1 $NMEM_ENS); do
    smem=$((imem + mem_offset))
-   if (( smem > 80 )); then
-      smem=$((smem - 80))
+   if (( smem > NMEM_ENS_MAX )); then
+      smem=$((smem - NMEM_ENS_MAX))
    fi
    gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
 
-   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
+   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
       COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
+   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
       COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
    ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atmf00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"

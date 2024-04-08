@@ -20,8 +20,8 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
-GRID=0p25 YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_0p25:COM_ATMOS_GEMPAK_TMPL"
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_GOES
+GRID=0p25 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GEMPAK_0p25:COM_ATMOS_GEMPAK_TMPL"
 if [[ ! -d "${COM_ATMOS_GEMPAK_0p25}" ]]; then mkdir -m 775 -p "${COM_ATMOS_GEMPAK_0p25}"; fi
 
 export SENDDBN="${SENDDBN:-NO}"

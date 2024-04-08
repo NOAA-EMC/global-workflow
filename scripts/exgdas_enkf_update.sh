@@ -69,7 +69,7 @@ corrlength=${corrlength:-1250}
 lnsigcutoff=${lnsigcutoff:-2.5}
 analpertwt=${analpertwt:-0.85}
 readin_localization_enkf=${readin_localization_enkf:-".true."}
-reducedgrid=${reducedgrid:-".true."}
+reducedgrid=${reducedgrid:-".false."}
 letkf_flag=${letkf_flag:-".false."}
 getkf=${getkf:-".false."}
 denkf=${denkf:-".false."}
@@ -80,6 +80,7 @@ cnvw_option=${cnvw_option:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
 IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
+NMEM_ENS_MAX=${NMEM_ENS:-80}
 if [ "${RUN}" = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
    NMEM_ENS=${NMEM_ENS_GFS:-30}
@@ -184,16 +185,16 @@ fi
 nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
 for imem in $(seq 1 $NMEM_ENS); do
    smem=$((imem + mem_offset))
-   if (( smem > 80 )); then
-      smem=$((smem - 80))
+   if (( smem > NMEM_ENS_MAX )); then
+      smem=$((smem - NMEM_ENS_MAX))
    fi
    gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
 
-   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
+   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
       COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
-   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
+   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
       COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
    if [ $lobsdiag_forenkf = ".false." ]; then
