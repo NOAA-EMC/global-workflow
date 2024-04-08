@@ -168,8 +168,8 @@ if [[ ${type} = "gfs" ]]; then
     fhr=$(printf %03i "${fh}")
     if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
       {
-        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2"
-        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxgrbf${fhr}.grib2.idx"
+        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grb2"
+        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grb2.idx"
       } >> "${DATA}/gfs_flux.txt"
 
       {
