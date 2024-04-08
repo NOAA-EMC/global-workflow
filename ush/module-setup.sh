@@ -3,6 +3,8 @@ set -u
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 
+echo "MACHINE_ID: ${MACHINE_ID}"
+
 if [[ ${MACHINE_ID} = jet* ]] ; then
     # We are on NOAA Jet
     if ( ! eval module help > /dev/null 2>&1 ) ; then
@@ -122,7 +124,9 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
 # platforms come online.
 elif [[ ${MACHINE_ID} = "noaacloud" ]]; then
 
-    export SPACK_ROOT=/contrib/global-workflow/spack-stack/spack
+   #export SPACK_ROOT=/contrib/global-workflow/spack-stack/spack
+   #export SPACK_ROOT=/contrib/spack-stack-rocky8/spack-stack-1.6.0/spack
+    export SPACK_ROOT=/contrib/spack-stack/spack-stack-1.6.0/spack
     export PATH=${PATH}:${SPACK_ROOT}/bin
     . "${SPACK_ROOT}"/share/spack/setup-env.sh
 
