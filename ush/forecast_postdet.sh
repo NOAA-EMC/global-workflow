@@ -479,8 +479,10 @@ EOF
       ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
       ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}"
       if [[ ${WRITE_DOPOST} = ".true." ]]; then
-        ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
-        ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}"
+        #${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
+        #${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}"
+        ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.masterf${FH3}.grb2" "GFSPRS.GrbF${FH2}"
+        ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxf${FH3}.grb2" "GFSFLX.GrbF${FH2}"
       fi
     done
   else  # TODO: Is this even valid anymore?
