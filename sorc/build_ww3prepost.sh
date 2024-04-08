@@ -6,7 +6,7 @@ cd "${script_dir}" || exit 1
 
 # Default settings
 APP="S2SWA"
-PDLIB="OFF"
+PDLIB="ON"
 
 while getopts ":j:a:dvw" option; do
   case "${option}" in
@@ -14,7 +14,7 @@ while getopts ":j:a:dvw" option; do
     d) BUILD_TYPE="Debug";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
-    w) PDLIB="ON";;
+    w) PDLIB="OFF";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage

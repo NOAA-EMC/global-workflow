@@ -9,9 +9,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_
 ##############################################
 
 # Construct COM variables from templates
-YMD="${PDY}" HH="${cyc}" generate_com -rx "COM_${COMPONENT^^}_HISTORY"
-YMD="${PDY}" HH="${cyc}" generate_com -rx "COM_${COMPONENT^^}_GRIB"
-YMD="${PDY}" HH="${cyc}" generate_com -rx "COM_${COMPONENT^^}_NETCDF"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_${COMPONENT^^}_HISTORY"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_${COMPONENT^^}_GRIB"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_${COMPONENT^^}_NETCDF"
 
 ###############################################################
 # Run exglobal script

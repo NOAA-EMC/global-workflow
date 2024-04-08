@@ -103,10 +103,10 @@ OSCATBF=${OSCATBF:-${COM_OBS}/${OPREFIX}oscatw.tm00.bufr_d${OSUFFIX}}
 RAPIDSCATBF=${RAPIDSCATBF:-${COM_OBS}/${OPREFIX}rapidscatw.tm00.bufr_d${OSUFFIX}}
 GSNDBF=${GSNDBF:-${COM_OBS}/${OPREFIX}goesnd.tm00.bufr_d${OSUFFIX}}
 GSNDBF1=${GSNDBF1:-${COM_OBS}/${OPREFIX}goesfv.tm00.bufr_d${OSUFFIX}}
-B1HRS2=${B1HRS2:-${COM_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}}
+#B1HRS2=${B1HRS2:-${COM_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
 B1MSU=${B1MSU:-${COM_OBS}/${OPREFIX}1bmsu.tm00.bufr_d${OSUFFIX}}
-B1HRS3=${B1HRS3:-${COM_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}}
-B1HRS4=${B1HRS4:-${COM_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}}
+#B1HRS3=${B1HRS3:-${COM_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
+#B1HRS4=${B1HRS4:-${COM_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
 B1AMUA=${B1AMUA:-${COM_OBS}/${OPREFIX}1bamua.tm00.bufr_d${OSUFFIX}}
 B1AMUB=${B1AMUB:-${COM_OBS}/${OPREFIX}1bamub.tm00.bufr_d${OSUFFIX}}
 B1MHS=${B1MHS:-${COM_OBS}/${OPREFIX}1bmhs.tm00.bufr_d${OSUFFIX}}
@@ -528,7 +528,7 @@ if [ ${DOHYBVAR} = "YES" ]; then
 
    for imem in $(seq 1 ${NMEM_ENS}); do
       memchar="mem$(printf %03i "${imem}")"
-      MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com COM_ATMOS_HISTORY
+      MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ATMOS_HISTORY
 
       for fhr in ${fhrs}; do
          ${NLN} ${COM_ATMOS_HISTORY}/${GPREFIX_ENS}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
@@ -824,9 +824,11 @@ OBS_INPUT::
    gomebufr       gome        metop-b     gome_metop-b        0.0     2     0
    atmsbufr       atms        npp         atms_npp            0.0     1     1
    atmsbufr       atms        n20         atms_n20            0.0     1     1
+   atmsbufr       atms        n21         atms_n21            0.0     1     1
    crisbufr       cris        npp         cris_npp            0.0     1     0
    crisfsbufr     cris-fsr    npp         cris-fsr_npp        0.0     1     0
    crisfsbufr     cris-fsr    n20         cris-fsr_n20        0.0     1     0
+   crisfsbufr     cris-fsr    n21         cris-fsr_n21        0.0     1     0
    gsnd1bufr      sndrd1      g14         sndrD1_g14          0.0     1     0
    gsnd1bufr      sndrd2      g14         sndrD2_g14          0.0     1     0
    gsnd1bufr      sndrd3      g14         sndrD3_g14          0.0     1     0
@@ -848,6 +850,7 @@ OBS_INPUT::
    ahibufr        ahi         himawari8   ahi_himawari8       0.0     1     0
    abibufr        abi         g16         abi_g16             0.0     1     0
    abibufr        abi         g17         abi_g17             0.0     1     0
+   abibufr        abi         g18         abi_g18             0.0     1     0
    rapidscatbufr  uv          null        uv                  0.0     0     0
    ompsnpbufr     ompsnp      npp         ompsnp_npp          0.0     0     0
    ompslpbufr     ompslp      npp         ompslp_npp          0.0     0     0
