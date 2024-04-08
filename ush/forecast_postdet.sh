@@ -148,7 +148,7 @@ EOF
 
   _suite_file="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml"
   if [[ ! -f ${_suite_file} ]]; then
-    echo "FATAL: CCPP Suite file ${_suite_file} does not exist!"
+    echo "FATAL ERROR: CCPP Suite file ${_suite_file} does not exist!"
     exit 2
   fi
 
@@ -602,7 +602,7 @@ WW3_postdet() {
   if [[ "${WW3CURINP}" = "YES" ]]; then
     local wavcurfile="${COM_WAVE_PREP}/${RUNwave}.${WAVECUR_FID}.${cycle}.cur"
     if [[ ! -f ${wavcurfile} ]]; then
-      echo "FATAL: ERROR: WW3CURINP = ${WW3CURINP}, but missing current file ${wavcurfile}"
+      echo "FATAL ERROR: WW3CURINP = ${WW3CURINP}, but missing current file ${wavcurfile}"
       echo "Abort!"
       exit 1
     fi
