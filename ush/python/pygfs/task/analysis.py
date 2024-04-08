@@ -64,18 +64,14 @@ class Analysis(Task):
         # generate JEDI YAML file
         logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
 
-        print('KEYS:', self.task_config.keys())
-
         if 'JCB_YAML' in self.task_config.keys():
             # Step 1: fill templates of the JCB Yaml file
             jcb_config = parse_j2yaml(self.task_config.JCB_YAML, self.task_config,
                                       searchpath=self.gdasapp_j2tmpl_dir)
-
-            save_as_yaml(jcb_config, "/scratch1/NCEPDEV/da/Daniel.Holdaway/opt/src/global-workflow/jcb/sorc/gdas.cd/build/gdas/test/atm/global-workflow/testrun/RUNDIRS/gdas_test/gdasatmanl_18/jcb.yaml")
-
             # Step 2: generate the JEDI Yaml using JCB driving YAML
             jedi_config = render(jcb_config)
         elif 'JEDIYAML' in self.task_config.keys():
+            # This will ultimately be deprecated one all YAMLs move to JCB
             jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
                                       searchpath=self.gdasapp_j2tmpl_dir)
         else:
