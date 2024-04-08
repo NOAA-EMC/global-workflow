@@ -49,6 +49,9 @@ class AtmAnalysis(Analysis):
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
                 'jedi_yaml': _jedi_yaml,
+                'atm_obsdatain_path': f"{self.runtime_config.DATA}/obs/",
+                'atm_obsdataout_path': f"{self.runtime_config.DATA}/diags/",
+                'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
             }
         )
 

@@ -7,8 +7,10 @@ from logging import getLogger
 from pprint import pformat
 from netCDF4 import Dataset
 from typing import List, Dict, Any, Union
+import yaml
 
-from wxflow import (parse_j2yaml, FileHandler, rm_p, logit,
+from jcb import render
+from wxflow import (parse_j2yaml, save_as_yaml, FileHandler, rm_p, logit,
                     Task, Executable, WorkflowException, to_fv3time, to_YMD,
                     Template, TemplateConstants)
 
@@ -61,7 +63,24 @@ class Analysis(Task):
 
         # generate JEDI YAML file
         logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
-        jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+
+        print('KEYS:', self.task_config.keys())
+
+        if 'JCB_YAML' in self.task_config.keys():
+            # Step 1: fill templates of the JCB Yaml file
+            jcb_config = parse_j2yaml(self.task_config.JCB_YAML, self.task_config,
+                                      searchpath=self.gdasapp_j2tmpl_dir)
+
+            save_as_yaml(jcb_config, "/scratch1/NCEPDEV/da/Daniel.Holdaway/opt/src/global-workflow/jcb/sorc/gdas.cd/build/gdas/test/atm/global-workflow/testrun/RUNDIRS/gdas_test/gdasatmanl_18/jcb.yaml")
+
+            # Step 2: generate the JEDI Yaml using JCB driving YAML
+            jedi_config = render(jcb_config)
+        elif 'JEDIYAML' in self.task_config.keys():
+            jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
+                                      searchpath=self.gdasapp_j2tmpl_dir)
+        else:
+            raise KeyError(f"Task config must contain either JEDIYAML or JCB_YAML")
+
         logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
 
         return jedi_config
@@ -83,7 +102,7 @@ class Analysis(Task):
             a dictionary containing the list of observation files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of observation files from {self.task_config.JEDIYAML}")
+        logger.info(f"Extracting a list of observation files from Jedi config file")
         observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
         logger.debug(f"observations:\n{pformat(observations)}")
 
@@ -117,7 +136,7 @@ class Analysis(Task):
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of bias correction files from {self.task_config.JEDIYAML}")
+        logger.info(f"Extracting a list of bias correction files from Jedi config file")
         observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
         logger.debug(f"observations:\n{pformat(observations)}")
 

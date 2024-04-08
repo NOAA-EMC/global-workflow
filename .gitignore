@@ -193,3 +193,8 @@ versions/run.ver
 ush/python/wxflow
 workflow/wxflow
 ci/scripts/wxflow
+
+# jcb checkout and symlinks
+ush/python/jcb
+workflow/jcb
+ci/scripts/jcb
