@@ -5,11 +5,11 @@ echo "BEGIN: config.com"
 
 # These are just templates. All templates must use single quotations so variable
 #   expansion does not occur when this file is sourced. Substitution happens later
-#   during runtime. It is recommended to use the helper function `generate_com()`,
+#   during runtime. It is recommended to use the helper function `declare_from_tmpl()`,
 #   to do this substitution, which is defined in `ush/preamble.sh`.
 #
-#   Syntax for generate_com():
-#       generate_com [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
+#   Syntax for declare_from_tmpl():
+#       declare_from_tmpl [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
 #
 #       options:
 #           -r: Make variable read-only (same as `decalre -r`)
@@ -20,14 +20,14 @@ echo "BEGIN: config.com"
 #
 #   Examples:
 #       # Current cycle and RUN
-#       YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+#       YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
 #
 #       # Previous cycle and gdas
-#       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+#       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 #           COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 #
 #       # Current cycle and COM for first member
-#       MEMDIR='mem001' YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
+#       MEMDIR='mem001' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY
 #
 
 #

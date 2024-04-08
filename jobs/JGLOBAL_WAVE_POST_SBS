@@ -9,7 +9,7 @@ export errchk=${errchk:-err_chk}
 export MP_PULSE=0
 
 # Set COM Paths and GETGES environment
-YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP COM_WAVE_HISTORY COM_WAVE_GRID
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_PREP COM_WAVE_HISTORY COM_WAVE_GRID
 
 mkdir -p "${COM_WAVE_GRID}"
 

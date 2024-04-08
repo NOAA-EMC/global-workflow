@@ -6,6 +6,7 @@ echo "BEGIN: config.prepoceanobs"
 
 export OCNOBS2IODAEXEC=${HOMEgfs}/sorc/gdas.cd/build/bin/gdas_obsprovider2ioda.x
 
+export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config
 export OBSPREP_YAML=@OBSPREP_YAML@
 export OBS_LIST=@SOCA_OBS_LIST@

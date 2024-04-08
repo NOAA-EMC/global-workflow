@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch"
 ##############################################
 export CDUMP=${RUN/enkf}
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_BUFR COM_ATMOS_GEMPAK \
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS COM_ATMOS_BUFR COM_ATMOS_GEMPAK \
   COM_ATMOS_GENESIS COM_ATMOS_HISTORY COM_ATMOS_INPUT COM_ATMOS_MASTER COM_ATMOS_RESTART \
   COM_ATMOS_TRACK COM_ATMOS_WMO \
   COM_CHEM_HISTORY COM_CHEM_ANALYSIS\
@@ -23,7 +23,7 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_BUFR COM_ATMO
   COM_ATMOS_OZNMON COM_ATMOS_RADMON COM_ATMOS_MINMON COM_CONF
 
 for grid in "0p25" "0p50" "1p00"; do
-  YMD=${PDY} HH=${cyc} GRID=${grid} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+  YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 ###############################################################

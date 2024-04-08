@@ -33,17 +33,17 @@ GPREFIX_DET="${GDUMP}.t${gcyc}z."
 export GSUFFIX=".ensmean.nc"
 
 # Generate COM variables from templates
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
-MEMDIR='ensstat' YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+MEMDIR='ensstat' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
 declare -rx COM_ATMOS_ANALYSIS_ENS="${COM_ATMOS_ANALYSIS}"
 
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} generate_com -r COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -r COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
-MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
     COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
 
-RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} generate_com -r COM_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
+RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -r COM_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
 
 mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
 
