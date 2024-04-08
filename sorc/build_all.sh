@@ -34,7 +34,7 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w]
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
   -w:
-    Use unstructured wave grid
+    Use structured wave grid
 EOF
   exit 1
 }
@@ -48,7 +48,7 @@ _build_ufsda="NO"
 _build_gsi="NO"
 _build_debug=""
 _verbose_opt=""
-_wave_unst=""
+_wave_opt=""
 _build_job_max=20
 _quick_kill="NO"
 # Reset option counter in case this script is sourced
@@ -63,7 +63,7 @@ while getopts ":a:dghj:kuvw" option; do
     k) _quick_kill="YES" ;;
     u) _build_ufsda="YES" ;;
     v) _verbose_opt="-v";;
-    w) _wave_unst="-w";;
+    w) _wave_opt="-w";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       _usage
@@ -126,7 +126,7 @@ declare -A build_opts
 big_jobs=0
 build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
-build_opts["ufs"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
+build_opts["ufs"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
 
 build_jobs["upp"]=2
 build_opts["upp"]="${_build_debug}"
@@ -138,7 +138,7 @@ build_jobs["gfs_utils"]=1
 build_opts["gfs_utils"]="${_verbose_opt} ${_build_debug}"
 
 build_jobs["ww3prepost"]=2
-build_opts["ww3prepost"]="${_wave_unst} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
+build_opts["ww3prepost"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
