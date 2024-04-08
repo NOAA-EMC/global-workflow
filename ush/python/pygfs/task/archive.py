@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 
+import glob
 from yaml import load
 from yaml import CLoader as Loader
-from typing import Dict, Any
+from typing import Dict, Any, List
 from wxflow import (
          logit,
          cast_strdict_as_dtypedict,
          AttrDict,
          get_gid,
          Task,
-         htar,
-         hsi,
-         parse_j2yaml,
-         archive_utils)
+         Htar,
+         Hsi,
+         rm_p,
+         mkdir_p,
+         chgrp,
+         parse_j2yaml)
 from logging import getLogger
 import os
 
@@ -41,6 +44,7 @@ class Archive(Task):
 
         rotdir=self.config.ROTDIR + os.sep
 
+        # Collect COM locations relative to ${ROTDIR}
         local_dict = AttrDict(
             {'atmos_analysis_dir': self.config.COM_ATMOS_ANALYSIS.replace(rotdir,''),
             'atmos_bufr_dir': self.config.COM_ATMOS_BUFR.replace(rotdir,''),
@@ -80,7 +84,7 @@ class Archive(Task):
 
     @classmethod
     @logit(logger)
-    def configure(cls, arch_dict: Dict[str, Any]) -> None:
+    def configure(self, arch_dict: Dict[str, Any]) -> list[Dict[str, Any]]:
         """Determine which tarballs will need to be created.
 
         Parameters
@@ -92,31 +96,46 @@ class Archive(Task):
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
 
+        if arch_dict.HPSSARCH: 
+            self.tar_cmd = "htar"
+            self.hsi = staticmethod(Hsi())
+            self.htar = staticmethod(Htar())
+        elif arch_dict.LOCALARCH:
+            self.tar_cmd = "tar"
+        else: #Nothing to do
+            raise ValueError(f"Neither HPSSARCH nor LOCALARCH are set to YES.\n"
+                             f"Unable to determine archiving method!")
+
         if(arch_dict.RUN == "gdas"):
 
-            datasets = ['gdas'] # , 'gdas_restarta', 'gdas_restartb']
+            datasets = ['gdas', 'gdas_restarta', 'gdas_restartb']
 
-            #if(arch_dict.DO_ICE == "YES"):
-            #    datasets.append('gdas_ice')
-            #    datasets.append('gdas_ice_restart')
+            if(arch_dict.DO_ICE == "YES"):
+                datasets.append('gdas_ice')
+                datasets.append('gdas_ice_restart')
 
-            #if(arch_dict.DO_OCN == "YES"):
-            #    datasets.append('gdas_ocean_6hravg')
-            #    datasets.append('gdas_ocean_daily')
-            #    datasets.append('gdas_ocean_grib2')
+            if(arch_dict.DO_OCN == "YES"):
+                datasets.append('gdas_ocean_6hravg')
+                datasets.append('gdas_ocean_daily')
+                datasets.append('gdas_ocean_grib2')
 
-            #if(arch_dict.DO_WAVE == "YES"):
-            #    datasets.append('gdas_wave')
+            if(arch_dict.DO_WAVE == "YES"):
+                datasets.append('gdas_wave_restart')
 
         elif (arch_dict.RUN == "gfs"):
-            print("Set me up!")
+            raise NotImplementedError("Archiving is not yet set up for GFS runs")
+
+        elif (arch_dict.RUN == "enkfgdas"):
+            raise NotImplementedError("Archiving is not yet set up for ENKF GDAS runs")
+
+        elif (arch_dict.RUN == "enkfgfs"):
+            raise NotImplementedError("Archiving is not yet set up for ENKF GFS runs")
+
+        elif (arch_dict.RUN == "gefs"):
+            raise NotImplementedError("Archiving is not yet set up for GEFS runs")
 
         else:
-            raise NotImplementedError(f'Archiving is not enabled for {arch_dict.RUN} runs')
-
-        tar_cmd = 'tar'
-        if arch_dict.HPSSARCH:
-            tar_cmd = 'htar'
+            raise ValueError(f'Archiving is not enabled for {arch_dict.RUN} runs')
 
         archive_sets = []
 
@@ -126,17 +145,15 @@ class Archive(Task):
 
             archive_filename = os.path.join(archive_parm, dataset + ".yaml.j2")
             archive_set = parse_j2yaml(archive_filename, arch_dict)
-            archive_set = cls._create_fileset(archive_set)
-            archive_set['has_rstprod'] = cls._has_rstprod(archive_set.fileset)
-            archive_set['protocol'] = tar_cmd
+            archive_set['fileset'] = Archive._create_fileset(archive_set)
+            archive_set['has_rstprod'] = Archive._has_rstprod(archive_set.fileset)
 
             archive_sets.append(archive_set)
 
         return archive_sets
 
-    @staticmethod
     @logit(logger)
-    def execute(archive_sets: list[Dict[str, Any]]) -> None:
+    def execute(self, archive_sets: list[Dict[str, Any]]) -> None:
         """Create the tarballs from the list of yaml dicts.
 
         Parameters
@@ -147,19 +164,29 @@ class Archive(Task):
 
         for archive_set in archive_sets:
 
+            if self.tar_cmd == "htar":
+                cvf = self.htar.cvf
+                rm_cmd = self.hsi.rm
+            else:
+                cvf = Archive._create_tarball
+                rm_cmd = rm_p
+
             if archive_set.has_rstprod:
 
                 try:
-                    archive_utils.ArchiveHandler(archive_set).create()
-                    success = True
+                    cvf(archive_set.target, archive_set.fileset)
                 except:
-                    success = False
+                    rm_cmd(archive_set.target)
+                    raise RuntimeError(f"Failed to create restricted archive {archive_set.target}, deleting!")
 
-                cls._protect_rstprod(archive_set)
+                self._protect_rstprod(archive_set)
+
+            else:
+                cvf(archive_set.target, archive_set.fileset)
 
     @logit(logger)
-    @classmethod
-    def _create_fileset(cls, archive_set: Dict[str, Any]) -> None:
+    @staticmethod
+    def _create_fileset(archive_set: Dict[str, Any]) -> list:
         """
         Collect the list of all available files from the parsed yaml dict.
         Globs are expanded and if mandatory files are missing, an error is
@@ -175,17 +202,14 @@ class Archive(Task):
             Contains full paths for mandatory and optional files to be archived.
         """
 
-        import glob
-
-        archive_set.fileset = []
+        fileset = []
         if 'mandatory' in archive_set:
             for item in archive_set.mandatory:
                 glob_set = glob.glob(item)
                 if len(glob_set) == 0:
-                    raise FileNotFoundError(f'Mandatory file or glob {item} not found!')
-                for file in glob_set:
-                    cls._check_isfile(file)
-                    archive_set.fileset.append(file)
+                    raise FileNotFoundError(f'Mandatory file, directory, or glob {item} not found!')
+                for entry in glob_set:
+                    fileset.append(entry)
 
         if 'optional' in archive_set:
             for item in archive_set.optional:
@@ -193,40 +217,16 @@ class Archive(Task):
                 if len(glob_set) == 0:
                     print (f'WARNING: optional file/glob {item} not found!')
                 else:
-                    for file in glob_set:
-                        cls._check_isfile(file,False)
-                        archive_set.fileset.append(file)
+                    for entry in glob_set:
+                        fileset.append(entry)
 
-        if len(archive_set.fileset) == 0:
+        if len(fileset) == 0:
             print (f'WARNING: the fileset for the {archive_set.name} archive is empty!')
 
-        return archive_set
+        return fileset
 
     @logit(logger)
-    def _check_isfile(filename: str, error_on_noexist = True) -> None:
-        """
-        Checks that the input filename is not a directory.
-        TODO: Expand this to check that 'filename' is not a glob and that
-              the file actually exists.
-
-        Parameters
-        ----------
-        filename : str
-            The name of the file to check including the path.
-
-        error_on_noexist : boolean
-            (not yet implemented)
-            If the file does not exist, this flag determines if a warning or
-            error should be generated.
-            Errors will always be issued if filename points to a directory.
-        """
-
-        if os.path.isdir(filename):
-            raise IsADirectoryError(f'{file} is a directory\n' +
-                  f'only files are allowed to be archived.')
-
-
-    @logit(logger)
+    @staticmethod
     def _has_rstprod(fileset: list) -> bool:
         """
         Checks if any files in the input fileset belongs to rstprod.
@@ -244,40 +244,74 @@ class Archive(Task):
             return False
 
         # Expand globs and check each file for group ownership
-        for file in fileset:
-            if os.stat(filename).st_gid == rstprod_gid:
-                return True
+        for file_or_glob in fileset:
+            glob_set = glob.glob(file_or_glob)
+            for filename in glob_set:
+                if os.stat(filename).st_gid == rstprod_gid:
+                    return True
 
         return False
 
-
-
     @logit(logger)
-    def _protect_rstprod(self, archive_set) -> None:
+    def _protect_rstprod(self, archive_set: Dict[str, any]) -> None:
         """
         Changes the group of the target tarball to rstprod and the permissions to
         640.  If this fails for any reason, attempt to delete the file before exiting.
 
         """
 
-        if archive_set.protocol = "htar":
-            chgrp = hsi.chgrp
-            chmod = hsi.chmod
-            rm = hsi.rm
+        if self.tar_cmd == "htar":
+            chgrp_cmd = self.hsi.chgrp
+            chmod_cmd = self.hsi.chmod
+            rm_cmd = self.hsi.rm
+        elif self.tar_cmd == "tar":
+            chgrp_cmd = chgrp
+            chmod_cmd = os.fchmod
+            rm_cmd = rm_p
         else:
-            # TODO verify these are correct
-            chgrp = f_chgrp
-            chmod = os.chmod
-            rm = os.rm
+            raise KeyError(f"Invalid archiving command given: {self.tar_cmd}")
 
         try:
-            chgrp("rstprod", archive_set.target)
-            chmod("640", archive_set.target)
-        except
+            if self.tar_cmd == "htar":
+                self.hsi.chgrp("rstprod", archive_set.target)
+                self.hsi.chmod("640", archive_set.target)
+            else:
+                chgrp("rstprod", archive_set.target)
+                os.chmod(archive_set.target, 0o640)
+        except:
             try:
-                rm(archive_set.target)
+                if self.tar_cmd == "htar":
+                    self.hsi.rm(archive_set.target)
+                else:
+                    rm_p(archive_set.target)
             except:
                 pass
 
-            raise OSError(f"Failed to protect {archive_set.target}!\n"
+            raise RuntimeError(f"Failed to protect {archive_set.target}!\n"
                           f"Please verify that it has been deleted!!")
+
+
+    @logit(logger)
+    @staticmethod
+    def _create_tarball(target: str, fileset: list) -> None:
+        """Method to create a local tarball.
+
+        Parameters
+        ----------
+        target : str
+            Tarball to create
+
+        file_list : list
+            List of files to add to an archive
+        """
+        import tarfile
+
+        # TODO create a set of tar helper functions in wxflow
+
+        # Attempt to create the parent directory if it does not exist
+        mkdir_p(os.path.dirname(os.path.realpath(target)))
+
+        # Create the archive
+        with tarfile.open(target, "w") as tarball:
+            for filename in fileset:
+                tarball.add(filename)

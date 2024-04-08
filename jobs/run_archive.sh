@@ -1,20 +1,23 @@
 #!/usr/bin/bash
 # Change to a directory that you can write to
-export ATARDIR=/work/noaa/global/dhuber/para/stmp/test_arch
+export ATARDIR=/scratch1/NCEPDEV/global/David.Huber/archive_rotdir/minmon
 # Change to the head of your clone
-export HOMEgfs=/work/noaa/global/dhuber/GW/gw_arch
+export HOMEgfs=/scratch1/NCEPDEV/global/David.Huber/GW/gw_archive
 
 set -e
-module use /work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core
+module reset
+module use /scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.6.0/envs/gsi-addon-dev-rocky8/install/modulefiles/Core
 module load stack-intel stack-python py-jinja2 py-pyyaml
 export PARMgfs=$HOMEgfs/parm
 export wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
 
 export RUN=gdas
-export ROTDIR=/work2/noaa/global/dhuber/para/com/herc_mon
-export PDY=20211111
+export ROTDIR=/scratch1/NCEPDEV/global/David.Huber/para/comrot/minmon
+export PDY=20240302
 export cyc=00
+export assim_freq=6
+export NFHRS_PER_GROUP=3
 export COM_ATMOS_ANALYSIS=$ROTDIR/$RUN.$PDY/$cyc/analysis/atmos
 export COM_ATMOS_BUFR=$ROTDIR/$RUN.$PDY/$cyc/products/atmos/bufr
 export COM_ATMOS_GEMPAK=$ROTDIR/$RUN.$PDY/$cyc/products/atmos/gempak/
@@ -59,15 +62,20 @@ export DO_VERFRAD=YES
 export DO_VMINMON=YES
 export DO_VERFOZN=YES
 export DO_ICE=NO
-export WRITE_DOPOST=YES
+export DO_AERO=NO
+export DO_OCN=NO
+export DO_WAVE=NO
+export WRITE_DOPOST=.true.
 export ARCHIVE_RUN=$RUN
+export HPSSARCH="NO"
+export LOCALARCH="YES"
 # Not needed for task, but required by wxflow
 export DATA=""
 export CDUMP=""
 
 rm -rf $ATARDIR
-mkdir $ATARDIR
+#mkdir -p $ATARDIR
 
 cd ${ROTDIR}
 
-/work/noaa/global/dhuber/GW/gw_arch/scripts/call_archive.py
+${HOMEgfs}/scripts/call_archive.py

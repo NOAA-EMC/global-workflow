@@ -1,0 +1,5 @@
+{% set cycle_YYYYMMDDHH = current_cycle | strftime('%Y%m%d%H') %}
+name: "GDAS_OCEAN_6HR_AVG"
+target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/ocean_6hravg.tar"
+mandatory:
+    - '{{ ocean_history_dir }}/gfs.ocean.t${cyc}z.6hr_avg.f*.nc'

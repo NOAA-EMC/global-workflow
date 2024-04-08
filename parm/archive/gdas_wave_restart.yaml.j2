@@ -1,0 +1,5 @@
+{% set cycle_YYYYMMDDHH = current_cycle | strftime('%Y%m%d%H') %}
+name: "GDAS_WAVE_RESTART"
+target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdas_wave_restart.tar"
+mandatory:
+    - "{{ wave_restart_dir }}/*"

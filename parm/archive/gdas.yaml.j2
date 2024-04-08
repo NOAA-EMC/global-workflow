@@ -1,14 +1,7 @@
-name: "GDAS"
-description: "Basic GDAS analysis and forecast produts and data"
 {% set cycle_HH = current_cycle | strftime('%H') %}
 {% set cycle_YYYYMMDDHH = current_cycle | strftime('%Y%m%d%H') %}
 {% set first_cycle = cycle_YYYYMMDDHH == SDATE %}
-{% set n_fhrs = (FHMAX - FHMIN + 1) / FHOUT %}
-{% if n_fhrs % NFHRS_PER_GROUP == 0 %}
-{% set n_post_groups = n_fhrs // NFHRS_PER_GROUP %}
-{% else %}
-{% set n_post_groups = n_fhrs // NFHRS_PER_GROUP + 1 %}
-{% endif %}
+name: "GDAS"
 target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdas.tar"
 mandatory:
     - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.anl"
@@ -17,21 +10,10 @@ mandatory:
     - "{{ atmos_grib_1p00_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.1p00.anl.idx"
     - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmanl.nc"
     - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.sfcanl.nc"
-    {% if not first_cycle }
+    {% if not first_cycle %}
     - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmanlprod.log"
     {% endif %}
-    {% for post_group in range(n_post_groups) %}
-    {% set grp_st_fhr = post_group * NFHRS_PER_GROUP * FHOUT + FHMIN %}
-    {% set grp_en_fhr = (post_group + 1) * NFHRS_PER_GROUP * FHOUT + FHMIN - 1 %}
-    {% if grp_en_fhr > FHMAX %}
-    {% set grp_en_fhr = FHMAX %}
-    {% endif %}
-    {% if grp_en_fhr != grp_st_fhr %}
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_prod_f{{ '%03d' % grp_st_fhr }}-f{{ '%03d' %grp_en_fhr}}.log"
-    {% else %}
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_prod_f{{ '%03d' % grp_st_fhr }}.log"
-    {% endif %}
-    {% endfor %}
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_prod_f*.log"
     {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
     - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.f{{ '%03d' % fhr }}"
     - "{{ atmos_grib_0p25_dir }}/{{ RUN }}.t{{ cycle_HH }}z.pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
@@ -73,6 +55,10 @@ mandatory:
     - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.reduction.ieee_d"
     - "{{ atmos_minmon_dir }}/gnorm_data.txt"
     {% endif %}
+    {% if DO_WAVE %}
+    - "{{ wave_grid_dir }}/gdaswave.t{{ cycle_HH }}z.*"
+    - "{{ wave_station_dir }}/gdaswave.t{{ cycle_HH }}z.*"
+    {% endif %}
 optional:
     - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmvar.yaml"
     - "{{ atmos_analysis_dir }}/{{ RUN }}.t{{ cycle_HH }}z.atmstat"
@@ -98,18 +84,8 @@ optional:
     {% endif %}
     - "{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmanlupp.log"
     {% if WRITE_DOPOST %}
-    {% for post_group in range(n_post_groups) %}
-    {% set grp_st_fhr = post_group * NFHRS_PER_GROUP * FHOUT + FHMIN %}
-    {% set grp_en_fhr = (post_group + 1) * NFHRS_PER_GROUP * FHOUT + FHMIN - 1 %}
-    {% if grp_en_fhr > FHMAX %}
-    {% set grp_en_fhr = FHMAX %}
-    {% endif %}
-    {% if grp_en_fhr != grp_st_fhr %}
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_upp_f{{ '%03d' % grp_st_fhr }}-f{{ '%03d' %grp_en_fhr}}.log"
-    {% else %}
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_upp_f{{ '%03d' % grp_st_fhr }}.log"
-    {% endif %}
-    {% endfor %}
+    # TODO set the forecast hours explicitly.  This will require emulating numpy.array_split
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_upp_f*.log"
     {% endif %} # WRITE_DOPOST
     {% if DO_VERFOZN %}
     {% set oznmon_types = [

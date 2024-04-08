@@ -1,0 +1,5 @@
+{% set cycle_YYYYMMDDHH = current_cycle | strftime('%Y%m%d%H') %}
+name: "GDAS_OCEAN_DAILY"
+target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/ocean_daily.tar"
+mandatory:
+    - '{{ ocean_history_dir }}/gfs.ocean.t${cyc}z.daily.f*.nc'
