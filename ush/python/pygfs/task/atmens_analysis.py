@@ -62,7 +62,6 @@ class AtmEnsAnalysis(Analysis):
         - staging FV3-JEDI fix files
         - staging model backgrounds
         - generating a YAML file for the JEDI executable
-        - linking JEDI ensemble da executable
         - creating output directories
 
         Parameters
@@ -121,9 +120,6 @@ class AtmEnsAnalysis(Analysis):
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote ensemble da YAML to: {self.task_config.jedi_yaml}")
 
-        # link ensemble da JEDI executable to run directory
-        self.link_jediexe()
-
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
@@ -149,22 +145,15 @@ class AtmEnsAnalysis(Analysis):
         ----------
         None
         """
-        chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMENSANL)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+        # link JEDI executable to run directory
+        self.task_config.jedi_exe = self.link_jediexe()
 
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        pass
+        # Run executable
+        self.execute_jediexe(self.runtime_config.DATA, \
+                             self.task_config.APRUN_ATMENSANL, \
+                             self.task_config.jedi_exe, \
+                             self.task_config.jedi_yaml)
 
     @logit(logger)
     def finalize(self: Analysis) -> None:

@@ -66,7 +66,6 @@ class AtmAnalysis(Analysis):
         - staging B error files
         - staging model backgrounds
         - generating a YAML file for the JEDI variational executable
-        - linking JEDI variational executable
         - creating output directories
         """
         super().initialize()
@@ -105,9 +104,6 @@ class AtmAnalysis(Analysis):
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
 
-        # link variational JEDI executable to run directory
-        self.link_jediexe()
-
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
@@ -119,35 +115,24 @@ class AtmAnalysis(Analysis):
     @logit(logger)
     def variational(self: Analysis) -> None:
 
-        chdir(self.task_config.DATA)
+        # Link JEDI executable
+        self.task_config.jedi_exe = self.link_jediexe()
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMANLVAR)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        pass
+        # Run executable
+        self.execute_jediexe(self.runtime_config.DATA, \
+                             self.task_config.APRUN_ATMANLVAR, \
+                             self.task_config.jedi_exe, \
+                             self.task_config.jedi_yaml)
 
     @logit(logger)
     def fv3_increment(self: Analysis) -> None:
 
-        # Setup task configuration
+        # Setup JEDI YAML file
         self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
-        self.task_config.jedi_exe  = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIEXE))
-
-        # Stage JEDI YAML file
         save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
 
-        # Link JEDI executable
-        self.link_jediexe()
+        # Link JEDI executable to run directory
+        self.task_config.jedi_exe = self.link_jediexe()
 
         # Run executable
         self.execute_jediexe(self.runtime_config.DATA, \

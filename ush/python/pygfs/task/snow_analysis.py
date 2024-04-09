@@ -236,7 +236,6 @@ class SnowAnalysis(Analysis):
         This method:
         - creates artifacts in the DATA directory by copying fix files
         - creates the JEDI LETKF yaml from the template
-        - links JEDI LETKF executable
         - stages backgrounds, observations and ensemble members
 
         Parameters
@@ -273,9 +272,6 @@ class SnowAnalysis(Analysis):
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.jedi_yaml}")
 
-        # link letkfoi JEDI executable to run directory
-        self.link_jediexe()
-
         # need output dir for diags and anl
         logger.info("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
@@ -298,12 +294,15 @@ class SnowAnalysis(Analysis):
            Instance of the SnowAnalysis object
         """
 
+        # link JEDI executable to run directory
+        self.task_config.jedi_exe = self.link_jediexe()
+
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_SNOW_ANALYSIS', 'APREFIX',
                 'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'OCNRES', 'ntiles',
-                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml',
+                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml', 'jedi_exe',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -316,7 +315,7 @@ class SnowAnalysis(Analysis):
         logger.info("Running JEDI LETKF")
         self.execute_jediexe(localconf.DATA,
                              localconf.APRUN_SNOWANL,
-                             os.path.basename(localconf.JEDIEXE),
+                             localconf.jedi_exe,
                              localconf.jedi_yaml)
 
         logger.info("Creating analysis from backgrounds and increments")

@@ -96,9 +96,6 @@ class AerosolAnalysis(Analysis):
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
 
-        # link variational JEDI executable to run directory
-        self.link_jediexe()
-
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
@@ -110,22 +107,14 @@ class AerosolAnalysis(Analysis):
     @logit(logger)
     def execute(self: Analysis) -> None:
 
-        chdir(self.task_config.DATA)
+        # link JEDI executable to run directory
+        self.task_config.jedi_exe = self.link_jediexe()
 
-        exec_cmd = Executable(self.task_config.APRUN_AEROANL)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        pass
+        # Run executable
+        self.execute_jediexe(self.runtime_config.DATA, \
+                             self.task_config.APRUN_AEROANL, \
+                             self.task_config.jedi_exe, \
+                             self.task_config.jedi_yaml)
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
