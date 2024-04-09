@@ -1,0 +1,8 @@
+{% set head = "gdas.t" + cycle_HH + "z." %}
+name: "GDASOCEAN_ANALYSIS"
+target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdasocean_analysis.tar"
+mandatory:
+    - '{{ ocean_analysis_dir }}/{{ head }}*'
+    - '{{ ocean_analysis_dir }}/gdas.t??z.ocngrid.nc'
+    - '{{ ocean_analysis_dir }}/diags'
+    - '{{ ocean_analysis_dir }}/yaml'
