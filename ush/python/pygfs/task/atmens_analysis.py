@@ -48,6 +48,7 @@ class AtmEnsAnalysis(Analysis):
                 'jedi_yaml': _jedi_yaml,
                 'atm_obsdatain_path': f"./obs/",
                 'atm_obsdataout_path': f"./diags/",
+                'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
             }
         )
 

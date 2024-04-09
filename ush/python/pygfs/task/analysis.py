@@ -65,10 +65,10 @@ class Analysis(Task):
 
         if 'JCB_BASE_YAML' in self.task_config.keys():
             # Step 1: fill templates of the jcb base YAML file
-            jcb_config = parse_j2yaml(self.task_config.JCB_YAML, self.task_config)
+            jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
             # Step 2: (optional) fill templates of algorithm override YAML and merge
             if 'JCB_ALGO_YAML' in self.task_config.keys():
-                jcb_algo_config = parse_j2yaml(self.task_config.JCB_YAML, self.task_config)
+                jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
                 jcb_config = {**jcb_config, **jcb_algo_config}
             # Step 3: generate the JEDI Yaml using JCB driving YAML
             jedi_config = render(jcb_config)
