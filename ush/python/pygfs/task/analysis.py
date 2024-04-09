@@ -64,10 +64,13 @@ class Analysis(Task):
         # generate JEDI YAML file
         logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
 
-        if 'JCB_YAML' in self.task_config.keys():
-            # Step 1: fill templates of the JCB Yaml file
-            jcb_config = parse_j2yaml(self.task_config.JCB_YAML, self.task_config,
-                                      searchpath=self.gdasapp_j2tmpl_dir)
+        if 'JCB_BASE_YAML' in self.task_config.keys():
+            # Step 1: fill templates of the jcb base YAML file
+            jcb_config = parse_j2yaml(self.task_config.JCB_YAML, self.task_config)
+            # Step 2: (optional) fill templates of algorithm override YAML and merge
+            if 'JCB_ALGO_YAML' in self.task_config.keys():
+                jcb_algo_config = parse_j2yaml(self.task_config.JCB_YAML, self.task_config)
+                jcb_config = {**jcb_config, **jcb_algo_config}
             # Step 2: generate the JEDI Yaml using JCB driving YAML
             jedi_config = render(jcb_config)
         elif 'JEDIYAML' in self.task_config.keys():
@@ -75,7 +78,7 @@ class Analysis(Task):
             jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
                                       searchpath=self.gdasapp_j2tmpl_dir)
         else:
-            raise KeyError(f"Task config must contain either JEDIYAML or JCB_YAML")
+            raise KeyError(f"Task config must contain either JEDIYAML or JCB_BASE_YAML")
 
         logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
 

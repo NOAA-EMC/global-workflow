@@ -5,10 +5,9 @@
 
 echo "BEGIN: config.atmanl"
 
-export JCB_ALGORITHM="3dvar"
-export JCB_YAML="${PARMgfs}/gdas/atm.yaml.j2"
+export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
+export JCB_ALGO_YAML="${PARMgfs}/gdas/atm/gdas_prototype_3dvar.yaml.j2"
 
-export OBS_LIST="satwind_abi_goes-16, scatwind_ascat_metop-b, conv_ps, gnssro, ompsnp_npp, ompstc_npp, omi_aura"
 export STATICB_TYPE="gsibec"
 export LOCALIZATION_TYPE="bump"
 export INTERP_METHOD='barycentric'

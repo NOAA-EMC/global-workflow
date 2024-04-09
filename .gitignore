@@ -49,7 +49,6 @@ parm/gdas/ioda
 parm/gdas/snow
 parm/gdas/soca
 parm/gdas/jcb-gdas
-parm/gdas/atm.yaml.j2
 parm/monitor
 parm/post/AEROSOL_LUTS.dat
 parm/post/nam_micro_lookup.dat
