@@ -236,6 +236,7 @@ class SnowAnalysis(Analysis):
         This method:
         - creates artifacts in the DATA directory by copying fix files
         - creates the JEDI LETKF yaml from the template
+        - links JEDI LETKF executable
         - stages backgrounds, observations and ensemble members
 
         Parameters
@@ -271,6 +272,9 @@ class SnowAnalysis(Analysis):
         # Write out letkfoi YAML file
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.jedi_yaml}")
+
+        # link letkfoi JEDI executable to run directory
+        self.link_jediexe()
 
         # need output dir for diags and anl
         logger.info("Create empty output [anl, diags] directories to receive output from executable")

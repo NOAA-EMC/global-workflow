@@ -62,6 +62,7 @@ class AtmEnsAnalysis(Analysis):
         - staging FV3-JEDI fix files
         - staging model backgrounds
         - generating a YAML file for the JEDI executable
+        - linking JEDI ensemble da executable
         - creating output directories
 
         Parameters
@@ -119,6 +120,9 @@ class AtmEnsAnalysis(Analysis):
         logger.debug(f"Generate ensemble da YAML file: {self.task_config.jedi_yaml}")
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote ensemble da YAML to: {self.task_config.jedi_yaml}")
+
+        # link ensemble da JEDI executable to run directory
+        self.link_jediexe()
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")

@@ -68,6 +68,7 @@ class AerosolAnalysis(Analysis):
         - staging B error files
         - staging model backgrounds
         - generating a YAML file for the JEDI executable
+        - linking JEDI variational executable
         - creating output directories
         """
         super().initialize()
@@ -94,6 +95,9 @@ class AerosolAnalysis(Analysis):
         logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
+
+        # link variational JEDI executable to run directory
+        self.link_jediexe()
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")

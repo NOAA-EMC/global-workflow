@@ -32,8 +32,6 @@ class AtmAnalysis(Analysis):
         _res_anl = int(self.config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config.assim_freq}H") / 2)
         _jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
-        _fv3inc_yaml = os.path.join(self.runtime_config.DATA, 'fv3jedi_fv3inc_variational.yaml')
-        _fv3inc_exe = os.path.join(self.runtime_config.DATA, 'fv3jedi_fv3inc.x')
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -51,8 +49,6 @@ class AtmAnalysis(Analysis):
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
                 'jedi_yaml': _jedi_yaml,
-                'fv3inc_yaml': _fv3inc_yaml,
-                'fv3inc_exe': _fv3inc_exe,
             }
         )
 
@@ -70,7 +66,7 @@ class AtmAnalysis(Analysis):
         - staging B error files
         - staging model backgrounds
         - generating a YAML file for the JEDI variational executable
-        - generating a YAML file for the JEDI FV3 increment converter executable
+        - linking JEDI variational executable
         - creating output directories
         """
         super().initialize()
@@ -109,18 +105,8 @@ class AtmAnalysis(Analysis):
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
 
-        # generate FV3 increment converter YAML file
-        logger.debug(f"Generate FV3 increment converter YAML file: {self.task_config.fv3inc_yaml}")
-        fv3inc_yaml = parse_j2yaml(self.task_config.FV3INCYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
-        save_as_yaml(fv3inc_yaml, self.task_config.fv3inc_yaml)
-        logger.info(f"Wrote FV3 increment converter YAML to: {self.task_config.fv3inc_yaml}")
-
-        # link FV3 increment converter executable
-        logger.debug(f"Link FV3 increment converter executable: {self.task_config.fv3inc_exe}")
-        if os.path.exists(self.task_config.fv3inc_exe):
-            rm_p(self.task_config.fv3inc_exe)
-        os.symlink(self.task_config.FV3INCEXE, self.task_config.fv3inc_exe)
-        logger.debug(f"Linked FV3 increment converter executable: {self.task_config.fv3inc_exe}")
+        # link variational JEDI executable to run directory
+        self.link_jediexe()
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -153,23 +139,22 @@ class AtmAnalysis(Analysis):
     @logit(logger)
     def fv3_increment(self: Analysis) -> None:
 
-        chdir(self.task_config.DATA)
+        # Setup task configuration
+        self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
+        self.task_config.jedi_exe  = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIEXE))
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMANLFV3INC)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_fv3inc.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(self.task_config.fv3inc_yaml)
+        # Stage JEDI YAML file
+        save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
 
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+        # Link JEDI executable
+        self.link_jediexe()
 
-        pass
-
+        # Run executable
+        self.execute_jediexe(self.runtime_config.DATA, \
+                             self.task_config.APRUN_ATMANLFV3INC, \
+                             self.task_config.jedi_exe, \
+                             self.task_config.jedi_yaml)
+ 
     @logit(logger)
     def finalize(self: Analysis) -> None:
         """Finalize a global atm analysis

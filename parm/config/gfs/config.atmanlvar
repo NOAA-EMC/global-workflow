@@ -8,4 +8,6 @@ echo "BEGIN: config.atmanlvar"
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmanlvar
 
+export JEDIEXE=${EXECgfs}/fv3jedi_var.x
+
 echo "END: config.atmanlvar"
