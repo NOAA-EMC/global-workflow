@@ -2,7 +2,7 @@
 set -x
 
 # Input GSI diagnostic file containing inputs to wdqms.py
-CNVSTAT="${CDUMP}.t${cyc}z.cnvstat"
+CNVSTAT="${RUN}.t${cyc}z.cnvstat"
 
 # Input files from CNVSTAT fed to wdqms.py
 INPUT_LIST=("diag_conv_ps_ges.${PDY}${cyc}.nc4" \
@@ -59,8 +59,9 @@ for otype in "${OTYPES[@]}"; do
   #=============================================================================
   # Copy to COMOUT if wdqms.py created the output file
   csvfile="NCEP_${otype}_${PDY}_${cyc}.csv"
+  csvfileout="${RUN}.t${cyc}z.${otype,,}.csv"
   if [[ -f "${csvfile}" ]]; then
-    cp "./${csvfile}" "${COMOUT}/${csvfile}" || ( echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}'" )
+    cp "./${csvfile}" "${COMOUT}/${csvfileout}" || ( echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'" )
   else
     echo "WARNING: wdqms.py failed to create csvfile '${csvfile}'"
     error=$((error + 1))
@@ -69,16 +70,10 @@ for otype in "${OTYPES[@]}"; do
 
   #=============================================================================
   # Send DBN alerts
-  if [[ -f "${COMOUT}/${csvfile}" ]]; then
-    if [[ "${SENDDBN:-}" == "YES" ]]; then
-      "${DBNROOT}/bin/dbn_alert" MODEL SUB_TYPE "${job}" "${COMOUT}/${csvfile}"  # TODO: NCO SPA will coordinate w/ Dataflow to identify the appropriate SUB_TYPE
+  if [[ "${SENDDBN:-}" == "YES" ]]; then
+    if [[ -f "${COMOUT}/${csvfileout}" ]]; then
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WDQMS" "${job}" "${COMOUT}/${csvfileout}"
     fi
-  else
-    echo "WARNING: wdqms.py did not produce '${csvfile}'"
-    if [[ "${SENDDBN:-}" == "YES" ]]; then
-      echo "WARNING: No DBN alert.  File missing: '${COMOUT}/${csvfile}'"
-    fi
-    error=$((error + 1))
   fi
   #=============================================================================
 
