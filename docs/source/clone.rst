@@ -39,7 +39,7 @@ For coupled cycling (include new UFSDA) use the `-gu` options during build:
    ./build_all.sh -gu
 
 
-For building with PDLIB for the wave model, use the `-w` options during build:
+For building without PDLIB (unstructured grid) for the wave model, use the `-w` options during build:
 
 ::
 
