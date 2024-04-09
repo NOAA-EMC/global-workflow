@@ -22,7 +22,7 @@ def main():
         'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_AERO', 'PARMgfs',
         'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'cyc', 'cycle_YYYYMMDDHH',
         'cycle_HH', 'first_cycle', 'NFHRS_PER_GROUP', 'HPSSARCH',
-        'LOCALARCH']
+        'DO_JEDISNOWDA', 'LOCALARCH']
 
     archive_dict = AttrDict()
     for key in keys:

@@ -66,6 +66,7 @@ export DO_ICE=NO
 export DO_AERO=NO
 export DO_OCN=NO
 export DO_WAVE=NO
+export DO_JEDISNOWDA=NO
 export WRITE_DOPOST=.true.
 export ARCHIVE_RUN=$RUN
 export HPSSARCH="YES"

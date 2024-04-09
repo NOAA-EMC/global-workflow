@@ -9,6 +9,14 @@ mandatory:
     - "{{ atmos_restart_dir }}/*0000.sfcanl_data.tile4.nc"
     - "{{ atmos_restart_dir }}/*0000.sfcanl_data.tile5.nc"
     - "{{ atmos_restart_dir }}/*0000.sfcanl_data.tile6.nc"
+    {% if DO_JEDISNOWDA %}
+    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile1.nc"
+    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile2.nc"
+    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile3.nc"
+    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile4.nc"
+    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile5.nc"
+    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile6.nc"
+    {% endif %}
 optional:
     - "{{ atmos_analysis_dir }}/{{ head }}cnvstat"
     - "{{ atmos_analysis_dir }}/{{ head }}radstat"
@@ -25,9 +33,3 @@ optional:
     - "{{ atmos_analysis_dir }}/{{ head }}amsua_n19.satbias_cov.nc4"
     - "{{ atmos_analysis_dir }}/{{ head }}amsua_n19.tlapse.txt"
     - "{{ conf_dir }}/{{ head }}letkfoi.yaml"
-    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile1.nc"
-    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile2.nc"
-    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile3.nc"
-    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile4.nc"
-    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile5.nc"
-    - "{{ snow_analysis_dir }}/*0000.sfc_data.tile6.nc"
