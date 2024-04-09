@@ -7,7 +7,6 @@ from logging import getLogger
 from pprint import pformat
 from netCDF4 import Dataset
 from typing import List, Dict, Any, Union
-import yaml
 
 from jcb import render
 from wxflow import (parse_j2yaml, FileHandler, rm_p, logit,
@@ -71,7 +70,7 @@ class Analysis(Task):
             if 'JCB_ALGO_YAML' in self.task_config.keys():
                 jcb_algo_config = parse_j2yaml(self.task_config.JCB_YAML, self.task_config)
                 jcb_config = {**jcb_config, **jcb_algo_config}
-            # Step 2: generate the JEDI Yaml using JCB driving YAML
+            # Step 3: generate the JEDI Yaml using JCB driving YAML
             jedi_config = render(jcb_config)
         elif 'JEDIYAML' in self.task_config.keys():
             # This will ultimately be deprecated one all YAMLs move to JCB
