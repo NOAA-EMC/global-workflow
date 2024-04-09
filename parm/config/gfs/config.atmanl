@@ -6,7 +6,7 @@
 echo "BEGIN: config.atmanl"
 
 export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
-export JCB_ALGO_YAML="${PARMgfs}/gdas/atm/gdas_prototype_3dvar.yaml.j2"
+export JCB_ALGO_YAML="${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
 
 export STATICB_TYPE="gsibec"
 export LOCALIZATION_TYPE="bump"
