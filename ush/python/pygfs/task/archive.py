@@ -21,6 +21,7 @@ import os
 
 logger = getLogger(__name__.split('.')[-1])
 
+
 class Archive(Task):
     """Task to archive ROTDIR data to HPSS (or locally)
     """
@@ -42,15 +43,15 @@ class Archive(Task):
         """
         super().__init__(config)
 
-        rotdir=self.config.ROTDIR + os.sep
+        rotdir = self.config.ROTDIR + os.sep
 
         # Find all absolute paths in the environment and get their relative paths from ${ROTDIR}
         path_dict = self._gen_relative_paths(rotdir)
         local_dict = AttrDict(
-            {'cycle_HH': self.runtime_config.current_cycle.strftime("%H"),
-             'cycle_YYYYMMDDHH': self.runtime_config.current_cycle.strftime("%Y%m%d%H"),
-             'first_cycle': self.runtime_config.current_cycle == self.config.SDATE
-            }
+          {'cycle_HH': self.runtime_config.current_cycle.strftime("%H"),
+           'cycle_YYYYMMDDHH': self.runtime_config.current_cycle.strftime("%Y%m%d%H"),
+           'first_cycle': self.runtime_config.current_cycle == self.config.SDATE
+           }
         )
 
         self.task_config = AttrDict(**self.config, **self.runtime_config, **path_dict, **local_dict)
@@ -69,13 +70,13 @@ class Archive(Task):
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
 
-        if arch_dict.HPSSARCH: 
+        if arch_dict.HPSSARCH:
             self.tar_cmd = "htar"
             self.hsi = staticmethod(Hsi())
             self.htar = staticmethod(Htar())
         elif arch_dict.LOCALARCH:
             self.tar_cmd = "tar"
-        else: #Nothing to do
+        else:  # Nothing to do
             raise ValueError(f"Neither HPSSARCH nor LOCALARCH are set to YES.\n"
                              f"Unable to determine archiving method!")
 
@@ -149,7 +150,8 @@ class Archive(Task):
 
                 try:
                     cvf(archive_set.target, archive_set.fileset)
-                except:
+                # Regardless of exception type, attempt to remove the target
+                except:  # noqa
                     rm_cmd(archive_set.target)
                     raise RuntimeError(f"Failed to create restricted archive {archive_set.target}, deleting!")
 
@@ -189,13 +191,13 @@ class Archive(Task):
             for item in archive_set.optional:
                 glob_set = glob.glob(item)
                 if len(glob_set) == 0:
-                    print (f'WARNING: optional file/glob {item} not found!')
+                    print(f'WARNING: optional file/glob {item} not found!')
                 else:
                     for entry in glob_set:
                         fileset.append(entry)
 
         if len(fileset) == 0:
-            print (f'WARNING: the fileset for the {archive_set.name} archive is empty!')
+            print(f'WARNING: the fileset for the {archive_set.name} archive is empty!')
 
         return fileset
 
@@ -252,18 +254,16 @@ class Archive(Task):
             else:
                 chgrp("rstprod", archive_set.target)
                 os.chmod(archive_set.target, 0o640)
-        except:
+        # Regardless of exception type, attempt to remove the target
+        except:  # noqa
             try:
                 if self.tar_cmd == "htar":
                     self.hsi.rm(archive_set.target)
                 else:
                     rm_p(archive_set.target)
-            except:
-                pass
-
-            raise RuntimeError(f"Failed to protect {archive_set.target}!\n"
-                          f"Please verify that it has been deleted!!")
-
+            finally:
+                raise RuntimeError(f"Failed to protect {archive_set.target}!\n"
+                                   f"Please verify that it has been deleted!!")
 
     @logit(logger)
     @staticmethod
