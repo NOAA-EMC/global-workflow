@@ -75,7 +75,7 @@ class Analysis(Task):
         elif 'JEDIYAML' in self.task_config.keys():
             # This will ultimately be deprecated one all YAMLs move to JCB
             jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
-                                      searchpath=self.gdasapp_j2tmpl_dir)
+                                       searchpath=self.gdasapp_j2tmpl_dir)
         else:
             raise KeyError(f"Task config must contain either JEDIYAML or JCB_BASE_YAML")
 
