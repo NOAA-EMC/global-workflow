@@ -905,7 +905,7 @@ class GFSTasks(Tasks):
 
         atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"])
         deps = []
-        data = f'{atm_master_path}/{self.cdump}.t@Hz.master.grb2anl'
+        data = f'{atm_master_path}/{self.cdump}.t@Hz.masteranl.grib2'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
@@ -1015,7 +1015,7 @@ class GFSTasks(Tasks):
 
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2#dep#'},
+                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master#dep#.grib2'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
                                    'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.6hr_avg.#dep#.nc'},
