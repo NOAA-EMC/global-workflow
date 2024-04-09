@@ -44,43 +44,16 @@ class Archive(Task):
 
         rotdir=self.config.ROTDIR + os.sep
 
-        # Collect COM locations relative to ${ROTDIR}
+        # Find all absolute paths in the environment and get their relative paths from ${ROTDIR}
+        path_dict = self._gen_relative_paths(rotdir)
         local_dict = AttrDict(
-            {'atmos_analysis_dir': self.config.COM_ATMOS_ANALYSIS.replace(rotdir,''),
-            'atmos_bufr_dir': self.config.COM_ATMOS_BUFR.replace(rotdir,''),
-            'atmos_gempak_dir': self.config.COM_ATMOS_GEMPAK.replace(rotdir,''),
-            'atmos_grib_0p25_dir': self.config.COM_ATMOS_GRIB_0p25.replace(rotdir,''),
-            'atmos_grib_0p50_dir': self.config.COM_ATMOS_GRIB_0p50.replace(rotdir,''),
-            'atmos_grib_1p00_dir': self.config.COM_ATMOS_GRIB_1p00.replace(rotdir,''),
-            'atmos_history_dir': self.config.COM_ATMOS_HISTORY.replace(rotdir,''),
-            'atmos_input_dir': self.config.COM_ATMOS_INPUT.replace(rotdir,''),
-            'atmos_master_dir': self.config.COM_ATMOS_MASTER.replace(rotdir,''),
-            'atmos_minmon_dir': self.config.COM_ATMOS_MINMON.replace(rotdir,''),
-            'atmos_oznmon_dir': self.config.COM_ATMOS_OZNMON.replace(rotdir,''),
-            'atmos_radmon_dir': self.config.COM_ATMOS_RADMON.replace(rotdir,''),
-            'atmos_restart_dir': self.config.COM_ATMOS_RESTART.replace(rotdir,''),
-            'atmos_track_dir': self.config.COM_ATMOS_TRACK.replace(rotdir,''),
-            'atmos_wmo_dir': self.config.COM_ATMOS_WMO.replace(rotdir,''),
-            'chem_history_dir': self.config.COM_CHEM_HISTORY.replace(rotdir,''),
-            'chem_analysis_dir': self.config.COM_CHEM_ANALYSIS.replace(rotdir,''),
-            'conf_dir': self.config.COM_CONF.replace(rotdir,''),
-            'ice_grib_dir': self.config.COM_ICE_GRIB.replace(rotdir,''),
-            'ice_history_dir': self.config.COM_ICE_HISTORY.replace(rotdir,''),
-            'med_restart_dir': self.config.COM_MED_RESTART.replace(rotdir,''),
-            'obs_dir': self.config.COM_OBS.replace(rotdir,''),
-            'ocean_analysis_dir': self.config.COM_OCEAN_ANALYSIS.replace(rotdir,''),
-            'ocean_grib_dir': self.config.COM_OCEAN_GRIB.replace(rotdir,''),
-            'ocean_history_dir': self.config.COM_OCEAN_HISTORY.replace(rotdir,''),
-            'ocean_input_dir': self.config.COM_OCEAN_INPUT.replace(rotdir,''),
-            'ocean_restart_dir': self.config.COM_OCEAN_RESTART.replace(rotdir,''),
-            'wave_grid_dir': self.config.COM_WAVE_GRID.replace(rotdir,''),
-            'wave_history_dir': self.config.COM_WAVE_HISTORY.replace(rotdir,''),
-            'wave_restart_dir': self.config.COM_WAVE_RESTART.replace(rotdir,''),
-            'wave_station_dir': self.config.COM_WAVE_STATION.replace(rotdir,'')
+            {'cycle_HH': self.runtime_config.current_cycle.strftime("%H"),
+             'cycle_YYYYMMDDHH': self.runtime_config.current_cycle.strftime("%Y%m%d%H"),
+             'first_cycle': self.runtime_config.current_cycle == self.config.SDATE
             }
         )
 
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
+        self.task_config = AttrDict(**self.config, **self.runtime_config, **path_dict, **local_dict)
 
     @classmethod
     @logit(logger)
@@ -120,6 +93,7 @@ class Archive(Task):
                 datasets.append('gdas_ocean_grib2')
 
             if(arch_dict.DO_WAVE == "YES"):
+                datasets.append('gdas_wave')
                 datasets.append('gdas_wave_restart')
 
         elif (arch_dict.RUN == "gfs"):
@@ -315,3 +289,31 @@ class Archive(Task):
         with tarfile.open(target, "w") as tarball:
             for filename in fileset:
                 tarball.add(filename)
+
+    @logit(logger)
+    def _gen_relative_paths(self, root_path: str) -> Dict:
+        """Generate a dict of paths in self.config relative to root_path
+
+        Parameters
+        ----------
+        root_path : str
+            Path to base all relative paths off of
+
+        Return
+        ------
+        rel_path_dict : Dict
+            Dictionary of paths relative to root_path.  Members will be named
+            based on the dict names in self.config.  For COM paths, the names will
+            follow COM_<NAME> --> <name>_dir.  For all other directories, the
+            names will follow <NAME> --> <name>_dir.
+        """
+
+        rel_path_dict = {}
+        for key, value in self.config.items():
+            if isinstance(value, str):
+                if root_path in value:
+                    rel_path = value.replace(root_path, '')
+                    rel_key = (key[4:] if key.startswith("COM_") else key).lower() + "_dir"
+                    rel_path_dict[rel_key] = rel_path
+
+        return rel_path_dict

@@ -1,6 +1,6 @@
-{% set cycle_YYYYMMDDHH = current_cycle | strftime('%Y%m%d%H') %}
+{% set head = "gdas.t" + cycle_HH + "z." %}
 name: "GDASICE"
 target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdasice.tar"
 mandatory:
-    - '{{ ice_history_dir }}/gdas.t{{ cyc }}z.*'
+    - '{{ ice_history_dir }}/{{ head }}*'
     - '{{ ice_history_dir }}/ice_in'

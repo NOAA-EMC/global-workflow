@@ -1,0 +1,6 @@
+{% set head = "gdas.t" + cycle_HH + "z." %}
+name: "GDASOCEAN"
+target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdasocean.tar"
+mandatory:
+    - '{{ ocean_history_dir }}/{{ head }}*'
+    - '{{ ocean_input_dir }}/.'

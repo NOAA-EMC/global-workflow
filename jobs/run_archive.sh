@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 # Change to a directory that you can write to
-export ATARDIR=/scratch1/NCEPDEV/global/David.Huber/archive_rotdir/minmon
+export ATARDIR=/NCEPDEV/emc-global/1year/David.Huber/HERA/test_archive
 # Change to the head of your clone
 export HOMEgfs=/scratch1/NCEPDEV/global/David.Huber/GW/gw_archive
 
@@ -16,6 +16,7 @@ export RUN=gdas
 export ROTDIR=/scratch1/NCEPDEV/global/David.Huber/para/comrot/minmon
 export PDY=20240302
 export cyc=00
+export SDATE=2024030118
 export assim_freq=6
 export NFHRS_PER_GROUP=3
 export COM_ATMOS_ANALYSIS=$ROTDIR/$RUN.$PDY/$cyc/analysis/atmos
@@ -67,13 +68,13 @@ export DO_OCN=NO
 export DO_WAVE=NO
 export WRITE_DOPOST=.true.
 export ARCHIVE_RUN=$RUN
-export HPSSARCH="NO"
-export LOCALARCH="YES"
+export HPSSARCH="YES"
+export LOCALARCH="NO"
 # Not needed for task, but required by wxflow
 export DATA=""
 export CDUMP=""
 
-rm -rf $ATARDIR
+#rm -rf $ATARDIR
 #mkdir -p $ATARDIR
 
 cd ${ROTDIR}

@@ -1,0 +1,5 @@
+name: "GDASOCEAN_RESTART"
+target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdasocean_restart.tar"
+mandatory:
+    - '{{ ocean_restart_dir }}/*'
+    - '{{ med_restart_dir }}/*'

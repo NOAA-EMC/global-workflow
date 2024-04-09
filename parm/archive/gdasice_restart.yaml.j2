@@ -1,5 +1,4 @@
-{% set cycle_YYYYMMDDHH = current_cycle | strftime('%Y%m%d%H') %}
-name: "GDAS_ICE_RESTART"
+name: "GDASICE_RESTART"
 target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdasice_restart.tar"
 mandatory:
     - '{{ ice_history_dir }}/*'

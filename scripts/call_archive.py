@@ -20,22 +20,18 @@ def main():
     # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
         'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_AERO', 'PARMgfs',
-        'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'cyc', 'atmos_analysis_dir',
-        'atmos_bufr_dir', 'NFHRS_PER_GROUP', 'HPSSARCH', 'LOCALARCH',
-        'atmos_gempak_dir', 'atmos_grib_0p25_dir', 'atmos_grib_0p50_dir',
-        'atmos_grib_1p00_dir', 'atmos_history_dir',
-        'atmos_input_dir', 'atmos_master_dir',
-        'atmos_minmon_dir', 'atmos_oznmon_dir', 'atmos_radmon_dir',
-        'atmos_restart_dir', 'atmos_track_dir',
-        'atmos_wmo_dir', 'chem_history_dir', 'chem_analysis_dir', 'conf_dir',
-        'ice_grib_dir', 'ice_history_dir', 'med_restart_dir', 'obs_dir',
-        'ocean_analysis_dir', 'ocean_grib_dir', 'ocean_history_dir',
-        'ocean_input_dir', 'ocean_restart_dir', 'wave_grid_dir',
-        'wave_history_dir', 'wave_restart_dir', 'wave_station_dir']
+        'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'cyc', 'cycle_YYYYMMDDHH',
+        'cycle_HH', 'first_cycle', 'NFHRS_PER_GROUP', 'HPSSARCH',
+        'LOCALARCH']
 
     archive_dict = AttrDict()
     for key in keys:
         archive_dict[key] = archive.task_config[key]
+
+    # Also get all relative paths
+    for key in archive.task_config.keys():
+        if key.endswith("_dir"):
+            archive_dict[key] = archive.task_config[key]
 
     # Determine which archives to create
     archive_sets = archive.configure(archive_dict)

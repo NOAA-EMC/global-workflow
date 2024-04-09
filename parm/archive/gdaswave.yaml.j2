@@ -1,0 +1,6 @@
+{% set head = "gdaswave.t" + cycle_HH + "z." %}
+name: "GDASWAVE"
+target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdaswave.tar"
+mandatory:
+    - "{{ wave_grid_dir }}/{{ head }}*"
+    - "{{ wave_station_dir }}/{{ head }}*"
