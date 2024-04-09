@@ -57,10 +57,10 @@ if [[ ${type} = "gfs" ]]; then
 
   if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
     {
-      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.anl"
-      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.anl.idx"
-      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.anl"
-      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.anl.idx"
+      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.anl.grib2"
+      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.anl.grib2.idx"
+      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.anl.grib2"
+      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.anl.grib2.idx"
     } >> "${DATA}/gfs_pgrb2b.txt"
 
     if [[ ${MODE} = "cycled" ]]; then
@@ -112,8 +112,8 @@ if [[ ${type} = "gfs" ]]; then
       fi
     fi
 
-    echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl"
-    echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl.idx"
+    echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl.grib2"
+    echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl.grib2.idx"
 
     #Only generated if there are cyclones to track
     cyclone_files=("avno.t${cyc}z.cyclone.trackatcfunix"
@@ -156,10 +156,10 @@ if [[ ${type} = "gfs" ]]; then
   } >> "${DATA}/gfs_downstream.txt"
 
   {
-    echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.anl"
-    echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.anl.idx"
-    echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl"
-    echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl.idx"
+    echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.anl.grib2"
+    echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.anl.grib2.idx"
+    echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl.grib2"
+    echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl.grib2.idx"
   } >> "${DATA}/gfsb.txt"
 
 
@@ -168,35 +168,35 @@ if [[ ${type} = "gfs" ]]; then
     fhr=$(printf %03i "${fh}")
     if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
       {
-        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grb2"
-        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grb2.idx"
+        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2"
+        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2.idx"
       } >> "${DATA}/gfs_flux.txt"
 
       {
-        echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.f${fhr}"
-        echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.f${fhr}.idx"
-        if [[ -s "${COM_ATMOS_GRIB_1p00}/${head}pgrb2b.1p00.f${fhr}" ]]; then
-           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.f${fhr}"
-           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.f${fhr}.idx"
+        echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.f${fhr}.grib2"
+        echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2b.0p25.f${fhr}.grib2.idx"
+        if [[ -s "${COM_ATMOS_GRIB_1p00}/${head}pgrb2b.1p00.f${fhr}.grib2" ]]; then
+           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.f${fhr}.grib2"
+           echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2b.1p00.f${fhr}.grib2.idx"
         fi
       } >> "${DATA}/gfs_pgrb2b.txt"
     fi
 
     {
-      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}"
-      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.idx"
+      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.grib2"
+      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.grib2.idx"
       echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}atm.logf${fhr}.txt"
     } >> "${DATA}/gfsa.txt"
 
 
     {
-      if [[ -s "${COM_ATMOS_GRIB_0p50}/${head}pgrb2.0p50.f${fhr}" ]]; then
-         echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.f${fhr}"
-         echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.f${fhr}.idx"
+      if [[ -s "${COM_ATMOS_GRIB_0p50}/${head}pgrb2.0p50.f${fhr}.grib2" ]]; then
+         echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.f${fhr}.grib2"
+         echo "${COM_ATMOS_GRIB_0p50/${ROTDIR}\//}/${head}pgrb2.0p50.f${fhr}.grib2.idx"
       fi
-      if [[ -s "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.f${fhr}" ]]; then
-         echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}"
-         echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}.idx"
+      if [[ -s "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.f${fhr}.grib2" ]]; then
+         echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}.grib2"
+         echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}.grib2.idx"
       fi
     } >> "${DATA}/gfsb.txt"
 
@@ -280,8 +280,8 @@ if [[ ${type} = "gfs" ]]; then
     head="gfs.t${cyc}z."
     rm -f "${DATA}/gfs_flux_1p00.txt"; touch "${DATA}/gfs_flux_1p00.txt"
     {
-      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}flux.1p00.f???"
-      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}flux.1p00.f???.idx"
+      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}flux.1p00.f???.grib2"
+      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}flux.1p00.f???.grib2.idx"
     } >> "${DATA}/gfs_flux_1p00.txt"
   fi
 
@@ -341,10 +341,10 @@ if [[ ${type} == "gdas" ]]; then
 
   #..................
   {
-    echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl"
-    echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl.idx"
-    echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl"
-    echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl.idx"
+    echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl.grib2"
+    echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.anl.grib2.idx"
+    echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl.grib2"
+    echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.anl.grib2.idx"
     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}atmanl.nc"
     echo "${COM_ATMOS_ANALYSIS/${ROTDIR}\//}/${head}sfcanl.nc"
     if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atmvar.yaml" ]]; then
@@ -395,12 +395,12 @@ if [[ ${type} == "gdas" ]]; then
     fh=0
     while [[ ${fh} -le 9 ]]; do
       fhr=$(printf %03i "${fh}")
-      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grb2"
-      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grb2.idx"
-      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}"
-      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.idx"
-      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}"
-      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}.idx"
+      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2"
+      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2.idx"
+      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.grib2"
+      echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.grib2.idx"
+      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}.grib2"
+      echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}.grib2.idx"
       echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}atm.logf${fhr}.txt"
       echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}atmf${fhr}.nc"
       echo "${COM_ATMOS_HISTORY/${ROTDIR}\//}/${head}sfcf${fhr}.nc"
@@ -408,7 +408,7 @@ if [[ ${type} == "gdas" ]]; then
     done
     flist="001 002 004 005 007 008"
     for fhr in ${flist}; do
-      file="${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grb2"
+      file="${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2"
       if [[ -s "${file}" ]]; then
         echo "${file}"
         echo "${file}.idx"
