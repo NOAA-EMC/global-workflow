@@ -164,18 +164,18 @@ jobs/JGFS_ATMOS_WAFS_GRIB2
 jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
+scripts/exgdas_global_marine_analysis_ecen.py
 scripts/exgfs_atmos_wafs_blending.sh
 scripts/exgfs_atmos_wafs_blending_0p25.sh
 scripts/exgfs_atmos_wafs_gcip.sh
 scripts/exgfs_atmos_wafs_grib.sh
 scripts/exgfs_atmos_wafs_grib2.sh
 scripts/exgfs_atmos_wafs_grib2_0p25.sh
+scripts/exglobal_prep_ocean_obs.py
 # ush symlinks
 ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
-ush/exgdas_global_marine_analysis_ecen.py
-ush/exglobal_prep_ocean_obs.py
 ush/fix_precip.sh
 ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh

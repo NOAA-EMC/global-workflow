@@ -22,7 +22,7 @@ YMD=${gPDY} HH=${gcyc} generate_com -rx \
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/ush/exgdas_global_marine_analysis_ecen.py}
+EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/scripts/exgdas_global_marine_analysis_ecen.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
