@@ -8,39 +8,46 @@ else
   source "${HOMEgfs}/ush/jjob_header.sh" -e "prepsnowobs" -c "base prepsnowobs"
 fi
 
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
 # Restart conditions for GFS cycle come from GDAS
 rCDUMP=${RUN}
-[[ ${RUN} == "gfs" ]] && export rCDUMP="gdas"
+export rCDUMP="${RUN/gfs/gdas}"
 
 # Get OBS for ENKFGDAS run from GDAS
 oCDUMP=${RUN}
-[[ ${RUN} == "enkfgdas" ]] && export oCDUMP="gdas"
+export oCDUMP="${RUN/enkfgdas/gdas}"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-gPDY=${GDATE:0:8}
-gcyc=${GDATE:8:2}
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+declare -rx GDATE
+# shellcheck disable=
+declare -rx gPDY="${GDATE:0:8}"
+declare -rx gcyc="${GDATE:8:2}"
+
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-RUN=${oCDUMP} MEMDIR="" YMD=${PDY} HH=${cyc} generate_com -rx COMIN_OBS:COM_OBS_TMPL
-RUN=${RUN} YMD=${PDY} HH=${cyc} generate_com -rx COMOUT_OBS:COM_OBS_TMPL
+RUN=${oCDUMP} MEMDIR="" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
+RUN=${RUN} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 
-RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
 mkdir -m 775 -p "${COMOUT_OBS}"
 
 ###############################################################
 # Run relevant script
-EXSCRIPT=${GDASSNOWPREPPY:-${SCRgfs}/exglobal_prep_snow_obs.py}
-${EXSCRIPT}
+###############################################################
+${GDASSNOWPREPPY:-${SCRgfs}/exglobal_prep_snow_obs.py}
 status=$?
 [[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")
 
