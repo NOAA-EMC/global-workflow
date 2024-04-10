@@ -34,7 +34,7 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 source "${ROOT_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules)
+  hera | orion | hercules | wcoss2)
     echo "Running Automated Testing on ${MACHINE_ID}"
     source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
     ;;
