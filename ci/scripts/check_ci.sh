@@ -18,7 +18,7 @@ if [[ $? != "0" ]]; then
    export GH="${HOME}/bin/gh"
 fi
 
-REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines

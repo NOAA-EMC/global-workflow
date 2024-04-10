@@ -17,8 +17,12 @@ set -eux
 #################################################################
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
-export GH=${HOME}/bin/gh
-export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+
+export GH=$(which gh)
+if [[ $? != "0" ]]; then
+   export GH="${HOME}/bin/gh"
+fi
+export REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging
