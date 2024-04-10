@@ -13,7 +13,11 @@ scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-GH=${HOME}/bin/gh
+export GH=$(which gh)
+if [[ $? != "0" ]]; then
+   export GH="${HOME}/bin/gh"
+fi
+
 REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 #########################################################################
