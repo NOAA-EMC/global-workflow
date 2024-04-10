@@ -11,7 +11,7 @@ logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=Fals
 
 def input_args():
     """
-    Parse command-line arguments.
+    Parse command-line arguments. test
 
     Returns
     -------
