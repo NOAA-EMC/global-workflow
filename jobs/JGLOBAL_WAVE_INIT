@@ -10,7 +10,7 @@ export errchk=${errchk:-err_chk}
 export MP_PULSE=0
 
 # Set COM Paths
-YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_PREP
 
 mkdir -m 775 -p ${COM_WAVE_PREP}
 

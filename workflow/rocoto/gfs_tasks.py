@@ -704,7 +704,7 @@ class GFSTasks(Tasks):
     def ocnanalchkpt(self):
 
         deps = []
-        if self.app_config.do_ocnanalecen:
+        if self.app_config.do_hybvar:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalecen'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
@@ -1469,7 +1469,7 @@ class GFSTasks(Tasks):
 
     def gempakmeta(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1492,7 +1492,7 @@ class GFSTasks(Tasks):
 
     def gempakmetancdc(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1515,7 +1515,7 @@ class GFSTasks(Tasks):
 
     def gempakncdcupapgif(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1564,7 +1564,9 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlprod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}goesupp'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('npoess')
         task_name = f'{self.cdump}npoess_pgrb2_0p5deg'
@@ -1573,7 +1575,7 @@ class GFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/npoess_pgrb2_0p5deg.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/npoess.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2233,6 +2235,21 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}arch'}
             deps.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_gempak:
+            if self.cdump in ['gdas']:
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}gempakmetancdc'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            elif self.cdump in ['gfs']:
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}gempakmeta'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.cdump}gempakncdcupapgif'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                if self.app_config.do_goes:
+                    dep_dict = {'type': 'task', 'name': f'{self.cdump}gempakgrb2spec'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    dep_dict = {'type': 'task', 'name': f'{self.cdump}npoess_pgrb2_0p5deg'}
+                    deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

@@ -64,7 +64,7 @@ EOF
             increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}atmi${incfhr}.nc"
           fi
           if [[ ! -f ${increment_file} ]]; then
-            echo "ERROR: DOIAU = ${DOIAU}, but missing increment file for fhr ${incfhr} at ${increment_file}"
+            echo "FATAL ERROR: DOIAU = ${DOIAU}, but missing increment file for fhr ${incfhr} at ${increment_file}"
             echo "Abort!"
             exit 1
           fi
@@ -148,7 +148,7 @@ EOF
 
   _suite_file="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml"
   if [[ ! -f ${_suite_file} ]]; then
-    echo "FATAL: CCPP Suite file ${_suite_file} does not exist!"
+    echo "FATAL ERROR: CCPP Suite file ${_suite_file} does not exist!"
     exit 2
   fi
 
@@ -242,17 +242,25 @@ EOF
       MM=$(printf %02d "${month}")
       ${NLN} "${FIXgfs}/aer/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
     done
-    ${NLN} "${FIXgfs}/lut/optics_BC.v1_3.dat"  "${DATA}/optics_BC.dat"
-    ${NLN} "${FIXgfs}/lut/optics_OC.v1_3.dat"  "${DATA}/optics_OC.dat"
-    ${NLN} "${FIXgfs}/lut/optics_DU.v15_3.dat" "${DATA}/optics_DU.dat"
-    ${NLN} "${FIXgfs}/lut/optics_SS.v3_3.dat"  "${DATA}/optics_SS.dat"
-    ${NLN} "${FIXgfs}/lut/optics_SU.v1_3.dat"  "${DATA}/optics_SU.dat"
   fi
+    
+  ${NLN} "${FIXgfs}/lut/optics_BC.v1_3.dat"  "${DATA}/optics_BC.dat"
+  ${NLN} "${FIXgfs}/lut/optics_OC.v1_3.dat"  "${DATA}/optics_OC.dat"
+  ${NLN} "${FIXgfs}/lut/optics_DU.v15_3.dat" "${DATA}/optics_DU.dat"
+  ${NLN} "${FIXgfs}/lut/optics_SS.v3_3.dat"  "${DATA}/optics_SS.dat"
+  ${NLN} "${FIXgfs}/lut/optics_SU.v1_3.dat"  "${DATA}/optics_SU.dat"
 
   ${NLN} "${FIXgfs}/am/global_co2historicaldata_glob.txt" "${DATA}/co2historicaldata_glob.txt"
   ${NLN} "${FIXgfs}/am/co2monthlycyc.txt"                 "${DATA}/co2monthlycyc.txt"
-  if [[ ${ICO2} -gt 0 ]]; then
-    for file in $(ls "${FIXgfs}/am/fix_co2_proj/global_co2historicaldata"*) ; do
+  # Set historical CO2 values based on whether this is a reforecast run or not
+  # Ref. issue 2403
+  local co2dir
+  co2dir="fix_co2_proj"
+  if [[ ${reforecast:-"NO"} == "YES" ]]; then
+    co2dir="co2dat_4a"
+  fi
+  if (( ICO2 > 0 )); then
+    for file in $(ls "${FIXgfs}/am/${co2dir}/global_co2historicaldata"*) ; do
       ${NLN} "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
@@ -432,26 +440,26 @@ EOF
   fi
 
   # Stochastic Physics Options
-  if [[ ${SET_STP_SEED:-"YES"} = "YES" ]]; then
-    ISEED_SKEB=$((current_cycle*1000 + MEMBER*10 + 1))
-    ISEED_SHUM=$((current_cycle*1000 + MEMBER*10 + 2))
-    ISEED_SPPT=$((current_cycle*1000 + MEMBER*10 + 3))
-    ISEED_CA=$(( (current_cycle*1000 + MEMBER*10 + 4) % 2147483647 ))
-    ISEED_LNDP=$(( (current_cycle*1000 + MEMBER*10 + 5) % 2147483647 ))
+  if [[ ${DO_SPPT:-"NO"} = "YES" ]]; then
+    do_sppt=".true."
+    ISEED_SPPT=$((current_cycle*10000 + ${MEMBER#0}*100 + 3)),$((current_cycle*10000 + ${MEMBER#0}*100 + 4)),$((current_cycle*10000 + ${MEMBER#0}*100 + 5)),$((current_cycle*10000 + ${MEMBER#0}*100 + 6)),$((current_cycle*10000 + ${MEMBER#0}*100 + 7))
   else
     ISEED=${ISEED:-0}
   fi
+  if (( MEMBER > 0 )) && [[ ${DO_CA:-"NO"} = "YES" ]]; then
+    ISEED_CA=$(( (current_cycle*10000 + ${MEMBER#0}*100 + 18) % 2147483647 ))
+  fi
   if [[ ${DO_SKEB} = "YES" ]]; then
     do_skeb=".true."
-  fi
-  if [[ ${DO_SPPT} = "YES" ]]; then
-    do_sppt=".true."
+    ISEED_SKEB=$((current_cycle*10000 + ${MEMBER#0}*100 + 1))
   fi
   if [[ ${DO_SHUM} = "YES" ]]; then
     do_shum=".true."
+    ISEED_SHUM=$((current_cycle*1000 + MEMBER*10 + 2))
   fi
   if [[ ${DO_LAND_PERT} = "YES" ]]; then
     lndp_type=${lndp_type:-2}
+    ISEED_LNDP=$(( (current_cycle*1000 + MEMBER*10 + 5) % 2147483647 ))
     LNDP_TAU=${LNDP_TAU:-21600}
     LNDP_SCALE=${LNDP_SCALE:-500000}
     ISEED_LNDP=${ISEED_LNDP:-${ISEED}}
@@ -561,7 +569,7 @@ WW3_postdet() {
       if [[ ${RERUN} = "NO" ]]; then
         echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
       else
-        echo "ERROR: Wave IC is missing in RERUN, exiting."
+        echo "FATAL ERROR: Wave IC ${waverstfile} is missing in RERUN, exiting."
         exit 1
       fi
     else
@@ -584,7 +592,7 @@ WW3_postdet() {
   if [[ "${WW3ICEINP}" = "YES" ]]; then
     local wavicefile="${COM_WAVE_PREP}/${RUNwave}.${WAVEICE_FID}.${cycle}.ice"
     if [[ ! -f ${wavicefile} ]]; then
-      echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
+      echo "FATAL ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file ${wavicefile}"
       echo "Abort!"
       exit 1
     fi
@@ -594,7 +602,7 @@ WW3_postdet() {
   if [[ "${WW3CURINP}" = "YES" ]]; then
     local wavcurfile="${COM_WAVE_PREP}/${RUNwave}.${WAVECUR_FID}.${cycle}.cur"
     if [[ ! -f ${wavcurfile} ]]; then
-      echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
+      echo "FATAL ERROR: WW3CURINP = ${WW3CURINP}, but missing current file ${wavcurfile}"
       echo "Abort!"
       exit 1
     fi
@@ -689,12 +697,18 @@ MOM6_postdet() {
   # Link increment
   if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
       if [[ ! -f "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" ]]; then
-          echo "FATAL ERROR: Ocean increment not found, ABORT!"
+          echo "FATAL ERROR: Ocean increment ${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc not found, ABORT!"
           exit 111
       fi
       ${NLN} "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
   fi
 
+  # GEFS perturbations
+  # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
+  #     to ensure it does not interfere with the GFS
+  if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+     ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc"
+  fi
   # Copy MOM6 fixed files
   ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
 
@@ -709,13 +723,11 @@ MOM6_postdet() {
 
   # If using stochatic parameterizations, create a seed that does not exceed the
   # largest signed integer
-  if [[ "${DO_OCN_SPPT}" = "YES" ]] || [[ "${DO_OCN_PERT_EPBL}" = "YES" ]]; then
-    if [[ ${SET_STP_SEED:-"YES"} = "YES" ]]; then
-      ISEED_OCNSPPT=$(( (current_cycle*1000 + MEMBER*10 + 6) % 2147483647 ))
-      ISEED_EPBL=$(( (current_cycle*1000 + MEMBER*10 + 7) % 2147483647 ))
-    else
-      ISEED=${ISEED:-0}
-    fi
+  if [[ ${DO_OCN_SPPT} = "YES" ]]; then
+    ISEED_OCNSPPT=$((current_cycle*10000 + ${MEMBER#0}*100 + 8)),$((current_cycle*10000 + ${MEMBER#0}*100 + 9)),$((current_cycle*10000 + ${MEMBER#0}*100 + 10)),$((current_cycle*10000 + ${MEMBER#0}*100 + 11)),$((current_cycle*10000 + ${MEMBER#0}*100 + 12))
+  fi
+  if [[ ${DO_OCN_PERT_EPBL} = "YES" ]]; then
+    ISEED_EPBL=$((current_cycle*10000 + ${MEMBER#0}*100 + 13)),$((current_cycle*10000 + ${MEMBER#0}*100 + 14)),$((current_cycle*10000 + ${MEMBER#0}*100 + 15)),$((current_cycle*10000 + ${MEMBER#0}*100 + 16)),$((current_cycle*10000 + ${MEMBER#0}*100 + 17))
   fi
 
   # Link output files

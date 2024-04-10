@@ -5,12 +5,6 @@
 
 echo "BEGIN: config.efcs"
 
-# Turn off components in ensemble
-# export DO_AERO="NO"
-# export DO_OCN="NO"
-# export DO_ICE="NO"
-export DO_WAVE="NO"
-
 export CASE="${CASE_ENS}"
 
 # Source model specific information that is resolution dependent

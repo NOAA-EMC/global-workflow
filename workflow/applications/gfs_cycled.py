@@ -30,10 +30,6 @@ class GFSCycledAppConfig(AppConfig):
             elif eupd_cdump in ['gfs', 'gdas']:
                 self.eupd_cdumps = [eupd_cdump]
 
-        self.do_ocnanalecen = False
-        if self.nens > 3:
-            self.do_ocnanalecen = True
-
     def _get_app_configs(self):
         """
         Returns the config_files that are involved in the cycled app
@@ -48,7 +44,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_jediocnvar:
             configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat', 'ocnanalrun']
-            if self.do_ocnanalecen:
+            if self.do_hybvar:
                 configs += ['ocnanalecen']
             configs += ['ocnanalchkpt', 'ocnanalpost']
             if self.do_vrfy_oceanda:
@@ -91,7 +87,9 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['metp']
 
         if self.do_gempak:
-            configs += ['gempak', 'npoess']
+            configs += ['gempak']
+            if self.do_goes:
+                configs += ['npoess']
 
         if self.do_bufrsnd:
             configs += ['postsnd']
@@ -144,7 +142,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_jediocnvar:
             gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat', 'ocnanalrun']
-            if self.do_ocnanalecen:
+            if self.do_hybvar:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalecen']
             gdas_gfs_common_tasks_before_fcst += ['ocnanalchkpt', 'ocnanalpost']
             if self.do_vrfy_oceanda:
@@ -261,8 +259,9 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += ['gempak']
             gfs_tasks += ['gempakmeta']
             gfs_tasks += ['gempakncdcupapgif']
-            gfs_tasks += ['npoess_pgrb2_0p5deg']
-            gfs_tasks += ['gempakpgrb2spec']
+            if self.do_goes:
+                gfs_tasks += ['npoess_pgrb2_0p5deg']
+                gfs_tasks += ['gempakpgrb2spec']
 
         if self.do_awips:
             gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']

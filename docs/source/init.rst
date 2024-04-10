@@ -51,6 +51,7 @@ Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs ar
    Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C96C48
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48
+   AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C96C48
 
 Start date = 2021122018
 
@@ -111,6 +112,7 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
    Jet: /lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/C48C48mx500
+   AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C48C48mx500
 
 Start date = 2021032312
 
@@ -246,7 +248,7 @@ Automated Generation
 Cycled mode
 -----------
 
-Not yet supported.
+Not yet supported. See the UFS_UTILS documentation on the gdas_init utility to generate your own ICs for cycled or forecast-only mode: https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init
 
 .. _forecastonly-coupled:
 
@@ -319,14 +321,14 @@ Manual Generation
 
 The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
 
-The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users should see the documentation to generation initial conditions in the UFS_UTILS repository. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
+The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users should see the `documentation to generation initial conditions in the UFS_UTILS repository <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init>`_. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
 
 * pre-GFSv14
 * GFSv14
 * GFSv15
 * GFSv16
 
-See instructions in UFS_UTILS to clone, build and generate initial conditions.
+See instructions in UFS_UTILS to clone, build and generate initial conditions: https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init
 
 .. _warmstarts-prod:
 

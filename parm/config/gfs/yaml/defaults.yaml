@@ -8,6 +8,9 @@ base:
   DO_GOES: "NO"
   FHMAX_GFS: 120
   DO_VRFY_OCEANDA: "NO"
+  GSI_SOILANAL: "NO"
+  EUPD_CYC: "gdas"
+  FHMAX_ENKF_GFS: 12
 
 atmanl:
   LAYOUT_X_ATMANL: 8
@@ -37,7 +40,9 @@ ocnanal:
   SABER_BLOCKS_YAML: ""
   NICAS_RESOL: 1
   NICAS_GRID_SIZE: 15000
+
 prepoceanobs:
+  SOCA_INPUT_FIX_DIR: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca"  # TODO: These need to go to glopara fix space.
   SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in ocnanal
   OBSPREP_YAML: "${PARMgfs}/gdas/soca/obsprep/obsprep_config.yaml"
   DMPDIR: "/scratch1/NCEPDEV/global/glopara/data/experimental_obs"

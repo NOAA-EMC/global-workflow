@@ -29,6 +29,17 @@ export PARMgfs="${HOMEgfs}/parm"
 export SCRgfs="${HOMEgfs}/scripts"
 export USHgfs="${HOMEgfs}/ush"
 
+export FIXam="${FIXgfs}/am"
+export FIXaer="${FIXgfs}/aer"
+export FIXcpl="${FIXgfs}/cpl"
+export FIXlut="${FIXgfs}/lut"
+export FIXorog="${FIXgfs}/orog"
+export FIXcice="${FIXgfs}/cice"
+export FIXmom="${FIXgfs}/mom6"
+export FIXreg2grb2="${FIXgfs}/reg2grb2"
+export FIXugwd="${FIXgfs}/ugwd"
+export FIXgdas="${FIXgfs}/gdas"
+
 ########################################################################
 
 # GLOBAL static environment parameters
@@ -37,6 +48,12 @@ export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 export BASE_CPLIC="@BASE_CPLIC@"
+
+# Gempak from external models
+# Default locations are to dummy locations for testing
+export COMINecmwf=@COMINecmwf@
+export COMINnam=@COMINnam@
+export COMINukmet=@COMINukmet@
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -77,6 +94,7 @@ export MODE="@MODE@" # cycled/forecast-only
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
+export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
 
@@ -142,6 +160,20 @@ export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 # APP settings
 export APP=@APP@
 
+shopt -s extglob
+# Adjust APP based on RUN
+case "${RUN}" in
+    gfs)   # Turn off aerosols
+        APP="${APP/%A}"
+        ;;
+    enkf*) # Turn off aerosols and waves
+        APP="${APP/%+([WA])}"
+        ;;
+    *)     # Keep app unchanged
+        ;;
+esac
+shopt -u extglob
+
 # Defaults:
 export DO_ATM="YES"
 export DO_COUPLED="NO"
@@ -162,6 +194,7 @@ export CASE="@CASECTL@"
 export CASE_ENS="@CASEENS@"
 export OCNRES="@OCNRES@"
 export ICERES="${OCNRES}"
+
 # These are the currently recommended grid-combinations
 case "${CASE}" in
     "C48")
@@ -233,7 +266,7 @@ export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set 
 export FHOUT_OCNICE=3
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
-export EUPD_CYC="gdas"
+export EUPD_CYC="@EUPD_CYC@"
 
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
@@ -241,7 +274,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 export FHMAX_GFS=@FHMAX_GFS@
-export FHOUT_GFS=3
+export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 export FHOUT_OCNICE_GFS=6
@@ -250,7 +283,11 @@ if (( gfs_cyc != 0 )); then
 else
     export STEP_GFS="0"
 fi
-export ILPOST=1           # gempak output frequency up to F120
+# TODO: Change gempak to use standard out variables (#2348)
+export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
+if (( FHMAX_HF_GFS < 120 )); then
+    export ILPOST=${FHOUT_GFS}
+fi
 
 # GFS restart interval in hours
 export restart_interval_gfs=12
@@ -295,16 +332,20 @@ export DO_MERGENSST="@DO_MERGENSST@"
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
 export NMEM_ENS=@NMEM_ENS@
-export NMEM_ENS_GFS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
+
+# Early-cycle EnKF parameters
+export NMEM_ENS_GFS=30
+export NMEM_ENS_GFS_OFFSET=20
+export DO_CALC_INCREMENT_ENKF_GFS="NO"
 
 # EnKF output frequency
 if [[ ${DOHYBVAR} = "YES" ]]; then
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
-    export FHMAX_ENKF_GFS=120
+    export FHMAX_ENKF_GFS=@FHMAX_ENKF_GFS@
     export FHOUT_ENKF_GFS=3
     if [[ ${l4densvar} = ".true." ]]; then
         export FHOUT=1
@@ -331,6 +372,8 @@ fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
 
+export GSI_SOILANAL=@GSI_SOILANAL@
+
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
 if [[ ${DONST} = "YES" ]]; then export FNTSFA="        "; fi
@@ -347,9 +390,6 @@ export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 
-# Write analysis files for early cycle EnKF
-export DO_CALC_INCREMENT_ENKF_GFS="YES"
-
 # Stratospheric increments to zero
 export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
 export INCVARS_EFOLD="5"
@@ -361,7 +401,7 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
 export DO_FIT2OBS="YES"      # Run fit to observations package
 export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
@@ -381,7 +421,7 @@ export FITSARC="YES"
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
-# The monitor jobs are not yet supported for JEDIATMVAR
+# The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring

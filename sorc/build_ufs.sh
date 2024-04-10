@@ -6,6 +6,7 @@ cwd=$(pwd)
 # Default settings
 APP="S2SWA"
 CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: does the g-w need to build with all these CCPP_SUITES?
+PDLIB="ON"
 
 while getopts ":da:j:vw" option; do
   case "${option}" in
@@ -13,7 +14,7 @@ while getopts ":da:j:vw" option; do
     a) APP="${OPTARG}";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
-    w) PDLIB="ON";; 
+    w) PDLIB="OFF";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       ;;
@@ -36,7 +37,7 @@ CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
-  ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+  BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua

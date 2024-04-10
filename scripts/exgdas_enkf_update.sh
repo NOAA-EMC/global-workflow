@@ -56,7 +56,6 @@ ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
 # Namelist parameters
 USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"NO"}
-NMEM_ENS=${NMEM_ENS:-80}
 NAM_ENKF=${NAM_ENKF:-""}
 SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
@@ -70,7 +69,7 @@ corrlength=${corrlength:-1250}
 lnsigcutoff=${lnsigcutoff:-2.5}
 analpertwt=${analpertwt:-0.85}
 readin_localization_enkf=${readin_localization_enkf:-".true."}
-reducedgrid=${reducedgrid:-".true."}
+reducedgrid=${reducedgrid:-".false."}
 letkf_flag=${letkf_flag:-".false."}
 getkf=${getkf:-".false."}
 denkf=${denkf:-".false."}
@@ -81,12 +80,19 @@ cnvw_option=${cnvw_option:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
 IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
-if [ $RUN = "enkfgfs" ]; then
+NMEM_ENS_MAX=${NMEM_ENS:-80}
+if [ "${RUN}" = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
+   NMEM_ENS=${NMEM_ENS_GFS:-30}
+   ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
+   mem_offset=$((ec_offset * cyc/6))
 else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
+   NMEM_ENS=${NMEM_ENS:-80}
+   mem_offset=0
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
+GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
 
 ################################################################################
 
@@ -178,12 +184,17 @@ else
 fi
 nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
 for imem in $(seq 1 $NMEM_ENS); do
+   smem=$((imem + mem_offset))
+   if (( smem > NMEM_ENS_MAX )); then
+      smem=$((smem - NMEM_ENS_MAX))
+   fi
+   gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
 
-   MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
+   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
       COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
-   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
+   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
       COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
    if [ $lobsdiag_forenkf = ".false." ]; then
@@ -203,6 +214,10 @@ for imem in $(seq 1 $NMEM_ENS); do
    for FHR in $nfhrs; do
       ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      if [ $GSI_SOILANAL = "YES" ]; then
+         ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
+             "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      fi
       if [ $cnvw_option = ".true." ]; then
          ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}.nc" \
             "sfgsfc_${PDY}${cyc}_fhr0${FHR}_${memchar}"
@@ -224,6 +239,10 @@ for imem in $(seq 1 $NMEM_ENS); do
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       fi
+      if [ $GSI_SOILANAL = "YES" ]; then
+          ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
+           "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
+      fi
    done
 done
 
@@ -238,10 +257,10 @@ for FHR in $nfhrs; do
    fi
 done
 
-if [ $USE_CFP = "YES" ]; then
+if [[ $USE_CFP = "YES" ]]; then
    chmod 755 $DATA/mp_untar.sh
    ncmd=$(cat $DATA/mp_untar.sh | wc -l)
-   if [ $ncmd -gt 0 ]; then
+   if [[ $ncmd -gt 0 ]]; then
       ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
@@ -398,8 +417,8 @@ cat stdout stderr > "${COM_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
 
 ################################################################################
 #  Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+cd "$pwd"
+[[ $mkdata = "YES" ]] && rm -rf "${DATA}"
 
 
-exit $err
+exit ${err}
