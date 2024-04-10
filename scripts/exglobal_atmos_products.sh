@@ -42,7 +42,7 @@ fi
 # Section creating pressure grib2 interpolated products
 
 # Files needed by ${INTERP_ATMOS_MASTERSH}
-MASTER_FILE="${COM_ATMOS_MASTER}/${PREFIX}master${fhr3}.grib2"
+MASTER_FILE="${COM_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
 
 # Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
 # Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
@@ -172,7 +172,7 @@ done  # for (( nset=1 ; nset <= downset ; nset++ ))
 #---------------------------------------------------------------
 
 # Create the index file for the sflux master, if it exists.
-FLUX_FILE="${COM_ATMOS_MASTER}/${PREFIX}sflux${fhr3}.grib2"
+FLUX_FILE="${COM_ATMOS_MASTER}/${PREFIX}sflux.${fhr3}.grib2"
 if [[ -s "${FLUX_FILE}" ]]; then
   ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.idx"
 fi
@@ -250,8 +250,8 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
       if (( FORECAST_HOUR % 3 == 0 )); then
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF"           "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}atm${fhr3}.nc"
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF"           "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2.grib2"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2.grib2.idx"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sflux.${fhr3}.grib2.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sflux.${fhr3}.grib2.grib2.idx"
       fi
     elif [[ "${RUN}" == "gfs" ]]; then
 
@@ -261,8 +261,8 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
       fi
 
       if [[ -s "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2" ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2.idx"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sflux.${fhr3}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sflux.${fhr3}.grib2.idx"
       fi
     fi  # end if RUN=gfs
 

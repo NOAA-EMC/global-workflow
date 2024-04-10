@@ -168,8 +168,8 @@ if [[ ${type} = "gfs" ]]; then
     fhr=$(printf %03i "${fh}")
     if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
       {
-        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2"
-        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2.idx"
+        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sflux.f${fhr}.grib2"
+        echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sflux.f${fhr}.grib2.idx"
       } >> "${DATA}/gfs_flux.txt"
 
       {
@@ -395,8 +395,8 @@ if [[ ${type} == "gdas" ]]; then
     fh=0
     while [[ ${fh} -le 9 ]]; do
       fhr=$(printf %03i "${fh}")
-      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2"
-      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2.idx"
+      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sflux.f${fhr}.grib2"
+      echo "${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sflux.f${fhr}.grib2.idx"
       echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.grib2"
       echo "${COM_ATMOS_GRIB_0p25/${ROTDIR}\//}/${head}pgrb2.0p25.f${fhr}.grib2.idx"
       echo "${COM_ATMOS_GRIB_1p00/${ROTDIR}\//}/${head}pgrb2.1p00.f${fhr}.grib2"
@@ -408,7 +408,7 @@ if [[ ${type} == "gdas" ]]; then
     done
     flist="001 002 004 005 007 008"
     for fhr in ${flist}; do
-      file="${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sfluxf${fhr}.grib2"
+      file="${COM_ATMOS_MASTER/${ROTDIR}\//}/${head}sflux.f${fhr}.grib2"
       if [[ -s "${file}" ]]; then
         echo "${file}"
         echo "${file}.idx"
