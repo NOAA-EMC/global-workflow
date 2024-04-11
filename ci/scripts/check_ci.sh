@@ -13,8 +13,12 @@ scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-GH=${HOME}/bin/gh
-REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+export GH=$(which gh)
+if [[ $? != "0" ]]; then
+   export GH="${HOME}/bin/gh"
+fi
+
+REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
