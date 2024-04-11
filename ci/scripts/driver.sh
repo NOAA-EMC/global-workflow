@@ -113,7 +113,7 @@ for pr in ${pr_list}; do
     else
       for case in ${experiments}; do
         case_name=$(basename "${case}")
-        cancel_slurm_jobs "${case_name}"
+        cancel_batch_jobs "${case_name}"
         {
           echo "Canceled all jobs for experiment ${case_name} in PR:${pr} on ${MACHINE_ID^}"
         } >> "${output_ci_single}"
