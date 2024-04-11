@@ -55,11 +55,11 @@ class Archive(Task):
         # Find all absolute paths in the environment and get their relative paths from ${ROTDIR}
         path_dict = self._gen_relative_paths(rotdir)
         local_dict = AttrDict(
-          {'cycle_HH': self.runtime_config.current_cycle.strftime("%H"),
-           'cycle_YYYYMMDDHH': self.runtime_config.current_cycle.strftime("%Y%m%d%H"),
-           'cycle_YYYYMMDD': self.runtime_config.current_cycle.strftime("%Y%m%d"),
-           'first_cycle': self.runtime_config.current_cycle == self.config.SDATE
-           }
+            {'cycle_HH': self.runtime_config.current_cycle.strftime("%H"),
+             'cycle_YYYYMMDDHH': self.runtime_config.current_cycle.strftime("%Y%m%d%H"),
+             'cycle_YYYYMMDD': self.runtime_config.current_cycle.strftime("%Y%m%d"),
+             'first_cycle': self.runtime_config.current_cycle == self.config.SDATE
+             }
         )
 
         if self.config.REALTIME:
@@ -162,7 +162,7 @@ class Archive(Task):
             if mod == 0 or first_day:
                 SAVEFCSTIC = True
 
-        if(arch_dict.RUN == "gdas"):
+        if arch_dict.RUN == "gdas":
 
             datasets = ['gdas']
 
@@ -178,26 +178,26 @@ class Archive(Task):
             if save_warm_ic_b or arch_dict.SAVEFCSTIC:
                 datasets.append("gdas_restartb")
 
-            if(arch_dict.DO_ICE == "YES"):
+            if arch_dict.DO_ICE == "YES":
                 datasets.append('gdasice')
 
-            if(arch_dict.DO_OCN == "YES"):
+            if arch_dict.DO_OCN == "YES":
                 datasets.append('gdasocean')
                 datasets.append('gdasocean_analysis')
 
-            if(arch_dict.DO_WAVE == "YES"):
+            if arch_dict.DO_WAVE == "YES":
                 datasets.append('gdaswave')
 
-        elif (arch_dict.RUN == "gfs"):
+        elif arch_dict.RUN == "gfs":
             raise NotImplementedError("Archiving is not yet set up for GFS runs")
 
-        elif (arch_dict.RUN == "enkfgdas"):
+        elif arch_dict.RUN == "enkfgdas":
             raise NotImplementedError("Archiving is not yet set up for ENKF GDAS runs")
 
-        elif (arch_dict.RUN == "enkfgfs"):
+        elif arch_dict.RUN == "enkfgfs":
             raise NotImplementedError("Archiving is not yet set up for ENKF GFS runs")
 
-        elif (arch_dict.RUN == "gefs"):
+        elif arch_dict.RUN == "gefs":
             raise NotImplementedError("Archiving is not yet set up for GEFS runs")
 
         else:
