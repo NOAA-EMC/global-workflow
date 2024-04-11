@@ -3,6 +3,11 @@
 export ATARDIR=/NCEPDEV/emc-global/1year/David.Huber/HERA/test_archive
 # Change to the head of your clone
 export HOMEgfs=/scratch1/NCEPDEV/global/David.Huber/GW/gw_archive
+# Change to the name of an experiment
+export PSLOT=minmon
+export ROTDIR=/scratch1/NCEPDEV/global/David.Huber/para/comrot/${PSLOT}
+# Change to where to archive local forecast products
+export ARCDIR="/scratch1/NCEPDEV/global/David.Huber/archive/minmon_test"
 
 set -e
 module reset
@@ -13,7 +18,6 @@ export wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
 
 export RUN=gdas
-export ROTDIR=/scratch1/NCEPDEV/global/David.Huber/para/comrot/minmon
 export PDY=20240302
 export cyc=00
 export SDATE=2024030118
@@ -71,6 +75,12 @@ export WRITE_DOPOST=.true.
 export ARCHIVE_RUN=$RUN
 export HPSSARCH="YES"
 export LOCALARCH="NO"
+export REALTIME="YES"
+export ARCH_WARMICFREQ="4"
+export ARCH_FCSTICFREQ="1"
+export ARCH_CYC="00"
+export SAVEFCSTIC="NO"
+export assim_freq=6
 # Not needed for task, but required by wxflow
 export DATA=""
 export CDUMP=""

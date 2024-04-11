@@ -1,0 +1,73 @@
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+{% if RUN == "gdas" or RUN == "gfs" %}
+deterministic:
+    mkdir:
+        - "{{ ARCDIR }}"
+        {% if RUN == "gfs" %}
+        - "{{ ARCDIR }}/tracker.{{ cycle_YYYYMMDDHH }}/{{ RUN }}"
+        {% endif %}
+        {% if FITSARC %}
+        {% if not VFYARC is defined %}
+        {% set VFYARC = ROTDIR + "/vrfyarch" %}
+        {% endif %}
+        - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}"
+        {% endif %}
+    copy:
+        - ["{{ atmos_analysis_dir }}/{{ head }}gsistat", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% if DO_JEDISNOWDA %}
+        - ["{{ snow_analysis_dir }}/{{ head }}snowstat", "{{ ARCDIR }}/snowstat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% endif %}
+        {% if DO_AERO %}
+        - ["{{ chem_analysis_dir }}/{{ head }}aerostat", "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% endif %}
+        - ["{{ atmos_grib_1p00_dir }}/{{ head }}pgrb2.1p00.anl", "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YYYYMMDDHH }}.grib2"]
+        {% if RUN == "gfs" %}
+        {% set fhmin, fhmax, fhout = FHMIN_GFS, FHMAX_GFS, FHOUT_GFS %}
+        {% elif RUN == "gdas" %}
+        {% set fhmin, fhmax, fhout = FHMIN, FHMAX, FHOUT %}
+        {% endif %}
+        {% for fhr in range(0, fhmax + fhout, fhout) %}
+        - ["{{ atmos_grib_1p00_dir }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}", "{{ ARCDIR }}/pgbf{{ '%02d' % fhr }}.{{ RUN }}.{{ cycle_YYYYMMDDHH }}.grib2"]
+        {% endfor %}
+        {% if RUN == "gfs" %}
+        - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}"]
+        {% if path_exists(atmos_track_dir + "/epac") %}
+        - ["{{ atmos_track_dir }}/epac", "{{ ARCDIR }}/epac"]
+        {% endif %}
+        {% if path_exists(atmos_track_dir + "/epac") %}
+        - ["{{ atmos_track_dir }}/natl", "{{ ARCDIR }}/natl"]
+        {% endif %}
+        {% endif %}
+        {% if RUN == "gfs" and FITSARC %}
+        {% if FHMAX_FITS is defined %}
+        {% set fhmax = FHMAX_FITS %}
+        {% else %}
+        {% set fhmax = FHMAX_GFS %}
+        {% endif %}
+        {% for fhr in range(0, fhmax + 6, 6) %}
+        {% set sfcfile = atmos_history_dir + "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
+        {% set sigfile = atmos_history_dir + "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
+        - ["{{ sfcfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}/{{ sfcfile }}"]
+        - ["{{ sigfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}/{{ sigfile }}"]
+        {% endfor %}
+        {% endif %}
+    sed_replace:
+        {% set PSLOT4 = PSLOT[0:4]|upper() %}
+        {% if path_exists(atmos_track_dir ~ "/avno.t" ~ cycle_HH ~ "z.cycle.trackatcfunix") %}
+        - ["s:AVNO:{{ PSLOT4 }}:g", "{{ atmos_track_dir }}/avno.t{{ cycle_HH }}z.cycle.trackatcfunix", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% endif %}
+        {% if path_exists(atmos_track_dir ~ "/avnop.t" ~ cycle_HH ~ "z.cycle.trackatcfunixp") %}
+        - ["s:AVNO:{{ PSLOT4 }}:g", "{{ atmos_track_dir }}/avnop.t{{ cycle_HH }}z.cycle.trackatcfunixp", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% endif %}
+        {% if RUN == "gdas" %}
+        {% if path_exists(atmos_track_dir ~ "/gdas.t" ~ cycle_HH ~ "z.cycle.trackatcfunix") %}
+        - ["s:AVNO:{{ PSLOT4 }}:g", "{{ atmos_track_dir }}/gdas.t{{ cycle_HH }}z.cycle.trackatcfunix", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% endif %}
+        {% if path_exists(atmos_track_dir ~ "/gdasp.t" ~ cycle_HH ~ "z.cycle.trackatcfunixp") %}
+        - ["s:AVNO:{{ PSLOT4 }}:g", "{{ atmos_track_dir }}/gdasp.t{{ cycle_HH }}z.cycle.trackatcfunixp", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% endif %}
+        {% endif %}
+{% endif %} # gfs or gdas

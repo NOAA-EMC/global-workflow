@@ -21,8 +21,10 @@ def main():
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
         'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_AERO', 'PARMgfs',
         'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'cyc', 'cycle_YYYYMMDDHH',
-        'cycle_HH', 'first_cycle', 'NFHRS_PER_GROUP', 'HPSSARCH',
-        'DO_JEDISNOWDA', 'LOCALARCH']
+        'PSLOT', 'cycle_HH', 'first_cycle', 'NFHRS_PER_GROUP', 'HPSSARCH',
+        'DO_JEDISNOWDA', 'LOCALARCH', 'REALTIME', 'ROTDIR', 'ARCH_WARMICFREQ',
+        'ARCH_FCSTICFREQ', 'SAVEFCSTIC', 'ARCH_CYC', 'assim_freq', 'ARCDIR',
+        'path_exists']
 
     archive_dict = AttrDict()
     for key in keys:
@@ -34,10 +36,10 @@ def main():
             archive_dict[key] = archive.task_config[key]
 
     # Determine which archives to create
-    archive_sets = archive.configure(archive_dict)
+    arcdir_set, tarball_sets = archive.configure(archive_dict)
 
     # Create the archives
-    archive.execute(archive_sets)
+    archive.execute(arcdir_set, atardir_sets)
 
 if __name__ == '__main__':
     main()
