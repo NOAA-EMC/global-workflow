@@ -119,9 +119,9 @@ class AtmAnalysis(Analysis):
         self.task_config.jedi_exe = self.link_jediexe()
 
         # Run executable
-        self.execute_jediexe(self.runtime_config.DATA, \
-                             self.task_config.APRUN_ATMANLVAR, \
-                             self.task_config.jedi_exe, \
+        self.execute_jediexe(self.runtime_config.DATA,
+                             self.task_config.APRUN_ATMANLVAR,
+                             self.task_config.jedi_exe,
                              self.task_config.jedi_yaml)
 
     @logit(logger)
@@ -135,11 +135,11 @@ class AtmAnalysis(Analysis):
         self.task_config.jedi_exe = self.link_jediexe()
 
         # Run executable
-        self.execute_jediexe(self.runtime_config.DATA, \
-                             self.task_config.APRUN_ATMANLFV3INC, \
-                             self.task_config.jedi_exe, \
+        self.execute_jediexe(self.runtime_config.DATA,
+                             self.task_config.APRUN_ATMANLFV3INC,
+                             self.task_config.jedi_exe,
                              self.task_config.jedi_yaml)
- 
+
     @logit(logger)
     def finalize(self: Analysis) -> None:
         """Finalize a global atm analysis

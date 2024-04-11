@@ -111,9 +111,9 @@ class AerosolAnalysis(Analysis):
         self.task_config.jedi_exe = self.link_jediexe()
 
         # Run executable
-        self.execute_jediexe(self.runtime_config.DATA, \
-                             self.task_config.APRUN_AEROANL, \
-                             self.task_config.jedi_exe, \
+        self.execute_jediexe(self.runtime_config.DATA,
+                             self.task_config.APRUN_AEROANL,
+                             self.task_config.jedi_exe,
                              self.task_config.jedi_yaml)
 
     @logit(logger)
