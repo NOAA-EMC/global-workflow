@@ -19,4 +19,5 @@ if __name__ == '__main__':
 
     # Instantiate the atm analysis task
     AtmAnl = AtmAnalysis(config)
+    AtmAnl.init_fv3_increment()
     AtmAnl.fv3_increment()

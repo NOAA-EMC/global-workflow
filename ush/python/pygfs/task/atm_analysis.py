@@ -117,7 +117,7 @@ class AtmAnalysis(Analysis):
 
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMANL)
+        exec_cmd = Executable(self.task_config.APRUN_ATMANLVAR)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
@@ -133,7 +133,7 @@ class AtmAnalysis(Analysis):
         pass
 
     @logit(logger)
-    def fv3_increment(self: Analysis) -> None:
+    def init_fv3_increment(self: Analysis) -> None:
         # Setup JEDI YAML file
         self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
         save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
@@ -141,6 +141,8 @@ class AtmAnalysis(Analysis):
         # Link JEDI executable to run directory
         self.task_config.jedi_exe = self.link_jediexe()
 
+    @logit(logger)
+    def fv3_increment(self: Analysis) -> None:
         # Run executable
         self.execute_jediexe(self.runtime_config.DATA,
                              self.task_config.APRUN_ATMANLFV3INC,
