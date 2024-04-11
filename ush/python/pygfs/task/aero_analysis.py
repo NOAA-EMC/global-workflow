@@ -68,7 +68,6 @@ class AerosolAnalysis(Analysis):
         - staging B error files
         - staging model backgrounds
         - generating a YAML file for the JEDI executable
-        - linking JEDI variational executable
         - creating output directories
         """
         super().initialize()
@@ -107,14 +106,22 @@ class AerosolAnalysis(Analysis):
     @logit(logger)
     def execute(self: Analysis) -> None:
 
-        # link JEDI executable to run directory
-        self.task_config.jedi_exe = self.link_jediexe()
+        chdir(self.task_config.DATA)
 
-        # Run executable
-        self.execute_jediexe(self.runtime_config.DATA,
-                             self.task_config.APRUN_AEROANL,
-                             self.task_config.jedi_exe,
-                             self.task_config.jedi_yaml)
+        exec_cmd = Executable(self.task_config.APRUN_AEROANL)
+        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
 
     @logit(logger)
     def finalize(self: Analysis) -> None:

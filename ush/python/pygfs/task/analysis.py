@@ -43,6 +43,9 @@ class Analysis(Task):
         bias_dict = self.get_bias_dict()
         FileHandler(bias_dict).sync()
 
+        # link jedi executable to run directory
+        self.link_jediexe()
+
     @logit(logger)
     def get_jedi_config(self) -> Dict[str, Any]:
         """Compile a dictionary of JEDI configuration from JEDIYAML template file

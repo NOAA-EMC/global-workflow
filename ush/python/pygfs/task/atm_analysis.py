@@ -10,7 +10,7 @@ from typing import Dict, List, Any
 from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
-                    chdir, rm_p,
+                    chdir,
                     parse_j2yaml, save_as_yaml,
                     logit,
                     Executable,
@@ -65,7 +65,7 @@ class AtmAnalysis(Analysis):
         - staging FV3-JEDI fix files
         - staging B error files
         - staging model backgrounds
-        - generating a YAML file for the JEDI variational executable
+        - generating a YAML file for the JEDI executable
         - creating output directories
         """
         super().initialize()
@@ -115,18 +115,25 @@ class AtmAnalysis(Analysis):
     @logit(logger)
     def variational(self: Analysis) -> None:
 
-        # Link JEDI executable
-        self.task_config.jedi_exe = self.link_jediexe()
+        chdir(self.task_config.DATA)
 
-        # Run executable
-        self.execute_jediexe(self.runtime_config.DATA,
-                             self.task_config.APRUN_ATMANLVAR,
-                             self.task_config.jedi_exe,
-                             self.task_config.jedi_yaml)
+        exec_cmd = Executable(self.task_config.APRUN_ATMANL)
+        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
 
     @logit(logger)
     def fv3_increment(self: Analysis) -> None:
-
         # Setup JEDI YAML file
         self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
         save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
@@ -149,7 +156,7 @@ class AtmAnalysis(Analysis):
         - tar output diag files and place in ROTDIR
         - copy the generated YAML file from initialize to the ROTDIR
         - copy the updated bias correction files to ROTDIR
-        - copy UFS model readable atm FV3 increment file to ROTDIR
+        - write UFS model readable atm incrment file
 
         """
         # ---- tar up diags
@@ -218,6 +225,7 @@ class AtmAnalysis(Analysis):
         FileHandler(bias_copy).sync()
 
         # Copy FV3 atm increment to comrot directory
+        logger.info("Copy UFS model readable atm increment file")
         cdate = to_fv3time(self.task_config.current_cycle)
         cdate_inc = cdate.replace('.', '_')
         src = os.path.join(self.task_config.DATA, 'anl', f"atminc.{cdate_inc}z.nc4")

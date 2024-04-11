@@ -145,15 +145,22 @@ class AtmEnsAnalysis(Analysis):
         ----------
         None
         """
+        chdir(self.task_config.DATA)
 
-        # link JEDI executable to run directory
-        self.task_config.jedi_exe = self.link_jediexe()
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANL)
+        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
-        # Run executable
-        self.execute_jediexe(self.runtime_config.DATA,
-                             self.task_config.APRUN_ATMENSANL,
-                             self.task_config.jedi_exe,
-                             self.task_config.jedi_yaml)
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
 
     @logit(logger)
     def finalize(self: Analysis) -> None:

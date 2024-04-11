@@ -294,15 +294,12 @@ class SnowAnalysis(Analysis):
            Instance of the SnowAnalysis object
         """
 
-        # link JEDI executable to run directory
-        self.task_config.jedi_exe = self.link_jediexe()
-
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_SNOW_ANALYSIS', 'APREFIX',
                 'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'OCNRES', 'ntiles',
-                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml', 'jedi_exe',
+                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -315,7 +312,7 @@ class SnowAnalysis(Analysis):
         logger.info("Running JEDI LETKF")
         self.execute_jediexe(localconf.DATA,
                              localconf.APRUN_SNOWANL,
-                             localconf.jedi_exe,
+                             os.path.basename(localconf.JEDIEXE),
                              localconf.jedi_yaml)
 
         logger.info("Creating analysis from backgrounds and increments")
