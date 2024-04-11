@@ -67,8 +67,7 @@ class WDQMS:
         df_total = self._get_datetimes(df_total)
 
         # Drop duplicates
-        columns_to_compare = ['Station_ID', 'var_id', 'Observation_Type', 'Latitude', 'Longitude', 'Pressure', 'Time']
-        df_total = df_total.drop_duplicates(subset=columns_to_compare, keep='first')
+        df_total = df_total.drop_duplicates()
 
         # Adjust relative humidity data
         df_total = self._genqsat(df_total)
@@ -485,6 +484,7 @@ class WDQMS:
             q_tmp = q_tmp[columns_to_extract]
 
             t_tmp = pd.merge(t_tmp, q_tmp, on=columns_to_compare, suffixes=('','_q'), how='inner')
+            t_tmp = t_tmp[columns_to_extract].drop_duplicates()
 
             q_obs = q_tmp['Observation'].to_numpy() * 1.0e6
             q_ges = (q_tmp['Observation'].to_numpy() -
