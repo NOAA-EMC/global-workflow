@@ -169,6 +169,8 @@ ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
+ush/gen_bufr2ioda_json.py
+ush/gen_bufr2ioda_yaml.py
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
