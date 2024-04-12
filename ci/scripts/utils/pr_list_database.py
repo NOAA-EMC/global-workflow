@@ -90,9 +90,9 @@ def display_db(db, display) -> list:
 
     Parameters
     ----------
-    ci_database : SQLiteDB
+    db : SQLiteDB
         The database to display.
-    args : argparse.Namespace
+    args : display
         The command line arguments.
 
     Returns
@@ -121,7 +121,7 @@ def update_database(db: SQLiteDB) -> list:
 
     Parameters
     ----------
-    ci_database : SQLiteDB
+    db : SQLiteDB
         The database to update.
 
     Returns
