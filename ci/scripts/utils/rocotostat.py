@@ -111,7 +111,7 @@ if __name__ == '__main__':
     if args.export:
         for status in rocoto_status:
             print(f'export {status}={rocoto_status[status]}')
-    else:        
+    else:
         print(rocoto_state)
 
     sys.exit(error_return)
