@@ -36,7 +36,7 @@ def main():
             archive_dict[key] = archive.task_config[key]
 
     # Determine which archives to create
-    arcdir_set, tarball_sets = archive.configure(archive_dict)
+    arcdir_set, atardir_sets = archive.configure(archive_dict)
 
     # Create the archives
     archive.execute(arcdir_set, atardir_sets)

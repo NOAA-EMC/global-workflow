@@ -74,7 +74,6 @@ class Archive(Task):
 
         self.task_config = AttrDict(**self.config, **self.runtime_config, **path_dict, **local_dict)
 
-    @classmethod
     @logit(logger)
     def configure(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
         """Determine which tarballs will need to be created.
@@ -103,8 +102,8 @@ class Archive(Task):
 
         if arch_dict.HPSSARCH:
             self.tar_cmd = "htar"
-            self.hsi = staticmethod(Hsi())
-            self.htar = staticmethod(Htar())
+            self.hsi = Hsi()
+            self.htar = Htar()
         elif arch_dict.LOCALARCH:
             self.tar_cmd = "tar"
         else:  # Only perform local archiving.  Do not create tarballs.
@@ -161,6 +160,9 @@ class Archive(Task):
             SAVEFCSTIC = False
             if mod == 0 or first_day:
                 SAVEFCSTIC = True
+
+            # If present, copy and replace the experiment names in cycle tracking files
+            self._rename_cyclone_expt(arch_dict)
 
         if arch_dict.RUN == "gdas":
 
@@ -417,3 +419,42 @@ class Archive(Task):
                     rel_path_dict[rel_key] = rel_path
 
         return rel_path_dict
+
+    def _rename_cyclone_expt(self, arch_dict) -> None:
+
+        # Rename the experiment in the tracker files from "AVNO" to the
+        # first 4 letters of PSLOT.
+        pslot4 = arch_dict.PSLOT.upper()
+        if len(arch_dict.PSLOT) > 4:
+            pslot4 = arch_dict.PSLOT[0:4].upper()
+
+        track_dir = arch_dict.atmos_track_dir
+        cycle_HH = str(arch_dict.cycle_HH)
+        run = arch_dict.RUN
+
+        if run == "gfs":
+            in_track_file = track_dir + "/avno.t" + cycle_HH + "z.cycle.trackatcfunix"
+            in_track_p_file = track_dir + "/avnop.t" + cycle_HH + "z.cycle.trackatcfunixp"
+        elif run == "gdas":
+            in_track_file = track_dir + "/gdas.t" + cycle_HH + "z.cycle.trackatcfunix"
+            in_track_p_file = track_dir + "/gdasp.t" + cycle_HH + "z.cycle.trackatcfunixp"
+
+        if not os.path.isfile(in_track_file):
+            return
+
+        cycle_YYYYMMDDHH = str(arch_dict.cycle_YYYYMMDDHH)
+
+        out_track_file = track_dir + "/atcfunix." + run + "." + cycle_YYYYMMDDHH
+        out_track_p_file = track_dir + "/atcfunixp." + run + "." + cycle_YYYYMMDDHH
+
+        def replace_string_from_to_file(filename_in, filename_out, search_str, replace_str):
+            with open(filename_in) as old_file:
+                lines = old_file.readlines()
+
+            out_lines = [line.replace(search, replace) for line in lines]
+
+            with open(filename_out, "w") as new_file:
+                new_file.writelines(out_lines)
+
+        replace_string_from_to_file(in_track_file, out_track_file, "AVNO", pslot4)
+        replace_string_from_to_file(in_track_p_file, out_track_p_file, "AVNO", pslot4)

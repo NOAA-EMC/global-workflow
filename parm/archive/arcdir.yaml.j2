@@ -34,14 +34,14 @@ deterministic:
         - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}"]
         - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}"]
         - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}"]
+        ## Only created if tracking is on and there were systems to track
         {% if path_exists(atmos_track_dir + "/epac") %}
         - ["{{ atmos_track_dir }}/epac", "{{ ARCDIR }}/epac"]
         {% endif %}
         {% if path_exists(atmos_track_dir + "/epac") %}
         - ["{{ atmos_track_dir }}/natl", "{{ ARCDIR }}/natl"]
         {% endif %}
-        {% endif %}
-        {% if RUN == "gfs" and FITSARC %}
+        {% if FITSARC %}
         {% if FHMAX_FITS is defined %}
         {% set fhmax = FHMAX_FITS %}
         {% else %}
@@ -53,21 +53,10 @@ deterministic:
         - ["{{ sfcfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}/{{ sfcfile }}"]
         - ["{{ sigfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}/{{ sigfile }}"]
         {% endfor %}
-        {% endif %}
-    sed_replace:
-        {% set PSLOT4 = PSLOT[0:4]|upper() %}
-        {% if path_exists(atmos_track_dir ~ "/avno.t" ~ cycle_HH ~ "z.cycle.trackatcfunix") %}
-        - ["s:AVNO:{{ PSLOT4 }}:g", "{{ atmos_track_dir }}/avno.t{{ cycle_HH }}z.cycle.trackatcfunix", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
-        {% endif %}
-        {% if path_exists(atmos_track_dir ~ "/avnop.t" ~ cycle_HH ~ "z.cycle.trackatcfunixp") %}
-        - ["s:AVNO:{{ PSLOT4 }}:g", "{{ atmos_track_dir }}/avnop.t{{ cycle_HH }}z.cycle.trackatcfunixp", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
-        {% endif %}
-        {% if RUN == "gdas" %}
-        {% if path_exists(atmos_track_dir ~ "/gdas.t" ~ cycle_HH ~ "z.cycle.trackatcfunix") %}
-        - ["s:AVNO:{{ PSLOT4 }}:g", "{{ atmos_track_dir }}/gdas.t{{ cycle_HH }}z.cycle.trackatcfunix", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
-        {% endif %}
-        {% if path_exists(atmos_track_dir ~ "/gdasp.t" ~ cycle_HH ~ "z.cycle.trackatcfunixp") %}
-        - ["s:AVNO:{{ PSLOT4 }}:g", "{{ atmos_track_dir }}/gdasp.t{{ cycle_HH }}z.cycle.trackatcfunixp", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
-        {% endif %}
+        {% endif %} ## FITSARC
+        {% endif %} ## RUN == "gfs"
+        {% if path_exists(atmos_track_dir ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YYYYMMDDHH) %}
+        - ["{{ atmos_track_dir }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ atmos_track_dir }}/atcfunixp.{{ RUN }}.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
         {% endif %}
 {% endif %} # gfs or gdas
