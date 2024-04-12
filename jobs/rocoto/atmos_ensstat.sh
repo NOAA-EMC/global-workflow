@@ -27,7 +27,7 @@ for fhr in "${fhrs[@]}"; do
     fhr="10#${fhr}"
     fhr=${fhr//10\#-/-10\#}
     export FORECAST_HOUR=$(( fhr ))
-    "${HOMEgfs}/jobs/JGEFS_ATMOS_ENSSTAT"
+    "${HOMEgfs}/jobs/JGLOBAL_ATMOS_ENSSTAT"
     status=$?
     if (( status != 0 )); then exit "${status}"; fi
 done
