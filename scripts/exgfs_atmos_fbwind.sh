@@ -22,7 +22,7 @@ cd "${DATA}" || exit 2
 # Set up Here Files.
 ######################
 
-job_name="${job/[jpt]gfs/gfs}"
+outfile_name="${COMOUT}/${RUN}.atmos.t${cyc}z.fbwind.pacific.ascii"
 
 set +x
 echo " "
@@ -68,11 +68,11 @@ cp "${PARMgfs}/product/fbwnd_pacific.stnlist" fbwnd_pacific.stnlist
 "${EXECgfs}/fbwndgfs.x" < fbwnd_pacific.stnlist >> "${pgmout}" 2> errfile
 export err=$?; err_chk
 
-cp tran.fbwnd_pacific "${COMOUT}/tran.fbwnd_pacific.${job_name}"
+cp tran.fbwnd_pacific "${outfile_name}"
 
 if [[ "${SENDDBN}" == 'YES' ]]; then
   # Should this really be in a SENDDBN block?
-  "${USHgfs}/make_ntc_bull.pl" WMOBH NONE KWNO NONE tran.fbwnd_pacific "${COMOUT}/tran.fbwnd_pacific.${job_name}"
+  "${USHgfs}/make_ntc_bull.pl" WMOBH NONE KWNO NONE tran.fbwnd_pacific "${outfile_name}"
 fi
 
 #####################################################################
