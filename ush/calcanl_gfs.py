@@ -14,6 +14,7 @@ import datetime
 
 python2fortran_bool = {True: '.true.', False: '.false.'}
 
+
 # function to calculate analysis from a given increment file and background
 def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 ComIn_Ges, GPrefix,
