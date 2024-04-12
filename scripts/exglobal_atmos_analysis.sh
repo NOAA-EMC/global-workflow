@@ -380,6 +380,10 @@ ${NLN} ${SCANINFO}     scaninfo
 ${NLN} ${HYBENSINFO}   hybens_info
 ${NLN} ${OBERROR}      errtable
 
+${NLN} ${FIXgfs}/gsi/AIRS_CLDDET.NL   AIRS_CLDDET.NL
+${NLN} ${FIXgfs}/gsi/CRIS_CLDDET.NL   CRIS_CLDDET.NL
+${NLN} ${FIXgfs}/gsi/IASI_CLDDET.NL   IASI_CLDDET.NL
+
 #If using correlated error, link to the covariance files
 if [ ${USE_CORRELATED_OBERRS} == "YES" ];  then
   if grep -q "Rcov" ${ANAVINFO} ;  then
@@ -674,7 +678,7 @@ if [ ${DOHYBVAR} = "YES" ]; then
       SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=${l4densvar},lwrite4danl=${lwrite4danl},${SETUP}"
       JCOPTS="ljc4tlevs=.true.,${JCOPTS}"
       STRONGOPTS="tlnmc_option=3,${STRONGOPTS}"
-      OBSQC="c_varqc=0.04,${OBSQC}"
+      OBSQC="c_varqc=0.04,airs_cads=.false.,cris_cads=.false.,iasi_cads=.false.,${OBSQC}"
    fi
 fi
 
