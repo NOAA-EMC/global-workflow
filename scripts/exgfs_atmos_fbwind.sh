@@ -14,15 +14,15 @@
 # echo "         Nov 2019 - B Vuong  Removed WINTEMV bulletin (retired)"
 #####################################################################
 
-source "${USHgfs}/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-cd $DATA
+cd "${DATA}" || exit 2
 
 ######################
 # Set up Here Files.
 ######################
 
-job_name=$(echo $job|sed 's/[jpt]gfs/gfs/')
+job_name="${job/[jpt]gfs/gfs}"
 
 set +x
 echo " "
@@ -34,20 +34,17 @@ echo " "
 set_trace
 
 export pgm=bulls_fbwndgfs
-. prep_step
+source prep_step
 
-for fhr in 006 012 024
-do
-
-  cp $COMIN/gfs.${cycle}.pgrb2.0p25.f${fhr}   tmp_pgrb2_0p25${fhr} 
-  cp $COMIN/gfs.${cycle}.pgrb2b.0p25.f${fhr}  tmp_pgrb2b_0p25${fhr} 
-  cat tmp_pgrb2_0p25${fhr} tmp_pgrb2b_0p25${fhr} > tmp0p25filef${fhr} 
-  $WGRIB2 tmp0p25filef${fhr} | grep  -F -f ${PARMgfs}/product/gfs_fbwnd_parmlist_g2 | $WGRIB2 -i -grib tmpfilef${fhr} tmp0p25filef${fhr}
-  $CNVGRIB -g21 tmpfilef${fhr} tmpfilef${fhr}.grib1
-  $GRBINDEX tmpfilef${fhr}.grib1 tmpfilef${fhr}.grib1i
-  mv tmpfilef${fhr}.grib1   gfs.t${cyc}z.grbf${fhr}_grb1
-  mv tmpfilef${fhr}.grib1i  gfs.t${cyc}z.grbif${fhr}_grb1
-
+for fhr3 in 006 012 024; do
+  cp "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pgrb2.0p25.f${fhr3}"   "tmp_pgrb2_0p25${fhr3}" 
+  cp "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pgrb2b.0p25.f${fhr3}"  "tmp_pgrb2b_0p25${fhr3}"
+  cat "tmp_pgrb2_0p25${fhr3}" "tmp_pgrb2b_0p25${fhr3}" > "tmp0p25filef${fhr3}"
+  # shellcheck disable=SC2312
+  ${WGRIB2} "tmp0p25filef${fhr3}" | grep -F -f "${PARMgfs}/product/gfs_fbwnd_parmlist_g2" | \
+    ${WGRIB2} -i -grib "tmpfilef${fhr3}" "tmp0p25filef${fhr3}"
+  ${CNVGRIB} -g21 "tmpfilef${fhr3}" "gfs.t${cyc}z.grbf${fhr3}_grb1"
+  ${GRBINDEX} "gfs.t${cyc}z.grbf${fhr3}_grb1" "gfs.t${cyc}z.grbf${fhr3}_grb1.idx"
 done
 
 export FORT11="gfs.t${cyc}z.grbf006_grb1"
@@ -56,9 +53,9 @@ export FORT13="gfs.t${cyc}z.grbf024_grb1"
 
 #       GFS grib index files
 
-export FORT31="gfs.t${cyc}z.grbif006_grb1"
-export FORT32="gfs.t${cyc}z.grbif012_grb1"
-export FORT33="gfs.t${cyc}z.grbif024_grb1"
+export FORT31="gfs.t${cyc}z.grbf006_grb1.idx"
+export FORT32="gfs.t${cyc}z.grbf012_grb1.idx"
+export FORT33="gfs.t${cyc}z.grbf024_grb1.idx"
 
 #
 #   1280 byte transmission file
@@ -66,18 +63,16 @@ export FORT33="gfs.t${cyc}z.grbif024_grb1"
 
 export FORT51="tran.fbwnd_pacific"
 
-startmsg
+cp "${PARMgfs}/product/fbwnd_pacific.stnlist" fbwnd_pacific.stnlist
 
-$EXECgfs/fbwndgfs < ${PARMgfs}/product/fbwnd_pacific.stnlist >> $pgmout 2> errfile
+"${EXECgfs}/fbwndgfs.x" < fbwnd_pacific.stnlist >> "${pgmout}" 2> errfile
 export err=$?; err_chk
 
+cp tran.fbwnd_pacific "${COMOUT}/tran.fbwnd_pacific.${job_name}"
 
-cp tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
-
-if test "$SENDDBN" = 'YES'
-then
-#    make_ntc_bull.pl WMOBH NONE KWNO NONE tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
-   ${USHgfs}/make_ntc_bull.pl WMOBH NONE KWNO NONE tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
+if [[ "${SENDDBN}" == 'YES' ]]; then
+  # Should this really be in a SENDDBN block?
+  "${USHgfs}/make_ntc_bull.pl" WMOBH NONE KWNO NONE tran.fbwnd_pacific "${COMOUT}/tran.fbwnd_pacific.${job_name}"
 fi
 
 #####################################################################
