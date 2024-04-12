@@ -132,10 +132,12 @@ for pr in ${pr_list}; do
     if [[ "${rocoto_error}" -ne 0 ]]; then
         "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
         error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
+        # shellcheck disable=SC2086
         ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo "PR_${pr}" > /dev/null
         gist_url="$("${HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --gist "PR_${pr}")"
+        # shellcheck enable=SC2086
         {
-          echo "Experiment ${pslot} **${rocoto_state}** on ${MACHINE_ID^} at $(date +'%D %r')"
+          echo "Experiment ${pslot} **${rocoto_state}** on ${MACHINE_ID^} at $(date +'%D %r')" || true
           echo ""
           echo "Error logs:"
           echo "\`\`\`"
