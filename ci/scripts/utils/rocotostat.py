@@ -32,6 +32,7 @@ def input_args():
     parser.add_argument('-d', help='database_file', metavar='Database File', type=FileType('r'), required=True)
     parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
     parser.add_argument('-v', action='store_true', help='List the states and the number of jobs that are in each', required=False)
+    parser.add_argument('--export', help='create and export list of the status values for bash', required=False)
 
     args = parser.parse_args()
 
@@ -105,5 +106,10 @@ if __name__ == '__main__':
             else:
                 print(f'Number of {status} : {rocoto_status[status]}')
 
-    print(rocoto_state)
+    if args.export:
+        for status_type, status in rocoto_status.items():
+            print(f'export {status_type}={rocoto_status[status]}')
+    else:        
+        print(rocoto_state)
+
     sys.exit(error_return)
