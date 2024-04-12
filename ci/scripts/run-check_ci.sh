@@ -73,6 +73,7 @@ while true; do
 
   # Get job statistics
   echo "Gather Rocoto statistics"
+  # shellcheck disable=SC2312 # We want to use the exit code of the command
   eval "$("${ROOT_DIR}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --export)"
   error_stat=$?
 
