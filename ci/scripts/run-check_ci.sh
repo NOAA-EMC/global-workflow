@@ -9,8 +9,7 @@ set -eu
 
 TEST_DIR=${1:-${TEST_DIR:-?}}  # Location of the root of the testing directory
 pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this script
-ROOT_DIR=${3:-${ROOT_DIR:-?}}  # Location of the root of the global-workflow repository
-                               # that runs CI functions that may be outside of PRs 
+SYSTEM_BUILD_DIR=${3:-${SYSTEM_BUILD_DIR:-?}}  # Name of the system build directory
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -28,10 +27,6 @@ ROOT_DIR=${3:-${ROOT_DIR:-?}}  # Location of the root of the global-workflow rep
 HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR:-global-workflow}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
-
-if [[ "${ROOT_DIR}" == "?" ]]; then
-    ROOT_DIR="${HOMEgfs}"
-fi
 
 # Source modules and setup logging
 echo "Source modules."
@@ -74,7 +69,7 @@ while true; do
   # Get job statistics
   echo "Gather Rocoto statistics"
   # shellcheck disable=SC2312 # We want to use the exit code of the command
-  eval "$("${ROOT_DIR}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --export)"
+  eval "$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --export)"
   error_stat=$?
 
   echo "(${pslot}) Total Cycles: ${CYCLES_TOTAL} number done: ${CYCLES_DONE} ${ROCOTO_STATE} on ${MACHINE_ID^}"

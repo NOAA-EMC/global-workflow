@@ -179,10 +179,9 @@ pipeline {
                         steps {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
-                                env.SYSTEM_BUILD_DIR=system // used to set the system build directory in the run scripts 
                                 pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
                                 try {
-                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
+                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot} ${system}")
                                 } catch (Exception error_experment) {
                                     sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
                                     ws(HOME) {

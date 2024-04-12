@@ -48,7 +48,7 @@ git clone "${REPO_URL}"
 cd global-workflow || exit 1
 
 # checkout pull request
-"${GH}" pr checkout "${PR}" --repo "${REPO_URL}" --recurse-submodules
+"${GH}" pr checkout "${PR}" --repo "${REPO_URL}" --recurse-submodules -j 4
 HOMEgfs="${PWD}"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
