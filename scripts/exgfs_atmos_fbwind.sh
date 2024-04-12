@@ -68,14 +68,6 @@ cp "${PARMgfs}/product/fbwnd_pacific.stnlist" fbwnd_pacific.stnlist
 "${EXECgfs}/fbwndgfs.x" < fbwnd_pacific.stnlist >> "${pgmout}" 2> errfile
 export err=$?; err_chk
 
-cp tran.fbwnd_pacific "${outfile_name}"
-
-if [[ "${SENDDBN}" == 'YES' ]]; then
-  # Should this really be in a SENDDBN block?
-  "${USHgfs}/make_ntc_bull.pl" WMOBH NONE KWNO NONE tran.fbwnd_pacific "${outfile_name}"
-fi
-
-#####################################################################
-
+"${USHgfs}/make_ntc_bull.pl" WMOBH NONE KWNO NONE tran.fbwnd_pacific "${outfile_name}"
 
 ############################### END OF SCRIPT #######################
