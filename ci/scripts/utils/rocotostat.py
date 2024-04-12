@@ -99,7 +99,7 @@ if __name__ == '__main__':
     else:
         rocoto_state = 'RUNNING'
 
-    rocoto_status['STATE'] = rocoto_state
+    rocoto_status['ROCOTO_STATE'] = rocoto_state
 
     if args.verbose or args.v:
         for status in rocoto_status:

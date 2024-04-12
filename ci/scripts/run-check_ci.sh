@@ -73,24 +73,17 @@ while true; do
 
   # Get job statistics
   echo "Gather Rocoto statistics"
-  rocotostat_output="$("${ROOT_DIR}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)"
+  eval "$("${ROOT_DIR}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --export)"
   error_stat=$?
 
-  num_cycles=$(echo "${rocotostat_output}" | grep "Cycles:" | cut -d: -f2 ) || true
-  num_cycles_done=$(echo "${rocotostat_output}" | grep Cycles_Done | cut -d: -f2) || true
-  num_succeeded=$(echo "${rocotostat_output}" | grep "SUCCEEDED:" | cut -d: -f2) || true
-  num_failed=$(echo "${rocotostat_output}" | grep "FAIL:" | cut -d: -f2) || true
-  num_dead=$(echo "${rocotostat_output}" | grep "DEAD:" | cut -d: -f2) || true
-  rocoto_stat=$(echo "${rocotostat_output}" | tail -1) || true
-
-  echo "(${pslot}) Total Cycles: ${num_cycles} number done: ${num_cycles_done} ${rocoto_stat} on ${MACHINE_ID^}"
+  echo "(${pslot}) Total Cycles: ${CYCLES_TOTAL} number done: ${CYCLES_DONE} ${ROCOTO_STATE} on ${MACHINE_ID^}"
 
   if [[ ${error_stat} -ne 0 ]]; then
     {
-      echo "Experiment ${pslot} Terminated with ${num_failed} tasks failed or dead at $(date)" || true
-      echo "Experiment ${pslot} Terminated: *${rocoto_stat}*"
+      echo "Experiment ${pslot} Terminated with ${FAIL} tasks failed and ${DEAD} dead at $(date)" || true
+      echo "Experiment ${pslot} Terminated: *${ROCOTO_STATE}*"
     } | tee -a "${run_check_logfile}"
-    if [[ "${num_dead}" -ne 0 ]]; then
+    if [[ "${DEAD}" -ne 0 ]]; then
       error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       {
         echo "Error logs:"
@@ -105,10 +98,10 @@ while true; do
    break
   fi
 
-  if [[ "${rocoto_stat}" == "DONE" ]]; then
+  if [[ "${ROCOTO_STAT}" == "DONE" ]]; then
     {
-      echo "Experiment ${pslot} Completed ${num_cycles_done} Cycles at $(date)" || true
-      echo "with ${num_succeeded} successfully completed jobs" || true
+      echo "Experiment ${pslot} Completed ${CYCLES_DONE} Cycles at $(date)" || true
+      echo "with ${SUCCEEDED} successfully completed jobs" || true
       echo "Experiment ${pslot} Completed: *SUCCESS*"
     } | tee -a "${run_check_logfile}"
     rc=0
