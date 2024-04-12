@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-set -eux
+set -eu
 
 cwd=$(pwd)
 
@@ -35,6 +35,9 @@ COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
+echo "MACHINE_ID: ${MACHINE_ID}"
+echo "PW_CSP: ${PW_CSP}"
+
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
@@ -42,23 +45,33 @@ if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 else
 
-  if [[ "${PW_CSP:-}" == "aws" ]]; then
-    set +x
-    # TODO: This will need to be addressed further when the EPIC stacks are available/supported.
-    module use /contrib/spack-stack/envs/ufswm/install/modulefiles/Core
-    module load stack-intel
-    module load stack-intel-oneapi-mpi
-    module load ufs-weather-model-env/1.0.0
-    # TODO: It is still uncertain why this is the only module that is
-    # missing; check the spack build as this needed to be added manually.
-    module load w3emc/2.9.2 # TODO: This has similar issues for the EPIC stack.
-    module list
-    set -x
-  fi
+ #if [[ "${PW_CSP:-}" == "aws" ]]; then
+ #  set +x
+ #  # TODO: This will need to be addressed further when the EPIC stacks are available/supported.
+ #  module purge
+ #  module use /contrib/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core
+ #  module load stack-intel/2021.3.0
+ #  module load cmake/3.23.1
+ # #module list
+ # #export SPACK_ROOT=/contrib/spack-stack/spack-stack-1.6.0/spack
+ # #export PATH=$PATH:$SPACK_ROOT/bin
+ # #. $SPACK_ROOT/share/spack/setup-env.sh
+ # #module load stack-intel/2021.3.0
+ # #module load cmake/3.23.1
+ #  set -x
+ #fi
 
-  export CMAKE_FLAGS="${MAKE_OPT}"
-  BUILD_JOBS=${BUILD_JOBS:-8} ./build.sh
-  mv "${cwd}/ufs_model.fd/build/ufs_model" "${cwd}/ufs_model.fd/tests/ufs_model.x"
+ #export CMAKE_FLAGS="${MAKE_OPT}"
+ #BUILD_JOBS=${BUILD_JOBS:-8} ./build.sh
+ #mv "${cwd}/ufs_model.fd/build/ufs_model" "${cwd}/ufs_model.fd/tests/ufs_model.x"
+
+  echo "MACHINE_ID: ${MACHINE_ID}"
+  echo "COMPILE_NR: ${COMPILE_NR}"
+
+  BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+  mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
+  mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
+  cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 fi
 
 exit 0

@@ -124,8 +124,8 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
 # platforms come online.
 elif [[ ${MACHINE_ID} = "noaacloud" ]]; then
 
-   #export SPACK_ROOT=/contrib/global-workflow/spack-stack/spack
-   #export SPACK_ROOT=/contrib/spack-stack-rocky8/spack-stack-1.6.0/spack
+    module use /contrib/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core
+    module load stack-intel/2021.3.0  stack-intel-oneapi-mpi/2021.3.0
     export SPACK_ROOT=/contrib/spack-stack/spack-stack-1.6.0/spack
     export PATH=${PATH}:${SPACK_ROOT}/bin
     . "${SPACK_ROOT}"/share/spack/setup-env.sh

@@ -19,6 +19,8 @@ EOF
   exit 1
 }
 
+set -x
+
 RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
@@ -70,6 +72,7 @@ case "${machine}" in
   "hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
   "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
   "s4")       FIX_DIR="/data/prod/glopara/fix" ;;
+  "noaacloud") FIX_DIR="/contrib/Wei.Huang/data/hack-orion/fix" ;;
   *)
     echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
     exit 1

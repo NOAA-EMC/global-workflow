@@ -93,6 +93,10 @@ cat "${buildswitch}"
 MAKE_OPT="-DCMAKE_INSTALL_PREFIX=install"
 [[ ${BUILD_TYPE:-"Release"} = "Debug" ]] && MAKE_OPT+=" -DCMAKE_BUILD_TYPE=Debug"
 
+echo "WW3_DIR: ${WW3_DIR}"
+echo "buildswitch: ${buildswitch}"
+echo "MAKE_OPT: ${MAKE_OPT}"
+
 #Build executables:
 # shellcheck disable=SC2086
 cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" ${MAKE_OPT}
