@@ -32,8 +32,8 @@ if (( num_found != NMEM_ENS + 1 )); then
 fi
 
 # Create namelist for ensstat
-mean_out="${RUN}.t${cyc}z.pres_${grid_type}.ens_mean.${grid}.f${fhr3}.grib2"
-sd_out="${RUN}.t${cyc}z.pres_${grid_type}.ens_sd.${grid}.f${fhr3}.grib2"
+mean_out="${RUN}.t${cyc}z.mean.pres_${grid_type}.${grid}.f${fhr3}.grib2"
+spr_out="${RUN}.t${cyc}z.spread.pres_${grid_type}.${grid}.f${fhr3}.grib2"
 
 cat << EOF > input.nml
 &namdim
@@ -46,7 +46,7 @@ cat << EOF > input.nml
     navg_min=${NMEM_ENS}
 
     cfopg1="${mean_out}"
-    cfopg2="${sd_out}"
+    cfopg2="${spr_out}"
 
 $(
     for (( filenum = 1; filenum <= num_found; filenum++ )); do
@@ -72,7 +72,7 @@ fi
 comout_var_name="COMOUT_ATMOS_GRIB_${grid}"
 comout_path="${!comout_var_name}"
 
-for outfile in ${mean_out} ${sd_out}; do
+for outfile in ${mean_out} ${spr_out}; do
     if [[ ! -s ${outfile} ]]; then
         echo "FATAL ERROR: Failed to create ${outfile}"
         exit 20
