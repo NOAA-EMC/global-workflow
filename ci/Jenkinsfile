@@ -5,7 +5,7 @@ def caseList = ''
 // Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
 def repo_url = 'git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git'
-def STATUS = 'PASSED'
+def STATUS = 'Passed'
 
 pipeline {
 
@@ -120,7 +120,7 @@ pipeline {
                                                 }
                                             }
                                             sh(script: './link_workflow.sh')
-                                            // sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
+                                            sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
                                         }
                                     }
                                     if (env.CHANGE_ID && system == 'gfs') {
@@ -213,7 +213,7 @@ pipeline {
                                         } else {
                                             echo "No error logs found for failed cases in $HOME/RUNTESTS/${pslot}_error.logs"
                                         }
-                                        STATUS = 'FAILED'
+                                        STATUS = 'Failed'
                                         echo "Failed to run experiments ${Case} on ${Machine}"
                                     }
                                 }
@@ -227,17 +227,13 @@ pipeline {
             agent { label "${machine}-emc" }
             steps {
                 script {
-                    if (STATUS == 'PASSED') {
+                    try {
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Passed" """, returnStatus: true)
-                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI PASSED** ${Machine} at <br>Built and ran in directory `${HOME}`" """, returnStatus: true)
-                    }
-                    else {
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
-                        sh(script: """${GH} pr edit ${env.CHCHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Failed" """, returnStatus: true)
-                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI FAILED** ${Machine} at <br>Built and ran in directory `${HOME}`" """, returnStatus: true)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI ${STATUS}** ${Machine} at <br>Built and ran in directory `${HOME}`" """, returnStatus: true)
+                    } catch (Exception e) {
+                        echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                     }
                 }
             }

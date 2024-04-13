@@ -85,7 +85,7 @@ if __name__ == '__main__':
     rocoto_status = rocoto_statcount()
 
     if rocoto_status['CYCLES_TOTAL'] == rocoto_status['CYCLES_DONE']:
-        print(f"All {rocoto_status['CYCLES']} Cycles are Done")
+        print(f"All {rocoto_status['CYCLES_TOTAL']} Cycles are Done")
         rocoto_state = 'DONE'
     elif rocoto_status['DEAD'] > 0:
         error_return = rocoto_status['FAIL'] + rocoto_status['DEAD']
