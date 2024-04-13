@@ -214,7 +214,7 @@ pipeline {
                                             echo "No error logs found for failed cases in $HOME/RUNTESTS/${pslot}_error.logs"
                                         }
                                         STATUS = 'Failed'
-                                        echo "Failed to run experiments ${Case} on ${Machine}"
+                                        error("Failed to run experiments ${Case} on ${Machine}")
                                     }
                                 }
                             }
