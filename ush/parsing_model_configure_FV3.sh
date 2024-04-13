@@ -49,7 +49,6 @@ if [[ ! -f ${template} ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi
-source "${USHgfs}/atparse.bash"
 rm -f "${DATA}/model_configure"
 atparse < "${template}" >> "${DATA}/model_configure"
 echo "Rendered model_configure"

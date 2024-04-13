@@ -53,9 +53,14 @@ common_predet(){
   ENSMEM=${ENSMEM:-000}
 
   # Define significant cycles
+  half_window=$(( assim_freq / 2 ))
   current_cycle="${PDY}${cyc}"
   previous_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
   next_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
+  current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
+  current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
+  next_cycle_begin=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
+  next_cycle_end=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
   # IAU options
@@ -81,11 +86,13 @@ common_predet(){
   FHMAX_HF=${FHMAX_HF:-0}
   FHOUT_HF=${FHOUT_HF:-1}
 
+  if [[ ! -d "${COM_CONF}" ]]; then mkdir -p "${COM_CONF}"; fi
+
+  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
+
   # Several model components share DATA/INPUT for input data
   if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
 
-  if [[ ! -d "${COM_CONF}" ]]; then mkdir -p "${COM_CONF}"; fi
-  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
 
 # shellcheck disable=SC2034
@@ -181,23 +188,8 @@ FV3_predet(){
   chksum_debug=${chksum_debug:-".false."}
   print_freq=${print_freq:-6}
 
-  #-------------------------------------------------------
-  if [[ "${RUN}" =~ "gfs" || "${RUN}" = "gefs" ]]; then
-    ${NLN} "${COM_ATMOS_RESTART}" RESTART
-    # The final restart written at the end doesn't include the valid date
-    # Create links that keep the same name pattern for these files
-    files="coupler.res fv_core.res.nc"
-    for n in $(seq 1 "${ntiles}"); do
-      for base in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
-        files="${files} ${base}.tile${n}.nc"
-      done
-    done
-    for file in ${files}; do
-      ${NLN} "${file}" "${COM_ATMOS_RESTART}/${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${file}"
-    done
-  else
-    if [[ ! -d "${DATA}/RESTART" ]]; then mkdir -p "${DATA}/RESTART"; fi
-  fi
+  if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
+  ${NLN} "${DATArestart}/FV3_RESTART" "${DATA}/RESTART"
 
 }
 
@@ -207,7 +199,8 @@ WW3_predet(){
   if [[ ! -d "${COM_WAVE_HISTORY}" ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
   if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
 
-  ${NLN} "${COM_WAVE_RESTART}" "restart_wave"
+  if [[ ! -d "${DATArestart}/WAVE_RESTART" ]]; then mkdir -p "${DATArestart}/WAVE_RESTART"; fi
+  ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
 }
 
 # shellcheck disable=SC2034
@@ -219,7 +212,8 @@ CICE_predet(){
   if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
 
   if [[ ! -d "${DATA}/CICE_OUTPUT" ]]; then  mkdir -p "${DATA}/CICE_OUTPUT"; fi
-  if [[ ! -d "${DATA}/CICE_RESTART" ]]; then mkdir -p "${DATA}/CICE_RESTART"; fi
+  if [[ ! -d "${DATArestart}/CICE_RESTART" ]]; then mkdir -p "${DATArestart}/CICE_RESTART"; fi
+  ${NLN} "${DATArestart}/CICE_RESTART" "${DATA}/CICE_RESTART"
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
@@ -236,7 +230,8 @@ MOM6_predet(){
   if [[ ! -d "${COM_OCEAN_INPUT}" ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
 
   if [[ ! -d "${DATA}/MOM6_OUTPUT" ]]; then mkdir -p "${DATA}/MOM6_OUTPUT"; fi
-  if [[ ! -d "${DATA}/MOM6_RESTART" ]]; then mkdir -p "${DATA}/MOM6_RESTART"; fi
+  if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
+  ${NLN} "${DATArestart}/MOM6_RESTART" "${DATA}/MOM6_RESTART"
 
   # MOM6 does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for MOM6
@@ -249,7 +244,8 @@ CMEPS_predet(){
 
   if [[ ! -d "${COM_MED_RESTART}" ]]; then mkdir -p "${COM_MED_RESTART}"; fi
 
-  if [[ ! -d "${DATA}/CMEPS_RESTART" ]]; then mkdir -p "${DATA}/CMEPS_RESTART"; fi
+  if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
+  ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
 
 }
 

@@ -43,11 +43,12 @@ cat "${DIAG_TABLE_APPEND}"
 } >> diag_table_template
 
 local template=diag_table_template
-local SYEAR=${current_cycle:0:4} 
+local SYEAR=${current_cycle:0:4}
 local SMONTH=${current_cycle:4:2}
-local SDAY=${current_cycle:6:2} 
+local SDAY=${current_cycle:6:2}
 local CHOUR=${current_cycle:8:2}
-source "${USHgfs}/atparse.bash"
+local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
+
 atparse < "${template}" >> "diag_table"
 
 
@@ -645,7 +646,7 @@ EOF
   pbl_taper = ${pbl_taper:-"0,0,0,0.125,0.25,0.5,0.75"}
 EOF
   fi
-  
+
   if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
     cat >> input.nml <<EOF
   OCNSPPT=${OCNSPPT}
@@ -663,7 +664,7 @@ EOF
   ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
 EOF
   fi
-  
+
   if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
     cat >> input.nml <<EOF
   OCNSPPT=${OCNSPPT}

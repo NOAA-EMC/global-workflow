@@ -93,7 +93,6 @@ else
   echo "INFO: using ufs.configure template: '${ufs_configure_template}'"
 fi
 
-source "${USHgfs}/atparse.bash"
 rm -f "${DATA}/ufs.configure"
 atparse < "${ufs_configure_template}" >> "${DATA}/ufs.configure"
 echo "Rendered ufs.configure:"
