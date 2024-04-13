@@ -232,7 +232,7 @@ pipeline {
             }
         }
         stage( 'FINALIZE' ) {
-            when( STATUS == 'Passed' )
+            when { STATUS == 'Passed' }
             agent { label "${machine}-emc" }
             steps {
                 script {
