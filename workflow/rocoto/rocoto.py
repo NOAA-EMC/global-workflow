@@ -345,9 +345,7 @@ def _add_sh_tag(dep_dict: Dict[str, Any]) -> str:
     """
 
     shell = dep_dict.get('shell', '/bin/sh')
-    runopt = dep_dict.get('runopt', None)
     command = dep_dict.get('command', 'echo "Hello World"')
-
 
     if '@' in command:
         offset_string_b = f'<cyclestr>'
