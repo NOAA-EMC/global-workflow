@@ -8,6 +8,7 @@ from typing import Union, List, Dict, Any
 
     ABOUT:
         Helper module to create tasks, metatasks, and dependencies for Rocoto
+        Rocoto documentation is available at https://christopherwharrop.github.io/rocoto
 '''
 
 __all__ = ['create_task',
@@ -182,7 +183,8 @@ def add_dependency(dep_dict: Dict[str, Any]) -> str:
                'data': _add_data_tag,
                'cycleexist': _add_cycle_tag,
                'streq': _add_streq_tag,
-               'strneq': _add_streq_tag}
+               'strneq': _add_streq_tag,
+               'sh': _add_sh_tag}
 
     dep_condition = dep_dict.get('condition', None)
     dep_type = dep_dict.get('type', None)
@@ -329,6 +331,33 @@ def _add_streq_tag(dep_dict: Dict[str, Any]) -> str:
         dep_right = f'<cyclestr>{dep_right}</cyclestr>'
 
     string = f'<{dep_type}><left>{dep_left}</left><right>{dep_right}</right></{dep_type}>'
+
+    return string
+
+
+def _add_sh_tag(dep_dict: Dict[str, Any]) -> str:
+    """
+    create a simple shell execution tag
+    :param: dep_dict: shell command to execute
+    :type dep_dict: dict
+    :return: Rocoto simple shell execution dependency
+    :rtype: str
+    """
+
+    shell = dep_dict.get('shell', '/bin/sh')
+    runopt = dep_dict.get('runopt', None)
+    command = dep_dict.get('command', 'echo "Hello World"')
+
+
+    if '@' in command:
+        offset_string_b = f'<cyclestr>'
+        offset_string_e = '</cyclestr>'
+    else:
+        offset_string_b = ''
+        offset_string_e = ''
+    cmd = f'{offset_string_b}{command}{offset_string_e}'
+
+    string = f'<sh shell="{shell}">{cmd}</sh>'
 
     return string
 
