@@ -49,7 +49,7 @@ fi
 # Launch experiment
 echo "Launch experiment with Rocoto."
 rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
-sleep 30
+sleep 10
 if [[ ! -f "${db}" ]]; then
   echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
   exit 2
@@ -64,15 +64,16 @@ while true; do
   rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 
   # Wait before running rocotostat
-  sleep 30
+  sleep 10
 
   # Get job statistics
   echo "Gather Rocoto statistics"
   # shellcheck disable=SC2312 # We want to use the exit code of the command
-  eval "$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --export)"
+  eval=$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --export)
   error_stat=$?
+  eval "${eval}"
 
-  echo "(${pslot}) Total Cycles: ${CYCLES_TOTAL} number done: ${CYCLES_DONE} ${ROCOTO_STATE} on ${MACHINE_ID^}"
+  echo -e "(${pslot} on ${MACHIE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
 
   if [[ ${error_stat} -ne 0 ]]; then
     {
