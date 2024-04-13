@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
+# shellcheck disable=SC2155,SC2312
 HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
 declare -rx HOMEgfs
 
