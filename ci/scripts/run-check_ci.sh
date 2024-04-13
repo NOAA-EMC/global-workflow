@@ -73,7 +73,7 @@ while true; do
   error_stat=$?
   eval "${eval}"
 
-  echo -e "(${pslot} on ${MACHIE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
+  echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
 
   if [[ ${error_stat} -ne 0 ]]; then
     {
@@ -95,7 +95,7 @@ while true; do
    break
   fi
 
-  if [[ "${ROCOTO_STAT}" == "DONE" ]]; then
+  if [[ "${ROCOTO_STATE}" == "DONE" ]]; then
     {
       echo "Experiment ${pslot} Completed ${CYCLES_DONE} Cycles at $(date)" || true
       echo "with ${SUCCEEDED} successfully completed jobs" || true
