@@ -112,7 +112,7 @@ pipeline {
                                                     try {
                                                         sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}")
                                                         gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build failed on **${Machine}** with error logs:${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build **FAILED** on **${Machine}** with error logs:\n\\`\\`\\`${error_logs_message}\n\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                     } catch (Exception error_comment) {
                                                         echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                     }
@@ -205,7 +205,7 @@ pipeline {
                                             }
                                             try {
                                                 gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} failed on ${Machine} with error logs:\\\n\\\n\\`\\`\\`\\\n${error_logs_message}\\\n\\`\\`\\`\\\n\\\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} *FAILED* on ${Machine} with error logs:\n\\`\\`\\`\\\n${error_logs_message}\n\\`\\`\\`\\\n\\\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                 sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}")
                                             } catch (Exception error_comment) {
                                                 echo "Failed to comment on PR: ${error_comment.getMessage()}"
@@ -214,6 +214,14 @@ pipeline {
                                             echo "No error logs found for failed cases in $HOME/RUNTESTS/${pslot}_error.logs"
                                         }
                                         STATUS = 'Failed'
+                                        try {
+                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
+                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
+                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI ${STATUS}** ${Machine} at <br>Built and ran in directory `${HOME}`" """, returnStatus: true)
+                                        } catch (Exception e) {
+                                            echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
+                                        }
                                         error("Failed to run experiments ${Case} on ${Machine}")
                                     }
                                 }
