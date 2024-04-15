@@ -42,7 +42,6 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   module load "module_gwci.${MACHINE_ID}"
 fi
 set -x
-unset HOMEgfs
 if ! command -v gh > /dev/null; then
    GH="${HOME}/bin/gh"
 else
