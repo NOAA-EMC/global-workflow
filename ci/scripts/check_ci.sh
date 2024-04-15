@@ -146,7 +146,6 @@ for pr in ${pr_list}; do
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
       "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
       cancel_all_batch_jobs "${pr_dir}/RUNTESTS/"
-      done
       break
     fi
     if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
