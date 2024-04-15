@@ -56,7 +56,7 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
 fi
 set -x
 unset HOMEgfs
-GH=$(which gh)
+GH=$(command -v gh)
 if [[ $? != "0" ]]; then
    export GH="${HOME}/bin/gh"
 else
