@@ -506,12 +506,14 @@ if [[ ${type} == "gdas" ]]; then
 
     [[ -s "${COM_CONF}/${head}letkfoi.yaml" ]] && echo "${COM_CONF/${ROTDIR}\//}/${head}letkfoi.yaml"
 
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile1.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile2.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile3.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile4.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile5.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile6.nc"
+    if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile1.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile2.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile3.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile4.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile5.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile6.nc"
+    fi
   } >> "${DATA}/gdas_restarta.txt"
 
   #..................

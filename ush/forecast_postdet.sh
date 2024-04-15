@@ -64,7 +64,7 @@ EOF
             increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}atmi${incfhr}.nc"
           fi
           if [[ ! -f ${increment_file} ]]; then
-            echo "ERROR: DOIAU = ${DOIAU}, but missing increment file for fhr ${incfhr} at ${increment_file}"
+            echo "FATAL ERROR: DOIAU = ${DOIAU}, but missing increment file for fhr ${incfhr} at ${increment_file}"
             echo "Abort!"
             exit 1
           fi
@@ -148,7 +148,7 @@ EOF
 
   _suite_file="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml"
   if [[ ! -f ${_suite_file} ]]; then
-    echo "FATAL: CCPP Suite file ${_suite_file} does not exist!"
+    echo "FATAL ERROR: CCPP Suite file ${_suite_file} does not exist!"
     exit 2
   fi
 
@@ -569,7 +569,7 @@ WW3_postdet() {
       if [[ ${RERUN} = "NO" ]]; then
         echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
       else
-        echo "ERROR: Wave IC is missing in RERUN, exiting."
+        echo "FATAL ERROR: Wave IC ${waverstfile} is missing in RERUN, exiting."
         exit 1
       fi
     else
@@ -592,7 +592,7 @@ WW3_postdet() {
   if [[ "${WW3ICEINP}" = "YES" ]]; then
     local wavicefile="${COM_WAVE_PREP}/${RUNwave}.${WAVEICE_FID}.${cycle}.ice"
     if [[ ! -f ${wavicefile} ]]; then
-      echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
+      echo "FATAL ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file ${wavicefile}"
       echo "Abort!"
       exit 1
     fi
@@ -602,7 +602,7 @@ WW3_postdet() {
   if [[ "${WW3CURINP}" = "YES" ]]; then
     local wavcurfile="${COM_WAVE_PREP}/${RUNwave}.${WAVECUR_FID}.${cycle}.cur"
     if [[ ! -f ${wavcurfile} ]]; then
-      echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
+      echo "FATAL ERROR: WW3CURINP = ${WW3CURINP}, but missing current file ${wavcurfile}"
       echo "Abort!"
       exit 1
     fi
@@ -697,7 +697,7 @@ MOM6_postdet() {
   # Link increment
   if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
       if [[ ! -f "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" ]]; then
-          echo "FATAL ERROR: Ocean increment not found, ABORT!"
+          echo "FATAL ERROR: Ocean increment ${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc not found, ABORT!"
           exit 111
       fi
       ${NLN} "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
