@@ -14,14 +14,6 @@ set -eux
 # It then is ready to run a suite of regression tests with various configurations
 #######################################################################################
 
-#################################################################
-# TODO using static build for GitHub CLI until fixed in HPC-Stack
-#################################################################
-
-export GH=$(which gh)
-if [[ $? != "0" ]]; then
-   export GH="${HOME}/bin/gh"
-fi
 export REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 
 ################################################################
@@ -58,8 +50,16 @@ source "${ROOT_DIR}/ci/scripts/utils/ci_utils.sh"
 source "${ROOT_DIR}/ush/module-setup.sh"
 module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
+# Load machine specific modules for ci (only wcoss2 is current)
+if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+  module load "module_gwci.${MACHINE_ID}"
+fi
 set -x
 unset HOMEgfs
+export GH=$(which gh)
+if [[ $? != "0" ]]; then
+   export GH="${HOME}/bin/gh"
+fi
 
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
