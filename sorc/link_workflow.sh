@@ -79,20 +79,23 @@ esac
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
 
-# Link python pacakges in ush/python, workflow and ci/scripts
+# Link python pacakges in ush/python
 # TODO: This will be unnecessary when these are part of the virtualenv
 packages=("wxflow" "jcb")
 for package in "${packages[@]}"; do
     cd "${HOMEgfs}/ush/python" || exit 1
     [[ -s "${package}" ]] && rm -f "${package}"
     ${LINK} "${HOMEgfs}/sorc/${package}/src/${package}" .
-    cd "${HOMEgfs}/workflow" || exit 1
-    [[ -s "${package}" ]] && rm -f "${package}"
-    ${LINK} "${HOMEgfs}/sorc/${package}/src/${package}" .
-    cd "${HOMEgfs}/ci/scripts" || exit 1
-    [[ -s "${package}" ]] && rm -f "${package}"
-    ${LINK} "${HOMEgfs}/sorc/${package}/src/${package}" .
 done
+
+# Link wxflow in workflow and ci/scripts
+# TODO: This will be unnecessary when wxflow is part of the virtualenv
+cd "${HOMEgfs}/workflow" || exit 1
+[[ -s "wxflow" ]] && rm -f wxflow
+${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
+cd "${HOMEgfs}/ci/scripts" || exit 1
+[[ -s "wxflow" ]] && rm -f wxflow
+${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
 
 # Link fix directories
 if [[ -n "${FIX_DIR}" ]]; then
@@ -221,7 +224,7 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/parm/gdas" || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas")
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms")
   for comp in "${gdasapp_comps[@]}"; do
     [[ -d "${comp}" ]] && rm -rf "${comp}"
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
