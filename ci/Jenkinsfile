@@ -4,7 +4,7 @@ def HOME = 'none'
 def caseList = ''
 // Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
-def repo_url = 'git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git'
+def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
 def STATUS = 'Passed'
 
 pipeline {
