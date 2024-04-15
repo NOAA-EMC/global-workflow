@@ -13,8 +13,7 @@ scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-GH=$(command -v gh)
-if [[ $? != "0" ]]; then
+if ! GH=$(command -v gh); then
    export GH="${HOME}/bin/gh"
 else
    export GH
