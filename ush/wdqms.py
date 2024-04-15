@@ -66,6 +66,9 @@ class WDQMS:
         # Grab actual datetimes from datetime + timedelta
         df_total = self._get_datetimes(df_total)
 
+        # Drop duplicates
+        df_total = df_total.drop_duplicates()
+
         # Adjust relative humidity data
         df_total = self._genqsat(df_total)
 
@@ -474,10 +477,14 @@ class WDQMS:
             t_tmp = t_df.loc[(t_df['Station_ID'] == stn)]
             q_tmp = q_df.loc[(q_df['Station_ID'] == stn)]
 
-            t_tmp = t_tmp.loc[(np.in1d(t_tmp['Time'], q_tmp['Time'])) &
-                              (np.in1d(t_tmp['Pressure'], q_tmp['Pressure'])) &
-                              (np.in1d(t_tmp['Latitude'], q_tmp['Latitude'])) &
-                              (np.in1d(t_tmp['Longitude'], q_tmp['Longitude']))]
+            columns_to_extract = ['Latitude', 'Longitude', 'Pressure', 'Time', 'Observation', 'Obs_Minus_Forecast_adjusted']
+            columns_to_compare = ['Latitude', 'Longitude', 'Pressure', 'Time']
+
+            t_tmp = t_tmp[columns_to_extract]
+            q_tmp = q_tmp[columns_to_extract]
+
+            t_tmp = pd.merge(t_tmp, q_tmp, on=columns_to_compare, suffixes=('','_q'), how='inner')
+            t_tmp = t_tmp[columns_to_extract].drop_duplicates()
 
             q_obs = q_tmp['Observation'].to_numpy() * 1.0e6
             q_ges = (q_tmp['Observation'].to_numpy() -
