@@ -56,11 +56,12 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
 fi
 set -x
 unset HOMEgfs
-if not GH=$(command -v gh); then
-   export GH="${HOME}/bin/gh"
+if ! command -v gh > /dev/null; then
+   GH="${HOME}/bin/gh"
 else
-   export GH
+   GH=$(command -v gh)
 fi
+export GH
 
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
