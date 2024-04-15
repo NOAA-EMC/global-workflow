@@ -2,15 +2,62 @@
 name: "GDAS"
 target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdas.tar"
 mandatory:
+    {% if not first_cycle and MODE == "cycled" %}
     - "{{ atmos_grib_0p25_dir }}/{{ head }}pgrb2.0p25.anl"
     - "{{ atmos_grib_0p25_dir }}/{{ head }}pgrb2.0p25.anl.idx"
     - "{{ atmos_grib_1p00_dir }}/{{ head }}pgrb2.1p00.anl"
     - "{{ atmos_grib_1p00_dir }}/{{ head }}pgrb2.1p00.anl.idx"
     - "{{ atmos_analysis_dir }}/{{ head }}atmanl.nc"
     - "{{ atmos_analysis_dir }}/{{ head }}sfcanl.nc"
-    {% if not first_cycle %}
     - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmanlprod.log"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}prep.log"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}anal.log"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmanlupp.log"
+    - "{{ atmos_analysis_dir }}/{{ head }}atmanl.ensres.nc"
+    - "{{ atmos_analysis_dir }}/{{ head }}atma003.ensres.nc"
+    - "{{ atmos_analysis_dir }}/{{ head }}atma009.ensres.nc"
+    - "{{ atmos_analysis_dir }}/{{ head }}cnvstat"
+    - "{{ atmos_analysis_dir }}/{{ head }}oznstat"
+    - "{{ atmos_analysis_dir }}/{{ head }}radstat"
+    {% if DO_JEDIATMVAR %}
+    - "{{ atmos_analysis_dir }}/{{ head }}atmvar.yaml"
+    - "{{ atmos_analysis_dir }}/{{ head }}atmstat"
     {% endif %}
+    {% if DO_VERFOZN %}
+    - "{{ atmos_oznmon_dir }}/time/bad_cnt.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_oznmon_dir }}/time/bad_diag.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_oznmon_dir }}/time/bad_pen.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_oznmon_dir }}/time/stdout.time.tar.gz"
+    - "{{ atmos_oznmon_dir }}/horiz/stdout.horiz.tar.gz"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}verfozn.log"
+    {% endif %}
+    {% if DO_VERFRAD %}
+    - "{{ atmos_radmon_dir }}/bad_diag.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_radmon_dir }}/bad_pen.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_radmon_dir }}/low_count.{{ cycle_YYYYMMDDHH }}"
+    - "{{ atmos_radmon_dir }}/radmon_angle.tar.gz"
+    - "{{ atmos_radmon_dir }}/radmon_bcoef.tar.gz"
+    - "{{ atmos_radmon_dir }}/radmon_bcor.tar.gz"
+    - "{{ atmos_radmon_dir }}/radmon_time.tar.gz"
+    - "{{ atmos_radmon_dir }}/warning.{{ cycle_YYYYMMDDHH }}"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}verfrad.log"
+    {% endif %}
+    {% if DO_VMINMON %}
+    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.costs.txt"
+    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.cost_terms.txt"
+    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.gnorms.ieee_d"
+    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.reduction.ieee_d"
+    - "{{ atmos_minmon_dir }}/gnorm_data.txt"
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}vminmon.log"
+    {% endif %}
+    {% if DO_AERO %}
+    - "{{ chem_analysis_dir }}/{{ head }}aerostat"
+    {% endif %}
+    {% if DO_JEDISNOWDA %}
+    - "{{ snow_analysis_dir }}/{{ head }}snowstat.tgz"
+    {% endif %}
+    {% endif %}  # Full cycle
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}fcst.log"
     - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_prod_f*.log"
     {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
     - "{{ atmos_grib_0p25_dir }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"
@@ -25,60 +72,9 @@ mandatory:
     - "{{ atmos_master_dir }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
     - "{{ atmos_master_dir }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
     {% endfor %}
-    {% if DO_VERFOZN %}
-    - "{{ atmos_oznmon_dir }}/time/bad_cnt.{{ cycle_YYYYMMDDHH }}"
-    - "{{ atmos_oznmon_dir }}/time/bad_diag.{{ cycle_YYYYMMDDHH }}"
-    - "{{ atmos_oznmon_dir }}/time/bad_pen.{{ cycle_YYYYMMDDHH }}"
-    - "{{ atmos_oznmon_dir }}/time/stdout.time.tar.gz"
-    - "{{ atmos_oznmon_dir }}/horiz/stdout.horiz.tar.gz"
-    {% endif %}
-    {% if DO_VERFRAD %}
-    - "{{ atmos_radmon_dir }}/bad_diag.{{ cycle_YYYYMMDDHH }}"
-    - "{{ atmos_radmon_dir }}/bad_pen.{{ cycle_YYYYMMDDHH }}"
-    - "{{ atmos_radmon_dir }}/low_count.{{ cycle_YYYYMMDDHH }}"
-    - "{{ atmos_radmon_dir }}/radmon_angle.tar.gz"
-    - "{{ atmos_radmon_dir }}/radmon_bcoef.tar.gz"
-    - "{{ atmos_radmon_dir }}/radmon_bcor.tar.gz"
-    - "{{ atmos_radmon_dir }}/radmon_time.tar.gz"
-    - "{{ atmos_radmon_dir }}/warning.{{ cycle_YYYYMMDDHH }}"
-    {% endif %}
-    {% if DO_VMINMON %}
-    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.costs.txt"
-    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.cost_terms.txt"
-    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.gnorms.ieee_d"
-    - "{{ atmos_minmon_dir }}/{{ cycle_YYYYMMDDHH }}.reduction.ieee_d"
-    - "{{ atmos_minmon_dir }}/gnorm_data.txt"
-    {% endif %}
 optional:
-    - "{{ atmos_analysis_dir }}/{{ head }}atmvar.yaml"
-    - "{{ atmos_analysis_dir }}/{{ head }}atmstat"
+    {% if not first_cycle and MODE == "cycled" %}
     - "{{ atmos_analysis_dir }}/{{ head }}gsistat"
-    - "{{ atmos_analysis_dir }}/{{ head }}atmanl.ensres.nc"
-    - "{{ atmos_analysis_dir }}/{{ head }}atma003.ensres.nc"
-    - "{{ atmos_analysis_dir }}/{{ head }}atma009.ensres.nc"
-    - "{{ atmos_analysis_dir }}/{{ head }}cnvstat"
-    - "{{ atmos_analysis_dir }}/{{ head }}oznstat"
-    - "{{ chem_analysis_dir }}/{{ head }}aerostat"
-    - "{{ snow_analysis_dir }}/{{ head }}snowstat.tgz"
-    - "{{ atmos_analysis_dir }}/{{ head }}radstat"
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}prep.log"
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}anal.log"
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}fcst.log"
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}verfozn.log"
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}verfrad.log"
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}vminmon.log"
-    {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
-    - "{{ atmos_master_dir }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
-    - "{{ atmos_master_dir }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
-    {% endfor %}
-    {% if DO_AERO %}
-    - "{{ chem_analysis_dir }}/{{ head }}aerostat"
-    {% endif %}
-    - "{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmanlupp.log"
-    {% if WRITE_DOPOST %}
-    # TODO set the forecast hours explicitly.  This will require emulating numpy.array_split
-    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_upp_f*.log"
-    {% endif %} # WRITE_DOPOST
     {% if DO_VERFOZN %}
     {% set oznmon_types = [
        "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",
@@ -95,3 +91,12 @@ optional:
     {% endfor %}
     {% endfor %}
     {% endif %}
+    {% endif %}
+    {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
+    - "{{ atmos_master_dir }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
+    - "{{ atmos_master_dir }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
+    {% endfor %}
+    {% if not WRITE_DOPOST %}
+    # TODO set the forecast hours explicitly.  This will require emulating numpy.array_split
+    - "logs/{{ cycle_YYYYMMDDHH }}/{{ RUN }}atmos_upp_f*.log"
+    {% endif %}  ## not WRITE_DOPOST

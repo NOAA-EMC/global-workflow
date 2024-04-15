@@ -30,7 +30,7 @@ done
 # Run archive script
 ###############################################################
 
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive.sh}
+${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive.py}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

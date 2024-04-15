@@ -13,6 +13,7 @@ deterministic:
         - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}"
         {% endif %}
     copy:
+        {% if not first_cycle and MODE == "cycled" %}
         - ["{{ atmos_analysis_dir }}/{{ head }}gsistat", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
         {% if DO_JEDISNOWDA %}
         - ["{{ snow_analysis_dir }}/{{ head }}snowstat", "{{ ARCDIR }}/snowstat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
@@ -21,6 +22,7 @@ deterministic:
         - ["{{ chem_analysis_dir }}/{{ head }}aerostat", "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
         {% endif %}
         - ["{{ atmos_grib_1p00_dir }}/{{ head }}pgrb2.1p00.anl", "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YYYYMMDDHH }}.grib2"]
+        {% endif %}  # Full cycle
         {% if RUN == "gfs" %}
         {% set fhmin, fhmax, fhout = FHMIN_GFS, FHMAX_GFS, FHOUT_GFS %}
         {% elif RUN == "gdas" %}
@@ -30,17 +32,6 @@ deterministic:
         - ["{{ atmos_grib_1p00_dir }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}", "{{ ARCDIR }}/pgbf{{ '%02d' % fhr }}.{{ RUN }}.{{ cycle_YYYYMMDDHH }}.grib2"]
         {% endfor %}
         {% if RUN == "gfs" %}
-        - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YYYYMMDDHH }}"]
-        - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}"]
-        - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}"]
-        - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}"]
-        ## Only created if tracking is on and there were systems to track
-        {% if path_exists(atmos_track_dir + "/epac") %}
-        - ["{{ atmos_track_dir }}/epac", "{{ ARCDIR }}/epac"]
-        {% endif %}
-        {% if path_exists(atmos_track_dir + "/epac") %}
-        - ["{{ atmos_track_dir }}/natl", "{{ ARCDIR }}/natl"]
-        {% endif %}
         {% if FITSARC %}
         {% if FHMAX_FITS is defined %}
         {% set fhmax = FHMAX_FITS %}
@@ -54,6 +45,17 @@ deterministic:
         - ["{{ sigfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}/{{ sigfile }}"]
         {% endfor %}
         {% endif %} ## FITSARC
+        - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}"]
+        ## Only created if tracking is on and there were systems to track
+        {% if path_exists(atmos_track_dir + "/epac") %}
+        - ["{{ atmos_track_dir }}/epac", "{{ ARCDIR }}/epac"]
+        {% endif %}
+        {% if path_exists(atmos_track_dir + "/epac") %}
+        - ["{{ atmos_track_dir }}/natl", "{{ ARCDIR }}/natl"]
+        {% endif %}
         {% endif %} ## RUN == "gfs"
         {% if path_exists(atmos_track_dir ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YYYYMMDDHH) %}
         - ["{{ atmos_track_dir }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]

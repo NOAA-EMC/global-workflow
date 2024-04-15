@@ -2,7 +2,7 @@
 
 import os
 
-from wxflow import AttrDict, Logger, logit, cast_strdict_as_dtypedict
+from wxflow import AttrDict, Logger, logit, cast_strdict_as_dtypedict, chdir
 from pygfs.task.archive import Archive
 
 # initialize root logger
@@ -21,9 +21,9 @@ def main():
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
             'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_AERO', 'PARMgfs',
             'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'cyc', 'cycle_YYYYMMDDHH',
-            'PSLOT', 'cycle_HH', 'first_cycle', 'NFHRS_PER_GROUP', 'HPSSARCH',
+            'PSLOT', 'cycle_HH', 'first_cycle', 'HPSSARCH',
             'DO_JEDISNOWDA', 'LOCALARCH', 'REALTIME', 'ROTDIR', 'ARCH_WARMICFREQ',
-            'ARCH_FCSTICFREQ', 'SAVEFCSTIC', 'ARCH_CYC', 'assim_freq', 'ARCDIR',
+            'ARCH_FCSTICFREQ', 'ARCH_CYC', 'assim_freq', 'ARCDIR',
             'path_exists']
 
     archive_dict = AttrDict()
@@ -35,12 +35,17 @@ def main():
         if key.endswith("_dir"):
             archive_dict[key] = archive.task_config[key]
 
+    cwd = os.getcwd()
+
+    os.chdir(config.ROTDIR)
+
     # Determine which archives to create
     arcdir_set, atardir_sets = archive.configure(archive_dict)
 
     # Create the archives
     archive.execute(arcdir_set, atardir_sets)
 
+    os.chdir(cwd)
 
 if __name__ == '__main__':
     main()

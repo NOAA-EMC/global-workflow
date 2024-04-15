@@ -168,7 +168,7 @@ class Archive(Task):
 
             datasets = ['gdas']
 
-            if save_warm_ic_a or arch_dict.SAVEFCSTIC:
+            if save_warm_ic_a or SAVEFCSTIC:
                 datasets.append("gdas_restarta")
                 if arch_dict.DO_WAVE:
                     datasets.append("gdaswave_restart")
@@ -177,7 +177,7 @@ class Archive(Task):
                 if arch_dict.DO_ICE:
                     datasets.append("gdasice_restart")
 
-            if save_warm_ic_b or arch_dict.SAVEFCSTIC:
+            if save_warm_ic_b or SAVEFCSTIC:
                 datasets.append("gdas_restartb")
 
             if arch_dict.DO_ICE == "YES":
@@ -241,8 +241,13 @@ class Archive(Task):
         # Generate tarballs
         for atardir_set in atardir_sets:
 
+            if len(atardir_set.fileset) == 0:
+                print(f"WARNING skipping would-be empty archive {atardir_set.target}.")
+                continue
+
             if self.tar_cmd == "htar":
                 cvf = self.htar.cvf
+                create = self.htar.create
                 rm_cmd = self.hsi.rm
             else:
                 cvf = Archive._create_tarball
@@ -282,24 +287,23 @@ class Archive(Task):
 
         fileset = []
         if 'mandatory' in atardir_set:
-            for item in atardir_set.mandatory:
-                glob_set = glob.glob(item)
-                if len(glob_set) == 0:
-                    raise FileNotFoundError(f'Mandatory file, directory, or glob {item} not found!')
-                for entry in glob_set:
-                    fileset.append(entry)
-
-        if 'optional' in atardir_set:
-            for item in atardir_set.optional:
-                glob_set = glob.glob(item)
-                if len(glob_set) == 0:
-                    print(f'WARNING: optional file/glob {item} not found!')
-                else:
+            if atardir_set.mandatory is not None:
+                for item in atardir_set.mandatory:
+                    glob_set = glob.glob(item)
+                    if len(glob_set) == 0:
+                        raise FileNotFoundError(f'Mandatory file, directory, or glob {item} not found!')
                     for entry in glob_set:
                         fileset.append(entry)
 
-        if len(fileset) == 0:
-            print(f'WARNING: the fileset for the {atardir_set.name} archive is empty!')
+        if 'optional' in atardir_set:
+            if atardir_set.optional is not None:
+                for item in atardir_set.optional:
+                    glob_set = glob.glob(item)
+                    if len(glob_set) == 0:
+                        print(f'WARNING: optional file/glob {item} not found!')
+                    else:
+                        for entry in glob_set:
+                            fileset.append(entry)
 
         return fileset
 
