@@ -13,8 +13,7 @@ scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-GH=${HOME}/bin/gh
-REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
@@ -22,7 +21,7 @@ REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules)
+  hera | orion | hercules | wcoss2)
    echo "Running Automated Testing on ${MACHINE_ID}"
    source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
    ;;
@@ -38,7 +37,18 @@ source "${HOMEgfs}/ci/scripts/utils/ci_utils.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
+# Load machine specific modules for ci (only wcoss2 is current)
+if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+  module load "module_gwci.${MACHINE_ID}"
+fi
 set -x
+if ! command -v gh > /dev/null; then
+   GH="${HOME}/bin/gh"
+else
+   GH=$(command -v gh)
+fi
+export GH
+
 rocotostat=$(command -v rocotostat)
 if [[ -z ${rocotostat+x} ]]; then
   echo "rocotostat not found on system"
@@ -141,10 +151,7 @@ for pr in ${pr_list}; do
       sed -i "1 i\`\`\`" "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
       "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
-      for kill_cases in "${pr_dir}/RUNTESTS/"*; do
-         pslot=$(basename "${kill_cases}")
-         cancel_slurm_jobs "${pslot}"
-      done
+      cancel_all_batch_jobs "${pr_dir}/RUNTESTS/"
       break
     fi
     if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
