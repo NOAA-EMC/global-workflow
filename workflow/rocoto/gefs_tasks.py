@@ -239,6 +239,45 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def atmos_ensstat(self):
+
+        resources = self.get_resource('atmos_ensstat')
+
+        deps = []
+        for member in range(0, self.nmem + 1):
+            task = f'atmos_prod_mem{member:03d}_f#fhr#'
+            dep_dict = {'type': 'task', 'name': task}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHRLST': '#fhr#'}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        task_name = f'atmos_ensstat_f#fhr#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': postenvars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmos_ensstat.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'}
+
+        fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
+        fhr_metatask_dict = {'task_name': f'atmos_ensstat',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+        task = rocoto.create_task(fhr_metatask_dict)
+
+        return task
+
     def wavepostsbs(self):
         deps = []
         for wave_grid in self._configs['wavepostsbs']['waveGRD'].split():
