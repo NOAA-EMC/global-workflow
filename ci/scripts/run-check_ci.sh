@@ -9,7 +9,7 @@ set -eu
 
 TEST_DIR=${1:-${TEST_DIR:-?}}  # Location of the root of the testing directory
 pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this script
-SYSTEM_BUILD_DIR=${3:-${SYSTEM_BUILD_DIR:-?}}  # Name of the system build directory
+SYSTEM_BUILD_DIR=${3:-"global-workflow"}  # Name of the system build directory, default is "global-workflow
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -24,7 +24,7 @@ SYSTEM_BUILD_DIR=${3:-${SYSTEM_BUILD_DIR:-?}}  # Name of the system build direct
 #         └── ${pslot}
 # Two system build directories created at build time gfs, and gdas
 # TODO: Make this configurable (for now all scripts run from gfs for CI at runtime)
-HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR:-global-workflow}"
+HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
