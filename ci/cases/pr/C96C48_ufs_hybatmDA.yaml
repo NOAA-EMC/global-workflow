@@ -22,3 +22,4 @@ skip_ci_on_hosts:
   - orion
   - hercules
   - wcoss2
+  
