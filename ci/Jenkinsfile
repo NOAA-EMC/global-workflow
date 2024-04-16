@@ -124,8 +124,7 @@ pipeline {
                                     }
                                     if (env.CHANGE_ID && system == 'gfs') {
                                         try {
-                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Running" """)
-                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """)
+                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Running" --remove-label "CI-${Machine}-Building" """)
                                         } catch (Exception e) {
                                             echo "Failed to update label from Buildng to Running: ${e.getMessage()}"
                                         }
@@ -214,8 +213,7 @@ pipeline {
                                         }
                                         STATUS = 'Failed'
                                         try {
-                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
-                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
                                         } catch (Exception e) {
                                             echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                         }
@@ -238,9 +236,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" """, returnStatus: true)
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Building" """, returnStatus: true)
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --remove-label "CI-${Machine}-Building" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
                         sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI ${STATUS}** ${Machine} at <br>Built and ran in directory //`${HOME}//`" """, returnStatus: true)
                     } catch (Exception e) {
                         echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
