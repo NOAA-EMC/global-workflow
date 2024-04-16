@@ -69,9 +69,15 @@ while true; do
   # Get job statistics
   echo "Gather Rocoto statistics"
   # shellcheck disable=SC2312 # We want to use the exit code of the command
-  eval=$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --export)
+  eval=$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
   error_stat=$?
-  eval "${eval}"
+
+  CYCLES_TOTAL=$(echo "${eval}" | grep CYCLES_TOTAL | cut -d: -f2) || true
+  CYCLES_DONE=$(echo "${eval}" | grep CYCLES_DONE | cut -d: -f2) || true
+  SUCCEEDED=$(echo "${eval}" | grep SUCCEEDED | cut -d: -f2) || true
+  FAIL=$(echo "${eval}" | grep FAIL | cut -d: -f2) || true
+  DEAD=$(echo "${eval}" | grep DEAD | cut -d: -f2) || true
+  ROCOTO_STATE=$(echo "${eval}" | tail -1) || true
 
   echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
 
