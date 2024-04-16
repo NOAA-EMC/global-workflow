@@ -49,8 +49,7 @@ pipeline {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         HOME = "${WORKSPACE}"
                         sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" """)
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Ready" """)
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
                     echo "Building and running on ${Machine} in directory ${HOME}"
                 }
