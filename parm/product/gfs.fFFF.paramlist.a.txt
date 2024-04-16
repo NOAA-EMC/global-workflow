@@ -45,7 +45,6 @@ ACPCP:surface
 ALBDO:surface
 APCP:surface
 APTMP:2 m above ground
-var discipline=0 master_table=2 parmcat=0 parm=21:2 m above ground
 AOTK:entire atmosphere
 CAPE:180-0 mb above ground
 CAPE:255-0 mb above ground
@@ -177,7 +176,6 @@ ICAHT:max wind
 ICAHT:tropopause
 ICEC:surface
 ICETK:surface
-ICETMP:surface
 ICSEV:100 mb
 ICSEV:150 mb
 ICSEV:200 mb
@@ -758,4 +756,3 @@ WEASD:surface
 WILT:surface
 SNOD:surface
 VIS:surface
-ICEG:10 m above mean sea level

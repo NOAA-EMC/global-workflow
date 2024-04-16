@@ -158,16 +158,19 @@ sorc/ocnicepost.fd
 # jobs symlinks
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
+scripts/exgdas_global_marine_analysis_ecen.py
+scripts/exglobal_prep_ocean_obs.py
 # ush symlinks
 ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
-ush/exglobal_prep_ocean_obs.py
 ush/fix_precip.sh
 ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
+ush/gen_bufr2ioda_json.py
+ush/gen_bufr2ioda_yaml.py
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
