@@ -17,7 +17,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_ensstat" -c "base atmos_ensstat
 
 for grid in '0p25' '0p50' '1p00'; do
   prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-  MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+  MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
 done
 

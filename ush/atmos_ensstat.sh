@@ -13,7 +13,7 @@ cd "${grid}${grid_type}" || exit 2
 input_files=()
 for ((mem_num = 0; mem_num <= "${NMEM_ENS:-0}"; mem_num++)); do
     mem=$(printf "%03d" "${mem_num}")
-    MEMDIR="mem${mem}" GRID="${grid}" YMD="${PDY}" HH="${cyc}" generate_com COMIN_ATMOS_GRIB:COM_ATMOS_GRIB_GRID_TMPL
+    MEMDIR="mem${mem}" GRID="${grid}" YMD="${PDY}" HH="${cyc}" declare_from_tmpl COMIN_ATMOS_GRIB:COM_ATMOS_GRIB_GRID_TMPL
     memfile_in="${COMIN_ATMOS_GRIB}/${RUN}.t${cyc}z.pgrb2${grid_type}.${grid}.f${fhr3}"
 
     if [[ -r "${memfile_in}.idx" ]]; then
