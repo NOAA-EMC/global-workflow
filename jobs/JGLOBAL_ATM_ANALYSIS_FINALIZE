@@ -20,9 +20,9 @@ GDUMP="gdas"
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
     COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL

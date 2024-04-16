@@ -151,6 +151,14 @@ done
 
 cd "${HOMEgfs}/scripts" || exit 8
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
+if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+  declare -a gdas_scripts=(exglobal_prep_ocean_obs.py \
+                           exgdas_global_marine_analysis_ecen.py \
+                           )
+  for gdas_script in "${gdas_scripts[@]}" ; do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/${gdas_script}" .
+  done
+fi
 cd "${HOMEgfs}/ush" || exit 8
 for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
@@ -166,12 +174,19 @@ declare -a ufs_templates=("model_configure.IN" \
                           "MOM6_data_table.IN" \
                           "ice_in.IN" \
                           "ufs.configure.atm.IN" \
+                          "ufs.configure.atm_esmf.IN" \
                           "ufs.configure.atmaero.IN" \
-                          "ufs.configure.leapfrog_atm_wav.IN" \
+                          "ufs.configure.atmaero_esmf.IN" \
+                          "ufs.configure.s2s.IN" \
                           "ufs.configure.s2s_esmf.IN" \
+                          "ufs.configure.s2sa.IN" \
                           "ufs.configure.s2sa_esmf.IN" \
+                          "ufs.configure.s2sw.IN" \
                           "ufs.configure.s2sw_esmf.IN" \
-                          "ufs.configure.s2swa_esmf.IN" )
+                          "ufs.configure.s2swa.IN" \
+                          "ufs.configure.s2swa_esmf.IN" \
+                          "ufs.configure.leapfrog_atm_wav.IN" \
+                          "ufs.configure.leapfrog_atm_wav_esmf.IN" )
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
@@ -218,9 +233,10 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   cd "${HOMEgfs}/ush" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda"                              .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/jediinc2fv3.py"                     .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_json.py"    .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/exglobal_prep_ocean_obs.py"           .
 fi
 
 
@@ -257,8 +273,8 @@ if [[ ! -d "${HOMEgfs}/exec" ]]; then mkdir "${HOMEgfs}/exec" || exit 1 ; fi
 cd "${HOMEgfs}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
-  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x \
-  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x
+  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x rdbfmsua.x \
+  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x webtitle.x
 do
   [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
@@ -345,10 +361,11 @@ fi
 #--link source code directories
 #------------------------------
 cd "${HOMEgfs}/sorc" || exit 8
-if [[ -d ufs_model.fd ]]; then
-  [[ -d upp.fd ]] && rm -rf upp.fd
-  ${LINK} ufs_model.fd/FV3/upp upp.fd
-fi
+# TODO: Commenting out until UPP is up-to-date with Rocky-8.
+#if [[ -d ufs_model.fd ]]; then
+#  [[ -d upp.fd ]] && rm -rf upp.fd
+#  ${LINK} ufs_model.fd/FV3/upp upp.fd
+#fi
 
 if [[ -d gsi_enkf.fd ]]; then
   [[ -d gsi.fd ]] && rm -rf gsi.fd

@@ -43,8 +43,10 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['anal', 'analdiag']
 
         if self.do_jediocnvar:
-            configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat',
-                        'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost']
+            configs += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat', 'ocnanalrun']
+            if self.do_hybvar:
+                configs += ['ocnanalecen']
+            configs += ['ocnanalchkpt', 'ocnanalpost']
             if self.do_vrfy_oceanda:
                 configs += ['ocnanalvrfy']
 
@@ -85,7 +87,9 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['metp']
 
         if self.do_gempak:
-            configs += ['gempak', 'npoess']
+            configs += ['gempak']
+            if self.do_goes:
+                configs += ['npoess']
 
         if self.do_bufrsnd:
             configs += ['postsnd']
@@ -137,9 +141,10 @@ class GFSCycledAppConfig(AppConfig):
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
         if self.do_jediocnvar:
-            gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep',
-                                                  'ocnanalbmat', 'ocnanalrun',
-                                                  'ocnanalchkpt', 'ocnanalpost']
+            gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep', 'ocnanalbmat', 'ocnanalrun']
+            if self.do_hybvar:
+                gdas_gfs_common_tasks_before_fcst += ['ocnanalecen']
+            gdas_gfs_common_tasks_before_fcst += ['ocnanalchkpt', 'ocnanalpost']
             if self.do_vrfy_oceanda:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 
@@ -254,8 +259,9 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += ['gempak']
             gfs_tasks += ['gempakmeta']
             gfs_tasks += ['gempakncdcupapgif']
-            gfs_tasks += ['npoess_pgrb2_0p5deg']
-            gfs_tasks += ['gempakpgrb2spec']
+            if self.do_goes:
+                gfs_tasks += ['npoess_pgrb2_0p5deg']
+                gfs_tasks += ['gempakpgrb2spec']
 
         if self.do_awips:
             gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']

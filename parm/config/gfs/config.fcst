@@ -5,6 +5,8 @@
 
 echo "BEGIN: config.fcst"
 
+export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
+
 # Turn off waves if not used for this CDUMP
 case ${WAVE_CDUMP} in
   both | "${CDUMP/enkf}" ) ;; # Don't change
@@ -115,9 +117,6 @@ if (( gwd_opt == 2 )); then
     export do_ugwp_v1_orog_only=".false."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
-    if [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
-       export cdmbgwd=${cdmbgwd_gsl}
-    fi
 fi
 
 # Sponge layer settings
@@ -147,7 +146,11 @@ tbp=""
 if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 
 # Radiation options
-export IAER=1011    ; #spectral band mapping method for aerosol optical properties
+if [[ "${DO_AERO}" == "YES" ]]; then
+    export IAER=2011  # spectral band mapping method for aerosol optical properties
+else
+    export IAER=1011    
+fi
 export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
 export iovr_sw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
 export iovr=3       ; #de-correlation length cloud overlap method (Barker, 2008)

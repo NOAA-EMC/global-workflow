@@ -15,7 +15,7 @@ class Tasks:
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'prepoceanobs',
-                   'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
+                   'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalecen', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlrun', 'atmensanlfinal',
@@ -47,7 +47,10 @@ class Tasks:
         self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
-        self.nmem = int(self._base['NMEM_ENS'])
+        if self.cdump == "enkfgfs":
+            self.nmem = int(self._base['NMEM_ENS_GFS'])
+        else:
+            self.nmem = int(self._base['NMEM_ENS'])
         self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
