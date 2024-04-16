@@ -13,8 +13,7 @@ scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-GH=${HOME}/bin/gh
-REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
@@ -22,7 +21,7 @@ REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules)
+  hera | orion | hercules | wcoss2)
    echo "Running Automated Testing on ${MACHINE_ID}"
    source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
    ;;
@@ -38,7 +37,18 @@ source "${HOMEgfs}/ci/scripts/utils/ci_utils.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
+# Load machine specific modules for ci (only wcoss2 is current)
+if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+  module load "module_gwci.${MACHINE_ID}"
+fi
 set -x
+if ! command -v gh > /dev/null; then
+   GH="${HOME}/bin/gh"
+else
+   GH=$(command -v gh)
+fi
+export GH
+
 rocotostat=$(command -v rocotostat)
 if [[ -z ${rocotostat+x} ]]; then
   echo "rocotostat not found on system"

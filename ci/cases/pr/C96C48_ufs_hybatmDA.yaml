@@ -21,3 +21,5 @@ skip_ci_on_hosts:
   - hera
   - orion
   - hercules
+  - wcoss2
+  
