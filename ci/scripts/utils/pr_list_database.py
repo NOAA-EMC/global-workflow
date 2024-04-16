@@ -39,6 +39,7 @@ def create_table(db: SQLiteDB):
     db : SQLiteDB
         The database to create.
     """
+
     db.create_table('pr_list', ['pr INTEGER PRIMARY KEY UNIQUE', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])
 
 
@@ -53,6 +54,7 @@ def add_pr(db: SQLiteDB, pr: str) -> bool:
     pr : str
         The pull request to add.
     """
+
     entities = (pr, 'Open', 'Ready', 0, 'ci_repo')
     try:
         db.insert_data('pr_list', entities)
@@ -74,6 +76,7 @@ def update_pr(db: SQLiteDB, args):
     args : argparse.Namespace
         The command line arguments.
     """
+
     if len(args.update_pr) < 2:
         print(f"update_pr must have at least one vaule to update")
         sys.exit(0)
@@ -100,6 +103,7 @@ def display_db(db: SQLiteDB, display: any) -> list:
     list
         The rows of the database.
     """
+
     values = []
     if len(display) == 1:
         rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"pr = '{display[0]}'")
@@ -129,6 +133,7 @@ def update_database(db: SQLiteDB) -> list:
     list
         The kill list of pull requests.
     """
+
     gh = GitHubPR()
     pr_ready_list, pr_kill_list = gh.get_open_pr_list()
     for pr in pr_ready_list:
@@ -148,9 +153,9 @@ def input_args():
     argparse.Namespace
         The parsed command line arguments.
     """
-
     description = """Arguments for creating and updating db file for pr states
     """
+
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
