@@ -4,7 +4,7 @@ set -eu
 
 #####################################################################################
 # Script description: script to check the status of an experiment as reported
-#                     by Rocoto 
+#                     by Rocoto
 #####################################################################################
 
 TEST_DIR=${1:-${TEST_DIR:-?}}  # Location of the root of the testing directory

@@ -84,7 +84,7 @@ def update_pr(db: SQLiteDB, args):
         db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def display_db(db, display) -> list:
+def display_db(db: SQLiteDB, display: any) -> list:
     """
     Display the database.
 
@@ -92,7 +92,7 @@ def display_db(db, display) -> list:
     ----------
     db : SQLiteDB
         The database to display.
-    args : display
+    display : argparse.Namespace
         The command line arguments.
 
     Returns

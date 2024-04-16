@@ -140,6 +140,12 @@ for pr in ${pr_list}; do
     rm -f "${output_ci_single}"
     if [[ "${rocoto_error}" -ne 0 ]]; then
         "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
+        if [[ "${rocoto_state}" == "STALLED" ]]; then
+          "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body "Experiment ${pslot} **${rocoto_state}** on ${MACHINE_ID^} at $(date +'%D %r')"
+          "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+          cancel_all_batch_jobs "${pr_dir}/RUNTESTS"
+          exit "${rocoto_error}"
+        fi
         error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
         # shellcheck disable=SC2086
         ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo "PR_${pr}" > /dev/null
