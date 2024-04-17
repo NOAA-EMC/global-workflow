@@ -1,110 +1,113 @@
 #! /usr/bin/env bash
 
-FV3_det(){
-  echo "SUB ${FUNCNAME[0]}: Run type determination for FV3"
-  #-------------------------------------------------------
-  # warm start?
-  warm_start=${EXP_WARM_START:-".false."}
-  read_increment=${read_increment:-".false."}
-  res_latlon_dynamics="''"
+# Disable variable not used warnings
+# shellcheck disable=SC2034
+UFS_det(){
+  echo "SUB ${FUNCNAME[0]}: Run type determination for UFS"
 
-  # Determine if this is a warm start or cold start
-  if [[ -f "${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000.coupler.res" ]]; then
-    warm_start=".true."
+  if [[ "${DOIAU:-}" == "YES" ]]; then
+    if [[ -f "${COM_ATMOS_RESTART_PREV}/${current_cycle_begin:0:8}.${current_cycle_begin:8:2}0000.coupler.res" ]]; then
+      warm_start=".true."
+    fi
+  else
+    if [[ -f "${COM_ATMOS_RESTART_PREV}/${current_cycle:0:8}.${current_cycle:8:2}0000.coupler.res" ]]; then
+      warm_start=".true."
+    fi
   fi
 
-  # turn IAU off for cold start
-  DOIAU_coldstart=${DOIAU_coldstart:-"NO"}
-  if [ "${DOIAU}" = "YES" -a "${warm_start}" = ".false." ] || [ "${DOIAU_coldstart}" = "YES" -a "${warm_start}" = ".true." ]; then
-    echo "turning off IAU since this is a cold-start"
+  if [[ "${warm_start}" == ".false." ]]; then
+
+    # Since restarts are not available from the previous cycle, this is likely a cold start
+    # Ensure cold start ICs are present when warm start is not set
+    # TODO: add checks for other cold start ICs as well
+    if [[ ! -f "${COM_ATMOS_INPUT}/gfs_ctrl.nc" ]]; then
+      echo "FATAL ERROR: Cold start ICs are missing from '${COM_ATMOS_INPUT}'"
+      exit 1
+    fi
+
+    # Since warm start is false, we cannot do IAU
     DOIAU="NO"
-    DOIAU_coldstart="YES"
-    # Ignore "not used" warning
-    # shellcheck disable=SC2034
     IAU_OFFSET=0
-    sCDATE=${current_cycle}
-    sPDY=${current_cycle:0:8}
-    scyc=${current_cycle:8:2}
-    tPDY=${sPDY}
-    tcyc=${scyc}
+
+    # It is still possible that a restart is available from a previous forecast attempt
+    # So we have to continue checking for restarts
   fi
 
-  #-------------------------------------------------------
-  # determine if restart IC exists to continue from a previous forecast run attempt
+  # Lets assume this is was not run before and hence this is not a RERUN
+  RERUN="NO"
 
-  RERUN=${RERUN:-"NO"}
-  # Get a list of all YYYYMMDD.HH0000.coupler.res files from the atmos restart directory
-  # shellcheck disable=SC2312
-  mapfile -t file_array < <(find "${COM_ATMOS_RESTART:-/dev/null}" -name "????????.??0000.coupler.res" | sort)
-  if [[ ( "${RUN}" = "gfs" || "${RUN}" = "gefs" ) \
-    && "${#file_array[@]}" -gt 0 ]]; then
+  # However, if this was run before, a DATArestart/FV3_RESTART must exist with data in it.
+  local file_array nrestarts
+  mapfile -t file_array < <(find "${DATArestart}/FV3_RESTART" -name "????????.??0000.coupler.res" | sort)
+  nrestarts=${#file_array[@]}
+  if (( nrestarts == 0 )); then
+    echo "No restarts found in '${DATArestart}/FV3_RESTART', RERUN='${RERUN}'"
+    return 0
+  fi
 
-    # Look in reverse order of file_array to determine available restart times
-    for ((ii=${#file_array[@]}-1; ii>=0; ii--)); do
+  # Look in reverse order of file_array to determine available restart times
+  local ii filepath filename
+  local rdate seconds
+  local fv3_rst_ok mom6_rst_ok cice6_rst_ok cmeps_rst_ok ww3_rst_ok
+  for (( ii=nrestarts-1; ii>=0; ii-- )); do
 
-      local filepath="${file_array[ii]}"
-      local filename
-      filename=$(basename "${filepath}")  # Strip path from YYYYMMDD.HH0000.coupler.res
-      PDYS=${filename:0:8}  # match YYYYMMDD of YYYYMMDD.HH0000.coupler.res
-      cycs=${filename:9:2}  # match HH of YYYYMMDD.HH0000.coupler.res
+    filepath="${file_array[ii]}"
+    filename=$(basename "${filepath}")  # Strip path from YYYYMMDD.HH0000.coupler.res
+    rdate="${filename:0:8}${filename:9:2}"  # match YYYYMMDD and HH of YYYYMMDD.HH0000.coupler.res
 
-      # Assume all is well; all restarts are available
-      local fv3_rst_ok="YES"
-      local mom6_rst_ok="YES"
-      local cice6_rst_ok="YES"
-      local cmeps_rst_ok="YES"
-      local ww3_rst_ok="YES"
+    # Assume all is well; all restarts are available
+    fv3_rst_ok="YES"
+    cmeps_rst_ok="YES"
+    mom6_rst_ok="YES"
+    cice6_rst_ok="YES"
+    ww3_rst_ok="YES"
 
-      # Check for availability of FV3 restarts
-      if [[ -f "${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res" ]]; then
-        mv "${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res" "${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res.old"
-      else
-        local fv3_rst_ok="NO"
+    # Check for FV3 restart availability
+    if [[ ! -f "${DATArestart}/FV3_RESTART/${rdate:0:8}.${rdate:8:2}0000.coupler.res" ]]; then
+      fv3_rst_ok="NO"
+    fi
+    # TODO: add checks for other FV3 restarts as well
+
+    # Check for CMEPS and MOM6 restart availability
+    if [[ "${cplflx}" == ".true." ]]; then
+      seconds=$(to_seconds "${rdate:8:2}0000")
+      if [[ ! -f "${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${rdate:0:4}-${rdate:4:2}-${rdate:6:2}-${seconds}.nc" ]]; then
+        cmeps_rst_ok="NO"
       fi
-
-      # Check for availability of MOM6 restarts  # TODO
-      # Check for availability of CICE6 restarts  # TODO
-      # Check for availability of CMEPS restarts  # TODO
-
-      # Check for availability of WW3 restarts
-      if [[ "${cplwav}" = ".true." ]]; then
-        for ww3_grid in ${waveGRD} ; do
-          if [[ ! -f "${COM_WAVE_RESTART}/${PDYS}.${cycs}0000.restart.${ww3_grid}" ]]; then
-            local ww3_rst_ok="NO"
-          fi
-        done
+      if [[ ! -f "${DATArestart}/MOM6_RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" ]]; then
+        mom6_rst_ok="NO"
       fi
+      # TODO: add checks for other MOM6 restarts as well
+    fi
 
-      # Collective check
-      if [[ "${fv3_rst_ok}" = "YES" ]] \
-        && [[ "${mom6_rst_ok}" = "YES" ]] \
-        && [[ "${cice6_rst_ok}" = "YES" ]] \
-        && [[ "${cmeps_rst_ok}" = "YES" ]] \
-        && [[ "${ww3_rst_ok}" = "YES" ]]; then
+    # Check for CICE6 restart availability
+    if [[ "${cplice}" == ".true." ]]; then
+      if [[ ! -f "${DATArestart}/CICE_RESTART/cice_model.res.${rdate:0:4}-${rdate:4:2}-${rdate:6:2}-${seconds}.nc" ]]; then
+        cice_rst_ok="NO"
+      fi
+    fi
 
-        if [[ -f "${COM_ATMOS_RESTART}/coupler.res" ]]; then
-          mv "${COM_ATMOS_RESTART}/coupler.res" "${COM_ATMOS_RESTART}/coupler.res.old"
+    # Check for WW3 restart availability
+    if [[ "${cplwav}" == ".true." ]]; then
+      for ww3_grid in ${waveGRD} ; do
+        if [[ ! -f "${DATArestart}/WW3_RESTART/${rdate:0:8}.${rdate:8:2}0000.restart.${ww3_grid}" ]]; then
+          local ww3_rst_ok="NO"
         fi
+      done
+    fi
 
-        CDATE_RST="${PDYS}${cycs}"
-        RERUN="YES"
-        echo "Restarts have been found for CDATE_RST=${CDATE_RST}, returning with 'RERUN=YES'"
-        break
-      fi
+    # Collective check
+    if [[ "${fv3_rst_ok}" == "YES" ]] \
+      && [[ "${cmeps_rst_ok}" == "YES" ]] \
+      && [[ "${mom6_rst_ok}" == "YES" ]] \
+      && [[ "${cice6_rst_ok}" == "YES" ]] \
+      && [[ "${ww3_rst_ok}" == "YES" ]]; then
+      RERUN="YES"
+      RERUN_DATE="${rdate}"
+      echo "All restarts found for '${RERUN_DATE}', RERUN='${RERUN}'"
+      break
+    fi
 
-    done
-  fi
-  #-------------------------------------------------------
-}
+  done
 
-WW3_det(){
-  echo "SUB ${FUNCNAME[0]}: Run type determination for WW3"
-}
-
-CICE_det(){
-  echo "SUB ${FUNCNAME[0]}: Run type determination for CICE"
-}
-
-MOM6_det(){
-  echo "SUB ${FUNCNAME[0]}: Run type determination for MOM6"
 }

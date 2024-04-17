@@ -39,8 +39,10 @@ nhour(){
 # shellcheck disable=SC2034
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through model components"
-  pwd=$(pwd)
+
   CDUMP=${CDUMP:-gdas}
+  rCDUMP=${rCDUMP:-${CDUMP}}
+
   CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
 
@@ -57,9 +59,8 @@ common_predet(){
 
   # IAU options
   IAU_OFFSET=${IAU_OFFSET:-0}
-  DOIAU=${DOIAU:-"NO"}
-  if [[ "${DOIAU}" = "YES" ]]; then
-    sCDATE=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
+  if [[ "${DOIAU:-}" == "YES" ]]; then
+    sCDATE=${current_cycle_begin}
     sPDY="${sCDATE:0:8}"
     scyc="${sCDATE:8:2}"
     tPDY=${previous_cycle:0:8}
@@ -124,8 +125,6 @@ FV3_predet(){
 
   # Model config options
   ntiles=6
-
-  rCDUMP=${rCDUMP:-${CDUMP}}
 
   #------------------------------------------------------------------
   # changeable parameters
@@ -290,6 +289,7 @@ FV3_predet(){
   ncep_ic=${ncep_ic:-".false."}
   external_ic=".true."
   mountain=".false."
+  warm_start=".false."
   read_increment=".false."
   res_latlon_dynamics='""'
 

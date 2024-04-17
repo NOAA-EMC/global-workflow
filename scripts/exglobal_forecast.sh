@@ -114,11 +114,8 @@ FV3_predet
 echo "MAIN: Variables before determination of run type loaded"
 
 echo "MAIN: Determining run type"
-FV3_det
-[[ ${cplflx} = .true. ]] && MOM6_det
-[[ ${cplwav} = .true. ]] && WW3_det
-[[ ${cplice} = .true. ]] && CICE_det
-echo "MAIN: RUN Type Determined"
+UFS_det
+echo "MAIN: run type determined"
 
 echo "MAIN: Post-determination set up of run type"
 FV3_postdet
