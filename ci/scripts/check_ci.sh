@@ -141,6 +141,7 @@ for pr in ${pr_list}; do
     if [[ "${rocoto_error}" -ne 0 ]]; then
         "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
         if [[ "${rocoto_state}" == "STALLED" ]]; then
+          # shellcheck disable=SC2312
           "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body "Experiment ${pslot} **${rocoto_state}** on ${MACHINE_ID^} at $(date +'%D %r')"
           "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
           cancel_all_batch_jobs "${pr_dir}/RUNTESTS"
