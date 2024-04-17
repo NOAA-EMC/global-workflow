@@ -131,16 +131,13 @@ echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing namelists and model configuration"
 FV3_nml
+FV3_model_configure
 [[ ${cplflx} = .true. ]] && MOM6_nml
 [[ ${cplwav} = .true. ]] && WW3_nml
 [[ ${cplice} = .true. ]] && CICE_nml
 [[ ${cplchm} = .true. ]] && GOCART_rc
-FV3_model_configure
+UFS_configure
 echo "MAIN: Name lists and model configuration written"
-
-echo "MAIN: Writing UFS Configure file"
-writing_ufs_configure
-echo "MAIN: UFS configured"
 
 #------------------------------------------------------------------
 # run the executable

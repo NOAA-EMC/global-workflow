@@ -86,8 +86,7 @@ FV3_det(){
           mv "${COM_ATMOS_RESTART}/coupler.res" "${COM_ATMOS_RESTART}/coupler.res.old"
         fi
 
-        SDATE="${PDYS}${cycs}"
-        CDATE_RST="${SDATE}"
+        CDATE_RST="${PDYS}${cycs}"
         RERUN="YES"
         echo "Restarts have been found for CDATE_RST=${CDATE_RST}, returning with 'RERUN=YES'"
         break

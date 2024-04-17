@@ -73,7 +73,7 @@ EOF
 
     #.............................
     else  ##RERUN
-      export warm_start=".true."
+      warm_start=".true."
       PDYT="${CDATE_RST:0:8}"
       cyct="${CDATE_RST:8:2}"
       local file

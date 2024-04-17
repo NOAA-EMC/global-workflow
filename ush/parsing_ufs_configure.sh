@@ -7,7 +7,7 @@
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034
-writing_ufs_configure() {
+UFS_configure() {
 
 echo "SUB ${FUNCNAME[0]}: ufs.configure begins"
 
