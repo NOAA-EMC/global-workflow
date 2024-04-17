@@ -43,7 +43,7 @@ def create_table(db: SQLiteDB):
     db.create_table('pr_list', ['pr INTEGER PRIMARY KEY UNIQUE', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])
 
 
-def add_pr(db: SQLiteDB, pr: str) -> bool:
+def add_pr(ci_database: SQLiteDB, pr: str) -> bool:
     """
     Add a pull request to the database.
 
@@ -57,7 +57,7 @@ def add_pr(db: SQLiteDB, pr: str) -> bool:
 
     entities = (pr, 'Open', 'Ready', 0, 'ci_repo')
     try:
-        db.insert_data('pr_list', entities)
+        ci_database.insert_data('pr_list', entities)
         return True
     except (SQLiteDBError.IntegrityError) as e:
         if 'unique' in str(e).lower():
@@ -65,7 +65,7 @@ def add_pr(db: SQLiteDB, pr: str) -> bool:
             return False
 
 
-def update_pr(db: SQLiteDB, args):
+def update_pr(ci_database: SQLiteDB, args):
     """
     Update a pull request in the database.
 
@@ -84,10 +84,10 @@ def update_pr(db: SQLiteDB, args):
     update_list = ['state', 'status', 'reset_id', 'cases']
     for value in args.update_pr[1:]:
         update = update_list.pop(0)
-        db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
+        ci_database.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def display_db(db: SQLiteDB, display: any) -> list:
+def display_db(ci_database: SQLiteDB, display: any) -> list:
     """
     Display the database.
 
@@ -106,18 +106,18 @@ def display_db(db: SQLiteDB, display: any) -> list:
 
     values = []
     if len(display) == 1:
-        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"pr = '{display[0]}'")
+        rows = ci_database.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"pr = '{display[0]}'")
     if len(display) == 2:
-        rows = db.fetch_data('pr_list', ['pr'], f"state = '{display[0]}' AND status = '{display[1]}'")
+        rows = ci_database.fetch_data('pr_list', ['pr'], f"state = '{display[0]}' AND status = '{display[1]}'")
     if len(display) == 0:
-        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
+        rows = ci_database.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
     for row in rows:
         values.append(' '.join(map(str, row)))
 
     return values
 
 
-def update_database(db: SQLiteDB) -> list:
+def update_database(ci_database: SQLiteDB) -> list:
     """
     Update the database from the GitHub PRs
     - only PRs from host machine are added to the database
@@ -125,7 +125,7 @@ def update_database(db: SQLiteDB) -> list:
 
     Parameters
     ----------
-    db : SQLiteDB
+    ci_database : SQLiteDB
         The database to update.
 
     Returns
@@ -137,7 +137,7 @@ def update_database(db: SQLiteDB) -> list:
     gh = GitHubPR()
     pr_ready_list, pr_kill_list = gh.get_open_pr_list()
     for pr in pr_ready_list:
-        if not add_pr(db, str(pr)):
+        if not add_pr(ci_database, str(pr)):
             if pr not in pr_kill_list:
                 pr_kill_list.append(pr)
     pr_kill_list = list(set(pr_kill_list))
