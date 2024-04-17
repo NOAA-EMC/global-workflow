@@ -19,6 +19,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_RUN"
+"${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_VARIATIONAL"
 status=$?
 exit "${status}"
