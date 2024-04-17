@@ -104,7 +104,7 @@ class AerosolAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self: Analysis) -> None:
+    def variational(self: Analysis) -> None:
 
         chdir(self.task_config.DATA)
 
