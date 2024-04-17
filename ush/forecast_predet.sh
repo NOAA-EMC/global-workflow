@@ -1,13 +1,5 @@
 #! /usr/bin/env bash
 
-#####
-## "forecast_predet.sh"
-## This script sets value of all variables
-##
-## This is the child script of ex-global forecast,
-## This script is a definition of functions.
-#####
-
 to_seconds() {
   # Function to convert HHMMSS to seconds since 00Z
   local hhmmss hh mm ss seconds padded_seconds

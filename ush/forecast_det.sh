@@ -1,16 +1,5 @@
 #! /usr/bin/env bash
 
-#####
-## "forecast_det.sh"
-## This script sets value of all variables
-##
-## This is the child script of ex-global forecast,
-## This script is a definition of functions.
-#####
-
-# For all non-environment variables
-# Cycling and forecast hour specific parameters
-
 FV3_det(){
   echo "SUB ${FUNCNAME[0]}: Run type determination for FV3"
   #-------------------------------------------------------

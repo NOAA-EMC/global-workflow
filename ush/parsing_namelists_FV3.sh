@@ -1,13 +1,6 @@
 #! /usr/bin/env bash
 
-#####
-## "parsing_namelist_FV3.sh"
-## This script writes namelist for FV3 model
-##
-## This is the child script of ex-global forecast,
-## writing namelist for FV3
-## This script is a direct execution.
-#####
+# parsing namelist of FV3, diag_table, etc.
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034

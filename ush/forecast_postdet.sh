@@ -1,16 +1,5 @@
 #! /usr/bin/env bash
 
-#####
-## This script defines functions for data I/O and namelist.
-## different applications could share the same function
-## or have their own.
-##
-## This is a child script of modular
-## forecast script. This script is function definition.
-## need to call these functions in the parent script
-## for execution.
-#####
-
 # Disable variable not used warnings
 # shellcheck disable=SC2034
 FV3_postdet() {
