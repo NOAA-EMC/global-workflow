@@ -128,10 +128,10 @@ function create_experiment () {
 }
 
 function publish_logs() {
-# publish_logs function
-# This function takes a directory path and a list of files as arguments.
-# It calls the publish_logs.py script to publish the logs and returns its gist URL.
-# Usage: publish_logs <ID> <dir_path> <file1> <file2> ... <fileN>
+    # publish_logs function
+    # This function takes a directory path and a list of files as arguments.
+    # It calls the publish_logs.py script to publish the logs and returns its gist URL.
+    # Usage: publish_logs <ID> <dir_path> <file1> <file2> ... <fileN>
     local PR_header="$1"
     local dir_path="$2"
     local file="$3"
