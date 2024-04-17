@@ -57,22 +57,6 @@ common_predet(){
   next_cycle_end=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
-  # IAU options
-  IAU_OFFSET=${IAU_OFFSET:-0}
-  if [[ "${DOIAU:-}" == "YES" ]]; then
-    sCDATE=${current_cycle_begin}
-    sPDY="${sCDATE:0:8}"
-    scyc="${sCDATE:8:2}"
-    tPDY=${previous_cycle:0:8}
-    tcyc=${previous_cycle:8:2}
-  else
-    sCDATE=${current_cycle}
-    sPDY=${current_cycle:0:8}
-    scyc=${current_cycle:8:2}
-    tPDY=${sPDY}
-    tcyc=${scyc}
-  fi
-
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
   FHOUT=${FHOUT:-3}

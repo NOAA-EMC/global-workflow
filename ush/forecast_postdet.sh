@@ -8,122 +8,142 @@ FV3_postdet() {
   echo "warm_start = ${warm_start}"
   echo "RERUN = ${RERUN}"
 
-  #-------------------------------------------------------
-  if [[ "${warm_start}" = ".true." ]] || [[ "${RERUN}" = "YES" ]]; then
-    #-------------------------------------------------------
-    #.............................
-    if [[ ${RERUN} = "NO" ]]; then
-      #.............................
+  # cold start case
+  if [[ "${warm_start}" == ".false." ]]; then
 
-      # Link all restart files from previous cycle
-      for file in "${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000."*.nc; do
-        file2=$(echo $(basename "${file}"))
-        file2=$(echo "${file2}" | cut -d. -f3-) # remove the date from file
-        fsuf=$(echo "${file2}" | cut -d. -f1)
-        ${NLN} "${file}" "${DATA}/INPUT/${file2}"
+    # Create an array of chgres-ed FV3 files
+    local fv3_input_files tile_files fv3_input_file
+    fv3_input_files=(gfs_ctrl.nc)
+    tile_files=(gfs_data sfc_data)
+    local nn tt
+    for (( nn = 1; nn <= ntiles; nn++ )); do
+      for tt in "${tile_files[@]}"; do
+        fv3_input_files+=("${tt}.tile${nn}.nc")
       done
+    done
 
-      # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
-      for file in "${COM_ATMOS_RESTART}/${sPDY}.${scyc}0000."*.nc; do
-        file2=$(basename "${file}")
-        file2=$(echo "${file2}" | cut -d. -f3-) # remove the date from file
-        fsufanl=$(echo "${file2}" | cut -d. -f1)
-        file2=$(echo "${file2}" | sed -e "s/sfcanl_data/sfc_data/g")
-        rm -f "${DATA}/INPUT/${file2}"
-        ${NLN} "${file}" "${DATA}/INPUT/${file2}"
+    echo "Copying FV3 cold start files for 'RUN=${RUN}' at '${current_cycle}' from '${COM_ATMOS_INPUT}'"
+    for fv3_input_file in "${fv3_input_files[@]}"; do
+      ${NCP} "${COM_ATMOS_INPUT}/${fv3_input_file}" "${DATA}/INPUT/${fv3_input_file}" \
+      || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
+    done
+
+  # warm start case
+  elif [[ "${warm_start}" == ".true." ]]; then
+
+    # Create an array of FV3 restart files
+    local fv3_restart_files tile_files fv3_restart_file restart_file
+    fv3_restart_files=(coupler.res fv_core.res.nc)
+    tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
+    local nn tt
+    for (( nn = 1; nn <= ntiles; nn++ )); do
+      for tt in "${tile_files[@]}"; do
+        fv3_restart_files+=("${tt}.tile${nn}.nc")
       done
+    done
 
-      # Need a coupler.res when doing IAU  # FIXME: This is needed for warm_start, regardless of IAU.
-      if [[ ${DOIAU} = "YES" ]]; then
-        rm -f "${DATA}/INPUT/coupler.res"
-        cat >> "${DATA}/INPUT/coupler.res" << EOF
-        3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
-        ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
-        ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
-EOF
+    local restart_date restart_dir
+    if [[ "${RERUN}" == "YES" ]]; then
+      restart_date="${RERUN_DATE}"
+      restart_dir="${DATArestart}/FV3_RESTART"
+    else  # "${RERUN}" == "NO"
+      if [[ "${DOIAU}" == "YES" ]]; then
+        restart_date="${current_cycle_begin}"
+      else
+        restart_date="${current_cycle}"
       fi
+      restart_dir="${COM_ATMOS_RESTART_PREV}"
+    fi
 
-      # Link increments
-      if [[ ${DOIAU} = "YES" ]]; then
-        for i in $(echo "${IAUFHRS}" | sed "s/,/ /g" | rev); do
-          incfhr=$(printf %03i "${i}")
-          if [[ ${incfhr} = "006" ]]; then
-            increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}atminc.nc"
-          else
-            increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}atmi${incfhr}.nc"
-          fi
-          if [[ ! -f ${increment_file} ]]; then
-            echo "ERROR: DOIAU = ${DOIAU}, but missing increment file for fhr ${incfhr} at ${increment_file}"
-            echo "Abort!"
-            exit 1
-          fi
-          ${NLN} "${increment_file}" "${DATA}/INPUT/fv_increment${i}.nc"
-          IAU_INC_FILES="'fv_increment${i}.nc',${IAU_INC_FILES:-}"
-        done
-        read_increment=".false."
-        res_latlon_dynamics=""
-      else  # if not doing IAU
-        increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}atminc.nc"
-        if [[ -f ${increment_file} ]]; then
-          ${NLN} "${increment_file}" "${DATA}/INPUT/fv3_increment.nc"
-          read_increment=".true."
-          res_latlon_dynamics="fv3_increment.nc"
-        fi
-      fi
+    echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
+    for fv3_restart_file in "${fv3_restart_files[@]}"; do
+      restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_restart_file}"
+      ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${fv3_restart_file}" \
+      || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
+    done
 
-    #.............................
-    else  ##RERUN
-      warm_start=".true."
-      PDYT="${CDATE_RST:0:8}"
-      cyct="${CDATE_RST:8:2}"
-      local file
-      for file in "${DATArestart}/RESTART/${PDYT}.${cyct}0000."*; do
-        file2=$(basename "${file}")
-        file2=$(echo "${file2}" | cut -d. -f3-)
-        ${NLN} "${file}" "${DATA}/INPUT/${file2}"
-      done
+    if [[ "${RERUN}" == "YES" ]]; then
 
-      local hour_rst
-      hour_rst=$(nhour "${CDATE_RST}" "${current_cycle}")
-      # shellcheck disable=SC2034
-      IAU_FHROT=$((IAU_OFFSET+hour_rst))
-      if [[ ${DOIAU} = "YES" ]]; then
+      local restart_fhr
+      restart_fhr=$(nhour "${RERUN_DATE}" "${current_cycle}")
+      IAU_FHROT=$((IAU_OFFSET + restart_fhr))
+      if [[ "${DOIAU}" == "YES" ]]; then
         IAUFHRS=-1
-        # Ignore "not used" warning
-        # shellcheck disable=SC2034
         IAU_DELTHRS=0
         IAU_INC_FILES="''"
       fi
-    fi
-    #.............................
 
-  else ## cold start
-    local file file2 fsuf
-    for file in "${COM_ATMOS_INPUT}/"*.nc; do
-      file2=$(basename "${file}")
-      fsuf="${file2:0:3}"
-      if [[ "${fsuf}" = "gfs" ]] || [[ "${fsuf}" = "sfc" ]]; then
-        ${NLN} "${file}" "${DATA}/INPUT/${file2}"
+    else  # "${RERUN}" == "NO"
+
+      # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
+      local nn
+      for (( nn = 1; nn <= ntiles; nn++ )); do
+        if [[ -f "${COM_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" ]]; then
+          rm -f "${DATA}/INPUT/sfc_data.tile${nn}.nc"
+          ${NCP} "${COM_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" \
+                 "${DATA}/INPUT/sfc_data.tile${nn}.nc"
+        else
+          echo "'sfcanl_data.tile1.nc' not found in '${COM_ATMOS_RESTART}', using 'sfc_data.tile1.nc'"
+          break
+        fi
+      done
+
+      # Need a coupler.res when doing IAU
+      if [[ "${DOIAU}" == "YES" ]]; then
+        rm -f "${DATA}/INPUT/coupler.res"
+        cat >> "${DATA}/INPUT/coupler.res" << EOF
+        3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
+        ${previous_cycle:0:4}  ${previous_cycle:4:2}  ${previous_cycle:6:2}  ${previous_cycle:8:2}  0  0        Model start time: year, month, day, hour, minute, second
+        ${current_cycle_begin:0:4}  ${current_cycle_begin:4:2}  ${current_cycle_begin:6:2}  ${current_cycle_begin:8:2}  0  0        Current model time: year, month, day, hour, minute, second
+EOF
       fi
-    done
 
-  fi
+      # Create a array of increment files
+      local inc_files inc_file iaufhrs iaufhr
+      if [[ "${DOIAU}" == "YES" ]]; then
+        # create an array of inc_files for each IAU hour
+        IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
+        inc_files=()
+        delimiter=""
+        IAU_INC_FILES=""
+        for iaufhr in "${iaufhrs[@]}"; do
+          if (( iaufhr == 6 )); then
+            inc_file="atminc.nc"
+          else
+            inc_file="atmi$(printf %03i "${iaufhr}").nc"
+          fi
+          inc_files+=("${inc_file}")
+          IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
+          delimiter=","
+        done
+      else  # "${DOIAU}" == "NO"
+        inc_files=("atminc.nc")
+        read_increment=".true."
+        res_latlon_dynamics="atminc.nc"
+      fi
 
-  nfiles=$(ls -1 "${DATA}/INPUT/"* | wc -l)
-  if (( nfiles <= 0 )); then
-    echo SUB "${FUNCNAME[0]}": Initial conditions must exist in "${DATA}/INPUT", ABORT!
-    exit 1
-  fi
+      local increment_file
+      for inc_file in "${inc_files[@]}"; do
+        increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+        if [[ -f "${increment_file}" ]]; then
+          ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
+        else
+          echo "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
+          exit 1
+        fi
+      done
+
+    fi
+
+  fi  # if [[ "${warm_start}" == ".true." ]]; then
 
   # If doing IAU, change forecast hours
-  if [[ "${DOIAU}" = "YES" ]]; then
-    FHMAX=$((FHMAX+6))
-    if [[ ${FHMAX_HF} -gt 0 ]]; then
-      FHMAX_HF=$((FHMAX_HF+6))
+  if [[ "${DOIAU:-}" == "YES" ]]; then
+    FHMAX=$((FHMAX + 6))
+    if (( FHMAX_HF > 0 )); then
+      FHMAX_HF=$((FHMAX_HF + 6))
     fi
   fi
-
-  #------------------------------------------------------------------
 
   # If warm starting from restart files, set the following flags
   if [[ "${warm_start}" == ".true." ]]; then
@@ -133,9 +153,6 @@ EOF
     ncep_ic=".false."
     external_ic=".false."
     mountain=".true."
-    if [[ "${read_increment}" == ".true." ]]; then # add increment on the fly to the restarts
-      res_latlon_dynamics="fv3_increment.nc"
-    fi
 
     # restarts contain non-hydrostatic state
     [[ "${TYPE}" == "nh" ]] && make_nh=".false."
@@ -159,12 +176,13 @@ EOF
       fi
     done
   else  # TODO: Is this even valid anymore?
-    for n in $(seq 1 "${ntiles}"); do
-      ${NLN} "nggps2d.tile${n}.nc"       "${COM_ATMOS_HISTORY}/nggps2d.tile${n}.nc"
-      ${NLN} "nggps3d.tile${n}.nc"       "${COM_ATMOS_HISTORY}/nggps3d.tile${n}.nc"
-      ${NLN} "grid_spec.tile${n}.nc"     "${COM_ATMOS_HISTORY}/grid_spec.tile${n}.nc"
-      ${NLN} "atmos_static.tile${n}.nc"  "${COM_ATMOS_HISTORY}/atmos_static.tile${n}.nc"
-      ${NLN} "atmos_4xdaily.tile${n}.nc" "${COM_ATMOS_HISTORY}/atmos_4xdaily.tile${n}.nc"
+    local nn
+    for (( nn = 1; nn <= ntiles; nn++ )); do
+      ${NLN} "nggps2d.tile${nn}.nc"       "${COM_ATMOS_HISTORY}/nggps2d.tile${nn}.nc"
+      ${NLN} "nggps3d.tile${nn}.nc"       "${COM_ATMOS_HISTORY}/nggps3d.tile${nn}.nc"
+      ${NLN} "grid_spec.tile${nn}.nc"     "${COM_ATMOS_HISTORY}/grid_spec.tile${nn}.nc"
+      ${NLN} "atmos_static.tile${nn}.nc"  "${COM_ATMOS_HISTORY}/atmos_static.tile${nn}.nc"
+      ${NLN} "atmos_4xdaily.tile${nn}.nc" "${COM_ATMOS_HISTORY}/atmos_4xdaily.tile${nn}.nc"
     done
   fi
 }
@@ -172,9 +190,13 @@ EOF
 FV3_nml() {
   # namelist output for a certain component
   echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
-  # Call child scripts in current script directory
+
   source "${USHgfs}/parsing_namelists_FV3.sh"
+  source "${USHgfs}/parsing_model_configure_FV3.sh"
+
   FV3_namelists
+  FV3_model_configure
+
   echo "SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created"
 }
 
@@ -194,7 +216,7 @@ FV3_out() {
   fv3_restart_files=(coupler.res fv_core.res.nc)
   tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
   local nn tt
-  for nn in $(seq 1 "${ntiles}"); do
+  for (( nn = 1; nn <= ntiles; nn++ )); do
     for tt in "${tile_files[@]}"; do
       fv3_restart_files+=("${tt}.tile${nn}.nc")
     done
@@ -383,34 +405,49 @@ CPL_out() {
 MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
+  local restart_dir restart_date
+  if [[ "${RERUN}" == "YES" ]]; then
+    restart_dir="${DATArestart}/MOM6_RESTART"
+    restart_date="${RERUN_DATE}"
+  else  # "${RERUN}" == "NO"
+    restart_dir="${COM_OCEAN_RESTART_PREV}"
+    if [[ "${DOIAU}" == "YES" ]]; then
+      restart_date="${current_cycle_begin}"
+    else
+      restart_date="${current_cycle}"
+    fi
+  fi
+
   # Copy MOM6 ICs
-  ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+  ${NCP} "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc" \
+  || ( echo "FATAL ERROR: Unable to copy MOM6 IC, ABORT!"; exit 1 )
   case ${OCNRES} in
     "025")
       local nn
-      for nn in $(seq 1 4); do
-        if [[ -f "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res_${nn}.nc" ]]; then
-          ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
+      for (( nn = 1; nn <= 4; nn++ )); do
+        if [[ -f "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res_${nn}.nc" ]]; then
+          ${NCP} "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc" \
+          || ( echo "FATAL ERROR: Unable to copy MOM6 IC, ABORT!"; exit 1 )
         fi
       done
     ;;
   esac
 
-  # Link increment
-  if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
-      if [[ ! -f "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" ]]; then
-          echo "FATAL ERROR: Ocean increment not found, ABORT!"
-          exit 111
-      fi
-      ${NLN} "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
-  fi
+  # Copy increment (only when RERUN=NO)
+  if [[ "${RERUN}" == "NO" ]]; then
+    if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
+      ${NCP} "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
+      || ( echo "FATAL ERROR: Unable to copy MOM6 increment, ABORT!"; exit 1 )
+    fi
 
-  # GEFS perturbations
-  # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
-  #     to ensure it does not interfere with the GFS
-  if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-     ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc"
-  fi
+    # GEFS perturbations
+    # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
+    #     to ensure it does not interfere with the GFS when ensemble is updated in the GFS
+    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+      ${NCP} "${COM_OCEAN_RESTART_PREV}/${restart_date:0:8}.${restart_date:0:8}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc" \
+      || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
+    fi
+  fi  # if [[ "${RERUN}" == "NO" ]]; then
 
   # Link output files
   if [[ "${RUN}" =~ "gfs" || "${RUN}" == "gefs" ]]; then  # Link output files for RUN=gfs|enkfgfs|gefs
@@ -453,7 +490,7 @@ MOM6_postdet() {
     for fhr in ${MOM6_OUTPUT_FH}; do
       local fhr3=$(printf %03i "${fhr}")
       local vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-      ${NLN} "${COM_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATA}/ocn_da_${vdatestr}.nc"
+      ${NLN} "${COM_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATA}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
     done
   fi
 
@@ -481,7 +518,7 @@ MOM6_out() {
   case "${OCNRES}" in
     "025")
       local nn
-      for nn in $(seq 1 4); do
+      for (( nn = 1; nn <= 4; nn++ )); do
         mom6_restart_files+=("MOM.res_${nn}.nc")
       done
       ;;
@@ -519,16 +556,23 @@ MOM6_out() {
 CICE_postdet() {
   echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
 
-  # Copy CICE ICs
-  echo "Link CICE ICs"
-  cice_restart_file="${COM_ICE_RESTART_PREV}/${sPDY}.${scyc}0000.cice_model.res.nc"
-  # TODO: on RERUN or warm_start, cice_restart_file will be from DATArestart
-  if [[ ! -f "${cice_restart_file}" ]]; then
-    echo "FATAL ERROR: CICE restart file not found at '${cice_restart_file}', ABORT!"
-    exit 112
-  else
-    ${NLN} "${cice_restart_file}" "${DATA}/cice_model.res.nc"
+  local restart_dir restart_date
+  if [[ "${RERUN}" == "YES" ]]; then
+    restart_dir="${DATArestart}/CICE_RESTART"
+    restart_date="${RERUN_DATE}"
+  else  # "${RERUN}" == "NO"
+    restart_dir="${COM_ICE_RESTART_PREV}"
+    if [[ "${DOIAU}" == "YES" ]]; then
+      restart_date="${current_cycle_begin}"
+    else
+      restart_date="${current_cycle}"
+    fi
   fi
+
+  # Copy CICE ICs
+  cice_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
+  ${NCP} "${cice_restart_file}" "${DATA}/cice_model.res.nc" \
+  || ( echo "FATAL ERROR: Unable to copy CICE IC, ABORT!"; exit 1 )
 
   # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
   # TODO: Is this file needed in COM? Is this going to be used for generating any products?

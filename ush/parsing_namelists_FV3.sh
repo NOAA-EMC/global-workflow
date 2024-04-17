@@ -384,7 +384,6 @@ cat >> input.nml <<EOF
   do_sppt      = ${do_sppt:-".false."}
   do_shum      = ${do_shum:-".false."}
   do_skeb      = ${do_skeb:-".false."}
-  do_ca        = ${do_ca:-".false."}
   frac_grid    = ${FRAC_GRID:-".true."}
   cplchm       = ${cplchm:-".false."}
   cplflx       = ${cplflx:-".false."}
@@ -414,6 +413,7 @@ fi
 
 if [[ ${DO_CA:-"NO"} = "YES" ]]; then
   cat >> input.nml << EOF
+  do_ca      = .true.
   ca_global  = ${ca_global:-".false."}
   ca_sgs     = ${ca_sgs:-".true."}
   nca        = ${nca:-"1"}
@@ -424,7 +424,7 @@ if [[ ${DO_CA:-"NO"} = "YES" ]]; then
   nthresh    = ${nthresh:-"18"}
   ca_trigger = ${ca_trigger:-".true."}
   nspinup    = ${nspinup:-"1"}
-  iseed_ca   = ${ISEED_CA:-${ISEED}}
+  iseed_ca   = ${ISEED_CA:-"12345"}
 EOF
 fi
 

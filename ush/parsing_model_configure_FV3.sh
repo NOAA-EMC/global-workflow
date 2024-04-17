@@ -9,10 +9,18 @@ local restile=${CASE:1}
 
 # Prepare local variables for use in model_configure.IN from UFSWM
 # The ones already defined are left commented as a reminder
-local SYEAR=${tPDY:0:4}
-local SMONTH=${tPDY:4:2}
-local SDAY=${tPDY:6:2}
-local SHOUR=${tcyc}
+
+local model_start_date
+if [[ "${DOIAU}" == "YES" ]]; then
+  model_start_date="${current_cycle_begin}"
+else
+  model_start_date="${current_cycle}"
+fi
+
+local SYEAR=${model_start_date:0:4}
+local SMONTH=${model_start_date:4:2}
+local SDAY=${model_start_date:6:2}
+local SHOUR=${model_start_date:8:2}
 # FHMAX
 local FHROT=${IAU_FHROT:-0}
 local DT_ATMOS=${DELTIM}

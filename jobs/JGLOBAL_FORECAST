@@ -12,9 +12,11 @@ else
   source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
 
-# Create the directory to hold restarts for the model in stmp
+# Create the directory to hold restarts and output from the model in stmp
 export DATArestart="${DATAjob}/restart"
 if [[ ! -d "${DATArestart}" ]]; then mkdir -p "${DATArestart}"; fi
+export DATAoutput="${DATAjob}/output"
+if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 ##############################################
 # Begin JOB SPECIFIC work

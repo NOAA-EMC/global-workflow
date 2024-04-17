@@ -84,7 +84,7 @@ source "${USHgfs}/forecast_predet.sh" 	# include functions for variable definiti
 source "${USHgfs}/forecast_det.sh"  # include functions for run type determination
 source "${USHgfs}/forecast_postdet.sh"	# include functions for variables after run type determination
 source "${USHgfs}/parsing_ufs_configure.sh"	 # include functions for ufs_configure processing
-source "${USHgfs}/parsing_model_configure_FV3.sh"  # include functions for model_configure processing
+
 source "${USHgfs}/atparse.bash"  # include function atparse for parsing @[XYZ] templated files
 
 # Coupling control switches, for coupling purpose, off by default
@@ -128,7 +128,6 @@ echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing namelists and model configuration"
 FV3_nml
-FV3_model_configure
 [[ ${cplflx} = .true. ]] && MOM6_nml
 [[ ${cplwav} = .true. ]] && WW3_nml
 [[ ${cplice} = .true. ]] && CICE_nml
