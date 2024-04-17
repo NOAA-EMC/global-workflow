@@ -73,7 +73,7 @@ while true; do
   error_stat=$?
 
   for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
-    declare ${state}=$(echo "${full_state}" | grep "${state}" | cut -d: -f2) || true
+    declare ${state}="$(echo "${full_state}" | grep "${state}" | cut -d: -f2)" || true
   done
   ROCOTO_STATE=$(echo "${full_state}" | tail -1) || exit 1
 
