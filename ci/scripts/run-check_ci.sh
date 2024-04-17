@@ -72,12 +72,10 @@ while true; do
   eval=$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
   error_stat=$?
 
-  CYCLES_TOTAL=$(echo "${eval}" | grep CYCLES_TOTAL | cut -d: -f2) || true
-  CYCLES_DONE=$(echo "${eval}" | grep CYCLES_DONE | cut -d: -f2) || true
-  SUCCEEDED=$(echo "${eval}" | grep SUCCEEDED | cut -d: -f2) || true
-  FAIL=$(echo "${eval}" | grep FAIL | cut -d: -f2) || true
-  DEAD=$(echo "${eval}" | grep DEAD | cut -d: -f2) || true
-  ROCOTO_STATE=$(echo "${eval}" | tail -1) || true
+  for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
+    declare ${!state}=$(echo "${full_state}" | grep "${state}" | cut -d: -f2) || true
+  done
+  ROCOTO_STATE=$(echo "${full_state}" | tail -1) || exit 1
 
   echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
 
