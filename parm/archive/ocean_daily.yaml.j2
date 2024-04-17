@@ -1,0 +1,7 @@
+{% set head = "gfs.ocean.t" + cycle_HH + "z." %}
+name: "OCEAN_DAILY"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_daily.tar"
+mandatory:
+    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + 24, 24 %}
+    - "{{ COM_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}daily.f{{ '%03d' % fhr }}.nc"
+    {% endfor %}

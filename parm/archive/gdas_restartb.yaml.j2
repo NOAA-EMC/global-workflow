@@ -1,4 +1,7 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = "gdas.t" + cycle_HH + "z." %}
 name: "GDAS_RESTARTB"
-target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdas_restartb.tar"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas_restartb.tar"
 mandatory:
-    - '{{ atmos_restart_dir }}/.'
+    - '{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/.'

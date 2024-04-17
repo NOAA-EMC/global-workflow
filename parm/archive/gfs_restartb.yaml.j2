@@ -1,0 +1,7 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = "gfs.t" + cycle_HH + "z." %}
+name: "GFS_RESTARTB"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_restartb.tar"
+mandatory:
+    - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/"

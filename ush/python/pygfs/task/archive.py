@@ -1,30 +1,18 @@
 #!/usr/bin/env python3
 
-from datetime import timedelta
-
 import glob
-
-from logging import getLogger
-
 import os
+import shutil
+from datetime import timedelta
+from logging import getLogger
+from typing import Any, Dict, List
 
-from typing import Dict, Any, List
-
-from yaml import load
+import numpy as np
+from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, cast_strdict_as_dtypedict,
+                    chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
+                    to_YMD, to_YMDH)
 from yaml import CLoader as Loader
-
-from wxflow import (logit,
-                    cast_strdict_as_dtypedict,
-                    AttrDict,
-                    get_gid,
-                    Task,
-                    Htar,
-                    Hsi,
-                    rm_p,
-                    mkdir_p,
-                    chgrp,
-                    FileHandler,
-                    parse_j2yaml)
+from yaml import load
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -54,25 +42,8 @@ class Archive(Task):
 
         # Find all absolute paths in the environment and get their relative paths from ${ROTDIR}
         path_dict = self._gen_relative_paths(rotdir)
-        local_dict = AttrDict(
-            {'cycle_HH': self.runtime_config.current_cycle.strftime("%H"),
-             'cycle_YYYYMMDDHH': self.runtime_config.current_cycle.strftime("%Y%m%d%H"),
-             'cycle_YYYYMMDD': self.runtime_config.current_cycle.strftime("%Y%m%d"),
-             'first_cycle': self.runtime_config.current_cycle == self.config.SDATE
-             }
-        )
 
-        if self.config.REALTIME:
-            local_dict['mos_YYYYMMDDHH'] = (self.runtime_config.current_cycle - timedelta(days=1)).strftime("%Y%m%d%H")
-        else:
-            local_dict['mos_YYYYMMDDHH'] = cycle_YYYYMMDDHH
-
-        local_dict['mos_YYYYMMDD'] = local_dict['mos_YYYYMMDDHH'][:8]
-
-        # Add the os.path.exists function for use in parsing the jinja files
-        local_dict['path_exists'] = os.path.exists
-
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **path_dict, **local_dict)
+        self.task_config = AttrDict(**self.config, **self.runtime_config, **path_dict)
 
     @logit(logger)
     def configure(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
@@ -95,6 +66,17 @@ class Archive(Task):
 
         # Collect the dataset to archive locally
         arcdir_filename = os.path.join(archive_parm, "arcdir.yaml.j2")
+
+        # Add the glob.glob function for capturing log filenames
+        # TODO remove this kludge once log filenames are explicit
+        arch_dict['glob'] = glob.glob
+
+        # Copy the cyclone track files and rename the experiments
+        Archive._rename_cyclone_expt(arch_dict)
+        # Add the os.path.exists function to the dict for yaml parsing
+        arch_dict['path_exists'] = os.path.exists
+
+        # Parse the input jinja yaml template
         arcdir_set = parse_j2yaml(arcdir_filename, arch_dict)
 
         # Collect datasets that need to be archived
@@ -113,62 +95,61 @@ class Archive(Task):
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
-        # Pull out some common variables
-        cycle_YYYYMMDDHH = arch_dict.cycle_YYYYMMDDHH
-        cycle_HH = arch_dict.cycle_HH
-        first_cycle = arch_dict.first_cycle
-        ARCH_WARMICFREQ = arch_dict.ARCH_WARMICFREQ
-        ARCH_FCSTICFREQ = arch_dict.ARCH_FCSTICFREQ
-        assim_freq = arch_dict.assim_freq
+        arch_mos = False
+        if arch_dict.DO_MOS:
+            if self.config.REALTIME:
+                if arch_dict.current_cycle - timedelta(days=1) > arch_dict.SDATE:
+                    arch_mos = True
+            else:
+                arch_mos = True
+
+        cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
         if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
 
-            ARCHINC_CYC = arch_dict.ARCH_CYC
-            ARCHICS_CYC = ARCHINC_CYC - assim_freq
-            if ARCHICS_CYC < 0:
-                ARCHICS_CYC += 24
+            arch_ics_cycle = arch_dict.ARCH_CYC - arch_dict.assim_freq
 
-            mm = cycle_YYYYMMDDHH[4:6]
-            dd = cycle_YYYYMMDDHH[6:8]
-            # TODO: This math yields multiple dates sharing the same nday
-            nday = (int(mm) - 1) * 30 + int(dd)
-            mod = nday % int(ARCH_WARMICFREQ)
+            if arch_ics_cycle < 0:
+                arch_ics_cycle += 24
+
+            mod = (arch_dict.current_cycle -
+                   arch_dict.SDATE).days % arch_dict.ARCH_WARMICFREQ
 
             save_warm_ic_a = False
             save_warm_ic_b = False
-            if first_cycle and cycle_HH == ARCHINC_CYC:
+
+            if arch_dict.current_cycle == arch_dict.SDATE and cycle_HH == arch_dict.ARCH_CYC:
                 save_warm_ic_a = True
                 save_warm_ic_b = True
-            elif mod == 0 and cycle_HH == ARCHINC_CYC:
+            elif mod == 0 and cycle_HH == arch_dict.ARCH_CYC:
                 save_warm_ic_a = True
                 save_warm_ic_b = True
 
-            if ARCHICS_CYC == "18":
-                nday1 = nday + 1
-                mod1 = nday1 % int(ARCH_WARMICFREQ)
+            if arch_ics_cycle == 18:
 
-                if cycle_HH == ARCHICS_CYC:
+                mod1 = ((arch_dict.current_cycle -
+                         arch_dict.SDATE).days + 1) % arch_dict.ARCH_WARMICFREQ
+
+                if cycle_HH == arch_ics_cycle:
                     if mod1 == 0:
                         save_warm_ic_b = True
-                    elif first_cycle:
+                    elif arch_dict.current_cycle == SDATE:
                         save_warm_ic_b = True
                     else:
                         save_warm_ic_b = False
 
-            mod = nday % int(ARCH_FCSTICFREQ)
+            mod = (arch_dict.current_cycle -
+                   arch_dict.SDATE).days % arch_dict.ARCH_FCSTICFREQ
 
-            SAVEFCSTIC = False
-            if mod == 0 or first_day:
-                SAVEFCSTIC = True
-
-            # If present, copy and replace the experiment names in cycle tracking files
-            self._rename_cyclone_expt(arch_dict)
+            save_fcst_ic = False
+            if mod == 0 or arch_dict.current_cycle == SDATE:
+                save_fcst_ic = True
 
         if arch_dict.RUN == "gdas":
 
-            datasets = ['gdas']
+            datasets = ["gdas"]
 
-            if save_warm_ic_a or SAVEFCSTIC:
+            if save_warm_ic_a or save_fcst_ic:
                 datasets.append("gdas_restarta")
                 if arch_dict.DO_WAVE:
                     datasets.append("gdaswave_restart")
@@ -177,21 +158,48 @@ class Archive(Task):
                 if arch_dict.DO_ICE:
                     datasets.append("gdasice_restart")
 
-            if save_warm_ic_b or SAVEFCSTIC:
+            if save_warm_ic_b or save_fcst_ic:
                 datasets.append("gdas_restartb")
 
-            if arch_dict.DO_ICE == "YES":
-                datasets.append('gdasice')
+            if arch_dict.DO_ICE:
+                datasets.append("gdasice")
 
-            if arch_dict.DO_OCN == "YES":
-                datasets.append('gdasocean')
-                datasets.append('gdasocean_analysis')
+            if arch_dict.DO_OCN:
+                datasets.append("gdasocean")
+                datasets.append("gdasocean_analysis")
 
-            if arch_dict.DO_WAVE == "YES":
-                datasets.append('gdaswave')
+            if arch_dict.DO_WAVE:
+                datasets.append("gdaswave")
 
         elif arch_dict.RUN == "gfs":
-            raise NotImplementedError("Archiving is not yet set up for GFS runs")
+            datasets = ["gfsa", "gfsb"]
+
+            if arch_dict.ARCH_GAUSSIAN:
+                datasets.extend(["gfs_flux", "gfs_netcdfb", "gfs_pgrb2b"])
+                print(datasets)
+                if arch_dict.MODE == "cycled":
+                    datasets.append("gfs_netcdfa")
+
+            if arch_dict.DO_WAVE:
+                datasets.append("gfswave")
+
+            if arch_dict.DO_OCN:
+                datasets.extend(["ocean_6hravg", "ocean_daily", "ocean_grib2", "gfs_flux_1p00"])
+
+            if arch_dict.DO_ICE:
+                datasets.extend(["ice_6hravg", "ice_grib2"])
+
+            if arch_dict.DO_AERO:
+                datasets.append(["aero"])
+
+            if save_fcst_ic:
+                datasets.append("gfs_restarta")
+
+            if arch_dict.DO_BUFRSND:
+                datasets.append("gfs_downstream")
+
+            if arch_mos and cycle_HH == "18":
+                datasets.append("gfsmos")
 
         elif arch_dict.RUN == "enkfgdas":
             raise NotImplementedError("Archiving is not yet set up for ENKF GDAS runs")
@@ -203,7 +211,7 @@ class Archive(Task):
             raise NotImplementedError("Archiving is not yet set up for GEFS runs")
 
         else:
-            raise ValueError(f'Archiving is not enabled for {arch_dict.RUN} runs')
+            raise ValueError(f"Archiving is not enabled for {arch_dict.RUN} runs")
 
         atardir_sets = []
 
@@ -211,8 +219,8 @@ class Archive(Task):
 
             archive_filename = os.path.join(archive_parm, dataset + ".yaml.j2")
             atardir_set = parse_j2yaml(archive_filename, arch_dict)
-            atardir_set['fileset'] = Archive._create_fileset(atardir_set)
-            atardir_set['has_rstprod'] = Archive._has_rstprod(atardir_set.fileset)
+            atardir_set["fileset"] = Archive._create_fileset(atardir_set)
+            atardir_set["has_rstprod"] = Archive._has_rstprod(atardir_set.fileset)
 
             atardir_sets.append(atardir_set)
 
@@ -286,21 +294,21 @@ class Archive(Task):
         """
 
         fileset = []
-        if 'mandatory' in atardir_set:
+        if "mandatory" in atardir_set:
             if atardir_set.mandatory is not None:
                 for item in atardir_set.mandatory:
                     glob_set = glob.glob(item)
                     if len(glob_set) == 0:
-                        raise FileNotFoundError(f'Mandatory file, directory, or glob {item} not found!')
+                        raise FileNotFoundError(f"Mandatory file, directory, or glob {item} not found!")
                     for entry in glob_set:
                         fileset.append(entry)
 
-        if 'optional' in atardir_set:
+        if "optional" in atardir_set:
             if atardir_set.optional is not None:
                 for item in atardir_set.optional:
                     glob_set = glob.glob(item)
                     if len(glob_set) == 0:
-                        print(f'WARNING: optional file/glob {item} not found!')
+                        print(f"WARNING: optional file/glob {item} not found!")
                     else:
                         for entry in glob_set:
                             fileset.append(entry)
@@ -387,7 +395,6 @@ class Archive(Task):
         import tarfile
 
         # TODO create a set of tar helper functions in wxflow
-
         # Attempt to create the parent directory if it does not exist
         mkdir_p(os.path.dirname(os.path.realpath(target)))
 
@@ -418,13 +425,15 @@ class Archive(Task):
         for key, value in self.config.items():
             if isinstance(value, str):
                 if root_path in value:
-                    rel_path = value.replace(root_path, '')
+                    rel_path = value.replace(root_path, "")
                     rel_key = (key[4:] if key.startswith("COM_") else key).lower() + "_dir"
                     rel_path_dict[rel_key] = rel_path
 
         return rel_path_dict
 
-    def _rename_cyclone_expt(self, arch_dict) -> None:
+    @logit(logger)
+    @staticmethod
+    def _rename_cyclone_expt(arch_dict) -> None:
 
         # Rename the experiment in the tracker files from "AVNO" to the
         # first 4 letters of PSLOT.
@@ -432,33 +441,60 @@ class Archive(Task):
         if len(arch_dict.PSLOT) > 4:
             pslot4 = arch_dict.PSLOT[0:4].upper()
 
-        track_dir = arch_dict.atmos_track_dir
-        cycle_HH = str(arch_dict.cycle_HH)
+        track_dir = arch_dict.COM_ATMOS_TRACK
         run = arch_dict.RUN
+        cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
         if run == "gfs":
-            in_track_file = track_dir + "/avno.t" + cycle_HH + "z.cycle.trackatcfunix"
-            in_track_p_file = track_dir + "/avnop.t" + cycle_HH + "z.cycle.trackatcfunixp"
+            in_track_file = (track_dir + "/avno.t" +
+                             cycle_HH + "z.cycle.trackatcfunix")
+            in_track_p_file = (track_dir + "/avnop.t" +
+                               cycle_HH + "z.cycle.trackatcfunixp")
         elif run == "gdas":
-            in_track_file = track_dir + "/gdas.t" + cycle_HH + "z.cycle.trackatcfunix"
-            in_track_p_file = track_dir + "/gdasp.t" + cycle_HH + "z.cycle.trackatcfunixp"
+            in_track_file = (track_dir + "/gdas.t" +
+                             cycle_HH + "z.cycle.trackatcfunix")
+            in_track_p_file = (track_dir + "/gdasp.t" +
+                               cycle_HH + "z.cycle.trackatcfunixp")
 
         if not os.path.isfile(in_track_file):
+            # Do not attempt to archive the outputs
             return
 
-        cycle_YYYYMMDDHH = str(arch_dict.cycle_YYYYMMDDHH)
-
-        out_track_file = track_dir + "/atcfunix." + run + "." + cycle_YYYYMMDDHH
-        out_track_p_file = track_dir + "/atcfunixp." + run + "." + cycle_YYYYMMDDHH
+        out_track_file = track_dir + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
+        out_track_p_file = track_dir + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
 
         def replace_string_from_to_file(filename_in, filename_out, search_str, replace_str):
+
+            """Write a new file from the contents of an input file while searching
+            and replacing ASCII strings.  To prevent partial file creation, a
+            temporary file is created and moved to the final location only
+            after the search/replace is finished.
+
+            Parameters
+            ----------
+            filename_in : str
+                Input filename
+
+            filename_out : str
+                Output filename
+
+            search_str : str
+                ASCII string to search for
+
+            replace_str : str
+                ASCII string to replace the search_str with
+            """
             with open(filename_in) as old_file:
                 lines = old_file.readlines()
 
             out_lines = [line.replace(search, replace) for line in lines]
 
-            with open(filename_out, "w") as new_file:
+            with open("/tmp/track_file", "w") as new_file:
                 new_file.writelines(out_lines)
+
+            shutil.move("tmp/track_file", filename_out)
 
         replace_string_from_to_file(in_track_file, out_track_file, "AVNO", pslot4)
         replace_string_from_to_file(in_track_p_file, out_track_p_file, "AVNO", pslot4)
+
+        return

@@ -1,8 +1,9 @@
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = "gdaswave.t" + cycle_HH + "z." %}
-name: "GDASWAVE"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave.tar"
+{% set head = "gfswave.t" + cycle_HH + "z." %}
+name: "GFSWAVE"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
 mandatory:
+    - "{{ COM_WAVE_HISTORY | relpath(ROTDIR) }}/ww3_multi*"
     - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*"
     - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}*"

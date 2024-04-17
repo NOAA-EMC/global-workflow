@@ -1,27 +1,30 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set cycle_YMD = current_cycle | to_YMD %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
 {% if RUN == "gdas" or RUN == "gfs" %}
 deterministic:
     mkdir:
         - "{{ ARCDIR }}"
         {% if RUN == "gfs" %}
-        - "{{ ARCDIR }}/tracker.{{ cycle_YYYYMMDDHH }}/{{ RUN }}"
+        - "{{ ARCDIR }}/tracker.{{ cycle_YMDH }}/{{ RUN }}"
         {% endif %}
         {% if FITSARC %}
         {% if not VFYARC is defined %}
         {% set VFYARC = ROTDIR + "/vrfyarch" %}
         {% endif %}
-        - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}"
+        - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
         {% endif %}
     copy:
-        {% if not first_cycle and MODE == "cycled" %}
-        - ["{{ atmos_analysis_dir }}/{{ head }}gsistat", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% if not current_cycle == SDATE and MODE == "cycled" %}
+        - ["{{ COM_ATMOS_ANALYSIS }}/{{ head }}gsistat", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}"]
         {% if DO_JEDISNOWDA %}
-        - ["{{ snow_analysis_dir }}/{{ head }}snowstat", "{{ ARCDIR }}/snowstat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ COM_SNOW_ANALYSIS }}/{{ head }}snowstat", "{{ ARCDIR }}/snowstat.{{ RUN }}.{{ cycle_YMDH }}"]
         {% endif %}
         {% if DO_AERO %}
-        - ["{{ chem_analysis_dir }}/{{ head }}aerostat", "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        - ["{{ COM_CHEM_ANALYSIS }}/{{ head }}aerostat", "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YMDH }}"]
         {% endif %}
-        - ["{{ atmos_grib_1p00_dir }}/{{ head }}pgrb2.1p00.anl", "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YYYYMMDDHH }}.grib2"]
+        - ["{{ COM_ATMOS_GRIB_1p00 }}/{{ head }}pgrb2.1p00.anl", "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
         {% endif %}  # Full cycle
         {% if RUN == "gfs" %}
         {% set fhmin, fhmax, fhout = FHMIN_GFS, FHMAX_GFS, FHOUT_GFS %}
@@ -29,7 +32,7 @@ deterministic:
         {% set fhmin, fhmax, fhout = FHMIN, FHMAX, FHOUT %}
         {% endif %}
         {% for fhr in range(0, fhmax + fhout, fhout) %}
-        - ["{{ atmos_grib_1p00_dir }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}", "{{ ARCDIR }}/pgbf{{ '%02d' % fhr }}.{{ RUN }}.{{ cycle_YYYYMMDDHH }}.grib2"]
+        - ["{{ COM_ATMOS_GRIB_1p00 }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}", "{{ ARCDIR }}/pgbf{{ '%02d' % fhr }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
         {% endfor %}
         {% if RUN == "gfs" %}
         {% if FITSARC %}
@@ -39,26 +42,29 @@ deterministic:
         {% set fhmax = FHMAX_GFS %}
         {% endif %}
         {% for fhr in range(0, fhmax + 6, 6) %}
-        {% set sfcfile = atmos_history_dir + "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
-        {% set sigfile = atmos_history_dir + "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
-        - ["{{ sfcfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}/{{ sfcfile }}"]
-        - ["{{ sigfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YYYYMMDD }}/{{ cycle_HH }}/{{ sigfile }}"]
+        {% set sfcfile = COM_ATMOS_HISTORY + "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
+        {% set sigfile = COM_ATMOS_HISTORY + "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
+        - ["{{ sfcfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sfcfile }}"]
+        - ["{{ sigfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sigfile }}"]
         {% endfor %}
         {% endif %} ## FITSARC
-        - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YYYYMMDDHH }}"]
-        - ["{{ atmos_genesis_dir }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YYYYMMDDHH }}"]
-        - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YYYYMMDDHH }}"]
-        - ["{{ atmos_track_dir }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YYYYMMDDHH }}"]
+        {% if path_exists(COM_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH) %}
+        - ["{{ COM_ATMOS_GENESIS }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_GENESIS }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"]
+        {% endif %}
+        {% if path_exists(COM_ATMOS_GENESIS ~ "/trak.gfso.atcfunix." ~ cycle_YMDH) %}
+        - ["{{ COM_ATMOS_TRACK }}/trak.gfso.atcfunix.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_TRACK }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
+        {% endif %}
         ## Only created if tracking is on and there were systems to track
-        {% if path_exists(atmos_track_dir + "/epac") %}
-        - ["{{ atmos_track_dir }}/epac", "{{ ARCDIR }}/epac"]
+        {% for basin in ["epac", "natl"] %}
+        {% if path_exists(COM_ATMOS_TRACK + "/" + basin) %}
+        - ["{{ COM_ATMOS_TRACK }}/{{ basin }}", "{{ ARCDIR }}/{{ basin }}"]
         {% endif %}
-        {% if path_exists(atmos_track_dir + "/epac") %}
-        - ["{{ atmos_track_dir }}/natl", "{{ ARCDIR }}/natl"]
-        {% endif %}
+        {% endfor %}
         {% endif %} ## RUN == "gfs"
-        {% if path_exists(atmos_track_dir ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YYYYMMDDHH) %}
-        - ["{{ atmos_track_dir }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
-        - ["{{ atmos_track_dir }}/atcfunixp.{{ RUN }}.{{ cycle_YYYYMMDDHH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YYYYMMDDHH }}"]
+        {% if arch_tracks %}
+        - ["{{ COM_ATMOS_TRACK }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
         {% endif %}
 {% endif %} # gfs or gdas

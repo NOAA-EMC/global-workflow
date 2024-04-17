@@ -1,0 +1,11 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = "gfs.t" + cycle_HH + "z." %}
+name: "GFS_DOWNSTREAM"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_downstream.tar"
+mandatory:
+    - "{{ COM_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.sfc"
+    - "{{ COM_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.snd"
+    - "{{ COM_ATMOS_WMO | relpath(ROTDIR) }}/gfs_collective*.postsnd_{{ cycle_HH }}"
+    - "{{ COM_ATMOS_BUFR | relpath(ROTDIR) }}/bufr.t{{ cycle_HH }}z"
+    - "{{ COM_ATMOS_BUFR | relpath(ROTDIR) }}/gfs.t{{ cycle_HH }}z.bufrsnd.tar.gz"

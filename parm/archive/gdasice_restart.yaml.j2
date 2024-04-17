@@ -1,4 +1,7 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = "gdas.t" + cycle_HH + "z." %}
 name: "GDASICE_RESTART"
-target: "{{ ATARDIR }}/{{ cycle_YYYYMMDDHH }}/gdasice_restart.tar"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice_restart.tar"
 mandatory:
-    - '{{ ice_history_dir }}/*'
+    - '{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/*'

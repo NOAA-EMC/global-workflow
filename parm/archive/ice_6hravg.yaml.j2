@@ -1,0 +1,8 @@
+{% set head = "gfs.ice.t" + cycle_HH + "z." %}
+name: "ICE_6HRAVG"
+target: "{{ ATARDIR }}/{{ current_cycle | to_YMDH }}/ice_6hravg.tar"
+mandatory:
+    - "{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}ic.nc"
+    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + 6, 6 %}
+    - "{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}6hr_avg.f{{ '%03d' % fhr }}.nc"
+    {% endfor %}

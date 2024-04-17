@@ -1,0 +1,12 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = "gfs.t" + cycle_HH + "z." %}
+name: "GFS_NETCDFA"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_netcdfa.tar"
+mandatory:
+    - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
+    - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
+    - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi*.nc"
+optional:
+    - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
+    - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
