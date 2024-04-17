@@ -1,0 +1,11 @@
+#!/bin/bash -x
+
+########## config.aeroanlgenb ##########
+# Aerosol Variance specific
+
+echo "BEGIN: config.aeroanlgenb"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" aeroanlgenb
+
+echo "END: config.aeroanlgenb"
