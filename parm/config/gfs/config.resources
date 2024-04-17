@@ -13,7 +13,7 @@ if (( $# != 1 )); then
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "snowanl"
-    echo "aeroanlinit aeroanlrun aeroanlfinal"
+    echo "aeroanlinit aeroanlvar aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -294,7 +294,7 @@ case ${step} in
     export memory_aeroanlinit="3072M"
     ;;
 
-  "aeroanlrun")
+  "aeroanlvar")
     case ${CASE} in
       "C768")
         layout_x=8
@@ -321,12 +321,12 @@ case ${step} in
     export layout_x
     export layout_y
 
-    export wtime_aeroanlrun="00:30:00"
-    export npe_aeroanlrun=$(( layout_x * layout_y * 6 ))
-    export npe_aeroanlrun_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_aeroanlrun=1
-    export nth_aeroanlrun_gfs=1
-    export npe_node_aeroanlrun=$(( npe_node_max / nth_aeroanlrun ))
+    export wtime_aeroanlvar="00:30:00"
+    export npe_aeroanlvar=$(( layout_x * layout_y * 6 ))
+    export npe_aeroanlvar_gfs=$(( layout_x * layout_y * 6 ))
+    export nth_aeroanlvar=1
+    export nth_aeroanlvar_gfs=1
+    export npe_node_aeroanlvar=$(( npe_node_max / nth_aeroanlvar ))
     export is_exclusive=True
     ;;
 

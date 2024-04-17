@@ -483,21 +483,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def aeroanlrun(self):
+    def aeroanlvar(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('aeroanlrun')
-        task_name = f'{self.cdump}aeroanlrun'
+        resources = self.get_resource('aeroanlvar')
+        task_name = f'{self.cdump}aeroanlvar'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlrun.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlvar.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -510,7 +510,7 @@ class GFSTasks(Tasks):
     def aeroanlfinal(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlrun'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

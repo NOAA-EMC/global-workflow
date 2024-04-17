@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="aeroanlrun"
+export job="aeroanlvar"
 export jobid="${job}.$$"
 
 ###############################################################
