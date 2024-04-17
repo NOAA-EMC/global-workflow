@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.atmos_ensstat ##########
+# atmosphere grib2 enstat specific
+
+echo "BEGIN: config.atmos_ensstat"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmos_ensstat
+
+echo "END: config.atmos_ensstat"
