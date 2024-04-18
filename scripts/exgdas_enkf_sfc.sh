@@ -17,13 +17,14 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
 
 # Base variables
 DONST=${DONST:-"NO"}
+GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
 DOSFCANL_ENKF=${DOSFCANL_ENKF:-"YES"}
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
@@ -31,7 +32,7 @@ ntiles=${ntiles:-6}
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 
 # Scripts
 
@@ -46,23 +47,28 @@ GPREFIX=${GPREFIX:-""}
 GPREFIX_ENS=${GPREFIX_ENS:-${GPREFIX}}
 
 # Variables
-NMEM_ENS=${NMEM_ENS:-80}
+NMEM_ENS_MAX=${NMEM_ENS:-80}
+if [ "${RUN}" = "enkfgfs" ]; then
+   NMEM_ENS=${NMEM_ENS_GFS:-30}
+   ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
+   mem_offset=$((ec_offset * cyc/6))
+else
+   NMEM_ENS=${NMEM_ENS:-80}
+   mem_offset=0
+fi
 DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
-CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
+CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
-export FIXorog=${FIXorog:-$HOMEgfs/fix/orog}
-export FIXam=${FIXam:-$HOMEgfs/fix/am}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 
 APRUN_ESFC=${APRUN_ESFC:-${APRUN:-""}}
 NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
-
 
 ################################################################################
 # Preprocessing
@@ -134,28 +140,39 @@ if [ $DOIAU = "YES" ]; then
         export TILE_NUM=$n
 
         for imem in $(seq 1 $NMEM_ENS); do
-
+            smem=$((imem + mem_offset))
+            if (( smem > NMEM_ENS_MAX )); then
+               smem=$((smem - NMEM_ENS_MAX))
+            fi
+            gmemchar="mem"$(printf %03i "$smem")
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            MEMDIR=${memchar} RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} generate_com \
+            MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
-            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+                COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
+            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
             ${NCP} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
                 "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
             ${NLN} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
             ${NLN} "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc" \
                 "${DATA}/fnbgso.${cmem}"
-            ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
-            ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+            ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
+            ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-        done
+            if [[ ${GSI_SOILANAL} = "YES" ]]; then
+                FHR=6
+                ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+                   "${DATA}/lnd_incr.${cmem}"
+            fi
+        done # ensembles
 
         CDATE="${PDY}${cyc}" ${CYCLESH}
         export err=$?; err_chk
@@ -170,14 +187,18 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
         export TILE_NUM=$n
 
         for imem in $(seq 1 $NMEM_ENS); do
-
+            smem=$((imem + mem_offset))
+            if (( smem > NMEM_ENS_MAX )); then
+               smem=$((smem - NMEM_ENS_MAX))
+            fi
+            gmemchar="mem"$(printf %03i "$smem")
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            RUN="${GDUMP_ENS}" MEMDIR=${memchar} YMD=${gPDY} HH=${gcyc} generate_com \
+            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
@@ -188,8 +209,8 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
                 "${DATA}/fnbgsi.${cmem}"
             ${NLN} "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc" \
                 "${DATA}/fnbgso.${cmem}"
-            ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
-            ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+            ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
+            ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
         done
 

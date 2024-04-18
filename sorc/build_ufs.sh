@@ -7,12 +7,13 @@ cwd=$(pwd)
 APP="S2SWA"
 CCPP_SUITES="FV3_GFS_v17_p8,FV3_GFS_v17_coupled_p8"  # TODO: does the g-w need to build with all these CCPP_SUITES?
 
-while getopts ":da:j:v" option; do
+while getopts ":da:j:vw" option; do
   case "${option}" in
-    d) BUILD_TYPE="DEBUG";;
+    d) BUILD_TYPE="Debug";;
     a) APP="${OPTARG}";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
+    w) PDLIB="ON";; 
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       ;;
@@ -28,13 +29,14 @@ source "./tests/detect_machine.sh"
 source "./tests/module-setup.sh"
 
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
-[[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
+[[ ${PDLIB:-"OFF"} = "ON" ]] && MAKE_OPT+=" -DPDLIB=ON"
+[[ ${BUILD_TYPE:-"Release"} = "Debug" ]] && MAKE_OPT+=" -DDEBUG=ON"
 COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
 if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
-  ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+  BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
   mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
   mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
   cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua

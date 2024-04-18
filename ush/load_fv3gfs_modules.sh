@@ -10,7 +10,8 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
-source "${HOMEgfs}/modulefiles/module-setup.sh.inc"
+source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/module-setup.sh"
 
 # Source versions file for runtime
 source "${HOMEgfs}/versions/run.ver"
@@ -18,6 +19,7 @@ source "${HOMEgfs}/versions/run.ver"
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
+<<<<<<< HEAD
 if [[ -d /lfs/f1 ]]; then
   # We are on WCOSS2 (Cactus or Dogwood)
   module load module_base.wcoss2
@@ -48,6 +50,16 @@ elif [[ -d /data/prod ]] ; then
 else
   echo WARNING: UNKNOWN PLATFORM
 fi
+=======
+case "${MACHINE_ID}" in
+  "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4")
+    module load "module_base.${MACHINE_ID}"
+    ;;
+  *)
+    echo "WARNING: UNKNOWN PLATFORM"
+    ;;
+esac
+>>>>>>> origin/develop-AR
 
 module list
 

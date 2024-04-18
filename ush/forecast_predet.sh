@@ -8,35 +8,35 @@
 ## This script is a definition of functions.
 #####
 
-# For all non-evironment variables
-# Cycling and forecast hour specific parameters
-
 to_seconds() {
   # Function to convert HHMMSS to seconds since 00Z
-  local hhmmss=${1:?}
-  local hh=${hhmmss:0:2}
-  local mm=${hhmmss:2:2}
-  local ss=${hhmmss:4:2}
-  local seconds=$((10#${hh}*3600+10#${mm}*60+10#${ss}))
-  local padded_seconds=$(printf "%05d" "${seconds}")
+  local hhmmss hh mm ss seconds padded_seconds
+  hhmmss=${1:?}
+  hh=${hhmmss:0:2}
+  mm=${hhmmss:2:2}
+  ss=${hhmmss:4:2}
+  seconds=$((10#${hh}*3600+10#${mm}*60+10#${ss}))
+  padded_seconds=$(printf "%05d" "${seconds}")
   echo "${padded_seconds}"
 }
 
 middle_date(){
   # Function to calculate mid-point date in YYYYMMDDHH between two dates also in YYYYMMDDHH
-  local date1=${1:?}
-  local date2=${2:?}
-  local date1s=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
-  local date2s=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
-  local dtsecsby2=$(( $((date2s - date1s)) / 2 ))
-  local mid_date=$(date --utc -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
+  local date1 date2 date1s date2s dtsecsby2 mid_date
+  date1=${1:?}
+  date2=${2:?}
+  date1s=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
+  date2s=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
+  dtsecsby2=$(( $((date2s - date1s)) / 2 ))
+  mid_date=$(date --utc -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
   echo "${mid_date:0:10}"
 }
 
 nhour(){
   # Function to calculate hours between two dates (This replicates prod-util NHOUR)
-  local date1=${1:?}
-  local date2=${2:?}
+  local date1 date2 seconds1 seconds2 hours
+  date1=${1:?}
+  date2=${2:?}
   # Convert dates to UNIX timestamps
   seconds1=$(date --utc -d "${date1:0:8} ${date1:8:2}:00:00" +%s)
   seconds2=$(date --utc -d "${date2:0:8} ${date2:8:2}:00:00" +%s)
@@ -44,30 +44,17 @@ nhour(){
   echo "${hours}"
 }
 
+# shellcheck disable=SC2034
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through model components"
-  # Ignore "not used" warning
-  # shellcheck disable=SC2034
   pwd=$(pwd)
   CDUMP=${CDUMP:-gdas}
-  CASE=${CASE:-C768}
-  CDATE=${CDATE:-2017032500}
+  CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
 
-  FCSTEXECDIR=${FCSTEXECDIR:-${HOMEgfs}/exec}
-  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
-
-  # Directories.
-  FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
-
-  # Model specific stuff
-  PARM_POST=${PARM_POST:-${HOMEgfs}/parm/post}
-
   # Define significant cycles
-  current_cycle=${CDATE}
+  current_cycle="${PDY}${cyc}"
   previous_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
-  # ignore errors that variable isn't used
-  # shellcheck disable=SC2034
   next_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
@@ -88,23 +75,29 @@ common_predet(){
     tcyc=${scyc}
   fi
 
-  mkdir -p "${COM_CONF}"
-  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
-}
-
-FV3_predet(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
   FHOUT=${FHOUT:-3}
-  FHZER=${FHZER:-6}
-  FHCYC=${FHCYC:-24}
   FHMAX_HF=${FHMAX_HF:-0}
   FHOUT_HF=${FHOUT_HF:-1}
-  NSOUT=${NSOUT:-"-1"}
-  FDIAG=${FHOUT}
-  if (( FHMAX_HF > 0 && FHOUT_HF > 0 )); then FDIAG=${FHOUT_HF}; fi
-  WRITE_DOPOST=${WRITE_DOPOST:-".false."}
+
+  # Several model components share DATA/INPUT for input data
+  if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
+
+  if [[ ! -d "${COM_CONF}" ]]; then mkdir -p "${COM_CONF}"; fi
+  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
+}
+
+# shellcheck disable=SC2034
+FV3_predet(){
+  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
+
+  if [[ ! -d "${COM_ATMOS_HISTORY}" ]]; then mkdir -p "${COM_ATMOS_HISTORY}"; fi
+  if [[ ! -d "${COM_ATMOS_MASTER}" ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
+  if [[ ! -d "${COM_ATMOS_RESTART}" ]]; then mkdir -p "${COM_ATMOS_RESTART}"; fi
+
+  FHZER=${FHZER:-6}
+  FHCYC=${FHCYC:-24}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
   if [[ ${restart_interval} -eq 0 ]]; then
@@ -112,30 +105,16 @@ FV3_predet(){
   fi
 
   # Convert output settings into an explicit list for FV3
-  # NOTE:  FV3_OUTPUT_FH is also currently used in other components
-  # TODO: Have a seperate control for other components to address issue #1629
   FV3_OUTPUT_FH=""
   local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
-    for (( fh = FHMIN; fh < FHMAX_HF; fh = fh + FHOUT_HF )); do
-      FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
-    done
+    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
     fhr=${FHMAX_HF}
   fi
-  for (( fh = fhr; fh <= FHMAX; fh = fh + FHOUT )); do
-    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} ${fh}"
-  done
-
-
-  # Model resolution specific parameters
-  DELTIM=${DELTIM:-225}
-  layout_x=${layout_x:-8}
-  layout_y=${layout_y:-16}
-  LEVS=${LEVS:-65}
+  FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
   # Other options
-  MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
-  ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
+  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options
@@ -145,17 +124,7 @@ FV3_predet(){
   # Model config options
   ntiles=6
 
-  TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
-  MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
-
-  QUILTING=${QUILTING:-".true."}
-  OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
-  WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
-  WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
-
   rCDUMP=${rCDUMP:-${CDUMP}}
-
-  mkdir -p "${DATA}/INPUT"
 
   #------------------------------------------------------------------
   # changeable parameters
@@ -196,7 +165,6 @@ FV3_predet(){
   nstf_name=${nstf_name:-"${NST_MODEL},${NST_SPINUP},${NST_RESV},${ZSEA1},${ZSEA2}"}
   nst_anl=${nst_anl:-".false."}
 
-
   # blocking factor used for threading and general physics performance
   #nyblocks=$(expr \( $npy - 1 \) \/ $layout_y )
   #nxblocks=$(expr \( $npx - 1 \) \/ $layout_x \/ 32)
@@ -214,8 +182,7 @@ FV3_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]]; then
-    if [[ ! -d ${COM_ATMOS_RESTART} ]]; then mkdir -p "${COM_ATMOS_RESTART}" ; fi
+  if [[ "${RUN}" =~ "gfs" || "${RUN}" = "gefs" ]]; then
     ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
@@ -229,26 +196,69 @@ FV3_predet(){
       ${NLN} "${file}" "${COM_ATMOS_RESTART}/${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${file}"
     done
   else
-    mkdir -p "${DATA}/RESTART"
+    if [[ ! -d "${DATA}/RESTART" ]]; then mkdir -p "${DATA}/RESTART"; fi
   fi
 
-  echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }
 
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
+
+  if [[ ! -d "${COM_WAVE_HISTORY}" ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
   if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
+
   ${NLN} "${COM_WAVE_RESTART}" "restart_wave"
 }
 
+# shellcheck disable=SC2034
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
+
+  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi
+  if [[ ! -d "${COM_ICE_RESTART}" ]]; then mkdir -p "${COM_ICE_RESTART}"; fi
+  if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
+
   if [[ ! -d "${DATA}/CICE_OUTPUT" ]]; then  mkdir -p "${DATA}/CICE_OUTPUT"; fi
   if [[ ! -d "${DATA}/CICE_RESTART" ]]; then mkdir -p "${DATA}/CICE_RESTART"; fi
+
+  # CICE does not have a concept of high frequency output like FV3
+  # Convert output settings into an explicit list for CICE
+  CICE_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_OCNICE}" "${FHMAX}")
+
 }
 
+# shellcheck disable=SC2034
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
+
+  if [[ ! -d "${COM_OCEAN_HISTORY}" ]]; then mkdir -p "${COM_OCEAN_HISTORY}"; fi
+  if [[ ! -d "${COM_OCEAN_RESTART}" ]]; then mkdir -p "${COM_OCEAN_RESTART}"; fi
+  if [[ ! -d "${COM_OCEAN_INPUT}" ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
+
   if [[ ! -d "${DATA}/MOM6_OUTPUT" ]]; then mkdir -p "${DATA}/MOM6_OUTPUT"; fi
   if [[ ! -d "${DATA}/MOM6_RESTART" ]]; then mkdir -p "${DATA}/MOM6_RESTART"; fi
+
+  # MOM6 does not have a concept of high frequency output like FV3
+  # Convert output settings into an explicit list for MOM6
+  MOM6_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_OCNICE}" "${FHMAX}")
+
+}
+
+CMEPS_predet(){
+  echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
+
+  if [[ ! -d "${COM_MED_RESTART}" ]]; then mkdir -p "${COM_MED_RESTART}"; fi
+
+  if [[ ! -d "${DATA}/CMEPS_RESTART" ]]; then mkdir -p "${DATA}/CMEPS_RESTART"; fi
+
+}
+
+# shellcheck disable=SC2034
+GOCART_predet(){
+  echo "SUB ${FUNCNAME[0]}: GOCART before run type determination"
+
+  if [[ ! -d "${COM_CHEM_HISTORY}" ]]; then mkdir -p "${COM_CHEM_HISTORY}"; fi
+
+  GOCART_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "6" "${FHMAX}")
+  # TODO: AERO_HISTORY.rc has hardwired output frequency to 6 hours
 }

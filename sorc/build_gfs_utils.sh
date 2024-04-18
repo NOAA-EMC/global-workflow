@@ -18,14 +18,12 @@ EOF
   exit 1
 }
 
-cwd=$(pwd)
-
 OPTIND=1
 while getopts ":j:dvh" option; do
   case "${option}" in
-    d) export BUILD_TYPE="DEBUG";;
-    v) export BUILD_VERBOSE="YES";;
-    j) export BUILD_JOBS="${OPTARG}";;
+    d) BUILD_TYPE="Debug";;
+    v) BUILD_VERBOSE="YES";;
+    j) BUILD_JOBS="${OPTARG}";;
     h)
       usage
       ;;
@@ -44,6 +42,6 @@ shift $((OPTIND-1))
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
 BUILD_JOBS=${BUILD_JOBS:-8} \
-"${cwd}/gfs_utils.fd/ush/build.sh"
+"./gfs_utils.fd/ush/build.sh"
 
 exit

@@ -13,7 +13,7 @@ export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_GRID COM_WAVE_WMO
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_GRID COM_WAVE_WMO
 
 if [[ ! -d ${COM_WAVE_WMO} ]]; then mkdir -p "${COM_WAVE_WMO}"; fi
 
@@ -22,7 +22,7 @@ mkdir -p "${COM_WAVE_WMO}"
 ###################################
 # Execute the Script
 ###################################
-${HOMEgfs}/scripts/exgfs_wave_prdgen_gridded.sh
+${SCRgfs}/exgfs_wave_prdgen_gridded.sh
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 

@@ -1,0 +1,268 @@
+def Machine = 'none'
+def machine = 'none'
+def HOME = 'none'
+def caseList = ''
+// Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
+
+pipeline {
+    agent { label 'built-in' }
+
+    options {
+        skipDefaultCheckout()
+        parallelsAlwaysFailFast()
+    }
+
+    stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
+             // which is used to designate the Nodes in the Jenkins Controler by the agent label
+             // Each Jenknis Node is connected to said machine via an JAVA agent via an ssh tunnel
+
+        stage('Get Machine') {
+            agent { label 'built-in' }
+            steps {
+                script {
+                    machine = 'none'
+                    for (label in pullRequest.labels) {
+                        echo "Label: ${label}"
+                        if ((label.matches('CI-Hera-Ready'))) {
+                            machine = 'hera'
+                        } else if ((label.matches('CI-Orion-Ready'))) {
+                            machine = 'orion'
+                        } else if ((label.matches('CI-Hercules-Ready'))) {
+                            machine = 'hercules'
+                        }
+                    } // createing a second machine varible with first letter capital
+                      // because the first letter of the machine name is captitalized in the GitHub labels
+                    Machine = machine[0].toUpperCase() + machine.substring(1)
+                }
+            }
+        }
+
+        stage('Get Common Workspace') {
+            agent { label "${machine}-emc" }
+            steps {
+                script {
+                    ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        HOME = "${WORKSPACE}"
+                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
+                        pullRequest.addLabel("CI-${Machine}-Building")
+                        if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Ready") }) {
+                            pullRequest.removeLabel("CI-${Machine}-Ready")
+                        }
+                    }
+                    echo "Building and running on ${Machine} in directory ${HOME}"
+                }
+            }
+        }
+
+        stage('Build System') {
+            matrix {
+                agent { label "${machine}-emc" }
+                //options {
+                //    throttle(['global_matrix_build'])
+                //}
+                axes {
+                    axis {
+                        name 'system'
+                        values 'gfs', 'gefs'
+                    }
+                }
+                stages {
+                    stage('build system') {
+                        steps {
+                            script {
+                                def HOMEgfs = "${HOME}/${system}" // local HOMEgfs is used to build the system on per system basis under the common workspace HOME
+                                sh(script: "mkdir -p ${HOMEgfs}")
+                                ws(HOMEgfs) {
+                                    if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
+                                        sh(script: "cat ${HOMEgfs}/sorc/BUILT_semaphor", returnStdout: true).trim() // TODO: and user configurable control to manage build semphore
+                                        checkout scm
+                                        dir('sorc') {
+                                            sh(script: './link_workflow.sh')
+                                        }
+                                    } else {
+                                        checkout scm
+                                        def gist_url = ""
+                                        def error_logs = ""
+                                        def error_logs_message = ""
+                                        def builds_file = readYaml file: 'ci/cases/yamls/build.yaml'
+                                        def build_args_list = builds_file['builds']
+                                        def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
+                                        dir("${HOMEgfs}/sorc") {
+                                            try {
+                                                sh(script: "${build_args}")
+                                            } catch (Exception error_build) {
+                                                echo "Failed to build system: ${error_build.getMessage()}"
+                                                if ( fileExists("logs/error.logs") ) {
+                                                    def fileContent = readFile 'logs/error.logs'
+                                                    def lines = fileContent.readLines()
+                                                    for (line in lines) {
+                                                        echo "archiving: ${line}"
+                                                        if (fileExists("${line}") && readFile("${line}").length() > 0 ){
+                                                            try {
+                                                                archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                                error_logs = error_logs + "${HOMEgfs}/sorc/${line} "
+                                                                error_logs_message = error_logs_message + "${HOMEgfs}/sorc/${line}\n"
+                                                            }
+                                                            catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
+                                                        }
+                                                    }
+                                                    repo_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                    gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                    try {
+                                                        pullRequest.comment("Build failed on **${Machine}** with error logs:${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
+                                                    } catch (Exception error_comment) {
+                                                        echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                                    }
+                                                    error("Failed to build system on ${Machine}")
+                                                }
+                                            }
+                                            sh(script: './link_workflow.sh')
+                                            // sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
+                                        }
+                                    }
+                                    if (env.CHANGE_ID && system == 'gfs') {
+                                        try {
+                                            if (pullRequest.labels.any { value -> value.matches("CI-${Machine}-Building") }) {
+                                               pullRequest.removeLabel("CI-${Machine}-Building")
+                                            }
+                                            pullRequest.addLabel("CI-${Machine}-Running")
+                                        } catch (Exception e) {
+                                            echo "Failed to update label from Buildng to Running: ${e.getMessage()}"
+                                        }
+                                    }
+                                    if (system == 'gfs') {
+                                        caseList = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
+                                    }
+                               }
+                           }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            matrix {
+                agent { label "${machine}-emc" }
+                axes {
+                    axis {
+                        name 'Case'
+                        // TODO add dynamic list of cases from env vars (needs addtional plugins)
+                        values 'C48C48_ufs_hybatmDA', 'C48_ATM', 'C48_S2SW', 'C48_S2SWA_gefs', 'C48mx500_3DVarAOWCDA', 'C96C48_hybatmDA', 'C96_atm3DVar', 'C96_atmaerosnowDA'
+                    }
+                }
+                stages {
+
+                    stage('Create Experiments') {
+                        when {
+                            expression { return caseList.contains(Case) }
+                        }
+                        steps {
+                                script {
+                                    sh(script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp")
+                                    def yaml_case = readYaml file: "${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp"
+                                    system = yaml_case.experiment.system
+                                    def HOMEgfs = "${HOME}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
+                                    env.RUNTESTS = "${HOME}/RUNTESTS"
+                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml")
+                                }
+                        }
+                    }
+
+                    stage('Run Experiments') {
+                        when {
+                            expression { return caseList.contains(Case) }
+                        }
+                        steps {
+                            script {
+                                HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
+                                pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
+                                try {
+                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot}")
+                                } catch (Exception error_experment) {
+                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_all_batch_jobs ${HOME}/RUNTESTS")
+                                    ws(HOME) {
+                                        def error_logs = ""
+                                        def error_logs_message = ""
+                                        if (fileExists("RUNTESTS/error.logs")) {
+                                            def fileContent = readFile 'RUNTESTS/error.logs'
+                                            def lines = fileContent.readLines()
+                                            for (line in lines) {
+                                                echo "archiving: ${line}"
+                                                if (fileExists("${HOME}/${line}") && readFile("${HOME}/${line}").length() > 0) {
+                                                    try {
+                                                        archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                        error_logs = error_logs + "${HOME}/${line} "
+                                                        error_logs_message = error_logs_message + "${HOME}/${line}\n"
+                                                    } catch (Exception error_arch) {
+                                                        echo "Failed to archive error log ${line}: ${error_arch.getMessage()}"
+                                                    }
+                                                }
+                                            }
+                                            repo_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                            gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                            try {
+                                                pullRequest.comment("Experiment ${Case} failed on ${Machine} with error logs: ${error_logs_message}\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})")
+                                            } catch (Exception error_comment) {
+                                                echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                            }
+                                        } else {
+                                            echo "No error logs found for failed cases in $HOME/RUNTESTS/error.logs"
+                                        }
+                                        error("Failed to run experiments ${Case} on ${Machine}")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+                    
+    post {
+        always {
+            script {
+                if(env.CHANGE_ID) {
+                    try {
+                        for (label in pullRequest.labels) {
+                            if (label.contains("${Machine}")) {
+                                pullRequest.removeLabel(label)
+                            }
+                        }
+                    }  catch (Exception e) {
+                    echo "Failed to remove labels: ${e.getMessage()}"
+                    }
+                }
+            }
+        }
+        success {
+            script {
+                if(env.CHANGE_ID) {
+                    try {
+                        pullRequest.addLabel("CI-${Machine}-Passed")
+                        def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
+                        pullRequest.comment("**CI SUCCESS** ${Machine} at ${timestamp}\n\nBuilt and ran in directory `${HOME}`")
+                    } catch (Exception e) {
+                        echo "Failed to add success label or comment: ${e.getMessage()}"
+                    }
+                }
+            }
+        }
+        failure {
+            script {
+                if(env.CHANGE_ID) {
+                    try {
+                        pullRequest.addLabel("CI-${Machine}-Failed")
+                        def timestamp = new Date().format('MM dd HH:mm:ss', TimeZone.getTimeZone('America/New_York'))
+                        pullRequest.comment("**CI FAILED** ${Machine} at ${timestamp}<br>Built and ran in directory `${HOME}`")
+                    } catch (Exception e) {
+                        echo "Failed to add failure label or comment: ${e.getMessage()}"
+                    }
+                }
+            }
+        }
+    }
+}

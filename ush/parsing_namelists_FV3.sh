@@ -9,13 +9,20 @@
 ## This script is a direct execution.
 #####
 
+# Disable variable not used warnings
+# shellcheck disable=SC2034
 FV3_namelists(){
 
 # setup the tables
-DIAG_TABLE=${DIAG_TABLE:-${HOMEgfs}/parm/ufs/fv3/diag_table}
-DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${HOMEgfs}/parm/ufs/fv3/diag_table_aod}
-DATA_TABLE=${DATA_TABLE:-${HOMEgfs}/parm/ufs/fv3/data_table}
-FIELD_TABLE=${FIELD_TABLE:-${HOMEgfs}/parm/ufs/fv3/field_table}
+DIAG_TABLE=${DIAG_TABLE:-${PARMgfs}/ufs/fv3/diag_table}
+DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${PARMgfs}/ufs/fv3/diag_table_aod}
+DATA_TABLE=${DATA_TABLE:-${PARMgfs}/ufs/MOM6_data_table.IN}
+FIELD_TABLE=${FIELD_TABLE:-${PARMgfs}/ufs/fv3/field_table}
+
+# set cdmbgwd
+if (( gwd_opt == 2 )) && [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
+  cdmbgwd=${cdmbgwd_gsl}
+fi
 
 # ensure non-prognostic tracers are set
 dnats=${dnats:-0}
@@ -33,7 +40,15 @@ if [[ -n "${AERO_DIAG_TABLE:-}" ]]; then
   cat "${AERO_DIAG_TABLE}"
 fi
 cat "${DIAG_TABLE_APPEND}"
-} >> diag_table
+} >> diag_table_template
+
+local template=diag_table_template
+local SYEAR=${current_cycle:0:4} 
+local SMONTH=${current_cycle:4:2}
+local SDAY=${current_cycle:6:2} 
+local CHOUR=${current_cycle:8:2}
+source "${USHgfs}/atparse.bash"
+atparse < "${template}" >> "diag_table"
 
 
 # copy data table
@@ -100,7 +115,7 @@ cat > input.nml <<EOF
   range_warn = ${range_warn:-".true."}
   reset_eta = .false.
   n_sponge = ${n_sponge:-"10"}
-  nudge_qv = ${nudge_qv:-".true."}
+  nudge_qv = ${nudge_qv:-".false."}
   nudge_dz = ${nudge_dz:-".false."}
   tau = ${tau:-10.}
   rf_cutoff = ${rf_cutoff:-"7.5e2"}
@@ -383,6 +398,14 @@ cat >> input.nml <<EOF
   cplwav2atm   = ${cplwav2atm:-".false."}
 EOF
 
+if [[ ${DO_SPPT} = "YES" ]]; then
+cat >> input.nml <<EOF
+  pert_mp = .false.
+  pert_radtend = .false.
+  pert_clds = .true.
+EOF
+fi
+
 # Add namelist for IAU
 if [[ ${DOIAU} = "YES" ]]; then
   cat >> input.nml << EOF
@@ -596,7 +619,7 @@ EOF
   skeb_tau = ${SKEB_TAU:-"-999."}
   skeb_lscale = ${SKEB_LSCALE:-"-999."}
   skebnorm = ${SKEBNORM:-"1"}
-  skeb_npass = ${SKEB_nPASS:-"30"}
+  skeb_npass = ${SKEB_NPASS:-"30"}
   skeb_vdof = ${SKEB_VDOF:-"5"}
 EOF
   fi
@@ -619,6 +642,43 @@ EOF
   sppt_logit = ${SPPT_LOGIT:-".true."}
   sppt_sfclimit = ${SPPT_SFCLIMIT:-".true."}
   use_zmtnblck = ${use_zmtnblck:-".true."}
+  pbl_taper = ${pbl_taper:-"0,0,0,0.125,0.25,0.5,0.75"}
+EOF
+  fi
+  
+  if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
+    cat >> input.nml <<EOF
+  OCNSPPT=${OCNSPPT}
+  OCNSPPT_LSCALE=${OCNSPPT_LSCALE}
+  OCNSPPT_TAU=${OCNSPPT_TAU}
+  ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
+EOF
+  fi
+
+  if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
+    cat >> input.nml <<EOF
+  EPBL=${EPBL}
+  EPBL_LSCALE=${EPBL_LSCALE}
+  EPBL_TAU=${EPBL_TAU}
+  ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
+EOF
+  fi
+  
+  if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
+    cat >> input.nml <<EOF
+  OCNSPPT=${OCNSPPT}
+  OCNSPPT_LSCALE=${OCNSPPT_LSCALE}
+  OCNSPPT_TAU=${OCNSPPT_TAU}
+  ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
+EOF
+  fi
+
+  if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
+    cat >> input.nml <<EOF
+  EPBL=${EPBL}
+  EPBL_LSCALE=${EPBL_LSCALE}
+  EPBL_TAU=${EPBL_TAU}
+  ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
 EOF
   fi
 

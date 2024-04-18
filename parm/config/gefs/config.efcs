@@ -5,14 +5,16 @@
 
 echo "BEGIN: config.efcs"
 
-# Turn off components in ensemble via _ENKF, or use setting from deterministic
-export DO_AERO=${DO_AERO_ENKF:-${DO_AERO:-"NO"}}
-export DO_OCN=${DO_OCN_ENKF:-${DO_OCN:-"NO"}}
-export DO_ICE=${DO_ICE_ENKF:-${DO_ICE:-"NO"}}
-export DO_WAVE=${DO_WAVE_ENKF:-${DO_WAVE:-"NO"}}
+# Turn off components in ensemble
+# export DO_AERO="NO"
+# export DO_OCN="NO"
+# export DO_ICE="NO"
+# export DO_WAVE="NO"
+
+export CASE="${CASE_ENS}"
 
 # Source model specific information that is resolution dependent
-string="--fv3 ${CASE_ENS}"
+string="--fv3 ${CASE}"
 # Ocean/Ice/Waves ensemble configurations are identical to deterministic member
 [[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
 [[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
@@ -24,23 +26,24 @@ source "${EXPDIR}/config.ufs" ${string}
 # Get task specific resources
 source "${EXPDIR}/config.resources" efcs
 
-# Use serial I/O for ensemble (lustre?)
-export OUTPUT_FILETYPE_ATM="netcdf"
-export OUTPUT_FILETYPE_SFC="netcdf"
+# nggps_diag_nml
+export FHOUT=${FHOUT_ENKF:-3}
+if [[ "${RUN}" == "enkfgfs" ]]; then
+    export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT}}
+fi
 
-# Number of enkf members per fcst job
-export NMEM_EFCSGRP=1
-export RERUN_EFCSGRP="NO"
-
-# Turn off inline UPP for EnKF forecast
-export WRITE_DOPOST=".true."
+# model_configure
+export FHMAX=${FHMAX_ENKF:-9}
+if [[ "${RUN}" == "enkfgfs" ]]; then
+   export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX}}
+fi
 
 # Stochastic physics parameters (only for ensemble forecasts)
 export DO_SKEB="YES"
-export SKEB=0.3
-export SKEB_TAU=21600.
-export SKEB_LSCALE=250000.
-export SKEBNORM=0
+export SKEB="0.8,-999,-999,-999,-999"
+export SKEB_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
+export SKEB_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
+export SKEBNORM=1
 export SKEB_NPASS=30
 export SKEB_VDOF=5
 export DO_SHUM="YES"
@@ -48,12 +51,33 @@ export SHUM=0.005
 export SHUM_TAU=21600.
 export SHUM_LSCALE=500000.
 export DO_SPPT="YES"
-export SPPT=0.5
-export SPPT_TAU=21600.
-export SPPT_LSCALE=500000.
+export SPPT="0.56,0.28,0.14,0.056,0.028"
+export SPPT_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
+export SPPT_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
+export DO_CA="YES"
+# OCN options
+export DO_OCN_SPPT="YES"
+export OCNSPPT="0.8,0.4,0.2,0.08,0.04"
+export OCNSPPT_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
+export OCNSPPT_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
+export DO_OCN_PERT_EPBL="YES"
+export EPBL="0.8,0.4,0.2,0.08,0.04"
+export EPBL_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
+export EPBL_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
 
-export restart_interval=${restart_interval_gfs}
+if [[ "${USE_OCN_PERTURB_FILES:-false}" == "true" ]]; then
+    export ODA_INCUPD="True"
+    export ODA_TEMPINC_VAR='t_pert'
+    export ODA_SALTINC_VAR='s_pert'
+    export ODA_THK_VAR='h_anl'
+    export ODA_UINC_VAR='u_pert'
+    export ODA_VINC_VAR='v_pert'
+    export ODA_INCUPD_NHOURS=0.0
+else
+    export ODA_INCUPD="False"
+fi
+export restart_interval="${restart_interval_gfs}"
 
 echo "END: config.efcs"

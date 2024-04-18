@@ -9,7 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 ##############################################
 export CDUMP=${RUN/enkf}
 
-
 ########################################
 # Runs GFS BUFR SOUNDINGS
 ########################################
@@ -18,23 +17,12 @@ export model=${model:-gfs}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-###################################
-# Set up the source directories
-###################################
-
-export HOMEbufrsnd=${HOMEbufrsnd:-${HOMEgfs}}
-export EXECbufrsnd=${EXECbufrsnd:-${HOMEbufrsnd}/exec}
-export FIXbufrsnd=${FIXbufrsnd:-${HOMEbufrsnd}/fix/product}
-export PARMbufrsnd=${PARMbufrsnd:-${HOMEbufrsnd}/parm/product}
-export USHbufrsnd=${USHbufrsnd:-${HOMEbufrsnd}/ush}
-export SCRbufrsnd=${SCRbufrsnd:-${HOMEbufrsnd}/scripts}
-
 ##############################
 # Define COM Directories
 ##############################
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
   COM_ATMOS_WMO COM_ATMOS_GEMPAK
 
 [[ ! -d ${COM_ATMOS_BUFR} ]] && mkdir -p "${COM_ATMOS_BUFR}"
@@ -44,7 +32,7 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
 
 ########################################################
 # Execute the script.
-${SCRbufrsnd}/exgfs_atmos_postsnd.sh
+${SCRgfs}/exgfs_atmos_postsnd.sh
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 

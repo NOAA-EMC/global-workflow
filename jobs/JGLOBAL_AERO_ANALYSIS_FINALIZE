@@ -20,9 +20,9 @@ GDUMP="gdas"
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_CHEM_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_CHEM_ANALYSIS
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_CHEM_ANALYSIS_PREV:COM_CHEM_ANALYSIS_TMPL \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
@@ -31,7 +31,7 @@ mkdir -m 775 -p "${COM_CHEM_ANALYSIS}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROFINALPY:-${HOMEgfs}/scripts/exglobal_aero_analysis_finalize.py}
+EXSCRIPT=${GDASAEROFINALPY:-${SCRgfs}/exglobal_aero_analysis_finalize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

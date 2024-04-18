@@ -12,13 +12,13 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmiodaobs" -c "base prepatmiodao
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
 
 
 ###############################################################
 # Run relevant script
-EXSCRIPT=${BUFR2IODASH:-${HOMEgfs}/ush/run_bufr2ioda.py}
-${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${IODAPARM}" "${COM_OBS}/"
+EXSCRIPT=${BUFR2IODASH:-${USHgfs}/run_bufr2ioda.py}
+${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${PARMgfs}/gdas/ioda/bufr2ioda" "${COM_OBS}/"
 status=$?
 [[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")
 

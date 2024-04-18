@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -34,11 +34,11 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Fix files
 LEVS=${LEVS:-64}
-HYBENSMOOTH=${HYBENSMOOTH:-$FIXgsi/global_hybens_smoothinfo.l${LEVS}.txt}
+HYBENSMOOTH=${HYBENSMOOTH:-${FIXgfs}/gsi/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgfs/exec/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgfs/exec/getsfcensmeanp.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgfs}/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECgfs}/getsfcensmeanp.x}
 
 # Other variables.
 PREFIX=${PREFIX:-""}
@@ -46,10 +46,11 @@ FHMIN=${FHMIN_EPOS:-3}
 FHMAX=${FHMAX_EPOS:-9}
 FHOUT=${FHOUT_EPOS:-3}
 
-if [[ $CDUMP == "gfs" ]]; then
+if [[ "${RUN}" == "enkfgfs" ]]; then
    NMEM_ENS=${NMEM_ENS_GFS:-${NMEM_ENS:-30}}
+else
+   NMEM_ENS=${NMEM_ENS:-80}
 fi
-NMEM_ENS=${NMEM_ENS:-80}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 ENKF_SPREAD=${ENKF_SPREAD:-"NO"}
 
@@ -69,7 +70,7 @@ export OMP_NUM_THREADS=$NTHREADS_EPOS
 # Forecast ensemble member files
 for imem in $(seq 1 $NMEM_ENS); do
    memchar="mem"$(printf %03i "${imem}")
-   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
+   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x COM_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
    for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
       fhrchar=$(printf %03i $fhr)
@@ -79,7 +80,7 @@ for imem in $(seq 1 $NMEM_ENS); do
 done
 
 # Forecast ensemble mean and smoothed files
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY_STAT:COM_ATMOS_HISTORY_TMPL
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY_STAT:COM_ATMOS_HISTORY_TMPL
 if [[ ! -d "${COM_ATMOS_HISTORY_STAT}" ]]; then mkdir -p "${COM_ATMOS_HISTORY_STAT}"; fi
 
 for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
@@ -89,7 +90,7 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    if [ $SMOOTH_ENKF = "YES" ]; then
       for imem in $(seq 1 $NMEM_ENS); do
          memchar="mem"$(printf %03i "${imem}")
-         MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_HISTORY
+         MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} declare_from_tmpl -x COM_ATMOS_HISTORY
          ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
       done
    fi

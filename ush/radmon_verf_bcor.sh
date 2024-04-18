@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -65,7 +65,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 ####################################################################
 
 # File names
-pgmout=${pgmout:-${jlogfile}}
 touch "${pgmout}"
 
 # Other variables

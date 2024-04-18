@@ -25,7 +25,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -82,7 +82,7 @@ if [[ ! -s "${COM_WAVE_GRID}/${outfile}.idx" ]]; then
   echo "   Model ID         : $WAV_MOD_TAG"
   set_trace
 
-  if [[ -z "${PDY}" ]] || [[ -z ${cyc} ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECwave}" ]] || \
+  if [[ -z "${PDY}" ]] || [[ -z ${cyc} ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
 	 [[ -z "${COM_WAVE_GRID}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
 	 [[ -z "${GRIDNR}" ]] || [[ -z "${MODNR}" ]] || \
      [[ -z "${SENDDBN}" ]]; then
@@ -138,11 +138,11 @@ if [[ ! -s "${COM_WAVE_GRID}/${outfile}.idx" ]]; then
 
   set +x
   echo "   Run ww3_grib2"
-  echo "   Executing ${EXECwave}/ww3_grib"
+  echo "   Executing ${EXECgfs}/ww3_grib"
   set_trace
 
   export pgm=ww3_grib;. prep_step
-  "${EXECwave}/ww3_grib" > "grib2_${grdnam}_${FH3}.out" 2>&1
+  "${EXECgfs}/ww3_grib" > "grib2_${grdnam}_${FH3}.out" 2>&1
   export err=$?;err_chk
 
   if [ ! -s gribfile ]; then

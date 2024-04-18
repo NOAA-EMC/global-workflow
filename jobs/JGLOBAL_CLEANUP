@@ -3,7 +3,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
 
-"${HOMEgfs}/scripts/exglobal_cleanup.sh"
+"${SCRgfs}/exglobal_cleanup.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

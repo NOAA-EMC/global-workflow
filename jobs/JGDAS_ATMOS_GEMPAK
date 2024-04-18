@@ -5,17 +5,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
 # TODO (#1219) This j-job is not part of the rocoto suite
 
-################################
-# Set up the HOME directory
-export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
-export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
-export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
-export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
-export FIXgempak=${FIXgempak:-${HOMEgfs}/gempak/fix}
-export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
-export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
-export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
-
 ############################################
 # Set up model and cycle specific variables
 ############################################
@@ -38,63 +27,51 @@ export model=${model:-gdas}
 ##############################################
 # Define COM directories
 ##############################################
-for grid in 0p25 0p50 1p00; do
-  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+for grid in 0p25 1p00; do
+  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
-for grid in 1p00 0p25; do
+for grid in 0p25 1p00; do
   prod_dir="COM_ATMOS_GEMPAK_${grid}"
-  GRID=${grid} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
+  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
 
   if [[ ! -d "${!prod_dir}" ]] ; then
     mkdir -m 775 -p "${!prod_dir}"
   fi
 done
 
-
 # TODO: These actions belong in an ex-script not a j-job
 if [[ -f poescript ]]; then
    rm -f poescript
 fi
 
-########################################################
-# Execute the script.
-echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}" >> poescript
-########################################################
+{
+  ########################################################
+  # Execute the script.
+  echo "${SCRgfs}/exgdas_atmos_nawips.sh 1p00 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
+  ########################################################
 
-########################################################
-# Execute the script for quater-degree grib
-echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}" >> poescript
-########################################################
+  ########################################################
+  # Execute the script for quater-degree grib
+  echo "${SCRgfs}/exgdas_atmos_nawips.sh 0p25 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+  ########################################################
+} > poescript
 
 cat poescript
 
-chmod 775 ${DATA}/poescript
-export MP_PGMMODEL=mpmd
-export MP_CMDFILE=${DATA}/poescript
-
-ntasks=${NTASKS_GEMPAK:-$(cat ${DATA}/poescript | wc -l)}
-ptile=${PTILE_GEMPAK:-4}
-threads=${NTHREADS_GEMPAK:-1}
-export OMP_NUM_THREADS=${threads}
-APRUN="mpiexec -l -np ${ntasks} --cpu-bind verbose,core cfp"
-
-APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-${APRUN}}
-
-${APRUN_GEMPAKCFP} ${DATA}/poescript
+"${HOMEgfs}/ush/run_mpmd.sh" poescript
 export err=$?; err_chk
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "${KEEPDATA}" != "YES" ] ; then
-  rm -rf ${DATA}
+if [[ "${KEEPDATA}" != "YES" ]] ; then
+  rm -rf "${DATA}"
 fi
-

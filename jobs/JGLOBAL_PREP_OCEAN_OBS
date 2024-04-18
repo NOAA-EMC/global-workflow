@@ -8,19 +8,19 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
 ##############################################
 
 export COMIN_OBS="${DATA}"
-YMD=${PDY} HH=${cyc} generate_com -rx COMOUT_OBS:COM_OBS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Add prep_marine_obs.py to PYTHONPATH
-export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/soca:${PYTHONPATH}
+export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPOCNOBSPY:-${HOMEgfs}/ush/exglobal_prep_ocean_obs.py}
+EXSCRIPT=${GDASPREPOCNOBSPY:-${USHgfs}/exglobal_prep_ocean_obs.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
@@ -38,7 +38,7 @@ if [[ -e "${pgmout}" ]] ; then
 fi
 
 ##########################################
-# Handle the temporary working directory 
+# Handle the temporary working directory
 ##########################################
 cd "${DATAROOT}" || (echo "FATAL ERROR: ${DATAROOT} does not exist. ABORT!"; exit 1)
 [[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"

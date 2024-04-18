@@ -15,7 +15,7 @@ GDUMP_ENS="enkf${GDUMP}"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variable from template
-MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} generate_com -rx \
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COM_ATMOS_ANALYSIS_ENS:COM_ATMOS_ANALYSIS_TMPL
 
 mkdir -m 755 -p "${COM_ATMOS_ANALYSIS_ENS}"
@@ -23,7 +23,7 @@ mkdir -m 755 -p "${COM_ATMOS_ANALYSIS_ENS}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSFINALPY:-${HOMEgfs}/scripts/exglobal_atmens_analysis_finalize.py}
+EXSCRIPT=${GDASATMENSFINALPY:-${SCRgfs}/exglobal_atmens_analysis_finalize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

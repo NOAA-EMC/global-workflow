@@ -5,10 +5,10 @@ Load environment to run GFS workflow setup scripts on S4
 load(pathJoin("rocoto","1.3.5"))
 load(pathJoin("git","2.30.0"))
 
-prepend_path("MODULEPATH", "/data/prod/jedi/spack-stack/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/data/prod/jedi/spack-stack/spack-stack-1.6.0/envs/gsi-addon-env/install/modulefiles/Core")
 
 local stack_intel_ver=os.getenv("stack_intel_ver") or "2021.5.0"
-local python_ver=os.getenv("python_ver") or "3.10.8"
+local python_ver=os.getenv("python_ver") or "3.11.6"
 
 load(pathJoin("stack-intel", stack_intel_ver))
 load(pathJoin("python", python_ver))
