@@ -228,7 +228,7 @@ FV3_out() {
     restart_date=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
     while (( restart_date < forecast_end_cycle )); do
       echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
-      for fv3_restart_file in ${fv3_restart_files[@]}; do
+      for fv3_restart_file in "${fv3_restart_files[@]}"; do
         restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_restart_file}"
         ${NCP} "${DATArestart}/FV3_RESTART/${restart_file}" \
                "${COM_ATMOS_RESTART}/${restart_file}"
@@ -241,7 +241,7 @@ FV3_out() {
   # The final restart written at the end of the forecast does not include the valid date
   # TODO: verify the above statement since RM found that it did!
   echo "Copying FV3 restarts for 'RUN=${RUN}' at the end of the forecast segment: ${forecast_end_cycle}"
-  for fv3_restart_file in ${fv3_restart_files[@]}; do
+  for fv3_restart_file in "${fv3_restart_files[@]}"; do
     restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${fv3_restart_file}"
     ${NCP} "${DATArestart}/FV3_RESTART/${restart_file}" \
            "${COM_ATMOS_RESTART}/${restart_file}"
@@ -293,7 +293,7 @@ WW3_postdet() {
       if [[ ${RERUN} = "NO" ]]; then
         echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
       else
-        echo "ERROR: Wave IC is missing in RERUN, exiting."
+        echo "FATAL ERROR: Wave IC ${waverstfile} is missing in RERUN, exiting."
         exit 1
       fi
     else
@@ -316,7 +316,7 @@ WW3_postdet() {
   if [[ "${WW3ICEINP}" = "YES" ]]; then
     local wavicefile="${COM_WAVE_PREP}/${RUNwave}.${WAVEICE_FID}.${cycle}.ice"
     if [[ ! -f ${wavicefile} ]]; then
-      echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
+      echo "FATAL ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file ${wavicefile}"
       echo "Abort!"
       exit 1
     fi
@@ -326,7 +326,7 @@ WW3_postdet() {
   if [[ "${WW3CURINP}" = "YES" ]]; then
     local wavcurfile="${COM_WAVE_PREP}/${RUNwave}.${WAVECUR_FID}.${cycle}.cur"
     if [[ ! -f ${wavcurfile} ]]; then
-      echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
+      echo "FATAL ERROR: WW3CURINP = ${WW3CURINP}, but missing current file ${wavcurfile}"
       echo "Abort!"
       exit 1
     fi
@@ -528,7 +528,7 @@ MOM6_out() {
   local restart_file
   if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
     echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-    for mom6_restart_file in ${mom6_restart_files[@]}; do
+    for mom6_restart_file in "${mom6_restart_files[@]}"; do
       restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${mom6_restart_file}"
       ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
              "${COM_OCEAN_RESTART}/${restart_file}"
@@ -544,7 +544,7 @@ MOM6_out() {
       restart_date="${next_cycle}"
     fi
     echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
-    for mom6_restart_file in ${mom6_restart_files[@]}; do
+    for mom6_restart_file in "${mom6_restart_files[@]}"; do
       restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
       ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
              "${COM_OCEAN_RESTART}/${restart_file}"
@@ -559,7 +559,8 @@ CICE_postdet() {
   local restart_date cice_restart_file
   if [[ "${RERUN}" == "YES" ]]; then
     restart_date="${RERUN_DATE}"
-    local seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+    local seconds
+    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     cice_restart_file="${DATArestart}/CICE_RESTART/cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
   else  # "${RERUN}" == "NO"
     if [[ "${DOIAU}" == "YES" ]]; then
@@ -658,14 +659,14 @@ GOCART_rc() {
   # this variable is platform-dependent and should be set via a YAML file
 
   # link directory containing GOCART input dataset, if provided
-  if [[ ! -z "${AERO_INPUTS_DIR}" ]]; then
+  if [[ -n "${AERO_INPUTS_DIR}" ]]; then
     ${NLN} "${AERO_INPUTS_DIR}" "${DATA}/ExtData"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
   fi
 
   # copying GOCART configuration files
-  if [[ ! -z "${AERO_CONFIG_DIR}" ]]; then
+  if [[  -n "${AERO_CONFIG_DIR}" ]]; then
     ${NCP} "${AERO_CONFIG_DIR}"/*.rc "${DATA}"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
@@ -686,8 +687,9 @@ GOCART_rc() {
 GOCART_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
 
+  local vdate
   for fhr in ${GOCART_OUTPUT_FH}; do
-    local vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
 
     # Temporarily delete existing files due to noclobber in GOCART
     if [[ -e "${COM_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
@@ -721,7 +723,8 @@ CMEPS_postdet() {
   local restart_date cmeps_restart_file
   if [[ "${RERUN}" == "YES" ]]; then
     restart_date="${RERUN_DATE}"
-    local seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+    local seconds
+    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     cmeps_restart_file="${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
   else  # "${RERUN}" == "NO"
     if [[ "${DOIAU}" == "YES" ]]; then
