@@ -7,23 +7,6 @@
 if (( $# != 1 )); then
 
     echo "Must specify an input task argument to set resource variables!"
-    echo "argument can be any one of the following:"
-    echo "stage_ic aerosol_init"
-    echo "prep prepsnowobs prepatmiodaobs"
-    echo "atmanlinit atmanlrun atmanlfinal"
-    echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "snowanl"
-    echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag fcst echgres"
-    echo "upp atmos_products"
-    echo "tracker genesis genesis_fsu"
-    echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
-    echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
-    echo "init_chem mom6ic"
-    echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
-    echo "wavegempak waveawipsbulls waveawipsgridded"
-    echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -229,6 +212,18 @@ case ${step} in
     export npe_atmos_products_gfs="${npe_atmos_products}"
     export nth_atmos_products_gfs="${nth_atmos_products}"
     export npe_node_atmos_products_gfs="${npe_node_atmos_products}"
+    export is_exclusive=True
+    ;;
+
+  "atmos_ensstat")
+    export wtime_atmos_ensstat="00:30:00"
+    export npe_atmos_ensstat=6
+    export nth_atmos_ensstat=1
+    export npe_node_atmos_ensstat="${npe_atmos_ensstat}"
+    export wtime_atmos_ensstat_gfs="${wtime_atmos_ensstat}"
+    export npe_atmos_ensstat_gfs="${npe_atmos_ensstat}"
+    export nth_atmos_ensstat_gfs="${nth_atmos_ensstat}"
+    export npe_node_atmos_ensstat_gfs="${npe_node_atmos_ensstat}"
     export is_exclusive=True
     ;;
 
