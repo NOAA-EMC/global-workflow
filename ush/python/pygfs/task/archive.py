@@ -204,9 +204,8 @@ class Archive(Task):
 
         elif arch_dict.RUN == "enkfgdas" or arch_dict.RUN == "enkfgfs":
 
-
             if arch_dict.ENSGRP == 0:
-                datasets = [ "enkf" ]
+                datasets = ["enkf"]
 
             else:
 
@@ -214,7 +213,7 @@ class Archive(Task):
                 first_mem = (arch_dict.ENSGRP - 1) * arch_dict.NMEM_EARCGRP + 1
                 last_mem = min(arch_dict.NMEM_ENS,
                                arch_dict.ENSGRP * arch_dict.NMEM_EARCGRP)
-                mem_list = [ f"{mem:03d}" for mem in range(first_mem, last_mem + 1) ]
+                mem_list = [f"{mem:03d}" for mem in range(first_mem, last_mem + 1)]
 
                 arch_dict["first_group_mem"] = first_mem
                 arch_dict["last_group_mem"] = last_mem
