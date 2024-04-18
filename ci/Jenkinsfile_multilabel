@@ -44,7 +44,7 @@ pipeline {
         //                     }
         //                 }
         //             }
-                    build(job: "EMC-Global-Pipeline/PR-${env.CHANGE_ID}", parameters: [string(name: 'machine', value: 'orion')], wait: false)
+                    build(job: "EMC-Pipelines/PR-${env.CHANGE_ID}", parameters: [string(name: 'machine', value: 'orion')], wait: false)
                     machine = hera
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                 }
