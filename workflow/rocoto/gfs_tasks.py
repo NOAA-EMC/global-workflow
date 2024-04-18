@@ -1093,7 +1093,14 @@ class GFSTasks(Tasks):
         data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        if component in ['ocean']:
+            command = f"{self.HOMEgfs}/ush/check_netcdf.sh {history_path}/{history_file_tmpl}"
+            dep_dict = {'type': 'sh', 'command': command}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        else:
+            dependencies = rocoto.create_dependency(dep=deps)
+
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource(component_dict['config'])
 

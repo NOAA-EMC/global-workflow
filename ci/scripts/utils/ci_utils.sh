@@ -23,7 +23,7 @@ function cancel_batch_jobs() {
 
   scheduler=$(determine_scheduler)
 
-  if [[ "${schduler}" == "torque" ]]; then
+  if [[ "${scheduler}" == "torque" ]]; then
     job_ids=$(qstat -u "${USER}" | awk '{print $1}') || true
 
     for job_id in ${job_ids}; do
