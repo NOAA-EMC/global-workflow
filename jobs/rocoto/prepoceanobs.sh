@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 ###############################################################
 # setup python path for class defs and utils
 
-export PYTHONPATH=${HOMEgfs}/ush:${PYTHONPATH}
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush"
 
 ###############################################################
 # Execute the JJOB
