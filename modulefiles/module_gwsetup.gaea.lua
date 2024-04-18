@@ -1,5 +1,5 @@
 help([[
-Load environment to run GFS workflow setup scripts on Hera
+Load environment to run GFS workflow setup scripts on Gaea C5 
 ]])
 
 load(pathJoin("rocoto"))
