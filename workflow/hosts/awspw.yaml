@@ -1,23 +1,27 @@
-BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git' #TODO: This does not yet exist.
-DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump' # TODO: This does not yet exist.
-PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara' #TODO: This does not yet exist.
-COMINsyn: '/scratch1/NCEPDEV/global/glopara/com/gfs/prod/syndat' #TODO: This does not yet exist.
-HOMEDIR: '/contrib/${USER}'
-STMP: '/lustre/${USER}/stmp2/'
-PTMP: '/lustre/${USER}/stmp4/'
-NOSCRUB: ${HOMEDIR}
-ACCOUNT: hwufscpldcld
+BASE_GIT: '/work/noaa/global/glopara/git'
+DMPDIR: '/work/noaa/rstprod/dump'
+BASE_CPLIC: '/work/noaa/global/glopara/data/ICSDIR/prototype_ICs'
+PACKAGEROOT: '/work/noaa/global/glopara/nwpara'
+COMINsyn: '/work/noaa/global/glopara/com/gfs/prod/syndat'
+HOMEDIR: '/contrib/${USER}/src/global-workflow-cloud'
+STMP: '/contrib/${USER}/stmp'
+PTMP: '/contrib/${USER}/ptmp'
+NOSCRUB: '/contrib/${USER}/scrub'
 SCHEDULER: slurm
+ACCOUNT: $USER
 QUEUE: batch
 QUEUE_SERVICE: batch
 PARTITION_BATCH: compute
 PARTITION_SERVICE: compute
 CHGRP_RSTPROD: 'YES'
-CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
-HPSSARCH: 'YES'
-HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
+CHGRP_CMD: 'chgrp rstprod'
+HPSSARCH: 'NO'
+HPSS_PROJECT: epic
 LOCALARCH: 'NO'
-ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}' # TODO: This will not yet work from AWS.
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-SUPPORTED_RESOLUTIONS: ['C48', 'C96'] # TODO: Test and support all cubed-sphere resolutions.
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
+COMINecmwf: /work/noaa/global/glopara/data/external_gempak/ecmwf
+COMINnam: /work/noaa/global/glopara/data/external_gempak/nam
+COMINukmet: /work/noaa/global/glopara/data/external_gempak/ukmet
