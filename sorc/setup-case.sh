@@ -3,18 +3,19 @@
 
  set -x
 
+ cd ${GLOBALWORKFLOWHOME}/workflow
+
  GLOBALWORKFLOWTEMP=/contrib/Wei.Huang/run
  GLOBALWORKFLOWHOME=/contrib/Wei.Huang/src/global-workflow-cloud
  PSLOT=c48atm
  CONFIGDIR=${GLOBALWORKFLOWHOME}/parm/config
- IDATE=2022032312
- EDATE=2022032412
+ IDATE=2024010100
+ EDATE=2024010100
  COMROOT=${GLOBALWORKFLOWTEMP}/comroot
  EXPDIR=${GLOBALWORKFLOWTEMP}/expdir
 
  mkdir -p ${COMROOT} ${EXPDIR}
 
- cd ${GLOBALWORKFLOWHOME}/workflow
  source ${GLOBALWORKFLOWHOME}/workflow/gw_setup.sh
 
  ${GLOBALWORKFLOWHOME}/workflow/setup_expt.py gfs forecast-only \
