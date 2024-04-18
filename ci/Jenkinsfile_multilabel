@@ -2,7 +2,7 @@ def Machine = 'none'
 def machine = 'none'
 def HOME = 'none'
 def caseList = ''
-// Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
+// no op Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
 def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
 def STATUS = 'Passed'
@@ -11,7 +11,6 @@ properties([
     parameters([[
         $class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: 'Node', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases'],
         string(name: 'machine', defaultValue: 'none', description: 'Node to run on'),
-         buildDiscarder(logRotator(numToKeepStr: '3'))
     ])
 ])
 
