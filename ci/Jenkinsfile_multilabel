@@ -9,7 +9,7 @@ def STATUS = 'Passed'
 
 properties([
     parameters([[
-        $class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases'],
+        $class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: 'Node', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases'],
         string(name: 'machine', defaultValue: 'none', description: 'Node to run on'),
          buildDiscarder(logRotator(numToKeepStr: '3'))
     ])
