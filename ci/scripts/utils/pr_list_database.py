@@ -14,10 +14,12 @@ def full_path(string):
     ----------
     string : str
         The relative path of the file or directory.
+
     Returns
     -------
     str
         The absolute path of the file or directory.
+
     Raises
     ------
     NotADirectoryError
@@ -51,6 +53,7 @@ def add_pr(ci_database: SQLiteDB, pr: str) -> bool:
     ----------
     ci_database : SQLiteDB
         The database to add the pull request to.
+
     pr : str
         The pull request to add.
     """
@@ -73,6 +76,7 @@ def update_pr(ci_database: SQLiteDB, args):
     ----------
     ci_database : SQLiteDB
         The database to update the pull request in.
+
     args : argparse.Namespace
         The command line arguments.
     """
@@ -95,6 +99,7 @@ def display_db(ci_database: SQLiteDB, display: any) -> list:
     ----------
     db : SQLiteDB
         The database to display.
+
     display : argparse.Namespace
         The command line arguments.
 
