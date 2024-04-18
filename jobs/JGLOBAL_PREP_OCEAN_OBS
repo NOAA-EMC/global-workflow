@@ -15,12 +15,12 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 ##############################################
 
 # Add prep_marine_obs.py to PYTHONPATH
-export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush:${PYTHONPATH}
+export PYTHONPATH=${HOMEgfs}/ush:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPOCNOBSPY:-${USHgfs}/exglobal_prep_ocean_obs.py}
+EXSCRIPT=${GDASPREPOCNOBSPY:-${HOMEgfs}/scripts/exglobal_prep_ocean_obs.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
