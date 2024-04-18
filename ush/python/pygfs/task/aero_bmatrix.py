@@ -19,3 +19,6 @@ class AerosolBMatrix(BMatrix):
     def initialize(self: Analysis) -> None:
         super().initialize()
 
+    @logit(logger)
+    def finalize(self) -> None:
+        super().finalize()

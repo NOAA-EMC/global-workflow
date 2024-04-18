@@ -22,3 +22,5 @@ class BMatrix(Task):
     def initialize(self) -> None:
         super().initialize()
 
+    def finalize(self) -> None:
+        super().finalize()
