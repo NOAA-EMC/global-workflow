@@ -16,6 +16,8 @@ properties([
 
 pipeline {
 
+    properties([ buildDiscarder(logRotator(numToKeepStr: '3')) ])
+
     agent { label 'built-in' }
 
     options {
@@ -49,7 +51,7 @@ pipeline {
         //                 }
         //             }
                     build(job: "global-workflow/EMC-Pipelines/PR-${env.CHANGE_ID}", parameters: [string(name: 'machine', value: 'orion')], wait: false)
-                    machine = hera
+                    machine = 'hera'
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                 }
             }
