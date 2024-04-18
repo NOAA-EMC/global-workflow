@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 import numpy as np
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, cast_strdict_as_dtypedict,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
-                    to_YMD, to_YMDH)
+                    to_YMD, to_YMDH, Template, TemplateConstants)
 from yaml import CLoader as Loader
 from yaml import load
 
@@ -71,8 +71,6 @@ class Archive(Task):
         # TODO remove this kludge once log filenames are explicit
         arch_dict['glob'] = glob.glob
 
-        # Copy the cyclone track files and rename the experiments
-        Archive._rename_cyclone_expt(arch_dict)
         # Add the os.path.exists function to the dict for yaml parsing
         arch_dict['path_exists'] = os.path.exists
 
@@ -95,17 +93,12 @@ class Archive(Task):
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
-        arch_mos = False
-        if arch_dict.DO_MOS:
-            if self.config.REALTIME:
-                if arch_dict.current_cycle - timedelta(days=1) > arch_dict.SDATE:
-                    arch_mos = True
-            else:
-                arch_mos = True
-
         cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
         if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
+
+            # Copy the cyclone track files and rename the experiments
+            Archive._rename_cyclone_expt(arch_dict)
 
             arch_ics_cycle = arch_dict.ARCH_CYC - arch_dict.assim_freq
 
@@ -198,14 +191,76 @@ class Archive(Task):
             if arch_dict.DO_BUFRSND:
                 datasets.append("gfs_downstream")
 
-            if arch_mos and cycle_HH == "18":
-                datasets.append("gfsmos")
+            if arch_dict.DO_MOS:
+                arch_mos = False
+                if self.config.REALTIME:
+                    if arch_dict.current_cycle - timedelta(days=1) > arch_dict.SDATE:
+                        arch_mos = True
+                else:
+                    arch_mos = True
 
-        elif arch_dict.RUN == "enkfgdas":
-            raise NotImplementedError("Archiving is not yet set up for ENKF GDAS runs")
+                if arch_mos and cycle_HH == "18":
+                    datasets.append("gfsmos")
 
-        elif arch_dict.RUN == "enkfgfs":
-            raise NotImplementedError("Archiving is not yet set up for ENKF GFS runs")
+        elif arch_dict.RUN == "enkfgdas" or arch_dict.RUN == "enkfgfs":
+
+
+            if arch_dict.ENSGRP == 0:
+                datasets = [ "enkf" ]
+
+            else:
+
+                # Determine which members to archive
+                first_mem = (arch_dict.ENSGRP - 1) * arch_dict.NMEM_EARCGRP + 1
+                last_mem = min(arch_dict.NMEM_ENS,
+                               arch_dict.ENSGRP * arch_dict.NMEM_EARCGRP)
+                mem_list = [ f"{mem:03d}" for mem in range(first_mem, last_mem + 1) ]
+
+                arch_dict["first_group_mem"] = first_mem
+                arch_dict["last_group_mem"] = last_mem
+
+                # Create a list of IAU forecast hours from IAUFHRS
+                if isinstance(arch_dict.IAUFHRS, int):
+                    # First half-cycle or if 3dvar
+                    arch_dict["iaufhrs"] = [arch_dict.IAUFHRS]
+                else:
+                    arch_dict["iaufhrs"] = [int(fhr) for fhr in arch_dict.IAUFHRS.split(",")]
+                # Create a dict to define COM template parameters
+                tmpl_dict = {
+                    'ROTDIR': self.task_config.ROTDIR,
+                    'RUN': self.task_config.RUN,
+                    'YMD': to_YMD(self.task_config.current_cycle),
+                    'HH': self.task_config.current_cycle.strftime('%H')
+                }
+
+                tmpl_atm_anl = self.task_config.COM_ATMOS_ANALYSIS_TMPL
+                tmpl_atm_res = self.task_config.COM_ATMOS_RESTART_TMPL
+                tmpl_atm_hst = self.task_config.COM_ATMOS_HISTORY_TMPL
+
+                # Construct lists of COM directories to archive data from
+                arch_dict["COM_ATMOS_ANALYSIS_MEM_list"] = []
+                arch_dict["COM_ATMOS_RESTART_MEM_list"] = []
+                arch_dict["COM_ATMOS_HISTORY_MEM_list"] = []
+                DCB = TemplateConstants.DOLLAR_CURLY_BRACE
+                for mem in mem_list:
+                    tmpl_dict["MEMDIR"] = "mem" + mem
+                    com_atm_anl = Template.substitute_structure(
+                            tmpl_atm_anl, DCB, tmpl_dict.get)
+                    arch_dict.COM_ATMOS_ANALYSIS_MEM_list.append(com_atm_anl)
+
+                    com_atm_res = Template.substitute_structure(
+                            tmpl_atm_res, DCB, tmpl_dict.get)
+                    arch_dict.COM_ATMOS_RESTART_MEM_list.append(com_atm_res)
+
+                    com_atm_hst = Template.substitute_structure(
+                            tmpl_atm_hst, DCB, tmpl_dict.get)
+                    arch_dict.COM_ATMOS_HISTORY_MEM_list.append(com_atm_hst)
+
+                # Declare the datasets to archive
+                datasets = ["enkf_grp"]
+
+                if arch_dict.current_cycle != arch_dict.SDATE:
+                    datasets.extend(["enkf_restarta_grp", "enkf_restartb_grp"])
 
         elif arch_dict.RUN == "gefs":
             raise NotImplementedError("Archiving is not yet set up for GEFS runs")

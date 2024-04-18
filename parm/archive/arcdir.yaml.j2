@@ -68,3 +68,11 @@ deterministic:
         - ["{{ COM_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
         {% endif %}
 {% endif %} # gfs or gdas
+{% if current_cycle != SDATE and (RUN == "enkfgdas" or RUN == "enkfgfs") %}
+ensemble:
+    mkdir:
+        - "{{ ARCDIR }}"
+    copy:
+        - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}enkfstat", "{{ ARCDIR }}/enkfstat.{{ RUN }}.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}gsistat.ensmean", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}.ensmean"]
+{% endif %}  # enkfgdas or enkfgfs

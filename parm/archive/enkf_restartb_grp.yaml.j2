@@ -1,0 +1,12 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+name: "ENKF_RESTARTB_GRP"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restartb_grp{{ ENSGRP }}.tar"
+mandatory:
+    {% for mem in range(first_group_mem, last_group_mem + 1) %}
+    {% set imem = mem - first_group_mem %}
+    {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
+
+    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}"
+    {% endfor %}

@@ -1,0 +1,31 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+name: "ENKF_RESTARTA_GRP"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restarta_grp{{ ENSGRP }}.tar"
+mandatory:
+    {% for mem in range(first_group_mem, last_group_mem + 1) %}
+    {% set imem = mem - first_group_mem %}
+    {% set COM_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_MEM_list[imem] %}
+    {% set COM_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_MEM_list[imem] %}
+    {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
+
+    {% if not lobsdiag_forenkf %}
+    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias"
+    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_air"
+    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_int"
+    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_pc"
+    {% endif %}
+
+    {% for itile in range(1,7) %}
+    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/*0000.sfcanl_data.tile{{ itile }}.nc"
+    {% endfor %}
+    {% endfor %}  # first_group_mem to last_group_mem
+optional:
+    {% for mem in range(first_group_mem, last_group_mem + 1) %}
+    {% set imem = mem - first_group_mem %}
+    {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
+    {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
+    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
+    {% endif %}
+    {% endfor %}

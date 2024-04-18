@@ -1,0 +1,59 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+{% if RUN == "enkfgdas" %}
+{% set (fhmin, fhmax, fhout) = (FHMIN_ENKF, FHMAX_ENKF, FHOUT_ENKF) %}
+{% elif RUN == "enkfgfs" %}
+{% set (fhmin, fhmax, fhout) = (FHMIN_ENKF, FHMAX_ENKF_GFS, FHOUT_ENKF_GFS) %}
+{% endif %}
+name: "ENKF"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}.tar"
+mandatory:
+    {% for fhr in range(fhmin, fhmax + fhout, fhout) %}
+    - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensmean.nc"
+    - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.ensmean.nc"
+    {% endfor %}
+    {% if not current_cycle == SDATE %}
+    {% if not DO_JEDIATMENS %}
+    {% set da_files = ["enkfstat",
+                       "gsistat.ensmean",
+                       "cnvstat.ensmean",
+                       "oznstat.ensmean",
+                       "radstat.ensmean"] %}
+    {% else %}
+    {% set da_files = ["atmens.yaml",
+                       "atmensstat"] %}
+    {% endif %}
+    {% for file in da_files %}
+    - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
+    {% endfor %}
+    {% if DOIAU %}
+    {% for fhr in IAUFHRS %}
+    {% if fhr == IAU_OFFSET %}
+    {% if DO_CALC_INCREMENT_ENKF_GFS %}
+    - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
+    {% endif %}  # calc increment
+    - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ratminc.ensmean.nc"
+    {% else %}  # fhr != IAU_OFFSET
+    - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
+    - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
+    {% endif %}  # fhr == IAU_OFFSET
+    {% endfor %}  # IAUFHRS
+    {% endif %}   # DOIAU
+    {% set steps = ["eobs", "ecen*", "esfc", "eupd"] %}
+    {% for step in steps %}
+    - "logs/{{ cycle_YMDH }}/{{ RUN }}{{ step }}.log"
+    {% endfor %}
+    - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem*.log"
+    {% if lobsdiag_forenkf %}
+    - "logs/{{ cycle_YMDH }}/{{ RUN }}ediag.log"
+    {% else %}
+    {% for mem in range(1, NMEM_ENS + 1) %}
+    - "logs/{{ cycle_YMDH }}/{{ RUN }}eomg_mem{{ '%03d' % mem }}.log"
+    {% endfor %}
+    {% endif %}  # lobsdiag_forenkf
+    {% endif %}  # not the first cycle
+optional:
+    {% for fhr in range(fhmin, fhmax + fhout, fhout) %}
+    - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
+    {% endfor %}

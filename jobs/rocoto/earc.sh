@@ -8,6 +8,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
+###############################################################
+# setup python path for workflow utilities and tasks
+wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
+export PYTHONPATH
+
 export job="earc"
 export jobid="${job}.$$"
 
@@ -15,6 +21,5 @@ export jobid="${job}.$$"
 # Execute the JJOB
 "${HOMEgfs}/jobs/JGDAS_ENKF_ARCHIVE"
 status=$?
-
 
 exit "${status}"

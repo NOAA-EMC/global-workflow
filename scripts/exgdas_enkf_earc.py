@@ -18,14 +18,12 @@ def main():
     archive = Archive(config)
 
     # Pull out all the configuration keys needed to run the rest of archive steps
-    keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
-            'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_AERO', 'PARMgfs',
-            'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'PSLOT', 'HPSSARCH', 'DO_MOS',
-            'DO_JEDISNOWDA', 'LOCALARCH', 'REALTIME', 'ROTDIR', 'ARCH_WARMICFREQ',
-            'ARCH_FCSTICFREQ', 'ARCH_CYC', 'assim_freq', 'ARCDIR', 'SDATE',
-            'FHMIN_GFS', 'FHMAX_GFS', 'FHOUT_GFS', 'ARCH_GAUSSIAN', 'MODE',
-            'FHOUT_OCNICE', 'FHOUT_OCNICE_GFS', 'DO_BUFRSND',
-            'ARCH_GAUSSIAN_FHMAX', 'ARCH_GAUSSIAN_FHINC', 'ARCH_GAUSSIAN_FHINC']
+    keys = ['ATARDIR', 'current_cycle', 'IAUFHRS', 'RUN', 'PDY',
+            'PSLOT', 'HPSSARCH', 'LOCALARCH', 'ROTDIR', 'PARMgfs',
+            'ARCDIR', 'SDATE', 'MODE', 'ENSGRP', 'NMEM_EARCGRP',
+            'NMEM_ENS', 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS',
+            'lobsdiag_forenkf', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',
+            'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF']
 
     archive_dict = AttrDict()
     for key in keys:
@@ -47,6 +45,7 @@ def main():
     archive.execute(arcdir_set, atardir_sets)
 
     os.chdir(cwd)
+
 
 if __name__ == '__main__':
     main()
