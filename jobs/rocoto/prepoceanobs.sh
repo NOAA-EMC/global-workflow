@@ -13,6 +13,11 @@ export job="prepoceanobs"
 export jobid="${job}.$$"
 
 ###############################################################
+# setup python path for class defs and utils
+
+export PYTHONPATH=${HOMEgfs}/ush:${PYTHONPATH}
+
+###############################################################
 # Execute the JJOB
 "${HOMEgfs}"/jobs/JGLOBAL_PREP_OCEAN_OBS
 status=$?
