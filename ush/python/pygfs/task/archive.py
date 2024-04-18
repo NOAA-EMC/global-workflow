@@ -244,15 +244,15 @@ class Archive(Task):
                 for mem in mem_list:
                     tmpl_dict["MEMDIR"] = "mem" + mem
                     com_atm_anl = Template.substitute_structure(
-                            tmpl_atm_anl, DCB, tmpl_dict.get)
+                        tmpl_atm_anl, DCB, tmpl_dict.get)
                     arch_dict.COM_ATMOS_ANALYSIS_MEM_list.append(com_atm_anl)
 
                     com_atm_res = Template.substitute_structure(
-                            tmpl_atm_res, DCB, tmpl_dict.get)
+                        tmpl_atm_res, DCB, tmpl_dict.get)
                     arch_dict.COM_ATMOS_RESTART_MEM_list.append(com_atm_res)
 
                     com_atm_hst = Template.substitute_structure(
-                            tmpl_atm_hst, DCB, tmpl_dict.get)
+                        tmpl_atm_hst, DCB, tmpl_dict.get)
                     arch_dict.COM_ATMOS_HISTORY_MEM_list.append(com_atm_hst)
 
                 # Declare the datasets to archive
