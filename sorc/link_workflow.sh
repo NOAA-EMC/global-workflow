@@ -340,6 +340,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "fv3jedi_enshofx.x" \
                        "fv3jedi_hofx_nomodel.x" \
                        "fv3jedi_testdata_downloader.py" \
+                       "gdasapp_chem_diagb.x" \
                        "gdas_ens_handler.x" \
                        "gdas_incr_handler.x" \
                        "gdas_obsprovider2ioda.x" \
