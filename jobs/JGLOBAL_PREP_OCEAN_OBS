@@ -20,7 +20,7 @@ export PYTHONPATH=${HOMEgfs}/ush:${PYTHONPATH}
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPOCNOBSPY:-${HOMEgfs}/scripts/exglobal_prep_ocean_obs.py}
+EXSCRIPT=${GDASPREPOCNOBSPY:-${SCRgfs}/exglobal_prep_ocean_obs.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
