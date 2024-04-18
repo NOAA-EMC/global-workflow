@@ -556,21 +556,21 @@ MOM6_out() {
 CICE_postdet() {
   echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
 
-  local restart_dir restart_date
+  local restart_date cice_restart_file
   if [[ "${RERUN}" == "YES" ]]; then
-    restart_dir="${DATArestart}/CICE_RESTART"
     restart_date="${RERUN_DATE}"
+    local seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+    cice_restart_file="${DATArestart}/CICE_RESTART/cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
   else  # "${RERUN}" == "NO"
-    restart_dir="${COM_ICE_RESTART_PREV}"
     if [[ "${DOIAU}" == "YES" ]]; then
       restart_date="${current_cycle_begin}"
     else
       restart_date="${current_cycle}"
     fi
+    cice_restart_file="${COM_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
   fi
 
   # Copy CICE ICs
-  cice_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
   ${NCP} "${cice_restart_file}" "${DATA}/cice_model.res.nc" \
   || ( echo "FATAL ERROR: Unable to copy CICE IC, ABORT!"; exit 1 )
 
@@ -718,24 +718,40 @@ GOCART_out() {
 CMEPS_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for CMEPS mediator"
 
-  # Copy mediator restart files to RUNDIR
-  if [[ "${warm_start}" = ".true." ]]; then
-    local mediator_file="${COM_MED_RESTART}/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
-    if [[ -f "${mediator_file}" ]]; then
-      ${NCP} "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
+  local restart_date cmeps_restart_file
+  if [[ "${RERUN}" == "YES" ]]; then
+    restart_date="${RERUN_DATE}"
+    local seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+    cmeps_restart_file="${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
+  else  # "${RERUN}" == "NO"
+    if [[ "${DOIAU}" == "YES" ]]; then
+      restart_date="${current_cycle_begin}"
+    else
+      restart_date="${current_cycle}"
+    fi
+    cmeps_restart_file="${COM_MED_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
+  fi
+
+  # Copy CMEPS restarts
+  if [[ "${warm_start}" == ".true." ]]; then
+    if [[ -f "${cmeps_restart_file}" ]]; then
+      ${NCP} "${cmeps_restart_file}" "${DATA}/ufs.cpld.cpl.r.nc" \
+      || ( echo "FATAL ERROR: Unable to copy CMEPS restarts, ABORT!"; exit 1 )
       rm -f "${DATA}/rpointer.cpl"
       touch "${DATA}/rpointer.cpl"
       echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
     else
       # We have a choice to make here.
       # Either we can FATAL ERROR out, or we can let the coupling fields initialize from zero
-      # cmeps_run_type is determined based on the availability of the mediator restart file
-      echo "WARNING: ${mediator_file} does not exist for warm_start = .true., initializing!"
-      #echo "FATAL ERROR: ${mediator_file} must exist for warm_start = .true. and does not, ABORT!"
-      #exit 4
+      # cmeps_run_type is determined based on the availability of the CMEPS restart file
+      echo "WARNING: CMEPS restart file '${cmeps_restart_file}' not found for warm_start='${warm_start}', will initialize!"
+      if [[ "${RERUN}" == "YES" ]]; then
+        # In the case of a RERUN, the CMEPS restart file is required
+        echo "FATAL ERROR: CMEPS restart file '${cmeps_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+        exit 1
+      fi
     fi
   fi
-
 }
 
 CMEPS_out() {

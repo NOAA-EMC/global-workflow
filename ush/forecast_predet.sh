@@ -216,11 +216,6 @@ FV3_predet(){
     IEMS=${IEMS:-1}
   fi
 
-  # GFS standard input data
-
-  ISOL=${ISOL:-2}
-
-
   if [[ "${TYPE}" == "nh" ]]; then  # non-hydrostatic options
     hydrostatic=".false."
     phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
@@ -389,6 +384,10 @@ FV3_predet(){
   H2OFORC=${H2OFORC:-"global_h2o_pltc.f77"}
   ${NCP} "${FIXgfs}/am/${O3FORC}"  "${DATA}/global_o3prdlos.f77"
   ${NCP} "${FIXgfs}/am/${H2OFORC}" "${DATA}/global_h2oprdlos.f77"
+
+  # GFS standard input data
+
+  ISOL=${ISOL:-2}
 
   ${NCP} "${FIXgfs}/am/global_solarconstant_noaa_an.txt" "${DATA}/solarconstant_noaa_an.txt"
   ${NCP} "${FIXgfs}/am/global_sfc_emissivity_idx.txt"    "${DATA}/sfc_emissivity_idx.txt"

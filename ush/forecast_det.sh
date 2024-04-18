@@ -5,6 +5,7 @@
 UFS_det(){
   echo "SUB ${FUNCNAME[0]}: Run type determination for UFS"
 
+  # Determine if the current cycle is a warm start (based on the availability of restarts)
   if [[ "${DOIAU:-}" == "YES" ]]; then
     if [[ -f "${COM_ATMOS_RESTART_PREV}/${current_cycle_begin:0:8}.${current_cycle_begin:8:2}0000.coupler.res" ]]; then
       warm_start=".true."
@@ -15,6 +16,7 @@ UFS_det(){
     fi
   fi
 
+  # If restarts were not available, this is likely a cold start
   if [[ "${warm_start}" == ".false." ]]; then
 
     # Since restarts are not available from the previous cycle, this is likely a cold start
@@ -35,6 +37,12 @@ UFS_det(){
 
   # Lets assume this is was not run before and hence this is not a RERUN
   RERUN="NO"
+
+  # RERUN is only available for RUN=gfs|gefs It is not available for RUN=enkfgdas|enkfgfs
+  if [[ "${RUN}" == "enkfgdas" ]] || [[ "${RUN}" == "enkfgfs" ]]; then
+    echo "RERUN is not available for RUN='${RUN}'"
+    return 0
+  fi
 
   # However, if this was run before, a DATArestart/FV3_RESTART must exist with data in it.
   local file_array nrestarts
@@ -64,9 +72,9 @@ UFS_det(){
 
     # Check for FV3 restart availability
     if [[ ! -f "${DATArestart}/FV3_RESTART/${rdate:0:8}.${rdate:8:2}0000.coupler.res" ]]; then
+    # TODO: add checks for other FV3 restarts as well
       fv3_rst_ok="NO"
     fi
-    # TODO: add checks for other FV3 restarts as well
 
     # Check for CMEPS and MOM6 restart availability
     if [[ "${cplflx}" == ".true." ]]; then
@@ -75,9 +83,9 @@ UFS_det(){
         cmeps_rst_ok="NO"
       fi
       if [[ ! -f "${DATArestart}/MOM6_RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" ]]; then
+      # TODO: add checks for other MOM6 restarts as well
         mom6_rst_ok="NO"
       fi
-      # TODO: add checks for other MOM6 restarts as well
     fi
 
     # Check for CICE6 restart availability
@@ -104,10 +112,10 @@ UFS_det(){
       && [[ "${ww3_rst_ok}" == "YES" ]]; then
       RERUN="YES"
       RERUN_DATE="${rdate}"
-      echo "All restarts found for '${RERUN_DATE}', RERUN='${RERUN}'"
+      warm_start=".true."
+      echo "All restarts found for '${RERUN_DATE}', RERUN='${RERUN}', warm_start='${warm_start}'"
       break
     fi
 
   done
-
 }
