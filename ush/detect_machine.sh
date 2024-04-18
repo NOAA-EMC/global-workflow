@@ -81,7 +81,7 @@ elif [[ -d /glade ]] ; then
 elif [[ -d /gpfs && -d /ncrc ]] ; then
   # We are on GAEA C5.
   MACHINE_ID=gaea
-elif [[ -d /lustre && -d /ncrc ]] ; then
+elif [[ -d /data/prod ]] ; then
   # We are on SSEC's S4
   MACHINE_ID=s4
 else
