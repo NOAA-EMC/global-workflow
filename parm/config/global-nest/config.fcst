@@ -187,7 +187,7 @@ case ${imp_physics} in
         ;;
     8)  # Thompson
         export ncld=2
-        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_thompson_noaero_tke${tbp}"
+        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_thompson_aero_tke${tbp}"
         export nwat=6
 
         export cal_pre=".false."
