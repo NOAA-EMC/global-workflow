@@ -32,6 +32,36 @@ step=$1
 
 echo "BEGIN: config.resources"
 
+<<<<<<< HEAD
+if [[ "${machine}" = "WCOSS2" ]]; then
+   export npe_node_max=128
+elif [[ "${machine}" = "JET" ]]; then
+   if [[ ${PARTITION_BATCH} = "xjet" ]]; then
+     export npe_node_max=24
+   elif [[ ${PARTITION_BATCH} = "vjet" || ${PARTITION_BATCH} = "sjet" ]]; then
+     export npe_node_max=16
+   elif [[ ${PARTITION_BATCH} = "kjet" ]]; then
+     export npe_node_max=40
+   fi
+elif [[ ${machine} = "HERA" ]]; then
+   export npe_node_max=40
+elif [[ ${machine} = "GAEA" ]]; then
+   export npe_node_max=40
+elif [[ ${machine} = "S4" ]]; then
+   if [[ ${PARTITION_BATCH} = "s4" ]]; then
+      export npe_node_max=32
+   elif [[ ${PARTITION_BATCH} = "ivy" ]]; then
+      export npe_node_max=20
+   fi
+elif [[ "${machine}" = "AWSPW" ]]; then
+     export PARTITION_BATCH="compute"
+     export npe_node_max=40
+elif [[ ${machine} = "ORION" ]]; then
+   export npe_node_max=40
+elif [[ ${machine} = "HERCULES" ]]; then
+   export npe_node_max=80
+fi
+=======
 case ${machine} in
   "WCOSS2")   npe_node_max=128;;
   "HERA")     npe_node_max=40;;
@@ -69,6 +99,7 @@ case ${machine} in
     ;;
 esac
 export npe_node_max
+>>>>>>> origin/develop-AR
 
 case ${step} in
   "prep")

@@ -26,7 +26,13 @@ case $(hostname -f) in
   gaea9.ncrc.gov)      MACHINE_ID=gaea ;; ### gaea9
   gaea1[0-6].ncrc.gov) MACHINE_ID=gaea ;; ### gaea10-16
 
+<<<<<<< HEAD
+  gaea5[0-9].ncrc.gov) MACHINE_ID=gaea ;; ### gaea10-16  
+
+  hfe0[1-9]) MACHINE_ID=hera ;; ### hera01-9
+=======
   hfe0[1-9]) MACHINE_ID=hera ;; ### hera01-09
+>>>>>>> origin/develop-AR
   hfe1[0-2]) MACHINE_ID=hera ;; ### hera10-12
   hecflow01) MACHINE_ID=hera ;; ### heraecflow01
 
@@ -83,8 +89,16 @@ elif [[ -d /work ]]; then
   else
     MACHINE_ID=orion
   fi
+<<<<<<< HEAD
+elif [[ -d /glade ]] ; then
+  # We are on NCAR Yellowstone
+  MACHINE_ID=cheyenne
+elif [[ -d /gpfs && -d /ncrc ]] ; then
+  # We are on GAEA C5.
+=======
 elif [[ -d /gpfs && -d /ncrc ]]; then
   # We are on GAEA.
+>>>>>>> origin/develop-AR
   MACHINE_ID=gaea
 elif [[ -d /data/prod ]]; then
   # We are on SSEC's S4
