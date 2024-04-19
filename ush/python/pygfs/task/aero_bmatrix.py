@@ -22,7 +22,7 @@ class AerosolBMatrix(BMatrix):
         super().__init__(config)
 
         _res = int(self.config['CASE'][1:])
-        _res_anl = int(self.config['CASE_ANL'][1:])        
+        _res_anl = int(self.config['CASE_ANL'][1:])
 
         _bmat_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
 
@@ -94,7 +94,6 @@ class AerosolBMatrix(BMatrix):
 
         pass
 
-
     @logit(logger)
     def finalize(self) -> None:
         super().finalize()
@@ -116,7 +115,7 @@ class AerosolBMatrix(BMatrix):
             src = os.path.join(self.task_config.DATA, 'stddev', tracer)
             dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, tracer)
             inclist.append([src, dest])
-        FileHandler({'copy': inclist}).sync()        
+        FileHandler({'copy': inclist}).sync()
 
     @logit(logger)
     def link_bmatexe(self) -> None:
