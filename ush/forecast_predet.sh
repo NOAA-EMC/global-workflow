@@ -467,6 +467,7 @@ WW3_predet(){
     local array=("${WAVECUR_FID}" "${WAVEICE_FID}" "${WAVEWND_FID}" "${waveuoutpGRD}" "${waveGRD}" "${waveesmfGRD}")
     echo "Wave Grids: ${array[*]}"
     local grdALL
+    # shellcheck disable=SC2312
     grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
     for ww3_grid in ${grdALL}; do
@@ -511,6 +512,7 @@ WW3_predet(){
   WAV_MOD_TAG="${RUN}wave${waveMEMB}"
   if [[ "${USE_WAV_RMP:-YES}" == "YES" ]]; then
     local file file_array file_count
+    # shellcheck disable=SC2312
     mapfile -t file_array < <(find "${FIXgfs}/wave" -name "rmp_src_to_dst_conserv_*" | sort)
     file_count=${#file_array[@]}
     if (( file_count > 0 )); then
