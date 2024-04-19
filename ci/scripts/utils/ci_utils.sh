@@ -91,9 +91,7 @@ function get_pslot () {
     # loop over expdir directories in RUNTESTS
     # and return the name of the pslot with its tag that matches the case
     #############################################################
-    pslot_dirs=("${RUNTESTS}/EXPDIR/"*)
-    IFS=$'\n' pslot_dirs=("$(ls -dt "${pslot_dirs[@]}")")
-    for pslot_dir in "${pslot_dirs[@]}"; do
+    for pslot_dir in $(ls -td "${RUNTESTS}/EXPDIR/"*); do
       pslot=$(basename "${pslot_dir}")
       check_case=$(echo "${pslot}" | rev | cut -d"_" -f2- | rev) || true
       if [[ "${check_case}" == "${case}" ]]; then
