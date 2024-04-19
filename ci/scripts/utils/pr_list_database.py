@@ -2,9 +2,11 @@
 
 import sys
 import os
+from typing import List
 from wxflow import SQLiteDB, SQLiteDBError
 from githubpr import GitHubPR
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
+import argparse
 
 
 def full_path(string):
@@ -68,7 +70,7 @@ def add_pr(ci_database: SQLiteDB, pr: str) -> bool:
             return False
 
 
-def update_pr(ci_database: SQLiteDB, args):
+def update_pr(ci_database: SQLiteDB, args: argparse.Namespace):
     """
     Update a pull request in the database.
 
@@ -91,7 +93,7 @@ def update_pr(ci_database: SQLiteDB, args):
         ci_database.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def display_db(ci_database: SQLiteDB, display: any) -> list:
+def display_db(ci_database: SQLiteDB, display: List[str]) -> list:
     """
     Display the database.
 
