@@ -2,21 +2,35 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
-export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
+export DATA=${DATA:-${DATAROOT}/${RUN}aerogenb_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlgenb" -c "base aeroanl aeroanlgenb"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
+GDUMP="gdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_CHEM_ANALYSIS
+
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+    COM_CHEM_ANALYSIS_PREV:COM_CHEM_ANALYSIS_TMPL \
+    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+mkdir -m 775 -p "${COM_CHEM_ANALYSIS}"
+
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROVARSH:-${SCRgfs}/exglobal_aero_analysis_generate_bmatrix.py}
+EXSCRIPT=${GDASAEROBMATPY:-${SCRgfs}/exglobal_aero_analysis_generate_bmatrix.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
@@ -31,5 +45,11 @@ status=$?
 if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0

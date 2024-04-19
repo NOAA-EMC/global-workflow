@@ -8,4 +8,6 @@ echo "BEGIN: config.aeroanlgenb"
 # Get task specific resources
 source "${EXPDIR}/config.resources" aeroanlgenb
 
+export BMATYAML="${PARMgfs}/gdas/aero/berror/aero_diagb.yaml.j2"
+
 echo "END: config.aeroanlgenb"

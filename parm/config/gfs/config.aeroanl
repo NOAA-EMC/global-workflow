@@ -19,6 +19,7 @@ export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIEXE="${EXECgfs}/fv3jedi_var.x"
+export BMATEXE="${EXECgfs}/gdasapp_chem_diagb.x"
 
 if [[ "${DOIAU}" == "YES" ]]; then
   export aero_bkg_times="3,6,9"
