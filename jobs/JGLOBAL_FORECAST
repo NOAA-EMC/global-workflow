@@ -3,11 +3,11 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 if (( 10#${ENSMEM:-0} > 0 )); then
-  export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY}${cyc}"
+  export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
   export DATA="${DATAjob}/${jobid}"
   source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
-  export DATAjob="${DATAROOT}/${RUN}fcst.${PDY}${cyc}"
+  export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
   export DATA="${DATAjob}/${jobid}"
   source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
@@ -98,6 +98,6 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
-[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA} ${DATArestart} ${DATAjob}"  # DATAjob contains DATA and DATArestart
+[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA} ${DATArestart}"  # do not remove DATAjob. It contains DATAoutput
 
 exit 0

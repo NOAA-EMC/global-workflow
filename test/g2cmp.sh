@@ -14,5 +14,7 @@ source "${HOMEgfs}/ush/load_fv3gfs_modules.sh" 1>/dev/null 2>&1
 file1=${1:?}
 file2=${2:?}
 
-wgrib2 ${file2} -var -lev -rpn "sto_1" -import_grib ${file1} -rpn "rcl_1:print_corr:print_rms" | egrep -v "rpn_corr=1"
+# Use wgrib2 to compute correlations and print any record that does not have corr=1 for mismatch
+#shellcheck disable=SC2312
+wgrib2 "${file2}" -var -lev -rpn "sto_1" -import_grib "${file1}" -rpn "rcl_1:print_corr:print_rms" | grep -v "rpn_corr=1"
 
