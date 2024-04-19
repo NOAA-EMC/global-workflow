@@ -178,6 +178,8 @@ pipeline {
                             script {
                                 HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                 def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
+                                def error_file = "${HOME}/RUNTESTS/${pslot}_error.logs"
+                                sh(script: " rm -f ${error_file}")
                                 try {
                                     sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot} ${system}")
                                 } catch (Exception error_experment) {
@@ -185,7 +187,6 @@ pipeline {
                                     ws(HOME) {
                                         def error_logs = ""
                                         def error_logs_message = ""
-                                        def error_file = "${HOME}/RUNTESTS/${pslot}_error.logs"
                                         if (fileExists(error_file)) {
                                             def fileContent = readFile error_file
                                             def lines = fileContent.readLines()
