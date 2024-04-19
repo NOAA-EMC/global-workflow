@@ -97,7 +97,7 @@ def display_db(ci_database: SQLiteDB, display: any) -> list:
 
     Parameters
     ----------
-    db : SQLiteDB
+    ci_database : SQLiteDB
         The database to display.
 
     display : argparse.Namespace
