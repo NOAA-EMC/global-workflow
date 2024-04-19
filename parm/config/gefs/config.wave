@@ -15,9 +15,6 @@ export CDUMPwave="${RUN}wave"
 # In GFS/GDAS, restart files are generated/read from gdas runs
 export CDUMPRSTwave="gdas"
 
-# Grids for wave model
-export waveGRD=${waveGRD:-'mx025'}
-
 #grid dependent variable defaults
 export waveGRDN='1'                   # grid number for ww3_multi
 export waveGRDG='10'                  # grid group for ww3_multi

@@ -56,7 +56,7 @@ UFS_det(){
   # Look in reverse order of file_array to determine available restart times
   local ii filepath filename
   local rdate seconds
-  local fv3_rst_ok mom6_rst_ok cice6_rst_ok cmeps_rst_ok ww3_rst_ok
+  local fv3_rst_ok cmeps_rst_ok mom6_rst_ok cice6_rst_ok ww3_rst_ok
   for (( ii=nrestarts-1; ii>=0; ii-- )); do
 
     filepath="${file_array[ii]}"
@@ -64,11 +64,11 @@ UFS_det(){
     rdate="${filename:0:8}${filename:9:2}"  # match YYYYMMDD and HH of YYYYMMDD.HH0000.coupler.res
 
     # Assume all is well; all restarts are available
-    local fv3_rst_ok="YES"
-    local cmeps_rst_ok="YES"
-    local mom6_rst_ok="YES"
-    local cice6_rst_ok="YES"
-    local ww3_rst_ok="YES"
+    fv3_rst_ok="YES"
+    cmeps_rst_ok="YES"
+    mom6_rst_ok="YES"
+    cice6_rst_ok="YES"
+    ww3_rst_ok="YES"
 
     # Check for FV3 restart availability
     if [[ ! -f "${DATArestart}/FV3_RESTART/${rdate:0:8}.${rdate:8:2}0000.coupler.res" ]]; then
@@ -118,5 +118,5 @@ UFS_det(){
       break
     fi
 
-  done
+  done  # loop over nrestarts
 }

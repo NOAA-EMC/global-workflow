@@ -346,6 +346,7 @@ WW3_nml() {
 
 WW3_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for WW3"
+  # TODO: Need to add logic to copy restarts from DATArestart/WW3_RESTART to COM_WAVE_RESTART
 }
 
 
