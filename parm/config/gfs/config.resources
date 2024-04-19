@@ -32,7 +32,6 @@ step=$1
 
 echo "BEGIN: config.resources"
 
-<<<<<<< HEAD
 if [[ "${machine}" = "WCOSS2" ]]; then
    export npe_node_max=128
 elif [[ "${machine}" = "JET" ]]; then
@@ -61,7 +60,6 @@ elif [[ ${machine} = "ORION" ]]; then
 elif [[ ${machine} = "HERCULES" ]]; then
    export npe_node_max=80
 fi
-=======
 case ${machine} in
   "WCOSS2")   npe_node_max=128;;
   "HERA")     npe_node_max=40;;
@@ -99,7 +97,6 @@ case ${machine} in
     ;;
 esac
 export npe_node_max
->>>>>>> origin/develop-AR
 
 case ${step} in
   "prep")
