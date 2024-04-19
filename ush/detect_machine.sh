@@ -89,16 +89,13 @@ elif [[ -d /work ]]; then
   else
     MACHINE_ID=orion
   fi
-<<<<<<< HEAD
 elif [[ -d /glade ]] ; then
   # We are on NCAR Yellowstone
   MACHINE_ID=cheyenne
 elif [[ -d /gpfs && -d /ncrc ]] ; then
   # We are on GAEA C5.
-=======
 elif [[ -d /gpfs && -d /ncrc ]]; then
   # We are on GAEA.
->>>>>>> origin/develop-AR
   MACHINE_ID=gaea
 elif [[ -d /data/prod ]]; then
   # We are on SSEC's S4
