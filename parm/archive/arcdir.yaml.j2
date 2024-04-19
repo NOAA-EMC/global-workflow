@@ -27,9 +27,9 @@ deterministic:
         - ["{{ COM_ATMOS_GRIB_1p00 }}/{{ head }}pgrb2.1p00.anl", "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
         {% endif %}  # Full cycle
         {% if RUN == "gfs" %}
-        {% set fhmin, fhmax, fhout = FHMIN_GFS, FHMAX_GFS, FHOUT_GFS %}
+        {% set fhmax, fhout = FHMAX_GFS, FHOUT_GFS %}
         {% elif RUN == "gdas" %}
-        {% set fhmin, fhmax, fhout = FHMIN, FHMAX, FHOUT %}
+        {% set fhmax, fhout = FHMAX, FHOUT %}
         {% endif %}
         {% for fhr in range(0, fhmax + fhout, fhout) %}
         - ["{{ COM_ATMOS_GRIB_1p00 }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}", "{{ ARCDIR }}/pgbf{{ '%02d' % fhr }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
