@@ -164,9 +164,10 @@ EOF
 
   cd "${DATA}" || exit 1
   if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
+    local FH2 FH3
     for fhr in ${FV3_OUTPUT_FH}; do
-      local FH3=$(printf %03i "${fhr}")
-      local FH2=$(printf %02i "${fhr}")
+      FH3=$(printf %03i "${fhr}")
+      FH2=$(printf %02i "${fhr}")
       ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
       ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
       ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}"
@@ -386,6 +387,7 @@ MOM6_postdet() {
         fi
       done
     ;;
+    *) ;;
   esac
 
   # Copy increment (only when RERUN=NO)
@@ -442,9 +444,10 @@ MOM6_postdet() {
   elif [[ "${RUN}" =~ "gdas" ]]; then  # Link output files for RUN=gdas|enkfgdas
 
     # Save (instantaneous) MOM6 backgrounds
+    local fhr3 vdatestr
     for fhr in ${MOM6_OUTPUT_FH}; do
-      local fhr3=$(printf %03i "${fhr}")
-      local vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
+      fhr3=$(printf %03i "${fhr}")
+      vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
       ${NLN} "${COM_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATA}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
     done
   fi
@@ -477,6 +480,7 @@ MOM6_out() {
         mom6_restart_files+=("MOM.res_${nn}.nc")
       done
       ;;
+    *) ;;
   esac
 
   # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs

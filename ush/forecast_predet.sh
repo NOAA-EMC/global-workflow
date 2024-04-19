@@ -178,7 +178,9 @@ FV3_predet(){
   fi
 
   # Scan suite file to determine whether it uses Noah-MP
-  if [[ $(grep noahmpdrv "${suite_file}" | wc -l ) -gt 0 ]]; then
+  local num_noampdrv
+  num_noampdrv=$(grep -c noahmpdrv "${suite_file}")
+  if (( num_noahmpdrv > 0 )); then
     lsm="2"
     lheatstrg=".false."
     landice=".false."
@@ -407,7 +409,7 @@ FV3_predet(){
   ${NCP} "${FIXgfs}/am/global_climaeropac_global.txt" "${DATA}/aerosol.dat"
   if (( IAER > 0 )) ; then
     local file
-    for file in $(ls "${FIXgfs}/am/global_volcanic_aerosols"*) ; do
+    for file in "${FIXgfs}/am/global_volcanic_aerosols"* ; do
       ${NCP} "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
@@ -432,7 +434,7 @@ FV3_predet(){
   fi
   if (( ICO2 > 0 )); then
     local file
-    for file in $(ls "${FIXgfs}/am/${co2dir}/global_co2historicaldata"*) ; do
+    for file in "${FIXgfs}/am/${co2dir}/global_co2historicaldata"* ; do
       ${NCP} "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
@@ -462,9 +464,10 @@ WW3_predet(){
   # Copy mod_def files for wave grids
   local ww3_grid
   if [[ "${waveMULTIGRID}" == ".true." ]]; then
-    local array=(${WAVECUR_FID} ${WAVEICE_FID} ${WAVEWND_FID} ${waveuoutpGRD} ${waveGRD} ${waveesmfGRD})
-    echo "Wave Grids: ${array[@]}}"
-    local grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
+    local array=("${WAVECUR_FID}" "${WAVEICE_FID}" "${WAVEWND_FID}" "${waveuoutpGRD}" "${waveGRD}" "${waveesmfGRD}")
+    echo "Wave Grids: ${array[*]}"
+    local grdALL
+    grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
     for ww3_grid in ${grdALL}; do
       ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
