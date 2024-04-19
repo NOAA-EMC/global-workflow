@@ -86,7 +86,7 @@ FV3_predet(){
   FHCYC=${FHCYC:-24}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
-  if [[ ${restart_interval} -eq 0 ]]; then
+  if (( restart_interval == 0 )); then
     restart_interval=${FHMAX}
   fi
 
@@ -447,6 +447,8 @@ FV3_predet(){
 
 }
 
+# Disable variable not used warnings
+# shellcheck disable=SC2034
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
 
@@ -455,6 +457,68 @@ WW3_predet(){
 
   if [[ ! -d "${DATArestart}/WAVE_RESTART" ]]; then mkdir -p "${DATArestart}/WAVE_RESTART"; fi
   ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
+
+  # Files from wave prep and wave init jobs
+  # Copy mod_def files for wave grids
+  local ww3_grid
+  if [[ "${waveMULTIGRID}" == ".true." ]]; then
+    local array=(${WAVECUR_FID} ${WAVEICE_FID} ${WAVEWND_FID} ${waveuoutpGRD} ${waveGRD} ${waveesmfGRD})
+    echo "Wave Grids: ${array[@]}}"
+    local grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
+
+    for ww3_grid in ${grdALL}; do
+      ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
+      || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${ww3_grid}' from '${COM_WAVE_PREP}'"; exit 1 )
+    done
+  else
+    #if shel, only 1 waveGRD which is linked to mod_def.ww3
+    ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
+    || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COM_WAVE_PREP}'"; exit 1 )
+  fi
+
+  if [[ "${WW3ICEINP}" == "YES" ]]; then
+    local wavicefile="${COM_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
+    if [[ ! -f "${wavicefile}" ]]; then
+      echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
+      exit 1
+    fi
+    ${NCP} "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}" \
+    || ( echo "FATAL ERROR: Unable to copy '${wavicefile}', ABORT!"; exit 1 )
+  fi
+
+  if [[ "${WW3CURINP}" == "YES" ]]; then
+    local wavcurfile="${COM_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
+    if [[ ! -f "${wavcurfile}" ]]; then
+      echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
+      exit 1
+    fi
+    ${NCP} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}" \
+    || ( echo "FATAL ERROR: Unable to copy '${wavcurfile}', ABORT!"; exit 1 )
+  fi
+
+  # Fix files
+  #if wave mesh is not the same as the ocean mesh, copy it in the file
+  if [[ "${MESH_WAV}" == "${MESH_OCN:-mesh.mx${OCNRES}.nc}" ]]; then
+    echo "Wave is on the same mesh as ocean"
+  else
+    echo "Wave is NOT on the same mesh as ocean"
+    ${NCP} "${FIXgfs}/wave/${MESH_WAV}" "${DATA}/"
+  fi
+
+  WAV_MOD_TAG="${RUN}wave${waveMEMB}"
+  if [[ "${USE_WAV_RMP:-YES}" == "YES" ]]; then
+    local file file_array file_count
+    mapfile -t file_array < <(find "${FIXgfs}/wave" -name "rmp_src_to_dst_conserv_*" | sort)
+    file_count=${#file_array[@]}
+    if (( file_count > 0 )); then
+      for file in "${file_array[@]}" ; do
+        ${NCP} "${file}" "${DATA}/"
+      done
+    else
+      echo 'FATAL ERROR : No rmp precomputed nc files found for wave model, ABORT!'
+      exit 4
+    fi
+  fi
 }
 
 # shellcheck disable=SC2034

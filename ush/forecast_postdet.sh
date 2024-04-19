@@ -170,7 +170,7 @@ EOF
       ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
       ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
       ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}"
-      if [[ ${WRITE_DOPOST} = ".true." ]]; then
+      if [[ "${WRITE_DOPOST}" == ".true." ]]; then
         ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
         ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}"
       fi
@@ -250,142 +250,96 @@ FV3_out() {
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
 
+# Disable variable not used warnings
+# shellcheck disable=SC2034
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
-  COMPONENTwave=${COMPONENTwave:-${RUN}wave}
 
-  #Link mod_def files for wave grids
-  if [[ ${waveMULTIGRID} = ".true." ]]; then
-    local array=(${WAVECUR_FID} ${WAVEICE_FID} ${WAVEWND_FID} ${waveuoutpGRD} ${waveGRD} ${waveesmfGRD})
-    echo "Wave Grids: ${WAVECUR_FID} ${WAVEICE_FID} ${WAVEWND_FID} ${waveuoutpGRD} ${waveGRD} ${waveesmfGRD}"
-    local grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
-
-    for wavGRD in ${grdALL}; do
-      ${NCP} "${COM_WAVE_PREP}/${COMPONENTwave}.mod_def.${wavGRD}" "${DATA}/mod_def.${wavGRD}"
+  local ww3_grid
+  # Copy initial condition files:
+  if [[ "${warm_start}" == ".true." ]]; then
+    local restart_date restart_dir
+    if [[ "${RERUN}" == "YES" ]]; then
+      restart_date="${RERUN_DATE}"
+      restart_dir="${DATArestart}/WW3_RESTART"
+    else
+      if [[ "${DOIAU}" == "YES" ]]; then
+        restart_date="${current_cycle_begin}"
+      else
+        restart_date="${current_cycle}"
+      fi
+      restart_dir="${COM_WAVE_RESTART_PREV}"
+    fi
+    echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
+    local ww3_restart_file
+    for ww3_grid in ${waveGRD} ; do
+      ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.${ww3_grid}"
+      if [[ ! -f "${ww3_restart_file}" ]]; then
+        echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
+        if [[ "${RERUN}" == "YES" ]]; then
+          # In the case of a RERUN, the WW3 restart file is required
+          echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+          exit 1
+        fi
+      fi
+      if [[ "${waveMULTIGRID}" == ".true." ]]; then
+        ${NCP} "${ww3_restart_file}" "${DATA}/restart.${ww3_grid}" \
+        || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+      else
+        ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
+        || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+      fi
     done
-  else
-    #if shel, only 1 waveGRD which is linked to mod_def.ww3
-    ${NCP} "${COM_WAVE_PREP}/${COMPONENTwave}.mod_def.${waveGRD}" "${DATA}/mod_def.ww3"
-  fi
+  else  # cold start
+    echo "WW3 will start from rest!"
+  fi  # [[ "${warm_start}" == ".true." ]]
 
-
-  #if wave mesh is not the same as the ocean mesh, link it in the file
-  if [[ "${MESH_WAV}" == "${MESH_OCN:-mesh.mx${OCNRES}.nc}" ]]; then
-    echo "Wave is on same mesh as ocean"
-  else
-    ${NLN} "${FIXgfs}/wave/${MESH_WAV}" "${DATA}/"
-  fi
-
-  export wavprfx=${RUNwave}${WAV_MEMBER:-}
-
-  #Copy initial condition files:
-  for wavGRD in ${waveGRD} ; do
-    if [[ "${warm_start}" = ".true." ]] || [[ "${RERUN}" = "YES" ]]; then
-      if [[ ${RERUN} = "NO" ]]; then
-        local waverstfile="${COM_WAVE_RESTART_PREV}/${sPDY}.${scyc}0000.restart.${wavGRD}"
-      else
-        local waverstfile="${COM_WAVE_RESTART}/${PDYT}.${cyct}0000.restart.${wavGRD}"
-      fi
-    else
-      local waverstfile="${COM_WAVE_RESTART}/${sPDY}.${scyc}0000.restart.${wavGRD}"
-    fi
-    if [[ ! -f ${waverstfile} ]]; then
-      if [[ ${RERUN} = "NO" ]]; then
-        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
-      else
-        echo "FATAL ERROR: Wave IC ${waverstfile} is missing in RERUN, exiting."
-        exit 1
-      fi
-    else
-      if [[ ${waveMULTIGRID} = ".true." ]]; then
-        ${NLN} "${waverstfile}" "${DATA}/restart.${wavGRD}"
-      else
-        ${NLN} "${waverstfile}" "${DATA}/restart.ww3"
-      fi
-    fi
-  done
-
-  if [[ ${waveMULTIGRID} = ".true." ]]; then
-    for wavGRD in ${waveGRD} ; do
-      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${wavGRD}.${PDY}${cyc}" "log.${wavGRD}"
+  # Link output files
+  local wavprfx="${RUN}wave${WAV_MEMBER:-}"
+  if [[ "${waveMULTIGRID}" == ".true." ]]; then
+    ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.mww3.${PDY}${cyc}" "log.mww3"
+    for ww3_grid in ${waveGRD}; do
+      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${ww3_grid}.${PDY}${cyc}" "log.${ww3_grid}"
     done
   else
     ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
   fi
 
-  if [[ "${WW3ICEINP}" = "YES" ]]; then
-    local wavicefile="${COM_WAVE_PREP}/${RUNwave}.${WAVEICE_FID}.${cycle}.ice"
-    if [[ ! -f ${wavicefile} ]]; then
-      echo "FATAL ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file ${wavicefile}"
-      echo "Abort!"
-      exit 1
-    fi
-    ${NLN} "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}"
-  fi
-
-  if [[ "${WW3CURINP}" = "YES" ]]; then
-    local wavcurfile="${COM_WAVE_PREP}/${RUNwave}.${WAVECUR_FID}.${cycle}.cur"
-    if [[ ! -f ${wavcurfile} ]]; then
-      echo "FATAL ERROR: WW3CURINP = ${WW3CURINP}, but missing current file ${wavcurfile}"
-      echo "Abort!"
-      exit 1
-    fi
-    ${NLN} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"
-  fi
-
-  # Link output files
-  cd "${DATA}"
-  if [[ ${waveMULTIGRID} = ".true." ]]; then
-    ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.mww3.${PDY}${cyc}" "log.mww3"
-  fi
-
   # Loop for gridded output (uses FHINC)
-  local fhr vdate FHINC wavGRD
+  local fhr vdate FHINC ww3_grid
   fhr=${FHMIN_WAV}
-  while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
-    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-    if [[ ${waveMULTIGRID} = ".true." ]]; then
-      for wavGRD in ${waveGRD} ; do
-        ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${wavGRD}.${vdate:0:8}.${vdate:8:2}0000" "${DATA}/${vdate:0:8}.${vdate:8:2}0000.out_grd.${wavGRD}"
+  fhinc=${FHOUT_WAV}
+  while (( fhr <= FHMAX_WAV )); do
+    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
+    if [[ "${waveMULTIGRID}" == ".true." ]]; then
+      for ww3_grid in ${waveGRD} ; do
+        ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${ww3_grid}.${vdate}" "${DATA}/${vdate}.out_grd.${ww3_grid}"
       done
     else
-      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${vdate:0:8}.${vdate:8:2}0000" "${DATA}/${vdate:0:8}.${vdate:8:2}0000.out_grd.ww3"
+      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${vdate}" "${DATA}/${vdate}.out_grd.ww3"
     fi
-    FHINC=${FHOUT_WAV}
     if (( FHMAX_HF_WAV > 0 && FHOUT_HF_WAV > 0 && fhr < FHMAX_HF_WAV )); then
-      FHINC=${FHOUT_HF_WAV}
+      fhinc=${FHOUT_HF_WAV}
     fi
-    fhr=$((fhr+FHINC))
+    fhr=$((fhr + fhinc))
   done
 
   # Loop for point output (uses DTPNT)
   fhr=${FHMIN_WAV}
-  while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
-    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-    if [[ ${waveMULTIGRID} = ".true." ]]; then
-      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate:0:8}.${vdate:8:2}0000" "${DATA}/${vdate:0:8}.${vdate:8:2}0000.out_pnt.${waveuoutpGRD}"
+  fhinc=${FHINCP_WAV}
+  while (( fhr <= FHMAX_WAV )); do
+    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
+    if [[ "${waveMULTIGRID}" == ".true." ]]; then
+      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate}" "${DATA}/${vdate}.out_pnt.${waveuoutpGRD}"
     else
-      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate:0:8}.${vdate:8:2}0000" "${DATA}/${vdate:0:8}.${vdate:8:2}0000.out_pnt.ww3"
+      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate}" "${DATA}/${vdate}.out_pnt.ww3"
     fi
-
-    FHINC=${FHINCP_WAV}
-    fhr=$((fhr+FHINC))
+    fhr=$((fhr + fhinc))
   done
 }
 
 WW3_nml() {
   echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-  WAV_MOD_TAG=${RUN}wave${waveMEMB}
-  if [[ "${USE_WAV_RMP:-YES}" = "YES" ]]; then
-    if (( $( ls -1 "${FIXgfs}/wave/rmp_src_to_dst_conserv_"* 2> /dev/null | wc -l) > 0 )); then
-      for file in $(ls "${FIXgfs}/wave/rmp_src_to_dst_conserv_"*) ; do
-        ${NLN} "${file}" "${DATA}/"
-      done
-    else
-      echo 'FATAL ERROR : No rmp precomputed nc files found for wave model'
-      exit 4
-    fi
-  fi
   source "${USHgfs}/parsing_namelists_WW3.sh"
   WW3_namelists
 }
@@ -397,7 +351,7 @@ WW3_out() {
 
 CPL_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
-  if [[ "${esmf_profile:-}" = ".true." ]]; then
+  if [[ "${esmf_profile:-}" == ".true." ]]; then
     ${NCP} "${DATA}/ESMF_Profile.summary" "${COM_ATMOS_HISTORY}/ESMF_Profile.summary"
   fi
 }
@@ -720,23 +674,25 @@ GOCART_out() {
 CMEPS_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for CMEPS mediator"
 
-  local restart_date cmeps_restart_file
-  if [[ "${RERUN}" == "YES" ]]; then
-    restart_date="${RERUN_DATE}"
-    local seconds
-    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-    cmeps_restart_file="${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-  else  # "${RERUN}" == "NO"
-    if [[ "${DOIAU}" == "YES" ]]; then
-      restart_date="${current_cycle_begin}"
-    else
-      restart_date="${current_cycle}"
-    fi
-    cmeps_restart_file="${COM_MED_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
-  fi
-
-  # Copy CMEPS restarts
   if [[ "${warm_start}" == ".true." ]]; then
+
+    # Determine the appropriate restart file
+    local restart_date cmeps_restart_file
+    if [[ "${RERUN}" == "YES" ]]; then
+      restart_date="${RERUN_DATE}"
+      local seconds
+      seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+      cmeps_restart_file="${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
+    else  # "${RERUN}" == "NO"
+      if [[ "${DOIAU}" == "YES" ]]; then
+        restart_date="${current_cycle_begin}"
+      else
+        restart_date="${current_cycle}"
+      fi
+      cmeps_restart_file="${COM_MED_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
+    fi
+
+    # Copy CMEPS restarts
     if [[ -f "${cmeps_restart_file}" ]]; then
       ${NCP} "${cmeps_restart_file}" "${DATA}/ufs.cpld.cpl.r.nc" \
       || ( echo "FATAL ERROR: Unable to copy CMEPS restarts, ABORT!"; exit 1 )
@@ -754,7 +710,8 @@ CMEPS_postdet() {
         exit 1
       fi
     fi
-  fi
+
+  fi  # [[ "${warm_start}" == ".true." ]];
 }
 
 CMEPS_out() {

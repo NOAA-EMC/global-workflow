@@ -45,7 +45,6 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
   YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
   RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
     COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
-  declare -rx RUNwave="${RUN}wave"
 fi
 
 if [[ "${DO_OCN}" == "YES" ]]; then
