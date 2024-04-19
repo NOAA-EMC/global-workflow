@@ -363,6 +363,9 @@ if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
     export IAUFHRS_ENKF="6"
 fi
 
+# Generate post-processing ensemble spread files
+export ENKF_SPREAD="YES"
+
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0

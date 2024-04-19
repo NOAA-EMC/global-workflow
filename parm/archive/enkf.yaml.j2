@@ -12,6 +12,9 @@ mandatory:
     {% for fhr in range(fhmin, fhmax + fhout, fhout) %}
     - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensmean.nc"
     - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.ensmean.nc"
+    {% if ENKF_SPREAD %}
+    - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
+    {% endif %}
     {% endfor %}
     {% if not current_cycle == SDATE %}
     {% if not DO_JEDIATMENS %}
@@ -40,11 +43,14 @@ mandatory:
     {% endif %}  # fhr == IAU_OFFSET
     {% endfor %}  # IAUFHRS
     {% endif %}   # DOIAU
+    # TODO archive ecen logs based on actual groups.  Will need to emulate numpy.array_split to do so.
     {% set steps = ["eobs", "ecen*", "esfc", "eupd"] %}
     {% for step in steps %}
     - "logs/{{ cycle_YMDH }}/{{ RUN }}{{ step }}.log"
     {% endfor %}
-    - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem*.log"
+    {% for mem in range(1, NMEM_ENS + 1) %}
+    - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem{{ '%03d' % mem }}.log"
+    {% endfor %}
     {% if lobsdiag_forenkf %}
     - "logs/{{ cycle_YMDH }}/{{ RUN }}ediag.log"
     {% else %}
@@ -53,7 +59,3 @@ mandatory:
     {% endfor %}
     {% endif %}  # lobsdiag_forenkf
     {% endif %}  # not the first cycle
-optional:
-    {% for fhr in range(fhmin, fhmax + fhout, fhout) %}
-    - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
-    {% endfor %}

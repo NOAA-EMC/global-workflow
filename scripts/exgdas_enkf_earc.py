@@ -23,7 +23,8 @@ def main():
             'ARCDIR', 'SDATE', 'MODE', 'ENSGRP', 'NMEM_EARCGRP',
             'NMEM_ENS', 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS',
             'lobsdiag_forenkf', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',
-            'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF']
+            'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF',
+            'ENKF_SPREAD']
 
     archive_dict = AttrDict()
     for key in keys:
