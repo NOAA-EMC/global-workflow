@@ -9,8 +9,7 @@ status=0
 [[ "${status}" -ne 0 ]] && exit "${status}"
 
 export job="stage_ic"
-#export jobid="${job}.$$"
-export jobid="${job}.5"
+export jobid="${job}.$$"
 
 # Execute the JJOB
 # "${HOMEgfs}/jobs/JGLOBAL_STAGE_IC"
