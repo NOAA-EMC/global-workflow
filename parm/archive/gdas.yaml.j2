@@ -15,9 +15,11 @@ mandatory:
     - "logs/{{ cycle_YMDH }}/{{ RUN }}prep.log"
     - "logs/{{ cycle_YMDH }}/{{ RUN }}anal.log"
     - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlupp.log"
+    {% if DOIAU and DOHYBVAR %}
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma003.ensres.nc"
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma009.ensres.nc"
+    {% endif %}
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
@@ -61,7 +63,7 @@ mandatory:
     {% endif %}  # Full cycle
     - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
     - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_prod_f*.log"
-    {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
+    {% for fhr in range(0, FHMAX + FHOUT, FHOUT) %}
     - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"
     - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
     - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
@@ -69,8 +71,6 @@ mandatory:
     - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ '%03d' % fhr }}.txt"
     - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
     - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
-    {% endfor %}
-    {% for fhr in range(FHMIN, FHMAX + FHOUT) %}
     - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
     - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
     {% endfor %}

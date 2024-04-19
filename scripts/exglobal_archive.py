@@ -24,8 +24,9 @@ def main():
             'DO_JEDISNOWDA', 'LOCALARCH', 'REALTIME', 'ROTDIR', 'ARCH_WARMICFREQ',
             'ARCH_FCSTICFREQ', 'ARCH_CYC', 'assim_freq', 'ARCDIR', 'SDATE',
             'FHMIN_GFS', 'FHMAX_GFS', 'FHOUT_GFS', 'ARCH_GAUSSIAN', 'MODE',
-            'FHOUT_OCNICE', 'FHOUT_OCNICE_GFS', 'DO_BUFRSND',
-            'ARCH_GAUSSIAN_FHMAX', 'ARCH_GAUSSIAN_FHINC', 'ARCH_GAUSSIAN_FHINC']
+            'FHOUT_OCNICE', 'FHOUT_OCNICE_GFS', 'DO_BUFRSND', 'DOHYBVAR',
+            'ARCH_GAUSSIAN_FHMAX', 'ARCH_GAUSSIAN_FHINC', 'ARCH_GAUSSIAN_FHINC',
+            'DOIAU']
 
     archive_dict = AttrDict()
     for key in keys:

@@ -206,7 +206,7 @@ class SnowAnalysis(Analysis):
         # Execute imspy to create the IMS obs data in IODA format
         logger.info("Create IMS obs data in IODA format")
 
-        output_file = f"ims_snow_{to_YMDH(localconf.current_cycle)}.nc4"
+        output_file = f"ims_snow_{to_YMDH(localconf.current_cycle)}.nc"
         if os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
             rm_p(output_file)
 
@@ -333,7 +333,7 @@ class SnowAnalysis(Analysis):
             Instance of the SnowAnalysis object
         """
 
-        logger.info("Create diagnostic tarball of diag*.nc4 files")
+        logger.info("Create diagnostic tarball of diag*.nc files")
         statfile = os.path.join(self.task_config.COM_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat.tgz")
         self.tgz_diags(statfile, self.task_config.DATA)
 
