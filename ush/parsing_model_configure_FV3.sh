@@ -12,7 +12,7 @@ local restile=${CASE:1}
 
 local model_start_date
 if [[ "${DOIAU}" == "YES" ]]; then
-  model_start_date="${current_cycle_begin}"
+  model_start_date="${previous_cycle}"
 else
   model_start_date="${current_cycle}"
 fi

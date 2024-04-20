@@ -42,6 +42,7 @@ FV3_postdet() {
       done
     done
 
+    # Determine restart date and directory containing restarts
     local restart_date restart_dir
     if [[ "${RERUN}" == "YES" ]]; then
       restart_date="${RERUN_DATE}"
@@ -133,7 +134,7 @@ EOF
         fi
       done
 
-    fi
+    fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
 
