@@ -178,8 +178,8 @@ FV3_predet(){
   fi
 
   # Scan suite file to determine whether it uses Noah-MP
-  local num_noampdrv
-  num_noampdrv=$(grep -c noahmpdrv "${suite_file}")
+  local num_noahmpdrv
+  num_noahmpdrv=$(grep -c noahmpdrv "${suite_file}")
   if (( num_noahmpdrv > 0 )); then
     lsm="2"
     lheatstrg=".false."
