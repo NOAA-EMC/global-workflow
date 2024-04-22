@@ -48,7 +48,7 @@ git clone "${REPO_URL}"
 cd global-workflow || exit 1
 
 # checkout pull request
-"${GH}" pr checkout "${PR}" --repo "${REPO_URL}" --recurse-submodules
+"${GH}" pr checkout "${PR}" --repo "${REPO_URL}" --recurse-submodules -j 4
 HOMEgfs="${PWD}"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
@@ -74,7 +74,7 @@ set +e
 source "${HOMEgfs}/ush/module-setup.sh"
 export BUILD_JOBS=8
 rm -rf log.build
-./build_all.sh -g  >> log.build 2>&1
+./build_all.sh -gk  >> log.build 2>&1
 build_status=$?
 
 DATE=$(date +'%D %r')
@@ -83,6 +83,7 @@ if [[ ${build_status} != 0 ]]; then
     echo "Build: *** FAILED ***"
     echo "Build: Failed at ${DATE}"
     cat "${PWD}/log.build"
+    cat "${PWD}/logs/error.logs"
   } >> "${outfile}"
   exit "${build_status}"
 else
