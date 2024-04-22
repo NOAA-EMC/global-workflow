@@ -1,7 +1,9 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = to_YMDH %}
 {% set head = "gfs.ocean.t" + cycle_HH + "z." %}
 name: "OCEAN_6HRAVG"
-target: "{{ ATARDIR }}/{{ current_cycle | to_YMDH }}/ocean_6hravg.tar"
+target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_6hravg.tar"
 mandatory:
-    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + 6, 6 %}
+    {% for fhr in range(6, FHMAX_GFS + 6, 6) %}
     - "{{ COM_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}6hr_avg.f{{ '%03d' % fhr }}.nc"
     {% endfor %}

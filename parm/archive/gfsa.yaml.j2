@@ -10,25 +10,25 @@ mandatory:
     - "{{ log }}"
     {% endif %}
     {% endfor %}
-#    - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
-#    - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_prod_f*.log"
+    #    - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
+    #    - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_prod_f*.log"
     - "{{ COM_CONF | relpath(ROTDIR) }}/ufs.input.nml"
     {% if MODE == "cycled" %}
     - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
     - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl.idx"
     - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
     - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
-#    - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
-#    - "logs/{{ cycle_YMDH }}/{{ RUN }}prep.log"
-#    - "logs/{{ cycle_YMDH }}/{{ RUN }}anal.log"
-#    - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlupp.log"
+    #    - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
+    #    - "logs/{{ cycle_YMDH }}/{{ RUN }}prep.log"
+    #    - "logs/{{ cycle_YMDH }}/{{ RUN }}anal.log"
+    #    - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlupp.log"
     {% if DO_VMINMON %}
     - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.costs.txt"
     - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.cost_terms.txt"
     - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
     - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
     - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
-#    - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
+    #    - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
     {% endif %}
     {% endif %}  # Full cycle
     {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
@@ -51,7 +51,7 @@ optional:
     - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"
     - "{{ COM_ATMOS_GENESIS | relpath(ROTDIR) }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"
     - "{{ COM_ATMOS_GENESIS | relpath(ROTDIR) }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"
-#    {% if not WRITE_DOPOST %}
-#    # TODO set the forecast hours explicitly.  This will require emulating numpy.array_split
-#    - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_upp_f*.log"
-#    {% endif %}  ## not WRITE_DOPOST
+    # {% if not WRITE_DOPOST %}
+    # # TODO set the forecast hours explicitly.  This will require emulating numpy.array_split
+    #    - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_upp_f*.log"
+    #    {% endif %}  ## not WRITE_DOPOST

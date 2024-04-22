@@ -83,13 +83,12 @@ optional:
        "ompsnp_npp", "ompstc8_n20", "ompstc8_npp", "sbuv2_n19"
     ] %}
     {% for group in [ "horiz", "time" ] %}
+    {% if group == "horiz" %} {% set suffix = ".gz" %} {% else %} {% set suffix = "" %} {% endif %}
     {% for type in oznmon_types %}
     - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.ctl"
-    - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.{{ cycle_YMDH }}.ieee_d"
-    - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.{{ cycle_YMDH }}.ieee_d.gz"
+    - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
     - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.ctl"
-    - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.{{ cycle_YMDH }}.ieee_d"
-    - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.{{ cycle_YMDH }}.ieee_d.gz"
+    - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
     {% endfor %}
     {% endfor %}
     {% endif %}

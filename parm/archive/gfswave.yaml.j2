@@ -4,6 +4,7 @@
 name: "GFSWAVE"
 target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
 mandatory:
-    - "{{ COM_WAVE_HISTORY | relpath(ROTDIR) }}/ww3_multi*"
     - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*"
     - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}*"
+optional:
+    - "{{ COM_WAVE_HISTORY | relpath(ROTDIR) }}/ww3_multi*"

@@ -4,4 +4,25 @@
 name: "GFS_RESTARTB"
 target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_restartb.tar"
 mandatory:
-    - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/"
+    {% set tiled_types = ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
+    {% for itile in range(1, 7) %}
+    {% for datatype in tiled_types %}
+    - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/{{datatype}}.tile{{ itile }}.nc"
+    {% endfor %}
+    {% endfor %}
+    - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/coupler"
+    - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/fv_core.res.nc"
+    {% for f_time in range(restart_interval_gfs, FHMAX_GFS + restart_interval_gfs, restart_inverval_gfs) %}
+    {% set f_timedelta = (f_time + "H") | to_timedelta %}
+    {% set f_dt = current_cycle | add_to_datetime(f_timedelta) %}
+    {% set f_YMD = f_dt | to_YMD %}
+    {% set f_HH = f_dt | strftime("%H") %}
+    {% set f_prefix = f_YMD + "." + f_HH + "0000" %}
+    {% for itile in range(1, 7) %}
+    {% for datatype in tiled_types %}
+    - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/{{ f_prefix }}.{{datatype}}.tile{{ itile }}.nc"
+    {% endfor %}
+    {% endfor %}
+    - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/{{ f_prefix }}.coupler"
+    - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/{{ f_prefix }}.fv_core.res.nc"
+    {% endfor %}

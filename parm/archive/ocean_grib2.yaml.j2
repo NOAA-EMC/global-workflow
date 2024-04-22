@@ -1,16 +1,18 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = to_YMDH %}
 {% set head = "gfs.ocean.t" + cycle_HH + "z." %}
 name: "OCEAN_GRIB2"
 target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_grib2.tar"
 mandatory:
-    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_OCNICE_GFS, FHOUT_OCNICE_GFS %}
+    {% for fhr in range(FHOUT_OCNICE_GFS, FHMAX_GFS + FHOUT_OCNICE_GFS, FHOUT_OCNICE_GFS) %}
     {% set fhr3 = '%03d' % fhr %}
-    {% if OCNRES == "500" %}
+    {% if OCNRES == 500 %}
     - "{{ COM_OCEAN_GRIB | relpath(ROTDIR) }}/5p00/{{ head }}5p00.f{{ fhr3 }}.grib2"
     - "{{ COM_OCEAN_GRIB | relpath(ROTDIR) }}/5p00/{{ head }}5p00.f{{ fhr3 }}.grib2.idx"
-    {% elif OCNRES == "100" %}
+    {% elif OCNRES == 100 %}
     - "{{ COM_OCEAN_GRIB | relpath(ROTDIR) }}/1p00/{{ head }}1p00.f{{ fhr3 }}.grib2"
     - "{{ COM_OCEAN_GRIB | relpath(ROTDIR) }}/1p00/{{ head }}1p00.f{{ fhr3 }}.grib2.idx"
-    {% elif OCNRES == "025" %}
+    {% elif OCNRES == 25 or OCNRES == "025" %}
     - "{{ COM_OCEAN_GRIB | relpath(ROTDIR) }}/0p25/{{ head }}0p25.f{{ fhr3 }}.grib2"
     - "{{ COM_OCEAN_GRIB | relpath(ROTDIR) }}/0p25/{{ head }}0p25.f{{ fhr3 }}.grib2.idx"
     {% endif %}
