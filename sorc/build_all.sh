@@ -16,7 +16,7 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w][-f]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -d:
@@ -35,6 +35,8 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w]
     Execute all build scripts with -v option to turn on verbose where supported
   -w:
     Use structured wave grid
+  -f:
+    Build the UFS model using the -DFASTER=ON option
 EOF
   exit 1
 }
@@ -53,9 +55,10 @@ _build_job_max=20
 _quick_kill="NO"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:dghj:kuvw" option; do
+while getopts ":a:dghj:kuvwf" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
+    f) _build_ufs_opt+="-j ";;
     d) _build_debug="-d" ;;
     g) _build_gsi="YES" ;;
     h) _usage;;
