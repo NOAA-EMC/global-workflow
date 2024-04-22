@@ -15,7 +15,7 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET', 'HERCULES',
-                       'WCOSS2', 'S4', 'CONTAINER', 'AWSPW']
+                       'WCOSS2', 'S4', 'CONTAINER', 'AWSPW', 'GAEA']
 
     def __init__(self, host=None):
 
@@ -51,6 +51,8 @@ class Host:
             machine = 'S4'
         elif container is not None:
             machine = 'CONTAINER'
+        elif os.path.exists('/gpfs'):
+            machine = 'GAEA' 
         elif pw_csp is not None:
             if pw_csp.lower() not in ['azure', 'aws', 'gcp']:
                 raise ValueError(
