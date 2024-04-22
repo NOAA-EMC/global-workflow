@@ -53,8 +53,8 @@ deterministic:
         - ["{{ COM_ATMOS_GENESIS }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"]
         {% endif %}
         {% if path_exists(COM_ATMOS_GENESIS ~ "/trak.gfso.atcfunix." ~ cycle_YMDH) %}
-        - ["{{ COM_ATMOS_TRACK }}/trak.gfso.atcfunix.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"]
-        - ["{{ COM_ATMOS_TRACK }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_GENESIS }}/trak.gfso.atcfunix.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_GENESIS }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
         {% endif %}
         ## Only created if tracking is on and there were systems to track
         {% for basin in ["epac", "natl"] %}
