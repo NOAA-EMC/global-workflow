@@ -27,24 +27,24 @@
 # This directory is a good candidate for compression
 #Z
 
-_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
+#_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDYm1_/
+_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDYm1_/
 + /18/
 + /18/atmos/
 + /18/atmos/mem???/
-+ /18/atmos/mem???/gdas.t??z.ratminc.nc
-+ /18/atmos/gdas.t??z.atmf006.ensmean.nc
-+ /18/atmos/gdas.t??z.atmf009.ensmean.nc
++ /18/atmos/mem???/gdas.t??z.atmf006.nc
++ /18/atmos/mem???/gdas.t??z.atmf009.nc
 - *
 E
 # This directory is a good candidate for compression
 #Z
-_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDY_/
+#_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDY_/
+_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDY_/
 + /18/
 + /18/atmos/
 + /18/atmos/mem???/
-+ /18/atmos/mem???/gdas.t??z.ratminc.nc
-+ /18/atmos/gdas.t??z.atmf006.ensmean.nc
-+ /18/atmos/gdas.t??z.atmf009.ensmean.nc
++ /18/atmos/mem???/gdas.t??z.atmf006.nc
++ /18/atmos/mem???/gdas.t??z.atmf009.nc
 - *
 E
 # This directory is a good candidate for compression
