@@ -2,14 +2,16 @@
 
 import sys
 import os
+from typing import List
 from wxflow import SQLiteDB, SQLiteDBError
+from githubpr import GitHubPR
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, REMAINDER
+import argparse
 
 
 def full_path(string):
     """
     full_path Get the absolute path of a file or directory.
-
     Parameters
     ----------
     string : str
@@ -25,6 +27,7 @@ def full_path(string):
     NotADirectoryError
         If the provided string does not represent a valid file or directory.
     """
+
     if os.path.isfile(string) or os.path.isdir(os.path.dirname(string)):
         return os.path.abspath(string)
     else:
@@ -40,10 +43,11 @@ def create_table(db: SQLiteDB):
     db : SQLiteDB
         The database to create.
     """
+
     db.create_table('pr_list', ['pr INTEGER PRIMARY KEY UNIQUE', 'state TEXT', 'status TEXT', 'reset_id INTEGER', 'cases TEXT'])
 
 
-def add_pr(db: SQLiteDB, pr: str):
+def add_pr(ci_database: SQLiteDB, pr: str) -> bool:
     """
     Add a pull request to the database.
 
@@ -51,28 +55,34 @@ def add_pr(db: SQLiteDB, pr: str):
     ----------
     ci_database : SQLiteDB
         The database to add the pull request to.
+
     pr : str
         The pull request to add.
     """
+
     entities = (pr, 'Open', 'Ready', 0, 'ci_repo')
     try:
-        db.insert_data('pr_list', entities)
+        ci_database.insert_data('pr_list', entities)
+        return True
     except (SQLiteDBError.IntegrityError) as e:
         if 'unique' in str(e).lower():
             print(f"pr {pr} already is in list: nothing added")
+            return False
 
 
-def update_pr(db: SQLiteDB, args):
+def update_pr(ci_database: SQLiteDB, args: argparse.Namespace):
     """
     Update a pull request in the database.
 
     Parameters
     ----------
-    db : SQLiteDB
+    ci_database : SQLiteDB
         The database to update the pull request in.
+
     args : argparse.Namespace
         The command line arguments.
     """
+
     if len(args.update_pr) < 2:
         print(f"update_pr must have at least one vaule to update")
         sys.exit(0)
@@ -80,10 +90,10 @@ def update_pr(db: SQLiteDB, args):
     update_list = ['state', 'status', 'reset_id', 'cases']
     for value in args.update_pr[1:]:
         update = update_list.pop(0)
-        db.update_data('pr_list', update, value, 'pr', args.update_pr[0])
+        ci_database.update_data('pr_list', update, value, 'pr', args.update_pr[0])
 
 
-def display_db(db, display):
+def display_db(ci_database: SQLiteDB, display: List[str]) -> list:
     """
     Display the database.
 
@@ -91,23 +101,54 @@ def display_db(db, display):
     ----------
     ci_database : SQLiteDB
         The database to display.
-    display : list
-        The command line argument values.
+
+    display : argparse.Namespace
+        The command line arguments.
 
     Returns
     -------
     list
         The rows of the database.
     """
+
     values = []
     if len(display) == 1:
-        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f'pr = {display[0]}')
-    else:
-        rows = db.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
+        rows = ci_database.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'], f"pr = '{display[0]}'")
+    if len(display) == 2:
+        rows = ci_database.fetch_data('pr_list', ['pr'], f"state = '{display[0]}' AND status = '{display[1]}'")
+    if len(display) == 0:
+        rows = ci_database.fetch_data('pr_list', ['pr', 'state', 'status', 'reset_id', 'cases'])
     for row in rows:
         values.append(' '.join(map(str, row)))
 
     return values
+
+
+def update_database(ci_database: SQLiteDB) -> list:
+    """
+    Update the database from the GitHub PRs
+    - only PRs from host machine are added to the database
+    - if the PR is already in the database it its added to the kill list
+
+    Parameters
+    ----------
+    ci_database : SQLiteDB
+        The database to update.
+
+    Returns
+    -------
+    list
+        The kill list of pull requests.
+    """
+
+    gh = GitHubPR()
+    pr_ready_list, pr_kill_list = gh.get_open_pr_list()
+    for pr in pr_ready_list:
+        if not add_pr(ci_database, str(pr)):
+            if pr not in pr_kill_list:
+                pr_kill_list.append(pr)
+    pr_kill_list = list(set(pr_kill_list))
+    return pr_kill_list
 
 
 def input_args():
@@ -119,9 +160,9 @@ def input_args():
     argparse.Namespace
         The parsed command line arguments.
     """
-
     description = """Arguments for creating and updating db file for pr states
     """
+
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
@@ -132,6 +173,9 @@ def input_args():
     parser.add_argument('--update_pr', nargs=REMAINDER, metavar=('pr', 'state', 'status', 'reset_id', 'cases'),
                         help='updates state and status of a given pr', required=False)
     parser.add_argument('--display', nargs='*', help='output pr table', required=False)
+    parser.add_argument('--list', nargs=2, metavar=('state', 'status'), required=False)
+    parser.add_argument('--update_database', help='use labels from Open GitHub PRs to update database state and produces a kill list',
+                        action='store_true', required=False)
     args = parser.parse_args()
     return args
 
@@ -159,5 +203,14 @@ if __name__ == '__main__':
     if args.display is not None:
         for rows in display_db(ci_database, args.display):
             print(rows)
+    if args.list:
+        for rows in display_db(ci_database, [args.list[0], args.list[1]]):
+            print(rows, end=' ')
+        print()
+    if args.update_database:
+        pr_kill_list = update_database(ci_database)
+        for pr in pr_kill_list:
+            print(pr, end=' ')
+        print()
 
     ci_database.disconnect()
