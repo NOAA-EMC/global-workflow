@@ -39,7 +39,8 @@ UFS_det(){
   RERUN="NO"
 
   # RERUN is only available for RUN=gfs|gefs It is not available for RUN=enkfgdas|enkfgfs
-  if [[ "${RUN}" == "enkfgdas" ]] || [[ "${RUN}" == "enkfgfs" ]]; then
+  # RERUN is only available for RUN=gfs|gefs It is not available for RUN=gdas|enkfgdas|enkfgfs
+  if [[ "${RUN}" =~ "gdas" ]] || [[ "${RUN}" == "enkfgfs" ]]; then
     echo "RERUN is not available for RUN='${RUN}'"
     return 0
   fi

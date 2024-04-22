@@ -428,7 +428,7 @@ if [[ ${DO_CA:-"NO"} = "YES" ]]; then
 EOF
 fi
 
-if [[ "${DO_LAND_PERT:-}" == "YES" ]]; then
+if [[ "${DO_LAND_PERT:-NO}" == "YES" ]]; then
   cat >> input.nml << EOF
   lndp_type = ${lndp_type:-2}
   n_var_lndp = ${n_var_lndp:-0}
