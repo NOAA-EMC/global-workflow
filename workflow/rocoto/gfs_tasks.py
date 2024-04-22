@@ -486,7 +486,7 @@ class GFSTasks(Tasks):
     def aeroanlinit(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlgenb'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

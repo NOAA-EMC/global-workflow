@@ -286,19 +286,24 @@ class AerosolAnalysis(Analysis):
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = config.BERROR_DATA_DIR
         b_datestr = to_fv3time(config.BERROR_DATE)
+        analysis_dir = config.COM_CHEM_ANALYSIS
+        cycle_datestr = to_fv3time(config.current_cycle)
         berror_list = []
 
+        # the stddev is computed every cycle and is available in COM
         for ftype in ['stddev']:
-            coupler = f'{b_datestr}.{ftype}.coupler.res'
+            coupler = f'{cycle_datestr}.{ftype}.coupler.res'
             berror_list.append([
-                os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
+                os.path.join(analysis_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
             ])
-            template = f'{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
+            template = f'{cycle_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
             for itile in range(1, config.ntiles + 1):
                 tracer = template.format(tilenum=itile)
                 berror_list.append([
-                    os.path.join(b_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
+                    os.path.join(analysis_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
                 ])
+        
+        # the remaining B matrix files are fixed and come from a fix directory
         radius = 'cor_aero_universe_radius'
         berror_list.append([
             os.path.join(b_dir, radius), os.path.join(config.DATA, 'berror', radius)

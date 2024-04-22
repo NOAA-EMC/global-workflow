@@ -109,13 +109,20 @@ class AerosolBMatrix(BMatrix):
         # copy stddev files to ROTDIR
         logger.info('Copying std. dev. files to ROTDIR')
         template = f'{to_fv3time(self.task_config.current_cycle)}.stddev.fv_tracer.res.tile{{tilenum}}.nc'
-        inclist = []
+        stddevlist = []
+        # actual std dev tracer files
         for itile in range(1, self.task_config.ntiles + 1):
             tracer = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'stddev', tracer)
             dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, tracer)
-            inclist.append([src, dest])
-        FileHandler({'copy': inclist}).sync()
+            stddevlist.append([src, dest])
+        # coupler file
+        coupler = f'{to_fv3time(self.task_config.current_cycle)}.stddev.coupler.res'
+        src = os.path.join(self.task_config.DATA, 'stddev', coupler)
+        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, coupler)
+        stddevlist.append([src, dest])
+
+        FileHandler({'copy': stddevlist}).sync()
 
     @logit(logger)
     def link_bmatexe(self) -> None:
