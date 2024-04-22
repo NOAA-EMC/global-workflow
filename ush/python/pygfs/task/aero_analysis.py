@@ -302,7 +302,7 @@ class AerosolAnalysis(Analysis):
                 berror_list.append([
                     os.path.join(analysis_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
                 ])
-        
+
         # the remaining B matrix files are fixed and come from a fix directory
         radius = 'cor_aero_universe_radius'
         berror_list.append([
