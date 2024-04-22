@@ -7,9 +7,9 @@ set -x
 # Author:   Rahul Mahajan
 # Org:      NCEP/EMC
 # Abstract: This script unpacks GSI diagnostic files, runs them through a python
-#           script wdqms.py and creates CSV files for certain observation sub-types
-#           This script then copies them to COM and issues DBN alerts for successfully
-#           generated WDQMS products
+#           script ush/wdqms.py, and creates CSV files.
+#           These CSV files contain observation information, residual statistics,
+#           and data use in the assimilation for certain observation sub-types
 # History Log:
 #   2024-04-01  Rahul Mahajan  Initial Version.
 # Usage:
