@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.atmanlfv3inc ##########
+# Atm Var Analysis specific
+
+echo "BEGIN: config.atmanlfv3inc"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmanlfv3inc
+
+export JEDIYAML=${PARMgfs}/gdas/atm/utils/fv3jedi_fv3inc_variational.yaml.j2
+export JEDIEXE=${EXECgfs}/fv3jedi_fv3inc.x
+
+echo "END: config.atmanlfv3inc"

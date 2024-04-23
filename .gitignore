@@ -179,7 +179,7 @@ ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/jediinc2fv3.py
 ush/ufsda
-ush/finddate.sh
+ush/soca
 ush/make_NTC_file.pl
 ush/make_ntc_bull.pl
 ush/make_tif.sh

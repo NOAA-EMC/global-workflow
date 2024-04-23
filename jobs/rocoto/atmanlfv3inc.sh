@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
@@ -9,16 +8,17 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="prepoceanobs"
+export job="atmanlfv3inc"
 export jobid="${job}.$$"
 
 ###############################################################
-# setup python path for class defs and utils
-
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush"
+# setup python path for workflow utilities and tasks
+wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
+export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGLOBAL_PREP_OCEAN_OBS
+"${HOMEgfs}/jobs/JGLOBAL_ATM_ANALYSIS_FV3_INCREMENT"
 status=$?
 exit "${status}"
