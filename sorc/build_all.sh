@@ -58,7 +58,7 @@ OPTIND=1
 while getopts ":a:dfghj:kuvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
-    f) _build_ufs_opt+="-j ";;
+    f) _build_ufs_opt+="-f ";;
     d) _build_debug="-d" ;;
     g) _build_gsi="YES" ;;
     h) _usage;;
