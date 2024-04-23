@@ -1,6 +1,28 @@
 #!/bin/bash
 set -x
 
+################################################################################
+# UNIX Script Documentation Block
+# Name:     exgdas_atmos_analysis_wdqms.sh
+# Author:   Rahul Mahajan
+# Org:      NCEP/EMC
+# Abstract: This script unpacks GSI diagnostic files, runs them through a python
+#           script ush/wdqms.py, and creates CSV files.
+#           These CSV files contain observation information, residual statistics,
+#           and data use in the assimilation for certain observation sub-types
+# History Log:
+#   2024-04-01  Rahul Mahajan  Initial Version.
+# Usage:
+# Input Files:
+#   ${RUN}.t${cyc}z.cnvstat
+# Output Files:
+#   ${RUN}.t${cyc}z.${otype}.csv
+#   where: otype = synop | temp | marine
+# Condition codes:
+#   == 0 : success
+#   != 0 : non-fatal error encountered while generating output file
+################################################################################
+
 # Input GSI diagnostic file containing inputs to wdqms.py
 CNVSTAT="${RUN}.t${cyc}z.cnvstat"
 
