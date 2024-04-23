@@ -19,7 +19,7 @@ mandatory:
     - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
     {% endif %}
     {% for fhr in range(fhmin, fhmax+fhout, fhout) %}
-    - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf006.nc"
+    - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
     - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
     {% endfor %}
 
