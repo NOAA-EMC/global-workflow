@@ -16,7 +16,7 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w][-f]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -d:
@@ -55,7 +55,7 @@ _build_job_max=20
 _quick_kill="NO"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:dghj:kuvwf" option; do
+while getopts ":a:dfghj:kuvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     f) _build_ufs_opt+="-j ";;
