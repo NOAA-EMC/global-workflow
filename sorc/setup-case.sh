@@ -7,7 +7,7 @@
 
  GLOBALWORKFLOWTEMP=/contrib/Wei.Huang/run
  GLOBALWORKFLOWHOME=/contrib/Wei.Huang/src/global-workflow-cloud
- PSLOT=c48atm
+ PSLOT=c96atm
  CONFIGDIR=${GLOBALWORKFLOWHOME}/parm/config
  IDATE=2024010100
  EDATE=2024010100
@@ -24,7 +24,7 @@
         --app ATM \
         --pslot ${PSLOT} \
         --configdir ${CONFIGDIR}/gfs \
-        --resdetatmos 48 \
+        --resdetatmos 96 \
         --comroot ${COMROOT} \
         --expdir ${EXPDIR}
 
