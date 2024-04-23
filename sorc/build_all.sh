@@ -21,6 +21,8 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w]
     Build a specific UFS app instead of the default
   -d:
     Build in debug mode
+  -f:
+    Build the UFS model using the -DFASTER=ON option
   -g:
     Build GSI
   -h:
@@ -35,8 +37,6 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w]
     Execute all build scripts with -v option to turn on verbose where supported
   -w:
     Use structured wave grid
-  -f:
-    Build the UFS model using the -DFASTER=ON option
 EOF
   exit 1
 }
