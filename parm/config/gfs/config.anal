@@ -150,4 +150,8 @@ if [[ ${RUN_ENVIR} == "emc" ]]; then
   #   fi
 fi
 
+export AIRS_CADS=${AIRS_CADS:-".false."}
+export CRIS_CADS=${CRIS_CADS:-".false."}
+export IASI_CADS=${IASI_CADS:-".false."}
+
 echo "END: config.anal"

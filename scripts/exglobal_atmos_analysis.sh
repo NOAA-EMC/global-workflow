@@ -678,13 +678,18 @@ if [ ${DOHYBVAR} = "YES" ]; then
       SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=${l4densvar},lwrite4danl=${lwrite4danl},${SETUP}"
       JCOPTS="ljc4tlevs=.true.,${JCOPTS}"
       STRONGOPTS="tlnmc_option=3,${STRONGOPTS}"
-      OBSQC="c_varqc=0.04,airs_cads=.false.,cris_cads=.false.,iasi_cads=.false.,${OBSQC}"
+      OBSQC="c_varqc=0.04,${OBSQC}"
    fi
 fi
 
 if [ ${DONST} = "YES" ]; then
    NST="nstinfo=${NSTINFO},fac_dtl=${FAC_DTL},fac_tsl=${FAC_TSL},zsea1=${ZSEA1},zsea2=${ZSEA2},${NST}"
 fi
+
+export AIRS_CADS=${AIRS_CADS:-".false."}
+export CRIS_CADS=${CRIS_CADS:-".false."}
+export IASI_CADS=${IASI_CADS:-".false."}
+OBSQC="airs_cads={AIRS_CADS},cris_cads=${CRIS_CADS},iasi_cads=${IASI_CADS},${OBSQC}"
 
 ##############################################################
 # Create global_gsi namelist
