@@ -27,7 +27,7 @@
 # This directory is a good candidate for compression
 #Z
 
-_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
+_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDYm1_/
 + /12/
 + /12/atmos/
 + /12/atmos/mem???/
@@ -38,7 +38,7 @@ _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas
 E
 # This directory is a good candidate for compression
 #Z
-_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDY_/
+_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDY_/
 + /12/
 + /12/atmos/
 + /12/atmos/mem???/
