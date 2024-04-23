@@ -62,6 +62,7 @@ mandatory:
     {% endif %}
     {% endif %}  # Full cycle
     - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
+    # TODO explicitly name the atmos_prod log files to archive
     - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_prod_f*.log"
     {% for fhr in range(0, FHMAX + FHOUT, FHOUT) %}
     - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"

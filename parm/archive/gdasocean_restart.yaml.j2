@@ -4,5 +4,6 @@
 name: "GDASOCEAN_RESTART"
 target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_restart.tar"
 mandatory:
+    # TODO explicitly name the restart files to archive
     - '{{ COM_OCEAN_RESTART | relpath(ROTDIR) }}/*'
     - '{{ COM_MED_RESTART | relpath(ROTDIR) }}/*'

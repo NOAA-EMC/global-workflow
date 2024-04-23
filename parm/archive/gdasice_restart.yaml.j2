@@ -4,4 +4,5 @@
 name: "GDASICE_RESTART"
 target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice_restart.tar"
 mandatory:
-    - '{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/*'
+    # TODO explicitly name the restart files to archive
+    - '{{ COM_ICE_RESTART | relpath(ROTDIR) }}/*'
