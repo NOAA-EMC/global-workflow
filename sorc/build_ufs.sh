@@ -12,10 +12,10 @@ while getopts ":da:fj:vw" option; do
   case "${option}" in
     d) BUILD_TYPE="Debug";;
     a) APP="${OPTARG}";;
+    f) FASTER="ON";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
     w) PDLIB="OFF";;
-    f) FASTER="ON";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       ;;
