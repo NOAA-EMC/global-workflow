@@ -68,7 +68,7 @@ local CICE_RESTART_IOTASKS=-99
 local CICE_RESTART_FORMAT=${CICE_IO_FORMAT:-"pnetcdf2"}
 local CICE_DUMPFREQ="y"  # "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 local CICE_DUMPFREQ_N=10000  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
-local CICE_DIAGFREQ=$(( 86400 / DT_CICE ))  # frequency of diagnostic output in timesteps, recommended for 1x per day 
+local CICE_DIAGFREQ=$(( 86400 / DT_CICE ))  # frequency of diagnostic output in timesteps, recommended for 1x per day
 local CICE_HISTFREQ_N="0, 0, ${FHOUT_OCNICE}, 1, 1"
 if [[ "${RUN}" =~ "gdas" ]]; then
   local CICE_HIST_AVG=".false., .false., .false., .false., .false."   # DA needs instantaneous
@@ -124,10 +124,16 @@ if [[ ! -f "${template}" ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi
-source "${USHgfs}/atparse.bash"
 rm -f "${DATA}/ice_in"
 atparse < "${template}" >> "${DATA}/ice_in"
 echo "Rendered ice_in:"
 cat "${DATA}/ice_in"
+
+# Create a ice.restart_file when runtype is "continue"
+# This file is not needed when runtype is "initial"
+rm -f "${DATA}/ice.restart_file"
+if [[ "${runtype}" == "continue" ]]; then
+  echo "${DATA}/cice_model.res.nc" > "${DATA}/ice.restart_file"
+fi
 
 }
