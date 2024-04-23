@@ -4,8 +4,8 @@
 name: "GDAS_RESTARTB"
 target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas_restartb.tar"
 mandatory:
-    {% for r_time in range(restart_interval_gdas, FHMAX + restart_interval_gdas, restart_interval_gdas %}
-    {% set r_timedelta = (r_time + "H") | to_timedelta %}
+    {% for r_time in range(restart_interval_gdas, FHMAX + restart_interval_gdas, restart_interval_gdas) %}
+    {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
     {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
     {% set r_YMD = r_dt | to_YMD %}
     {% set r_HH = r_dt | strftime("%H") %}

@@ -26,7 +26,9 @@ def main():
             'FHMIN_GFS', 'FHMAX_GFS', 'FHOUT_GFS', 'ARCH_GAUSSIAN', 'MODE',
             'FHOUT_OCNICE', 'FHOUT_OCNICE_GFS', 'DO_BUFRSND', 'DOHYBVAR',
             'ARCH_GAUSSIAN_FHMAX', 'ARCH_GAUSSIAN_FHINC', 'ARCH_GAUSSIAN_FHINC',
-            'DOIAU', 'OCNRES', 'ICERES']
+            'DOIAU', 'OCNRES', 'ICERES', 'NUM_SND_COLLECTIVES', 'FHOUT_WAV',
+            'FHOUT_HF_WAV', 'FHMAX_WAV', 'FHMAX_HF_WAV', 'FHMAX_WAV_GFS',
+            'restart_interval_gdas', 'restart_interval_gfs']
 
     archive_dict = AttrDict()
     for key in keys:
