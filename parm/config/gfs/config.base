@@ -184,7 +184,6 @@ export DO_AERO="NO"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export FRAC_GRID=".true."
-export CCPP_SUITE="FV3_GFS_v17_p8_ugwpv1"
 
 # Set operational resolution
 export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it used?
