@@ -511,8 +511,11 @@ class GFSTasks(Tasks):
 
         deps = []
         dep_dict = {
-            'type': 'task', 'name': f'{self.cdump}aeroanlinit',
             'type': 'task', 'name': f'{self.cdump}aeroanlgenb',
+        }
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {
+            'type': 'task', 'name': f'{self.cdump}aeroanlinit',
         }
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
