@@ -278,6 +278,12 @@ export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 export FHOUT_OCNICE_GFS=6
+export FHMIN_WAV=0
+export FHOUT_WAV=3
+export FHMAX_HF_WAV=120
+export FHOUT_HF_WAV=1
+export FHMAX_WAV=${FHMAX:-9}
+export FHMAX_WAV_GFS=${FHMAX_GFS}
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
@@ -375,6 +381,24 @@ fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
 
+# Determine restart intervals
+# For IAU, write restarts at beginning of window also
+if [[ "${DOIAU_ENKF:-}" == "YES" ]]; then
+  export restart_interval_enkfgdas="3"
+else
+  export restart_interval_enkfgdas="6"
+fi
+
+if [[ "${DOIAU}" == "YES" ]]; then
+  export restart_interval_gdas="3"
+else
+  export restart_interval_gdas="6"
+fi
+
+# Write gfs restart files to rerun fcst from any break point
+export restart_interval_gfs=${restart_interval_gfs:-12}
+export restart_interval_enkfgfs=${restart_interval_enkfgfs:-12}
+
 export GSI_SOILANAL=@GSI_SOILANAL@
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
@@ -430,5 +454,8 @@ if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
+
+# Number of regional collectives to create soundings for
+export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
 
 echo "END: config.base"

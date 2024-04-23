@@ -275,11 +275,8 @@ if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
     # Variables used in DA cycling
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
 
-    if [[ "${DOIAU}" == "YES" ]]; then
-      export restart_interval="3"
-    else
-      export restart_interval="6"
-    fi
+    # Write gfs restart files to rerun fcst from any break point
+    export restart_interval=${restart_interval_gdas:-6}
 
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
