@@ -17,33 +17,34 @@ export COMPONENT="atmos"
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
-export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
+
+GRID="0p25" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT:COM_ATMOS_WMO_TMPL
+if [[ ! -d "${COMOUT}" ]]; then
+  mkdir -m 775 -p "${COMOUT}"
+fi
 
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
-
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exgfs_atmos_fbwind.sh
+"${SCRgfs}/exgfs_atmos_fbwind.sh"
 export err=$?;err_chk
 ########################################################
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "${KEEPDATA}" != "YES" ] ; then
-  rm -rf ${DATA}
+if [[ "${KEEPDATA}" != "YES" ]] ; then
+  rm -rf "${DATA}"
 fi
 

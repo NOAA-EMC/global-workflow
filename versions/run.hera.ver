@@ -6,6 +6,7 @@ export hpss_ver=hpss
 export ncl_ver=6.6.2
 export R_ver=3.5.0
 export gempak_ver=7.4.2
+export perl_ver=5.38.0
 
 source "${HOMEgfs:-}/versions/run.spack.ver"
 export spack_mod_path="/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"

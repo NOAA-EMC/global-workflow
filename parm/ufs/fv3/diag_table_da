@@ -1,16 +1,16 @@
 "fv3_history",    0,  "hours",  1,  "hours",  "time"
 "fv3_history2d",  0,  "hours",  1,  "hours",  "time"
-"ocn_da%4yr%2mo%2dy%2hr", 1, "hours", 1, "hours", "time", 1,  "hours"
+"@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr", 1, "hours", 1, "hours", "time", 1,  "hours"
 
-"ocean_model",    "geolon",    "geolon",   "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
-"ocean_model",    "geolat",    "geolat",   "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
-"ocean_model",    "SSH",       "ave_ssh",  "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
-"ocean_model",    "MLD_0125",  "MLD",      "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
-"ocean_model_z",  "u",         "u",        "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
-"ocean_model_z",  "v",         "v",        "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
-"ocean_model_z",  "h",         "h",        "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
-"ocean_model_z",  "salt",      "Salt",     "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
-"ocean_model_z",  "temp",      "Temp",     "ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model",    "geolon",    "geolon",   "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model",    "geolat",    "geolat",   "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model",    "SSH",       "ave_ssh",  "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model",    "MLD_0125",  "MLD",      "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model_z",  "u",         "u",        "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model_z",  "v",         "v",        "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model_z",  "h",         "h",        "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model_z",  "salt",      "Salt",     "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
+"ocean_model_z",  "temp",      "Temp",     "@[MOM6_OUTPUT_DIR]/ocn_da%4yr%2mo%2dy%2hr",  "all",  .false.,  "none",  2
 
 "gfs_dyn",     "ucomp",       "ugrd",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "vcomp",       "vgrd",         "fv3_history",    "all",  .false.,  "none",  2

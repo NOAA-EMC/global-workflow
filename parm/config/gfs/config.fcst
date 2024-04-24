@@ -135,7 +135,11 @@ fi
 
 # PBL/turbulance schemes
 export hybedmf=".false."
-export satmedmf=".true."
+if [[ "${CCPP_SUITE}" == "FV3_global_nest"* ]]; then
+  export satmedmf=".false."
+else
+  export satmedmf=".true."
+fi
 export isatmedmf=1
 tbf=""
 if [[ "${satmedmf}" == ".true." ]]; then tbf="_satmedmf" ; fi
@@ -207,6 +211,20 @@ case ${imp_physics} in
         export nord=2
         export dddmp=0.1
         export d4_bg=0.12
+
+        if [[ "${CCPP_SUITE}" == "FV3_global_nest"* ]]; then
+          export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_thompson_aero_tke${tbp}"
+          export ltaerosol=".true."
+          export lcnorm=".true."
+          export do_mynnedmf=".true."
+          export do_mynnsfclay=".true."
+          export imfshalcnv=5
+          export imfdeepcnv=5
+          export betascu=0.5
+          export betamcu=1.5
+          export betadcu=8.0
+        fi
+
         ;;
     11) # GFDL
         export ncld=5

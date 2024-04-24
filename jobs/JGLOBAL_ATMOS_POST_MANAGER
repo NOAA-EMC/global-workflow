@@ -17,7 +17,7 @@ export RUN=${RUN:-gfs}
 ###########################
 export EXT_FCST=NO
 
-YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY
 
 ########################################################
 # Execute the script.

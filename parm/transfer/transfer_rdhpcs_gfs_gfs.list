@@ -24,25 +24,45 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # transferred.
 
-# This directory is a good candidate for compression
-#Z
-
-_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
-+ /18/
-+ /18/atmos/
-+ /18/atmos/mem???/
-+ /18/atmos/mem???/gdas.t??z.atmf006.nc
-+ /18/atmos/mem???/gdas.t??z.atmf009.nc
-- *
-E
-# This directory is a good candidate for compression
-#Z
-_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDY_/
-+ /18/
-+ /18/atmos/
-+ /18/atmos/mem???/
-+ /18/atmos/mem???/gdas.t??z.atmf006.nc
-+ /18/atmos/mem???/gdas.t??z.atmf009.nc
+#_COMROOT_/gfs/_SHORTVER_/gfs._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/gfs._PDY_/
+_COMROOT_/gfs/_SHORTVER_/gfs._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/gfs._PDY_/
++ /??/
++ /??/atmos/
++ /??/atmos/gfs.t??z.*bufr*
++ /??/atmos/gfs.t??z.engicegrb
++ /??/atmos/gfs.t??z.*tcvitals*tm00
++ /??/atmos/gfs.t??z.atmanl.nc
++ /??/atmos/gfs.t??z.sfcanl.nc
++ /??/atmos/gfs.t??z.master.grb2f*
++ /??/atmos/gfs.t??z.pgrb2.0p25.f*
++ /??/atmos/gfs.t??z.sfluxgrbf*
++ /??/atmos/gfs.t??z.gcip.f00.grib2
++ /??/atmos/gfs.t??z.atmf000.nc
++ /??/atmos/gfs.t??z.atmf003.nc
++ /??/atmos/gfs.t??z.atmf006.nc
++ /??/atmos/gfs.t??z.atmf009.nc
++ /??/atmos/gfs.t??z.atmf012.nc
++ /??/atmos/gfs.t??z.atmf015.nc
++ /??/atmos/gfs.t??z.atmf018.nc
++ /??/atmos/gfs.t??z.atmf021.nc
++ /??/atmos/gfs.t??z.atmf024.nc
++ /??/atmos/gfs.t??z.atmf027.nc
++ /??/atmos/gfs.t??z.atmf030.nc
++ /??/atmos/gfs.t??z.atmf033.nc
++ /??/atmos/gfs.t??z.atmf036.nc
++ /??/atmos/gfs.t??z.atmf039.nc
++ /??/atmos/gfs.t??z.atmf042.nc
++ /??/atmos/gfs.t??z.atmf045.nc
++ /??/atmos/gfs.t??z.atmf048.nc
++ /??/atmos/gfs.t??z.sfcf024.nc
++ /??/atmos/gfs.t??z.sfcf027.nc
++ /??/atmos/gfs.t??z.sfcf030.nc
++ /??/atmos/gfs.t??z.sfcf033.nc
++ /??/atmos/gfs.t??z.sfcf036.nc
++ /??/atmos/gfs.t??z.sfcf039.nc
++ /??/atmos/gfs.t??z.sfcf042.nc
++ /??/atmos/gfs.t??z.sfcf045.nc
++ /??/atmos/gfs.t??z.sfcf048.nc
 - *
 E
 # This directory is a good candidate for compression

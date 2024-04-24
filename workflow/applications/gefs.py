@@ -17,7 +17,7 @@ class GEFSAppConfig(AppConfig):
         configs = ['stage_ic', 'fcst', 'atmos_products']
 
         if self.nens > 0:
-            configs += ['efcs']
+            configs += ['efcs', 'atmos_ensstat']
 
         if self.do_wave:
             configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
@@ -51,6 +51,9 @@ class GEFSAppConfig(AppConfig):
             tasks += ['efcs']
 
         tasks += ['atmos_prod']
+
+        if self.nens > 0:
+            tasks += ['atmos_ensstat']
 
         if self.do_ocean:
             tasks += ['ocean_prod']

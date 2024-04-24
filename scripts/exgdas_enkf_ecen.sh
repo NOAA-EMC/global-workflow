@@ -118,10 +118,10 @@ for imem in $(seq 1 $NMEM_ENS); do
    gmemchar="mem"$(printf %03i $smem)
    memchar="mem"$(printf %03i $imem)
 
-   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
+   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
       COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -x \
+   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
       COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
    ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atmf00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
