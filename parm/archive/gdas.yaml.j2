@@ -36,14 +36,10 @@ mandatory:
     - "logs/{{ cycle_YMDH }}/{{ RUN }}verfozn.log"
     {% endif %}
     {% if DO_VERFRAD %}
-    - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
-    - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
-    - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/low_count.{{ cycle_YMDH }}"
     - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_angle.tar.gz"
     - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcoef.tar.gz"
     - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcor.tar.gz"
     - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_time.tar.gz"
-    - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/warning.{{ cycle_YMDH }}"
     - "logs/{{ cycle_YMDH }}/{{ RUN }}verfrad.log"
     {% endif %}
     {% if DO_VMINMON %}
@@ -78,6 +74,12 @@ mandatory:
 optional:
     {% if not current_cycle == SDATE and MODE == "cycled" %}
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
+    {% if DO_VERFRAD %}
+    - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
+    - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
+    - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/low_count.{{ cycle_YMDH }}"
+    - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/warning.{{ cycle_YMDH }}"
+    {% endif %}
     {% if DO_VERFOZN %}
     {% set oznmon_types = [
        "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",
