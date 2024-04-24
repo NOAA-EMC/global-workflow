@@ -389,7 +389,7 @@ else
   export restart_interval_enkfgdas="6"
 fi
 
-if [[ "${DOIAU}" == "YES" ]]; then
+if [[ "${DOIAU}" == "YES" && "${DOHYBVAR}" == "YES" ]]; then
   export restart_interval_gdas="3"
 else
   export restart_interval_gdas="6"

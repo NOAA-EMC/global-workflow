@@ -14,7 +14,7 @@ mandatory:
     {% for mem in range(first_group_mem, last_group_mem + 1) %}
     {% set imem = mem - first_group_mem %}
     {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
-    {% for r_time in range(restart_interval, fhmax + restart_interval, restart_interval) %}
+    {% for r_time in range(restart_interval, fhmax + 1, restart_interval) %}
     {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
     {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
     {% set r_prefix = r_dt | to_YMD + "." + r_dt | strftime("%H") + "0000" %}

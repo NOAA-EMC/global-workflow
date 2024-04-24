@@ -12,7 +12,7 @@ mandatory:
     {% endfor %}
     - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/coupler"
     - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/fv_core.res.nc"
-    {% for r_time in range(restart_interval_gfs, FHMAX_GFS + restart_interval_gfs, restart_inverval_gfs) %}
+    {% for r_time in range(restart_interval_gfs, FHMAX_GFS + 1, restart_inverval_gfs) %}
     {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
     {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
     {% set r_YMD = r_dt | to_YMD %}
