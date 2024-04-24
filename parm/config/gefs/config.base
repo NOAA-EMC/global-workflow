@@ -215,6 +215,11 @@ export FHOUT_GFS=6
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 export FHOUT_OCNICE_GFS=6
+export FHMIN_WAV=0
+export FHOUT_WAV=3
+export FHMAX_HF_WAV=120
+export FHOUT_HF_WAV=1
+export FHMAX_WAV_GFS=${FHMAX_GFS}
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
@@ -228,6 +233,7 @@ export FHOUT_ENKF=${FHOUT_GFS}
 
 # GFS restart interval in hours
 export restart_interval_gfs=12
+export restart_interval_enkfgfs=12
 # NOTE: Do not set this to zero.  Instead set it to $FHMAX_GFS
 # TODO: Remove this variable from config.base and reference from config.fcst
 # TODO: rework logic in config.wave and push it to parsing_nameslist_WW3.sh where it is actually used
