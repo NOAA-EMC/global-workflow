@@ -1,13 +1,6 @@
 #! /usr/bin/env bash
 
-#####
-## "parsing_namelist_FV3.sh"
-## This script writes namelist for FV3 model
-##
-## This is the child script of ex-global forecast,
-## writing namelist for FV3
-## This script is a direct execution.
-#####
+# parsing namelist of FV3, diag_table, etc.
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034
@@ -43,11 +36,12 @@ cat "${DIAG_TABLE_APPEND}"
 } >> diag_table_template
 
 local template=diag_table_template
-local SYEAR=${current_cycle:0:4} 
+local SYEAR=${current_cycle:0:4}
 local SMONTH=${current_cycle:4:2}
-local SDAY=${current_cycle:6:2} 
+local SDAY=${current_cycle:6:2}
 local CHOUR=${current_cycle:8:2}
-source "${USHgfs}/atparse.bash"
+local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
+
 atparse < "${template}" >> "diag_table"
 
 
@@ -470,7 +464,7 @@ if [[ ${DO_CA:-"NO"} = "YES" ]]; then
 EOF
 fi
 
-if [[ ${DO_LAND_PERT:-"NO"} = "YES" ]]; then
+if [[ "${DO_LAND_PERT:-NO}" == "YES" ]]; then
   cat >> input.nml << EOF
   lndp_type = ${lndp_type:-2}
   n_var_lndp = ${n_var_lndp:-0}
@@ -681,7 +675,7 @@ EOF
   pbl_taper = ${pbl_taper:-"0,0,0,0.125,0.25,0.5,0.75"}
 EOF
   fi
-  
+
   if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
     cat >> input.nml <<EOF
   OCNSPPT=${OCNSPPT}
@@ -699,7 +693,7 @@ EOF
   ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
 EOF
   fi
-  
+
   if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
     cat >> input.nml <<EOF
   OCNSPPT=${OCNSPPT}
@@ -719,7 +713,6 @@ EOF
   fi
 
   cat >> input.nml << EOF
-  ${nam_stochy_nml:-}
 /
 EOF
 
@@ -732,13 +725,11 @@ EOF
   ISEED_LNDP = ${ISEED_LNDP:-${ISEED}}
   lndp_var_list = ${lndp_var_list}
   lndp_prt_list = ${lndp_prt_list}
-  ${nam_sfcperts_nml:-}
 /
 EOF
   else
     cat >> input.nml << EOF
 &nam_sfcperts
-  ${nam_sfcperts_nml:-}
 /
 EOF
   fi

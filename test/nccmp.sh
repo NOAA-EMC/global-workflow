@@ -1,15 +1,15 @@
 #! /usr/bin/env bash
 
+set -eu
+
 # shellcheck disable=SC2155,SC2312
 HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
 declare -rx HOMEgfs
 
 source "${HOMEgfs}/ush/load_fv3gfs_modules.sh" 1>/dev/null 2>&1
+module load "nccmp/${nccmp_ver:-"1.9.0.1"}"
 
-ncfile=${1?}
+file1=${1:?}
+file2=${2:?}
 
-ncdump -h "${ncfile}" 1>/dev/null 2>&1  # redirect stdout and stderr to /dev/null to suppress output in cron
-rc=$?
-# If there is no error, rc=0, else rc!=0
-
-exit "${rc}"
+nccmp -d -S -f -B --warn=format "${file1}" "${file2}"

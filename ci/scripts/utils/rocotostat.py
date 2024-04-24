@@ -95,7 +95,11 @@ if __name__ == '__main__':
         error_return = rocoto_status['UNKNOWN']
         rocoto_state = 'UNKNOWN'
     elif rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
-        error_return = -3
+        #
+        #  TODO for now a STALLED state will be just a warning as it can
+        #  produce a false negative if there is a timestamp on a file dependency.
+        #
+        #   error_return = -3
         rocoto_state = 'STALLED'
     else:
         rocoto_state = 'RUNNING'

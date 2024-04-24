@@ -24,47 +24,26 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # transferred.
 
-_COMROOT_/gfs/_SHORTVER_/gdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/gdas._PDYm1_/
-+ /??/
-+ /??/atmos/
-+ /??/atmos/gdas.t??z*tcvitals*
-+ /??/atmos/gdas.*bufr*
-+ /??/atmos/gdas.t??z.abias_pc
-+ /??/atmos/gdas.t??z.abias_air
-+ /??/atmos/gdas.t??z.abias
-+ /??/atmos/gdas.t??z.sfcf*.nc
-+ /??/atmos/gdas.t??z.engicegrb
-+ /??/atmos/gdas.t??z.atmf0*.nc
-+ /??/atmos/gdas.t??z.radstat
-+ /??/atmos/gdas.t??z.atmanl.nc
-+ /??/atmos/gdas.t??z.atmges.nc
-+ /??/atmos/gdas.t??z.atmgm3.nc
-+ /??/atmos/gdas.t??z.atmgp3.nc
-+ /??/atmos/gdas.t??z.sfcanl.nc
-- *
-E
-# This directory is a good candidate for compression
-#Z
-_COMROOT_/gfs/_SHORTVER_/gdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/gdas._PDY_/
-+ /??/
-+ /??/atmos/
-+ /??/atmos/gdas.t??z*tcvitals*
-+ /??/atmos/gdas.*bufr*
-+ /??/atmos/gdas.t??z.abias_pc
-+ /??/atmos/gdas.t??z.abias_air
-+ /??/atmos/gdas.t??z.abias
-+ /??/atmos/gdas.t??z.sfcf*.nc
-+ /??/atmos/gdas.t??z.engicegrb
-+ /??/atmos/gdas.t??z.atmf0*.nc
-+ /??/atmos/gdas.t??z.radstat
-+ /??/atmos/gdas.t??z.atmanl.nc
-+ /??/atmos/gdas.t??z.atmges.nc
-+ /??/atmos/gdas.t??z.atmgm3.nc
-+ /??/atmos/gdas.t??z.atmgp3.nc
-+ /??/atmos/gdas.t??z.sfcanl.nc
-+ /??/atmos/gdas.t??z.sstgrb
-- *
-E
 # This directory is a good candidate for compression
 #Z
 
+_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDYm1_/
++ /06/
++ /06/atmos/
++ /06/atmos/mem???/
++ /06/atmos/mem???/gdas.t??z.atmf006.nc
++ /06/atmos/mem???/gdas.t??z.atmf009.nc
+- *
+E
+# This directory is a good candidate for compression
+#Z
+_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDY_/
++ /06/
++ /06/atmos/
++ /06/atmos/mem???/
++ /06/atmos/mem???/gdas.t??z.atmf006.nc
++ /06/atmos/mem???/gdas.t??z.atmf009.nc
+- *
+E
+# This directory is a good candidate for compression
+#Z
