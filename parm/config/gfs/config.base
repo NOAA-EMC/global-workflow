@@ -78,6 +78,12 @@ export DO_VERFRAD="YES"    # Radiance data assimilation monitoring
 export DO_VMINMON="YES"    # GSI minimization monitoring
 export DO_MOS="NO"         # GFS Model Output Statistics - Only supported on WCOSS2
 
+if [[ ${machine} == "HERCULES" ]]; then
+    # TODO - Monitor jobs are not yet able to build on Hercules
+    export DO_VERFOZN="NO"
+    export DO_VERFRAD="NO"
+fi
+
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
 #  if want MOS written to HPSS.   Should update arch.sh to

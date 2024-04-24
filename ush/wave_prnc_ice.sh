@@ -36,7 +36,7 @@ source "${USHgfs}/preamble.sh"
   rm -rf ice
   mkdir ice
   cd ice
-  ln -s ${DATA}/postmsg .
+  ln -s "${DATA}/postmsg" postmsg
 
 # 0.b Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
