@@ -41,9 +41,6 @@ optional:
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int"
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
-    - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}amsua_n19.satbias.nc4"
-    - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}amsua_n19.satbias_cov.nc4"
-    - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}amsua_n19.tlapse.txt"
     {% if DO_JEDISNOWDA %}
     - "{{ COM_CONF | relpath(ROTDIR) }}/{{ head }}letkfoi.yaml"
     {% endif %}
