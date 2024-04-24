@@ -150,6 +150,8 @@ if [[ ${RUN_ENVIR} == "emc" ]]; then
   #   fi
 fi
 
+# Flag to turn on (.true.) or off (.false.) the infrared cloud and aerosol detection software
+# for AIRS, CrIS, and IASI.  Default is .false.
 export AIRS_CADS=${AIRS_CADS:-".false."}
 export CRIS_CADS=${CRIS_CADS:-".false."}
 export IASI_CADS=${IASI_CADS:-".false."}
