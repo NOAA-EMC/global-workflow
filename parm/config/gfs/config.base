@@ -302,6 +302,7 @@ export WRITE_NSFLIP=".true."
 
 # IAU related parameters
 export DOIAU="@DOIAU@"        # Enable 4DIAU for control with 3 increments
+if [[ "${MODE}" == "cycled" && "${SDATE}" == "${PDY}${cyc}" && ${EXP_WARM_START} == ".true." ]]; then export DOIAU="NO"; fi
 export IAUFHRS="3,6,9"
 export IAU_FHROT=${IAUFHRS%%,*}
 export IAU_DELTHRS=6
