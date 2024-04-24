@@ -14,7 +14,11 @@ local SMONTH=${tPDY:4:2}
 local SDAY=${tPDY:6:2}
 local SHOUR=${tcyc}
 # FHMAX
-local FHROT=${IAU_FHROT:-0}
+if [[ "${USE_REPLAY_ICS:-"false"}" == "true" ]]; then
+    local FHROT=3
+else
+    local FHROT=${IAU_FHROT:-0}
+fi
 local DT_ATMOS=${DELTIM}
 local RESTART_INTERVAL="${restart_interval} -1"
 # QUILTING

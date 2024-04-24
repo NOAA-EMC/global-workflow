@@ -18,7 +18,7 @@ FV3_postdet(){
 
   echo "warm_start = ${warm_start}"
   echo "RERUN = ${RERUN}"
-
+   
   #-------------------------------------------------------
   if [[ "${warm_start}" = ".true." ]] || [[ "${RERUN}" = "YES" ]]; then
     #-------------------------------------------------------
@@ -123,6 +123,18 @@ EOF
     echo SUB "${FUNCNAME[0]}": Initial conditions must exist in "${DATA}/INPUT", ABORT!
     exit 1
   fi
+  
+  if (( MEMBER > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
+    increment_file="${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000.fv3_perturbation.nc"
+    if [[ -f ${increment_file} ]]; then
+      ${NLN} "${increment_file}" "${DATA}/INPUT/fv3_increment.nc"
+      read_increment=".true."
+    else
+      echo "FATAL ERROR: Atmos perturbation ${increment_file} not found, ABORT!"
+      exit 111
+    fi 
+  fi
+        
 
   # If doing IAU, change forecast hours
   if [[ "${DOIAU}" = "YES" ]]; then
@@ -683,6 +695,10 @@ MOM6_postdet() {
 
   # Copy MOM6 ICs
   ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+  if [[ ! -f "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res.nc" ]]; then
+    echo "FATAL ERROR: MOM6 restart file not found at ${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.MOM.res.nc, ABORT!"
+    exit 112
+  fi
   case ${OCNRES} in
     "025")
       local nn
@@ -707,7 +723,7 @@ MOM6_postdet() {
   # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
   #     to ensure it does not interfere with the GFS
   if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-     ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc"
+     ${NLN} "${COM_OCEAN_RESTART_PREV}/${sPDY}.${scyc}0000.mom6_perturbation.nc" "${DATA}/INPUT/mom6_increment.nc"
   fi
   # Copy MOM6 fixed files
   ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit

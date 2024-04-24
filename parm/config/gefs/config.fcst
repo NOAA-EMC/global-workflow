@@ -256,6 +256,9 @@ else
   export io_layout="1,1"
 fi
 
+if [[ ${USE_REPLAY_ICS} == "true" ]]; then
+    export reforecast="YES"
+fi
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
