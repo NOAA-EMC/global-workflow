@@ -200,11 +200,12 @@ FV3_nml() {
   source "${USHgfs}/parsing_namelists_FV3.sh"
   source "${USHgfs}/parsing_model_configure_FV3.sh"
 
+  # Call the appropriate namelist functions
   if [[ "${DO_NEST:-NO}" == YES ]] ; then
       FV3_namelists global_with_nest
       FV3_namelists nest
   else
-      FV3_namelists #default to global without nest
+      FV3_namelists
   fi
   FV3_model_configure
 

@@ -600,7 +600,7 @@ case ${step} in
         [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
       fi
 
-      if [[ ${ntiles} -gt 6 ]] ; then
+      if (( ntiles > 6 )); then
         export layout_x_nest=${layout_x_nest:-10}
         export layout_y_nest=${layout_y_nest:-10}
         export npx_nest=${npx_nest:-1441}
