@@ -23,7 +23,6 @@ mandatory:
     - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
     {% endfor %}
     {% endfor %}
-    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.atm_stoch.res.nc"
     - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
     - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
     {% endfor %}
