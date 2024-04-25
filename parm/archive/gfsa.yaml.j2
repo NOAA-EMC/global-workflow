@@ -42,13 +42,15 @@ optional:
     - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
     - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
     - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
+    {% if DO_JEDIATMVAR %}
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
     - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
+    {% endif %}
     {% endif %}  # cycled
     - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/avno.t{{ cycle_HH }}z.cyclone.trackatcfunix"
     - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/avnop.t{{ cycle_HH }}z.cyclone.trackatcfunix"
-    - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"
-    - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"
+    - "{{ COM_ATMOS_GENESIS | relpath(ROTDIR) }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"
+    - "{{ COM_ATMOS_GENESIS | relpath(ROTDIR) }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"
     - "{{ COM_ATMOS_GENESIS | relpath(ROTDIR) }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"
     - "{{ COM_ATMOS_GENESIS | relpath(ROTDIR) }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"
     # {% if not WRITE_DOPOST %}
