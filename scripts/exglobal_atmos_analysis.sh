@@ -687,9 +687,6 @@ if [ ${DONST} = "YES" ]; then
 fi
 
 # Infrared cloud and aerosol detection software (CADS) on (.true.) - off (.false.) flags 
-export AIRS_CADS=${AIRS_CADS:-".false."}
-export CRIS_CADS=${CRIS_CADS:-".false."}
-export IASI_CADS=${IASI_CADS:-".false."}
 OBSQC="airs_cads=${AIRS_CADS},cris_cads=${CRIS_CADS},iasi_cads=${IASI_CADS},${OBSQC}"
 
 ##############################################################
