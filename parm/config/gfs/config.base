@@ -389,15 +389,13 @@ else
   export restart_interval_enkfgdas="6"
 fi
 
+export restart_interval_enkfgfs=${restart_interval_enkfgdas}
+
 if [[ "${DOIAU}" == "YES" && "${DOHYBVAR}" == "YES" ]]; then
   export restart_interval_gdas="3"
 else
   export restart_interval_gdas="6"
 fi
-
-# Write gfs restart files to rerun fcst from any break point
-export restart_interval_gfs=${restart_interval_gfs:-12}
-export restart_interval_enkfgfs=${restart_interval_enkfgfs:-12}
 
 export GSI_SOILANAL=@GSI_SOILANAL@
 
