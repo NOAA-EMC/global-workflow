@@ -204,10 +204,6 @@ class Archive(Task):
 
         elif arch_dict.RUN == "enkfgdas" or arch_dict.RUN == "enkfgfs":
 
-            if arch_dict.RUN == "enkfgfs":
-                # TODO test enkfgfs archiving and remove this warning
-                print("WARNING enkfgfs archiving has not been tested!")
-
             if arch_dict.ENSGRP == 0:
                 datasets = ["enkf"]
 
