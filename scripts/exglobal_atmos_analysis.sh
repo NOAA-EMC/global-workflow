@@ -686,9 +686,6 @@ if [ ${DONST} = "YES" ]; then
    NST="nstinfo=${NSTINFO},fac_dtl=${FAC_DTL},fac_tsl=${FAC_TSL},zsea1=${ZSEA1},zsea2=${ZSEA2},${NST}"
 fi
 
-# Infrared cloud and aerosol detection software (CADS) on (.true.) - off (.false.) flags 
-OBSQC="airs_cads=${AIRS_CADS},cris_cads=${CRIS_CADS},iasi_cads=${IASI_CADS},${OBSQC}"
-
 ##############################################################
 # Create global_gsi namelist
 cat > gsiparm.anl << EOF
@@ -752,7 +749,8 @@ cat > gsiparm.anl << EOF
   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.false.,nvqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1.0e5,upd_aircraft=.true.,cleanup_tail=.true.,
-  tcp_width=70.0,tcp_ermax=7.35,
+  tcp_width=70.0,tcp_ermax=7.35,airs_cads=${AIRS_CADS},cris_cads=${CRIS_CADS},
+  iasi_cads=${IASI_CADS},
   ${OBSQC}
 /
 &OBS_INPUT
