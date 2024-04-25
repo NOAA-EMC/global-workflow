@@ -36,9 +36,6 @@ EOF
 echo "Rendered input.nml:"
 cat input.nml
 
-# Source functions from this file for filling in templates
-source "${USHgfs}/atparse.bash"
-
 # ================================================================
 # MOM_input
 # ---------

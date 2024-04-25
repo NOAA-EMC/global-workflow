@@ -80,11 +80,12 @@
 source "${USHgfs}/preamble.sh"
 
 # include all subroutines. Executions later.
-source "${USHgfs}/forecast_predet.sh"	# include functions for variable definition
+source "${USHgfs}/forecast_predet.sh" 	# include functions for variable definition
 source "${USHgfs}/forecast_det.sh"  # include functions for run type determination
 source "${USHgfs}/forecast_postdet.sh"	# include functions for variables after run type determination
-source "${USHgfs}/parsing_ufs_configure.sh"	# include functions for ufs_configure processing
-source "${USHgfs}/parsing_model_configure_FV3.sh"
+source "${USHgfs}/parsing_ufs_configure.sh"	 # include functions for ufs_configure processing
+
+source "${USHgfs}/atparse.bash"  # include function atparse for parsing @[XYZ] templated files
 
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
@@ -113,11 +114,8 @@ FV3_predet
 echo "MAIN: Variables before determination of run type loaded"
 
 echo "MAIN: Determining run type"
-FV3_det
-[[ ${cplflx} = .true. ]] && MOM6_det
-[[ ${cplwav} = .true. ]] && WW3_det
-[[ ${cplice} = .true. ]] && CICE_det
-echo "MAIN: RUN Type Determined"
+UFS_det
+echo "MAIN: run type determined"
 
 echo "MAIN: Post-determination set up of run type"
 FV3_postdet
@@ -134,12 +132,8 @@ FV3_nml
 [[ ${cplwav} = .true. ]] && WW3_nml
 [[ ${cplice} = .true. ]] && CICE_nml
 [[ ${cplchm} = .true. ]] && GOCART_rc
-FV3_model_configure
+UFS_configure
 echo "MAIN: Name lists and model configuration written"
-
-echo "MAIN: Writing UFS Configure file"
-writing_ufs_configure
-echo "MAIN: UFS configured"
 
 #------------------------------------------------------------------
 # run the executable
