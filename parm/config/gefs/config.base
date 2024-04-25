@@ -219,7 +219,7 @@ export FHMIN_WAV=0
 export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
-export FHMAX_WAV_GFS=${FHMAX_GFS}
+export FHMAX_WAV=${FHMAX_GFS}
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
