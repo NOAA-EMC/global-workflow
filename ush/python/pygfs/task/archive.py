@@ -169,7 +169,7 @@ class Archive(Task):
 
             if arch_dict.ARCH_GAUSSIAN:
                 datasets.extend(["gfs_flux", "gfs_netcdfb", "gfs_pgrb2b"])
-                print(datasets)
+
                 if arch_dict.MODE == "cycled":
                     datasets.append("gfs_netcdfa")
 
