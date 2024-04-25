@@ -68,6 +68,21 @@ if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${
   skip_mediator=false
 fi
 
+if [[ "${DO_NEST:-NO}" == YES ]] ; then
+    export grid_type=0
+    export target_lat=32.5
+    export target_lon=-135.0
+    export stretch_fac=1.0001
+    export NEST_LON1=-195.000000
+    export NEST_LAT1=-7.500000
+    export NEST_LON2=-75.000000
+    export NEST_LAT2=72.500000
+    export twowaynest=${twowaynest:-.true.}
+else
+    # No nest.
+    export grid_type=-1
+fi
+
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
     "C48")
@@ -105,6 +120,24 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
+        if [[ ${DO_NEST:-NO} == YES ]] ; then
+            export DELTIM=450
+            export layout_x_gfs=4
+            export layout_y_gfs=4
+            export layout_x_nest=12
+            export layout_y_nest=10
+            export nest_refine=4
+            export nest_ioffset=4
+            export nest_joffset=9
+            export npx_nest=361
+            export npy_nest=241
+            export NEST_DLON=0.25
+            export NEST_DLAT=0.25
+            export WRITE_GROUP=2
+            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=2
+            export WRITE_GROUP_GFS=2
+            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=2
+        fi
         ;;
     "C192")
         export DELTIM=450
@@ -123,6 +156,24 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
         export WRITE_GROUP_GFS=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=5
+        if [[ ${DO_NEST:-NO} == YES ]] ; then
+            export DELTIM=225
+            export layout_x_gfs=5
+            export layout_y_gfs=6
+            export layout_x_nest=15
+            export layout_y_nest=25
+            export nest_refine=4
+            export nest_ioffset=7
+            export nest_joffset=19
+            export npx_nest=721
+            export npy_nest=481
+            export NEST_DLON=0.125
+            export NEST_DLAT=0.125
+            export WRITE_GROUP=2
+            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15
+            export WRITE_GROUP_GFS=2
+            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=15
+        fi
         ;;
     "C384")
         export DELTIM=300
@@ -141,6 +192,26 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10
+        if [[ ${DO_NEST:-NO} == YES ]] ; then
+            export DELTIM=150
+            export layout_x=8
+            export layout_y=8
+            export layout_x_gfs=8
+            export layout_y_gfs=8
+            export layout_x_nest=34
+            export layout_y_nest=24
+            export nest_refine=4
+            export nest_ioffset=13
+            export nest_joffset=37
+            export npx_nest=1441
+            export npy_nest=961
+            export NEST_DLON=0.0625
+            export NEST_DLAT=0.0625
+            export WRITE_GROUP=2
+            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20
+            export WRITE_GROUP_GFS=2
+            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20
+        fi
         ;;
     "C768")
         export DELTIM=150
@@ -159,6 +230,28 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20 #Note this should be 10 for WCOSS2
+        if [[ ${DO_NEST:-NO} == YES ]] ; then
+            export DELTIM=75
+            export layout_x=16
+            export layout_y=10
+            export layout_x_gfs=16
+            export layout_y_gfs=10
+            export layout_x_nest=48
+            export layout_y_nest=45
+            export nthreads_fv3=2
+            export nthreads_fv3_gfs=2
+            export nest_refine=4
+            export nest_ioffset=24
+            export nest_joffset=72
+            export npx_nest=2881
+            export npy_nest=1921
+            export NEST_DLON=0.0325
+            export NEST_DLAT=0.0325
+            export WRITE_GROUP=2
+            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=90
+            export WRITE_GROUP_GFS=2
+            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=90
+        fi
         ;;
     "C1152")
         export DELTIM=120
@@ -209,6 +302,9 @@ export WRTTASK_PER_GROUP_PER_THREAD_GFS
 
 (( ntasks_fv3 = layout_x * layout_y * 6 ))
 (( ntasks_fv3_gfs = layout_x_gfs * layout_y_gfs * 6 ))
+if [[ "${DO_NEST:-NO}" == YES ]] ; then
+  (( ntasks_fv3_gfs += layout_x_nest * layout_y_nest ))
+fi
 export ntasks_fv3
 export ntasks_fv3_gfs
 
@@ -241,7 +337,11 @@ export cplice=".false."
 export cplchm=".false."
 export cplwav=".false."
 export cplwav2atm=".false."
-export CCPP_SUITE="${CCPP_SUITE:-FV3_GFS_v17_p8_ugwpv1}"
+if [[ "${DO_NEST:-NO}" == YES ]] ; then
+  export CCPP_SUITE="${CCPP_SUITE:-FV3_global_nest_v1}"
+else
+  export CCPP_SUITE="${CCPP_SUITE:-FV3_GFS_v17_p8_ugwpv1}"
+fi
 model_list="atm"
 
 # Mediator specific settings

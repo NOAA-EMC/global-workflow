@@ -175,6 +175,10 @@ EOF
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
         ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
         ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}"
+        if [[ "${DO_NEST:-NO}" == YES ]] ; then
+            ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.grb2f${FH3}" "GFSPRS.GrbF${FH2}.nest02"
+            ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}.nest02"
+        fi
       fi
     done
   else  # TODO: Is this even valid anymore?
@@ -196,7 +200,12 @@ FV3_nml() {
   source "${USHgfs}/parsing_namelists_FV3.sh"
   source "${USHgfs}/parsing_model_configure_FV3.sh"
 
-  FV3_namelists
+  if [[ "${DO_NEST:-NO}" == YES ]] ; then
+      FV3_namelists global_with_nest
+      FV3_namelists nest
+  else
+      FV3_namelists #default to global without nest
+  fi
   FV3_model_configure
 
   echo "SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created"
