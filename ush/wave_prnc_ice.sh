@@ -36,7 +36,7 @@ source "${USHgfs}/preamble.sh"
   rm -rf ice
   mkdir ice
   cd ice
-  ln -s "${DATA}/postmsg" postmsg
+  ${NLN} "${DATA}/postmsg" postmsg
 
 # 0.b Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
@@ -71,7 +71,7 @@ source "${USHgfs}/preamble.sh"
 
 # 0.c Links to working directory
 
-  ln -s ${DATA}/mod_def.$WAVEICE_FID mod_def.ww3
+  ${NLN} ${DATA}/mod_def.$WAVEICE_FID mod_def.ww3
 
 # --------------------------------------------------------------------------- #
 # 1.  Get the necessary files

@@ -592,8 +592,8 @@ if [ -s fort.*  ]; then
   rm fort.*
 fi
 
-ln -s -f ${vdir}/vitals.${symd}${dishh}                  fort.31
-ln -s -f ${vdir}/vitals.upd.${cmodel}.${symd}${dishh}    fort.51
+${NLN} ${vdir}/vitals.${symd}${dishh}                  fort.31
+${NLN} ${vdir}/vitals.upd.${cmodel}.${symd}${dishh}    fort.51
 
 ##$XLF_LINKSSH
 #if [ -z $XLF_LINKSSH ] ; then
@@ -1528,19 +1528,19 @@ if [ -s fort.*  ]; then
   rm fort.*
 fi
 
-ln -s -f ${gribfile}                                   fort.11
-ln -s -f ${vdir}/tmp.gfs.atcfunix.${symdh}             fort.14
-ln -s -f ${vdir}/vitals.upd.${cmodel}.${symd}${dishh}  fort.12
-ln -s -f ${ixfile}                                     fort.31
-ln -s -f ${vdir}/trak.${cmodel}.all.${symdh}           fort.61
-ln -s -f ${vdir}/trak.${cmodel}.atcf.${symdh}          fort.62
-ln -s -f ${vdir}/trak.${cmodel}.radii.${symdh}         fort.63
-ln -s -f ${vdir}/trak.${cmodel}.atcfunix.${symdh}      fort.64
+${NLN} ${gribfile}                                   fort.11
+${NLN} ${vdir}/tmp.gfs.atcfunix.${symdh}             fort.14
+${NLN} ${vdir}/vitals.upd.${cmodel}.${symd}${dishh}  fort.12
+${NLN} ${ixfile}                                     fort.31
+${NLN} ${vdir}/trak.${cmodel}.all.${symdh}           fort.61
+${NLN} ${vdir}/trak.${cmodel}.atcf.${symdh}          fort.62
+${NLN} ${vdir}/trak.${cmodel}.radii.${symdh}         fort.63
+${NLN} ${vdir}/trak.${cmodel}.atcfunix.${symdh}      fort.64
 
 if [ $BKGFREQ -eq 1 ]; then
-  ln -s -f ${FIXgfs}/am/${cmodel}.tracker_leadtimes_hrly fort.15
+  ${NLN} ${FIXgfs}/am/${cmodel}.tracker_leadtimes_hrly fort.15
 elif [ $BKGFREQ -eq 3 ]; then
-  ln -s -f ${FIXgfs}/am/${cmodel}.tracker_leadtimes      fort.15
+  ${NLN} ${FIXgfs}/am/${cmodel}.tracker_leadtimes      fort.15
 fi
 
 ##$XLF_LINKSSH
