@@ -27,16 +27,13 @@ pipeline {
             steps {
                 script {
 
-                    echo "entering Get Machine stage"
-
-                    // def causes = currentBuild.rawBuild.getCauses()
-                    // def isSpawnedFromAnotherJob = causes.any { cause ->
-                    //     cause instanceof hudson.model.Cause.UpstreamCause
-                    // }
+                    def causes = currentBuild.rawBuild.getCauses()
+                    def isSpawnedFromAnotherJob = causes.any { cause ->
+                        cause instanceof hudson.model.Cause.UpstreamCause
+                    }
 
                     def run_nodes = []
-                    // if (isSpawnedFromAnotherJob) {
-                    if (false) {
+                    if (isSpawnedFromAnotherJob) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
                         machine = params.machine
@@ -46,7 +43,7 @@ pipeline {
                             echo "Checking label: ${label}"
                             matcher = label =~ /CI-(.*?)-Ready/
                             if (matcher.matches()) {
-                                def Machine_name = matcher[0][1]
+                                Machine_name = matcher[0][1].toString()
                                 jenkins.model.Jenkins.get().computers.each { c ->
                                     if (c.node.selfLabel.name == "${Machine_name}-EMC") {
                                         run_nodes.add(c.node.selfLabel.name)
@@ -55,9 +52,7 @@ pipeline {
                             }
                         }
                         // Spawning all the jobs on the nodes matching the labels
-                        echo "is this failing"
                         test_machine = run_nodes.last().split('-')[0].toLowerCase()
-                        echo "Running parent job with entent to run: ${test_machine}"
                         if (run_nodes.size() > 1) {
                             run_nodes.init().each { node ->
                                 def machine_name = node.split('-')[0].toLowerCase()
