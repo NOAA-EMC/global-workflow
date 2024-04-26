@@ -26,13 +26,18 @@ pipeline {
             agent { label 'built-in' }
             steps {
                 script {
-                    echo "BUILD CAUSE: ${currentBuild.rawBuild.getCauses()[0].toString()}"
-                    def run_nodes = []
-                    if ( env.Node != 'built-in' ) {
+
+                    def causes = currentBuild.rawBuild.getCauses()
+                    def isSpawnedFromAnotherJob = causes.any { cause ->
+                        cause instanceof hudson.model.Cause.UpstreamCause
+                    }
+
+                    if (isSpawnedFromAnotherJob) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
                         machine = params.machine
                     } else {
+                        def run_nodes = []
                         echo "This is parent job and testing the listing out of nodes matching labels:"
                         for (label in pullRequest.labels) {
                             matcher = label =~ /CI-(.*?)-Ready/
