@@ -57,6 +57,10 @@ pipeline {
                         for (node in run_nodes) {
                             echo "Node: ${node}"
                         }
+                        echo "Testing init loop"
+                        run_nodes.init().each { node ->
+                            echo "Node: ${node}"
+                        }
                         if (run_nodes.size() > 1) {
                             run_nodes.init().each { node ->
                                 echo "Spawning job on node: ${node}"
