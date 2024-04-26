@@ -84,7 +84,11 @@ export WAVEWND_FID=
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 export FHMAX_WAV=${FHMAX_GFS}
 export WAVHINDH=0
-export FHMIN_WAV=0
+if [[ "${USE_REPLAY_ICS:-"false"}" == "true" ]]; then
+    export FHMIN_WAV=3
+else
+    export FHMIN_WAV=0
+fi
 export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
