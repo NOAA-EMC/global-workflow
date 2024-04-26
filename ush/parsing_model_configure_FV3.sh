@@ -22,7 +22,11 @@ local SMONTH=${model_start_date:4:2}
 local SDAY=${model_start_date:6:2}
 local SHOUR=${model_start_date:8:2}
 # FHMAX
-local FHROT=${IAU_FHROT:-0}
+if [[ "${USE_REPLAY_ICS:-"false"}" == "true" ]]; then
+    local FHROT=3
+else
+    local FHROT=${IAU_FHROT:-0}
+fi
 local DT_ATMOS=${DELTIM}
 local RESTART_INTERVAL="${restart_interval} -1"
 # QUILTING

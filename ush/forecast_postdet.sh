@@ -137,6 +137,17 @@ EOF
     fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
+  
+  if (( MEMBER > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
+    increment_file="${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000.fv3_perturbation.nc"
+    if [[ -f ${increment_file} ]]; then
+      ${NLN} "${increment_file}" "${DATA}/INPUT/fv3_increment.nc"
+      read_increment=".true."
+    else
+      echo "FATAL ERROR: Atmos perturbation ${increment_file} not found, ABORT!"
+      exit 111
+    fi 
+  fi
 
   # If doing IAU, change forecast hours
   if [[ "${DOIAU:-}" == "YES" ]]; then
@@ -402,7 +413,7 @@ MOM6_postdet() {
     # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
     #     to ensure it does not interfere with the GFS when ensemble is updated in the GFS
     if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      ${NCP} "${COM_OCEAN_RESTART_PREV}/${restart_date:0:8}.${restart_date:0:8}0000.mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc" \
+      ${NCP} "${COM_OCEAN_RESTART_PREV}/${restart_date:0:8}.${restart_date:0:8}0000.mom6_perturbation.nc" "${DATA}/INPUT/mom6_increment.nc" \
       || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
     fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then

@@ -6,5 +6,7 @@ base:
   DO_MERGENSST: "NO"
   KEEPDATA: "NO" 
   FHMAX_GFS: 120
+  USE_REPLAY_ICS: "false"
+  USE_ATM_PERTURB_FILES: "false"
   USE_OCN_PERTURB_FILES: "false"
 
