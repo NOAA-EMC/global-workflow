@@ -41,11 +41,13 @@ pipeline {
                         echo "This is parent job so getting list of nodes matching labels:"
                         for (label in pullRequest.labels) {
                             echo "Checking label: ${label}"
-                            matcher = label =~ /CI-(.*?)-Ready/
-                            if (matcher.matches()) {
-                                Machine_name = matcher[0][1].toString()
+                            //matcher = label =~ /CI-(.*?)-Ready/
+                            //if (matcher.matches()) {
+                            if (true) {
+                                //name = matcher[0][1].toString()
+                                name = 'Heracles'
                                 jenkins.model.Jenkins.get().computers.each { c ->
-                                    if (c.node.selfLabel.name == "${Machine_name}-EMC") {
+                                    if (c.node.selfLabel.name == "${name}-EMC") {
                                         run_nodes.add(c.node.selfLabel.name)
                                     }
                                 }
