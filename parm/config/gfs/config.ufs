@@ -105,7 +105,7 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
         ;;
     "C96")
-        if [[ ${DO_NEST:-NO} == YES ]] ; then
+        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           export DELTIM=450
           export layout_x_gfs=4
           export layout_y_gfs=4
@@ -142,7 +142,7 @@ case "${fv3_res}" in
         fi
         ;;
     "C192")
-        if [[ ${DO_NEST:-NO} == YES ]] ; then
+        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           export DELTIM=225
           export layout_x_gfs=5
           export layout_y_gfs=6
@@ -179,7 +179,7 @@ case "${fv3_res}" in
         fi
         ;;
     "C384")
-        if [[ ${DO_NEST:-NO} == YES ]] ; then
+        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           export DELTIM=150
           export layout_x=8
           export layout_y=8
@@ -218,7 +218,7 @@ case "${fv3_res}" in
         fi
         ;;
     "C768")
-        if [[ ${DO_NEST:-NO} == YES ]] ; then
+        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           export DELTIM=75
           export layout_x=16
           export layout_y=10
@@ -307,7 +307,7 @@ export WRTTASK_PER_GROUP_PER_THREAD_GFS
 
 (( ntasks_fv3 = layout_x * layout_y * 6 ))
 (( ntasks_fv3_gfs = layout_x_gfs * layout_y_gfs * 6 ))
-if [[ "${DO_NEST:-NO}" == YES ]] ; then
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
   (( ntasks_fv3_gfs += layout_x_nest * layout_y_nest ))
 fi
 export ntasks_fv3
@@ -342,7 +342,7 @@ export cplice=".false."
 export cplchm=".false."
 export cplwav=".false."
 export cplwav2atm=".false."
-if [[ "${DO_NEST:-NO}" == YES ]] ; then
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
   export CCPP_SUITE="${CCPP_SUITE:-FV3_global_nest_v1}"
 else
   export CCPP_SUITE="${CCPP_SUITE:-FV3_GFS_v17_p8_ugwpv1}"
