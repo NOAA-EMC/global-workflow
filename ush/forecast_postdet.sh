@@ -175,7 +175,7 @@ EOF
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
         ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
         ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}"
-        if [[ "${DO_NEST:-NO}" == YES ]] ; then
+        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.grb2f${FH3}" "GFSPRS.GrbF${FH2}.nest02"
           ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}.nest02"
         fi
@@ -201,7 +201,7 @@ FV3_nml() {
   source "${USHgfs}/parsing_model_configure_FV3.sh"
 
   # Call the appropriate namelist functions
-  if [[ "${DO_NEST:-NO}" == YES ]] ; then
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
     source "${USHgfs}/parsing_namelists_FV3_nest.sh"
     FV3_namelists_nest global
     FV3_namelists_nest nest

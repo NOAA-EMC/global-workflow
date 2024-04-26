@@ -229,7 +229,7 @@ FV3_predet(){
 
   # Conserve total energy as heat globally
   consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
-  if [[ "${DO_NEST:-NO}" == YES ]] ; then
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
     consv_te=0
     k_split=${k_split:-1}
     k_split_nest=${k_split_nest:-4}
@@ -364,7 +364,7 @@ FV3_predet(){
     ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
     ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
   done
-  if [[ "${DO_NEST:-NO}" == YES ]] ; then
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
     ${NLN} "${DATA}/INPUT/oro_data.tile7.nc" "${DATA}/INPUT/oro_data.nest02.tile7.nc"
     ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc"     "${DATA}/INPUT/${CASE}_grid.nest02.tile7.nc"
     ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc"     "${DATA}/INPUT/grid.nest02.tile7.nc"
