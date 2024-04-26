@@ -140,13 +140,9 @@ EOF
   
   if (( MEMBER > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
     increment_file="${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000.fv3_perturbation.nc"
-    if [[ -f ${increment_file} ]]; then
-      ${NLN} "${increment_file}" "${DATA}/INPUT/fv3_increment.nc"
-      read_increment=".true."
-    else
-      echo "FATAL ERROR: Atmos perturbation ${increment_file} not found, ABORT!"
-      exit 111
-    fi 
+    ${NCP} "${increment_file}" "${DATA}/INPUT/fv3_increment.nc" \
+    || ( echo "FATAL ERROR: Unable to copy FV3 perturbation file, ABORT!"; exit 1 )
+     read_increment=".true."
   fi
 
   # If doing IAU, change forecast hours
