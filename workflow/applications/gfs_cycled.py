@@ -38,7 +38,7 @@ class GFSCycledAppConfig(AppConfig):
         configs = ['prep']
 
         if self.do_jediatmvar:
-            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal']
+            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
         else:
             configs += ['anal', 'analdiag']
 
@@ -136,7 +136,7 @@ class GFSCycledAppConfig(AppConfig):
         gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
 
         if self.do_jediatmvar:
-            gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal']
+            gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
         else:
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
