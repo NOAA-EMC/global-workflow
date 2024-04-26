@@ -214,7 +214,7 @@ export FHMAX_GFS=@FHMAX_GFS@
 export FHOUT_GFS=6
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
-export FHOUT_OCNICE_GFS=6
+export FHOUT_OCNICE_GFS=24
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
