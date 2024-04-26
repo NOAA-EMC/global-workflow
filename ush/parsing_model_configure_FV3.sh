@@ -53,7 +53,7 @@ local IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Ensure the template exists
 if [[ "${DO_NEST:-NO}" == YES ]] ; then
-  template="${PARMgfs}/ufs/model_configure.nest.IN"
+  template="${PARMgfs}/ufs/model_configure_nest.IN"
 else
   template="${PARMgfs}/ufs/model_configure.IN"
 fi
