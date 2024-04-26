@@ -12,12 +12,14 @@ import gsi_utils
 from collections import OrderedDict
 import datetime
 
+python2fortran_bool = {True: '.true.', False: '.false.'}
+
 
 # function to calculate analysis from a given increment file and background
 def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 ComIn_Ges, GPrefix,
                 FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
-                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, Cdump):
+                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, Cdump, JEDI):
     print('calcanl_gfs beginning at: ', datetime.datetime.utcnow())
 
     IAUHH = IAUHrs
@@ -273,6 +275,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                          "firstguess_filename": "'ges'",
                          "increment_filename": "'inc.fullres'",
                          "fhr": 6,
+                         "jedi": python2fortran_bool[JEDI],
                          }
 
     gsi_utils.write_nml(namelist, CalcAnlDir6 + '/calc_analysis.nml')
@@ -311,6 +314,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                                      "firstguess_filename": "'ges.ensres'",
                                      "increment_filename": "'siginc.nc'",
                                      "fhr": fh,
+                                     "jedi": python2fortran_bool[JEDI],
                                      }
 
                 gsi_utils.write_nml(namelist, CalcAnlDir6 + '/calc_analysis.nml')
@@ -356,10 +360,11 @@ if __name__ == '__main__':
     NEMSGet = os.getenv('NEMSIOGET', 'nemsio_get')
     IAUHrs = list(map(int, os.getenv('IAUFHRS', '6').split(',')))
     Cdump = os.getenv('CDUMP', 'gdas')
+    JEDI = gsi_utils.isTrue(os.getenv('DO_JEDIATMVAR', 'YES'))
 
     print(locals())
     calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 ComIn_Ges, GPrefix,
                 FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
                 ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc,
-                Cdump)
+                Cdump, JEDI)
