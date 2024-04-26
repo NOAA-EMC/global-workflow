@@ -77,6 +77,7 @@ pipeline {
             steps {
                 script {
                     Machine = machine[0].toUpperCase() + machine.substring(1)
+                    echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         HOME = "${WORKSPACE}"
