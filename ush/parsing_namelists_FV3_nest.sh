@@ -2,8 +2,9 @@
 
 # parsing namelist of FV3, diag_table, etc.
 
-# Disable variable not used warnings
+# Disable variable not used warnings and 'masking return value' warnings
 # shellcheck disable=SC2034
+# shellcheck disable=SC2155
 FV3_namelists_nest(){
 
 # First argument tells us which namelist we're writing:
