@@ -884,7 +884,7 @@ OBS_INPUT::
   beta_s0=0.125,readin_beta=.false.,
   s_ens_h=1000.0,300.0,150.0,685.0,219.2,s_ens_v=-0.5,-0.5,-0.5,0.0,0.0,
   readin_localization=.false.,global_spectral_filter_sd=.false.,
-  r_ensloccov4scl=1,nsclgrp=3,naensloc=4,
+  r_ensloccov4scl=1,nsclgrp=3,naensloc=5,
   aniso_a_en=.false.,oz_univ_static=.false.,uv_hyb_ens=.true.,
   ensemble_path='./ensemble_data/',
   ens_fast_read=.true.,
