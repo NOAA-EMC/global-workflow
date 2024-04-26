@@ -56,8 +56,8 @@ pipeline {
                                 def machine_name = node.split('-')[0].toLowerCase()
                                 echo "Spawning job on node: ${node} with machine name: ${machine_name}"
                                 build job: "/global-workflow/EMC-Pipelines/PR-${env.CHANGE_ID}", parameters: [
-                                    string(name: 'machine', value: ${machine_name}),
-                                    string(name: 'Node', value: ${node}) ],
+                                    string(name: 'machine', value: machine_name),
+                                    string(name: 'Node', value: node) ],
                                     wait: false
                             }
                             machine = run_nodes.last().split('-')[0].toLowerCase()
