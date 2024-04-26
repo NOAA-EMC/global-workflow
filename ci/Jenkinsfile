@@ -27,6 +27,8 @@ pipeline {
             steps {
                 script {
 
+                    echo "entering Get Machine stage"
+
                     def causes = currentBuild.rawBuild.getCauses()
                     def isSpawnedFromAnotherJob = causes.any { cause ->
                         cause instanceof hudson.model.Cause.UpstreamCause
