@@ -32,6 +32,7 @@ pipeline {
                 script {
                     def run_nodes = []
                     echo "env Node: ${env.Node}"
+                    echo "env BUILD_CAUSE: ${env.BUILD_CAUSE}"
                     if ( env.Node != 'built-in' ) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
