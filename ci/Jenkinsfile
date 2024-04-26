@@ -45,7 +45,7 @@ pipeline {
                             //if (matcher.matches()) {
                             if (true) {
                                 //name = matcher[0][1].toString()
-                                name = 'Heracles'
+                                name = 'Hercules'
                                 jenkins.model.Jenkins.get().computers.each { c ->
                                     if (c.node.selfLabel.name == "${name}-EMC") {
                                         run_nodes.add(c.node.selfLabel.name)
