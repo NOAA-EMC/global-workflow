@@ -202,8 +202,9 @@ FV3_nml() {
 
   # Call the appropriate namelist functions
   if [[ "${DO_NEST:-NO}" == YES ]] ; then
-    FV3_namelists global_with_nest
-    FV3_namelists nest
+    source "${USHgfs}/parsing_namelists_FV3_nest.sh"
+    FV3_namelists_nest global
+    FV3_namelists_nest nest
   else
     FV3_namelists
   fi
