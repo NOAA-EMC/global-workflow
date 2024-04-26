@@ -4,7 +4,8 @@ def HOME = 'none'
 def caseList = ''
 // Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
-def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
+//def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
+def repo_url = 'git@github.com:TerrenceMcGuinness-NOAA/global-workflow.git'
 def STATUS = 'Passed'
 
 pipeline {
@@ -21,31 +22,58 @@ pipeline {
              // Each Jenknis Node is connected to said machine via an JAVA agent via an ssh tunnel
              // no op 2
 
-        stage('Get Machine') {
+        stage('1. Get Machine') {
+            //when {
+            //    //expression { env.BUILD_CAUSE != 'UPSTREAMTRIGGER' }
+            //    expression { env.Node == 'built-in' }
+            //}
             agent { label 'built-in' }
             steps {
                 script {
-                    machine = 'none'
-                    for (label in pullRequest.labels) {
-                        echo "Label: ${label}"
-                        if ((label.matches('CI-Hera-Ready'))) {
-                            machine = 'hera'
-                        } else if ((label.matches('CI-Orion-Ready'))) {
-                            machine = 'orion'
-                        } else if ((label.matches('CI-Hercules-Ready'))) {
-                            machine = 'hercules'
+                    if ( env.Node != 'built-in' ) {
+                        echo "machine being set to value passed to this spawned job"
+                        echo "passed machine: ${params.machine}"
+                        machine = params.machine
+                    } else {
+                        echo "This is parent job and testing the listing out of nodes matching labels:"
+                        for (label in pullRequest.labels) {
+                            matcher = label =~ /CI-(.*?)-Ready/
+                            if (matcher.matches()) {
+                                def Machine_name = matcher[0][1]
+                                jenkins.model.Jenkins.get().computers.each { c ->
+                                    if (c.node.selfLabel.name == "${Machine_name}-EMC") {
+                                        run_nodes.add(c.node.selfLabel.name)
+                                    }
+                                }
+                            }
                         }
-                    } // createing a second machine varible with first letter capital
-                      // because the first letter of the machine name is captitalized in the GitHub labels
-                    Machine = machine[0].toUpperCase() + machine.substring(1)
+                        // Spawning all the jobs on the nodes matching the labels
+                        // exept for the last one which will be run on the parent job
+                        if (run_nodes.size() > 1) {
+                            run_nodes.init().each { node ->
+                                echo "Spawning job on node: ${node}"
+                                def machine_name = node.split('-')[0].toLowerCase()
+                                build job: "/global-workflow/EMC-Pipelines/PR-${env.CHANGE_ID}", parameters: [
+                                    string(name: 'machine', value: ${machine_name}),
+                                    string(name: 'Node', value: ${node}) ],
+                                    wait: false
+                            }
+                            machine = run_nodes.last().split('-')[0].toLowerCase()
+                            echo "Running parent job: ${machine}"
+                        } else {
+                            machine = run_nodes[0].split('-')[0].toLowerCase()
+                            echo "Running only the parent job: ${machine}"
+                        }
+                    }
                 }
             }
         }
 
-        stage('Get Common Workspace') {
+        stage('2. Get Common Workspace') {
             agent { label "${machine}-emc" }
             steps {
                 script {
+                    Machine = machine[0].toUpperCase() + machine.substring(1)
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         HOME = "${WORKSPACE}"
@@ -57,7 +85,7 @@ pipeline {
             }
         }
 
-        stage('Build System') {
+        stage('3. Build System') {
             matrix {
                 agent { label "${machine}-emc" }
                 //options {
@@ -141,7 +169,7 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('4. Run Tests') {
             failFast false 
             matrix {
                 agent { label "${machine}-emc" }
@@ -216,7 +244,7 @@ pipeline {
                                         STATUS = 'Failed'
                                         try {
                                             sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
-                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine}\nin\\`${HOME}/RUNTESTS/${pslot}\\`" """)
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in\n\\`${HOME}/RUNTESTS/${pslot}\\`" """)
                                         } catch (Exception e) {
                                             echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                         }
@@ -229,7 +257,7 @@ pipeline {
                 }
             }
         }
-        stage( 'FINALIZE' ) {
+        stage( '5. FINALIZE' ) {
             when { 
                 expression {
                    STATUS == 'Passed'
