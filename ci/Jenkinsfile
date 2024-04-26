@@ -38,8 +38,9 @@ pipeline {
                         echo "passed machine: ${params.machine}"
                         machine = params.machine
                     } else {
-                        echo "This is parent job and testing the listing out of nodes matching labels:"
+                        echo "This is parent job so getting list of nodes matching labels:"
                         for (label in pullRequest.labels) {
+                            echo "Checking label: ${label}"
                             matcher = label =~ /CI-(.*?)-Ready/
                             if (matcher.matches()) {
                                 def Machine_name = matcher[0][1]
