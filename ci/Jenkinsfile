@@ -29,13 +29,14 @@ pipeline {
 
                     echo "entering Get Machine stage"
 
-                    def causes = currentBuild.rawBuild.getCauses()
-                    def isSpawnedFromAnotherJob = causes.any { cause ->
-                        cause instanceof hudson.model.Cause.UpstreamCause
-                    }
+                    // def causes = currentBuild.rawBuild.getCauses()
+                    // def isSpawnedFromAnotherJob = causes.any { cause ->
+                    //     cause instanceof hudson.model.Cause.UpstreamCause
+                    // }
 
                     def run_nodes = []
-                    if (isSpawnedFromAnotherJob) {
+                    // if (isSpawnedFromAnotherJob) {
+                    if (false) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
                         machine = params.machine
