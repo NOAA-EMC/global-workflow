@@ -176,8 +176,8 @@ EOF
         ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
         ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}"
         if [[ "${DO_NEST:-NO}" == YES ]] ; then
-            ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.grb2f${FH3}" "GFSPRS.GrbF${FH2}.nest02"
-            ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}.nest02"
+          ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.grb2f${FH3}" "GFSPRS.GrbF${FH2}.nest02"
+          ${NLN} "${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}.nest02"
         fi
       fi
     done
@@ -202,10 +202,10 @@ FV3_nml() {
 
   # Call the appropriate namelist functions
   if [[ "${DO_NEST:-NO}" == YES ]] ; then
-      FV3_namelists global_with_nest
-      FV3_namelists nest
+    FV3_namelists global_with_nest
+    FV3_namelists nest
   else
-      FV3_namelists
+    FV3_namelists
   fi
   FV3_model_configure
 

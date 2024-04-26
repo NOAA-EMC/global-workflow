@@ -52,34 +52,17 @@ local OUTPUT_FH=${FV3_OUTPUT_FH}
 local IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Ensure the template exists
-template="${PARMgfs}/ufs/model_configure.IN"
+if [[ "${DO_NEST:-NO}" == YES ]] ; then
+  template="${PARMgfs}/ufs/model_configure.nest.IN"
+else
+  template="${PARMgfs}/ufs/model_configure.IN"
+fi
 if [[ ! -f ${template} ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1
 fi
 rm -f "${DATA}/model_configure"
 atparse < "${template}" >> "${DATA}/model_configure"
-
-if [[ "${DO_NEST:-NO}" == YES ]] ; then
-    cat >> model_configure <<EOF
-
-# Output settings for the nest.
-<output_grid_02>
-output_grid:             ${NEST_OUTPUT_GRID}
-imo:                     ${npx_nest}
-jmo:                     ${npy_nest}
-cen_lon:                 ${target_lon}
-cen_lat:                 ${target_lat}
-lon1:                    ${NEST_LON1}
-lat1:                    ${NEST_LAT1}
-lon2:                    ${NEST_LON2}
-lat2:                    ${NEST_LAT2}
-dlon:                    ${NEST_DLON}
-dlat:                    ${NEST_DLAT}
-</output_grid_02>
-EOF
-fi
-
 echo "Rendered model_configure"
 cat "${DATA}/model_configure"
 

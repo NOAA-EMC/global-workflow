@@ -135,9 +135,9 @@ cat > "${nml_file}" <<EOF
   npx = ${npx_here}
   npy = ${npy_here}
   ntiles = ${ntiles_here}
-  ${nested_here:+nested = $nested_here}
-  ${twowaynest_here:+twowaynest = $twowaynest_here}
-  ${nestupdate_here:+nestupdate = $nestupdate_here}
+  ${nested_here:+nested = ${nested_here}}
+  ${twowaynest_here:+twowaynest = ${twowaynest_herei}}
+  ${nestupdate_here:+nestupdate = ${nestupdate_here}}
   npz = ${npz}
   dz_min =  ${dz_min:-"6"}
   psm_bc = ${psm_bc:-"0"}
