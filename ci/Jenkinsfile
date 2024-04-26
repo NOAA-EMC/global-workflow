@@ -40,8 +40,8 @@ pipeline {
                     } else {
                         echo "This is parent job so getting list of nodes matching labels:"
                         for (label in pullRequest.labels) {
-                            matcher = label =~ /CI-(.*?)-Ready/
-                            if (matcher.matches()) {
+                            matcher = (label ==~ /CI-(.*?)-Ready/)
+                            if (matcher) {
                                 def Machine_name = lable.split('-')[1].toString()
                                 jenkins.model.Jenkins.get().computers.each { c ->
                                     if (c.node.selfLabel.name == "${Machine_name}-EMC") {
@@ -50,7 +50,6 @@ pipeline {
                                 }
                             }
                         }
-                        matcher = null
                         // Spawning all the jobs on the nodes matching the labels
                         if (run_nodes.size() > 1) {
                             run_nodes.init().each { node ->
