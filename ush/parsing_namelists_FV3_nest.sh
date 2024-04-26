@@ -4,7 +4,7 @@
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034
-FV3_namelists(){
+FV3_namelists_nest(){
 
 # First argument tells us which namelist we're writing:
 #   global = writing input.nml for running global with a nest
@@ -825,7 +825,7 @@ fi
 
 # Echo out formatted ""${nml_file}""
 echo "===================================="
-echo "FV3_namelists(): '${nml_file}'"
+echo "FV3_namelists_nest(): '${nml_file}'"
 cat "${nml_file}"
 echo "===================================="
 }
