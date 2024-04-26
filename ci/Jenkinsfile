@@ -30,6 +30,8 @@ pipeline {
             agent { label 'built-in' }
             steps {
                 script {
+                    def run_nodes = []
+                    echo "env Node: ${env.Node}"
                     if ( env.Node != 'built-in' ) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
