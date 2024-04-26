@@ -32,12 +32,12 @@ pipeline {
                         cause instanceof hudson.model.Cause.UpstreamCause
                     }
 
+                    def run_nodes = []
                     if (isSpawnedFromAnotherJob) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
                         machine = params.machine
                     } else {
-                        def run_nodes = []
                         echo "This is parent job and testing the listing out of nodes matching labels:"
                         for (label in pullRequest.labels) {
                             matcher = label =~ /CI-(.*?)-Ready/
