@@ -52,6 +52,9 @@ pipeline {
                             }
                         }
                         // Spawning all the jobs on the nodes matching the labels
+                        echo "is this failing"
+                        test_machine = run_nodes.last().split('-')[0].toLowerCase()
+                        echo "Running parent job with entent to run: ${test_machine}"
                         if (run_nodes.size() > 1) {
                             run_nodes.init().each { node ->
                                 def machine_name = node.split('-')[0].toLowerCase()
