@@ -695,6 +695,7 @@ CMEPS_postdet() {
       else
         restart_date="${current_cycle}"
       fi
+      RUN=${rCDUMP} YMD=${restart_date:0:8} HH=${restart_date:8:2} declare_from_tmpl COM_MED_RESTART_PREV:COM_MED_RESTART_TMPL
       cmeps_restart_file="${COM_MED_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
     fi
 
