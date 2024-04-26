@@ -71,9 +71,9 @@ fi
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
   # Describe nest location, interaction with parent, etc.
   export grid_type=0
-  export target_lat=32.5
-  export target_lon=-135.0
   export stretch_fac=1.0001
+  export TARGET_LAT=32.5
+  export TARGET_LON=-135.0
   export NEST_LON1=-195.000000
   export NEST_LAT1=-7.500000
   export NEST_LON2=-75.000000

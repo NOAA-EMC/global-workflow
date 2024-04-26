@@ -211,8 +211,8 @@ EOF
 if [[ "${DO_NEST:-NO}" == YES && ${namelist_mode} =~ global ]] ; then
   cat >> "${nml_file}" <<EOF
   do_schmidt = .true.
-  target_lat = ${target_lat}
-  target_lon = ${target_lon}
+  target_lat = ${TARGET_LAT}
+  target_lon = ${TARGET_LON}
   stretch_fac = ${stretch_fac}
 EOF
 fi
