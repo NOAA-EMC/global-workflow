@@ -746,7 +746,7 @@ case ${step} in
     ;;
 
   "atmos_products")
-    export wtime_atmos_products="00:15:00"
+    export wtime_atmos_products="01:15:00"
     export npe_atmos_products=24
     export nth_atmos_products=1
     export npe_node_atmos_products="${npe_atmos_products}"
@@ -758,7 +758,7 @@ case ${step} in
     ;;
 
   "verfozn")
-    export wtime_verfozn="00:05:00"
+    export wtime_verfozn="00:15:00"
     export npe_verfozn=1
     export nth_verfozn=1
     export npe_node_verfozn=1
