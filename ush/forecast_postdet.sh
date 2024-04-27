@@ -89,15 +89,20 @@ FV3_postdet() {
         fi
       done
 
-      # Need a coupler.res when doing IAU
+      # Need a coupler.res that is consistent with the model start time
       if [[ "${DOIAU}" == "YES" ]]; then
-        rm -f "${DATA}/INPUT/coupler.res"
-        cat >> "${DATA}/INPUT/coupler.res" << EOF
-        3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
-        ${previous_cycle:0:4}  ${previous_cycle:4:2}  ${previous_cycle:6:2}  ${previous_cycle:8:2}  0  0        Model start time: year, month, day, hour, minute, second
-        ${current_cycle_begin:0:4}  ${current_cycle_begin:4:2}  ${current_cycle_begin:6:2}  ${current_cycle_begin:8:2}  0  0        Current model time: year, month, day, hour, minute, second
-EOF
+        local model_start_time="${previous_cycle}"
+        local model_current_time="${current_cycle_begin}"
+      else
+        local model_start_time="${current_cycle}"
+        local model_current_time="${current_cycle}"
       fi
+      rm -f "${DATA}/INPUT/coupler.res"
+      cat >> "${DATA}/INPUT/coupler.res" << EOF
+      3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
+      ${model_start_time:0:4}  ${model_start_time:4:2}  ${model_start_time:6:2}  ${model_start_time:8:2}  0  0        Model start time: year, month, day, hour, minute, second
+      ${model_current_time:0:4}  ${model_current_time:4:2}  ${model_current_time:6:2}  ${model_current_time:8:2}  0  0        Current model time: year, month, day, hour, minute, second
+EOF
 
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
