@@ -258,7 +258,7 @@ pipeline {
                 }
             }
         }
-        stage( '5. FINALIZE' ) {
+        stage( '5. Finalize' ) {
             when { 
                 expression {
                    STATUS == 'Passed'
