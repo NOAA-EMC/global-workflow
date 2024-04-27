@@ -13,8 +13,7 @@ scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-GH=${HOME}/bin/gh
-REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
+REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
@@ -22,7 +21,7 @@ REPO_URL="https://github.com/NOAA-EMC/global-workflow.git"
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules)
+  hera | orion | hercules | wcoss2)
    echo "Running Automated Testing on ${MACHINE_ID}"
    source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
    ;;
@@ -38,7 +37,18 @@ source "${HOMEgfs}/ci/scripts/utils/ci_utils.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 module list
+# Load machine specific modules for ci (only wcoss2 is current)
+if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+  module load "module_gwci.${MACHINE_ID}"
+fi
 set -x
+if ! command -v gh > /dev/null; then
+   GH="${HOME}/bin/gh"
+else
+   GH=$(command -v gh)
+fi
+export GH
+
 rocotostat=$(command -v rocotostat)
 if [[ -z ${rocotostat+x} ]]; then
   echo "rocotostat not found on system"
@@ -58,7 +68,7 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display | grep -v Failed | grep Running | awk '{print $1}') || true
+  pr_list=$("${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Running) || true
 fi
 if [[ -z "${pr_list+x}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
@@ -90,7 +100,7 @@ for pr in ${pr_list}; do
     sed -i "1 i\`\`\`" "${output_ci}"
     sed -i "1 i\All CI Test Cases Passed on ${MACHINE_ID^}:" "${output_ci}"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
-    "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
     # Check to see if this PR that was opened by the weekly tests and if so close it if it passed on all platforms
     weekly_labels=$(${GH} pr view "${pr}" --repo "${REPO_URL}"  --json headRefName,labels,author --jq 'select(.author.login | contains("emcbot")) | select(.headRefName | contains("weekly_ci")) | .labels[].name ') || true
     if [[ -n "${weekly_labels}" ]]; then
@@ -123,31 +133,40 @@ for pr in ${pr_list}; do
     if [[ ! -f "${db}" ]]; then
        continue
     fi
-    rocoto_stat_output=$("${rocotostat}" -w "${xml}" -d "${db}" -s | grep -v CYCLE) || true
-    num_cycles=$(echo "${rocoto_stat_output}" | wc -l) || true
-    num_done=$(echo "${rocoto_stat_output}" | grep -c Done) || true
-    # num_succeeded=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c SUCCEEDED) || true
-    echo "${pslot} Total Cycles: ${num_cycles} number done: ${num_done}" || true
-    num_failed=$("${rocotostat}" -w "${xml}" -d "${db}" -a | grep -c -E 'FAIL|DEAD') || true
-    if [[ ${num_failed} -ne 0 ]]; then
-      "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
-      error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
-      {
-       echo "Experiment ${pslot}  *** FAILED *** on ${MACHINE_ID^}"
-       echo "Experiment ${pslot}  with ${num_failed} tasks failed at $(date +'%D %r')" || true
-       echo "Error logs:"
-       echo "${error_logs}"
-      } >> "${output_ci}"
-      sed -i "1 i\`\`\`" "${output_ci}"
-      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
-      "${HOMEgfs}/ci/scripts/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
-      for kill_cases in "${pr_dir}/RUNTESTS/"*; do
-         pslot=$(basename "${kill_cases}")
-         cancel_slurm_jobs "${pslot}"
-      done
-      break
+
+    set +e
+    rocoto_state="$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}")"
+    rocoto_error=$?
+    rm -f "${output_ci_single}"
+    if [[ "${rocoto_error}" -ne 0 ]]; then
+        "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
+        if [[ "${rocoto_state}" == "STALLED" ]]; then
+          # shellcheck disable=SC2312
+          "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body "Experiment ${pslot} **${rocoto_state}** on ${MACHINE_ID^} at $(date +'%D %r')"
+          "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+          cancel_all_batch_jobs "${pr_dir}/RUNTESTS"
+          exit "${rocoto_error}"
+        fi
+        error_logs=$("${rocotostat}" -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs "${rocotocheck}" -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
+        # shellcheck disable=SC2086
+        ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo "PR_${pr}" > /dev/null
+        # shellcheck disable=SC2086
+        gist_url="$("${HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --gist "PR_${pr}")"
+        {
+          echo "Experiment ${pslot} **${rocoto_state}** on ${MACHINE_ID^} at $(date +'%D %r')" || true
+          echo ""
+          echo "Error logs:"
+          echo "\`\`\`"
+          echo "${error_logs}"
+          echo "\`\`\`"
+          echo "Follow link here to view the contents of the above file(s): [(link)](${gist_url})"
+        } >> "${output_ci_single}"
+        "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
+        "${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+        cancel_all_batch_jobs "${pr_dir}/RUNTESTS"
+        exit "${rocoto_error}"
     fi
-    if [[ "${num_done}" -eq  "${num_cycles}" ]]; then
+    if [[ "${rocoto_state}" == "DONE" ]]; then
       #Remove Experment cases that completed successfully
       rm -Rf "${pslot_dir}"
       rm -Rf "${pr_dir}/RUNTESTS/COMROOT/${pslot}"
@@ -157,7 +176,6 @@ for pr in ${pr_list}; do
       echo "Experiment ${pslot} **SUCCESS** on ${MACHINE_ID^} at ${DATE}" >> "${output_ci_single}"
       echo "Experiment ${pslot} *** SUCCESS *** at ${DATE}" >> "${output_ci}"
       "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
-
     fi
   done
 done

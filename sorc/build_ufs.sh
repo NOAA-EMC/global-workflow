@@ -5,13 +5,14 @@ cwd=$(pwd)
 
 # Default settings
 APP="S2SWA"
-CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: does the g-w need to build with all these CCPP_SUITES?
+CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1,FV3_global_nest_v1"  # TODO: does the g-w need to build with all these CCPP_SUITES?
 PDLIB="ON"
 
-while getopts ":da:j:vw" option; do
+while getopts ":da:fj:vw" option; do
   case "${option}" in
     d) BUILD_TYPE="Debug";;
     a) APP="${OPTARG}";;
+    f) FASTER="ON";;
     j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
     w) PDLIB="OFF";;
@@ -31,7 +32,11 @@ source "./tests/module-setup.sh"
 
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
 [[ ${PDLIB:-"OFF"} = "ON" ]] && MAKE_OPT+=" -DPDLIB=ON"
-[[ ${BUILD_TYPE:-"Release"} = "Debug" ]] && MAKE_OPT+=" -DDEBUG=ON"
+if [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] ; then
+    MAKE_OPT+=" -DDEBUG=ON"
+elif [[ "${FASTER:-OFF}" == ON ]] ; then
+    MAKE_OPT+=" -DFASTER=ON"
+fi
 COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO

@@ -16,11 +16,13 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -d:
     Build in debug mode
+  -f:
+    Build the UFS model using the -DFASTER=ON option
   -g:
     Build GSI
   -h:
@@ -53,9 +55,10 @@ _build_job_max=20
 _quick_kill="NO"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:dghj:kuvw" option; do
+while getopts ":a:dfghj:kuvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
+    f) _build_ufs_opt+="-f ";;
     d) _build_debug="-d" ;;
     g) _build_gsi="YES" ;;
     h) _usage;;
@@ -142,13 +145,9 @@ build_opts["ww3prepost"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_buil
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
-   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" ]]; then
-      echo "NOTE: The GDAS App is not supported on ${MACHINE_ID}.  Disabling build."
-   else
-      build_jobs["gdas"]=8
-      big_jobs=$((big_jobs+1))
-      build_opts["gdas"]="${_verbose_opt} ${_build_debug}"
-   fi
+   build_jobs["gdas"]=8
+   big_jobs=$((big_jobs+1))
+   build_opts["gdas"]="${_verbose_opt} ${_build_debug}"
 fi
 if [[ "${_build_gsi}" == "YES" ]]; then
    build_jobs["gsi_enkf"]=8

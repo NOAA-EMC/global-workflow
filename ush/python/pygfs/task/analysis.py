@@ -229,7 +229,7 @@ class Analysis(Task):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
-        return
+        return exe_dest
 
     @staticmethod
     @logit(logger)
