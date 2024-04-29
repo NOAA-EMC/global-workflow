@@ -473,11 +473,11 @@ MOM6_out() {
   # Coarser than 1/2 degree has a single MOM restart
   local mom6_restart_files mom6_restart_file restart_file
   mom6_restart_files=(MOM.res.nc)
-  # 1/4 degree resolution has 4 additional restarts
+  # 1/4 degree resolution has 3 additional restarts
   case "${OCNRES}" in
     "025")
       local nn
-      for (( nn = 1; nn <= 4; nn++ )); do
+      for (( nn = 1; nn <= 3; nn++ )); do
         mom6_restart_files+=("MOM.res_${nn}.nc")
       done
       ;;
@@ -495,22 +495,20 @@ MOM6_out() {
     done
   fi
 
-  # Copy restarts at the beginning/middle of the next assimilation cycle to COM for RUN=gdas|enkfgdas|enkfgfs
+  # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
-    if [[ "${DOIAU}" == "YES" ]]; then  # Copy restarts at the beginning of the next cycle from DATA to COM
-      restart_date="${next_cycle_begin}"
-    else  # Copy restarts at the middle of the next cycle from DATA to COM
-      restart_date="${next_cycle}"
-    fi
-    echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
-    for mom6_restart_file in "${mom6_restart_files[@]}"; do
-      restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
-      ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
-             "${COM_OCEAN_RESTART}/${restart_file}"
+    restart_date=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    while (( restart_date < forecast_end_cycle )); do
+      echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
+      for mom6_restart_file in "${mom6_restart_files[@]}"; do
+	restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
+        ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
+               "${COM_OCEAN_RESTART}/${restart_file}"
+      done
+      restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
     done
   fi
-
 }
 
 CICE_postdet() {
