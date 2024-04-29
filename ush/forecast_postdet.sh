@@ -598,20 +598,21 @@ CICE_out() {
            "${COM_ICE_RESTART}/${target_file}"
   fi
 
-  # Copy restarts at the beginning/middle of the next assimilation cycle to COM for RUN=gdas|enkfgdas|enkfgfs
+  # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
-    if [[ "${DOIAU}" == "YES" ]]; then  # Copy restarts at the beginning of the next cycle from DATA to COM
-      restart_date="${next_cycle_begin}"
-    else  # Copy restarts at the middle of the next cycle from DATA to COM
-      restart_date="${next_cycle}"
-    fi
-    echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
-    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-    source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-    target_file="${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-    ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
-           "${COM_ICE_RESTART}/${target_file}"
+    restart_date=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    while (( restart_date < forecast_end_cycle )); do
+      
+      echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
+      seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+      source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
+      target_file="${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
+      ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
+             "${COM_ICE_RESTART}/${target_file}"
+
+      restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    done
   fi
 
 }
