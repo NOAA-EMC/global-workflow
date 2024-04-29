@@ -51,7 +51,8 @@ if [[ "${DO_OCN}" == "YES" ]]; then
   YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT \
     COM_OCEAN_HISTORY COM_OCEAN_ANALYSIS
   RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+    COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL \
+    COM_MED_RESTART_PREV:COM_MED_RESTART_TMPL
 fi
 
 if [[ "${DO_ICE}" == "YES" ]]; then
