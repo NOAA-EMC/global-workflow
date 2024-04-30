@@ -49,10 +49,10 @@ class Host:
             machine = 'WCOSS2'
         elif os.path.exists('/data/prod'):
             machine = 'S4'
+        elif os.path.exists('/gpfs/f5'):
+            machine = 'GAEA' 
         elif container is not None:
             machine = 'CONTAINER'
-        elif os.path.exists('/gpfs'):
-            machine = 'GAEA' 
         elif pw_csp is not None:
             if pw_csp.lower() not in ['azure', 'aws', 'gcp']:
                 raise ValueError(
