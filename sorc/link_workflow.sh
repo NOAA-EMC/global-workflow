@@ -10,7 +10,7 @@ function usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-h][-o]
+Usage: ${BASH_SOURCE[0]} [-h][-o][--nest]
   -h:
     Print this help message and exit
   -o:
@@ -25,12 +25,17 @@ RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":ho" option; do
+while getopts ":ho-:" option; do
   case "${option}" in
     h) usage ;;
     o)
       echo "-o option received, configuring for NCO"
       RUN_ENVIR="nco";;
+    -)
+      if [[ "${OPTARG}" == "nest" ]]; then
+        LINK_NEST=ON
+      fi
+      ;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
@@ -81,6 +86,10 @@ esac
 
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
+# global-nest uses different versions of orog and ugwd
+if [[ "${LINK_NEST:-OFF}" == "ON" ]] ; then
+  source "${HOMEgfs}/versions/fix.nest.ver"
+fi
 
 # Link wxflow in ush/python, workflow and ci/scripts
 # TODO: This will be unnecessary when wxflow is part of the virtualenv
