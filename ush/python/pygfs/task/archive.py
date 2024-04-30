@@ -115,12 +115,10 @@ class Archive(Task):
 
         for dataset in parsed_set.datasets:
 
-            archive_filename = os.path.join(archive_parm, dataset + ".yaml.j2")
-            atardir_set = parse_j2yaml(archive_filename, arch_dict)
-            atardir_set["fileset"] = Archive._create_fileset(atardir_set)
-            atardir_set["has_rstprod"] = Archive._has_rstprod(atardir_set.fileset)
+            dataset["fileset"] = Archive._create_fileset(dataset)
+            dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
 
-            atardir_sets.append(atardir_set)
+            atardir_sets.append(dataset)
 
         return arcdir_set, atardir_sets
 
