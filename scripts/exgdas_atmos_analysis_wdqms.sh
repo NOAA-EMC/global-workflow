@@ -47,14 +47,14 @@ cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd into '${DATA}', ABORT!"; exit 
 # These should always be available
 cp "${COMIN}/${CNVSTAT}" .
 rc=$?
-(( rc != 0 )) && ( msg="FATAL ERROR: Unable to copy '${CNVSTAT}' from '${COMIN}', ABORT!"; echo $msg; err_exit $msg )
+(( rc != 0 )) && ( msg="Unable to copy '${CNVSTAT}' from '${COMIN}'"; err_exit "${msg}" )
 for diagfile in "${INPUT_LIST[@]}"; do
   tar -xvf "${CNVSTAT}" "${diagfile}.gz"
   rc=$?
-  (( rc != 0 )) && ( msg="FATAL ERROR: Unable to extract '${diagfile}.gz' from '${CNVSTAT}', ABORT!"; echo $msg; err_exit $msg )
+  (( rc != 0 )) && ( msg="Unable to extract '${diagfile}.gz' from '${CNVSTAT}'"; err_exit "${msg}" )
   gunzip "${diagfile}.gz"
   rc=$?
-  (( rc != 0 )) && ( msg="FATAL ERROR: Unable to gunzip '${diagfile}.gz', ABORT!"; echo $msg; err_exit $msg )
+  (( rc != 0 )) && ( msg="Unable to gunzip '${diagfile}.gz'"; err_exit "${msg}" )
 done
 
 #-------------------------------------------------------------------------------
