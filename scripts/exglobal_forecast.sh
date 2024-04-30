@@ -150,7 +150,10 @@ else
 fi
 
 ${NCP} "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
-${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2
+#${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2
+#srun --mpi=pmi2 -l -n 12 -N 1 --distribution=block:block --hint=nomultithread --cpus-per-task=1 ./ufs_model.x
+#srun --mpi=pmi2 -l -n 12 -N 1 ./ufs_model.x
+srun --mpi=pmi2 -l -n 30 -N 1 --distribution=block:block --hint=nomultithread --cpus-per-task=1 ./ufs_model.x
 export ERR=$?
 export err=${ERR}
 ${ERRSCRIPT} || exit "${err}"

@@ -766,7 +766,7 @@ case ${step} in
     ;;
 
   "verfozn")
-    export wtime_verfozn="00:05:00"
+    export wtime_verfozn="00:15:00"
     export npe_verfozn=1
     export nth_verfozn=1
     export npe_node_verfozn=1

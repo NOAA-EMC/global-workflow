@@ -24,7 +24,16 @@ class GFSTasks(Tasks):
 
         # Atm ICs
         if self.app_config.do_atm:
+            pslot = self._base['PSLOT']
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
+            base_cplic = f"{cpl_ic['BASE_CPLIC']}"
+            cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
+            print('base_cplic =', base_cplic)
+            print('cpl_atmic =', cpl_atmic)
+            print('pslot =', pslot)
+            print('prefix =', prefix)
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{self._base['PSLOT']}/gfs.@Y@m@d/@H/model_data/atmos/input"
+            print('prefix =', prefix)
             for file in ['gfs_ctrl.nc'] + \
                         [f'{datatype}_data.tile{tile}.nc'
                          for datatype in ['gfs', 'sfc']
