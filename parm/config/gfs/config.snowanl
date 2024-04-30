@@ -11,7 +11,7 @@ source "${EXPDIR}/config.resources" snowanl
 export OBS_LIST="${PARMgfs}/gdas/snow/obs/lists/gdas_snow.yaml.j2"
 
 # Name of the JEDI executable and its yaml template
-export JEDIEXE="${EXECgfs}/fv3jedi_letkf.x"
+export JEDIEXE="${EXECgfs}/gdas.x"
 export JEDIYAML="${PARMgfs}/gdas/snow/letkfoi/letkfoi.yaml.j2"
 
 # Ensemble member properties
