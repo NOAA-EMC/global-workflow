@@ -21,7 +21,7 @@ device="nc | ${metaname}"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 fend=F180

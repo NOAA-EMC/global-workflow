@@ -270,7 +270,7 @@ source "${USHgfs}/preamble.sh"
           err=3; export err;${errchk}
           exit $err
         fi
-        ln -s ${gfile} ./out_grd.${wavGRD}
+        ${NLN} ${gfile} ./out_grd.${wavGRD}
       done
 
       if [ "$DOGRI_WAV" = 'YES' ]

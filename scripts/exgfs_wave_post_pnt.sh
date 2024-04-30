@@ -251,7 +251,7 @@ source "${USHgfs}/preamble.sh"
     HH=$(date --utc -d "${PDY:0:8} ${cyc} + ${FHMIN_WAV} hours" +%H)
     HMS="${HH}0000"
     if [[ -f "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
-      ln -s "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
+      ${NLN} "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
         "./out_pnt.${waveuoutpGRD}"
     else
       echo '*************************************************** '
@@ -264,8 +264,8 @@ source "${USHgfs}/preamble.sh"
     fi
 
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
-    ln -fs ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
-    ln -fs ./mod_def.${waveuoutpGRD} ./mod_def.ww3
+    ${NLN} ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
+    ${NLN} ./mod_def.${waveuoutpGRD} ./mod_def.ww3
     export pgm=ww3_outp;. prep_step
     ${EXECgfs}/ww3_outp > buoy_lst.loc 2>&1
     export err=$?;err_chk
@@ -372,7 +372,7 @@ source "${USHgfs}/preamble.sh"
     pfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
     if [ -f  ${pfile} ]
     then
-      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD}
+      ${NLN} ${pfile} ./out_pnt.${waveuoutpGRD}
     else
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS} "
       echo ' '

@@ -28,7 +28,7 @@ else
     local FHROT=${IAU_FHROT:-0}
 fi
 local DT_ATMOS=${DELTIM}
-local RESTART_INTERVAL="${restart_interval} -1"
+local RESTART_INTERVAL="${FV3_RESTART_FH[*]}"
 # QUILTING
 local QUILTING_RESTART=".true."
 local WRITE_GROUP=${WRITE_GROUP:-1}
