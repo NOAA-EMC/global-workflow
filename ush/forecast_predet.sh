@@ -86,8 +86,18 @@ FV3_predet(){
   FHCYC=${FHCYC:-24}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  # Convert restart interval into an explicit list for FV3
   if (( restart_interval == 0 )); then
     restart_interval=${FHMAX}
+    FV3_RESTART_FH=("${restart_interval}")
+  else
+    # shellcheck disable=SC2312
+    mapfile -t FV3_RESTART_FH < <(seq "${restart_interval}" "${restart_interval}" "${FHMAX}")
+    # If the last forecast hour is not in the array, add it
+    local nrestarts=${#FV3_RESTART_FH[@]}
+    if (( FV3_RESTART_FH[nrestarts-1] != FHMAX )); then
+      FV3_RESTART_FH+=("${FHMAX}")
+    fi
   fi
 
   # Convert output settings into an explicit list for FV3
