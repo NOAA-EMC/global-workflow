@@ -44,8 +44,8 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     
     # coupler.res file
     if [[ "${USE_REPLAY_ICS:-"false"}" == "false" ]]; then
-        src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.coupler.res.nc"
-        tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.coupler.res.nc"
+        src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.coupler.res"
+        tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.coupler.res"
         ${NCP} "${src}" "${tgt}"
         rc=$?
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
@@ -171,7 +171,8 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
   # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
   if [[ "${DO_WAVE:-}" = "YES" ]]; then
-    YMD=${PDY} HH=${cyc} declare_from_tmpl COM_WAVE_RESTART
+    #RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+    YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_WAVE_RESTART
     [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
     for grdID in ${waveGRD}; do # TODO: check if this is a bash array; if so adjust
       src="${BASE_CPLIC}/${CPL_WAVIC:-}/${PDY}${cyc}/${MEMDIR}/wave/${PDY}.${cyc}0000.restart.${grdID}"
