@@ -1,18 +1,17 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = "gfs.t" + cycle_HH + "z." %}
-name: "GFSB"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfsb.tar"
-mandatory:
-    {% if MODE == "cycled" %}
-    - "{{ COM_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.anl"
-    - "{{ COM_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.anl.idx"
-    - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
-    - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
-    {% endif %}
-    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-    - "{{ COM_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}"
-    - "{{ COM_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}.idx"
-    - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
-    - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
-    {% endfor %}
+    gfsb:
+        {% set head = "gfs.t" + cycle_HH + "z." %}
+        name: "GFSB"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfsb.tar"
+        mandatory:
+            {% if MODE == "cycled" %}
+            - "{{ COM_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.anl"
+            - "{{ COM_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.anl.idx"
+            - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
+            - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
+            {% endif %}
+            {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+            - "{{ COM_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}"
+            - "{{ COM_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}.idx"
+            - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
+            - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
+            {% endfor %}

@@ -1,0 +1,42 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = "gdas.t" + cycle_HH + "z." %}
+datasets:
+{% include "gdas.yaml.j2" %}
+
+{% if save_warm_ic_b or save_fcst_ic %}
+{% include "gdas_restartb.yaml.j2" %}
+{% endif %}
+
+{% if DO_ICE %} {% include "gdasice.yaml.j2" %} {% endif %}
+
+{% if DO_OCEAN %}
+{% include "gdasocean.yaml.j2" %}
+{% include "gdasocean_analysis.yaml.j2" %}
+{% endif %}
+
+{% if DO_ICE %} {% include "gdaswave.yaml.j2" %} {% endif %}
+
+# Determine if we will save restart ICs or not
+{% set save_warm_ic_a, save_warm_ic_b = ( False, False ) %}
+
+%{ if ARCH_CYC == cycle_HH and current_cycle != SDATE%}
+# Save the warm and forecast-only cycle ICs every ARCH_WARMICFREQ days
+{% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
+{% set save_warm_ic_a = True %}
+{% set save_warm_ic_b = True %}
+# Save the forecast-only restarts every ARCH_FCSTICFREQ days
+{% elif (current_cycle - SDATE).days % ARCH_FCSTICFREQ == 0 %}
+{% set save_warm_ic_a = True %}
+{% endif %}
+{% endif %}
+
+{% if save_warm_ic_a %}
+{% include "gdas_restarta.yaml.j2" %}
+{% if DO_WAVE %} {% include "gdaswave_restart.yaml.j2" %} {% endif %}
+{% if DO_OCN %} {% include "gdasocean_restart.yaml.j2" %} {% endif %}
+{% if DO_ICE %} {% include "gdasice_restart.yaml.j2" %} {% endif %}
+{% endif %}  # Save warm ICs (A)
+
+{% if save_warm_ic_b %} {% include "gdas_restartb.yaml.j2" %} {% endif %}

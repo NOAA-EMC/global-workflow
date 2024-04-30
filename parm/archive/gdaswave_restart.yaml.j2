@@ -1,7 +1,6 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-name: "GDASWAVE_RESTART"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave_restart.tar"
-mandatory:
-    # TODO explicitly name the wave restart files to archive
-    - "{{ COM_WAVE_RESTART | relpath(ROTDIR) }}/*"
+    gdaswave_restart:
+        name: "GDASWAVE_RESTART"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave_restart.tar"
+        mandatory:
+            # TODO explicitly name the wave restart files to archive
+            - "{{ COM_WAVE_RESTART | relpath(ROTDIR) }}/*"

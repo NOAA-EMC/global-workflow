@@ -93,183 +93,27 @@ class Archive(Task):
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
-        cycle_HH = strftime(arch_dict.current_cycle, "%H")
-
         if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
 
             # Copy the cyclone track files and rename the experiments
             Archive._rename_cyclone_expt(arch_dict)
 
-            arch_ics_cycle = arch_dict.ARCH_CYC - arch_dict.assim_freq
-
-            if arch_ics_cycle < 0:
-                arch_ics_cycle += 24
-
-            mod = (arch_dict.current_cycle -
-                   arch_dict.SDATE).days % arch_dict.ARCH_WARMICFREQ
-
-            save_warm_ic_a = False
-            save_warm_ic_b = False
-
-            if arch_dict.current_cycle == arch_dict.SDATE and cycle_HH == arch_dict.ARCH_CYC:
-                save_warm_ic_a = True
-                save_warm_ic_b = True
-            elif mod == 0 and cycle_HH == arch_dict.ARCH_CYC:
-                save_warm_ic_a = True
-                save_warm_ic_b = True
-
-            if arch_ics_cycle == 18:
-
-                mod1 = ((arch_dict.current_cycle -
-                         arch_dict.SDATE).days + 1) % arch_dict.ARCH_WARMICFREQ
-
-                if cycle_HH == arch_ics_cycle:
-                    if mod1 == 0:
-                        save_warm_ic_b = True
-                    elif arch_dict.current_cycle == SDATE:
-                        save_warm_ic_b = True
-                    else:
-                        save_warm_ic_b = False
-
-            mod = (arch_dict.current_cycle -
-                   arch_dict.SDATE).days % arch_dict.ARCH_FCSTICFREQ
-
-            save_fcst_ic = False
-            if mod == 0 or arch_dict.current_cycle == SDATE:
-                save_fcst_ic = True
-
         if arch_dict.RUN == "gdas":
-
-            datasets = ["gdas"]
-
-            if save_warm_ic_a or save_fcst_ic:
-                datasets.append("gdas_restarta")
-                if arch_dict.DO_WAVE:
-                    datasets.append("gdaswave_restart")
-                if arch_dict.DO_OCN:
-                    datasets.append("gdasocean_restart")
-                if arch_dict.DO_ICE:
-                    datasets.append("gdasice_restart")
-
-            if save_warm_ic_b or save_fcst_ic:
-                datasets.append("gdas_restartb")
-
-            if arch_dict.DO_ICE:
-                datasets.append("gdasice")
-
-            if arch_dict.DO_OCN:
-                datasets.append("gdasocean")
-                datasets.append("gdasocean_analysis")
-
-            if arch_dict.DO_WAVE:
-                datasets.append("gdaswave")
-
+            master_yaml = "master_gdas.yaml.j2"
         elif arch_dict.RUN == "gfs":
-            datasets = ["gfsa", "gfsb"]
-
-            if arch_dict.ARCH_GAUSSIAN:
-                datasets.extend(["gfs_flux", "gfs_netcdfb", "gfs_pgrb2b"])
-
-                if arch_dict.MODE == "cycled":
-                    datasets.append("gfs_netcdfa")
-
-            if arch_dict.DO_WAVE:
-                datasets.append("gfswave")
-
-            if arch_dict.DO_OCN:
-                datasets.extend(["ocean_6hravg", "ocean_daily", "ocean_grib2", "gfs_flux_1p00"])
-
-            if arch_dict.DO_ICE:
-                datasets.extend(["ice_6hravg", "ice_grib2"])
-
-            if arch_dict.DO_AERO:
-                datasets.append(["aero"])
-
-            if save_fcst_ic:
-                datasets.append("gfs_restarta")
-
-            if arch_dict.DO_BUFRSND:
-                datasets.append("gfs_downstream")
-
-            if arch_dict.DO_MOS:
-                arch_mos = False
-                if self.config.REALTIME:
-                    if arch_dict.current_cycle - timedelta(days=1) > arch_dict.SDATE:
-                        arch_mos = True
-                else:
-                    arch_mos = True
-
-                if arch_mos and cycle_HH == "18":
-                    datasets.append("gfsmos")
-
+            master_yaml = "master_gfs.yaml.j2"
         elif arch_dict.RUN == "enkfgdas" or arch_dict.RUN == "enkfgfs":
-
-            if arch_dict.ENSGRP == 0:
-                datasets = ["enkf"]
-
-            else:
-
-                # Determine which members to archive
-                first_mem = (arch_dict.ENSGRP - 1) * arch_dict.NMEM_EARCGRP + 1
-                last_mem = min(arch_dict.NMEM_ENS,
-                               arch_dict.ENSGRP * arch_dict.NMEM_EARCGRP)
-                mem_list = [f"{mem:03d}" for mem in range(first_mem, last_mem + 1)]
-
-                arch_dict["first_group_mem"] = first_mem
-                arch_dict["last_group_mem"] = last_mem
-
-                # Create a list of IAU forecast hours from IAUFHRS
-                if isinstance(arch_dict.IAUFHRS, int):
-                    # First half-cycle or if 3dvar
-                    arch_dict["iaufhrs"] = [arch_dict.IAUFHRS]
-                else:
-                    arch_dict["iaufhrs"] = [int(fhr) for fhr in arch_dict.IAUFHRS.split(",")]
-                # Create a dict to define COM template parameters
-                tmpl_dict = {
-                    'ROTDIR': self.task_config.ROTDIR,
-                    'RUN': self.task_config.RUN,
-                    'YMD': to_YMD(self.task_config.current_cycle),
-                    'HH': self.task_config.current_cycle.strftime('%H')
-                }
-
-                tmpl_atm_anl = self.task_config.COM_ATMOS_ANALYSIS_TMPL
-                tmpl_atm_res = self.task_config.COM_ATMOS_RESTART_TMPL
-                tmpl_atm_hst = self.task_config.COM_ATMOS_HISTORY_TMPL
-
-                # Construct lists of COM directories to archive data from
-                arch_dict["COM_ATMOS_ANALYSIS_MEM_list"] = []
-                arch_dict["COM_ATMOS_RESTART_MEM_list"] = []
-                arch_dict["COM_ATMOS_HISTORY_MEM_list"] = []
-                DCB = TemplateConstants.DOLLAR_CURLY_BRACE
-                for mem in mem_list:
-                    tmpl_dict["MEMDIR"] = "mem" + mem
-                    com_atm_anl = Template.substitute_structure(
-                        tmpl_atm_anl, DCB, tmpl_dict.get)
-                    arch_dict.COM_ATMOS_ANALYSIS_MEM_list.append(com_atm_anl)
-
-                    com_atm_res = Template.substitute_structure(
-                        tmpl_atm_res, DCB, tmpl_dict.get)
-                    arch_dict.COM_ATMOS_RESTART_MEM_list.append(com_atm_res)
-
-                    com_atm_hst = Template.substitute_structure(
-                        tmpl_atm_hst, DCB, tmpl_dict.get)
-                    arch_dict.COM_ATMOS_HISTORY_MEM_list.append(com_atm_hst)
-
-                # Declare the datasets to archive
-                datasets = ["enkf_grp"]
-
-                if arch_dict.current_cycle != arch_dict.SDATE:
-                    datasets.extend(["enkf_restarta_grp", "enkf_restartb_grp"])
-
+            master_yaml = "master_enkf.yaml.j2"
         elif arch_dict.RUN == "gefs":
             raise NotImplementedError("Archiving is not yet set up for GEFS runs")
-
         else:
             raise ValueError(f"Archiving is not enabled for {arch_dict.RUN} runs")
 
+        parsed_sets = parse_j2yaml(master_yaml, arch_dict)
+
         atardir_sets = []
 
-        for dataset in datasets:
+        for dataset in parsed_set.datasets:
 
             archive_filename = os.path.join(archive_parm, dataset + ".yaml.j2")
             atardir_set = parse_j2yaml(archive_filename, arch_dict)
@@ -552,3 +396,64 @@ class Archive(Task):
         replace_string_from_to_file(in_track_p_file, out_track_p_file, "AVNO", pslot4)
 
         return
+
+    @staticmethod
+    def _create_enkf_com_lists(arch_dict: Dict[str, any]) -> Dict:
+
+        """Creates lists of ENKF member com directories from templates
+
+        Parameters
+        ----------
+        arch_dict : dict
+            Archiving context dictionary including COM_*_TMPL variables
+
+        Return
+        ------
+        arch_dict : dict
+            Updated context with lists for all ensemble members to be included
+        """
+
+        # Determine which members to archive
+        first_mem = (arch_dict.ENSGRP - 1) * arch_dict.NMEM_EARCGRP + 1
+        last_mem = min(arch_dict.NMEM_ENS,
+                       arch_dict.ENSGRP * arch_dict.NMEM_EARCGRP)
+        mem_list = [f"{mem:03d}" for mem in range(first_mem, last_mem + 1)]
+
+        arch_dict["first_group_mem"] = first_mem
+        arch_dict["last_group_mem"] = last_mem
+
+        # Create a list of IAU forecast hours from IAUFHRS
+        if isinstance(arch_dict.IAUFHRS, int):
+            # First half-cycle or if 3dvar
+            arch_dict["iaufhrs"] = [arch_dict.IAUFHRS]
+        else:
+            arch_dict["iaufhrs"] = [int(fhr) for fhr in arch_dict.IAUFHRS.split(",")]
+        # Create a dict to define COM template parameters
+        tmpl_dict = {
+            'ROTDIR': arch_dict.ROTDIR,
+            'RUN': arch_dict.RUN,
+            'YMD': to_YMD(arch_dict.current_cycle),
+            'HH': arch_dict.current_cycle.strftime('%H')
+        }
+
+        # Get a list of all COM templates (e.g. COM_ATMOS_ANALYSIS_TMPL)
+        com_tmpl_names = [key for key in arch_dict.keys()
+                     if key.startswith("COM_") and key.endswith("_TMPL")]
+
+        # Go through each template and 
+        for com_tmpl_name in com_tmpl_names: 
+
+            com_tmpl = arch_dict[com_tmpl_name]
+
+            # Construct lists of COM directories to archive data from
+            mem_com_list = []
+            for mem in mem_list:
+                tmpl_dict["MEMDIR"] = "mem" + mem
+                mem_com_list.append(Template.substitute_structure(
+                                    com_tmpl,
+                                    TemplateConstants.DOLLAR_CURLY_BRACE,
+                                    tmpl_dict.get))
+            mem_com_list_name = com_tmpl_name.replace("_TMPL","_MEM_list")
+            arch_dict[mem_com_list_name] = mem_com_list
+
+        return arch_dict

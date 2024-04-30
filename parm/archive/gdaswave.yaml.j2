@@ -1,9 +1,8 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = "gdaswave.t" + cycle_HH + "z." %}
-name: "GDASWAVE"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave.tar"
-mandatory:
-    # TODO explicitly name the wave grid/station files to archive
-    - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*"
-    - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}*"
+    gdaswave:
+        {% set head = "gdaswave.t" + cycle_HH + "z." %}
+        name: "GDASWAVE"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave.tar"
+        mandatory:
+            # TODO explicitly name the wave grid/station files to archive
+            - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*"
+            - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}*"

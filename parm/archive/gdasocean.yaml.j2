@@ -1,9 +1,8 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = "gdas.t" + cycle_HH + "z." %}
-name: "GDASOCEAN"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean.tar"
-mandatory:
-    # TODO Explicitly name the history and input files to archive
-    - '{{ COM_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}*'
-    - '{{ COM_OCEAN_INPUT | relpath(ROTDIR) }}/.'
+    gdasocean:
+        {% set head = "gdas.t" + cycle_HH + "z." %}
+        name: "GDASOCEAN"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean.tar"
+        mandatory:
+            # TODO Explicitly name the history and input files to archive
+            - '{{ COM_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}*'
+            - '{{ COM_OCEAN_INPUT | relpath(ROTDIR) }}/.'

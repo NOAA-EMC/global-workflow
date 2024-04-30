@@ -1,10 +1,9 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = "gfs.t" + cycle_HH + "z." %}
-name: "GFS_NETCDFB"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_netcdfb.tar"
-mandatory:
-    {% for fhr in range(0, ARCH_GAUSSIAN_FHMAX + ARCH_GAUSSIAN_FHINC, ARCH_GAUSSIAN_FHINC) %}
-    - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
-    - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
-    {% endfor %}
+    gfs_netcdfb:
+        {% set head = "gfs.t" + cycle_HH + "z." %}
+        name: "GFS_NETCDFB"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_netcdfb.tar"
+        mandatory:
+            {% for fhr in range(0, ARCH_GAUSSIAN_FHMAX + ARCH_GAUSSIAN_FHINC, ARCH_GAUSSIAN_FHINC) %}
+            - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
+            - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
+            {% endfor %}

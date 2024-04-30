@@ -24,7 +24,9 @@ def main():
             'NMEM_ENS', 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS',
             'lobsdiag_forenkf', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',
             'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF', 'ENKF_SPREAD',
-            'restart_interval_enkfgdas', 'restart_interval_enkfgfs']
+            'restart_interval_enkfgdas', 'restart_interval_enkfgfs',
+            'COM_ATMOS_ANALYSIS_TMPL', 'COM_ATMOS_RESTART_TMPL',
+            'COM_ATMOS_HISTORY_TMPL']
 
     archive_dict = AttrDict()
     for key in keys:

@@ -1,29 +1,28 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = RUN + ".t" + cycle_HH + "z." %}
-{% if RUN == "enkfgdas" %}
-{% set fhmax = FHMAX_ENKF %}
-{% set restart_interval = restart_interval_enkfgdas %}
-{% elif RUN == "enkfgfs" %}
-{% set fhmax = FHMAX_ENKF_GFS %}
-{% set restart_interval = restart_interval_enkfgfs %}
-{% endif %}
-name: "ENKF_RESTARTB_GRP"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restartb_grp{{ ENSGRP }}.tar"
-mandatory:
-    {% for mem in range(first_group_mem, last_group_mem + 1) %}
-    {% set imem = mem - first_group_mem %}
-    {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
-    {% for r_time in range(restart_interval, fhmax + 1, restart_interval) %}
-    {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
-    {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
-    {% set r_prefix = r_dt | to_YMD + "." + r_dt | strftime("%H") + "0000" %}
-    {% for itile in range(1, 7) %}
-    {% for datatype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
-    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
-    {% endfor %}
-    {% endfor %}
-    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
-    - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
-    {% endfor %}
-    {% endfor %}
+    enkf_restartb_grp:
+        {% set head = RUN + ".t" + cycle_HH + "z." %}
+        {% if RUN == "enkfgdas" %}
+        {% set fhmax = FHMAX_ENKF %}
+        {% set restart_interval = restart_interval_enkfgdas %}
+        {% elif RUN == "enkfgfs" %}
+        {% set fhmax = FHMAX_ENKF_GFS %}
+        {% set restart_interval = restart_interval_enkfgfs %}
+        {% endif %}
+        name: "ENKF_RESTARTB_GRP"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restartb_grp{{ ENSGRP }}.tar"
+        mandatory:
+            {% for mem in range(first_group_mem, last_group_mem + 1) %}
+            {% set imem = mem - first_group_mem %}
+            {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
+            {% for r_time in range(restart_interval, fhmax + 1, restart_interval) %}
+            {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
+            {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
+            {% set r_prefix = r_dt | to_YMD + "." + r_dt | strftime("%H") + "0000" %}
+            {% for itile in range(1, 7) %}
+            {% for datatype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
+            - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
+            {% endfor %}
+            {% endfor %}
+            - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
+            - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
+            {% endfor %}
+            {% endfor %}

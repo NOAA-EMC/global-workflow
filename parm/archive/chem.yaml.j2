@@ -1,8 +1,7 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = "gocart" %}
-name: "CHEM"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/chem.tar"
-mandatory:
-    # TODO explicitize this set
-    - "{{ COM_CHEM_HISTORY | relpath(ROTDIR) }}/{{ head }}*"
+    chem:
+        {% set head = "gocart" %}
+        name: "CHEM"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/chem.tar"
+        mandatory:
+            # TODO explicitize this set
+            - "{{ COM_CHEM_HISTORY | relpath(ROTDIR) }}/{{ head }}*"

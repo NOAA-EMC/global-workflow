@@ -1,11 +1,10 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = "gdas.t" + cycle_HH + "z." %}
-name: "GDASOCEAN_ANALYSIS"
-target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
-mandatory:
-    # TODO explicitly name the analysis files to archive
-    - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}*'
-    - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/gdas.t??z.ocngrid.nc'
-    - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags'
-    - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/yaml'
+    gdasocean_analysis:
+        {% set head = "gdas.t" + cycle_HH + "z." %}
+        name: "GDASOCEAN_ANALYSIS"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
+        mandatory:
+            # TODO explicitly name the analysis files to archive
+            - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}*'
+            - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/gdas.t??z.ocngrid.nc'
+            - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags'
+            - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/yaml'

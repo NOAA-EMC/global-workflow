@@ -1,0 +1,56 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+datasets:
+{% if ENSGRP == 0 %}
+{% include "enkf.yaml.j2" %}
+{% else %}
+
+# Set variables/lists needed to parse the enkf templates
+{% if IAUFHRS is string %}
+{% set iaufhrs = (int(fhr) for fhr in IAUFHRS.split(",")) %}
+{% else %}
+{% set iaufhrs = [IAUFHRS] %}
+{% endif %}
+
+# Declare a dict to get member COM directories from templates
+{% set tmpl_dict = {'ROTDIR':ROTDIR, 'RUN':RUN, 'YMD':cycle_YMD, 'HH':cycle_HH} %}
+
+# Declare to-be-filled lists of member COM directories
+{% set COM_ATMOS_ANALYSIS_MEM_list = [] %}
+{% set COM_ATMOS_RESTART_MEM_list = [] %}
+{% set COM_ATMOS_HISTORY_MEM_list = [] %}
+
+{% set first_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
+{% set last_mem = [ ENSGRP * NMEM_EARCGRP, NMEM_ENS ] | min %}
+
+{% for mem in range(first_mem, last_mem + 1) %}
+
+{% set tmpl_dict['MEMDIR'] = "mem" + '%03d' % mem %}
+
+# Populate the member COM directories from the template
+{{ COM_ATMOS_ANALYSIS_MEM_list.append(
+      template_substitute_structure(COM_ATMOS_ANALYSIS_TMPL,
+                                    DOLLAR_CURLY_BRACE,
+                                    tmpl_dict.get)) }}
+
+{{ COM_ATMOS_RESTART_MEM_list.append(
+      template_substitute_structure(COM_ATMOS_RESTART_TMPL,
+                                    DOLLAR_CURLY_BRACE,
+                                    tmpl_dict.get)) }}
+
+{{ COM_ATMOS_HISTORY_MEM_list.append(
+      template_substitute_structure(COM_ATMOS_HISTORY_TMPL,
+                                    DOLLAR_CURLY_BRACE,
+                                    tmpl_dict.get)) }}
+
+{% endfor %}
+
+# Determine which members to archive
+{% include "enkf_grp.yaml.j2" %}
+{% if current_cycle > SDATE %}
+{% include "enkf_restarta_grp.yaml.j2" %}
+{% include "enkf_restartb_grp.yaml.j2" %}
+{% endif %}
+
+{% endif %}  # ENSGRP != 0
