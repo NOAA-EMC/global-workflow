@@ -295,46 +295,6 @@ class Analysis(Task):
 
     @staticmethod
     @logit(logger)
-    def execute_jediexe(workdir: Union[str, os.PathLike], aprun_cmd: str, jedi_exec: str, jedi_yaml: str) -> None:
-        """
-        Run a JEDI executable
-
-        Parameters
-        ----------
-        workdir : str | os.PathLike
-            Working directory where to run containing the necessary files and executable
-        aprun_cmd : str
-            Launcher command e.g. mpirun -np <ntasks> or srun, etc.
-        jedi_exec : str
-            Name of the JEDI executable e.g. fv3jedi_var.x
-        jedi_yaml : str | os.PathLike
-            Name of the yaml file to feed the JEDI executable e.g. fv3jedi_var.yaml
-
-        Raises
-        ------
-        OSError
-            Failure due to OS issues
-        WorkflowException
-            All other exceptions
-        """
-
-        os.chdir(workdir)
-
-        exec_cmd = Executable(aprun_cmd)
-        exec_cmd.add_default_arg([os.path.join(workdir, jedi_exec), jedi_yaml])
-
-        logger.info(f"Executing {exec_cmd}")
-        try:
-            exec_cmd()
-        except OSError:
-            logger.exception(f"FATAL ERROR: Failed to execute {exec_cmd}")
-            raise OSError(f"{exec_cmd}")
-        except Exception:
-            logger.exception(f"FATAL ERROR: Error occured during execution of {exec_cmd}")
-            raise WorkflowException(f"{exec_cmd}")
-
-    @staticmethod
-    @logit(logger)
     def tgz_diags(statfile: str, diagdir: str) -> None:
         """tar and gzip the diagnostic files resulting from a JEDI analysis.
 

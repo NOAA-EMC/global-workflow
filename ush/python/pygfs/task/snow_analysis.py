@@ -299,7 +299,7 @@ class SnowAnalysis(Analysis):
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_SNOW_ANALYSIS', 'APREFIX',
                 'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'OCNRES', 'ntiles',
-                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml',
+                'APRUN_SNOWANL', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -310,10 +310,12 @@ class SnowAnalysis(Analysis):
                              AttrDict({key: localconf[key] for key in ['DATA', 'ntiles', 'current_cycle']}))
 
         logger.info("Running JEDI LETKF")
-        self.execute_jediexe(localconf.DATA,
-                             localconf.APRUN_SNOWANL,
-                             os.path.basename(localconf.JEDIEXE),
-                             localconf.jedi_yaml)
+        exec_cmd = Executable(localconf.APRUN_SNOWANL)
+        exec_name = os.path.join(localconf.DATA, 'gdas.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('localensembleda')
+        exec_cmd.add_default_arg(localconf.jedi_yaml)
 
         logger.info("Creating analysis from backgrounds and increments")
         self.add_increments(localconf)
