@@ -33,7 +33,10 @@ FV3_postdet() {
 
     # Create an array of FV3 restart files
     local fv3_restart_files tile_files fv3_restart_file restart_file
-    fv3_restart_files=(coupler.res fv_core.res.nc)
+    fv3_restart_files=(fv_core.res.nc)
+    if [[ "${USE_REPLAY_ICS}" == "true" ]]; then
+        fv_restart_files+=(coupler.res)
+    fi
     tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
     local nn tt
     for (( nn = 1; nn <= ntiles; nn++ )); do
@@ -89,19 +92,34 @@ FV3_postdet() {
         fi
       done
 
-      # Need a coupler.res when doing IAU
+      # Need a coupler.res that is consistent with the model start time
       if [[ "${DOIAU}" == "YES" ]]; then
-        rm -f "${DATA}/INPUT/coupler.res"
-        cat >> "${DATA}/INPUT/coupler.res" << EOF
-        3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
-        ${previous_cycle:0:4}  ${previous_cycle:4:2}  ${previous_cycle:6:2}  ${previous_cycle:8:2}  0  0        Model start time: year, month, day, hour, minute, second
-        ${current_cycle_begin:0:4}  ${current_cycle_begin:4:2}  ${current_cycle_begin:6:2}  ${current_cycle_begin:8:2}  0  0        Current model time: year, month, day, hour, minute, second
-EOF
+        local model_start_time="${previous_cycle}"
+        local model_current_time="${current_cycle_begin}"
+      else
+        local model_start_time="${current_cycle}"
+        local model_current_time="${current_cycle}"
       fi
+      rm -f "${DATA}/INPUT/coupler.res"
+      cat >> "${DATA}/INPUT/coupler.res" << EOF
+      3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
+      ${model_start_time:0:4}  ${model_start_time:4:2}  ${model_start_time:6:2}  ${model_start_time:8:2}  0  0        Model start time: year, month, day, hour, minute, second
+      ${model_current_time:0:4}  ${model_current_time:4:2}  ${model_current_time:6:2}  ${model_current_time:8:2}  0  0        Current model time: year, month, day, hour, minute, second
+EOF
 
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
-      if [[ "${DOIAU}" == "YES" ]]; then
+      if [[ "${USE_REPLAY_ICS}" == "true" ]]; then
+        if (( MEMBER > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
+            increment_file="${COM_ATMOS_RESTART_PREV}/${current_cycle:0:8}.${current_cycle:8:2}0000.fv3_perturbation.nc"
+            ${NCP} "${increment_file}" "${DATA}/INPUT/fv3_perturbation.nc" \
+            || ( echo "FATAL ERROR: Unable to copy FV3 perturbation file, ABORT!"; exit 1 )
+            read_increment=".true."
+            res_latlon_dynamics="fv3_perturbation.nc"
+        fi
+      elif [[ "${RUN}" == "gefs" ]]; then
+        inc_files=()
+      elif [[ "${DOIAU}" == "YES" ]]; then
         # create an array of inc_files for each IAU hour
         IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
         inc_files=()
@@ -138,12 +156,6 @@ EOF
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
   
-  if (( MEMBER > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
-    increment_file="${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000.fv3_perturbation.nc"
-    ${NCP} "${increment_file}" "${DATA}/INPUT/fv3_increment.nc" \
-    || ( echo "FATAL ERROR: Unable to copy FV3 perturbation file, ABORT!"; exit 1 )
-     read_increment=".true."
-  fi
 
   # If doing IAU, change forecast hours
   if [[ "${DOIAU:-}" == "YES" ]]; then
@@ -409,7 +421,7 @@ MOM6_postdet() {
     # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
     #     to ensure it does not interfere with the GFS when ensemble is updated in the GFS
     if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      ${NCP} "${COM_OCEAN_RESTART_PREV}/${restart_date:0:8}.${restart_date:0:8}0000.mom6_perturbation.nc" "${DATA}/INPUT/mom6_increment.nc" \
+      ${NCP} "${COM_OCEAN_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.mom6_perturbation.nc" "${DATA}/INPUT/mom6_increment.nc" \
       || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
     fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then
@@ -492,6 +504,7 @@ MOM6_out() {
   esac
 
   # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs
+  if [[ "${USE_REPLAY_ICS}" != "true" ]]; then
   local restart_file
   if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
     echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
@@ -500,6 +513,7 @@ MOM6_out() {
       ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
              "${COM_OCEAN_RESTART}/${restart_file}"
     done
+  fi
   fi
 
   # Copy restarts at the beginning/middle of the next assimilation cycle to COM for RUN=gdas|enkfgdas|enkfgfs
@@ -592,6 +606,7 @@ CICE_out() {
   ${NCP} "${DATA}/ice_in" "${COM_CONF}/ufs.ice_in"
 
   # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs
+  if [[ "${USE_REPLAY_ICS}" != "true" ]]; then
   local seconds source_file target_file
   if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
     echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
@@ -600,6 +615,7 @@ CICE_out() {
     target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
     ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
            "${COM_ICE_RESTART}/${target_file}"
+  fi
   fi
 
   # Copy restarts at the beginning/middle of the next assimilation cycle to COM for RUN=gdas|enkfgdas|enkfgfs
@@ -731,6 +747,7 @@ CMEPS_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CMEPS mediator"
 
   # Copy mediator restarts at the end of the forecast segment to COM for RUN=gfs|gefs
+  if [[ "${USE_REPLAY_ICS}" != "true" ]]; then
   echo "Copying mediator restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
   local seconds source_file target_file
   seconds=$(to_seconds "${forecast_end_cycle:8:2}"0000)
@@ -741,6 +758,7 @@ CMEPS_out() {
            "${COM_MED_RESTART}/${target_file}"
   else
     echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
+  fi
   fi
 
   # Copy restarts at the beginning/middle of the next assimilation cycle to COM for RUN=gdas|enkfgdas|enkfgfs

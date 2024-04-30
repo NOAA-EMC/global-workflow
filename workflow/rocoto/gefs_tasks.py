@@ -17,7 +17,7 @@ class GEFSTasks(Tasks):
         if self.app_config.do_atm:
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/atmos"
             if self._base['EXP_WARM_START']:
-                for file in ['ca_data.nc'] + ['fv_core.res.nc'] + \
+                for file in ['fv_core.res.nc'] + \
                             [f'{datatype}.tile{tile}.nc'
                              for datatype in ['ca_data', 'fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']
                              for tile in range(1, self.n_tiles + 1)]:

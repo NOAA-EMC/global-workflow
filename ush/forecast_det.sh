@@ -6,7 +6,9 @@ UFS_det(){
   echo "SUB ${FUNCNAME[0]}: Run type determination for UFS"
 
   # Determine if the current cycle is a warm start (based on the availability of restarts)
-  if [[ "${DOIAU:-}" == "YES" ]]; then
+  if [[ "${USE_REPLAY_ICS}" == "true" ]]; then
+      warm_start=".true."
+  elif [[ "${DOIAU:-}" == "YES" ]]; then
     if [[ -f "${COM_ATMOS_RESTART_PREV}/${current_cycle_begin:0:8}.${current_cycle_begin:8:2}0000.coupler.res" ]]; then
       warm_start=".true."
     fi
