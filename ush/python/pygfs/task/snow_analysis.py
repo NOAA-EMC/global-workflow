@@ -299,7 +299,7 @@ class SnowAnalysis(Analysis):
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_SNOW_ANALYSIS', 'APREFIX',
                 'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'OCNRES', 'ntiles',
-                'APRUN_SNOWANL', 'jedi_yaml',
+                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
             localconf[key] = self.task_config[key]
