@@ -51,7 +51,7 @@ export err=$?
 for diagfile in "${INPUT_LIST[@]}"; do
   tar -xvf "${CNVSTAT}" "${diagfile}.gz"
   export err=$?
-  (( rc != 0 )) && ( msg="Unable to extract '${diagfile}.gz' from '${CNVSTAT}'"; err_exit "${msg}" )
+  (( err != 0 )) && ( msg="Unable to extract '${diagfile}.gz' from '${CNVSTAT}'"; err_exit "${msg}" )
   gunzip "${diagfile}.gz"
   rc=$?
   (( rc != 0 )) && ( msg="Unable to gunzip '${diagfile}.gz'"; err_exit "${msg}" )
