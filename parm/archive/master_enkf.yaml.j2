@@ -8,41 +8,42 @@ datasets:
 
 # Set variables/lists needed to parse the enkf templates
 {% if IAUFHRS is string %}
-{% set iaufhrs = (int(fhr) for fhr in IAUFHRS.split(",")) %}
+{% set iaufhrs = [] %}
+{% for iaufhr in IAUFHRS.split(",") %}
+{% do iaufhrs.append(iaufhr | int) %}
+{% endfor %}
 {% else %}
 {% set iaufhrs = [IAUFHRS] %}
 {% endif %}
-
-# Declare a dict to get member COM directories from templates
-{% set tmpl_dict = {'ROTDIR':ROTDIR, 'RUN':RUN, 'YMD':cycle_YMD, 'HH':cycle_HH} %}
 
 # Declare to-be-filled lists of member COM directories
 {% set COM_ATMOS_ANALYSIS_MEM_list = [] %}
 {% set COM_ATMOS_RESTART_MEM_list = [] %}
 {% set COM_ATMOS_HISTORY_MEM_list = [] %}
 
-{% set first_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
-{% set last_mem = [ ENSGRP * NMEM_EARCGRP, NMEM_ENS ] | min %}
+{% set first_group_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
+{% set last_group_mem = [ ENSGRP * NMEM_EARCGRP, NMEM_ENS ] | min %}
 
-{% for mem in range(first_mem, last_mem + 1) %}
+{% for mem in range(first_group_mem, last_group_mem + 1) %}
 
-{% set tmpl_dict['MEMDIR'] = "mem" + '%03d' % mem %}
+# Declare a dict to get member COM directories from templates
+{% set tmpl_dict = {'ROTDIR':ROTDIR, 'RUN':RUN, 'YMD':cycle_YMD, 'HH':cycle_HH, 'MEMDIR':"mem" + '%03d' % mem} %}
 
 # Populate the member COM directories from the template
-{{ COM_ATMOS_ANALYSIS_MEM_list.append(
-      template_substitute_structure(COM_ATMOS_ANALYSIS_TMPL,
-                                    DOLLAR_CURLY_BRACE,
-                                    tmpl_dict.get)) }}
+{% do COM_ATMOS_ANALYSIS_MEM_list.append(
+      COM_ATMOS_ANALYSIS_TMPL | template_substitute_structure(DOLLAR_CURLY_BRACE,
+                                                              tmpl_dict.get))
+%}
 
-{{ COM_ATMOS_RESTART_MEM_list.append(
-      template_substitute_structure(COM_ATMOS_RESTART_TMPL,
-                                    DOLLAR_CURLY_BRACE,
-                                    tmpl_dict.get)) }}
+{% do COM_ATMOS_HISTORY_MEM_list.append(
+      COM_ATMOS_HISTORY_TMPL | template_substitute_structure(DOLLAR_CURLY_BRACE,
+                                                              tmpl_dict.get))
+%}
 
-{{ COM_ATMOS_HISTORY_MEM_list.append(
-      template_substitute_structure(COM_ATMOS_HISTORY_TMPL,
-                                    DOLLAR_CURLY_BRACE,
-                                    tmpl_dict.get)) }}
+{% do COM_ATMOS_RESTART_MEM_list.append(
+      COM_ATMOS_RESTART_TMPL | template_substitute_structure(DOLLAR_CURLY_BRACE,
+                                                              tmpl_dict.get))
+%}
 
 {% endfor %}
 
