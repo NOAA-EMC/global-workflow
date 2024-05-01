@@ -91,7 +91,7 @@ class Archive(Task):
             return arcdir_set, []
 
         if not os.path.isdir(arch_dict.ROTDIR):
-            raise FileNotFoundError(f"The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
         if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
 
@@ -105,9 +105,9 @@ class Archive(Task):
         elif arch_dict.RUN == "enkfgdas" or arch_dict.RUN == "enkfgfs":
             master_yaml = "master_enkf.yaml.j2"
         elif arch_dict.RUN == "gefs":
-            raise NotImplementedError("Archiving is not yet set up for GEFS runs")
+            raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
         else:
-            raise ValueError(f"Archiving is not enabled for {arch_dict.RUN} runs")
+            raise ValueError(f"FATAL ERROR: Archiving is not enabled for {arch_dict.RUN} runs")
 
         parsed_sets = parse_j2yaml(os.path.join(archive_parm,master_yaml), arch_dict)
 
@@ -164,7 +164,7 @@ class Archive(Task):
                 # Regardless of exception type, attempt to remove the target
                 except Exception:
                     rm_cmd(atardir_set.target)
-                    raise RuntimeError(f"Failed to create restricted archive {atardir_set.target}, deleting!")
+                    raise RuntimeError(f"FATAL ERROR: Failed to create restricted archive {atardir_set.target}, deleting!")
 
                 self._protect_rstprod(atardir_set)
 
@@ -195,7 +195,7 @@ class Archive(Task):
                 for item in atardir_set.mandatory:
                     glob_set = glob.glob(item)
                     if len(glob_set) == 0:
-                        raise FileNotFoundError(f"Mandatory file, directory, or glob {item} not found!")
+                        raise FileNotFoundError(f"FATAL ERROR: Mandatory file, directory, or glob {item} not found!")
                     for entry in glob_set:
                         fileset.append(entry)
 
@@ -255,7 +255,7 @@ class Archive(Task):
             chmod_cmd = os.fchmod
             rm_cmd = rm_p
         else:
-            raise KeyError(f"Invalid archiving command given: {self.tar_cmd}")
+            raise KeyError(f"FATAL ERROR: Invalid archiving command given: {self.tar_cmd}")
 
         try:
             if self.tar_cmd == "htar":
@@ -272,7 +272,7 @@ class Archive(Task):
                 else:
                     rm_p(atardir_set.target)
             finally:
-                raise RuntimeError(f"Failed to protect {atardir_set.target}!\n"
+                raise RuntimeError(f"FATAL ERROR: Failed to protect {atardir_set.target}!\n"
                                    f"Please verify that it has been deleted!!")
 
     @logit(logger)
