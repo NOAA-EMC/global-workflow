@@ -80,7 +80,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   # Atmosphere Perturbation Files (usually used with replay ICS)
   # Extra zero on MEMDIR ensure we have a number even if the string is empty
   if (( 0${MEMDIR:3} > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
-      src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.fv3_perturbation.nc"
+      src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.fv3_perturbation.nc"
       tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.fv3_perturbation.nc"
       ${NCP} "${src}" "${tgt}"
       rc=${?}
@@ -164,7 +164,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
   # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
   if [[ "${DO_WAVE:-}" = "YES" ]]; then
-    YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_WAVE_RESTART
+    YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_WAVE_RESTART_PREV
     [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
     for grdID in ${waveGRD}; do # TODO: check if this is a bash array; if so adjust
       src="${BASE_CPLIC}/${CPL_WAVIC:-}/${PDY}${cyc}/${MEMDIR}/wave/${PDY}.${cyc}0000.restart.${grdID}"
