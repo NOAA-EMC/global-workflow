@@ -10,18 +10,11 @@ arguments:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48
   idate: 2021122018
-  edate: 2021122106
+  edate: 2021122200
   nens: 0
-  gfs_cyc: 1
+  gfs_cyc: 4
   start: cold
-  DO_GOES: "YES"
-  DO_BUFRSND: "YES"
-  DO_GEMPAK: "YES"
-  DO_AWIPS: "YES"
-  DO_NPOESS: "YES"
-  DO_GENESIS_FSU: "NO"
-  FHMAX_GFS: 384
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_extended_ci.yaml
 
 skip_ci_on_hosts:
   - hera
