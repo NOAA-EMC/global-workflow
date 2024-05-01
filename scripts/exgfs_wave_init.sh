@@ -216,7 +216,7 @@ if (( NMEM_ENS > 0 )); then
     MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} declare_from_tmpl COM_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
     mkdir -p "${COM_WAVE_PREP_MEM}"
     for grdID in ${grdALL}; do
-      ${NLN} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "${COM_WAVE_PREP_MEM}/"
+      ${NLN} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "${COM_WAVE_PREP_MEM}/${RUN}wave.mod_def.${grdID}"
     done
   done
 fi
