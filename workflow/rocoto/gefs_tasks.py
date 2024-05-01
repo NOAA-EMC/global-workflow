@@ -9,10 +9,8 @@ class GEFSTasks(Tasks):
         super().__init__(app_config, cdump)
 
     def stage_ic(self):
-
         cpl_ic = self._configs['stage_ic'] 
-        deps = []
-        
+        deps = [] 
         # Atm ICs
         if self.app_config.do_atm:
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/atmos"

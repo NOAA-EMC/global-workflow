@@ -62,7 +62,6 @@ FV3_postdet() {
     echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     for fv3_restart_file in "${fv3_restart_files[@]}"; do
       restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_restart_file}"
-      echo 'NPB,' $restart_file
       ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${fv3_restart_file}" \
       || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
     done
@@ -101,7 +100,7 @@ FV3_postdet() {
         local model_start_time="${current_cycle}"
         local model_current_time="${current_cycle}"
       fi
-      if [[ ${USE_REPLAY_ICS} != 'true' ]]; then
+      if [[ "${USE_REPLAY_ICS}" != "true" ]]; then
       rm -f "${DATA}/INPUT/coupler.res"
       cat >> "${DATA}/INPUT/coupler.res" << EOF
       3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
@@ -158,7 +157,6 @@ EOF
     fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
-  
 
   # If doing IAU, change forecast hours
   if [[ "${DOIAU:-}" == "YES" ]]; then
