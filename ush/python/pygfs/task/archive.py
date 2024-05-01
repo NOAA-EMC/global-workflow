@@ -109,7 +109,7 @@ class Archive(Task):
         else:
             raise ValueError(f"FATAL ERROR: Archiving is not enabled for {arch_dict.RUN} runs")
 
-        parsed_sets = parse_j2yaml(os.path.join(archive_parm,master_yaml), arch_dict)
+        parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml), arch_dict)
 
         atardir_sets = []
 
