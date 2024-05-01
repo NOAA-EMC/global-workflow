@@ -33,25 +33,18 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     # Stage the FV3 restarts to ROTDIR (warm start)
     RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
     [[ ! -d "${COM_ATMOS_RESTART_PREV}" ]] && mkdir -p "${COM_ATMOS_RESTART_PREV}"
-    
-    # fv_core.res.nc file
-    src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.fv_core.res.nc"
-    tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.fv_core.res.nc"
-    ${NCP} "${src}" "${tgt}"
-    rc=$?
-    ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
-    err=$((err + rc))
-    
-    # coupler.res file
+    prev_atmos_copy_list=(fv_core.res.nc)
     if [[ "${USE_REPLAY_ICS:-"false"}" == "false" ]]; then
-        src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.coupler.res"
-        tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.coupler.res"
-        ${NCP} "${src}" "${tgt}"
-        rc=$?
-        ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
-        err=$((err + rc))
+      prev_atmos_copy_list+=(coupler.res)
     fi
-
+    for ftype in "${prev_atmos_copy_list[@]}"; do
+      src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.${ftype}"
+      tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.${ftype}"
+      ${NCP} "${src}" "${tgt}"
+      rc=$?
+      ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
+      err=$((err + rc))
+    done
     for ftype in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
       for ((tt = 1; tt <= 6; tt++)); do
         src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.${ftype}.tile${tt}.nc"
