@@ -53,7 +53,7 @@ for diagfile in "${INPUT_LIST[@]}"; do
   export err=$?
   (( err != 0 )) && ( msg="Unable to extract '${diagfile}.gz' from '${CNVSTAT}'"; err_exit "${msg}" )
   gunzip "${diagfile}.gz"
-  rc=$?
+  export err=$?
   (( err != 0 )) && ( msg="Unable to gunzip '${diagfile}.gz'"; err_exit "${msg}" )
 done
 
