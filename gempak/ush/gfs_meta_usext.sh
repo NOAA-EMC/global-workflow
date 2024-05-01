@@ -16,7 +16,7 @@ cp "${HOMEgfs}/gempak/fix/ak_sfstns.tbl" alaska.tbl
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 device="nc | mrf.meta"

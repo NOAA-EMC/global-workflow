@@ -22,9 +22,6 @@ source "${USHgfs}/preamble.sh"
 # Directories.
 pwd=$(pwd)
 
-# Utilities
-export NLN=${NLN:-"/bin/ln -sf"}
-
 # Scripts.
 ANALYSISSH=${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh}
 
