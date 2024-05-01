@@ -22,10 +22,6 @@ source "${USHgfs}/preamble.sh"
 # Directories.
 pwd=$(pwd)
 
-# Utilities
-NCP=${NCP:-"/bin/cp"}
-NLN=${NLN:-"/bin/ln -sf"}
-
 APRUN_EPOS=${APRUN_EPOS:-${APRUN:-""}}
 NTHREADS_EPOS=${NTHREADS_EPOS:-1}
 
