@@ -34,7 +34,7 @@ FV3_postdet() {
     # Create an array of FV3 restart files
     local fv3_restart_files tile_files fv3_restart_file restart_file
     fv3_restart_files=(fv_core.res.nc)
-    if [[ "${USE_REPLAY_ICS}" == "true" ]]; then
+    if [[ "${USE_REPLAY_ICS}" == "false" ]]; then
         fv_restart_files+=(coupler.res)
     fi
     tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
@@ -100,12 +100,14 @@ FV3_postdet() {
         local model_start_time="${current_cycle}"
         local model_current_time="${current_cycle}"
       fi
+      if [[ "${USE_REPLAY_ICS}" != "true" ]]; then
       rm -f "${DATA}/INPUT/coupler.res"
       cat >> "${DATA}/INPUT/coupler.res" << EOF
       3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
       ${model_start_time:0:4}  ${model_start_time:4:2}  ${model_start_time:6:2}  ${model_start_time:8:2}  0  0        Model start time: year, month, day, hour, minute, second
       ${model_current_time:0:4}  ${model_current_time:4:2}  ${model_current_time:6:2}  ${model_current_time:8:2}  0  0        Current model time: year, month, day, hour, minute, second
 EOF
+      fi
 
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
@@ -155,7 +157,6 @@ EOF
     fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
-  
 
   # If doing IAU, change forecast hours
   if [[ "${DOIAU:-}" == "YES" ]]; then
