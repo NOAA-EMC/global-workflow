@@ -49,8 +49,10 @@ ocean:
       {% if RUN == "gfs" %}
       - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
       - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      {% endif %}
       {% if RUN == "gefs" %}
       - ["{{ DATA }}/ocean.{{ grid }}.nc", "{{ COM_OCEAN_NETCDF }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
+      {% endif %}
       {% endfor %}
 
 ice:
@@ -76,6 +78,8 @@ ice:
       {% if RUN == "gfs" %}
       - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
       - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      {% endif %}
       {% if RUN == "gefs" %}
       - ["{{ DATA }}/ice.{{ grid }}.nc", "{{ COM_ICE_NETCDF }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
+      {% endif %}
       {% endfor %}
