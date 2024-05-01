@@ -14,7 +14,16 @@ arguments:
   nens: 0
   gfs_cyc: 1
   start: cold
+  DO_GOES: "YES"
+  DO_BUFRSND: "YES"
+  DO_GEMPAK: "YES"
+  DO_AWIPS: "YES"
+  DO_NPOESS: "YES"
+  DO_GENESIS_FSU: "NO"
+  FHMAX_GFS: 384
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - wcoss2
+  - hera
+  - orion
+  - hercules
