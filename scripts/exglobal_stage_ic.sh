@@ -164,11 +164,11 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
   # Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
   if [[ "${DO_WAVE:-}" = "YES" ]]; then
-    YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_WAVE_RESTART_PREV
-    [[ ! -d "${COM_WAVE_RESTART}" ]] && mkdir -p "${COM_WAVE_RESTART}"
+    YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+    [[ ! -d "${COM_WAVE_RESTART_PREV}" ]] && mkdir -p "${COM_WAVE_RESTART_PREV}"
     for grdID in ${waveGRD}; do # TODO: check if this is a bash array; if so adjust
       src="${BASE_CPLIC}/${CPL_WAVIC:-}/${PDY}${cyc}/${MEMDIR}/wave/${PDY}.${cyc}0000.restart.${grdID}"
-      tgt="${COM_WAVE_RESTART}/${PDY}.${cyc}0000.restart.${grdID}"
+      tgt="${COM_WAVE_RESTART_PREV}/${PDY}.${cyc}0000.restart.${grdID}"
       ${NCP} "${src}" "${tgt}"
       rc=$?
       ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
