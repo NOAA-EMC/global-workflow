@@ -5,9 +5,11 @@
 
  GLOBALWORKFLOWTEMP=/contrib/Wei.Huang/run
  GLOBALWORKFLOWHOME=/contrib/Wei.Huang/src/global-workflow-cloud
+#ATMOSRES=48
+ ATMOSRES=96
+ PSLOT=c${ATMOSRES}atm
  EXPNAME=gfs
- RES=96
- PSLOT=c${RES}atm
+ PSLOT=c${ATMOSRES}atm
  IDATE=2024010100
  EDATE=2024010100
  COMROOT=${GLOBALWORKFLOWTEMP}/comroot
@@ -25,7 +27,7 @@
         --edate ${EDATE} \
         --pslot ${PSLOT} \
         --configdir ${CONFIGDIR}/gfs \
-        --resdetatmos ${RES} \
+        --resdetatmos ${ATMOSRES} \
         --comroot ${COMROOT} \
         --expdir ${EXPDIR}
 

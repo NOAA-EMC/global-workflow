@@ -576,12 +576,11 @@ if [[ ${type} == "gdas" ]]; then
     rm -rf "${DATA}/gdasice_restart.txt"
     touch "${DATA}/gdasice_restart.txt"
 
-    head="gdas.t${cyc}z."
+    head="gdas.ice.t${cyc}z."
 
     #...........................
     {
       echo "${COM_ICE_HISTORY/${ROTDIR}\//}/${head}*"
-      echo "${COM_ICE_INPUT/${ROTDIR}\//}/ice_in"
     } >> "${DATA}/gdasice.txt"
 
     echo "${COM_ICE_RESTART/${ROTDIR}\//}/*" >> "${DATA}/gdasice_restart.txt"
