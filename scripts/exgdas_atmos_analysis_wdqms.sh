@@ -50,7 +50,7 @@ export err=$?
 (( err != 0 )) && ( msg="Unable to copy '${CNVSTAT}' from '${COMIN}'"; err_exit "${msg}" )
 for diagfile in "${INPUT_LIST[@]}"; do
   tar -xvf "${CNVSTAT}" "${diagfile}.gz"
-  rc=$?
+  export err=$?
   (( rc != 0 )) && ( msg="Unable to extract '${diagfile}.gz' from '${CNVSTAT}'"; err_exit "${msg}" )
   gunzip "${diagfile}.gz"
   rc=$?
