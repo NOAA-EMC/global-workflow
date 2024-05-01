@@ -30,14 +30,14 @@
             {% endif %}
             {% endif %}
 
-            {% for iauhr in iaufhrs if iauhr != 6 %}
-            {% set iauhr = iauhr | int %}
+            {% for iaufhr in iaufhrs if iaufhr != 6 %}
+            {% set iaufhr = iaufhr %}
             {% if DO_CALC_INCREMENT_ENKF_GFS %}
-            - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iauhr }}.nc"
+            - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iaufhr }}.nc"
             {% else %}
-            - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iauhr }}.nc"
+            - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
             {% endif %}
-            {% endfor %}  # iauhr in iaufhrs
+            {% endfor %}  # iaufhr in iaufhrs
             {% endfor %}  # first_group_mem to last_group_mem
         optional:
             {% for mem in range(first_group_mem, last_group_mem + 1) %}
