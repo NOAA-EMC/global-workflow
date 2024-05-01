@@ -5,8 +5,8 @@
 
  GLOBALWORKFLOWTEMP=/contrib/Wei.Huang/run
  GLOBALWORKFLOWHOME=/contrib/Wei.Huang/src/global-workflow-cloud
-#ATMOSRES=48
- ATMOSRES=96
+ ATMOSRES=48
+#ATMOSRES=96
  PSLOT=c${ATMOSRES}atm
  EXPNAME=gfs
  PSLOT=c${ATMOSRES}atm
