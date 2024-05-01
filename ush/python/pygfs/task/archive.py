@@ -109,11 +109,11 @@ class Archive(Task):
         else:
             raise ValueError(f"Archiving is not enabled for {arch_dict.RUN} runs")
 
-        parsed_sets = parse_j2yaml(master_yaml, arch_dict)
+        parsed_sets = parse_j2yaml(os.path.join(archive_parm,master_yaml), arch_dict)
 
         atardir_sets = []
 
-        for dataset in parsed_set.datasets:
+        for dataset in parsed_sets.datasets.values():
 
             dataset["fileset"] = Archive._create_fileset(dataset)
             dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
@@ -394,64 +394,3 @@ class Archive(Task):
         replace_string_from_to_file(in_track_p_file, out_track_p_file, "AVNO", pslot4)
 
         return
-
-    @staticmethod
-    def _create_enkf_com_lists(arch_dict: Dict[str, any]) -> Dict:
-
-        """Creates lists of ENKF member com directories from templates
-
-        Parameters
-        ----------
-        arch_dict : dict
-            Archiving context dictionary including COM_*_TMPL variables
-
-        Return
-        ------
-        arch_dict : dict
-            Updated context with lists for all ensemble members to be included
-        """
-
-        # Determine which members to archive
-        first_mem = (arch_dict.ENSGRP - 1) * arch_dict.NMEM_EARCGRP + 1
-        last_mem = min(arch_dict.NMEM_ENS,
-                       arch_dict.ENSGRP * arch_dict.NMEM_EARCGRP)
-        mem_list = [f"{mem:03d}" for mem in range(first_mem, last_mem + 1)]
-
-        arch_dict["first_group_mem"] = first_mem
-        arch_dict["last_group_mem"] = last_mem
-
-        # Create a list of IAU forecast hours from IAUFHRS
-        if isinstance(arch_dict.IAUFHRS, int):
-            # First half-cycle or if 3dvar
-            arch_dict["iaufhrs"] = [arch_dict.IAUFHRS]
-        else:
-            arch_dict["iaufhrs"] = [int(fhr) for fhr in arch_dict.IAUFHRS.split(",")]
-        # Create a dict to define COM template parameters
-        tmpl_dict = {
-            'ROTDIR': arch_dict.ROTDIR,
-            'RUN': arch_dict.RUN,
-            'YMD': to_YMD(arch_dict.current_cycle),
-            'HH': arch_dict.current_cycle.strftime('%H')
-        }
-
-        # Get a list of all COM templates (e.g. COM_ATMOS_ANALYSIS_TMPL)
-        com_tmpl_names = [key for key in arch_dict.keys()
-                     if key.startswith("COM_") and key.endswith("_TMPL")]
-
-        # Go through each template and 
-        for com_tmpl_name in com_tmpl_names: 
-
-            com_tmpl = arch_dict[com_tmpl_name]
-
-            # Construct lists of COM directories to archive data from
-            mem_com_list = []
-            for mem in mem_list:
-                tmpl_dict["MEMDIR"] = "mem" + mem
-                mem_com_list.append(Template.substitute_structure(
-                                    com_tmpl,
-                                    TemplateConstants.DOLLAR_CURLY_BRACE,
-                                    tmpl_dict.get))
-            mem_com_list_name = com_tmpl_name.replace("_TMPL","_MEM_list")
-            arch_dict[mem_com_list_name] = mem_com_list
-
-        return arch_dict
