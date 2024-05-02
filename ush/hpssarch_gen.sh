@@ -560,13 +560,14 @@ if [[ ${type} == "gdas" ]]; then
       echo "${COM_MED_RESTART/${ROTDIR}\//}/*"
     } >> "${DATA}/gdasocean_restart.txt"
 
-    {
-      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/${head}*"
-      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/gdas.t??z.ocngrid.nc"
-      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/diags"
-      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/yaml"
-    } >> "${DATA}/gdasocean_analysis.txt"
-
+    if [[ ${DO_JEDIOCNVAR} = "YES" ]]; then
+      {
+        echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/${head}*"
+        echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/gdas.t??z.ocngrid.nc"
+        echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/diags"
+        echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/yaml"
+      } >> "${DATA}/gdasocean_analysis.txt"
+    fi
   fi
 
   if [[ ${DO_ICE} = "YES" ]]; then
