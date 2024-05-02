@@ -36,8 +36,12 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     for ftype in coupler.res fv_core.res.nc; do
       src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.${ftype}"
       tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.${ftype}"
-      ${NCP} "${src}" "${tgt}"
-      rc=$?
+      if [ ! -f ${tgt} ]; then
+        ${NCP} "${src}" "${tgt}"
+        rc=$?
+      else
+        rc=0
+      fi
       ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
       err=$((err + rc))
     done
@@ -45,8 +49,12 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
       for ((tt = 1; tt <= 6; tt++)); do
         src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.${ftype}.tile${tt}.nc"
         tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.${ftype}.tile${tt}.nc"
-        ${NCP} "${src}" "${tgt}"
-        rc=$?
+        if [ ! -f ${tgt} ]; then
+          ${NCP} "${src}" "${tgt}"
+          rc=$?
+        else
+          rc=0
+        fi
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
         err=$((err + rc))
       done
@@ -55,18 +63,46 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     # Stage the FV3 cold-start initial conditions to ROTDIR
     YMD=${PDY} HH=${cyc} declare_from_tmpl COM_ATMOS_INPUT
     [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
-    src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
+   #src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
+    if [[ "${RUN:-}" = "gefs" ]]; then
+      src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
+    else
+      src="${BASE_CPLIC}/${CPL_ATMIC:-}/gfs.${PDY}${cyc}/model_data/atmos/input/gfs_ctrl.nc"
+    fi
     tgt="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
-    ${NCP} "${src}" "${tgt}"
-    rc=$?
+
+    echo "BASE_CPLIC=$BASE_CPLIC"
+    echo "CPL_ATMIC=$CPL_ATMIC"
+    echo "PDY=$PDY"
+    echo "cyc=$cyc"
+    echo "COM_ATMOS_INPUT=$COM_ATMOS_INPUT"
+    echo "MEMDIR=$MEMDIR"
+    echo "NCP=$NCP"
+    echo "src=$src"
+    echo "tgt=$tgt"
+    if [ ! -f ${tgt} ]; then
+      ${NCP} "${src}" "${tgt}"
+      rc=$?
+    else
+      rc=0
+    fi
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
     for ftype in gfs_data sfc_data; do
       for ((tt = 1; tt <= 6; tt++)); do
-        src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
+       #src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
+        if [[ "${RUN:-}" = "gefs" ]]; then
+          src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
+        else
+          src="${BASE_CPLIC}/${CPL_ATMIC:-}/gfs.${PDY}${cyc}/model_data/atmos/input/${ftype}.tile${tt}.nc"
+        fi
         tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
-        ${NCP} "${src}" "${tgt}"
-        rc=$?
+        if [ ! -f ${tgt} ]; then
+          ${NCP} "${src}" "${tgt}"
+          rc=$?
+        else
+          rc=0
+        fi
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
         err=$((err + rc))
       done
@@ -79,8 +115,12 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     [[ ! -d "${COM_OCEAN_RESTART_PREV}" ]] && mkdir -p "${COM_OCEAN_RESTART_PREV}"
     src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.MOM.res.nc"
     tgt="${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res.nc"
-    ${NCP} "${src}" "${tgt}"
-    rc=$?
+    if [ ! -f ${tgt} ]; then
+      ${NCP} "${src}" "${tgt}"
+      rc=$?
+    else
+      rc=0
+    fi
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
     case "${OCNRES}" in
@@ -91,8 +131,12 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
         for nn in $(seq 1 3); do
           src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
           tgt="${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc"
-          ${NCP} "${src}" "${tgt}"
-          rc=$?
+          if [ ! -f ${tgt} ]; then
+            ${NCP} "${src}" "${tgt}"
+            rc=$?
+          else
+            rc=0
+          fi
           ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
           err=$((err + rc))
         done
@@ -109,8 +153,12 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     if (( 0${MEMDIR:3} > 0 )) && [[ "${USE_OCN_PERTURB_FILES:-false}" == "true" ]]; then
         src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/ocean/${PDY}.${cyc}0000.mom6_increment.nc"
         tgt="${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.mom6_increment.nc"
-        ${NCP} "${src}" "${tgt}"
-        rc=${?}
+        if [ ! -f ${tgt} ]; then
+          ${NCP} "${src}" "${tgt}"
+          rc=$?
+        else
+          rc=0
+        fi
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
         err=$((err + rc))
     fi
@@ -124,8 +172,12 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
       src="${BASE_CPLIC}/${CPL_MEDIC:-}/${PDY}${cyc}/${MEMDIR}/med/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
       tgt="${COM_MED_RESTART_PREV}/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
       if [[ -f "${src}" ]]; then
-        ${NCP} "${src}" "${tgt}"
-        rc=$?
+        if [ ! -f ${tgt} ]; then
+          ${NCP} "${src}" "${tgt}"
+          rc=$?
+        else
+          rc=0
+        fi
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
         err=$((err + rc))
       else
@@ -141,8 +193,12 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     [[ ! -d "${COM_ICE_RESTART_PREV}" ]] && mkdir -p "${COM_ICE_RESTART_PREV}"
     src="${BASE_CPLIC}/${CPL_ICEIC:-}/${PDY}${cyc}/${MEMDIR}/ice/${PDY}.${cyc}0000.cice_model.res.nc"
     tgt="${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc"
-    ${NCP} "${src}" "${tgt}"
-    rc=$?
+    if [ ! -f ${tgt} ]; then
+      ${NCP} "${src}" "${tgt}"
+      rc=$?
+    else
+      rc=0
+    fi
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
   fi
@@ -154,8 +210,12 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     for grdID in ${waveGRD}; do # TODO: check if this is a bash array; if so adjust
       src="${BASE_CPLIC}/${CPL_WAVIC:-}/${PDY}${cyc}/${MEMDIR}/wave/${PDY}.${cyc}0000.restart.${grdID}"
       tgt="${COM_WAVE_RESTART}/${PDY}.${cyc}0000.restart.${grdID}"
-      ${NCP} "${src}" "${tgt}"
-      rc=$?
+      if [ ! -f ${tgt} ]; then
+        ${NCP} "${src}" "${tgt}"
+        rc=$?
+      else
+        rc=0
+      fi
       ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
       err=$((err + rc))
     done

@@ -167,6 +167,11 @@ class Tasks:
 
         scheduler = self.app_config.scheduler
 
+       #print('In workflow/rocoto/tasks.py')
+       #print('self.app_config = ', self.app_config)
+       #print('dir(self.app_config) = ', dir(self.app_config))
+       #print('vars(self.app_config) = ', vars(self.app_config))
+
         task_config = self._configs[task_name]
 
         account = task_config['ACCOUNT']
@@ -207,7 +212,9 @@ class Tasks:
             else:
                 native += ':shared'
         elif scheduler in ['slurm']:
-            native = '--export=NONE'
+           #native = '--export=NONE'
+           #On AWS, need to set as:
+            native = '--export=ALL --exclusive'
 
         queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
 

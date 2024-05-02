@@ -3,6 +3,28 @@
 source "${USHgfs}/preamble.sh"
 
 # Programs used
+if [[ ${WGRIB2:-"NEEDLOAD"} == "NEEDLOAD" ]]; then
+# Find module command and purge:
+  source "${HOMEgfs}/ush/detect_machine.sh"
+  source "${HOMEgfs}/ush/module-setup.sh"
+
+# Source versions file for runtime
+  source "${HOMEgfs}/versions/run.ver"
+
+# Load our modules:
+  module use "${HOMEgfs}/modulefiles"
+
+  case "${MACHINE_ID}" in
+    "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4" | "noaacloud")
+      module load "module_base.${MACHINE_ID}"
+      ;;
+    *)
+      echo "WARNING: UNKNOWN PLATFORM"
+      ;;
+  esac
+
+  module list
+fi
 export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 
 # Scripts used
