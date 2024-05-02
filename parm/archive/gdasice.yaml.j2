@@ -5,4 +5,4 @@
         mandatory:
             # TODO explicitly name the files in history to archive
             - '{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}*'
-            # - '{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/ice_in'
+            - '{{ COM_CONF | relpath(ROTDIR) }}/ufs.ice_in'
