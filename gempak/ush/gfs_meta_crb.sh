@@ -23,7 +23,7 @@ device="nc | ${metaname}"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 # DEFINE YESTERDAY
@@ -254,13 +254,13 @@ if [[ ${cyc} == 00 ]] ; then
     HPCECMWF_m1=ecmwf.${PDY}
     export HPCUKMET=ukmet.${PDYm1}
     if [[ ! -L "${HPCECMWF}" ]]; then
-        ln -sf "${COMINecmwf}ecmwf.${PDY}/gempak" "${HPCECMWF}"
+        ${NLN} "${COMINecmwf}ecmwf.${PDY}/gempak" "${HPCECMWF}"
     fi
     if [[ ! -L "${HPCECMWF_m1}" ]]; then
-        ln -sf "${COMINecmwf}ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
+        ${NLN} "${COMINecmwf}ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
     fi
     if [[ ! -L "${HPCUKMET}" ]]; then
-        ln -sf "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
+        ${NLN} "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
     fi
 
     grid1="F-${MDL} | ${PDY:2}/${cyc}00"

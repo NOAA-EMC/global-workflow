@@ -5,7 +5,7 @@ export spack_env=gsi-addon-dev-rocky8
 export hpss_ver=hpss
 export ncl_ver=6.6.2
 export R_ver=3.5.0
-export gempak_ver=7.4.2
+export gempak_ver=7.17.0
 export perl_ver=5.38.0
 
 source "${HOMEgfs:-}/versions/run.spack.ver"
