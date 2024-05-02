@@ -69,7 +69,7 @@ do
 #      To solve Bugzilla #408: remove the dependency of grib1 files in gfs wafs job in next GFS upgrade
 #      Reason: It's not efficent if simply converting from grib2 to grib1 (costs 6 seconds with 415 records)
 #      Solution: Need to grep 'selected fields on selected levels' before CNVGRIB (costs 1 second with 92 records)
-       ln -s $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fhr3  pgrb2f${hour}
+       ${NLN} $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fhr3  pgrb2f${hour}
        $WGRIB2 pgrb2f${hour} | grep -F -f $FIXgfs/grib_wafs.grb2to1.list | $WGRIB2 -i pgrb2f${hour} -grib pgrb2f${hour}.tmp
 #       on Cray, IOBUF_PARAMS has to used to speed up CNVGRIB
 #       export IOBUF_PARAMS='*:size=32M:count=4:verbose'
