@@ -1,0 +1,47 @@
+#!/bin/bash
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalletkf" -c "base ocnanal ocnanalletkf"
+
+##############################################
+# Set variables used in the script
+##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+
+YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+   COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+   COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/scripts/exgdas_global_marine_analysis_letkf.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
+
+exit 0
