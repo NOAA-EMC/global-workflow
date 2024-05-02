@@ -129,7 +129,7 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self: Analysis) -> None:
+    def letkf(self: Analysis) -> None:
         """Execute a global atmens analysis
 
         This method will execute a global atmens analysis using JEDI.
@@ -147,7 +147,7 @@ class AtmEnsAnalysis(Analysis):
         """
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMENSANL)
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLLETKF)
         exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
@@ -161,6 +161,23 @@ class AtmEnsAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
         pass
+
+        @logit(logger)
+    def init_fv3_increment(self: Analysis) -> None:
+	# Setup JEDI YAML file
+        self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
+        save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
+
+        # Link JEDI executable to run directory
+        self.task_config.jedi_exe = self.link_jediexe()
+
+    @logit(logger)
+    def fv3_increment(self: Analysis) -> None:
+        # Run executable
+        self.execute_jediexe(self.runtime_config.DATA,
+                             self.task_config.APRUN_ATMENSANLFV3INC,
+                             self.task_config.jedi_exe,
+                             self.task_config.jedi_yaml)
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
@@ -213,10 +230,22 @@ class AtmEnsAnalysis(Analysis):
         }
         FileHandler(yaml_copy).sync()
 
-        # Create UFS model readable atm increment file from UFS-DA atm increment
-        logger.info("Create UFS model readable atm increment file from UFS-DA atm increment")
-        self.jedi2fv3inc()
-
+        # Copy FV3 atm increment to comrot directory
+        logger.info("Copy UFS model readable atm increment file")
+        cdate = to_fv3time(self.task_config.current_cycle)
+        cdate_inc = cdate.replace('.', '_')
+        # loop over ensemble members
+        for imem in range(1, self.task_config.NMEM_ENS + 1):
+            memchar = f"mem{imem:03d}"
+            
+            src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.nc4")
+            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f'{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc')
+            logger.debug(f"Copying {src} to {dest}")
+            inc_copy = {
+                'copy': [[src, dest]]
+            }
+            FileHandler(inc_copy).sync()
+        
     def clean(self):
         super().clean()
 

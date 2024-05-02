@@ -18,7 +18,7 @@ class Tasks:
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalecen', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
-                   'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
+                   'atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'prepsnowobs', 'snowanl',
                    'fcst',
