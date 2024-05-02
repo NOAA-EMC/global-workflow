@@ -13,9 +13,9 @@ uname -n
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 
-## Find module command and purge:
-#source "${HOMEgfs}/ush/detect_machine.sh"
-#source "${HOMEgfs}/ush/module-setup.sh"
+# Find module command and purge:
+source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/module-setup.sh"
 
 # Source versions file for runtime
 #source "${HOMEgfs}/versions/run.ver"
@@ -36,7 +36,7 @@ ulimit_s=$( ulimit -S -s )
 
 # pjj - use this to load modules (spack-stack )
 ROOT_DIR=${HOMEgfs}/sorc
-set +x
+#set +x
 #Determine machine and load modules
 # pjj - use consistent module setup (spack-stack)
 source "${ROOT_DIR}/ufs_model.fd/tests/detect_machine.sh"
@@ -45,7 +45,7 @@ module use "${ROOT_DIR}/ufs_model.fd/modulefiles"
 module load "ufs_${MACHINE_ID}.intel"
 module load prod_util
 module list
-set -x
+#set -x
 echo $MACHINE_ID
 
 # Restore stack soft limit:

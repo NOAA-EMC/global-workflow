@@ -133,9 +133,9 @@ class RocotoXML(ABC):
         with open(xml_file, 'w') as fh:
             fh.write(self.xml)
 
-    def _write_crontab(self, crontab_file: str = None, cronint: int = 5) -> None:
+    def _write_crontab(self, crontab_file: str = None, cronint: int = 2) -> None:
         """
-        Create crontab to execute rocotorun every cronint (5) minutes
+        Create crontab to execute rocotorun every cronint (2) minutes
         """
 
         # No point creating a crontab if rocotorun is not available.

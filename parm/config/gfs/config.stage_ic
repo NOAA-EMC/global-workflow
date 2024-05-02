@@ -9,7 +9,8 @@ source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
   "C48" | "C96" | "C192")
-    export CPL_ATMIC="workflow_${CASE}_refactored"
+   #export CPL_ATMIC="workflow_${CASE}_refactored"
+    export CPL_ATMIC="${CASE}"
     export CPL_ICEIC="workflow_${CASE}_refactored"
     export CPL_OCNIC="workflow_${CASE}_refactored"
     export CPL_WAVIC="workflow_${CASE}_refactored"
