@@ -5,14 +5,18 @@
 datasets:
 {% include "gdas.yaml.j2" %}
 
-{% if DO_ICE %} {% include "gdasice.yaml.j2" %} {% endif %}
+{% if DO_ICE %}
+{% include "gdasice.yaml.j2" %}
+{% endif %}
 
 {% if DO_OCEAN %}
 {% include "gdasocean.yaml.j2" %}
 {% include "gdasocean_analysis.yaml.j2" %}
 {% endif %}
 
-{% if DO_ICE %} {% include "gdaswave.yaml.j2" %} {% endif %}
+{% if DO_WAVE %}
+{% include "gdaswave.yaml.j2" %}
+{% endif %}
 
 # Determine if we will save restart ICs or not
 {% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}
@@ -30,10 +34,22 @@ datasets:
 
 {% if save_warm_start_forecast %}
 {% include "gdas_restarta.yaml.j2" %}
-{% if DO_WAVE %} {% include "gdaswave_restart.yaml.j2" %} {% endif %}
-{% if DO_OCN %} {% include "gdasocean_restart.yaml.j2" %} {% endif %}
-{% if DO_ICE %} {% include "gdasice_restart.yaml.j2" %} {% endif %}
+
+{% if DO_WAVE %}
+{% include "gdaswave_restart.yaml.j2" %}
+{% endif %}
+
+{% if DO_OCN %}
+{% include "gdasocean_restart.yaml.j2" %}
+{% endif %}
+
+{% if DO_ICE %}
+{% include "gdasice_restart.yaml.j2" %}
+{% endif %}
+
 {% endif %}  # Save forecast-only restarts
 
 # Save cycled restarts
-{% if save_warm_start_cycled %} {% include "gdas_restartb.yaml.j2" %} {% endif %}
+{% if save_warm_start_cycled %}
+{% include "gdas_restartb.yaml.j2" %}
+{% endif %}

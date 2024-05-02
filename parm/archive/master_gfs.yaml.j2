@@ -14,9 +14,17 @@ datasets:
 {% endif %}
 {% endif %}
 
-{% if DO_WAVE %} {% include "gfswave.yaml.j2" %} {% endif %}
-{% if DO_AERO %} {% include "chem.yaml.j2" %} {% endif %}
-{% if DO_BUFRSND %} {% include "gfs_downstream.yaml.j2" %} {% endif %}
+{% if DO_WAVE %}
+{% include "gfswave.yaml.j2" %}
+{% endif %}
+
+{% if DO_AERO %}
+{% include "chem.yaml.j2" %}
+{% endif %}
+
+{% if DO_BUFRSND %}
+{% include "gfs_downstream.yaml.j2" %}
+{% endif %}
 
 {% if DO_OCEAN %}
 {% include "ocean_6hravg.yaml.j2" %}
