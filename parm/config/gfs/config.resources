@@ -481,8 +481,8 @@ case ${step} in
     ;;
 
   "anal")
-    export wtime_anal="00:50:00"
-    export wtime_anal_gfs="00:40:00"
+    export wtime_anal="01:20:00"
+    export wtime_anal_gfs="01:00:00"
     export npe_anal=780
     export nth_anal=5
     export npe_anal_gfs=825
@@ -497,6 +497,12 @@ case ${step} in
         export npe_anal_gfs=160
         export nth_anal=10
         export nth_anal_gfs=10
+        if [[ ${machine} = "HERA" ]]; then
+          export npe_anal=270
+          export npe_anal_gfs=270
+          export nth_anal=8
+          export nth_anal_gfs=8
+        fi	  
         if [[ ${machine} = "S4" ]]; then
           #On the S4-s4 partition, this is accomplished by increasing the task
           #count to a multiple of 32
@@ -558,7 +564,7 @@ case ${step} in
     ;;
 
   "sfcanl")
-    export wtime_sfcanl="00:10:00"
+    export wtime_sfcanl="00:20:00"
     export npe_sfcanl=6
     export nth_sfcanl=1
     export npe_node_sfcanl=$(( npe_node_max / nth_sfcanl ))
@@ -1020,7 +1026,7 @@ case ${step} in
     ;;
 
   "esfc")
-    export wtime_esfc="00:08:00"
+    export wtime_esfc="00:15:00"
     export npe_esfc=80
     export nth_esfc=1
     export npe_node_esfc=$(( npe_node_max / nth_esfc ))
