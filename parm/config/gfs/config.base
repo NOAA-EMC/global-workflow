@@ -110,6 +110,10 @@ export CHGRP_CMD="@CHGRP_CMD@"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
 export NCLEN="${HOMEgfs}/ush/getncdimlen"
 
+# Stop gap fix for wgrib with spack-stack 1.6.0
+# TODO Remove this when spack-stack issue #1097 is resolved
+export WGRIB="${WGRIB:-${grib_util_ROOT:-}/wgrib}"
+
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="${HOMEgfs}/env"
 export BASE_JOB="${HOMEgfs}/jobs/rocoto"
