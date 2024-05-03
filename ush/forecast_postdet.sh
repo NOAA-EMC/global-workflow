@@ -48,7 +48,7 @@ FV3_postdet() {
       restart_date="${RERUN_DATE}"
       restart_dir="${DATArestart}/FV3_RESTART"
     else  # "${RERUN}" == "NO"
-      restart_date="${current_cycle_begin}"
+      restart_date="${sdate_current_cycle}"
       restart_dir="${COM_ATMOS_RESTART_PREV}"
     fi
 
@@ -91,7 +91,7 @@ FV3_postdet() {
       else
         local model_start_time="${current_cycle}"
       fi
-      local model_current_time="${current_cycle_begin}"
+      local model_current_time="${sdate_current_cycle}"
       rm -f "${DATA}/INPUT/coupler.res"
       cat >> "${DATA}/INPUT/coupler.res" << EOF
       3        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
@@ -267,7 +267,7 @@ WW3_postdet() {
       restart_date="${RERUN_DATE}"
       restart_dir="${DATArestart}/WW3_RESTART"
     else
-      restart_date="${current_cycle_begin}"
+      restart_date="${sdate_current_cycle}"
       restart_dir="${COM_WAVE_RESTART_PREV}"
     fi
     echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
@@ -366,7 +366,7 @@ MOM6_postdet() {
     restart_date="${RERUN_DATE}"
   else  # "${RERUN}" == "NO"
     restart_dir="${COM_OCEAN_RESTART_PREV}"
-    restart_date="${current_cycle_begin}"
+    restart_date="${sdate_current_cycle}"
   fi
 
   # Copy MOM6 ICs
@@ -494,7 +494,7 @@ MOM6_out() {
   # Copy restarts for the next cycle for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
-    restart_date="${next_cycle_begin}"
+    restart_date="${sdate_next_cycle}"
     echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
     for mom6_restart_file in "${mom6_restart_files[@]}"; do
       restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
@@ -514,7 +514,7 @@ CICE_postdet() {
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     cice_restart_file="${DATArestart}/CICE_RESTART/cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
   else  # "${RERUN}" == "NO"
-    restart_date="${current_cycle_begin}"
+    restart_date="${sdate_current_cycle}"
     cice_restart_file="${COM_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
   fi
 
@@ -587,7 +587,7 @@ CICE_out() {
   # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
-    restart_date="${next_cycle_begin}"
+    restart_date="${sdate_next_cycle}"
     echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
@@ -675,7 +675,7 @@ CMEPS_postdet() {
       seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
       cmeps_restart_file="${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
     else  # "${RERUN}" == "NO"
-      restart_date="${current_cycle_begin}"
+      restart_date="${sdate_current_cycle}"
       cmeps_restart_file="${COM_MED_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
     fi
 
@@ -722,7 +722,7 @@ CMEPS_out() {
   # Copy restarts for the next cycle to COM for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
-    restart_date="${next_cycle_begin}"
+    restart_date="${sdate_next_cycle}"
     echo "Copying mediator restarts for 'RUN=${RUN}' at ${restart_date}"
     seconds=$(to_seconds "${restart_date:8:2}"0000)
     source_file="ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
