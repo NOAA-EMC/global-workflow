@@ -230,7 +230,7 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
-    export AERO_ANL_CDUMP="gdas"
+    export AERO_ANL_CDUMP="both"
     export AERO_FCST_CDUMP="gdas"
     ;;
   ATMW)
