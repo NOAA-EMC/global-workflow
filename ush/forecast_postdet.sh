@@ -507,15 +507,17 @@ MOM6_out() {
   # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
+    if [[ "${NEXTCYCIAU}" == "YES" ]]; then  # Copy restarts at the beginning of the next cycle from DATA to COM
+      restart_date="${next_cycle_begin}"
+    else  # Copy restarts at the middle of the next cycle from DATA to COM
+      restart_date="${next_cycle}"
+    fi
     restart_date=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-    while (( restart_date < forecast_end_cycle )); do
-      echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
-      for mom6_restart_file in "${mom6_restart_files[@]}"; do
-	restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
-        ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
-               "${COM_OCEAN_RESTART}/${restart_file}"
-      done
-      restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
+    for mom6_restart_file in "${mom6_restart_files[@]}"; do
+      restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
+      ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
+             "${COM_OCEAN_RESTART}/${restart_file}"
     done
   fi
 }
@@ -607,18 +609,18 @@ CICE_out() {
   # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
+    if [[ "${NEXTCYCIAU}" == "YES" ]]; then  # Copy restarts at the beginning of the next cycle from DATA to COM
+      restart_date="${next_cycle_begin}"
+    else  # Copy restarts at the middle of the next cycle from DATA to COM
+      restart_date="${next_cycle}"
+    fi
     restart_date=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-    while (( restart_date < forecast_end_cycle )); do
-      
-      echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
-      seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-      source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-      target_file="${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-      ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
-             "${COM_ICE_RESTART}/${target_file}"
-
-      restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-    done
+    echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
+    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+    source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
+    target_file="${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
+    ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
+           "${COM_ICE_RESTART}/${target_file}"
   fi
 
 }
@@ -751,7 +753,7 @@ CMEPS_out() {
   # Copy restarts at the beginning/middle of the next assimilation cycle to COM for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
-    if [[ "${DOIAU}" == "YES" ]]; then  # Copy restarts at the beginning of the next cycle from DATA to COM
+    if [[ "${NEXTCYCIAU}" == "YES" ]]; then  # Copy restarts at the beginning of the next cycle from DATA to COM
       restart_date="${next_cycle_begin}"
     else  # Copy restarts at the middle of the next cycle from DATA to COM
       restart_date="${next_cycle}"

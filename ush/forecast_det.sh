@@ -9,11 +9,13 @@ UFS_det(){
   if [[ "${DOIAU:-}" == "YES" ]]; then
     if [[ -f "${COM_ATMOS_RESTART_PREV}/${current_cycle_begin:0:8}.${current_cycle_begin:8:2}0000.coupler.res" ]]; then
       warm_start=".true."
-    fi
+    fi 
+    NEXTCYCIAU=YES
   else
     if [[ -f "${COM_ATMOS_RESTART_PREV}/${current_cycle:0:8}.${current_cycle:8:2}0000.coupler.res" ]]; then
       warm_start=".true."
     fi
+    NEXTCYCIAU=NO
   fi
 
   # If restarts were not available, this is likely a cold start
