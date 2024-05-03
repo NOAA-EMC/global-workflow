@@ -35,6 +35,9 @@
             - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
             - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ '%03d' % fhr }}.txt"
             {% endfor %}
+            {% if AERO_ANL_CDUMP == "gdas" or AERO_ANL_CDUMP == "both" %}
+            - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
+            {% endif %}
         optional:
             {% if MODE == "cycled" %}
             - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"

@@ -18,7 +18,7 @@ datasets:
 {% include "gfswave.yaml.j2" %}
 {% endif %}
 
-{% if DO_AERO %}
+{% if AERO_FCST_CDUMP == "gfs" or AERO_FCST_CDUMP == "both" %}
 {% include "chem.yaml.j2" %}
 {% endif %}
 

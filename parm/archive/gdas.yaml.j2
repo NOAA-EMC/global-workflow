@@ -49,7 +49,7 @@
             - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
             - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
             {% endif %}
-            {% if DO_AERO %}
+            {% if AERO_ANL_CDUMP == "gdas" or AERO_ANL_CDUMP == "both" %}
             - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
             {% endif %}
             {% if DO_JEDISNOWDA %}
