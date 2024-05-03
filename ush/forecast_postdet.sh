@@ -247,13 +247,15 @@ FV3_out() {
   # Copy the final restart files at the end of the forecast segment
   # The final restart written at the end of the forecast does not include the valid date
   # TODO: verify the above statement since RM found that it did!
-  echo "Copying FV3 restarts for 'RUN=${RUN}' at the end of the forecast segment: ${forecast_end_cycle}"
-  for fv3_restart_file in "${fv3_restart_files[@]}"; do
-    restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${fv3_restart_file}"
-    ${NCP} "${DATArestart}/FV3_RESTART/${restart_file}" \
-           "${COM_ATMOS_RESTART}/${restart_file}"
-  done
-
+  # TODO: For other components, this is only for gfs/gefs - check to see if this should also have this 
+  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then 
+    echo "Copying FV3 restarts for 'RUN=${RUN}' at the end of the forecast segment: ${forecast_end_cycle}"
+    for fv3_restart_file in "${fv3_restart_files[@]}"; do
+      restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${fv3_restart_file}"
+      ${NCP} "${DATArestart}/FV3_RESTART/${restart_file}" \
+             "${COM_ATMOS_RESTART}/${restart_file}"
+    done
+  fi 
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
 
@@ -490,14 +492,16 @@ MOM6_out() {
   esac
 
   # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs
-  local restart_file
-  if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
-    echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-    for mom6_restart_file in "${mom6_restart_files[@]}"; do
-      restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${mom6_restart_file}"
-      ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
-             "${COM_OCEAN_RESTART}/${restart_file}"
-    done
+  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+    local restart_file
+    if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
+      echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+      for mom6_restart_file in "${mom6_restart_files[@]}"; do
+        restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${mom6_restart_file}"
+        ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
+               "${COM_OCEAN_RESTART}/${restart_file}"
+      done
+    fi 
   fi
 
   # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
@@ -588,14 +592,16 @@ CICE_out() {
   ${NCP} "${DATA}/ice_in" "${COM_CONF}/ufs.ice_in"
 
   # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs
-  local seconds source_file target_file
-  if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
-    echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-    seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
-    source_file="cice_model.res.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
-    target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
-    ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
-           "${COM_ICE_RESTART}/${target_file}"
+  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+    local seconds source_file target_file
+    if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
+      echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+      seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
+      source_file="cice_model.res.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
+      target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
+      ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
+             "${COM_ICE_RESTART}/${target_file}"
+    fi 
   fi
 
   # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
@@ -728,17 +734,19 @@ CMEPS_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CMEPS mediator"
 
   # Copy mediator restarts at the end of the forecast segment to COM for RUN=gfs|gefs
-  echo "Copying mediator restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-  local seconds source_file target_file
-  seconds=$(to_seconds "${forecast_end_cycle:8:2}"0000)
-  source_file="ufs.cpld.cpl.r.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
-  target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.ufs.cpld.cpl.r.nc"
-  if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
-    ${NCP} "${DATArestart}/CMEPS_RESTART/${source_file}" \
-           "${COM_MED_RESTART}/${target_file}"
-  else
-    echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
-  fi
+  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+    echo "Copying mediator restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+    local seconds source_file target_file
+    seconds=$(to_seconds "${forecast_end_cycle:8:2}"0000)
+    source_file="ufs.cpld.cpl.r.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
+    target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.ufs.cpld.cpl.r.nc"
+    if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
+      ${NCP} "${DATArestart}/CMEPS_RESTART/${source_file}" \
+             "${COM_MED_RESTART}/${target_file}"
+    else
+      echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
+    fi
+  fi 
 
   # Copy restarts at the beginning/middle of the next assimilation cycle to COM for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
