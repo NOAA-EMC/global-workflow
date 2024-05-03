@@ -5,8 +5,10 @@
 
  GLOBALWORKFLOWTEMP=/contrib/Wei.Huang/run
  GLOBALWORKFLOWHOME=/contrib/Wei.Huang/src/global-workflow-cloud
- ATMOSRES=48
+#ATMOSRES=48
 #ATMOSRES=96
+ ATMOSRES=192
+#ATMOSRES=384
  PSLOT=c${ATMOSRES}atm
  EXPNAME=gfs
  PSLOT=c${ATMOSRES}atm
@@ -15,9 +17,8 @@
  COMROOT=${GLOBALWORKFLOWTEMP}/comroot
  EXPDIR=${GLOBALWORKFLOWTEMP}/expdir
  CONFIGDIR=${GLOBALWORKFLOWHOME}/parm/config
-#export BASE_CPLIC=${COMROOT}/${PSLOT}
-
- mkdir -p ${COMROOT} ${EXPDIR}
+ export BASE_CPLIC=/contrib/Wei.Huang/data/ICs
+ export CPL_ATMIC=C${ATMOSRES}
 
  source ${GLOBALWORKFLOWHOME}/workflow/gw_setup.sh
 

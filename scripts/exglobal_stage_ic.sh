@@ -63,11 +63,10 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     # Stage the FV3 cold-start initial conditions to ROTDIR
     YMD=${PDY} HH=${cyc} declare_from_tmpl COM_ATMOS_INPUT
     [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
-   #src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
     if [[ "${RUN:-}" = "gefs" ]]; then
-      src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
+      src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}PDY}/${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
     else
-      src="${BASE_CPLIC}/${CPL_ATMIC:-}/gfs.${PDY}${cyc}/model_data/atmos/input/gfs_ctrl.nc"
+      src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${PDY}/${cyc}/model_data/atmos/input/gfs_ctrl.nc"
     fi
     tgt="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
 
@@ -90,11 +89,10 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     err=$((err + rc))
     for ftype in gfs_data sfc_data; do
       for ((tt = 1; tt <= 6; tt++)); do
-       #src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
         if [[ "${RUN:-}" = "gefs" ]]; then
-          src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
+          src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
         else
-          src="${BASE_CPLIC}/${CPL_ATMIC:-}/gfs.${PDY}${cyc}/model_data/atmos/input/${ftype}.tile${tt}.nc"
+          src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${PDY}/${cyc}/model_data/atmos/input/${ftype}.tile${tt}.nc"
         fi
         tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
         if [ ! -f ${tgt} ]; then

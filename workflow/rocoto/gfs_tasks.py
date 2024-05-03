@@ -32,7 +32,9 @@ class GFSTasks(Tasks):
             print('cpl_atmic =', cpl_atmic)
             print('pslot =', pslot)
             print('prefix =', prefix)
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{self._base['PSLOT']}/gfs.@Y@m@d/@H/model_data/atmos/input"
+           #prefix = f"{self.rotdir}/gfs.@Y@m@d/@H/model_data/atmos/input"
+           #prefix = f"{cpl_ic['BASE_CPLIC']}/{self._base['PSLOT']}/gfs.@Y@m@d/@H/model_data/atmos/input"
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/gfs.@Y@m@d/@H/model_data/atmos/input"
             print('prefix =', prefix)
             for file in ['gfs_ctrl.nc'] + \
                         [f'{datatype}_data.tile{tile}.nc'
