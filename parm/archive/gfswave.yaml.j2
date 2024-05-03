@@ -13,7 +13,6 @@
             - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
             - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
             {% endfor %}
-        optional:
             - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}bull_tar"
             - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}cbull_tar"
             - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}spec_tar.gz"
