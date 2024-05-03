@@ -606,6 +606,13 @@ case ${step} in
         [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
       fi
 
+      if (( ntiles > 6 )); then
+        export layout_x_nest=${layout_x_nest:-10}
+        export layout_y_nest=${layout_y_nest:-10}
+        export npx_nest=${npx_nest:-1441}
+        export npy_nest=${npy_nest:-961}
+      fi
+
       # PETS for the atmosphere dycore
       (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
       echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"

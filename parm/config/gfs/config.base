@@ -187,6 +187,13 @@ export AERO_ANL_CDUMP="" # When to run aerosol analysis: gdas, gfs, or both
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export FRAC_GRID=".true."
+export DO_NEST="NO" # Whether to run a global-nested domain
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+  export ntiles=7
+  export NEST_OUTPUT_GRID="regional_latlon"
+else
+  export ntiles=6
+fi
 
 # Set operational resolution
 export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it used?
