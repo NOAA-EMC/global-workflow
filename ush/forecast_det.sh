@@ -92,7 +92,7 @@ UFS_det(){
     # Check for CICE6 restart availability
     if [[ "${cplice}" == ".true." ]]; then
       if [[ ! -f "${DATArestart}/CICE_RESTART/cice_model.res.${rdate:0:4}-${rdate:4:2}-${rdate:6:2}-${seconds}.nc" ]]; then
-        cice_rst_ok="NO"
+        cice6_rst_ok="NO"
       fi
     fi
 
