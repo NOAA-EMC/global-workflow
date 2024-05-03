@@ -28,7 +28,8 @@ def main():
             'ARCH_GAUSSIAN_FHMAX', 'ARCH_GAUSSIAN_FHINC', 'ARCH_GAUSSIAN_FHINC',
             'DOIAU', 'OCNRES', 'ICERES', 'NUM_SND_COLLECTIVES', 'FHOUT_WAV',
             'FHOUT_HF_WAV', 'FHMAX_WAV', 'FHMAX_HF_WAV', 'FHMAX_WAV_GFS',
-            'restart_interval_gdas', 'restart_interval_gfs']
+            'restart_interval_gdas', 'restart_interval_gfs',
+            'AERO_ANL_CDUMP', 'AERO_FCST_CDUMP']
 
     archive_dict = AttrDict()
     for key in keys:

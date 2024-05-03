@@ -87,7 +87,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
         tasks = ['stage_ic']
 
         if self.do_aero:
-            tasks += ['aerosol_init']
+            aero_fcst_cdump = _base.get('AERO_FCST_CDUMP', 'BOTH').lower()
+            if self._base['CDUMP'] in aero_fcst_cdump or aero_fcst_cdump == "both":
+                tasks += ['aerosol_init']
 
         if self.do_wave:
             tasks += ['waveinit']

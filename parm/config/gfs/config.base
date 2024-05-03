@@ -167,9 +167,6 @@ export APP=@APP@
 shopt -s extglob
 # Adjust APP based on RUN
 case "${RUN}" in
-    gfs)   # Turn off aerosols
-        APP="${APP/%A}"
-        ;;
     enkf*) # Turn off aerosols and waves
         APP="${APP/%+([WA])}"
         ;;
@@ -185,6 +182,8 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
+export AERO_FCST_CDUMP="" # When to run aerosol forecast: gdas, gfs, or both
+export AERO_ANL_CDUMP="" # When to run aerosol analysis: gdas, gfs, or both
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export FRAC_GRID=".true."
@@ -224,6 +223,8 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
+    export AERO_ANL_CDUMP="gdas"
+    export AERO_FCST_CDUMP="gdas"
     ;;
   ATMW)
     export DO_COUPLED="YES"
@@ -242,6 +243,8 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
+        export AERO_ANL_CDUMP="gdas"
+        export AERO_FCST_CDUMP="gdas"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
@@ -395,7 +398,7 @@ fi
 
 export restart_interval_enkfgfs=${restart_interval_enkfgdas}
 
-if [[ "${DOIAU}" == "YES" && "${DOHYBVAR}" == "YES" ]]; then
+if [[ "${DOIAU}" == "YES" ]]; then
   export restart_interval_gdas="3"
 else
   export restart_interval_gdas="6"
