@@ -348,6 +348,7 @@ class Analysis(Task):
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(diagdir, 'diags', 'diag*nc'))
+        diags.extend(glob.glob(os.path.join(diagdir, 'diags', 'diag*nc4')))
 
         logger.info(f"Compressing {len(diags)} diag files to {statfile}")
 
