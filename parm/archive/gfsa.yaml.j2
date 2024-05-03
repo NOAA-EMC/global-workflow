@@ -2,7 +2,7 @@
         {% set head = "gfs.t" + cycle_HH + "z." %}
         name: "GFSA"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfsa.tar"
-        mandatory:
+        required:
             # TODO explicitly name all logs to include
             {% for log in glob("logs/" ~ cycle_YMDH ~ "/gfs*.log") %} 
             {% if log != "gfsarch.log" %}

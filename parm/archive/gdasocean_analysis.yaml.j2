@@ -2,7 +2,7 @@
         {% set head = "gdas.ocean.t" + cycle_HH + "z." %}
         name: "GDASOCEAN_ANALYSIS"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
-        mandatory:
+        required:
             # TODO explicitly name the analysis files to archive
             - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}*'
             - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/gdas.t??z.ocngrid.nc'

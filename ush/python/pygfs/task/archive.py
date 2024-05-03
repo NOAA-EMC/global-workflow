@@ -176,7 +176,7 @@ class Archive(Task):
     def _create_fileset(atardir_set: Dict[str, Any]) -> List:
         """
         Collect the list of all available files from the parsed yaml dict.
-        Globs are expanded and if mandatory files are missing, an error is
+        Globs are expanded and if required files are missing, an error is
         raised.
 
         TODO: expand all globs in the jinja yaml files instead of expanding
@@ -186,16 +186,16 @@ class Archive(Task):
         Parameters
         ----------
         atardir_set: Dict
-            Contains full paths for mandatory and optional files to be archived.
+            Contains full paths for required and optional files to be archived.
         """
 
         fileset = []
-        if "mandatory" in atardir_set:
-            if atardir_set.mandatory is not None:
-                for item in atardir_set.mandatory:
+        if "required" in atardir_set:
+            if atardir_set.required is not None:
+                for item in atardir_set.required:
                     glob_set = glob.glob(item)
                     if len(glob_set) == 0:
-                        raise FileNotFoundError(f"FATAL ERROR: Mandatory file, directory, or glob {item} not found!")
+                        raise FileNotFoundError(f"FATAL ERROR: Required file, directory, or glob {item} not found!")
                     for entry in glob_set:
                         fileset.append(entry)
 

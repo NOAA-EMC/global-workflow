@@ -2,7 +2,7 @@
         {% set head = "gdas.t" + cycle_HH + "z." %}
         name: "GDAS_RESTARTB"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas_restartb.tar"
-        mandatory:
+        required:
             {% for r_time in range(restart_interval_gdas, FHMAX + 1, restart_interval_gdas) %}
             {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
             {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}

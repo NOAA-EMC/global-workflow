@@ -2,7 +2,7 @@
         {% set head = "gdas.t" + cycle_HH + "z." %}
         name: "GDAS_RESTARTA"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas_restarta.tar"
-        mandatory:
+        required:
             {% if not current_cycle == SDATE and MODE == "cycled" %}
             - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
             {% for iauhr in IAUHRS if iauhr != 6 %}

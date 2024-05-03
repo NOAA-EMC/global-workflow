@@ -2,7 +2,7 @@
         {% set head = "gfs.ice.t" + cycle_HH + "z." %}
         name: "ICE_GRIB2"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ice_grib2.tar"
-        mandatory:
+        required:
             {% for fhr in range(FHOUT_OCNICE_GFS, FHMAX_GFS + FHOUT_OCNICE_GFS, FHOUT_OCNICE_GFS) %}
             {% set fhr3 = '%03d' % fhr %}
             {% if ICERES == 500 %}

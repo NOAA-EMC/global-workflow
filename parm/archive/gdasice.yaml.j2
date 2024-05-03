@@ -2,7 +2,7 @@
         {% set head = "gdas.ice.t" + cycle_HH + "z." %}
         name: "GDASICE"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice.tar"
-        mandatory:
+        required:
             # TODO explicitly name the files in history to archive
             - '{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}*'
             - '{{ COM_CONF | relpath(ROTDIR) }}/ufs.ice_in'

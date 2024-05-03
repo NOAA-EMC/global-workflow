@@ -2,7 +2,7 @@
         {% set head = "gdas.t" + cycle_HH + "z." %}
         name: "GDAS"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas.tar"
-        mandatory:
+        required:
             {% if not current_cycle == SDATE and MODE == "cycled" %}
             - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
             - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl.idx"

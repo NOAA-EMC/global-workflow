@@ -7,7 +7,7 @@
         {% endif %}
         name: "ENKF"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}.tar"
-        mandatory:
+        required:
             {% for fhr in range(fhmin, fhmax + fhout, fhout) %}
             - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensmean.nc"
             - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.ensmean.nc"

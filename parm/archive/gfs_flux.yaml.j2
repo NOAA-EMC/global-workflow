@@ -2,7 +2,7 @@
         {% set head = "gfs.t" + cycle_HH + "z." %}
         name: "GFS_FLUX"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_flux.tar"
-        mandatory:
+        required:
             {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
             - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
             - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"

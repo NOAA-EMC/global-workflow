@@ -2,7 +2,7 @@
         {% set head = "gfs.t" + cycle_HH + "z." %}
         name: "GFS_DOWNSTREAM"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_downstream.tar"
-        mandatory:
+        required:
             - "{{ COM_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.sfc"
             - "{{ COM_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.snd"
             {% for i in range(1, NUM_SND_COLLECTIVES) %}

@@ -2,7 +2,7 @@
         {% set head = "gfs.t" + cycle_HH + "z." %}
         name: "GFS_PGRB2B"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_pgrb2b.tar"
-        mandatory:
+        required:
             {% if MODE == "cycled" %}
             - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2b.0p25.anl"
             - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2b.0p25.anl.idx"

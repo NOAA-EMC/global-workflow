@@ -2,7 +2,7 @@
         {% set head = "gfswave.t" + cycle_HH + "z." %}
         name: "GFSWAVE"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
-        mandatory:
+        required:
             {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
             # NOTE This is as explicit as possible without major logic to parse wavepostGRD.
             #      Matches files of the form "gfswave.tCCz.<region>.<res>.fHHH.grib2".

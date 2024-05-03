@@ -2,7 +2,7 @@
         {% set head = RUN + ".t" + cycle_HH + "z." %}
         name: "ENKF_RESTARTA_GRP"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restarta_grp{{ ENSGRP }}.tar"
-        mandatory:
+        required:
             {% for mem in range(first_group_mem, last_group_mem + 1) %}
             {% set imem = mem - first_group_mem %}
             {% set COM_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_MEM_list[imem] %}

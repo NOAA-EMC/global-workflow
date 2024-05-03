@@ -2,7 +2,7 @@
         {% set head = "gfs.t" + cycle_HH + "z." %}
         name: "GFS_NETCDFA"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_netcdfa.tar"
-        mandatory:
+        required:
             - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
             - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
             - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
