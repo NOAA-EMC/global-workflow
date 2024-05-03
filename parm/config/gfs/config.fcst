@@ -12,8 +12,6 @@ case ${WAVE_CDUMP} in
   both | "${CDUMP/enkf}" ) ;; # Don't change
   *) DO_WAVE="NO" ;; # Turn waves off
 esac
-   if [[ "${AERO_FCST_CDUMP}" == "both" || "AERO_FCST_CDUMP" == "$CDUMP" ]]; then
-      string="${string} --gocart"
 
 # Turn off waves if not used for this CDUMP
 case ${AERO_FCST_CDUMP} in

@@ -81,6 +81,10 @@ export CHGRP_CMD="@CHGRP_CMD@"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
 export NCLEN="${HOMEgfs}/ush/getncdimlen"
 
+# Stop gap fix for wgrib with spack-stack 1.6.0
+# TODO Remove this when spack-stack issue #1097 is resolved
+export WGRIB="${WGRIB:-${grib_util_ROOT:-}/wgrib}"
+
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="${HOMEgfs}/env"
 export BASE_JOB="${HOMEgfs}/jobs/rocoto"
@@ -134,6 +138,8 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
+export AERO_FCST_CDUMP="" # When to run aerosol forecast: gdas, gfs, or both
+export AERO_ANL_CDUMP="" # When to run aerosol analysis: gdas, gfs, or both
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
 export FRAC_GRID=".true."
@@ -179,6 +185,8 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
+    export AERO_ANL_CDUMP="gdas"
+    export AERO_FCST_CDUMP="gdas"
     ;;
   ATMW)
     export DO_COUPLED="YES"
@@ -197,6 +205,8 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
+        export AERO_ANL_CDUMP="gdas"
+        export AERO_FCST_CDUMP="gdas"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
@@ -318,5 +328,8 @@ export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capabili
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
 export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
+
+# Number of regional collectives to create soundings for
+export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
 
 echo "END: config.base"
