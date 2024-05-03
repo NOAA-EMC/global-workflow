@@ -177,7 +177,7 @@ class GFSCycledAppConfig(AppConfig):
             gdas_tasks += wave_prep_tasks
 
         if self.do_aero and 'gdas' in self.aero_anl_cdumps:
-            gdas_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+            gdas_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
