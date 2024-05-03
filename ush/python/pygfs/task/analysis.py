@@ -25,7 +25,6 @@ class Analysis(Task):
 
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
-        self.config.ntiles = 6
         # Store location of GDASApp jinja2 templates
         self.gdasapp_j2tmpl_dir = os.path.join(self.config.PARMgfs, 'gdas')
 

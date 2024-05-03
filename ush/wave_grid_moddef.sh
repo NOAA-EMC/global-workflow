@@ -82,12 +82,12 @@ source "${USHgfs}/preamble.sh"
   set_trace
  
   rm -f ww3_grid.inp 
-  ln -sf ../ww3_grid.inp.$grdID ww3_grid.inp
+  ${NLN} ../ww3_grid.inp.$grdID ww3_grid.inp
 
   if [ -f ../${grdID}.msh ]
   then
      rm -f ${grdID}.msh 
-     ln -sf ../${grdID}.msh ${grdID}.msh 
+     ${NLN} ../${grdID}.msh ${grdID}.msh
   fi
 
 

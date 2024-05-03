@@ -71,8 +71,8 @@ else
 fi
 
 rm -f cur.nc
-ln -s "cur_glo_uv_${PDY}_${fext}${fh3}_5min.nc" "cur.nc"
-ln -s "${DATA}/mod_def.${WAVECUR_FID}" ./mod_def.ww3
+${NLN} "cur_glo_uv_${PDY}_${fext}${fh3}_5min.nc" "cur.nc"
+${NLN} "${DATA}/mod_def.${WAVECUR_FID}" ./mod_def.ww3
 
 export pgm=ww3_prnc;. prep_step
 ${EXECgfs}/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1

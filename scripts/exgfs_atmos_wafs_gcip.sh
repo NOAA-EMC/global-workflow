@@ -72,7 +72,7 @@ if [ $RUN = "gfs" ] ; then
   cpreq $PARMgfs/wafs_gcip_gfs.cfg $configFile
 
   modelFile=modelfile.grb
-#  ln -sf $masterFile $modelFile
+#  ${NLN} $masterFile $modelFile
   $WGRIB2 $masterFile | egrep ":HGT:|:VVEL:|:CLMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | egrep "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | $WGRIB2 -i $masterFile -grib $modelFile
 
   # metar / ships / lightning / pireps
