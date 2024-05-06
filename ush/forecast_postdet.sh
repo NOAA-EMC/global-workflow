@@ -536,8 +536,8 @@ CICE_postdet() {
   # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
   # TODO: Is this file needed in COM? Is this going to be used for generating any products?
   local vdate seconds vdatestr fhr fhr3 interval last_fhr
-  seconds=$(to_seconds "${current_cycle:8:2}0000")  # convert HHMMSS to seconds
-  vdatestr="${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2}-${seconds}"
+  seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000")  # convert HHMMSS to seconds
+  vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
   ${NLN} "${COM_ICE_HISTORY}/${RUN}.ice.t${cyc}z.ic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
 
   # Link CICE forecast output files from DATA/CICE_OUTPUT to COM
