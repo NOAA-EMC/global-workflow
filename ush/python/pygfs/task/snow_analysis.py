@@ -317,6 +317,14 @@ class SnowAnalysis(Analysis):
         exec_cmd.add_default_arg('localensembleda')
         exec_cmd.add_default_arg(localconf.jedi_yaml)
 
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
         logger.info("Creating analysis from backgrounds and increments")
         self.add_increments(localconf)
 
