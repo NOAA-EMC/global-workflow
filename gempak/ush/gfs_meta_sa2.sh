@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# Metafile Script : ukmet_gfs_meta_sa2.sh
+# Metafile Script : gfs_meta_sa2.sh
 #
 # Creates several South American gfs charts, including 500mb and psml
 # comparisons to the ecmwf and ukmet
@@ -20,7 +20,7 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export HPCGFS="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${HPCGFS} ]]; then
-    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
+    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
 fi
 
 mdl=gfs
@@ -30,14 +30,6 @@ metatype="sa2"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
 
-#
-# IF CYCLE IS NOT 00Z OR 06Z EXIT SCRIPT.
-# Also exit if run from 00z gfs
-#
-if [[ ${cyc} != "06" ]]; then
-    exit
-fi
-
 grid1="F-GFSHPC | ${PDY:2}/${cyc}00"
 
 # DEFINE YESTERDAY
@@ -46,10 +38,10 @@ PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
 HPCECMWF="ecmwf.${PDYm1}"
 HPCUKMET="ukmet.${PDY}"
 if [[ ! -L "${HPCECMWF}" ]]; then
-    ln -sf "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
+    ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
 fi
 if [[ ! -L "${HPCUKMET}" ]]; then
-    ln -sf "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
+    ${NLN} "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
 fi
 
 "${GEMEXE}/gdplot2_nc" << EOF

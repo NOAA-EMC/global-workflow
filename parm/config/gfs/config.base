@@ -184,6 +184,13 @@ export DO_AERO="NO"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export FRAC_GRID=".true."
+export DO_NEST="NO" # Whether to run a global-nested domain
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+  export ntiles=7
+  export NEST_OUTPUT_GRID="regional_latlon"
+else
+  export ntiles=6
+fi
 
 # Set operational resolution
 export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it used?
@@ -326,7 +333,7 @@ export imp_physics=8
 export DO_JEDIATMVAR="@DO_JEDIATMVAR@"
 export DO_JEDIATMENS="@DO_JEDIATMENS@"
 export DO_JEDIOCNVAR="@DO_JEDIOCNVAR@"
-export DO_JEDILANDDA="@DO_JEDILANDDA@"
+export DO_JEDISNOWDA="@DO_JEDISNOWDA@"
 export DO_MERGENSST="@DO_MERGENSST@"
 
 # Hybrid related
@@ -425,9 +432,6 @@ export FHMAX_FITS=132
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
-   export DO_VMINMON="NO"     # GSI minimization monitoring
-# The minimization monitor is not yet supported on RDHPCS Hera for Rocky-8
-elif [[ ${machine} = "HERA" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
 

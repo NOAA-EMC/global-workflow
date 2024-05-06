@@ -213,10 +213,10 @@ source "${USHgfs}/preamble.sh"
 # Copy to other members if needed
 if (( NMEM_ENS > 0 )); then
   for mem in $(seq -f "%03g" 1 "${NMEM_ENS}"); do
-    MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} generate_com COM_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
+    MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} declare_from_tmpl COM_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
     mkdir -p "${COM_WAVE_PREP_MEM}"
     for grdID in ${grdALL}; do
-      ${NLN} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "${COM_WAVE_PREP_MEM}/"
+      ${NLN} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "${COM_WAVE_PREP_MEM}/${RUN}wave.mod_def.${grdID}"
     done
   done
 fi

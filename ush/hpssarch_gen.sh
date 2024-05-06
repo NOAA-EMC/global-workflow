@@ -506,12 +506,14 @@ if [[ ${type} == "gdas" ]]; then
 
     [[ -s "${COM_CONF}/${head}letkfoi.yaml" ]] && echo "${COM_CONF/${ROTDIR}\//}/${head}letkfoi.yaml"
 
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile1.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile2.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile3.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile4.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile5.nc"
-    echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile6.nc"
+    if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile1.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile2.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile3.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile4.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile5.nc"
+      echo "${COM_SNOW_ANALYSIS/${ROTDIR}\//}/*0000.sfc_data.tile6.nc"
+    fi
   } >> "${DATA}/gdas_restarta.txt"
 
   #..................
@@ -574,12 +576,11 @@ if [[ ${type} == "gdas" ]]; then
     rm -rf "${DATA}/gdasice_restart.txt"
     touch "${DATA}/gdasice_restart.txt"
 
-    head="gdas.t${cyc}z."
+    head="gdas.ice.t${cyc}z."
 
     #...........................
     {
       echo "${COM_ICE_HISTORY/${ROTDIR}\//}/${head}*"
-      echo "${COM_ICE_INPUT/${ROTDIR}\//}/ice_in"
     } >> "${DATA}/gdasice.txt"
 
     echo "${COM_ICE_RESTART/${ROTDIR}\//}/*" >> "${DATA}/gdasice_restart.txt"
@@ -698,7 +699,7 @@ if [[ ${type} == "enkfgdas" || ${type} == "enkfgfs" ]]; then
       mem=$(printf %03i ${nm})
       head="${RUN}.t${cyc}z."
 
-      MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} generate_com \
+      MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} declare_from_tmpl \
         COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL \
         COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL \
         COM_ATMOS_HISTORY_MEM:COM_ATMOS_HISTORY_TMPL

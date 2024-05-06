@@ -13,7 +13,7 @@ device="nc | gdasloop.meta"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L "${COMIN}" ]]; then
-    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 if [[ "${envir}" == "para" ]] ; then
@@ -38,10 +38,10 @@ for (( fhr=24; fhr<=144; fhr+=24 )); do
     cycles=$(seq -s ' ' -f "%02g" 0 6 "${cyc}")
     for cycle in ${cycles}; do
         #  Test with GDAS in PROD
-        YMD=${day} HH=${cyc} GRID=1p00 generate_com "COM_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
+        YMD=${day} HH=${cyc} GRID=1p00 declare_from_tmpl "COM_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
         export COMIN="${RUN}.${day}${cycle}"
         if [[ ! -L "${COMIN}" ]]; then
-            ln -sf "${COM_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
+            ${NLN} "${COM_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
         fi
         gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
