@@ -15,6 +15,7 @@ _top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../..'))
 
 description = """parse yaml file and return value of key"""
 
+
 def parse_args():
     """
     Parse command-line arguments.
@@ -28,6 +29,7 @@ def parse_args():
     parser.add_argument('-k', '--key', help='key to return value of', type=str, required=True)
     parser.add_argument('-s', '--string', help='output results as stings', action="store_true", required=False)
     return parser.parse_args()
+
 
 def yq(yamlfile, key):
     """
@@ -52,6 +54,7 @@ def yq(yamlfile, key):
         if ydict is None:
             break
     return ydict
+
 
 if __name__ == '__main__':
     """
