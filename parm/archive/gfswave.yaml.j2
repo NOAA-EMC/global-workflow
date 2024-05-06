@@ -16,3 +16,8 @@
             - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}bull_tar"
             - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}cbull_tar"
             - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}spec_tar.gz"
+            {% if DOIBP_WAV %}
+            - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpbull_tar"
+            - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpcbull_tar"
+            - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibp_tar"
+            {% endif %}
