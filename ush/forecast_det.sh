@@ -6,7 +6,7 @@ UFS_det(){
   echo "SUB ${FUNCNAME[0]}: Run type determination for UFS"
 
   # Determine if the current cycle is a warm start (based on the availability of restarts)
-  if [[ -f "${COM_ATMOS_RESTART_PREV}/${sdate_current_cycle:0:8}.${sdate_current_cycle:8:2}0000.coupler.res" ]]; then
+  if [[ -f "${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.coupler.res" ]]; then
     warm_start=".true."
   fi 
 
@@ -24,7 +24,7 @@ UFS_det(){
     # Since warm start is false, we cannot do IAU
     DOIAU="NO"
     IAU_OFFSET=0
-    sdate_current_cycle=${current_cycle}
+    model_start_date_current_cycle=${current_cycle}
 
     # It is still possible that a restart is available from a previous forecast attempt
     # So we have to continue checking for restarts

@@ -55,13 +55,13 @@ common_predet(){
   current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
   next_cycle_begin=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
-  #Define sdate for current_cycle and next_cycle as the time the forecast will start for this cycle and next cycle
+  #Define model start date for current_cycle and next_cycle as the time the forecast will start
   if [[ "${DOIAU:-}" == "YES" ]]; then
-    sdate_current_cycle="${current_cycle_begin}"
-    sdate_next_cycle="${next_cycle_begin}"
+    model_start_date_current_cycle="${current_cycle_begin}"
+    model_start_date_next_cycle="${next_cycle_begin}"
   else
-    sdate_current_cycle=${current_cycle} 
-    sdate_next_cycle=${next_cycle}
+    model_start_date_current_cycle=${current_cycle} 
+    model_start_date_next_cycle=${next_cycle}
   fi 
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
