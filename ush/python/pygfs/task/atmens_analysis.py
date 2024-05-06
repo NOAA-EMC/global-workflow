@@ -180,23 +180,6 @@ class AtmEnsAnalysis(Analysis):
                              self.task_config.jedi_yaml)
 
     @logit(logger)
-    def init_fv3_increment(self: Analysis) -> None:
-	# Setup JEDI YAML file
-        self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
-        save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
-
-        # Link JEDI executable to run directory
-        self.task_config.jedi_exe = self.link_jediexe()
-
-    @logit(logger)
-    def fv3_increment(self: Analysis) -> None:
-        # Run executable
-        self.execute_jediexe(self.runtime_config.DATA,
-                             self.task_config.APRUN_ATMENSANLFV3INC,
-                             self.task_config.jedi_exe,
-                             self.task_config.jedi_yaml)
-
-    @logit(logger)
     def finalize(self: Analysis) -> None:
         """Finalize a global atmens analysis
 
