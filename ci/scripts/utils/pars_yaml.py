@@ -22,6 +22,7 @@ def parse_args():
     Returns:
         argparse.Namespace: The parsed command-line arguments.
     """
+
     parser = ArgumentParser(description=description)
     parser.add_argument('-y', '--yaml', help='full path to yaml file to parce', type=Path, required=True)
     parser.add_argument('-k', '--key', help='key to return value of', type=str, required=True)
@@ -39,6 +40,7 @@ def yq(yamlfile, key):
     Returns:
         The value of the specified key in the yaml file.
     """
+
     data = AttrDict(HOMEgfs=_top)
     data.update({'HOMEgfs': _top})
     ydict = parse_j2yaml(path=yamlfile, data=data)
@@ -55,6 +57,7 @@ if __name__ == '__main__':
     """
     Main function. Parses command-line arguments and prints the value of the specified key in the specified yaml file.
     """
+
     args = parse_args()
     values = yq(args.yaml, args.key)
     if args.string and isinstance(values, list):
