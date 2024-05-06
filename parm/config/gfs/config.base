@@ -251,7 +251,7 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export AERO_ANL_CDUMP="gdas"
+        export AERO_ANL_CDUMP="both"
         export AERO_FCST_CDUMP="gdas"
     fi
 
@@ -356,6 +356,7 @@ export NMEM_ENS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
+export DO_CALC_INCREMENT="NO"
 
 # Early-cycle EnKF parameters
 export NMEM_ENS_GFS=30

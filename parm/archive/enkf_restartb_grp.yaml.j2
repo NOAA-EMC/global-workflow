@@ -1,12 +1,5 @@
     enkf_restartb_grp:
         {% set head = RUN + ".t" + cycle_HH + "z." %}
-        {% if RUN == "enkfgdas" %}
-        {% set fhmax = FHMAX_ENKF %}
-        {% set restart_interval = restart_interval_enkfgdas %}
-        {% elif RUN == "enkfgfs" %}
-        {% set fhmax = FHMAX_ENKF_GFS %}
-        {% set restart_interval = restart_interval_enkfgfs %}
-        {% endif %}
         name: "ENKF_RESTARTB_GRP"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restartb_grp{{ ENSGRP }}.tar"
         required:

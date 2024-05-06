@@ -1,12 +1,8 @@
+# Set variables/lists needed to parse the enkf templates
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
-datasets:
-{% if ENSGRP == 0 %}
-{% include "enkf.yaml.j2" %}
-{% else %}
 
-# Set variables/lists needed to parse the enkf templates
 {% if IAUFHRS is string %}
 {% set iaufhrs = [] %}
 {% for iaufhr in IAUFHRS.split(",") %}
@@ -16,13 +12,18 @@ datasets:
 {% set iaufhrs = [IAUFHRS] %}
 {% endif %}
 
+datasets:
+{% if ENSGRP == 0 %}
+{% include "enkf.yaml.j2" %}
+{% else %}
+
 # Declare to-be-filled lists of member COM directories
 {% set COM_ATMOS_ANALYSIS_MEM_list = [] %}
 {% set COM_ATMOS_RESTART_MEM_list = [] %}
 {% set COM_ATMOS_HISTORY_MEM_list = [] %}
 
 {% set first_group_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
-{% set last_group_mem = [ ENSGRP * NMEM_EARCGRP, NMEM_ENS ] | min %}
+{% set last_group_mem = [ ENSGRP * NMEM_EARCGRP, nmem_ens ] | min %}
 
 # Construct member COM directories
 {% for mem in range(first_group_mem, last_group_mem + 1) %}

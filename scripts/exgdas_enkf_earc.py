@@ -44,8 +44,12 @@ def main():
     # Determine which archives to create
     arcdir_set, atardir_sets = archive.configure(archive_dict)
 
-    # Create the archives
-    archive.execute(arcdir_set, atardir_sets)
+    # Populate the product archive (ARCDIR)
+    archive.execute_store_products(arcdir_set)
+
+    # Create the backup tarballs and store in ATARDIR
+    for atardir_set in atardir_sets:
+        archive.execute_backup_dataset(atardir_set)
 
     os.chdir(cwd)
 

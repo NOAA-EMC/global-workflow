@@ -90,7 +90,7 @@ class Archive(Task):
             self.tar_cmd = "tar"
             self.cvf = Archive._create_tarball
             self.chgrp_cmd = chgrp
-            self.chmod_cmd = os.fchmod
+            self.chmod_cmd = os.chmod
             self.rm_cmd = rm_p
         else:  # Only perform local archiving.  Do not create tarballs.
             self.tar_cmd = ""
@@ -104,16 +104,10 @@ class Archive(Task):
             # Copy the cyclone track files and rename the experiments
             Archive._rename_cyclone_expt(arch_dict)
 
-        if arch_dict.RUN == "gdas":
-            master_yaml = "master_gdas.yaml.j2"
-        elif arch_dict.RUN == "gfs":
-            master_yaml = "master_gfs.yaml.j2"
-        elif arch_dict.RUN == "enkfgdas" or arch_dict.RUN == "enkfgfs":
-            master_yaml = "master_enkf.yaml.j2"
-        elif arch_dict.RUN == "gefs":
+        if arch_dict.RUN == "gefs":
             raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
-        else:
-            raise ValueError(f"FATAL ERROR: Archiving is not enabled for {arch_dict.RUN} runs")
+
+        master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
         parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml), arch_dict)
 

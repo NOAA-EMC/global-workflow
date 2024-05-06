@@ -1,10 +1,5 @@
     enkf:
         {% set head = RUN + ".t" + cycle_HH + "z." %}
-        {% if RUN == "enkfgdas" %}
-        {% set (fhmin, fhmax, fhout) = (FHMIN_ENKF, FHMAX_ENKF, FHOUT_ENKF) %}
-        {% elif RUN == "enkfgfs" %}
-        {% set (fhmin, fhmax, fhout) = (FHMIN_ENKF, FHMAX_ENKF_GFS, FHOUT_ENKF_GFS) %}
-        {% endif %}
         name: "ENKF"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}.tar"
         required:
@@ -30,9 +25,9 @@
             - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
             {% endfor %}
             {% if DOIAU %}
-            {% for fhr in IAUFHRS %}
+            {% for fhr in iaufhrs %}
             {% if fhr == IAU_OFFSET %}
-            {% if DO_CALC_INCREMENT_ENKF_GFS %}
+            {% if do_calc_increment %}
             - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
             {% endif %}  # calc increment
             - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ratminc.ensmean.nc"
@@ -47,13 +42,13 @@
             {% for step in steps %}
             - "logs/{{ cycle_YMDH }}/{{ RUN }}{{ step }}.log"
             {% endfor %}
-            {% for mem in range(1, NMEM_ENS + 1) %}
+            {% for mem in range(1, nmem_ens + 1) %}
             - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem{{ '%03d' % mem }}.log"
             {% endfor %}
             {% if lobsdiag_forenkf %}
             - "logs/{{ cycle_YMDH }}/{{ RUN }}ediag.log"
             {% else %}
-            {% for mem in range(1, NMEM_ENS + 1) %}
+            {% for mem in range(1, nmem_ens + 1) %}
             - "logs/{{ cycle_YMDH }}/{{ RUN }}eomg_mem{{ '%03d' % mem }}.log"
             {% endfor %}
             {% endif %}  # lobsdiag_forenkf

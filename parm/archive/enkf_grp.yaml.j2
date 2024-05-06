@@ -1,10 +1,5 @@
     enkf_grp:
         {% set head = RUN + ".t" + cycle_HH + "z." %}
-        {% if RUN == "enkfgdas" %}
-        {% set (fhmin, fhmax, fhout) = (FHMIN_ENKF, FHMAX_ENKF, FHOUT_ENKF) %}
-        {% elif RUN == "enkfgfs" %}
-        {% set (fhmin, fhmax, fhout) = (FHMIN_ENKF, FHMAX_ENKF_GFS, FHOUT_ENKF_GFS) %}
-        {% endif %}
         name: "ENKF_GRP"
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_grp{{ ENSGRP }}.tar"
         required:
@@ -23,7 +18,7 @@
             {% endfor %}
 
             {% if not current_cycle == SDATE %}
-            {% if DO_CALC_INCR_ENKF_GFS %}
+            {% if do_calc_increment %}
             - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
             {% else %}
             - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
@@ -32,7 +27,7 @@
 
             {% for iaufhr in iaufhrs if iaufhr != 6 %}
             {% set iaufhr = iaufhr %}
-            {% if DO_CALC_INCREMENT_ENKF_GFS %}
+            {% if do_calc_increment %}
             - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iaufhr }}.nc"
             {% else %}
             - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
