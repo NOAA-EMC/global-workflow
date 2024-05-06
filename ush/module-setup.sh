@@ -73,7 +73,7 @@ elif [[ ${MACHINE_ID} = gaea* ]] ; then
 	source /usr/share/lmod/lmod/init/bash
 	source /etc/profile
     fi
-    module purge
+    module reset 
 
 elif [[ ${MACHINE_ID} = expanse* ]]; then
     # We are on SDSC Expanse
