@@ -46,15 +46,15 @@ cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd into '${DATA}', ABORT!"; exit 
 # Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py
 # These should always be available
 cp "${COMIN}/${CNVSTAT}" .
-rc=$?
-(( rc != 0 )) && ( echo "FATAL ERROR: Unable to copy '${CNVSTAT}' from '${COMIN}', ABORT!"; exit 2 )
+export err=$?
+(( err != 0 )) && ( msg="Unable to copy '${CNVSTAT}' from '${COMIN}'"; err_exit "${msg}" )
 for diagfile in "${INPUT_LIST[@]}"; do
   tar -xvf "${CNVSTAT}" "${diagfile}.gz"
-  rc=$?
-  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to extract '${diagfile}.gz' from '${CNVSTAT}', ABORT!"; exit 3 )
+  export err=$?
+  (( err != 0 )) && ( msg="Unable to extract '${diagfile}.gz' from '${CNVSTAT}'"; err_exit "${msg}" )
   gunzip "${diagfile}.gz"
-  rc=$?
-  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to gunzip '${diagfile}.gz', ABORT!"; exit 3 )
+  export err=$?
+  (( err != 0 )) && ( msg="Unable to gunzip '${diagfile}.gz'"; err_exit "${msg}" )
 done
 
 #-------------------------------------------------------------------------------
