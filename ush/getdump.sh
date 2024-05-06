@@ -31,7 +31,7 @@ prefix="$CDUMP.t${cyc}z."
 cd $SOURCE_DIR
 if [ -s ${prefix}updated.status.tm00.bufr_d ]; then
     for file in $(ls ${prefix}*); do
-	ln -fs $SOURCE_DIR/$file $TARGET_DIR/$file
+	${NLN} $SOURCE_DIR/$file $TARGET_DIR/$file
     done
 else
     echo "***ERROR*** ${prefix}updated.status.tm00.bufr_d NOT FOUND in $SOURCE_DIR"
