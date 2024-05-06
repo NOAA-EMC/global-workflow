@@ -84,8 +84,16 @@ class Archive(Task):
             self.tar_cmd = "htar"
             self.hsi = Hsi()
             self.htar = Htar()
+            self.cvf = self.htar.cvf
+            self.rm_cmd = self.hsi.rm
+            self.chgrp_cmd = self.hsi.chgrp
+            self.chmod_cmd = self.hsi.chmod
         elif arch_dict.LOCALARCH:
             self.tar_cmd = "tar"
+            self.cvf = Archive._create_tarball
+            self.chgrp_cmd = chgrp
+            self.chmod_cmd = os.fchmod
+            self.rm_cmd = rm_p
         else:  # Only perform local archiving.  Do not create tarballs.
             self.tar_cmd = ""
             return arcdir_set, []
@@ -123,15 +131,13 @@ class Archive(Task):
         return arcdir_set, atardir_sets
 
     @logit(logger)
-    def execute(self, arcdir_set: Dict[str, Any], atardir_sets: List[Dict[str, Any]]) -> None:
-        """Perform local archiving to ARCDIR and create the tarballs from the list of yaml dicts.
+    def execute_store_products(self, arcdir_set: Dict[str, Any]) -> None:
+        """Perform local archiving of data products to ARCDIR.
 
         Parameters
         ----------
         arcdir_set : Dict[str, Any]
             FileHandler instructions to populate ARCDIR with
-        atardir_sets: List[Dict[str, Any]]
-            Sets of files to archive via tar or htar
 
         Return
         ------
@@ -142,34 +148,38 @@ class Archive(Task):
         for key in arcdir_set.keys():
             FileHandler(arcdir_set[key]).sync()
 
-        # Generate tarballs
-        for atardir_set in atardir_sets:
+    @logit(logger)
+    def execute_backup_dataset(self, atardir_set: Dict[str, Any]) -> None:
+        """Create a backup tarball from a yaml dict.
 
-            if len(atardir_set.fileset) == 0:
-                print(f"WARNING skipping would-be empty archive {atardir_set.target}.")
-                continue
+        Parameters
+        ----------
+        atardir_set: Dict[str, Any]
+            Dict defining set of files to backup and the target tarball.
 
-            if self.tar_cmd == "htar":
-                cvf = self.htar.cvf
-                create = self.htar.create
-                rm_cmd = self.hsi.rm
-            else:
-                cvf = Archive._create_tarball
-                rm_cmd = rm_p
+        Return
+        ------
+        None
+        """
 
-            if atardir_set.has_rstprod:
+        # Generate tarball
+        if len(atardir_set.fileset) == 0:
+            print(f"WARNING skipping would-be empty archive {atardir_set.target}.")
+            return
 
-                try:
-                    cvf(atardir_set.target, atardir_set.fileset)
-                # Regardless of exception type, attempt to remove the target
-                except Exception:
-                    rm_cmd(atardir_set.target)
-                    raise RuntimeError(f"FATAL ERROR: Failed to create restricted archive {atardir_set.target}, deleting!")
+        if atardir_set.has_rstprod:
 
-                self._protect_rstprod(atardir_set)
+            try:
+                self.cvf(atardir_set.target, atardir_set.fileset)
+            # Regardless of exception type, attempt to remove the target
+            except Exception:
+                self.rm_cmd(atardir_set.target)
+                raise RuntimeError(f"FATAL ERROR: Failed to create restricted archive {atardir_set.target}, deleting!")
 
-            else:
-                cvf(atardir_set.target, atardir_set.fileset)
+            self._protect_rstprod(atardir_set)
+
+        else:
+            self.cvf(atardir_set.target, atardir_set.fileset)
 
     @logit(logger)
     @staticmethod
@@ -246,31 +256,16 @@ class Archive(Task):
 
         """
 
-        if self.tar_cmd == "htar":
-            chgrp_cmd = self.hsi.chgrp
-            chmod_cmd = self.hsi.chmod
-            rm_cmd = self.hsi.rm
-        elif self.tar_cmd == "tar":
-            chgrp_cmd = chgrp
-            chmod_cmd = os.fchmod
-            rm_cmd = rm_p
-        else:
-            raise KeyError(f"FATAL ERROR: Invalid archiving command given: {self.tar_cmd}")
-
         try:
+            self.chgrp_cmd("rstprod", atardir_set.target)
             if self.tar_cmd == "htar":
-                self.hsi.chgrp("rstprod", atardir_set.target)
-                self.hsi.chmod("640", atardir_set.target)
+                self.chmod_cmd("640", atardir_set.target)
             else:
-                chgrp("rstprod", atardir_set.target)
-                os.chmod(atardir_set.target, 0o640)
+                self.chmod_cmd(atardir_set.target, 0o640)
         # Regardless of exception type, attempt to remove the target
         except Exception:
             try:
-                if self.tar_cmd == "htar":
-                    self.hsi.rm(atardir_set.target)
-                else:
-                    rm_p(atardir_set.target)
+                self.rm_cmd(atardir_set.target)
             finally:
                 raise RuntimeError(f"FATAL ERROR: Failed to protect {atardir_set.target}!\n"
                                    f"Please verify that it has been deleted!!")
