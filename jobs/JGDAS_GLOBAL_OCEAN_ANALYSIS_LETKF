@@ -22,7 +22,7 @@ YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/scripts/exgdas_global_marine_analysis_letkf.py}
+EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exgdas_global_marine_analysis_letkf.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

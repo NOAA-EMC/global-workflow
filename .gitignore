@@ -159,6 +159,7 @@ sorc/ocnicepost.fd
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
 scripts/exgdas_global_marine_analysis_ecen.py
+scripts/exgdas_global_marine_analysis_letkf.py
 scripts/exglobal_prep_ocean_obs.py
 # ush symlinks
 ush/chgres_cube.sh
