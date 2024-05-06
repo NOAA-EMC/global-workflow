@@ -51,26 +51,19 @@ cat << EOF > gfsparm
 /
 EOF
 
+sleep_interval=10
 for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    hh2=$(printf %02i "${hr}")
    hh3=$(printf %03i "${hr}")
 
    #---------------------------------------------------------
    # Make sure all files are available:
-   ic=0
-   while (( ic < 1000 )); do
-      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}" ]]; then
-          sleep 10
-          ic=$((ic + 1))
-      else
-          break
-      fi
-
-      if (( ic >= 360 )); then
-         echo "FATAL: COULD NOT LOCATE logf${hh3} file AFTER 1 HOUR"
-         exit 2
-      fi
-   done
+   filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}"
+   if ! -f wait_for_file "${filename}" "${sleep_interval}" "1000"; then
+     echo "FATAL: COULD NOT LOCATE logf${hh3} file"
+     exit 2
+   fi
+   
    #------------------------------------------------------------------
    ln -sf "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}" 
    ln -sf "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"

@@ -97,29 +97,19 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
 
      GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2"
      GRIBIN_chk=$GRIBIN.idx
-
-     icnt=1
-     while [ $icnt -lt 1000 ]; do
-       if [ -r $GRIBIN_chk ] ; then
-         break
-       else
-         echo "Waiting for input file: $GRIBIN"
-         let "icnt=icnt+1"
-         sleep 5
-       fi
-       if [ $icnt -ge $maxtries ]; then
-         msg="ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
-         echo ' '
-         echo '**************************** '
-         echo '*** ERROR : NO GRIB FILE *** '
-         echo '**************************** '
-         echo ' '
-         echo $msg
-         set_trace
-         echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
-         err=1;export err;${errchk} || exit ${err}
-       fi
-     done
+     sleep_interval=5
+     if ! wait_for_file "${GRIBIN}" "${sleep_interval}" "1000"; then
+       msg="ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
+       echo ' '
+       echo '**************************** '
+       echo '*** ERROR : NO GRIB FILE *** '
+       echo '**************************** '
+       echo ' '
+       echo $msg
+       set_trace
+       echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
+       err=1;export err;${errchk} || exit ${err}
+     fi
 
      GRIBOUT=$RUNwave.$cycle.$grdID.f${fhr}.clipped.grib2
 

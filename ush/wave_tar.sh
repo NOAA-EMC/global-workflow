@@ -101,14 +101,27 @@ source "${USHgfs}/preamble.sh"
   count=0
   countMAX=5
   tardone='no'
-
-  while [ "$count" -lt "$countMAX" ] && [ "$tardone" = 'no' ]
+  sleep_interval=10
+  
+  while [[ "${tardone}" = "no" ]]
   do
     
     nf=$(ls | awk '/'$ID.*.$filext'/ {a++} END {print a}')
     nbm2=$(( $nb - 2 ))
     if [ $nf -ge $nbm2 ]
-    then 
+    then
+
+      filename="${ID}.${cycle}.${type}_tar" 
+      if ! -f wait_for_file "${filename}" "${sleep_interval}" "${countMAX}"; then
+        set +x
+        echo ' '
+        echo '***************************************** '
+        echo '*** FATAL ERROR : TAR CREATION FAILED *** '
+        echo '***************************************** '
+        echo ' '
+        set_trace
+        exit 3
+      fi
       tar -cf $ID.$cycle.${type}_tar ./$ID.*.$filext
       exit=$?
 
@@ -128,12 +141,6 @@ source "${USHgfs}/preamble.sh"
       then
         tardone='yes'
       fi
-    else
-      set +x
-      echo ' All files not found for tar. Sleeping 10 seconds and trying again ..'
-      set_trace
-      sleep 10
-      count=$(expr $count + 1)
     fi
 
   done

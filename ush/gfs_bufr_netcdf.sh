@@ -66,6 +66,8 @@ hh=$FSTART
       hh1=$(echo "${hh#"${hh%??}"}")
       hh=$hh1
    fi
+
+sleep_interval=10
 while  test $hh -le $FEND
 do  
    if test $hh -lt 100
@@ -75,25 +77,11 @@ do
       hh2=$hh
    fi
 
-#---------------------------------------------------------
-# Make sure all files are available:
-   ic=0
-   while [ $ic -lt 1000 ]
-   do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.txt ]
-      then
-          sleep 10
-          ic=$(expr $ic + 1)
-      else
-          break
-      fi
+   filename="${COMIN}/${RUN}.${cycle}.logf${hh2}.txt"
+   if ! -f wait_for_file "${filename}" "${sleep_interval}" "360"; then
+     err_exit "COULD NOT LOCATE logf${hh2} file"
+   fi
 
-      if [ $ic -ge 360 ]
-      then
-         err_exit "COULD NOT LOCATE logf${hh2} file AFTER 1 HOUR"
-      fi
-   done
-#------------------------------------------------------------------
    ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.nc sigf${hh} 
    ln -sf $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
 
