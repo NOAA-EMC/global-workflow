@@ -162,7 +162,7 @@ class AtmEnsAnalysis(Analysis):
 
         pass
 
-        @logit(logger)
+    @logit(logger)
     def init_fv3_increment(self: Analysis) -> None:
 	# Setup JEDI YAML file
         self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
