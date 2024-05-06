@@ -57,8 +57,8 @@ common_predet(){
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
   #Define sdate for current_cycle and next_cycle as the time the forecast will start for this cycle and next cycle
   if [[ "${DOIAU:-}" == "YES" ]]; then
-    sdate_current_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
-    sdate_next_cycle=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
+    sdate_current_cycle="${current_cycle_begin}"
+    sdate_next_cycle="${next_cycle_begin}"
   else
     sdate_current_cycle=${current_cycle} 
     sdate_next_cycle=${next_cycle}
