@@ -163,7 +163,6 @@ ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.s
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   declare -a gdas_scripts=(exglobal_prep_ocean_obs.py \
                            exgdas_global_marine_analysis_ecen.py \
-                           exgdas_global_marine_analysis_letkf.py \
                            )
   for gdas_script in "${gdas_scripts[@]}" ; do
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/${gdas_script}" .
