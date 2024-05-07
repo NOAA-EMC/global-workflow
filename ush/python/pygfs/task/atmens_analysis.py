@@ -165,9 +165,9 @@ class AtmEnsAnalysis(Analysis):
 
         pass
 
-        @logit(logger)
+    @logit(logger)
     def init_fv3_increment(self: Analysis) -> None:
-	# Setup JEDI YAML file
+        # Setup JEDI YAML file
         self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
         save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
 
@@ -177,10 +177,17 @@ class AtmEnsAnalysis(Analysis):
     @logit(logger)
     def fv3_increment(self: Analysis) -> None:
         # Run executable
-        self.execute_jediexe(self.runtime_config.DATA,
-                             self.task_config.APRUN_ATMENSANLFV3INC,
-                             self.task_config.jedi_exe,
-                             self.task_config.jedi_yaml)
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLFV3INC)
+        exec_cmd.add_default_arg(self.task_config.jedi_exe)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
