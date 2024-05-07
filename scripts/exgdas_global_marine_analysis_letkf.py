@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# exgdas_global_marine_analysis_ecen.py
+# exgdas_global_marine_analysis_letkf.py
 # This script creates an MarineLETKF class
-# and runs the initialize, run, and finalize  methods
+# and runs the initialize, run, and finalize methods
 # which currently are stubs
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
-# TODO (AFE): change to from pygfs.task.marine_recenter import MarineLETKF
 from soca.marine_letkf import MarineLETKF
 
 # Initialize root logger
