@@ -6,7 +6,7 @@
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
-from soca.marine_letkf import MarineLETKF
+from pygfs.task.marine_letkf import MarineLETKF
 
 # Initialize root logger
 logger = Logger(level='DEBUG', colored_log=True)
