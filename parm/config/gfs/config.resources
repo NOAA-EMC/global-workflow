@@ -747,7 +747,7 @@ case ${step} in
         exit 4
       ;;
     esac
-    if [[ ${machine} == "JET" ]]; then export memory_upp="0" ; fi
+    if [[ ${machine} == "JET" ]]; then unset memory_upp ; fi
     export npe_node_upp=${npe_upp}
 
     export nth_upp=1
@@ -1033,8 +1033,7 @@ case ${step} in
     export npe_node_esfc=$(( npe_node_max / nth_esfc ))
     export nth_cycle=${nth_esfc}
     export npe_node_cycle=$(( npe_node_max / nth_cycle ))
-    export memory_esfc="80GB"
-    if [[ ${machine} == "JET" ]]; then export memory_esfc="0" ; fi
+    if [[ ${machine} != "JET" ]]; then export memory_esfc="80G" ; fi
     ;;
 
   "epos")
