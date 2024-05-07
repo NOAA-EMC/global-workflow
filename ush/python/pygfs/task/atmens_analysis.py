@@ -148,8 +148,11 @@ class AtmEnsAnalysis(Analysis):
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_ATMENSANLLETKF)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
+
         exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('localensembleda')
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:
