@@ -121,8 +121,10 @@ class AtmAnalysis(Analysis):
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_ATMANLVAR)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
         exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('variational')
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:
@@ -148,10 +150,17 @@ class AtmAnalysis(Analysis):
     @logit(logger)
     def fv3_increment(self: Analysis) -> None:
         # Run executable
-        self.execute_jediexe(self.runtime_config.DATA,
-                             self.task_config.APRUN_ATMANLFV3INC,
-                             self.task_config.jedi_exe,
-                             self.task_config.jedi_yaml)
+        exec_cmd = Executable(self.task_config.APRUN_ATMANLFV3INC)
+        exec_cmd.add_default_arg(self.task_config.jedi_exe)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
     @logit(logger)
     def finalize(self: Analysis) -> None:

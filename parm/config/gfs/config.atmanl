@@ -30,6 +30,6 @@ export layout_y_atmanl=@LAYOUT_Y_ATMANL@
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE=${EXECgfs}/fv3jedi_var.x
+export JEDIEXE=${EXECgfs}/gdas.x
 
 echo "END: config.atmanl"
