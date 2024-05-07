@@ -82,6 +82,11 @@ case "${fv3_res}" in
         export nthreads_ufs_gfs=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="40.0,1.77,1.0,1.0"   # settings for GSL drag suite
+	export k_split=1
+	export n_split=4
+	export tau=10.0
+	export rf_cutoff=100.0
+        export fv_sg_adj=3600
         export knob_ugwp_tauamp=6.0e-3      # setting for UGWPv1 non-stationary GWD
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
@@ -101,13 +106,18 @@ case "${fv3_res}" in
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="20.0,2.5,1.0,1.0"   # settings for GSL drag suite
         export knob_ugwp_tauamp=3.0e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=1
+	export n_split=4
+	export tau=8.0
+	export rf_cutoff=100.0
+        export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
         ;;
     "C192")
-        export DELTIM=450
+        export DELTIM=600
         export layout_x=4
         export layout_y=6
         export layout_x_gfs=4
@@ -119,6 +129,11 @@ case "${fv3_res}" in
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="10.0,3.5,1.0,1.0"   # settings for GSL drag suite
         export knob_ugwp_tauamp=1.5e-3      # setting for UGWPv1 non-stationary GWD
+	export k_split=2
+	export n_split=4
+	export tau=6.0
+	export rf_cutoff=100.0
+	export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
         export WRITE_GROUP_GFS=2
@@ -137,6 +152,11 @@ case "${fv3_res}" in
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="5.0,5.0,1.0,1.0"   # settings for GSL drag suite
         export knob_ugwp_tauamp=0.8e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=4
+        export tau=4.0
+        export rf_cutoff=100.0
+        export fv_sg_adj=900
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
         export WRITE_GROUP_GFS=2
@@ -155,13 +175,18 @@ case "${fv3_res}" in
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="2.5,7.5,1.0,1.0"   # settings for GSL drag suite
         export knob_ugwp_tauamp=0.5e-3      # setting for UGWPv1 non-stationary GWD
+	export k_split=2
+	export n_split=4
+	export tau=3.0
+	export rf_cutoff=100.0
+	export fv_sg_adj=450
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20 #Note this should be 10 for WCOSS2
         ;;
     "C1152")
-        export DELTIM=120
+        export DELTIM=150
         export layout_x=8
         export layout_y=16
         export layout_x_gfs=8
@@ -173,6 +198,11 @@ case "${fv3_res}" in
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="1.67,8.8,1.0,1.0"   # settings for GSL drag suite
         export knob_ugwp_tauamp=0.35e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=6
+        export tau=2.5
+        export rf_cutoff=100.0
+ 	export fv_sg_adj=450
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
@@ -191,6 +221,11 @@ case "${fv3_res}" in
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="0.625,14.1,1.0,1.0"   # settings for GSL drag suite
         export knob_ugwp_tauamp=0.13e-3      # setting for UGWPv1 non-stationary GWD
+	export k_split=4
+	export n_split=5
+	export tau=0.5
+	export rf_cutoff=100.0
+	export fv_sg_adj=300
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4

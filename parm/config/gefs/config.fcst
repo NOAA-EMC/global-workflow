@@ -108,18 +108,21 @@ if (( gwd_opt == 2 )); then
 fi
 
 # Sponge layer settings
-export tau=0.
-export rf_cutoff=10.
+# export tau=0.                 ; #moved to config.ufs
+# export rf_cutoff=10.          ; #moved to config.ufs
+ 
 export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
 export n_sponge=42
-if (( LEVS == 128 )) && [[ "${CDUMP}" =~ "gdas" ]]; then
-   export tau=5.0
-   export rf_cutoff=1.0e3
-   export d2_bg_k1=0.20
-   export d2_bg_k2=0.0
-fi
+
+## comment out the follow 6 lines to apply the same damping options to both GFS and GDAS cycles
+#if (( LEVS == 128 )) && [[ "${CDUMP}" =~ "gdas" ]]; then
+#   export tau=5.0
+#   export rf_cutoff=1.0e3
+#   export d2_bg_k1=0.20
+#   export d2_bg_k2=0.0
+#fi
 
 # PBL/turbulance schemes
 export hybedmf=".false."
