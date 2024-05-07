@@ -119,6 +119,7 @@ if (( gwd_opt == 2 )); then
     export launch_level
 fi
 
+# Sponge layer settings
 export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
