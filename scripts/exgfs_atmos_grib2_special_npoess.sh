@@ -153,7 +153,8 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    # existence of the restart files
    ###############################
    export pgm="postcheck"
-   grib_file="${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.goesmasterf${fhr3}.grb2"
+   # grib_file="${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.goesmasterf${fhr3}.grb2"
+   grib_file="${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.special.grb2f${fhr3}"
    if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
       echo "FATAL ERROR: GOES master grib file ${grib_file} not available after max sleep time"
       export err=9
