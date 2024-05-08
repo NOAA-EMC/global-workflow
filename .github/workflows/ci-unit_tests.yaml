@@ -57,12 +57,12 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ci/scripts/tests
+          path: test-results.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          files: "ci/scripts/tests/*.xml"
+          files: "test-results.xml"
           job_summary: true
           comment_mode: off
   
