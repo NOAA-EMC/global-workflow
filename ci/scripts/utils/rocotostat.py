@@ -10,6 +10,7 @@ from collections import Counter
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
+
 def input_args():
     """
     Parse command-line arguments.
@@ -38,6 +39,7 @@ def input_args():
     args = parser.parse_args()
 
     return args
+
 
 def rocotostat_summary(rocotostat):
     rocotostat.add_default_arg('--summary')
