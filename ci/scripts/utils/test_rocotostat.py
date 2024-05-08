@@ -1,32 +1,16 @@
+
 import pytest
-from unittest.mock import patch, MagicMock
 from rocotostat import rocoto_statcount, CommandNotFoundError
 
-class MockCommand:
-    def __init__(self):
-        self.add_default_arg = MagicMock()
+import os
 
-@patch('os.path.abspath', return_value='workflow.xml')
-@patch('rocotostat.which', return_value=MockCommand())
-@patch('rocotostat.input_args')
-def test_rocoto_statcount(mock_input_args, mock_which, mock_abspath):
-    # Arrange
-    mock_input_args.return_value = MagicMock(w=MagicMock(name='workflow.xml'), d=MagicMock(name='database.db'))
+workflow_file = os.path.join(os.getcwd(), "workflow.xml")
+database_file = os.path.join(os.getcwd(), "database.db")
 
-    # Act
-    rocoto_statcount()
+def test_rocoto_statcount(
+    result = rocoto_statcount(w=workflow_file, d=database_file)
 
-    # Assert
-    mock_which.assert_called_with('rocotostat')
-    mock_input_args.assert_called_once()
-
-@patch('os.path.abspath', return_value='workflow.xml')
-@patch('rocotostat.which', side_effect=CommandNotFoundError('rocotostat not found in PATH'))
-@patch('rocotostat.input_args')
-def test_rocoto_statcount_raises_error_when_rocotostat_not_found(mock_input_args, mock_which, mock_abspath):
-    # Arrange
-    mock_input_args.return_value = MagicMock(w=MagicMock(name='workflow.xml'), d=MagicMock(name='database.db'))
-
-    # Act and Assert
-    with pytest.raises(CommandNotFoundError):
-        rocoto_statcount()
+    assert result['CYCLES_TOTAL'] == 1
+    assert result['CYCLES_DONE'] == 1
+    assert result['SUCCEDED'] == 20
+    assert result['ROCOTO_STATE'] == 'DONE'
