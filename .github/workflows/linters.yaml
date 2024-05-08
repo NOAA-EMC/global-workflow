@@ -61,7 +61,7 @@ jobs:
       run: |
         git clone https://github.com/christopherwharrop/rocoto.git
         cd rocoto
-        ./install.sh
+        ./INSTALL
 
     - name: Run tests
       run: pytest ci/scripts/tests/test_rocotostat.py
