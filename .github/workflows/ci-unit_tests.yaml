@@ -50,7 +50,11 @@ jobs:
       checks: write
       pull-requests: write
     if: always()
-
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ci/scripts/tests
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
