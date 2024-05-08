@@ -36,7 +36,7 @@ jobs:
           echo "$(pwd)/bin" >> $GITHUB_PATH
 
       - name: Run tests
-        run: python -m pytest ci/scripts/tests/test_rocotostat.py --junitxml ci/scripts/tests/test-results.xml 
+        run: python -m pytest ci/scripts/tests/test_rocotostat.py -v --junitxml ci/scripts/tests/test-results.xml
 
       - name: Publish Test Results
         if: always()
