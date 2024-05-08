@@ -80,8 +80,14 @@ class Analysis(Task):
 
             # Step 3: generate the JEDI Yaml using JCB driving YAML
             jedi_config = render(jcb_config)
+        elif 'JEDIYAML' in self.task_config.keys():
+           # Generate JEDI YAML file (without using JCB)
+           logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
+           jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
+                                      searchpath=self.gdasapp_j2tmpl_dir)
+           logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
         else:
-            raise KeyError(f"Task config must contain JCB_BASE_YAML")
+            raise KeyError(f"Task config must contain JCB_BASE_YAML or JEDIYAML")
 
         logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
 
