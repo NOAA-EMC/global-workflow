@@ -106,6 +106,7 @@ parm/post/ice.csv
 parm/post/ocnicepost.nml.jinja2
 parm/ufs/noahmptable.tbl
 parm/ufs/model_configure.IN
+parm/ufs/model_configure_nest.IN
 parm/ufs/MOM_input_*.IN
 parm/ufs/MOM6_data_table.IN
 parm/ufs/ice_in.IN
