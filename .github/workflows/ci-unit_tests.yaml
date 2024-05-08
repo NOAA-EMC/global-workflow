@@ -50,6 +50,7 @@ jobs:
       checks: write
       pull-requests: write
     if: always()
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
