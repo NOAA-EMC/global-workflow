@@ -43,8 +43,6 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         id: test-results
         if: always()
+        job_summary: true
         with:
           files: "test-results.xml"
-
-      - name: Conclusion
-        run: echo "Conclusion is ${{ fromJSON( steps.test-results.outputs.json ).conclusion }}"
