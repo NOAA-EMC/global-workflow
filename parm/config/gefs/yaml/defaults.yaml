@@ -9,7 +9,7 @@ base:
   DO_AWIPS: "NO"
   KEEPDATA: "NO" 
   FHMAX_GFS: 120
-  USE_REPLAY_ICS: "false"
+  END_OF_IAU_START: "false"
   USE_ATM_PERTURB_FILES: "false"
   USE_OCN_PERTURB_FILES: "false"
 
