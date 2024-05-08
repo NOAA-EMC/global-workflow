@@ -42,6 +42,19 @@ def input_args():
 
 
 def rocotostat_summary(rocotostat):
+    """
+    ROCOTO_SUMMARY Run rocotostat and process its output.
+
+    ROCOTO_SUMMARY(ROCOTOSTAT) adds a default argument '--summary' to the rocotostat
+    command, runs it, and processes its output to return a dictionary with the total
+    number of cycles and the number of cycles marked as 'Done'.
+
+    Input:
+    ROCOTOSTAT - The rocotostat command.
+
+    Output:
+    ROCOTO_STATUS - A dictionary with the total number of cycles and the number of cycles marked as 'Done'.
+    """
     rocotostat.add_default_arg('--summary')
     rocotostat_output = rocotostat(output=str)
     rocotostat_output = rocotostat_output.splitlines()[1:]
@@ -56,7 +69,17 @@ def rocotostat_summary(rocotostat):
 
 def rocoto_statcount(rocotostat):
     """
-    Run rocotostat and process its output.
+    ROCOTO_STATCOUNT Run rocotostat and process its output.
+
+    ROCOTO_STATCOUNT(ROCOTOSTAT) adds a default argument '--all' to the rocotostat
+    command, runs it, and processes its output to return a dictionary with the count
+    of each status case.
+
+    Input:
+    ROCOTOSTAT - The rocotostat command.
+
+    Output:
+    ROCOTO_STATUS - A dictionary with the count of each status case.
     """
 
     rocotostat.add_default_arg('--all')
