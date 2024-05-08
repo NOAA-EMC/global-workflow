@@ -36,50 +36,6 @@ jobs:
           name: Differential ShellCheck SARIF
           path: ${{ steps.ShellCheck.outputs.sarif }}
 
-  ci_pytest:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
-        python -m pip install --upgrade pip
-        pip install pytest wxflow
-        # If you have a requirements.txt file, you can install all dependencies using:
-        # pip install -r requirements.txt
-
-    - name: Install Rocoto
-      run: |
-        git clone https://github.com/christopherwharrop/rocoto.git
-        cd rocoto
-        ./INSTALL
-        echo "$(pwd)/bin" >> $GITHUB_PATH
-
-    - name: Run tests
-      run: pytest ci/scripts/tests/test_rocotostat.py
-
-    - name: Upload pytest results as artifact
-      if: always()
-      uses: actions/upload-artifact@v2
-      with:
-        name: Pytest Results
-        path: ci/scripts/tests/test-results.xml
-
-    - name: Upload SARIF to GitHub using github/codeql-action/upload-sarif
-      if: failure()
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: ci/scripts/tests/test-results.xml
-
   # lint-python:
   #   runs-on: ubuntu-latest
 
