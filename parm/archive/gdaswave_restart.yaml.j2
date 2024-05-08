@@ -1,6 +1,6 @@
-    gdaswave_restart:
-        name: "GDASWAVE_RESTART"
-        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave_restart.tar"
-        required:
-            # TODO explicitly name the wave restart files to archive
-            - "{{ COM_WAVE_RESTART | relpath(ROTDIR) }}/*"
+gdaswave_restart:
+    name: "GDASWAVE_RESTART"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave_restart.tar"
+    required:
+        # TODO explicitly name the wave restart files to archive
+        - "{{ COM_WAVE_RESTART | relpath(ROTDIR) }}/*"

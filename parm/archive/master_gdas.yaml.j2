@@ -3,19 +3,27 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = "gdas.t" + cycle_HH + "z." %}
 datasets:
+{% filter indent(width=4) %}
 {% include "gdas.yaml.j2" %}
+{% endfilter %}
 
 {% if DO_ICE %}
+{% filter indent(width=4) %}
 {% include "gdasice.yaml.j2" %}
+{% endfilter %}
 {% endif %}
 
 {% if DO_OCEAN %}
+{% filter indent(width=4) %}
 {% include "gdasocean.yaml.j2" %}
 {% include "gdasocean_analysis.yaml.j2" %}
+{% endfilter %}
 {% endif %}
 
 {% if DO_WAVE %}
+{% filter indent(width=4) %}
 {% include "gdaswave.yaml.j2" %}
+{% endfilter %}
 {% endif %}
 
 # Determine if we will save restart ICs or not
@@ -33,23 +41,33 @@ datasets:
 {% endif %}
 
 {% if save_warm_start_forecast %}
+{% filter indent(width=4) %}
 {% include "gdas_restarta.yaml.j2" %}
+{% endfilter %}
 
 {% if DO_WAVE %}
+{% filter indent(width=4) %}
 {% include "gdaswave_restart.yaml.j2" %}
+{% endfilter %}
 {% endif %}
 
 {% if DO_OCN %}
+{% filter indent(width=4) %}
 {% include "gdasocean_restart.yaml.j2" %}
+{% endfilter %}
 {% endif %}
 
 {% if DO_ICE %}
+{% filter indent(width=4) %}
 {% include "gdasice_restart.yaml.j2" %}
+{% endfilter %}
 {% endif %}
 
 {% endif %}  # Save forecast-only restarts
 
 # Save cycled restarts
 {% if save_warm_start_cycled %}
+{% filter indent(width=4) %}
 {% include "gdas_restartb.yaml.j2" %}
+{% endfilter %}
 {% endif %}

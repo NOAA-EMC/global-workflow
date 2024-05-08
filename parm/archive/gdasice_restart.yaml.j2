@@ -1,7 +1,7 @@
-    gdasice_restart:
-        {% set head = "gdas.ice.t" + cycle_HH + "z." %}
-        name: "GDASICE_RESTART"
-        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice_restart.tar"
-        required:
-            # TODO explicitly name the restart files to archive
-            - '{{ COM_ICE_RESTART | relpath(ROTDIR) }}/*'
+gdasice_restart:
+    {% set head = "gdas.ice.t" + cycle_HH + "z." %}
+    name: "GDASICE_RESTART"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice_restart.tar"
+    required:
+        # TODO explicitly name the restart files to archive
+        - '{{ COM_ICE_RESTART | relpath(ROTDIR) }}/*'

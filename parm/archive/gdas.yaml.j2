@@ -1,105 +1,105 @@
-    gdas:
-        {% set head = "gdas.t" + cycle_HH + "z." %}
-        name: "GDAS"
-        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas.tar"
-        required:
-            {% if not current_cycle == SDATE and MODE == "cycled" %}
-            - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
-            - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl.idx"
-            - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
-            - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}prep.log"
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}anal.log"
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlupp.log"
-            {% if DOIAU and DOHYBVAR %}
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma003.ensres.nc"
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma009.ensres.nc"
-            {% endif %}
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
-            {% if DO_JEDIATMVAR %}
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
-            {% endif %}
-            {% if DO_VERFOZN %}
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_cnt.{{ cycle_YMDH }}"
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_diag.{{ cycle_YMDH }}"
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}verfozn.log"
-            {% endif %}
-            {% if DO_VERFRAD %}
-            - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_angle.tar.gz"
-            - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcoef.tar.gz"
-            - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcor.tar.gz"
-            - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_time.tar.gz"
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}verfrad.log"
-            {% endif %}
-            {% if DO_VMINMON %}
-            - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.costs.txt"
-            - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.cost_terms.txt"
-            - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
-            - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
-            - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
-            {% endif %}
-            {% if AERO_ANL_CDUMP == "gdas" or AERO_ANL_CDUMP == "both" %}
-            - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
-            {% endif %}
-            {% if DO_JEDISNOWDA %}
-            - "{{ COM_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
-            {% endif %}
-            {% endif %}  # Full cycle
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
-            # TODO explicitly name the atmos_prod log files to archive
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_prod_f*.log"
-            {% for fhr in range(0, FHMAX + FHOUT, FHOUT) %}
-            - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"
-            - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
-            - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
-            - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
-            - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ '%03d' % fhr }}.txt"
-            - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
-            - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
-            - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
-            - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
-            {% endfor %}
-        optional:
-            {% if not current_cycle == SDATE and MODE == "cycled" %}
-            - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
-            {% if DO_VERFRAD %}
-            - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
-            - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
-            - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/low_count.{{ cycle_YMDH }}"
-            - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/warning.{{ cycle_YMDH }}"
-            {% endif %}
-            {% if DO_VERFOZN %}
-            {% set oznmon_types = [
-               "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",
-               "ompsnp_npp", "ompstc8_n20", "ompstc8_npp", "sbuv2_n19"
-            ] %}
-            {% for group in [ "horiz", "time" ] %}
-            {% if group == "horiz" %} {% set suffix = ".gz" %} {% else %} {% set suffix = "" %} {% endif %}
-            {% for type in oznmon_types %}
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.ctl"
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.ctl"
-            - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
-            {% endfor %}
-            {% endfor %}
-            {% endif %}
-            {% endif %}
-            {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
-            - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
-            - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
-            {% endfor %}
-            {% if not WRITE_DOPOST %}
-            # TODO set the forecast hours explicitly.  This will require emulating numpy.array_split
-            - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_upp_f*.log"
-            {% endif %}  ## not WRITE_DOPOST
+gdas:
+    {% set head = "gdas.t" + cycle_HH + "z." %}
+    name: "GDAS"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas.tar"
+    required:
+        {% if not current_cycle == SDATE and MODE == "cycled" %}
+        - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
+        - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl.idx"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}prep.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}anal.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlupp.log"
+        {% if DOIAU and DOHYBVAR %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma003.ensres.nc"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma009.ensres.nc"
+        {% endif %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
+        {% if DO_JEDIATMVAR %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
+        {% endif %}
+        {% if DO_VERFOZN %}
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_cnt.{{ cycle_YMDH }}"
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_diag.{{ cycle_YMDH }}"
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}verfozn.log"
+        {% endif %}
+        {% if DO_VERFRAD %}
+        - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_angle.tar.gz"
+        - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcoef.tar.gz"
+        - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcor.tar.gz"
+        - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_time.tar.gz"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}verfrad.log"
+        {% endif %}
+        {% if DO_VMINMON %}
+        - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.costs.txt"
+        - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.cost_terms.txt"
+        - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
+        - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
+        - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
+        {% endif %}
+        {% if AERO_ANL_CDUMP == "gdas" or AERO_ANL_CDUMP == "both" %}
+        - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
+        {% endif %}
+        {% if DO_JEDISNOWDA %}
+        - "{{ COM_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
+        {% endif %}
+        {% endif %}  # Full cycle
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
+        # TODO explicitly name the atmos_prod log files to archive
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_prod_f*.log"
+        {% for fhr in range(0, FHMAX + FHOUT, FHOUT) %}
+        - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"
+        - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
+        - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ '%03d' % fhr }}.txt"
+        - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
+        - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
+        - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
+        - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
+        {% endfor %}
+    optional:
+        {% if not current_cycle == SDATE and MODE == "cycled" %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
+        {% if DO_VERFRAD %}
+        - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
+        - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
+        - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/low_count.{{ cycle_YMDH }}"
+        - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/warning.{{ cycle_YMDH }}"
+        {% endif %}
+        {% if DO_VERFOZN %}
+        {% set oznmon_types = [
+           "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",
+           "ompsnp_npp", "ompstc8_n20", "ompstc8_npp", "sbuv2_n19"
+        ] %}
+        {% for group in [ "horiz", "time" ] %}
+        {% if group == "horiz" %} {% set suffix = ".gz" %} {% else %} {% set suffix = "" %} {% endif %}
+        {% for type in oznmon_types %}
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.ctl"
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.ctl"
+        - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
+        {% endfor %}
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+        {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
+        - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
+        - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
+        {% endfor %}
+        {% if not WRITE_DOPOST %}
+        # TODO set the forecast hours explicitly.  This will require emulating numpy.array_split
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_upp_f*.log"
+        {% endif %}  ## not WRITE_DOPOST

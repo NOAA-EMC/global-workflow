@@ -14,7 +14,9 @@
 
 datasets:
 {% if ENSGRP == 0 %}
+{% filter indent(width=4) %}
 {% include "enkf.yaml.j2" %}
+{% endfilter %}
 {% else %}
 
 # Declare to-be-filled lists of member COM directories
@@ -58,10 +60,14 @@ datasets:
 {% endfor %}
 
 # Determine which members to archive
+{% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}
+{% endfilter %}
 {% if current_cycle > SDATE %}
+{% filter indent(width=4) %}
 {% include "enkf_restarta_grp.yaml.j2" %}
 {% include "enkf_restartb_grp.yaml.j2" %}
+{% endfilter %}
 {% endif %}
 
 {% endif %}  # ENSGRP != 0
