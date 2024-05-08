@@ -6,6 +6,8 @@ import os
 from wxflow import Executable, which, Logger, CommandNotFoundError
 from argparse import ArgumentParser, FileType
 
+from collections import Counter
+
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
 
@@ -71,8 +73,13 @@ def rocoto_statcount():
     }
 
     status_cases = ['SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED']
+
+    status_counts = Counter(case for sublist in rocotostat_output_all for case in sublist)
     for case in status_cases:
-        rocoto_status[case] = sum([sublist.count(case) for sublist in rocotostat_output_all])
+        rocoto_status[case] = status_counts[case]
+
+    #for case in status_cases:
+    #    rocoto_status[case] = sum([sublist.count(case) for sublist in rocotostat_output_all])
 
     return rocoto_status
 
