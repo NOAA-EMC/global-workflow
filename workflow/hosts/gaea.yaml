@@ -8,7 +8,7 @@ HOMEDIR: '/gpfs/f5/epic/scratch/${USER}'
 STMP: '/gpfs/f5/epic/scratch/${USER}'
 PTMP: '/gpfs/f5/epic/scratch/${USER}'
 NOSCRUB: $HOMEDIR
-ACCOUNT: epic 
+ACCOUNT: ufs-ard 
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
