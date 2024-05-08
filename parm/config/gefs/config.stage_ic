@@ -15,6 +15,13 @@ case "${CASE}" in
     export CPL_WAVIC=""
     export CPL_MEDIC=""
     ;;
+  "C96")
+    export CPL_ATMIC=""
+    export CPL_ICEIC=""
+    export CPL_OCNIC=""
+    export CPL_WAVIC=""
+    export CPL_MEDIC=""
+    ;;
   "C48")
     export CPL_ATMIC="gefs_test"
     export CPL_ICEIC="gefs_test"
