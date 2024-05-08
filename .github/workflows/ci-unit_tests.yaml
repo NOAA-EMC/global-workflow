@@ -39,8 +39,12 @@ jobs:
       - name: Run tests
         run: pytest -v --junitxml test-results.xml ci/scripts/tests/test_rocotostat.py
 
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          files: test-results.xml
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      id: test-results
+      if: always()
+      with:
+        files: "test-results.xml"
+
+     - name: Conclusion
+       run: echo "Conclusion is ${{ fromJSON( steps.test-results.outputs.json ).conclusion }}"
