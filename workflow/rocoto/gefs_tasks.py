@@ -99,6 +99,27 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def prep_emissions(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'stage_ic'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('prep_emissions')
+        task_name = 'prep_emissions'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/prep_emissions.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def fcst(self):
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'stage_ic'}
@@ -106,6 +127,10 @@ class GEFSTasks(Tasks):
 
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'wave_init'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_aero:
+            dep_dict = {'type': 'task', 'name': f'prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
@@ -133,6 +158,10 @@ class GEFSTasks(Tasks):
 
         if self.app_config.do_wave:
             dep_dict = {'type': 'task', 'name': f'wave_init'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_aero:
+            dep_dict = {'type': 'task', 'name': f'prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)

@@ -6,6 +6,7 @@
 echo "BEGIN: config.fcst"
 
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
+export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
 # Turn off waves if not used for this CDUMP
 case ${WAVE_CDUMP} in
@@ -254,6 +255,9 @@ export DO_SKEB=${DO_SKEB:-"NO"}
 export DO_SHUM=${DO_SHUM:-"NO"}
 export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
 export DO_CA=${DO_CA:-"YES"}
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+  export DO_CA="NO"  # CA does not work with nesting.
+fi
 
 #coupling settings
 export cplmode="ufs.frac"

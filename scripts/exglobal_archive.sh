@@ -237,7 +237,10 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
         #gdasocean
         if [ "${DO_OCN}" = "YES" ]; then
-            targrp_list="${targrp_list} gdasocean gdasocean_analysis"
+            targrp_list="${targrp_list} gdasocean"	  
+            if [ "${DO_JEDIOCNVAR}" = "YES" ]; then
+                targrp_list="${targrp_list} gdasocean_analysis"
+            fi 
         fi
 
         #gdasice
