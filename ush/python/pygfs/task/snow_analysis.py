@@ -310,10 +310,20 @@ class SnowAnalysis(Analysis):
                              AttrDict({key: localconf[key] for key in ['DATA', 'ntiles', 'current_cycle']}))
 
         logger.info("Running JEDI LETKF")
-        self.execute_jediexe(localconf.DATA,
-                             localconf.APRUN_SNOWANL,
-                             os.path.basename(localconf.JEDIEXE),
-                             localconf.jedi_yaml)
+        exec_cmd = Executable(localconf.APRUN_SNOWANL)
+        exec_name = os.path.join(localconf.DATA, 'gdas.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('localensembleda')
+        exec_cmd.add_default_arg(localconf.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
         logger.info("Creating analysis from backgrounds and increments")
         self.add_increments(localconf)
