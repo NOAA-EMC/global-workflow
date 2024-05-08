@@ -7,7 +7,7 @@ import os
 workflow_file = os.path.join(os.getcwd(), "workflow.xml")
 database_file = os.path.join(os.getcwd(), "database.db")
 
-def test_rocoto_statcount(
+def test_rocoto_statcount():
     result = rocoto_statcount(w=workflow_file, d=database_file)
 
     assert result['CYCLES_TOTAL'] == 1
