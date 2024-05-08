@@ -10,7 +10,6 @@ from collections import Counter
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
-
 def input_args():
     """
     Parse command-line arguments.
@@ -40,11 +39,42 @@ def input_args():
 
     return args
 
+def rocotostat_summary(rocotostat):
+    rocotostat.add_default_arg('--summary')
+    rocotostat_output = rocotostat(output=str)
+    rocotostat_output = rocotostat_output.splitlines()[1:]
+    rocotostat_output = [line.split()[0:2] for line in rocotostat_output]
 
-def rocoto_statcount():
+    rocoto_status = {
+        'CYCLES_TOTAL': len(rocotostat_output),
+        'CYCLES_DONE': sum([sublist.count('Done') for sublist in rocotostat_output])
+    }
+    return rocoto_status
+
+
+def rocoto_statcount(rocotostat):
     """
     Run rocotostat and process its output.
     """
+
+    rocotostat.add_default_arg('--all')
+
+    rocotostat_output = rocotostat(output=str)
+    rocotostat_output = rocotostat_output.splitlines()[1:]
+    rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
+    rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
+
+    status_cases = ['SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED']
+
+    rocoto_status = {}
+    status_counts = Counter(case for sublist in rocotostat_output for case in sublist)
+    for case in status_cases:
+        rocoto_status[case] = status_counts[case]
+
+    return rocoto_status
+
+
+if __name__ == '__main__':
 
     args = input_args()
 
@@ -54,42 +84,11 @@ def rocoto_statcount():
         logger.exception("rocotostat not found in PATH")
         raise CommandNotFoundError("rocotostat not found in PATH")
 
-    rocotostat_all = which("rocotostat")
-    rocotostat.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name), '-s'])
-    rocotostat_all.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name), '-a'])
-
-    rocotostat_output = rocotostat(output=str)
-    rocotostat_output = rocotostat_output.splitlines()[1:]
-    rocotostat_output = [line.split()[0:2] for line in rocotostat_output]
-
-    rocotostat_output_all = rocotostat_all(output=str)
-    rocotostat_output_all = rocotostat_output_all.splitlines()[1:]
-    rocotostat_output_all = [line.split()[0:4] for line in rocotostat_output_all]
-    rocotostat_output_all = [line for line in rocotostat_output_all if len(line) != 1]
-
-    rocoto_status = {
-        'CYCLES_TOTAL': len(rocotostat_output),
-        'CYCLES_DONE': sum([sublist.count('Done') for sublist in rocotostat_output])
-    }
-
-    status_cases = ['SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED']
-
-    status_counts = Counter(case for sublist in rocotostat_output_all for case in sublist)
-    for case in status_cases:
-        rocoto_status[case] = status_counts[case]
-
-    #for case in status_cases:
-    #    rocoto_status[case] = sum([sublist.count(case) for sublist in rocotostat_output_all])
-
-    return rocoto_status
-
-
-if __name__ == '__main__':
-
-    args = input_args()
+    rocotostat.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name)])
 
     error_return = 0
-    rocoto_status = rocoto_statcount()
+    rocoto_status = rocoto_statcount(rocotostat)
+    rocoto_status.update(rocotostat_summary(rocotostat))
 
     if rocoto_status['CYCLES_TOTAL'] == rocoto_status['CYCLES_DONE']:
         rocoto_state = 'DONE'
