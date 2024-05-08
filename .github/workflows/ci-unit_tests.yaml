@@ -5,7 +5,7 @@ on:
 permissions:
     contents: read
 
-jobs:    
+jobs:
 
   ci_pytest:
       runs-on: ubuntu-latest
@@ -36,17 +36,14 @@ jobs:
           echo "$(pwd)/bin" >> $GITHUB_PATH
 
       - name: Run tests
-        run: pytest -v --junitxml ci/scripts/tests/test-results.xml ci/scripts/tests/test_rocotostat.py
+        run: pytest -v --junitxml test-results.xml ci/scripts/tests/test_rocotostat.py
 
-      - name: Upload pytest results as artifact
+      - name: Surface failing tests
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: pmeier/pytest-results-action@main
         with:
-          name: Pytest Results
-          path: ci/scripts/tests/test-results.xml
-
-      - name: Upload SARIF to GitHub using github/codeql-action/upload-sarif
-        if: failure()
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: ci/scripts/tests/test-results.xml
+          path: test-results.xml
+          summary: true
+          display-options: fEX
+          fail-on-empty: true
+          title: Test results
