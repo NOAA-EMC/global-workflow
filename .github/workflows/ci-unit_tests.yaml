@@ -6,6 +6,9 @@ jobs:
 
   ci_pytest:
       runs-on: ubuntu-latest
+      permissions:
+        checks: write
+        pull-requests: write
 
       steps:
       - name: Checkout code
@@ -39,23 +42,17 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Test Results
-          path: ci/scripts/tests/test-results.xml
+          name: test-results.xml
+          path: ci/scripts/tests
 
-  publish-test-results:
-    name: "Publish Tests Results"
-    needs: ci_pytest
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      pull-requests: write
-    if: always()
-    steps:
       - name: Download Artifacts
+        if: always()
         uses: actions/download-artifact@v4
         with:
           path: ci/scripts/tests
+
       - name: Publish Test Results
+        if: always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           files: ci/scripts/tests/test-results.xml
