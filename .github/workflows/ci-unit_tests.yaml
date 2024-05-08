@@ -12,10 +12,10 @@ jobs:
 
       steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
@@ -38,12 +38,8 @@ jobs:
       - name: Run tests
         run: pytest -v --junitxml test-results.xml ci/scripts/tests/test_rocotostat.py
 
-      - name: Surface failing tests
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
-        uses: pmeier/pytest-results-action@main
         with:
-          path: test-results.xml
-          summary: true
-          display-options: fEX
-          fail-on-empty: true
-          title: Test results
+          files: test-results.xml
