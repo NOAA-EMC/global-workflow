@@ -22,7 +22,7 @@ local SMONTH=${model_start_date:4:2}
 local SDAY=${model_start_date:6:2}
 local SHOUR=${model_start_date:8:2}
 # FHMAX
-if [[ "${USE_REPLAY_ICS:-"false"}" == "true" ]]; then
+if [[ "${END_OF_IAU_START:-"false"}" == "true" ]]; then
     local FHROT=3
 else
     local FHROT=${IAU_FHROT:-0}

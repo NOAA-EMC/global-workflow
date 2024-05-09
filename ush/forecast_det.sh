@@ -6,7 +6,7 @@ UFS_det(){
   echo "SUB ${FUNCNAME[0]}: Run type determination for UFS"
 
   # Determine if the current cycle is a warm start (based on the availability of restarts)
-  if [[ -f "${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.coupler.res" ]]; then
+  if [[ -f "${COM_MED_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.ufs.cpld.cpl.r.nc" ]]; then
     warm_start=".true."
   fi 
 
