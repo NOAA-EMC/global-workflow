@@ -3,7 +3,7 @@ gdas:
     name: "GDAS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas.tar"
     required:
-        {% if not current_cycle == SDATE and MODE == "cycled" %}
+        {% if current_cycle != SDATE and MODE == "cycled" %}
         - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
         - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl.idx"
         - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
@@ -71,7 +71,7 @@ gdas:
         - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
         {% endfor %}
     optional:
-        {% if not current_cycle == SDATE and MODE == "cycled" %}
+        {% if current_cycle != SDATE and MODE == "cycled" %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% if DO_VERFRAD %}
         - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"

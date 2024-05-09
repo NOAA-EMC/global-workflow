@@ -16,7 +16,7 @@ deterministic:
         - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
         {% endif %}
     copy:
-        {% if not current_cycle == SDATE and MODE == "cycled" %}
+        {% if current_cycle != SDATE and MODE == "cycled" %}
         - ["{{ COM_ATMOS_ANALYSIS }}/{{ head }}gsistat", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}"]
         {% if DO_JEDISNOWDA %}
         - ["{{ COM_SNOW_ANALYSIS }}/{{ head }}snowstat.tgz", "{{ ARCDIR }}/snowstat.{{ RUN }}.{{ cycle_YMDH }}.tgz"]

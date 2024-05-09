@@ -5,7 +5,7 @@ gdasocean_analysis:
     required:
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocninc.nc'
         {% if current_cycle != SDATE and MODE == "cycled" %}
-        {% set ocngrid_cycle = ((cycle_HH | int) - 3) % 24 %}
+        {% set ocngrid_cycle = '%02d' % (((cycle_HH | int) - 3) % 24) %}
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/gdas.t{{ ocngrid_cycle }}z.ocngrid.nc'
         {% for domain in ["ocn", "ice"] %}
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.bkgerr_stddev.nc'

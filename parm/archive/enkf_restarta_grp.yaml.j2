@@ -22,10 +22,10 @@ enkf_restarta_grp:
         {% endfor %}
         {% endfor %}  # first_group_mem to last_group_mem
     optional:
+        {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
         {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
-        {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
         - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
-        {% endif %}
         {% endfor %}
+        {% endif %}

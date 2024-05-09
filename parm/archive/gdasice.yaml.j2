@@ -3,6 +3,7 @@ gdasice:
     name: "GDASICE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice.tar"
     required:
-        # TODO explicitly name the files in history to archive
-        - '{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}*'
+        {% for fhr in range(FHOUT_OCNICE, FHMAX+1, FHOUT_OCNICE) %}
+        - "{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % fhr }}.nc"
+        {% endfor %}
         - '{{ COM_CONF | relpath(ROTDIR) }}/ufs.ice_in'

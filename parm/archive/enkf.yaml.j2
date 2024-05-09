@@ -9,7 +9,7 @@ enkf:
         - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
         {% endif %}
         {% endfor %}
-        {% if not current_cycle == SDATE %}
+        {% if current_cycle != SDATE %}
         {% if not DO_JEDIATMENS %}
         {% set da_files = ["enkfstat",
                            "gsistat.ensmean",
