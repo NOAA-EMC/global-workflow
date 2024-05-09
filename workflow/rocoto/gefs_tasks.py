@@ -3,17 +3,18 @@ from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
 from datetime import datetime, timedelta
 
-class GEFSTasks(Tasks):
 
+class GEFSTasks(Tasks):
+    
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
         super().__init__(app_config, cdump)
 
     def stage_ic(self):
-        cpl_ic = self._configs['stage_ic'] 
-        deps = [] 
+        cpl_ic = self._configs['stage_ic']
+        deps = []
         if self._configs['base']['END_OF_IAU_START']:
-            DTG = self._configs['base']['SDATE'] + timedelta(hours = 3)
-            DTG_PREFIX = DTG.strftime('%Y%m%d') + '.' + DTG.strftime('%H') + '0000'
+            DTG = self._configs['base']['SDATE']+timedelta(hours = 3)
+            DTG_PREFIX = DTG.strftime('%Y%m%d')+'.' + DTG.strftime('%H')+'0000'
         else:
             DTG_PREFIX = "@Y@m@d.@H0000"
         # Atm ICs
