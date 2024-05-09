@@ -48,6 +48,8 @@ parm/gdas/io
 parm/gdas/ioda
 parm/gdas/snow
 parm/gdas/soca
+parm/gdas/jcb-gdas
+parm/gdas/jcb-algorithms
 parm/monitor
 parm/post/AEROSOL_LUTS.dat
 parm/post/nam_micro_lookup.dat
@@ -195,3 +197,8 @@ versions/run.ver
 ush/python/wxflow
 workflow/wxflow
 ci/scripts/wxflow
+
+# jcb checkout and symlinks
+ush/python/jcb
+workflow/jcb
+ci/scripts/jcb
