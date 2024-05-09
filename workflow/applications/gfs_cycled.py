@@ -111,6 +111,8 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_jedisnowda:
             configs += ['prepsnowobs', 'snowanl']
+            if self.do_hybvar:
+                configs += ['esnowanl']
 
         if self.do_mos:
             configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
@@ -169,6 +171,8 @@ class GFSCycledAppConfig(AppConfig):
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
             hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
+            if self.do_jedisnowda:
+                hybrid_after_eupd_tasks += ['esnowanl']
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
