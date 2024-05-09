@@ -29,7 +29,8 @@ def main():
             'DOIAU', 'OCNRES', 'ICERES', 'NUM_SND_COLLECTIVES', 'FHOUT_WAV',
             'FHOUT_HF_WAV', 'FHMAX_WAV', 'FHMAX_HF_WAV', 'FHMAX_WAV_GFS',
             'restart_interval_gdas', 'restart_interval_gfs',
-            'AERO_ANL_CDUMP', 'AERO_FCST_CDUMP', 'DOIBP_WAV']
+            'AERO_ANL_CDUMP', 'AERO_FCST_CDUMP', 'DOIBP_WAV', 'DO_JEDIOCNVAR',
+            'NMEM_ENS']
 
     archive_dict = AttrDict()
     for key in keys:
