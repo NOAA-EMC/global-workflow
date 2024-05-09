@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from logging import getLogger
+from pygfs.task.analysis import Analysis
 from typing import Dict
 from wxflow import (chdir,
                     logit,
@@ -9,7 +10,7 @@ from wxflow import (chdir,
 logger = getLogger(__name__.split('.')[-1])
 
 
-class MarineLETKF(Task):
+class MarineLETKF(Analysis):
     """
     Class for global ocean analysis LETKF task
     """
