@@ -69,4 +69,3 @@ class MarineLETKF(Task):
         """
 
         logger.info("finalize")
-
