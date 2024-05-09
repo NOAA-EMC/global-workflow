@@ -150,10 +150,6 @@ class Tasks:
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
-        # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice']:
-            fhrs.remove(0)
-
         return fhrs
 
     def get_resource(self, task_name):
