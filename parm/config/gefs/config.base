@@ -47,9 +47,9 @@ export NOSCRUB="@NOSCRUB@"
 export BASE_GIT="@BASE_GIT@"
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="NO"     # BUFR sounding products
-export DO_GEMPAK="NO"      # GEMPAK products
-export DO_AWIPS="NO"       # AWIPS products
+export DO_BUFRSND="@DO_BUFRSND@"     # BUFR sounding products
+export DO_GEMPAK="@DO_GEMPAK@"       # GEMPAK products
+export DO_AWIPS="@DO_AWIPS@"         # AWIPS products
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
