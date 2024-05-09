@@ -2,6 +2,7 @@
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN + ".t" + cycle_HH + "z." %}
 
 {% if IAUFHRS is string %}
 {% set iaufhrs = [] %}
