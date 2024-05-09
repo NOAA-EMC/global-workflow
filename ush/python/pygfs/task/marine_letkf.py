@@ -1,24 +1,10 @@
 #!/usr/bin/env python3
 
-from datetime import datetime, timedelta
-import f90nml
 from logging import getLogger
-import os
-from soca import bkg_utils
 from typing import Dict
-import ufsda
-from ufsda.stage import soca_fix
-from wxflow import (AttrDict,
-                    chdir,
-                    Executable,
-                    FileHandler,
+from wxflow import (chdir,
                     logit,
-                    parse_j2yaml,
-                    Task,
-                    Template,
-                    TemplateConstants,
-                    WorkflowException,
-                    YAMLFile)
+                    Task)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -55,7 +41,6 @@ class MarineLETKF(Task):
         """
 
         logger.info("initialize")
-        RUN = self.runtime_config.RUN
 
     @logit(logger)
     def run(self):
@@ -85,5 +70,3 @@ class MarineLETKF(Task):
 
         logger.info("finalize")
 
-        RUN = self.runtime_config.RUN
-        cyc = self.runtime_config.cyc
