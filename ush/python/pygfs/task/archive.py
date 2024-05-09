@@ -3,14 +3,13 @@
 import glob
 import os
 import shutil
+import tarfile
 from logging import getLogger
 from typing import Any, Dict, List
 
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, cast_strdict_as_dtypedict,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
                     to_YMD, to_YMDH, Template, TemplateConstants)
-from yaml import CLoader as Loader
-from yaml import load
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -156,7 +155,7 @@ class Archive(Task):
 
         # Generate tarball
         if len(atardir_set.fileset) == 0:
-            print(f"WARNING skipping would-be empty archive {atardir_set.target}.")
+            logger.warning(f"WARNING: skipping would-be empty archive {atardir_set.target}.")
             return
 
         if atardir_set.has_rstprod:
@@ -206,7 +205,7 @@ class Archive(Task):
                 for item in atardir_set.optional:
                     glob_set = glob.glob(item)
                     if len(glob_set) == 0:
-                        print(f"WARNING: optional file/glob {item} not found!")
+                        logger.warning(f"WARNING: optional file/glob {item} not found!")
                     else:
                         for entry in glob_set:
                             fileset.append(entry)
@@ -275,7 +274,6 @@ class Archive(Task):
         file_list : List
             List of files to add to an archive
         """
-        import tarfile
 
         # TODO create a set of tar helper functions in wxflow
         # Attempt to create the parent directory if it does not exist
