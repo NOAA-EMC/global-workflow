@@ -482,7 +482,7 @@ MOM6_nml() {
 MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 
-  # Copy MOM_input from DATA to COM_OCEAN_INPUT after the forecast is run (and successfull)
+  # Copy MOM_input from DATA to COM_CONF after the forecast is run (and successfull)
   ${NCP} "${DATA}/INPUT/MOM_input" "${COM_CONF}/ufs.MOM_input"
 
   # Create a list of MOM6 restart files
