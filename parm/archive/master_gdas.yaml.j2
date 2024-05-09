@@ -13,11 +13,15 @@ datasets:
 {% endfilter %}
 {% endif %}
 
-{% if DO_OCEAN %}
+{% if DO_OCN %}
 {% filter indent(width=4) %}
 {% include "gdasocean.yaml.j2" %}
+{% endfilter %}
+{% if DO_JEDIOCNVAR %}
+{% filter indent(width=4) %}
 {% include "gdasocean_analysis.yaml.j2" %}
 {% endfilter %}
+{% endif %}
 {% endif %}
 
 {% if DO_WAVE %}
