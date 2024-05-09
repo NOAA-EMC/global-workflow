@@ -12,7 +12,7 @@ if (( $# != 1 )); then
     echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
-    echo "snowanl"
+    echo "snowanl esnowanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
@@ -272,6 +272,35 @@ case ${step} in
     export npe_snowanl=$(( layout_x * layout_y * 6 ))
     export nth_snowanl=1
     export npe_node_snowanl=$(( npe_node_max / nth_snowanl ))
+    ;;
+
+  "esnowanl")
+    # below lines are for creating JEDI YAML
+    case ${CASE} in
+      "C768")
+        layout_x=6
+        layout_y=6
+        ;;
+      "C384")
+        layout_x=5
+        layout_y=5
+        ;;
+      "C192" | "C96" | "C48")
+        layout_x=1
+        layout_y=1
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        exit 4
+    esac
+
+    export layout_x
+    export layout_y
+
+    export wtime_esnowanl="00:15:00"
+    export npe_esnowanl=$(( layout_x * layout_y * 6 ))
+    export nth_esnowanl=1
+    export npe_node_esnowanl=$(( npe_node_max / nth_esnowanl ))
     ;;
 
   "aeroanlinit")

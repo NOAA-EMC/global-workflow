@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.esnowanl ##########
+# configuration common to snow ensemble analysis tasks
+
+echo "BEGIN: config.esnowanl"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" esnowanl
+
+export io_layout_x=@IO_LAYOUT_X@
+export io_layout_y=@IO_LAYOUT_Y@
+
+echo "END: config.esnowanl"

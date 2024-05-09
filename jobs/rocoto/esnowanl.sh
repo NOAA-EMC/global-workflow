@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="snowanl"
+export job="esnowanl"
 export jobid="${job}.$$"
 
 ###############################################################
@@ -19,6 +19,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_SNOW_ANALYSIS"
+"${HOMEgfs}/jobs/JGLOBAL_SNOW_ENSEMBLE_ANALYSIS"
 status=$?
 exit "${status}"

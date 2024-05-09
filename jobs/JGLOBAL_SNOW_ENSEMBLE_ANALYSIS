@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA=${DATA:-${DATAROOT}/${RUN}snowanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
+export DATA=${DATA:-${DATAROOT}/${RUN}esnowanl_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
 
 ##############################################
 # Set variables used in the script
@@ -28,7 +28,7 @@ mkdir -m 775 -p "${COM_SNOW_ANALYSIS}" "${COM_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_analysis.py}
+EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_ensemble_analysis.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
