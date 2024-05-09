@@ -47,9 +47,9 @@ export NOSCRUB="@NOSCRUB@"
 export BASE_GIT="@BASE_GIT@"
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="NO"     # BUFR sounding products
-export DO_GEMPAK="NO"      # GEMPAK products
-export DO_AWIPS="NO"       # AWIPS products
+export DO_BUFRSND="@DO_BUFRSND@"     # BUFR sounding products
+export DO_GEMPAK="@DO_GEMPAK@"       # GEMPAK products
+export DO_AWIPS="@DO_AWIPS@"         # AWIPS products
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
@@ -137,6 +137,13 @@ export DO_AERO="NO"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
 export FRAC_GRID=".true."
+export DO_NEST="NO" # Whether to run a global-nested domain
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+  export ntiles=7
+  export NEST_OUTPUT_GRID="regional_latlon"
+else
+  export ntiles=6
+fi
 
 # Set operational resolution
 export OPS_RES="C768" # Do not change
