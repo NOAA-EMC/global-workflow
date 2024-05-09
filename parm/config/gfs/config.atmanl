@@ -5,18 +5,20 @@
 
 echo "BEGIN: config.atmanl"
 
-export OBS_LIST="${PARMgfs}/gdas/atm/obs/lists/gdas_prototype_3d.yaml.j2"
-export JEDIYAML="${PARMgfs}/gdas/atm/variational/3dvar_drpcg.yaml.j2"
+export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
+export JCB_ALGO_YAML="${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
+
 export STATICB_TYPE="gsibec"
+export LOCALIZATION_TYPE="bump"
 export INTERP_METHOD='barycentric'
 
 if [[ ${DOHYBVAR} = "YES" ]]; then
     # shellcheck disable=SC2153
     export CASE_ANL=${CASE_ENS}
-    export BERROR_YAML="${PARMgfs}/gdas/atm/berror/hybvar_${STATICB_TYPE}.yaml.j2"
+    export BERROR_YAML="background_error_hybrid_${STATICB_TYPE}_${LOCALIZATION_TYPE}"
 else
     export CASE_ANL=${CASE}
-    export BERROR_YAML="${PARMgfs}/gdas/atm/berror/staticb_${STATICB_TYPE}.yaml.j2"
+    export BERROR_YAML="background_error_static_${STATICB_TYPE}"
 fi
 
 export CRTM_FIX_YAML="${PARMgfs}/gdas/atm_crtm_coeff.yaml.j2"
