@@ -252,13 +252,19 @@ case ${step} in
     export memory_wavepostsbs="10GB"
     ;;
 
+  # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
+  # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
     export wtime_wavepostbndpnt="01:00:00"
     export npe_wavepostbndpnt=240
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(( npe_node_max / nth_wavepostbndpnt ))
-    export NTASKS=${npe_wavepostbndpnt}
     export is_exclusive=True
+    if [[ ${npe_node_wavepostbndpnt} -gt 40 ]]; then
+        export npe_node_wavepostbndpnt=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostbndpnt}
     ;;
 
   "wavepostbndpntbll")
@@ -266,8 +272,12 @@ case ${step} in
     export npe_wavepostbndpntbll=448
     export nth_wavepostbndpntbll=1
     export npe_node_wavepostbndpntbll=$(( npe_node_max / nth_wavepostbndpntbll ))
-    export NTASKS=${npe_wavepostbndpntbll}
     export is_exclusive=True
+    if [[ ${npe_node_wavepostbndpntbll} -gt 40 ]]; then
+        export npe_node_wavepostbndpntbll=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostbndpntbll}
     ;;
 
   "wavepostpnt")
@@ -276,8 +286,6 @@ case ${step} in
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=$(( npe_node_max / nth_wavepostpnt ))
     export is_exclusive=True
-    # This MPMD job is very I/O heavy and does not scale well. Limit jobs/node to 40.
-    # For now this affects only Hercules, but will also affect Gaea.
     if [[ ${npe_node_wavepostpnt} -gt 40 ]]; then
         export npe_node_wavepostpnt=40
         export is_exclusive=False
