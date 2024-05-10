@@ -12,12 +12,12 @@ logger = getLogger(__name__.split('.')[-1])
 
 class MarineLETKF(Analysis):
     """
-    Class for global ocean analysis LETKF task
+    Class for global ocean and sea ice analysis LETKF task
     """
 
     @logit(logger, name="MarineLETKF")
     def __init__(self, config: Dict) -> None:
-        """Constructor for ocean LETKF task
+        """Constructor for ocean and sea ice LETKF task
         Parameters:
         ------------
         config: Dict
@@ -32,7 +32,7 @@ class MarineLETKF(Analysis):
 
     @logit(logger)
     def initialize(self):
-        """Method initialize for ocean LETKF task
+        """Method initialize for ocean and sea ice LETKF task
         Parameters:
         ------------
         None
@@ -45,7 +45,7 @@ class MarineLETKF(Analysis):
 
     @logit(logger)
     def run(self):
-        """Method run for ocean LETKF task
+        """Method run for ocean and sea ice LETKF task
         Parameters:
         ------------
         None
@@ -60,7 +60,7 @@ class MarineLETKF(Analysis):
 
     @logit(logger)
     def finalize(self):
-        """Method finalize for ocean LETKF task
+        """Method finalize for ocean and sea ice LETKF task
         Parameters:
         ------------
         None
