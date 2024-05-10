@@ -55,6 +55,7 @@ def rocotostat_summary(rocotostat):
     Output:
     ROCOTO_STATUS - A dictionary with the total number of cycles and the number of cycles marked as 'Done'.
     """
+
     rocotostat.add_default_arg('--summary')
     rocotostat_output = rocotostat(output=str)
     rocotostat_output = rocotostat_output.splitlines()[1:]
@@ -99,19 +100,53 @@ def rocoto_statcount(rocotostat):
     return rocoto_status
 
 def is_done(rocoto_status):
+    """
+    IS_DONE Check if all cycles are done.
+
+    IS_DONE(ROCOTO_STATUS) checks if the total number of cycles equals the number of
+    done cycles in the ROCOTO_STATUS dictionary.
+
+    Input:
+    ROCOTO_STATUS - A dictionary with the count of each status case.
+
+    Output:
+    BOOLEAN - True if all cycles are done, False otherwise.
+    """
+
     if rocoto_status['CYCLES_TOTAL'] == rocoto_status['CYCLES_DONE']:
         return True
     else:
         return False
 
+
 def is_stalled(rocoto_status):
-   if rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
+    """
+    IS_STALLED Check if all cycles are stalled.
+
+    IS_STALLED(ROCOTO_STATUS) checks if all cycles are stalled by verifying if
+    there are no jobs that are RUNNING, SUBMITTING, or QUEUED.
+
+    Input:
+    ROCOTO_STATUS - A dictionary with the count of each status case.
+
+    Output:
+    BOOLEAN - True if all cycles are stalled, False otherwise.
+    """
+
+    if rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
        return True
-   else:
+    else:
        return False
 
 
 if __name__ == '__main__':
+    """
+    MAIN Execute the script.
+
+    MAIN() parses the input arguments, checks if the rocotostat command is available,
+    adds default arguments to the rocotostat command, and runs it and reports
+    out to stdout spcific information of rocoto workflow.
+    """
 
     args = input_args()
 
