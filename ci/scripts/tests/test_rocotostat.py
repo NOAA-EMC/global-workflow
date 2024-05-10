@@ -7,8 +7,8 @@ sys.path.append(os.path.join(os.path.dirname(script_dir), 'utils'))
 from rocotostat import rocoto_statcount, rocotostat_summary, CommandNotFoundError
 from wxflow import which
 
-workflow_file = os.path.join(script_dir, "workflow.xml")
-database_file = os.path.join(script_dir, "database.db")
+workflow_file = os.path.join(script_dir, "testdata/rocotostat/workflow.xml")
+database_file = os.path.join(script_dir, "testdata/rocotostat/database.db")
 
 try:
     rocotostat = which("rocotostat")

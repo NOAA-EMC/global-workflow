@@ -9,21 +9,21 @@
 		This workflow was automatically generated at 2024-05-01 14:24:16.515689
 	-->
 	<!ENTITY PSLOT "C48_ATM_0ad155f1">
-	<!ENTITY ROTDIR "/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1">
-	<!ENTITY JOBS_DIR "/work2/noaa/stmp/CI/ORION/2555/gfs/jobs/rocoto">
+	<!ENTITY ROTDIR "STUB">
+	<!ENTITY JOBS_DIR "STUB">
 	<!ENTITY MAXTRIES "2">
 ]>
 
 <workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
 
-	<log verbosity="10"><cyclestr>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1/logs/@Y@m@d@H.log</cyclestr></log>
+	<log verbosity="10"><cyclestr>STUB</cyclestr></log>
 
 	<!-- Define the cycles -->
 	<cycledef group="gfs">202103231200 202103231200 24:00:00</cycledef>
 
 <task name="gfsstage_ic" cycledefs="gfs" maxtries="&MAXTRIES;">
 
-	<command>/work2/noaa/stmp/CI/ORION/2555/gfs/jobs/rocoto/stage_ic.sh</command>
+	<command>stage_ic.sh</command>
 
 	<jobname><cyclestr>C48_ATM_0ad155f1_gfsstage_ic_@H</cyclestr></jobname>
 	<account>nems</account>
@@ -33,35 +33,23 @@
 	<nodes>1:ppn=1:tpp=1</nodes>
 	<native>--export=NONE</native>
 
-	<join><cyclestr>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsstage_ic.log</cyclestr></join>
+	<join><cyclestr>/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsstage_ic.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>/work2/noaa/stmp/CI/ORION/2555/gfs</value></envar>
-	<envar><name>EXPDIR</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
+	<envar><name>HOMEgfs</name><value>gfs</value></envar>
+	<envar><name>EXPDIR</name><value>RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>CDUMP</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/work/noaa/stmp/mterry/RUNDIRS/C48_ATM_0ad155f1</value></envar>
+	<envar><name>COMROOT</name><value>/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/RUNDIRS/C48_ATM_0ad155f1</value></envar>
 
 	<dependency>
 		<and>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/gfs_ctrl.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/gfs_data.tile1.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/gfs_data.tile2.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/gfs_data.tile3.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/gfs_data.tile4.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/gfs_data.tile5.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/gfs_data.tile6.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/sfc_data.tile1.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/sfc_data.tile2.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/sfc_data.tile3.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/sfc_data.tile4.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/sfc_data.tile5.nc</cyclestr></datadep>
-			<datadep><cyclestr>/work/noaa/global/glopara/data/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/sfc_data.tile6.nc</cyclestr></datadep>
+			<datadep><cyclestr>/ICSDIR/prototype_ICs/workflow_C48_refactored/@Y@m@d@H/atmos/gfs_ctrl.nc</cyclestr></datadep>
 		</and>
 	</dependency>
 
@@ -69,7 +57,7 @@
 
 <task name="gfsfcst" cycledefs="gfs" maxtries="&MAXTRIES;">
 
-	<command>/work2/noaa/stmp/CI/ORION/2555/gfs/jobs/rocoto/fcst.sh</command>
+	<command>/CI/ORION/2555/gfs/jobs/rocoto/fcst.sh</command>
 
 	<jobname><cyclestr>C48_ATM_0ad155f1_gfsfcst_@H</cyclestr></jobname>
 	<account>nems</account>
@@ -79,19 +67,19 @@
 	<nodes>1:ppn=40:tpp=1</nodes>
 	<native>--export=NONE</native>
 
-	<join><cyclestr>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsfcst.log</cyclestr></join>
+	<join><cyclestr>/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsfcst.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>/work2/noaa/stmp/CI/ORION/2555/gfs</value></envar>
-	<envar><name>EXPDIR</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
+	<envar><name>HOMEgfs</name><value>/CI/ORION/2555/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>CDUMP</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/work/noaa/stmp/mterry/RUNDIRS/C48_ATM_0ad155f1</value></envar>
+	<envar><name>COMROOT</name><value>/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/RUNDIRS/C48_ATM_0ad155f1</value></envar>
 
 	<dependency>
 		<and>
@@ -109,7 +97,7 @@
 
 	<task name="gfsatmos_prod#grp#" cycledefs="gfs" maxtries="&MAXTRIES;">
 
-		<command>/work2/noaa/stmp/CI/ORION/2555/gfs/jobs/rocoto/atmos_products.sh</command>
+		<command>/CI/ORION/2555/gfs/jobs/rocoto/atmos_products.sh</command>
 
 		<jobname><cyclestr>C48_ATM_0ad155f1_gfsatmos_prod#grp#_@H</cyclestr></jobname>
 		<account>nems</account>
@@ -119,19 +107,19 @@
 		<nodes>1:ppn=24:tpp=1</nodes>
 		<native>--export=NONE</native>
 
-		<join><cyclestr>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsatmos_prod#grp#.log</cyclestr></join>
+		<join><cyclestr>/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsatmos_prod#grp#.log</cyclestr></join>
 
 		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-		<envar><name>HOMEgfs</name><value>/work2/noaa/stmp/CI/ORION/2555/gfs</value></envar>
-		<envar><name>EXPDIR</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
+		<envar><name>HOMEgfs</name><value>/CI/ORION/2555/gfs</value></envar>
+		<envar><name>EXPDIR</name><value>/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
 		<envar><name>NET</name><value>gfs</value></envar>
 		<envar><name>CDUMP</name><value>gfs</value></envar>
 		<envar><name>RUN</name><value>gfs</value></envar>
 		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-		<envar><name>COMROOT</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
-		<envar><name>DATAROOT</name><value>/work/noaa/stmp/mterry/RUNDIRS/C48_ATM_0ad155f1</value></envar>
+		<envar><name>COMROOT</name><value>/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/RUNDIRS/C48_ATM_0ad155f1</value></envar>
 		<envar><name>FHRLST</name><value>#lst#</value></envar>
 		<envar><name>COMPONENT</name><value>atmos</value></envar>
 
@@ -145,7 +133,7 @@
 
 <task name="gfstracker" cycledefs="gfs" maxtries="&MAXTRIES;">
 
-	<command>/work2/noaa/stmp/CI/ORION/2555/gfs/jobs/rocoto/tracker.sh</command>
+	<command>/CI/ORION/2555/gfs/jobs/rocoto/tracker.sh</command>
 
 	<jobname><cyclestr>C48_ATM_0ad155f1_gfstracker_@H</cyclestr></jobname>
 	<account>nems</account>
@@ -156,19 +144,19 @@
 	<memory>4G</memory>
 	<native>--export=NONE</native>
 
-	<join><cyclestr>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfstracker.log</cyclestr></join>
+	<join><cyclestr>/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfstracker.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>/work2/noaa/stmp/CI/ORION/2555/gfs</value></envar>
-	<envar><name>EXPDIR</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
+	<envar><name>HOMEgfs</name><value>/CI/ORION/2555/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>CDUMP</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/work/noaa/stmp/mterry/RUNDIRS/C48_ATM_0ad155f1</value></envar>
+	<envar><name>COMROOT</name><value>/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/RUNDIRS/C48_ATM_0ad155f1</value></envar>
 
 	<dependency>
 		<metataskdep metatask="gfsatmos_prod"/>
@@ -178,7 +166,7 @@
 
 <task name="gfsgenesis" cycledefs="gfs" maxtries="&MAXTRIES;">
 
-	<command>/work2/noaa/stmp/CI/ORION/2555/gfs/jobs/rocoto/genesis.sh</command>
+	<command>/CI/ORION/2555/gfs/jobs/rocoto/genesis.sh</command>
 
 	<jobname><cyclestr>C48_ATM_0ad155f1_gfsgenesis_@H</cyclestr></jobname>
 	<account>nems</account>
@@ -189,19 +177,19 @@
 	<memory>10G</memory>
 	<native>--export=NONE</native>
 
-	<join><cyclestr>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsgenesis.log</cyclestr></join>
+	<join><cyclestr>/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsgenesis.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>/work2/noaa/stmp/CI/ORION/2555/gfs</value></envar>
-	<envar><name>EXPDIR</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
+	<envar><name>HOMEgfs</name><value>/CI/ORION/2555/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>CDUMP</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/work/noaa/stmp/mterry/RUNDIRS/C48_ATM_0ad155f1</value></envar>
+	<envar><name>COMROOT</name><value>/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/RUNDIRS/C48_ATM_0ad155f1</value></envar>
 
 	<dependency>
 		<metataskdep metatask="gfsatmos_prod"/>
@@ -211,7 +199,7 @@
 
 <task name="gfsarch" cycledefs="gfs" maxtries="&MAXTRIES;">
 
-	<command>/work2/noaa/stmp/CI/ORION/2555/gfs/jobs/rocoto/arch.sh</command>
+	<command>/CI/ORION/2555/gfs/jobs/rocoto/arch.sh</command>
 
 	<jobname><cyclestr>C48_ATM_0ad155f1_gfsarch_@H</cyclestr></jobname>
 	<account>nems</account>
@@ -222,19 +210,19 @@
 	<memory>4096M</memory>
 	<native>--export=NONE</native>
 
-	<join><cyclestr>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsarch.log</cyclestr></join>
+	<join><cyclestr>/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfsarch.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>/work2/noaa/stmp/CI/ORION/2555/gfs</value></envar>
-	<envar><name>EXPDIR</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
+	<envar><name>HOMEgfs</name><value>/CI/ORION/2555/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>CDUMP</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/work/noaa/stmp/mterry/RUNDIRS/C48_ATM_0ad155f1</value></envar>
+	<envar><name>COMROOT</name><value>/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/RUNDIRS/C48_ATM_0ad155f1</value></envar>
 
 	<dependency>
 		<and>
@@ -248,7 +236,7 @@
 
 <task name="gfscleanup" cycledefs="gfs" maxtries="&MAXTRIES;">
 
-	<command>/work2/noaa/stmp/CI/ORION/2555/gfs/jobs/rocoto/cleanup.sh</command>
+	<command>/CI/ORION/2555/gfs/jobs/rocoto/cleanup.sh</command>
 
 	<jobname><cyclestr>C48_ATM_0ad155f1_gfscleanup_@H</cyclestr></jobname>
 	<account>nems</account>
@@ -259,19 +247,19 @@
 	<memory>4096M</memory>
 	<native>--export=NONE</native>
 
-	<join><cyclestr>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfscleanup.log</cyclestr></join>
+	<join><cyclestr>/CI/ORION/2555/RUNTESTS/COMROOT/C48_ATM_0ad155f1/logs/@Y@m@d@H/gfscleanup.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>/work2/noaa/stmp/CI/ORION/2555/gfs</value></envar>
-	<envar><name>EXPDIR</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
+	<envar><name>HOMEgfs</name><value>/CI/ORION/2555/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/CI/ORION/2555/RUNTESTS/EXPDIR/C48_ATM_0ad155f1</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>CDUMP</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>/work2/noaa/stmp/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/work/noaa/stmp/mterry/RUNDIRS/C48_ATM_0ad155f1</value></envar>
+	<envar><name>COMROOT</name><value>/CI/ORION/2555/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/RUNDIRS/C48_ATM_0ad155f1</value></envar>
 
 	<dependency>
 		<and>
