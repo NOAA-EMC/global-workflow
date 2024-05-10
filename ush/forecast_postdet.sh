@@ -239,7 +239,7 @@ FV3_out() {
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
     restart_date=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-    while (( restart_date < forecast_end_cycle )); do
+    while (( restart_date <= forecast_end_cycle )); do
       echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
       for fv3_restart_file in "${fv3_restart_files[@]}"; do
         restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_restart_file}"
