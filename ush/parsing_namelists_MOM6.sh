@@ -16,7 +16,8 @@ cat >> input.nml <<EOF
   input_filename = '${MOM6_RESTART_SETTING}'
   restart_input_dir = 'INPUT/',
   restart_output_dir = 'MOM6_RESTART/',
-  parameter_filename = 'INPUT/MOM_input'
+  parameter_filename = 'INPUT/MOM_input',
+                       'INPUT/MOM_override'
 /
 EOF
 #temporarily commented out until a long term solution can be found
