@@ -221,7 +221,7 @@ for pr in ${pr_list}; do
       export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
       rm -f "${LOGFILE_PATH}"
       yaml_case_file="${HOMEgfs}/ci/cases/pr/${case}.yaml"
-      skip_hosts=$("${HOMEgfs}/ci/scripts/utils/pars_yaml.py" --yaml "${yaml_case_file}" --key skip_ci_on_hosts --string)
+      skip_hosts=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" --yaml "${yaml_case_file}" --key skip_ci_on_hosts --string)
       if [[ "${skip_hosts}" == *"${MACHINE_ID}"* ]]; then
         {
           echo "Case setup: Skipped for experiment ${pslot}" || true
