@@ -221,7 +221,7 @@ class GEFSTasks(Tasks):
         fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
 
         # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice']:
+        if component in ['ocean', 'ice'] and 0 in fhrs:
             fhrs.remove(0)
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}

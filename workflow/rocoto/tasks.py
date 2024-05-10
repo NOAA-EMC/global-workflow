@@ -152,8 +152,8 @@ class Tasks:
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
         # ocean/ice components do not have fhr 0 as they are averaged output
-#        if component in ['ocean', 'ice'] and 0 in fhrs:
-#            fhrs.remove(0)
+        if component in ['ocean', 'ice'] and 0 in fhrs:
+            fhrs.remove(0)
 
         return fhrs
 
