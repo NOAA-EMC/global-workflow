@@ -2447,7 +2447,7 @@ class GFSTasks(Tasks):
 
         task = rocoto.create_task(task_dict)
 
-        return task    
+        return task
 
     def atmensanlfinal(self):
 
