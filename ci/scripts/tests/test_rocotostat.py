@@ -4,7 +4,7 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(os.path.dirname(script_dir), 'utils'))
 
-from rocotostat import rocoto_statcount, rocotostat_summary, CommandNotFoundError
+from rocotostat import rocoto_statcount, rocotostat_summary, is_done, is_stalled, CommandNotFoundError
 from wxflow import which
 
 workflow_file = os.path.join(script_dir, "testdata/rocotostat/workflow.xml")
@@ -35,3 +35,18 @@ def test_rocoto_summary():
 
     assert result['CYCLES_TOTAL'] == 1
     assert result['CYCLES_DONE'] == 1
+
+def test_rocoto_done():
+
+    result = rocotostat_summary(rocotostat)
+
+    assert is_done(result) == True
+
+def test_rocoto_stalled():
+
+        workflow_file = os.path.join(script_dir, "testdata/rocotostat_stalled/stalled.xml")
+        database_file = os.path.join(script_dir, "testdata/rocotostat_stalled/stalled.db")
+
+        result = rocoto_statcount(rocotostat)
+
+        assert is_stalled(result) == True

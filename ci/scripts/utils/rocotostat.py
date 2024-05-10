@@ -98,6 +98,18 @@ def rocoto_statcount(rocotostat):
 
     return rocoto_status
 
+def is_done(rocoto_status):
+    if rocoto_status['CYCLES_TOTAL'] == rocoto_status['CYCLES_DONE']:
+        return True
+    else:
+        return False
+
+def is_stalled(rocoto_status):
+   if rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
+       return True
+   else:
+       return False
+
 
 if __name__ == '__main__':
 
@@ -115,7 +127,7 @@ if __name__ == '__main__':
     rocoto_status = rocoto_statcount(rocotostat)
     rocoto_status.update(rocotostat_summary(rocotostat))
 
-    if rocoto_status['CYCLES_TOTAL'] == rocoto_status['CYCLES_DONE']:
+    if is_done(rocoto_status):
         rocoto_state = 'DONE'
     elif rocoto_status['DEAD'] > 0:
         error_return = rocoto_status['FAIL'] + rocoto_status['DEAD']
@@ -123,7 +135,7 @@ if __name__ == '__main__':
     elif 'UNKNOWN' in rocoto_status:
         error_return = rocoto_status['UNKNOWN']
         rocoto_state = 'UNKNOWN'
-    elif rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
+    elif is_stalled(rocoto_status):
         #
         #  TODO for now a STALLED state will be just a warning as it can
         #  produce a false negative if there is a timestamp on a file dependency.
