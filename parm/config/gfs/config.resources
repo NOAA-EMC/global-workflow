@@ -606,6 +606,13 @@ case ${step} in
         [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
       fi
 
+      if (( ntiles > 6 )); then
+        export layout_x_nest=${layout_x_nest:-10}
+        export layout_y_nest=${layout_y_nest:-10}
+        export npx_nest=${npx_nest:-1441}
+        export npy_nest=${npy_nest:-961}
+      fi
+
       # PETS for the atmosphere dycore
       (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
       echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
@@ -692,7 +699,7 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}"="00:15:00"
+        declare -x "wtime_${step}"="00:20:00"
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384")
@@ -740,6 +747,7 @@ case ${step} in
         exit 4
       ;;
     esac
+    if [[ ${machine} == "JET" ]]; then unset memory_upp ; fi
     export npe_node_upp=${npe_upp}
 
     export nth_upp=1
@@ -1025,7 +1033,7 @@ case ${step} in
     export npe_node_esfc=$(( npe_node_max / nth_esfc ))
     export nth_cycle=${nth_esfc}
     export npe_node_cycle=$(( npe_node_max / nth_cycle ))
-    export memory_esfc="80GB"
+    if [[ ${machine} != "JET" ]]; then export memory_esfc="80G" ; fi
     ;;
 
   "epos")
