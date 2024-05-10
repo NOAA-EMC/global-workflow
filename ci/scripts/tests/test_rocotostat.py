@@ -41,7 +41,7 @@ def test_rocoto_done():
 
     result = rocotostat_summary(rocotostat)
 
-    assert is_done(result) == True
+    assert is_done(result)
 
 
 def test_rocoto_stalled():
@@ -51,4 +51,4 @@ def test_rocoto_stalled():
 
     result = rocoto_statcount(rocotostat)
 
-    assert is_stalled(result) == True
+    assert is_stalled(result)
