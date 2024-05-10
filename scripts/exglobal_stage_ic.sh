@@ -138,7 +138,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     # Extra zero on MEMDIR ensure we have a number even if the string is empty
     if (( 0${MEMDIR:3} > 0 )) && [[ "${USE_OCN_PERTURB_FILES:-false}" == "true" ]]; then
         src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/ocean/${DTG_PREFIX}.mom6_perturbation.nc"
-        tgt="${COM_OCEAN_RESTART_PREV}/${PDY}.${DTG_PREFIX}.mom6_perturbation.nc"
+        tgt="${COM_OCEAN_RESTART_PREV}/${DTG_PREFIX}.mom6_perturbation.nc"
         ${NCP} "${src}" "${tgt}"
         rc=${?}
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"

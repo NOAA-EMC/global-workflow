@@ -144,12 +144,12 @@ EOF
   fi  # if [[ "${warm_start}" == ".true." ]]; then
         
   if (( MEMBER > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
-    inc_files=("fv3_perturbation.nc")
+    inc_file="fv3_perturbation.nc"
     read_increment=".true."
     res_latlon_dynamics="fv3_perturbation.nc"
     perturbation_file="${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.${inc_file}"
-    if [[ -f "${increment_file}" ]]; then
-        ${NCP} "${pertubation_file}" "${DATA}/INPUT/${inc_file}"
+    if [[ -f "${perturbation_file}" ]]; then
+        ${NCP} "${perturbation_file}" "${DATA}/INPUT/${inc_file}"
     else
         echo "FATAL ERROR: missing perturbation file '${perturbation_file}', ABORT!"
         exit 1
