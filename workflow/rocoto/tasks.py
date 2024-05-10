@@ -133,6 +133,7 @@ class Tasks:
             local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']
             local_config['FHOUT_HF_GFS'] = config['FHOUT_OCNICE_GFS']
             local_config['FHOUT_GFS'] = config['FHOUT_OCNICE_GFS']
+            local_config['FHOUT_OCNICE'] = config['FHOUT_OCNICE_GFS']
 
         fhmin = local_config['FHMIN']
 
@@ -140,7 +141,7 @@ class Tasks:
         fhrs = []
         if cdump in ['gdas']:
             fhmax = local_config['FHMAX']
-            fhout = local_config['FHOUT']
+            fhout = local_config['FHOUT_OCNICE']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif cdump in ['gfs', 'gefs']:
             fhmax = local_config['FHMAX_GFS']
@@ -149,6 +150,10 @@ class Tasks:
             fhout_hf = local_config['FHOUT_HF_GFS']
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+
+        # ocean/ice components do not have fhr 0 as they are averaged output
+#        if component in ['ocean', 'ice'] and 0 in fhrs:
+#            fhrs.remove(0)
 
         return fhrs
 
