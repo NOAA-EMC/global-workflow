@@ -4,7 +4,7 @@ gfs_restarta:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_restarta.tar"
     required:
         {% if MODE == "cycled" %}
-        {% if DOHYBVAR %}
+        {% if DOHYBVAR and DOIAU %}
         {% set anl_offset = "-3H" %}
         {% else %}
         {% set anl_offset = "0H" %}

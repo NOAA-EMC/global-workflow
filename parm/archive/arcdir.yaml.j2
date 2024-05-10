@@ -17,7 +17,11 @@ deterministic:
         {% endif %}
     copy:
         {% if current_cycle != SDATE and MODE == "cycled" %}
+        {% if DO_JEDIATMVAR %}
+        - ["{{ COM_ATMOS_ANALYSIS }}/{{ head }}atmstat", "{{ ARCDIR }}/atmstat.{{ RUN }}.{{ cycle_YMDH }}"]
+        {% else %}
         - ["{{ COM_ATMOS_ANALYSIS }}/{{ head }}gsistat", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}"]
+        {% endif %}
         {% if DO_JEDISNOWDA %}
         - ["{{ COM_SNOW_ANALYSIS }}/{{ head }}snowstat.tgz", "{{ ARCDIR }}/snowstat.{{ RUN }}.{{ cycle_YMDH }}.tgz"]
         {% endif %}
@@ -73,6 +77,11 @@ ensemble:
     mkdir:
         - "{{ ARCDIR }}"
     copy:
+        {% if DO_JEDIATMENS %}
+        - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}atmensstat", "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}atminc.ensmean.nc", "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}.ensmean.nc"]
+        {% else %}
         - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}enkfstat", "{{ ARCDIR }}/enkfstat.{{ RUN }}.{{ cycle_YMDH }}"]
         - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}gsistat.ensmean", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}.ensmean"]
+        {% endif %}
 {% endif %}  # enkfgdas or enkfgfs

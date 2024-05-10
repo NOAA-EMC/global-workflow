@@ -12,19 +12,50 @@ gdas:
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}prep.log"
+        {% if DO_JEDIATMVAR %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}prepatmiodaobs.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlinit.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlfinal.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlfv3inc.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlvar.log"
+        {% else %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}anal.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}analdiag.log"
+        {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlupp.log"
+        {% if DO_JEDIOCNVAR %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}oceanobs.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalprep.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalbmat.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalrun.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalpost.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalchkpt.log"
+        {% if DOHYBVAR %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalecen.log"
+        {% endif %}
+        {% endif %}
+        {% if DO_OCEAN %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocean_prod*.log"
+        {% endif %}
+        {% if DO_ICE %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ice_prod*.log"
+        {% endif %}
+        {% if DO_VRFY_OCEANDA %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalecen.log"
+        {% endif %}
         {% if DOIAU and DOHYBVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma003.ensres.nc"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma009.ensres.nc"
         {% endif %}
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
         {% if DO_JEDIATMVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
+        {% else %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
         {% endif %}
         {% if DO_VERFOZN %}
         - "{{ COM_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_cnt.{{ cycle_YMDH }}"

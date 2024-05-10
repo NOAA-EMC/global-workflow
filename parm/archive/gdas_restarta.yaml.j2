@@ -8,7 +8,7 @@ gdas_restarta:
         {% for iauhr in IAUHRS if iauhr != 6 %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iauhr }}.nc"
         {% endfor %}
-        {% if DOHYBVAR %}
+        {% if DOHYBVAR and DOIAU %}
         {% set anl_offset = "-3H" %}
         {% else %}
         {% set anl_offset = "0H" %}
@@ -18,10 +18,12 @@ gdas_restarta:
         {% for itile in range(1,7) %}
         - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
         {% endfor %}
+        {% if not DO_JEDIATMVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
+        {% endif %}
         {% if DO_JEDISNOWDA %}
         {% for itile in range(1,7) %}
         # Snow analysis is 3dvar

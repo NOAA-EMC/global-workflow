@@ -36,19 +36,28 @@ enkf:
         {% endif %}  # fhr == IAU_OFFSET
         {% endfor %}  # IAUFHRS
         {% endif %}   # DOIAU
+        {% if DOHYBVAR %}
+        {% if DO_JEDIATMENS %}
+        {% set steps = ["atmensanlinit", "atmensanlrun", "atmensanlfinal"] %}
+        {% else %}
+        {% set steps = ["eobs", "eupd"] %}
+        {% if lobsdiag_forenkf %}
+        {% do steps.append("ediag") %}
+        {% else %}
+        {% for mem in range(1, nmem_ens + 1) %}
+        {% do steps.append("eomg_mem{{ '%03d' % mem }}") %}
+        {% endfor %}
+        {% endif %}
+        {% do steps.append("echgres") %}
+        {% do steps.append("esfc") %}
         # TODO archive ecen logs based on actual groups.  Will need to emulate numpy.array_split to do so.
-        {% set steps = ["eobs", "ecen*", "esfc", "eupd"] %}
+        {% do steps.append("ecen*") %}
+        {% endif %}
         {% for step in steps %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}{{ step }}.log"
         {% endfor %}
         {% for mem in range(1, nmem_ens + 1) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem{{ '%03d' % mem }}.log"
-        {% endfor %}
-        {% if lobsdiag_forenkf %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ediag.log"
-        {% else %}
-        {% for mem in range(1, nmem_ens + 1) %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}eomg_mem{{ '%03d' % mem }}.log"
         {% endfor %}
         {% endif %}  # lobsdiag_forenkf
         {% endif %}  # not the first cycle

@@ -30,7 +30,7 @@ def main():
             'FHOUT_HF_WAV', 'FHMAX_WAV', 'FHMAX_HF_WAV', 'FHMAX_WAV_GFS',
             'restart_interval_gdas', 'restart_interval_gfs',
             'AERO_ANL_CDUMP', 'AERO_FCST_CDUMP', 'DOIBP_WAV', 'DO_JEDIOCNVAR',
-            'NMEM_ENS']
+            'NMEM_ENS', 'DO_JEDIATMVAR']
 
     archive_dict = AttrDict()
     for key in keys:
