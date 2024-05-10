@@ -99,6 +99,7 @@ def rocoto_statcount(rocotostat):
 
     return rocoto_status
 
+
 def is_done(rocoto_status):
     """
     IS_DONE Check if all cycles are done.
@@ -134,9 +135,9 @@ def is_stalled(rocoto_status):
     """
 
     if rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
-       return True
+        return True
     else:
-       return False
+        return False
 
 
 if __name__ == '__main__':

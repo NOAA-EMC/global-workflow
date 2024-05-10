@@ -36,17 +36,19 @@ def test_rocoto_summary():
     assert result['CYCLES_TOTAL'] == 1
     assert result['CYCLES_DONE'] == 1
 
+
 def test_rocoto_done():
 
     result = rocotostat_summary(rocotostat)
 
     assert is_done(result) == True
 
+
 def test_rocoto_stalled():
 
-        workflow_file = os.path.join(script_dir, "testdata/rocotostat_stalled/stalled.xml")
-        database_file = os.path.join(script_dir, "testdata/rocotostat_stalled/stalled.db")
+    workflow_file = os.path.join(script_dir, "testdata/rocotostat_stalled/stalled.xml")
+    database_file = os.path.join(script_dir, "testdata/rocotostat_stalled/stalled.db")
 
-        result = rocoto_statcount(rocotostat)
+    result = rocoto_statcount(rocotostat)
 
-        assert is_stalled(result) == True
+    assert is_stalled(result) == True
