@@ -4,7 +4,6 @@ gdasocean_analysis:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
     required:
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocninc.nc'
-        {% if current_cycle != SDATE and MODE == "cycled" %}
         {% set ocngrid_cycle = '%02d' % (((cycle_HH | int) - 3) % 24) %}
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/gdas.t{{ ocngrid_cycle }}z.ocngrid.nc'
         {% for domain in ["ocn", "ice"] %}
@@ -23,4 +22,3 @@ gdasocean_analysis:
         {% endif %}
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/*.nc4'
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/yaml/*.yaml'
-        {% endif %} # Not the first cycle

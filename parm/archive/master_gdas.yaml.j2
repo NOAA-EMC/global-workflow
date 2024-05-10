@@ -17,7 +17,7 @@ datasets:
 {% filter indent(width=4) %}
 {% include "gdasocean.yaml.j2" %}
 {% endfilter %}
-{% if DO_JEDIOCNVAR %}
+{% if DO_JEDIOCNVAR and current_cycle != SDATE and MODE == "cycled" %}
 {% filter indent(width=4) %}
 {% include "gdasocean_analysis.yaml.j2" %}
 {% endfilter %}
