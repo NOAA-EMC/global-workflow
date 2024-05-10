@@ -39,6 +39,9 @@ load(pathJoin("met", (os.getenv("met_ver") or "None")))
 load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
+-- Adding perl as a module; With Rocky8, perl packages will not be from the OS
+load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
+
 setenv("WGRIB2","wgrib2")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 

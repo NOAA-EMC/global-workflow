@@ -49,6 +49,9 @@ class AtmAnalysis(Analysis):
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
                 'jedi_yaml': _jedi_yaml,
+                'atm_obsdatain_path': f"{self.runtime_config.DATA}/obs/",
+                'atm_obsdataout_path': f"{self.runtime_config.DATA}/diags/",
+                'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
             }
         )
 
@@ -137,8 +140,9 @@ class AtmAnalysis(Analysis):
     @logit(logger)
     def init_fv3_increment(self: Analysis) -> None:
         # Setup JEDI YAML file
-        self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
-        save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
+        self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA,
+                                                  f"{self.task_config.JCB_ALGO}.yaml")
+        save_as_yaml(self.get_jedi_config(self.task_config.JCB_ALGO), self.task_config.jedi_yaml)
 
         # Link JEDI executable to run directory
         self.task_config.jedi_exe = self.link_jediexe()

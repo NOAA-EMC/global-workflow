@@ -105,11 +105,7 @@ EOF
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
       if [[ "${END_OF_IAU_START}" == "true" ]]; then
-        if (( MEMBER > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
-            inc_files=("fv3_perturbation.nc")
-            read_increment=".true."
-            res_latlon_dynamics="fv3_perturbation.nc"
-        fi
+        inc_files=()
       elif [[ "${DOIAU}" == "YES" ]]; then
         # create an array of inc_files for each IAU hour
         IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
@@ -134,11 +130,7 @@ EOF
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        if [[ "${inc_file}" == "fv3_perturbation.nc" ]]; then
-            increment_file="${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.${inc_file}"
-        else
-            increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
-        fi
+        increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
@@ -150,6 +142,19 @@ EOF
     fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
+        
+  if (( MEMBER > 0 )) && [[ "${USE_ATM_PERTURB_FILES:-false}" == "true" ]]; then
+    inc_files=("fv3_perturbation.nc")
+    read_increment=".true."
+    res_latlon_dynamics="fv3_perturbation.nc"
+    perturbation_file="${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.${inc_file}"
+    if [[ -f "${increment_file}" ]]; then
+        ${NCP} "${pertubation_file}" "${DATA}/INPUT/${inc_file}"
+    else
+        echo "FATAL ERROR: missing perturbation file '${perturbation_file}', ABORT!"
+        exit 1
+    fi
+  fi
 
   # If doing IAU, change forecast hours
   if [[ "${DOIAU:-}" == "YES" ]]; then
