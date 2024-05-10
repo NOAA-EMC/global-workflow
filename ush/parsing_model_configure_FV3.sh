@@ -22,7 +22,7 @@ local SMONTH=${model_start_date:4:2}
 local SDAY=${model_start_date:6:2}
 local SHOUR=${model_start_date:8:2}
 # FHMAX
-if [[ "${USE_REPLAY_ICS:-"false"}" == "true" ]]; then
+if [[ "${END_OF_IAU_START:-"false"}" == "true" ]]; then
     local FHROT=3
 else
     local FHROT=${IAU_FHROT:-0}
@@ -56,7 +56,13 @@ local OUTPUT_FH=${FV3_OUTPUT_FH}
 local IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Ensure the template exists
-template="${PARMgfs}/ufs/model_configure.IN"
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+  local NEST_IMO=${npx_nest}
+  local NEST_JMO=${npy_nest}
+  template="${PARMgfs}/ufs/model_configure_nest.IN"
+else
+  template="${PARMgfs}/ufs/model_configure.IN"
+fi
 if [[ ! -f ${template} ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1

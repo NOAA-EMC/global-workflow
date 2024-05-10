@@ -31,6 +31,11 @@ source "${USHgfs}/preamble.sh"
   workdir=$4
 
   YMDHE=$($NDATE $FHMAX_WAV_PNT $CDATE)
+  if [[ "${END_OF_IAU_START}" == "true" ]]; then
+    model_start_date=$(${NDATE} 3 ${CDATE})
+  else
+    model_start_date=${CDATE}
+  fi
 
   cd $workdir
 
@@ -196,7 +201,7 @@ source "${USHgfs}/preamble.sh"
 
   if [ -f $outfile ]
   then
-   if [ "${ymdh}" = "${CDATE}" ]
+   if [ "${ymdh}" = "${model_start_date}" ]
    then
      if [ "$specdir" = "bull" ]
      then

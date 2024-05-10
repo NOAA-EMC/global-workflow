@@ -6,6 +6,7 @@
 echo "BEGIN: config.fcst"
 
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
+export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
 # Turn off waves if not used for this CDUMP
 case ${WAVE_CDUMP} in
@@ -256,7 +257,7 @@ else
   export io_layout="1,1"
 fi
 
-if [[ ${USE_REPLAY_ICS} == "true" ]]; then
+if [[ ${END_OF_IAU_START} == "true" ]]; then
     export reforecast="YES"
 fi
 # Remember config.efcs will over-ride these values for ensemble forecasts
