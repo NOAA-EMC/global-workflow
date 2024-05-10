@@ -25,9 +25,9 @@ def parse_args():
     """
 
     parser = ArgumentParser(description=description)
-    parser.add_argument('-y', '--yaml', help='full path to yaml file to parce', type=Path, required=True)
+    parser.add_argument('-y', '--yaml', help='full path to yaml file to parse', type=Path, required=True)
     parser.add_argument('-k', '--key', help='key to return value of', type=str, required=True)
-    parser.add_argument('-s', '--string', help='output results as stings', action="store_true", required=False)
+    parser.add_argument('-s', '--string', help='output results as strings', action="store_true", required=False)
     return parser.parse_args()
 
 
