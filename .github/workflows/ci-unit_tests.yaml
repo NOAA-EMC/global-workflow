@@ -29,7 +29,7 @@ jobs:
           # pip install -r requirements.txt
 
       - name: Cache Rocoto
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/rocoto
           key: ${{ runner.os }}-rocoto-${{ hashFiles('**/ci-unit_tests.yaml') }}
