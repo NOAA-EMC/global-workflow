@@ -275,8 +275,14 @@ case ${step} in
     export npe_wavepostpnt=200
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=$(( npe_node_max / nth_wavepostpnt ))
-    export NTASKS=${npe_wavepostpnt}
     export is_exclusive=True
+    # This MPMD job is very I/O heavy and does not scale well. Limit jobs/node to 40.
+    # For now this affects only Hercules, but will also affect Gaea.
+    if [[ ${npe_node_wavepostpnt} -gt 40 ]]; then
+        export npe_node_wavepostpnt=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostpnt}
     ;;
 
   *)
