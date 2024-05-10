@@ -251,7 +251,7 @@ class AtmEnsAnalysis(Analysis):
         # loop over ensemble members
         for imem in range(1, self.task_config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"
-            
+
             src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.nc4")
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f'{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc')
             logger.debug(f"Copying {src} to {dest}")
@@ -259,7 +259,7 @@ class AtmEnsAnalysis(Analysis):
                 'copy': [[src, dest]]
             }
             FileHandler(inc_copy).sync()
-        
+
     def clean(self):
         super().clean()
 
