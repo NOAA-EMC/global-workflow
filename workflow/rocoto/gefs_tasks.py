@@ -218,7 +218,7 @@ class GEFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
 
-        fhrs = self._get_forecast_hours('gefs', self._configs[config], str(component))
+        fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
 
         # ocean/ice components do not have fhr 0 as they are averaged output
         if component in ['ocean', 'ice']:
