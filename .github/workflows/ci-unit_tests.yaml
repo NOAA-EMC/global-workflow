@@ -42,7 +42,6 @@ jobs:
             ./INSTALL
           fi
           echo "$HOME/rocoto/bin" >> $GITHUB_PATH
-          sudo apt-get install -y wget
 
       - name: Run tests
         run: python -m pytest ci/scripts/tests/test_rocotostat.py -v --junitxml ci/scripts/tests/test-results.xml

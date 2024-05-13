@@ -13,7 +13,7 @@ testdata_path = 'testdata/rocotostat'
 testdata_full_path = os.path.join(script_dir, testdata_path)
 
 wget = which('wget')
-if not os.listdir(os.path.join(testdata_full_path)):
+if not os.path.isfile(os.path.join(testdata_full_path, 'database.db')):
     wget.add_default_arg(['-P', testdata_full_path,
         test_data_url + str(testdata_path) + '/workflow.xml',
         test_data_url + str(testdata_path) + '/database.db' ])
@@ -59,7 +59,7 @@ def test_rocoto_stalled():
     testdata_full_path = os.path.join(script_dir, testdata_path)
 
     wget = which('wget')
-    if not os.listdir(os.path.join(testdata_full_path)):
+    if not os.path.isfile(os.path.join(testdata_full_path, 'stalled.db')):
         wget.add_default_arg(['-P', testdata_full_path,
             test_data_url + str(testdata_path) + '/stalled.xml',
             test_data_url + str(testdata_path) + '/stalled.db' ])
