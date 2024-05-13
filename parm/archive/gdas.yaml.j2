@@ -25,7 +25,7 @@ gdas:
         {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlupp.log"
         {% if DO_JEDIOCNVAR %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}oceanobs.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}prepoceanobs.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalprep.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalbmat.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalrun.log"
@@ -34,12 +34,6 @@ gdas:
         {% if DOHYBVAR %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalecen.log"
         {% endif %}
-        {% endif %}
-        {% if DO_OCEAN %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocean_prod*.log"
-        {% endif %}
-        {% if DO_ICE %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ice_prod*.log"
         {% endif %}
         {% if DO_VRFY_OCEANDA %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalecen.log"
@@ -103,7 +97,9 @@ gdas:
         {% endfor %}
     optional:
         {% if current_cycle != SDATE and MODE == "cycled" %}
+        {% if not DO_JEDIATMVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
+        {% endif %}
         {% if DO_VERFRAD %}
         - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
         - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
