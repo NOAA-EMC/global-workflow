@@ -28,7 +28,7 @@ jobs:
           # If you have a requirements.txt file, you can install all dependencies using:
           # pip install -r requirements.txt
 
-      - name: Cache Rocoto
+      - name: Cache Rocoto Install
         uses: actions/cache@v4
         with:
           path: ~/rocoto
