@@ -19,6 +19,8 @@ case "${CASE_ENS}" in
    "C384" | "C768")
       export NMEM_EARCGRP=10
       ;;
+   "C1152")
+      export NMEM_EARCGRP=4
    *)
       echo "FATAL ERROR: Unknown ensemble resolution ${CASE_ENS}, ABORT!"
       exit 1
