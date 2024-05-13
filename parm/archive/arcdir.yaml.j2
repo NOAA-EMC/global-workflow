@@ -10,9 +10,7 @@ deterministic:
         - "{{ ARCDIR }}/tracker.{{ cycle_YMDH }}/{{ RUN }}"
         {% endif %}
         {% if FITSARC %}
-        {% if not VFYARC is defined %}
         {% set VFYARC = ROTDIR + "/vrfyarch" %}
-        {% endif %}
         - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
         {% endif %}
     copy:
@@ -46,10 +44,10 @@ deterministic:
         {% set fhmax = FHMAX_GFS %}
         {% endif %}
         {% for fhr in range(0, fhmax + 6, 6) %}
-        {% set sfcfile = COM_ATMOS_HISTORY + "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
-        {% set sigfile = COM_ATMOS_HISTORY + "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
-        - ["{{ sfcfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sfcfile }}"]
-        - ["{{ sigfile }}", "{{ VRFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sigfile }}"]
+        {% set sfcfile = "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
+        {% set sigfile = "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
+        - ["{{COM_ATMOS_HISTORY}}/{{ sfcfile }}", "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sfcfile }}"]
+        - ["{{COM_ATMOS_HISTORY}}/{{ sigfile }}", "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sigfile }}"]
         {% endfor %}
         {% endif %} ## FITSARC
         {% if path_exists(COM_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH) %}
