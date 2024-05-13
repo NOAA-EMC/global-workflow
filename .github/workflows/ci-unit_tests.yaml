@@ -48,6 +48,9 @@ jobs:
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
 
+      - name: List test directory
+        run: ls -la $GITHUB_WORKSPACE/ci/scripts/tests
+
       - name: Publish Test Results
         if: always()
         uses: EnricoMi/publish-unit-test-result-action@v2
