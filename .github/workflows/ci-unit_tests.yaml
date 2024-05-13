@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Rocoto
         run: |
-          if [ ! -d "$HOME/rocoto" ]; then
+          if [ ! -d "$HOME/rocoto/bin" ]; then
             git clone https://github.com/christopherwharrop/rocoto.git $HOME/rocoto
             cd $HOME/rocoto
             ./INSTALL
@@ -55,6 +55,6 @@ jobs:
         if: always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          files: $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
+          files: ci/scripts/tests/test-results.xml
           job_summary: true
           comment_mode: off
