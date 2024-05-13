@@ -552,7 +552,7 @@ if [[ ${type} == "gdas" ]]; then
     #...........................
     {
       echo "${COM_OCEAN_HISTORY/${ROTDIR}\//}/${head}*"
-      echo "${COM_OCEAN_INPUT/${ROTDIR}\//}"
+      echo "${COM_CONF/${ROTDIR}\//}/ufs.MOM_input"
     } >> "${DATA}/gdasocean.txt"
 
     {
