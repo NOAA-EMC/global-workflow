@@ -16,7 +16,7 @@ esac
 
 # Turn off waves if not used for this CDUMP
 case ${AERO_FCST_CDUMP} in
-  both | "${CDUMP/enkf}" ) ;; # Don't change
+  both | "${RUN/enkf}" ) ;; # Don't change
   *) DO_AERO="NO" ;; # Turn waves off
 esac
 
