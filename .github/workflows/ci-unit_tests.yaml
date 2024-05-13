@@ -28,6 +28,12 @@ jobs:
           # If you have a requirements.txt file, you can install all dependencies using:
           # pip install -r requirements.txt
 
+      - name: Cache Rocoto
+        uses: actions/cache@v4
+        with:
+          path: ~/rocoto
+          key: ${{ runner.os }}-rocoto-${{ hashFiles('**/ci-unit_tests.yaml') }}
+
       - name: Install Rocoto
         run: |
           if [ ! -d "$HOME/rocoto/bin" ]; then
@@ -36,12 +42,6 @@ jobs:
             ./INSTALL
           fi
           echo "$HOME/rocoto/bin" >> $GITHUB_PATH
-
-      - name: Cache Rocoto
-        uses: actions/cache@v4
-        with:
-          path: ~/rocoto
-          key: ${{ runner.os }}-rocoto-${{ hashFiles('**/ci-unit_tests.yaml') }}
 
       - name: Run tests
         run: |
