@@ -46,12 +46,12 @@ jobs:
       - name: Run tests
         run: |
           cd $GITHUB_WORKSPACE/ci/scripts/tests
-          pytest -v --junitxml ci/scripts/tests/test-results.xml
+          pytest -v --junitxml test-results.xml
 
       - name: Publish Test Results
         if: always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          files: ci/scripts/tests/test-results.xml
+          files: $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
           job_summary: true
           comment_mode: off
