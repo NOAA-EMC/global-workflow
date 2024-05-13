@@ -7,15 +7,25 @@ sys.path.append(os.path.join(os.path.dirname(script_dir), 'utils'))
 from rocotostat import rocoto_statcount, rocotostat_summary, is_done, is_stalled, CommandNotFoundError
 from wxflow import which
 
-workflow_file = os.path.join(script_dir, "testdata/rocotostat/workflow.xml")
-database_file = os.path.join(script_dir, "testdata/rocotostat/database.db")
+test_data_url ='https://noaa-nws-global-pds.s3.amazonaws.com/data/CI/'
+
+testdata_path = 'testdata/rocotostat'
+testdata_full_path = os.path.join(script_dir, testdata_path)
+
+wget = which('wget')
+if not os.listdir(os.path.join(testdata_full_path)):
+    wget.add_default_arg(['-P', testdata_full_path,
+                                test_data_url + str(testdata_path) + '/workflow.xml',
+                                test_data_url + str(testdata_path) + '/database.db',
+                                ])
+    wget()
 
 try:
-    rocotostat = which("rocotostat")
+    rocotostat = which('rocotostat')
 except CommandNotFoundError:
     raise CommandNotFoundError("rocotostat not found in PATH")
-rocotostat.add_default_arg(['-w', workflow_file, '-d', database_file])
 
+rocotostat.add_default_arg(['-w', os.path.join(testdata_path,'workflow.xml'), '-d', os.path.join(testdata_path, 'database.db')])
 
 def test_rocoto_statcount():
 
@@ -45,10 +55,21 @@ def test_rocoto_done():
 
 
 def test_rocoto_stalled():
+    testdata_path = 'testdata/rocotostat_stalled'
+    testdata_full_path = os.path.join(script_dir, testdata_path)
 
-    workflow_file = os.path.join(script_dir, "testdata/rocotostat_stalled/stalled.xml")
-    database_file = os.path.join(script_dir, "testdata/rocotostat_stalled/stalled.db")
+    wget = which('wget')
+    if not os.listdir(os.path.join(testdata_full_path)):
+        wget.add_default_arg(['-P', testdata_full_path,
+                                    test_data_url + str(testdata_path) + '/stalled.xml',
+                                    test_data_url + str(testdata_path) + '/stalled.db',
+                                    ])
+        wget()
+
+    rocotostat = which('rocotostat')
+    rocotostat.add_default_arg(['-w', os.path.join(testdata_path,'stalled.xml'), '-d', os.path.join(testdata_path, 'stalled.db')])
 
     result = rocoto_statcount(rocotostat)
 
+    assert result['SUCCEEDED'] == 110
     assert is_stalled(result)

@@ -3,7 +3,7 @@
 import sys
 import os
 
-from wxflow import Executable, which, Logger, CommandNotFoundError
+from wxflow import which, Logger, CommandNotFoundError
 from argparse import ArgumentParser, FileType
 
 from collections import Counter
