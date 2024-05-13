@@ -435,4 +435,7 @@ if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
 
+# If starting from warm restarts at the end of the IAU window. Used in GEFS when using Replay ICs
+export END_OF_IAU_START="false"
+
 echo "END: config.base"
