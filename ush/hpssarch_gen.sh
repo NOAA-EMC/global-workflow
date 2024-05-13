@@ -547,7 +547,7 @@ if [[ ${type} == "gdas" ]]; then
     rm -rf "${DATA}/gdasocean_restart.txt"
     touch "${DATA}/gdasocean_restart.txt"
 
-    head="gdas.t${cyc}z."
+    head="gdas.ocean.t${cyc}z."
 
     #...........................
     {
