@@ -34,13 +34,15 @@ gdas_restarta:
         {% endif %}
     optional:
         {% if current_cycle != SDATE and MODE == "cycled" %}
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
+        {% if not DO_JEDIATMVAR %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
+        {% endif %}
         {% if DO_JEDISNOWDA %}
         - "{{ COM_CONF | relpath(ROTDIR) }}/{{ head }}letkfoi.yaml"
         {% endif %}

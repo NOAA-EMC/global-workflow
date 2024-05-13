@@ -40,13 +40,14 @@ gfsa:
         {% endif %}
     optional:
         {% if MODE == "cycled" %}
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
         {% if DO_JEDIATMVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
+        {% else %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% endif %}
         {% endif %}  # cycled
         - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/avno.t{{ cycle_HH }}z.cyclone.trackatcfunix"
