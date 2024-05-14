@@ -252,7 +252,7 @@ class AtmEnsAnalysis(Analysis):
             'YMD': to_YMD(self.task_config.current_cycle),
             'HH': self.task_config.current_cycle.strftime('%H')
         }
-        
+
         # copy FV3 atm increment to comrot directory
         logger.info("Copy UFS model readable atm increment file")
         cdate = to_fv3time(self.task_config.current_cycle)
@@ -276,74 +276,3 @@ class AtmEnsAnalysis(Analysis):
 
     def clean(self):
         super().clean()
-
-    @logit(logger)
-    def jedi2fv3inc(self: Analysis) -> None:
-        """Generate UFS model readable analysis increment
-
-        This method writes a UFS DA atm increment in UFS model readable format.
-        This includes:
-        - write UFS-DA atm increments using variable names expected by UFS model
-        - compute and write delp increment
-        - compute and write hydrostatic delz increment
-
-        Please note that some of these steps are temporary and will be modified
-        once the modle is able to directly read atm increments.
-
-        Parameters
-        ----------
-        Analysis: parent class for GDAS task
-
-        Returns
-        ----------
-        None
-        """
-        # Select the atm guess file based on the analysis and background resolutions
-        # Fields from the atm guess are used to compute the delp and delz increments
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
-
-        # Reference the python script which does the actual work
-        incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
-
-        # create template dictionaries
-        template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
-        tmpl_inc_dict = {
-            'ROTDIR': self.task_config.ROTDIR,
-            'RUN': self.task_config.RUN,
-            'YMD': to_YMD(self.task_config.current_cycle),
-            'HH': self.task_config.current_cycle.strftime('%H')
-        }
-
-        template_ges = self.task_config.COM_ATMOS_HISTORY_TMPL
-        tmpl_ges_dict = {
-            'ROTDIR': self.task_config.ROTDIR,
-            'RUN': self.task_config.RUN,
-            'YMD': to_YMD(self.task_config.previous_cycle),
-            'HH': self.task_config.previous_cycle.strftime('%H')
-        }
-
-        # loop over ensemble members
-        for imem in range(1, self.task_config.NMEM_ENS + 1):
-            memchar = f"mem{imem:03d}"
-
-            # create output path for member analysis increment
-            tmpl_inc_dict['MEMDIR'] = memchar
-            incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-
-            # rewrite UFS-DA atmens increments
-            tmpl_ges_dict['MEMDIR'] = memchar
-            gesdir = Template.substitute_structure(template_ges, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_ges_dict.get)
-            atmges_fv3 = os.path.join(gesdir, f"{self.task_config.CDUMP}.t{self.task_config.previous_cycle.hour:02d}z.atmf006.nc")
-            atminc_jedi = os.path.join(self.task_config.DATA, 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
-            atminc_fv3 = os.path.join(incdir, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc")
-
-            # Execute incpy to create the UFS model atm increment file
-            # TODO: use MPMD or parallelize with mpi4py
-            # See https://github.com/NOAA-EMC/global-workflow/pull/1373#discussion_r1173060656
-            cmd = Executable(incpy)
-            cmd.add_default_arg(atmges_fv3)
-            cmd.add_default_arg(atminc_jedi)
-            cmd.add_default_arg(atminc_fv3)
-            logger.debug(f"Executing {cmd}")
-            cmd(output='stdout', error='stderr')
