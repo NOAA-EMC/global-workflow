@@ -140,13 +140,19 @@ case ${step} in
     export memory_wavepostsbs_gfs="10GB"
     ;;
 
+  # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
+  # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
     export wtime_wavepostbndpnt="01:00:00"
     export npe_wavepostbndpnt=240
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(( npe_node_max / nth_wavepostbndpnt ))
-    export NTASKS=${npe_wavepostbndpnt}
     export is_exclusive=True
+    if [[ ${npe_node_wavepostbndpnt} -gt 40 ]]; then
+        export npe_node_wavepostbndpnt=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostbndpnt}
     ;;
 
   "wavepostbndpntbll")
@@ -154,8 +160,12 @@ case ${step} in
     export npe_wavepostbndpntbll=448
     export nth_wavepostbndpntbll=1
     export npe_node_wavepostbndpntbll=$(( npe_node_max / nth_wavepostbndpntbll ))
-    export NTASKS=${npe_wavepostbndpntbll}
     export is_exclusive=True
+    if [[ ${npe_node_wavepostbndpntbll} -gt 40 ]]; then
+        export npe_node_wavepostbndpntbll=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostbndpntbll}
     ;;
 
   "wavepostpnt")
@@ -163,8 +173,12 @@ case ${step} in
     export npe_wavepostpnt=200
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=$(( npe_node_max / nth_wavepostpnt ))
-    export NTASKS=${npe_wavepostpnt}
     export is_exclusive=True
+    if [[ ${npe_node_wavepostpnt} -gt 40 ]]; then
+        export npe_node_wavepostpnt=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostpnt}
     ;;
 
   "wavegempak")
@@ -699,7 +713,7 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}"="00:15:00"
+        declare -x "wtime_${step}"="00:20:00"
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384")
@@ -747,6 +761,7 @@ case ${step} in
         exit 4
       ;;
     esac
+    if [[ ${machine} == "JET" ]]; then unset memory_upp ; fi
     export npe_node_upp=${npe_upp}
 
     export nth_upp=1
@@ -1032,7 +1047,7 @@ case ${step} in
     export npe_node_esfc=$(( npe_node_max / nth_esfc ))
     export nth_cycle=${nth_esfc}
     export npe_node_cycle=$(( npe_node_max / nth_cycle ))
-    export memory_esfc="80GB"
+    if [[ ${machine} != "JET" ]]; then export memory_esfc="80G" ; fi
     ;;
 
   "epos")

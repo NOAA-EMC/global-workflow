@@ -99,6 +99,6 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
-[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA} ${DATArestart}"  # do not remove DATAjob. It contains DATAoutput
+[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA}" "${DATArestart}"  # do not remove DATAjob. It contains DATAoutput
 
 exit 0

@@ -149,7 +149,7 @@ pipeline {
                                                 }
                                             }
                                             sh(script: './link_workflow.sh')
-                                            sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
+                                            //sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
                                         }
                                     }
                                     if (env.CHANGE_ID && system == 'gfs') {
