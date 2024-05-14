@@ -43,17 +43,17 @@ def input_args():
 
 def rocotostat_summary(rocotostat):
     """
-    ROCOTO_SUMMARY Run rocotostat and process its output.
+    rocoto_summary Run rocotostat and process its output.
 
-    ROCOTO_SUMMARY(ROCOTOSTAT) adds a default argument '--summary' to the rocotostat
+    rocoto_summary(rocotostat) adds a default argument '--summary' to the rocotostat
     command, runs it, and processes its output to return a dictionary with the total
     number of cycles and the number of cycles marked as 'Done'.
 
     Input:
-    ROCOTOSTAT - The rocotostat command.
+    rocotostat - The rocotostat command.
 
     Output:
-    ROCOTO_STATUS - A dictionary with the total number of cycles and the number of cycles marked as 'Done'.
+    rocoto_status - A dictionary with the total number of cycles and the number of cycles marked as 'Done'.
     """
 
     rocotostat.add_default_arg('--summary')
@@ -72,15 +72,15 @@ def rocoto_statcount(rocotostat):
     """
     ROCOTO_STATCOUNT Run rocotostat and process its output.
 
-    ROCOTO_STATCOUNT(ROCOTOSTAT) adds a default argument '--all' to the rocotostat
+    ROCOTO_STATCOUNT(rocotostat) adds a default argument '--all' to the rocotostat
     command, runs it, and processes its output to return a dictionary with the count
     of each status case.
 
     Input:
-    ROCOTOSTAT - The rocotostat command.
+    rocotostat - The rocotostat command.
 
     Output:
-    ROCOTO_STATUS - A dictionary with the count of each status case.
+    rocoto_status - A dictionary with the count of each status case.
     """
 
     rocotostat.add_default_arg('--all')
@@ -104,14 +104,14 @@ def is_done(rocoto_status):
     """
     IS_DONE Check if all cycles are done.
 
-    IS_DONE(ROCOTO_STATUS) checks if the total number of cycles equals the number of
-    done cycles in the ROCOTO_STATUS dictionary.
+    IS_DONE(rocoto_status) checks if the total number of cycles equals the number of
+    done cycles in the rocoto_status dictionary.
 
     Input:
-    ROCOTO_STATUS - A dictionary with the count of each status case.
+    rocoto_status - A dictionary with the count of each status case.
 
     Output:
-    BOOLEAN - True if all cycles are done, False otherwise.
+    boolean - True if all cycles are done, False otherwise.
     """
 
     if rocoto_status['CYCLES_TOTAL'] == rocoto_status['CYCLES_DONE']:
@@ -124,14 +124,14 @@ def is_stalled(rocoto_status):
     """
     IS_STALLED Check if all cycles are stalled.
 
-    IS_STALLED(ROCOTO_STATUS) checks if all cycles are stalled by verifying if
+    IS_STALLED(rocoto_status) checks if all cycles are stalled by verifying if
     there are no jobs that are RUNNING, SUBMITTING, or QUEUED.
 
     Input:
-    ROCOTO_STATUS - A dictionary with the count of each status case.
+    rocoto_status - A dictionary with the count of each status case.
 
     Output:
-    BOOLEAN - True if all cycles are stalled, False otherwise.
+    boolean - True if all cycles are stalled, False otherwise.
     """
 
     if rocoto_status['RUNNING'] + rocoto_status['SUBMITTING'] + rocoto_status['QUEUED'] == 0:
