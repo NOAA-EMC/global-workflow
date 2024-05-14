@@ -198,7 +198,7 @@ class GEFSTasks(Tasks):
 
     def _atmosoceaniceprod(self, component: str):
 
-        fhout_ocnice_gfs=self._configs['base']['FHOUT_OCNICE_GFS']
+        fhout_ocnice_gfs = self._configs['base']['FHOUT_OCNICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
                                    'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
