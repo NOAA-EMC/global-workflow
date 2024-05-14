@@ -47,6 +47,7 @@ gdas:
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
         {% else %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
@@ -97,9 +98,6 @@ gdas:
         {% endfor %}
     optional:
         {% if current_cycle != SDATE and MODE == "cycled" %}
-        {% if not DO_JEDIATMVAR %}
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
-        {% endif %}
         {% if DO_VERFRAD %}
         - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
         - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
@@ -122,10 +120,6 @@ gdas:
         {% endfor %}
         {% endif %}
         {% endif %}
-        {% for fhr in range(FHMIN, FHMAX + FHOUT, FHOUT) %}
-        - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
-        - "{{ COM_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
-        {% endfor %}
         {% if not WRITE_DOPOST %}
         # TODO set the forecast hours explicitly.  This will require emulating numpy.array_split
         - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_upp_f*.log"

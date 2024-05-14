@@ -38,6 +38,9 @@ gfsa:
         {% if AERO_ANL_CDUMP == "gdas" or AERO_ANL_CDUMP == "both" %}
         - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
         {% endif %}
+        {% if not DO_JEDIATMVAR %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
+        {% endif %}
     optional:
         {% if MODE == "cycled" %}
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
@@ -46,8 +49,6 @@ gfsa:
         {% if DO_JEDIATMVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
-        {% else %}
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% endif %}
         {% endif %}  # cycled
         - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/avno.t{{ cycle_HH }}z.cyclone.trackatcfunix"
