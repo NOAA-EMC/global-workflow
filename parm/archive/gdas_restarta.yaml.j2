@@ -5,7 +5,7 @@ gdas_restarta:
     required:
         {% if current_cycle != SDATE and MODE == "cycled" %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
-        {% for iauhr in IAUHRS if iauhr != 6 %}
+        {% for iauhr in IAUFHRS if iauhr != 6 %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iauhr }}.nc"
         {% endfor %}
         {% if DOHYBVAR and DOIAU %}
