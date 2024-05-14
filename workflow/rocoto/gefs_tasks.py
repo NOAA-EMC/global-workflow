@@ -25,12 +25,12 @@ class GEFSTasks(Tasks):
                             [f'{datatype}.tile{tile}.nc'
                              for datatype in ['ca_data', 'fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']
                              for tile in range(1, self.n_tiles + 1)]:
-                    data = f"{prefix}/{DTG_PREFIX}.{file}"
-                    dep_dict = {'type': 'data', 'data': data}
+                    data = [prefix, f"{dtg_prefix}.{file}"]
+                    dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                     deps.append(rocoto.add_dependency(dep_dict))
                 prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/med"
-                data = f"{prefix}/{DTG_PREFIX}.ufs.cpld.cpl.r.nc"
-                dep_dict = {'type': 'data', 'data': data}
+                data = [prefix, f"{dtg_prefix}.ufs.cpld.cpl.r.nc"]
+                dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                 deps.append(rocoto.add_dependency(dep_dict))
             else:
                 for file in ['gfs_ctrl.nc'] + \
