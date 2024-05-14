@@ -12,11 +12,11 @@ class GEFSTasks(Tasks):
     def stage_ic(self):
         cpl_ic = self._configs['stage_ic']
         deps = []
+        dtg_prefix = "@Y@m@d.@H0000"
         if self._configs['base']['END_OF_IAU_START']:
-            DTG = self._configs['base']['SDATE'] + timedelta(hours=3)
-            DTG_PREFIX = DTG.strftime('%Y%m%d') + '.' + DTG.strftime('%H') + '0000'
+            offset = "+03:00:00"
         else:
-            DTG_PREFIX = "@Y@m@d.@H0000"
+            offset = None
         # Atm ICs
         if self.app_config.do_atm:
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/atmos"
