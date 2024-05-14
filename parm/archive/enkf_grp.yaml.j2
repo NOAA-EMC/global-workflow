@@ -8,7 +8,7 @@ enkf_grp:
         {% set COM_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_MEM_list[imem] %}
         {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
 
-        {% for fhr in range(fhmin, fhmax+fhout, fhout) %}
+        {% for fhr in range(0, fhmax+1, 3) %}
         - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
         - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
         {% endfor %}

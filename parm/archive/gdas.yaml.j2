@@ -85,7 +85,7 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
         # TODO explicitly name the atmos_prod log files to archive
         - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_prod_f*.log"
-        {% for fhr in range(0, FHMAX + FHOUT, FHOUT) %}
+        {% for fhr in range(0, FHMAX + 1, 3) %}
         - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"
         - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
         - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
