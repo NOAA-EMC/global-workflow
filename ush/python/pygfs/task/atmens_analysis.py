@@ -46,6 +46,9 @@ class AtmEnsAnalysis(Analysis):
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
                 'jedi_yaml': _jedi_yaml,
+                'atm_obsdatain_path': f"./obs/",
+                'atm_obsdataout_path': f"./diags/",
+                'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
             }
         )
 
@@ -183,8 +186,10 @@ class AtmEnsAnalysis(Analysis):
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_ATMENSANL)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
         exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('localensembleda')
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:

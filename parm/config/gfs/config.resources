@@ -10,7 +10,7 @@ if (( $# != 1 )); then
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init"
     echo "prep prepsnowobs prepatmiodaobs"
-    echo "atmanlinit atmanlrun atmanlfinal"
+    echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlrun atmensanlfinal"
     echo "snowanl"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
@@ -140,13 +140,19 @@ case ${step} in
     export memory_wavepostsbs_gfs="10GB"
     ;;
 
+  # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
+  # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
     export wtime_wavepostbndpnt="01:00:00"
     export npe_wavepostbndpnt=240
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(( npe_node_max / nth_wavepostbndpnt ))
-    export NTASKS=${npe_wavepostbndpnt}
     export is_exclusive=True
+    if [[ ${npe_node_wavepostbndpnt} -gt 40 ]]; then
+        export npe_node_wavepostbndpnt=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostbndpnt}
     ;;
 
   "wavepostbndpntbll")
@@ -154,8 +160,12 @@ case ${step} in
     export npe_wavepostbndpntbll=448
     export nth_wavepostbndpntbll=1
     export npe_node_wavepostbndpntbll=$(( npe_node_max / nth_wavepostbndpntbll ))
-    export NTASKS=${npe_wavepostbndpntbll}
     export is_exclusive=True
+    if [[ ${npe_node_wavepostbndpntbll} -gt 40 ]]; then
+        export npe_node_wavepostbndpntbll=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostbndpntbll}
     ;;
 
   "wavepostpnt")
@@ -163,8 +173,12 @@ case ${step} in
     export npe_wavepostpnt=200
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=$(( npe_node_max / nth_wavepostpnt ))
-    export NTASKS=${npe_wavepostpnt}
     export is_exclusive=True
+    if [[ ${npe_node_wavepostpnt} -gt 40 ]]; then
+        export npe_node_wavepostpnt=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${npe_wavepostpnt}
     ;;
 
   "wavegempak")
@@ -209,17 +223,31 @@ case ${step} in
     export memory_atmanlinit="3072M"
     ;;
 
-  "atmanlrun")
+  "atmanlvar")
     export layout_x=${layout_x_atmanl}
     export layout_y=${layout_y_atmanl}
 
-    export wtime_atmanlrun="00:30:00"
-    export npe_atmanlrun=$(( layout_x * layout_y * 6 ))
-    export npe_atmanlrun_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlrun=1
-    export nth_atmanlrun_gfs=${nth_atmanlrun}
-    export npe_node_atmanlrun=$(( npe_node_max / nth_atmanlrun ))
-    export memory_atmanlrun="96GB"
+    export wtime_atmanlvar="00:30:00"
+    export npe_atmanlvar=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlvar_gfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmanlvar=1
+    export nth_atmanlvar_gfs=${nth_atmanlvar}
+    export npe_node_atmanlvar=$(( npe_node_max / nth_atmanlvar ))
+    export memory_atmanlvar="96GB"
+    export is_exclusive=True
+    ;;
+
+  "atmanlfv3inc")
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
+
+    export wtime_atmanlfv3inc="00:30:00"
+    export npe_atmanlfv3inc=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlfv3inc_gfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmanlfv3inc=1
+    export nth_atmanlfv3inc_gfs=${nth_atmanlfv3inc}
+    export npe_node_atmanlfv3inc=$(( npe_node_max / nth_atmanlfv3inc ))
+    export memory_atmanlfv3inc="96GB"
     export is_exclusive=True
     ;;
 
@@ -467,8 +495,8 @@ case ${step} in
     ;;
 
   "anal")
-    export wtime_anal="00:50:00"
-    export wtime_anal_gfs="00:40:00"
+    export wtime_anal="01:20:00"
+    export wtime_anal_gfs="01:00:00"
     export npe_anal=780
     export nth_anal=5
     export npe_anal_gfs=825
@@ -483,6 +511,12 @@ case ${step} in
         export npe_anal_gfs=160
         export nth_anal=10
         export nth_anal_gfs=10
+        if [[ ${machine} = "HERA" ]]; then
+          export npe_anal=270
+          export npe_anal_gfs=270
+          export nth_anal=8
+          export nth_anal_gfs=8
+        fi	  
         if [[ ${machine} = "S4" ]]; then
           #On the S4-s4 partition, this is accomplished by increasing the task
           #count to a multiple of 32
@@ -544,7 +578,7 @@ case ${step} in
     ;;
 
   "sfcanl")
-    export wtime_sfcanl="00:10:00"
+    export wtime_sfcanl="00:20:00"
     export npe_sfcanl=6
     export nth_sfcanl=1
     export npe_node_sfcanl=$(( npe_node_max / nth_sfcanl ))
@@ -584,6 +618,13 @@ case ${step} in
         [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
         [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
         [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
+      fi
+
+      if (( ntiles > 6 )); then
+        export layout_x_nest=${layout_x_nest:-10}
+        export layout_y_nest=${layout_y_nest:-10}
+        export npx_nest=${npx_nest:-1441}
+        export npy_nest=${npy_nest:-961}
       fi
 
       # PETS for the atmosphere dycore
@@ -672,7 +713,7 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}"="00:15:00"
+        declare -x "wtime_${step}"="00:20:00"
         declare -x "wtime_${step}_gfs"="03:00:00"
         ;;
       "C384")
@@ -720,6 +761,7 @@ case ${step} in
         exit 4
       ;;
     esac
+    if [[ ${machine} == "JET" ]]; then unset memory_upp ; fi
     export npe_node_upp=${npe_upp}
 
     export nth_upp=1
@@ -1013,13 +1055,13 @@ case ${step} in
     ;;
 
   "esfc")
-    export wtime_esfc="00:08:00"
+    export wtime_esfc="00:15:00"
     export npe_esfc=80
     export nth_esfc=1
     export npe_node_esfc=$(( npe_node_max / nth_esfc ))
     export nth_cycle=${nth_esfc}
     export npe_node_cycle=$(( npe_node_max / nth_cycle ))
-    export memory_esfc="80GB"
+    if [[ ${machine} != "JET" ]]; then export memory_esfc="80G" ; fi
     ;;
 
   "epos")

@@ -560,13 +560,14 @@ if [[ ${type} == "gdas" ]]; then
       echo "${COM_MED_RESTART/${ROTDIR}\//}/*"
     } >> "${DATA}/gdasocean_restart.txt"
 
-    {
-      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/${head}*"
-      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/gdas.t??z.ocngrid.nc"
-      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/diags"
-      echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/yaml"
-    } >> "${DATA}/gdasocean_analysis.txt"
-
+    if [[ ${DO_JEDIOCNVAR} = "YES" ]]; then
+      {
+        echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/${head}*"
+        echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/gdas.t??z.ocngrid.nc"
+        echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/diags"
+        echo "${COM_OCEAN_ANALYSIS/${ROTDIR}\//}/yaml"
+      } >> "${DATA}/gdasocean_analysis.txt"
+    fi
   fi
 
   if [[ ${DO_ICE} = "YES" ]]; then
@@ -576,12 +577,11 @@ if [[ ${type} == "gdas" ]]; then
     rm -rf "${DATA}/gdasice_restart.txt"
     touch "${DATA}/gdasice_restart.txt"
 
-    head="gdas.t${cyc}z."
+    head="gdas.ice.t${cyc}z."
 
     #...........................
     {
       echo "${COM_ICE_HISTORY/${ROTDIR}\//}/${head}*"
-      echo "${COM_ICE_INPUT/${ROTDIR}\//}/ice_in"
     } >> "${DATA}/gdasice.txt"
 
     echo "${COM_ICE_RESTART/${ROTDIR}\//}/*" >> "${DATA}/gdasice_restart.txt"

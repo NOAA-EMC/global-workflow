@@ -145,7 +145,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += ['config.anal', 'config.eupd']
             elif config in ['efcs']:
                 files += ['config.fcst', 'config.efcs']
-            elif config in ['atmanlinit', 'atmanlrun']:
+            elif config in ['atmanlinit', 'atmanlvar', 'atmanlfv3inc']:
                 files += ['config.atmanl', f'config.{config}']
             elif config in ['atmensanlinit', 'atmensanlobs', 'atmensanlrun']:
                 files += ['config.atmensanl', f'config.{config}']

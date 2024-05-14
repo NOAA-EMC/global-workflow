@@ -1,13 +1,5 @@
 #! /usr/bin/env bash
 
-#####
-## "forecast_predet.sh"
-## This script sets value of all variables
-##
-## This is the child script of ex-global forecast,
-## This script is a definition of functions.
-#####
-
 to_seconds() {
   # Function to convert HHMMSS to seconds since 00Z
   local hhmmss hh mm ss seconds padded_seconds
@@ -47,33 +39,30 @@ nhour(){
 # shellcheck disable=SC2034
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through model components"
-  pwd=$(pwd)
+
   CDUMP=${CDUMP:-gdas}
+  rCDUMP=${rCDUMP:-${CDUMP}}
+
   CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
 
   # Define significant cycles
+  half_window=$(( assim_freq / 2 ))
   current_cycle="${PDY}${cyc}"
   previous_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
   next_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${assim_freq} hours" +%Y%m%d%H)
-  forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
-
-  # IAU options
-  IAU_OFFSET=${IAU_OFFSET:-0}
-  DOIAU=${DOIAU:-"NO"}
-  if [[ "${DOIAU}" = "YES" ]]; then
-    sCDATE=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - 3 hours" +%Y%m%d%H)
-    sPDY="${sCDATE:0:8}"
-    scyc="${sCDATE:8:2}"
-    tPDY=${previous_cycle:0:8}
-    tcyc=${previous_cycle:8:2}
+  current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
+  current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
+  next_cycle_begin=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
+  #Define model start date for current_cycle and next_cycle as the time the forecast will start
+  if [[ "${DOIAU:-}" == "YES" ]]; then
+    model_start_date_current_cycle="${current_cycle_begin}"
+    model_start_date_next_cycle="${next_cycle_begin}"
   else
-    sCDATE=${current_cycle}
-    sPDY=${current_cycle:0:8}
-    scyc=${current_cycle:8:2}
-    tPDY=${sPDY}
-    tcyc=${scyc}
-  fi
+    model_start_date_current_cycle=${current_cycle} 
+    model_start_date_next_cycle=${next_cycle}
+  fi 
+  forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
@@ -81,11 +70,13 @@ common_predet(){
   FHMAX_HF=${FHMAX_HF:-0}
   FHOUT_HF=${FHOUT_HF:-1}
 
+  if [[ ! -d "${COM_CONF}" ]]; then mkdir -p "${COM_CONF}"; fi
+
+  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
+
   # Several model components share DATA/INPUT for input data
   if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
 
-  if [[ ! -d "${COM_CONF}" ]]; then mkdir -p "${COM_CONF}"; fi
-  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 }
 
 # shellcheck disable=SC2034
@@ -95,13 +86,25 @@ FV3_predet(){
   if [[ ! -d "${COM_ATMOS_HISTORY}" ]]; then mkdir -p "${COM_ATMOS_HISTORY}"; fi
   if [[ ! -d "${COM_ATMOS_MASTER}" ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
   if [[ ! -d "${COM_ATMOS_RESTART}" ]]; then mkdir -p "${COM_ATMOS_RESTART}"; fi
+  if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
+  ${NLN} "${DATArestart}/FV3_RESTART" "${DATA}/RESTART"
 
   FHZER=${FHZER:-6}
   FHCYC=${FHCYC:-24}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
-  if [[ ${restart_interval} -eq 0 ]]; then
+  # Convert restart interval into an explicit list for FV3
+  if (( restart_interval == 0 )); then
     restart_interval=${FHMAX}
+    FV3_RESTART_FH=("${restart_interval}")
+  else
+    # shellcheck disable=SC2312
+    mapfile -t FV3_RESTART_FH < <(seq "${restart_interval}" "${restart_interval}" "${FHMAX}")
+    # If the last forecast hour is not in the array, add it
+    local nrestarts=${#FV3_RESTART_FH[@]}
+    if (( FV3_RESTART_FH[nrestarts-1] != FHMAX )); then
+      FV3_RESTART_FH+=("${FHMAX}")
+    fi
   fi
 
   # Convert output settings into an explicit list for FV3
@@ -120,11 +123,6 @@ FV3_predet(){
   # IAU options
   IAUFHRS=${IAUFHRS:-0}
   IAU_DELTHRS=${IAU_DELTHRS:-0}
-
-  # Model config options
-  ntiles=6
-
-  rCDUMP=${rCDUMP:-${CDUMP}}
 
   #------------------------------------------------------------------
   # changeable parameters
@@ -181,33 +179,379 @@ FV3_predet(){
   chksum_debug=${chksum_debug:-".false."}
   print_freq=${print_freq:-6}
 
-  #-------------------------------------------------------
-  if [[ "${RUN}" =~ "gfs" || "${RUN}" = "gefs" ]]; then
-    ${NLN} "${COM_ATMOS_RESTART}" RESTART
-    # The final restart written at the end doesn't include the valid date
-    # Create links that keep the same name pattern for these files
-    files="coupler.res fv_core.res.nc"
-    for n in $(seq 1 "${ntiles}"); do
-      for base in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
-        files="${files} ${base}.tile${n}.nc"
-      done
-    done
-    for file in ${files}; do
-      ${NLN} "${file}" "${COM_ATMOS_RESTART}/${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${file}"
-    done
+  # the pre-conditioning of the solution
+  # =0 implies no pre-conditioning
+  # >0 means new adiabatic pre-conditioning
+  # <0 means older adiabatic pre-conditioning
+  na_init=${na_init:-1}
+
+  local suite_file="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml"
+  if [[ ! -f "${suite_file}" ]]; then
+    echo "FATAL ERROR: CCPP Suite file ${suite_file} does not exist, ABORT!"
+    exit 2
+  fi
+
+  # Scan suite file to determine whether it uses Noah-MP
+  local num_noahmpdrv
+  num_noahmpdrv=$(grep -c noahmpdrv "${suite_file}")
+  if (( num_noahmpdrv > 0 )); then
+    lsm="2"
+    lheatstrg=".false."
+    landice=".false."
+    iopt_dveg=${iopt_dveg:-"4"}
+    iopt_crs=${iopt_crs:-"2"}
+    iopt_btr=${iopt_btr:-"1"}
+    iopt_run=${iopt_run:-"1"}
+    iopt_sfc=${iopt_sfc:-"1"}
+    iopt_frz=${iopt_frz:-"1"}
+    iopt_inf=${iopt_inf:-"1"}
+    iopt_rad=${iopt_rad:-"3"}
+    iopt_alb=${iopt_alb:-"1"}
+    iopt_snf=${iopt_snf:-"4"}
+    iopt_tbot=${iopt_tbot:-"2"}
+    iopt_stc=${iopt_stc:-"3"}
+    IALB=${IALB:-2}
+    IEMS=${IEMS:-2}
   else
-    if [[ ! -d "${DATA}/RESTART" ]]; then mkdir -p "${DATA}/RESTART"; fi
+    lsm="1"
+    lheatstrg=".true."
+    landice=".true."
+    iopt_dveg=${iopt_dveg:-"1"}
+    iopt_crs=${iopt_crs:-"1"}
+    iopt_btr=${iopt_btr:-"1"}
+    iopt_run=${iopt_run:-"1"}
+    iopt_sfc=${iopt_sfc:-"1"}
+    iopt_frz=${iopt_frz:-"1"}
+    iopt_inf=${iopt_inf:-"1"}
+    iopt_rad=${iopt_rad:-"1"}
+    iopt_alb=${iopt_alb:-"2"}
+    iopt_snf=${iopt_snf:-"4"}
+    iopt_tbot=${iopt_tbot:-"2"}
+    iopt_stc=${iopt_stc:-"1"}
+    IALB=${IALB:-1}
+    IEMS=${IEMS:-1}
+  fi
+
+  if [[ "${TYPE}" == "nh" ]]; then  # non-hydrostatic options
+    hydrostatic=".false."
+    phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
+    use_hydro_pressure=".false."   # use hydrostatic pressure for physics
+    make_nh=".true."               # running in non-hydrostatic mode
+  else  # hydrostatic options
+    hydrostatic=".true."
+    phys_hydrostatic=".false."     # ignored when hydrostatic = T
+    use_hydro_pressure=".false."   # ignored when hydrostatic = T
+    make_nh=".false."              # running in hydrostatic mode
+  fi
+
+  # Conserve total energy as heat globally
+  consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+    consv_te=0
+    k_split=${k_split:-1}
+    k_split_nest=${k_split_nest:-4}
+  else
+    consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
+    k_split=${k_split:-2}
+  fi
+
+  # time step parameters in FV3
+  n_split=${n_split:-5}
+
+  if [[ "${MONO:0:4}" == "mono" ]]; then  # monotonic options
+    d_con=${d_con_mono:-"0."}
+    do_vort_damp=".false."
+    if [[ "${TYPE}" == "nh" ]]; then  # monotonic and non-hydrostatic
+      hord_mt=${hord_mt_nh_mono:-"10"}
+      hord_xx=${hord_xx_nh_mono:-"10"}
+    else  # monotonic and hydrostatic
+      hord_mt=${hord_mt_hydro_mono:-"10"}
+      hord_xx=${hord_xx_hydro_mono:-"10"}
+    fi
+  else  # non-monotonic options
+    d_con=${d_con_nonmono:-"1."}
+    do_vort_damp=".true."
+    if [[ "${TYPE}" == "nh" ]]; then  # non-monotonic and non-hydrostatic
+      hord_mt=${hord_mt_nh_nonmono:-"5"}
+      hord_xx=${hord_xx_nh_nonmono:-"5"}
+    else # non-monotonic and hydrostatic
+      hord_mt=${hord_mt_hydro_nonmono:-"10"}
+      hord_xx=${hord_xx_hydro_nonmono:-"10"}
+    fi
+  fi
+
+  if [[ "${MONO:0:4}" != "mono" && "${TYPE}" == "nh" ]]; then
+    vtdm4=${vtdm4_nh_nonmono:-"0.06"}
+  else
+    vtdm4=${vtdm4:-"0.05"}
+  fi
+
+  # Initial conditions are chgres-ed from GFS analysis file
+  nggps_ic=${nggps_ic:-".true."}
+  ncep_ic=${ncep_ic:-".false."}
+  external_ic=".true."
+  mountain=".false."
+  warm_start=".false."
+  read_increment=".false."
+  res_latlon_dynamics='""'
+
+  # Stochastic Physics Options
+  do_skeb=".false."
+  do_shum=".false."
+  do_sppt=".false."
+  do_ca=".false."
+  ISEED=0
+  if (( MEMBER > 0 )); then  # these are only applicable for ensemble members
+    local imem=${MEMBER#0}
+    local base_seed=$((current_cycle*10000 + imem*100))
+
+    if [[ "${DO_SKEB:-}" == "YES" ]]; then
+      do_skeb=".true."
+      ISEED_SKEB=$((base_seed + 1))
+    fi
+
+    if [[ "${DO_SHUM:-}" == "YES" ]]; then
+      do_shum=".true."
+      ISEED_SHUM=$((base_seed + 2))
+    fi
+
+    if [[ "${DO_SPPT:-}" == "YES" ]]; then
+      do_sppt=".true."
+      ISEED_SPPT=$((base_seed + 3)),$((base_seed + 4)),$((base_seed + 5)),$((base_seed + 6)),$((base_seed + 7))
+    fi
+
+    if [[ "${DO_CA:-}" == "YES" ]]; then
+      do_ca=".true."
+      ISEED_CA=$(( (base_seed + 18) % 2147483647 ))
+    fi
+
+    if [[ "${DO_LAND_PERT:-}" == "YES" ]]; then
+      lndp_type=${lndp_type:-2}
+      ISEED_LNDP=$(( (base_seed + 5) % 2147483647 ))
+      LNDP_TAU=${LNDP_TAU:-21600}
+      LNDP_SCALE=${LNDP_SCALE:-500000}
+      lndp_var_list=${lndp_var_list:-"'smc', 'vgf',"}
+      lndp_prt_list=${lndp_prt_list:-"0.2,0.1"}
+      n_var_lndp=$(echo "${lndp_var_list}" | wc -w)
+    fi
+
+  fi  # end of ensemble member specific options
+
+  #--------------------------------------------------------------------------
+
+  # Fix files
+  FNGLAC=${FNGLAC:-"${FIXgfs}/am/global_glacier.2x2.grb"}
+  FNMXIC=${FNMXIC:-"${FIXgfs}/am/global_maxice.2x2.grb"}
+  FNTSFC=${FNTSFC:-"${FIXgfs}/am/RTGSST.1982.2012.monthly.clim.grb"}
+  FNSNOC=${FNSNOC:-"${FIXgfs}/am/global_snoclim.1.875.grb"}
+  FNZORC=${FNZORC:-"igbp"}
+  FNAISC=${FNAISC:-"${FIXgfs}/am/IMS-NIC.blended.ice.monthly.clim.grb"}
+  FNALBC2=${FNALBC2:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tileX.nc"}
+  FNTG3C=${FNTG3C:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc"}
+  FNVEGC=${FNVEGC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNMSKH=${FNMSKH:-"${FIXgfs}/am/global_slmask.t1534.3072.1536.grb"}
+  FNVMNC=${FNVMNC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNVMXC=${FNVMXC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNSLPC=${FNSLPC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tileX.nc"}
+  FNALBC=${FNALBC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tileX.nc"}
+  FNVETC=${FNVETC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tileX.nc"}
+  FNSOTC=${FNSOTC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tileX.nc"}
+  FNSOCC=${FNSOCC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_color.tileX.nc"}
+  FNABSC=${FNABSC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tileX.nc"}
+  FNSMCC=${FNSMCC:-"${FIXgfs}/am/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
+
+  # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
+  [[ ! -f "${FNSMCC}" ]] && FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+
+  # Grid and orography data
+  if [[ "${cplflx}" == ".false." ]] ; then
+    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+  else
+    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+  fi
+
+  # Files for GWD
+  ${NCP} "${FIXgfs}/ugwd/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
+
+  # Files for orography, GWD tiles
+  local tt
+  for (( tt = 1; tt <= ntiles; tt++ )); do
+    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${tt}.nc" "${DATA}/INPUT/oro_data.tile${tt}.nc"
+    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${tt}.nc"                 "${DATA}/INPUT/${CASE}_grid.tile${tt}.nc"
+    ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
+    ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
+  done
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+    ${NLN} "${DATA}/INPUT/oro_data.tile7.nc" "${DATA}/INPUT/oro_data.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc"     "${DATA}/INPUT/${CASE}_grid.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc"     "${DATA}/INPUT/grid.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/oro_data_ls.tile7.nc" "${DATA}/INPUT/oro_data_ls.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/oro_data_ss.tile7.nc" "${DATA}/INPUT/oro_data_ss.nest02.tile7.nc"
+  fi
+
+  # NoahMP table
+  local noahmptablefile="${PARMgfs}/ufs/noahmptable.tbl"
+  if [[ ! -f "${noahmptablefile}" ]]; then
+    echo "FATAL ERROR: missing noahmp table file '${noahmptablefile}'"
+    exit 1
+  else
+    ${NCP} "${noahmptablefile}" "${DATA}/noahmptable.tbl"
+  fi
+
+  #  Thompson microphysics fix files
+  if (( imp_physics == 8 )); then
+    ${NCP} "${FIXgfs}/am/CCN_ACTIVATE.BIN" "${DATA}/CCN_ACTIVATE.BIN"
+    ${NCP} "${FIXgfs}/am/freezeH2O.dat"    "${DATA}/freezeH2O.dat"
+    ${NCP} "${FIXgfs}/am/qr_acr_qgV2.dat"  "${DATA}/qr_acr_qgV2.dat"
+    ${NCP} "${FIXgfs}/am/qr_acr_qsV2.dat"  "${DATA}/qr_acr_qsV2.dat"
+  fi
+
+  if [[ "${new_o3forc:-YES}" == "YES" ]]; then
+    O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
+  else
+    O3FORC="global_o3prdlos.f77"
+  fi
+  H2OFORC=${H2OFORC:-"global_h2o_pltc.f77"}
+  ${NCP} "${FIXgfs}/am/${O3FORC}"  "${DATA}/global_o3prdlos.f77"
+  ${NCP} "${FIXgfs}/am/${H2OFORC}" "${DATA}/global_h2oprdlos.f77"
+
+  # GFS standard input data
+
+  ISOL=${ISOL:-2}
+
+  ${NCP} "${FIXgfs}/am/global_solarconstant_noaa_an.txt" "${DATA}/solarconstant_noaa_an.txt"
+  ${NCP} "${FIXgfs}/am/global_sfc_emissivity_idx.txt"    "${DATA}/sfc_emissivity_idx.txt"
+
+  # Aerosol options
+  IAER=${IAER:-1011}
+
+  ## merra2 aerosol climo
+  if (( IAER == 1011 )); then
+    local month mm
+    for (( month = 1; month <=12; month++ )); do
+      mm=$(printf %02d "${month}")
+      ${NCP} "${FIXgfs}/aer/merra2.aerclim.2003-2014.m${mm}.nc" "aeroclim.m${mm}.nc"
+    done
+  fi
+
+  ${NCP} "${FIXgfs}/am/global_climaeropac_global.txt" "${DATA}/aerosol.dat"
+  if (( IAER > 0 )) ; then
+    local file
+    for file in "${FIXgfs}/am/global_volcanic_aerosols"* ; do
+      ${NCP} "${file}" "${DATA}/$(basename "${file//global_}")"
+    done
+  fi
+
+  ${NCP} "${FIXgfs}/lut/optics_BC.v1_3.dat"  "${DATA}/optics_BC.dat"
+  ${NCP} "${FIXgfs}/lut/optics_OC.v1_3.dat"  "${DATA}/optics_OC.dat"
+  ${NCP} "${FIXgfs}/lut/optics_DU.v15_3.dat" "${DATA}/optics_DU.dat"
+  ${NCP} "${FIXgfs}/lut/optics_SS.v3_3.dat"  "${DATA}/optics_SS.dat"
+  ${NCP} "${FIXgfs}/lut/optics_SU.v1_3.dat"  "${DATA}/optics_SU.dat"
+
+  # CO2 options
+  ICO2=${ICO2:-2}
+
+  ${NCP} "${FIXgfs}/am/global_co2historicaldata_glob.txt" "${DATA}/co2historicaldata_glob.txt"
+  ${NCP} "${FIXgfs}/am/co2monthlycyc.txt"                 "${DATA}/co2monthlycyc.txt"
+  # Set historical CO2 values based on whether this is a reforecast run or not
+  # Ref. issue 2403
+  local co2dir
+  co2dir="fix_co2_proj"
+  if [[ "${reforecast:-}" == "YES" ]]; then
+    co2dir="co2dat_4a"
+  fi
+  if (( ICO2 > 0 )); then
+    local file
+    for file in "${FIXgfs}/am/${co2dir}/global_co2historicaldata"* ; do
+      ${NCP} "${file}" "${DATA}/$(basename "${file//global_}")"
+    done
+  fi
+
+  # Inline UPP fix files
+  if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
+    ${NCP} "${PARMgfs}/post/post_tag_gfs${LEVS}"                              "${DATA}/itag"
+    ${NCP} "${FLTFILEGFS:-${PARMgfs}/post/postxconfig-NT-GFS-TWO.txt}"        "${DATA}/postxconfig-NT.txt"
+    ${NCP} "${FLTFILEGFSF00:-${PARMgfs}/post/postxconfig-NT-GFS-F00-TWO.txt}" "${DATA}/postxconfig-NT_FH00.txt"
+    ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}"             "${DATA}/params_grib2_tbl_new"
   fi
 
 }
 
+# Disable variable not used warnings
+# shellcheck disable=SC2034
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
 
   if [[ ! -d "${COM_WAVE_HISTORY}" ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
   if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
 
-  ${NLN} "${COM_WAVE_RESTART}" "restart_wave"
+  if [[ ! -d "${DATArestart}/WAVE_RESTART" ]]; then mkdir -p "${DATArestart}/WAVE_RESTART"; fi
+  ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
+
+  # Files from wave prep and wave init jobs
+  # Copy mod_def files for wave grids
+  local ww3_grid
+  if [[ "${waveMULTIGRID}" == ".true." ]]; then
+    local array=("${WAVECUR_FID}" "${WAVEICE_FID}" "${WAVEWND_FID}" "${waveuoutpGRD}" "${waveGRD}" "${waveesmfGRD}")
+    echo "Wave Grids: ${array[*]}"
+    local grdALL
+    # shellcheck disable=SC2312
+    grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
+
+    for ww3_grid in ${grdALL}; do
+      ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
+      || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${ww3_grid}' from '${COM_WAVE_PREP}'"; exit 1 )
+    done
+  else
+    #if shel, only 1 waveGRD which is linked to mod_def.ww3
+    ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
+    || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COM_WAVE_PREP}'"; exit 1 )
+  fi
+
+  if [[ "${WW3ICEINP}" == "YES" ]]; then
+    local wavicefile="${COM_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
+    if [[ ! -f "${wavicefile}" ]]; then
+      echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
+      exit 1
+    fi
+    ${NCP} "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}" \
+    || ( echo "FATAL ERROR: Unable to copy '${wavicefile}', ABORT!"; exit 1 )
+  fi
+
+  if [[ "${WW3CURINP}" == "YES" ]]; then
+    local wavcurfile="${COM_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
+    if [[ ! -f "${wavcurfile}" ]]; then
+      echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
+      exit 1
+    fi
+    ${NCP} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}" \
+    || ( echo "FATAL ERROR: Unable to copy '${wavcurfile}', ABORT!"; exit 1 )
+  fi
+
+  # Fix files
+  #if wave mesh is not the same as the ocean mesh, copy it in the file
+  if [[ "${MESH_WAV}" == "${MESH_OCN:-mesh.mx${OCNRES}.nc}" ]]; then
+    echo "Wave is on the same mesh as ocean"
+  else
+    echo "Wave is NOT on the same mesh as ocean"
+    ${NCP} "${FIXgfs}/wave/${MESH_WAV}" "${DATA}/"
+  fi
+
+  WAV_MOD_TAG="${RUN}wave${waveMEMB}"
+  if [[ "${USE_WAV_RMP:-YES}" == "YES" ]]; then
+    local file file_array file_count
+    # shellcheck disable=SC2312
+    mapfile -t file_array < <(find "${FIXgfs}/wave" -name "rmp_src_to_dst_conserv_*" | sort)
+    file_count=${#file_array[@]}
+    if (( file_count > 0 )); then
+      for file in "${file_array[@]}" ; do
+        ${NCP} "${file}" "${DATA}/"
+      done
+    else
+      echo 'FATAL ERROR : No rmp precomputed nc files found for wave model, ABORT!'
+      exit 4
+    fi
+  fi
 }
 
 # shellcheck disable=SC2034
@@ -219,11 +563,17 @@ CICE_predet(){
   if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
 
   if [[ ! -d "${DATA}/CICE_OUTPUT" ]]; then  mkdir -p "${DATA}/CICE_OUTPUT"; fi
-  if [[ ! -d "${DATA}/CICE_RESTART" ]]; then mkdir -p "${DATA}/CICE_RESTART"; fi
+  if [[ ! -d "${DATArestart}/CICE_RESTART" ]]; then mkdir -p "${DATArestart}/CICE_RESTART"; fi
+  ${NLN} "${DATArestart}/CICE_RESTART" "${DATA}/CICE_RESTART"
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
   CICE_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_OCNICE}" "${FHMAX}")
+
+  # Fix files
+  ${NCP} "${FIXgfs}/cice/${ICERES}/${CICE_GRID}" "${DATA}/"
+  ${NCP} "${FIXgfs}/cice/${ICERES}/${CICE_MASK}" "${DATA}/"
+  ${NCP} "${FIXgfs}/cice/${ICERES}/${MESH_ICE}"  "${DATA}/"
 
 }
 
@@ -236,11 +586,40 @@ MOM6_predet(){
   if [[ ! -d "${COM_OCEAN_INPUT}" ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
 
   if [[ ! -d "${DATA}/MOM6_OUTPUT" ]]; then mkdir -p "${DATA}/MOM6_OUTPUT"; fi
-  if [[ ! -d "${DATA}/MOM6_RESTART" ]]; then mkdir -p "${DATA}/MOM6_RESTART"; fi
+  if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
+  ${NLN} "${DATArestart}/MOM6_RESTART" "${DATA}/MOM6_RESTART"
 
   # MOM6 does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for MOM6
   MOM6_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_OCNICE}" "${FHMAX}")
+
+  # If using stochastic parameterizations, create a seed that does not exceed the
+  # largest signed integer
+  if (( MEMBER > 0 )); then  # these are only applicable for ensemble members
+    local imem=${MEMBER#0}
+    local base_seed=$((current_cycle*10000 + imem*100))
+
+    if [[ "${DO_OCN_SPPT:-}" == "YES" ]]; then
+      ISEED_OCNSPPT=$((base_seed + 8)),$((base_seed + 9)),$((base_seed + 10)),$((base_seed + 11)),$((base_seed + 12))
+    fi
+
+    if [[ "${DO_OCN_PERT_EPBL:-}" == "YES" ]]; then
+      ISEED_EPBL=$((base_seed + 13)),$((base_seed + 14)),$((base_seed + 15)),$((base_seed + 16)),$((base_seed + 17))
+    fi
+  fi
+
+  # Fix files
+  ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
+
+  # Copy coupled grid_spec
+  local spec_file
+  spec_file="${FIXgfs}/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+  if [[ -s "${spec_file}" ]]; then
+    ${NCP} "${spec_file}" "${DATA}/INPUT/"
+  else
+    echo "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist"
+    exit 3
+  fi
 
 }
 
@@ -249,7 +628,8 @@ CMEPS_predet(){
 
   if [[ ! -d "${COM_MED_RESTART}" ]]; then mkdir -p "${COM_MED_RESTART}"; fi
 
-  if [[ ! -d "${DATA}/CMEPS_RESTART" ]]; then mkdir -p "${DATA}/CMEPS_RESTART"; fi
+  if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
+  ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
 
 }
 

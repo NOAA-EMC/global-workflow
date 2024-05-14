@@ -1,18 +1,29 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
+
 if (( 10#${ENSMEM:-0} > 0 )); then
+  export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+  export DATA="${DATAjob}/${jobid}"
   source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
+  export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+  export DATA="${DATAjob}/${jobid}"
   source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
+
+# Create the directory to hold restarts and output from the model in stmp
+export DATArestart="${DATAjob}/restart"
+if [[ ! -d "${DATArestart}" ]]; then mkdir -p "${DATArestart}"; fi
+export DATAoutput="${DATAjob}/output"
+if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Restart conditions for GFS cycle come from GDAS
-rCDUMP=${RUN}
+rCDUMP="${RUN}"
 export rCDUMP="${RUN/gfs/gdas}"
 
 # Ignore possible spelling error (nothing is misspelled)
@@ -24,47 +35,47 @@ declare -rx gPDY="${GDATE:0:8}"
 declare -rx gcyc="${GDATE:8:2}"
 
 # Construct COM variables from templates (see config.com)
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
   COM_ATMOS_HISTORY COM_ATMOS_MASTER COM_TOP COM_CONF
 
-RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
   COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-if [[ ${DO_WAVE} == "YES" ]]; then
-  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
-  RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+if [[ "${DO_WAVE}" == "YES" ]]; then
+  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
+  RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
     COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
-  declare -rx RUNwave="${RUN}wave"
 fi
 
-if [[ ${DO_OCN} == "YES" ]]; then
-  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT \
+if [[ "${DO_OCN}" == "YES" ]]; then
+  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT \
     COM_OCEAN_HISTORY COM_OCEAN_ANALYSIS
-  RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+  RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+    COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL \
+    COM_MED_RESTART_PREV:COM_MED_RESTART_TMPL
 fi
 
-if [[ ${DO_ICE} == "YES" ]]; then
-  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ICE_HISTORY COM_ICE_INPUT COM_ICE_RESTART
-  RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+if [[ "${DO_ICE}" == "YES" ]]; then
+  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COM_ICE_HISTORY COM_ICE_INPUT COM_ICE_RESTART
+  RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
     COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
 fi
 
-if [[ ${DO_AERO} == "YES" ]]; then
-  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_CHEM_HISTORY
+if [[ "${DO_AERO}" == "YES" ]]; then
+  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COM_CHEM_HISTORY
 fi
 
 
 ###############################################################
 # Run relevant exglobal script
 ###############################################################
-${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}
+"${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}"
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+(( status != 0 )) && exit "${status}"
 
 # Send DBN alerts for EnKF
 # TODO: Should these be in post manager instead?
-if [[ "${RUN}" =~ "enkf" ]] && [[ "${SENDDBN}" = YES ]]; then
+if [[ "${RUN}" =~ "enkf" ]] && [[ "${SENDDBN:-}" == YES ]]; then
   for (( fhr = FHOUT; fhr <= FHMAX; fhr + FHOUT )); do
     if (( fhr % 3 == 0 )); then
       fhr3=$(printf %03i "${fhr}")
@@ -88,6 +99,6 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
-[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA}" "${DATArestart}"  # do not remove DATAjob. It contains DATAoutput
 
 exit 0

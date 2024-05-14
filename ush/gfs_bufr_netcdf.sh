@@ -94,8 +94,8 @@ do
       fi
    done
 #------------------------------------------------------------------
-   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.nc sigf${hh} 
-   ln -sf $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
+   ${NLN} $COMIN/${RUN}.${cycle}.atmf${hh2}.nc sigf${hh}
+   ${NLN} $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
 
    hh=$( expr $hh + $FINT )
    if test $hh -lt 10
@@ -105,9 +105,9 @@ do
 done  
 
 #  define input BUFR table file.
-ln -sf ${PARMgfs}/product/bufr_gfs_${CLASS}.tbl fort.1
-ln -sf ${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs} fort.8
-ln -sf ${PARMgfs}/product/bufr_ij13km.txt fort.7
+${NLN} ${PARMgfs}/product/bufr_gfs_${CLASS}.tbl fort.1
+${NLN} ${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs} fort.8
+${NLN} ${PARMgfs}/product/bufr_ij13km.txt fort.7
 
 ${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
 export err=$?
