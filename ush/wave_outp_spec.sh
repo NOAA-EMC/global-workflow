@@ -32,9 +32,9 @@ source "${USHgfs}/preamble.sh"
 
   YMDHE=$($NDATE $FHMAX_WAV_PNT $CDATE)
   if [[ "${END_OF_IAU_START}" == "true" ]]; then
-    model_start_date=$(${NDATE} 3 ${CDATE})
+    model_start_date=$(${NDATE} 3 "${PDY}${cyc}")
   else
-    model_start_date=${CDATE}
+    model_start_date="${PDY}${cyc}"
   fi
 
   cd $workdir
