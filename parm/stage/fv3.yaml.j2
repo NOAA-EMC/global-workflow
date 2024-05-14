@@ -1,0 +1,36 @@
+# # First 1/2 cycle also needs a atmos increment if doing warm start
+#   if inputs.start in ['warm']:
+#       for ftype in ['atmi003.nc', 'atminc.nc', 'atmi009.nc']:
+# if inputs.nens > 0:
+#for ftype in ['ratmi003.nc', 'ratminc.nc', 'ratmi009.nc']
+fv3:
+    name: "FV3"
+    source: "{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/atmos"
+    required:
+        #---------------
+        # WARM START
+        #---------------
+        {% if EXP_WARM_START %}
+        {% set head = "{{ COM_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000." %}
+        {% for ftype in coupler.res fv_core.res.nc %}
+        - "{{ head }}{{ ftype }}"
+        {% endfor %}
+        {% for ftype in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data %}
+        {% for ntile in $(seq 1 ntiles) %}
+        - "{{ head }}{{ ftype }}.tile{{ ntile }}.nc"
+        {% endfor %} # ntile
+        {% endfor %} # ftype
+        #--------------- # end warm start
+        {% else %}
+        #---------------
+        # COLD START
+        #---------------
+        {% set head = "{{ COM_ATMOS_INPUT | relpath(ROTDIR) }}" %}
+        - "{{ head }}/gfs_ctrl.nc"
+        {% for ftype in gfs_data sfc_data %}
+        {% for ntile in $(seq 1 ntiles) %}
+        - "{{ head }}/{{ ftype }}.tile{{ ntile }}.nc"
+        {% endfor %} # ntile
+        {% endfor %} # ftype
+        #--------------- # end cold start
+        {% endif %}
