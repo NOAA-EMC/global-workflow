@@ -5,6 +5,7 @@ jobs:
 
   ci_pytest:
       runs-on: ubuntu-latest
+      name: Run unit tests on CI system      
       permissions:
         checks: write
         pull-requests: write
