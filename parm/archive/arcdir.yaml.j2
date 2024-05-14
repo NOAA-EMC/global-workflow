@@ -65,7 +65,7 @@ deterministic:
         {% endif %}
         {% endfor %}
         {% endif %} ## RUN == "gfs"
-        {% if arch_tracks %}
+        {% if path_exists(COM_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH) %}
         - ["{{ COM_ATMOS_TRACK }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}"]
         - ["{{ COM_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
         {% endif %}

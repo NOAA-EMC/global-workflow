@@ -28,6 +28,15 @@ gfsa:
         - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
         - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
         #    - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
+        {% if AERO_ANL_CDUMP == "gfs" or AERO_ANL_CDUMP == "both" %}
+        - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
+        {% endif %}
+        {% if DO_JEDIATMVAR %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
+        {% else %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
+        {% endif %}
         {% endif %}
         {% endif %}  # Full cycle
         {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
@@ -35,21 +44,11 @@ gfsa:
         - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
         - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ '%03d' % fhr }}.txt"
         {% endfor %}
-        {% if AERO_ANL_CDUMP == "gdas" or AERO_ANL_CDUMP == "both" %}
-        - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
-        {% endif %}
-        {% if not DO_JEDIATMVAR %}
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
-        {% endif %}
     optional:
         {% if MODE == "cycled" %}
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
-        {% if DO_JEDIATMVAR %}
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
-        {% endif %}
         {% endif %}  # cycled
         - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/avno.t{{ cycle_HH }}z.cyclone.trackatcfunix"
         - "{{ COM_ATMOS_TRACK | relpath(ROTDIR) }}/avnop.t{{ cycle_HH }}z.cyclone.trackatcfunix"

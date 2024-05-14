@@ -8,7 +8,7 @@ enkf_grp:
         {% set COM_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_MEM_list[imem] %}
         {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
 
-        {% for fhr in range(0, fhmax+1, 3) %}
+        {% for fhr in range(3, fhmax+1, 3) %}
         - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
         - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
         {% endfor %}
@@ -24,14 +24,6 @@ enkf_grp:
         {% endif %}
         {% endif %}
 
-        {% for iaufhr in iaufhrs if iaufhr != 6 %}
-        {% set iaufhr = iaufhr %}
-        {% if do_calc_increment %}
-        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iaufhr }}.nc"
-        {% else %}
-        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
-        {% endif %}
-        {% endfor %}  # iaufhr in iaufhrs
         {% endfor %}  # first_group_mem to last_group_mem
     optional:
         {% if current_cycle != SDATE and not lobsdiag_forenkf %}
@@ -39,5 +31,11 @@ enkf_grp:
         {% set imem = mem - first_group_mem %}
         {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
         - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
+        {% for iaufhr in iaufhrs if iaufhr != 6 %}
+        {% set iaufhr = iaufhr %}
+        {% if do_calc_increment %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iaufhr }}.nc"
+        {% endif %}
+        {% endfor %}  # iaufhr in iaufhrs
         {% endfor %}
         {% endif %}

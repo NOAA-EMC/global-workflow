@@ -31,7 +31,7 @@ def main():
             'restart_interval_gdas', 'restart_interval_gfs',
             'AERO_ANL_CDUMP', 'AERO_FCST_CDUMP', 'DOIBP_WAV', 'DO_JEDIOCNVAR',
             'NMEM_ENS', 'DO_JEDIATMVAR', 'DO_VRFY_OCEANDA', 'FHMAX_FITS',
-            'FITSARC']
+            'FITSARC', 'IAUFHRS']
 
     archive_dict = AttrDict()
     for key in keys:

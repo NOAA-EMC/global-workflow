@@ -6,7 +6,7 @@ gfs_netcdfa:
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
-        {% for iauhr in IAUFHRS if iauhr != 6 %}
+        {% for iauhr in iaufhrs if iauhr != 6 %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iauhr }}.nc"
         {% endfor %}
     optional:

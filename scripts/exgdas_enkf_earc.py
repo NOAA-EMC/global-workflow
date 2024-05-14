@@ -25,7 +25,8 @@ def main():
             'lobsdiag_forenkf', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',
             'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF', 'ENKF_SPREAD',
             'restart_interval_enkfgdas', 'restart_interval_enkfgfs',
-            'DOHYBVAR', 'DOIAU_ENKF', 'IAU_OFFSET']
+            'DOHYBVAR', 'DOIAU_ENKF', 'IAU_OFFSET', 'DOIAU',
+            'DO_CALC_INCREMENT']
 
     archive_dict = AttrDict()
     for key in keys:

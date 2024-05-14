@@ -2,7 +2,7 @@ enkf:
     name: "ENKF"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}.tar"
     required:
-        {% for fhr in range(0, fhmax + 1, 3) %}
+        {% for fhr in range(3, fhmax + 1, 3) %}
         - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensmean.nc"
         - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.ensmean.nc"
         {% if ENKF_SPREAD %}
@@ -29,9 +29,7 @@ enkf:
         {% if do_calc_increment %}
         - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
         {% endif %}  # calc increment
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ratminc.ensmean.nc"
         {% else %}  # fhr != IAU_OFFSET
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
         - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
         {% endif %}  # fhr == IAU_OFFSET
         {% endfor %}  # IAUFHRS
@@ -61,3 +59,12 @@ enkf:
         {% endfor %}
         {% endif %}  # lobsdiag_forenkf
         {% endif %}  # not the first cycle
+    optional:
+        {% if current_cycle != SDATE and DOIAU %}
+        {% for fhr in iaufhrs %}
+        {% if fhr != IAU_OFFSET %}
+        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
+        {% endif %}  # fhr == IAU_OFFSET
+        {% endfor %}  # IAUFHRS
+        {% endif %}
