@@ -96,7 +96,7 @@ def fill_ROTDIR_cycled(host, inputs):
     dst_ocn_rst_dir = os.path.join('model_data', 'ocean', 'restart')
     dst_ocn_anl_dir = os.path.join('analysis', 'ocean')
     dst_ice_rst_dir = os.path.join('model_data', 'ice', 'restart')
-    dst_ice_anl_dir = os.path.join('analysis', 'ice', 'restart')
+    dst_ice_anl_dir = os.path.join('analysis', 'ice')
     dst_atm_anl_dir = os.path.join('analysis', 'atmos')
 
     if flat_structure:
