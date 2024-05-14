@@ -9,8 +9,31 @@ rCDUMP=${CDUMP}
 [[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
 export rCDUMP
 
+# Locally scoped variables and functions
+# shellcheck disable=SC2153
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+gPDY="${GDATE:0:8}"
+gcyc="${GDATE:8:2}"
+
+# Declare COMs
+if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
+  RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+  RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_MED_RESTART_PREV:COM_MED_RESTART_TMPL
+else
+  YMD=${PDY} HH=${cyc} declare_from_tmpl COM_ATMOS_INPUT
+fi
+if [[ "${DO_OCN:-}" = "YES" ]]; then
+  RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+fi
+if [[ "${DO_ICE:-}" = "YES" ]]; then
+  RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+fi
+if [[ "${DO_WAVE:-}" = "YES" ]]; then
+  YMD=${PDY} HH=${cyc} declare_from_tmpl COM_WAVE_RESTART
+fi
+
 # Execute the Script
-"${SCRgfs}/exglobal_stage_ic.sh"
+"${SCRgfs}/exglobal_stage_ic.py"
 
 ##########################################
 # Remove the Temporary working directory
