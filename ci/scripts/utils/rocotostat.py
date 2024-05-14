@@ -2,6 +2,7 @@
 
 import sys
 import os
+import copy
 
 from wxflow import which, Logger, CommandNotFoundError
 from argparse import ArgumentParser, FileType
@@ -55,7 +56,7 @@ def rocotostat_summary(rocotostat):
     Output:
     rocoto_status - A dictionary with the total number of cycles and the number of cycles marked as 'Done'.
     """
-
+    rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--summary')
     rocotostat_output = rocotostat(output=str)
     rocotostat_output = rocotostat_output.splitlines()[1:]
@@ -70,9 +71,9 @@ def rocotostat_summary(rocotostat):
 
 def rocoto_statcount(rocotostat):
     """
-    ROCOTO_STATCOUNT Run rocotostat and process its output.
+    rocoto_statcount Run rocotostat and process its output.
 
-    ROCOTO_STATCOUNT(rocotostat) adds a default argument '--all' to the rocotostat
+    rocoto_statcount(rocotostat) adds a default argument '--all' to the rocotostat
     command, runs it, and processes its output to return a dictionary with the count
     of each status case.
 
@@ -83,6 +84,7 @@ def rocoto_statcount(rocotostat):
     rocoto_status - A dictionary with the count of each status case.
     """
 
+    rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--all')
 
     rocotostat_output = rocotostat(output=str)
@@ -102,9 +104,9 @@ def rocoto_statcount(rocotostat):
 
 def is_done(rocoto_status):
     """
-    IS_DONE Check if all cycles are done.
+    is_done Check if all cycles are done.
 
-    IS_DONE(rocoto_status) checks if the total number of cycles equals the number of
+    is_done(rocoto_status) checks if the total number of cycles equals the number of
     done cycles in the rocoto_status dictionary.
 
     Input:
@@ -122,9 +124,9 @@ def is_done(rocoto_status):
 
 def is_stalled(rocoto_status):
     """
-    IS_STALLED Check if all cycles are stalled.
+    is_stalled Check if all cycles are stalled.
 
-    IS_STALLED(rocoto_status) checks if all cycles are stalled by verifying if
+    is_stalled(rocoto_status) checks if all cycles are stalled by verifying if
     there are no jobs that are RUNNING, SUBMITTING, or QUEUED.
 
     Input:
@@ -142,9 +144,9 @@ def is_stalled(rocoto_status):
 
 if __name__ == '__main__':
     """
-    MAIN Execute the script.
+    main Execute the script.
 
-    MAIN() parses the input arguments, checks if the rocotostat command is available,
+    main() parses the input arguments, checks if the rocotostat command is available,
     adds default arguments to the rocotostat command, and runs it and reports
     out to stdout spcific information of rocoto workflow.
     """

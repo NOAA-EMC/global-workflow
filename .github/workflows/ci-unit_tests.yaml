@@ -8,6 +8,7 @@ jobs:
       name: Run unit tests on CI system      
       permissions:
         checks: write
+        pull-requests: write
 
       steps:
       - name: Checkout code
