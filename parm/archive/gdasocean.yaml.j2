@@ -3,7 +3,7 @@ gdasocean:
     name: "GDASOCEAN"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean.tar"
     required:
-        {% for fhr in range(FHMIN, FHMAX + 1, FHMAX) %}
+        {% for fhr in range(FHMIN_OCNICE, FHMAX + 1, FHOUT_OCNICE) %}
         - "{{ COM_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
         - '{{ COM_CONF | relpath(ROTDIR) }}/ufs.MOM_input'
