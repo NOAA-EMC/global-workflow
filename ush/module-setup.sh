@@ -70,10 +70,10 @@ elif [[ ${MACHINE_ID} = stampede* ]] ; then
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
     # We are on GAEA.
     if ( ! eval module help > /dev/null 2>&1 ) ; then
-	source /usr/share/lmod/lmod/init/bash
-	source /etc/profile
+        source /usr/share/lmod/lmod/init/bash
+        source /etc/profile
     fi
-    module reset 
+    module reset
 
 elif [[ ${MACHINE_ID} = expanse* ]]; then
     # We are on SDSC Expanse
