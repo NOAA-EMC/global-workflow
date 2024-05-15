@@ -12,7 +12,7 @@ ACCOUNT: epic
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
-PARTITION_BATCH: cron_c5 
+PARTITION_BATCH: cron_c5
 PARTITION_SERVICE: service
 CHGRP_RSTPROD: 'NO'
 CHGRP_CMD: 'chgrp rstprod'
