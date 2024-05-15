@@ -39,12 +39,24 @@ class MarineLETKF(Analysis):
         DATA = self.runtime_config.DATA
         cdate = PDY + timedelta(hours=cyc)
 
+        gdas_home = path.join(config['HOMEgfs'], 'sorc', 'gdas.cd')
+
         half_assim_freq = timedelta(hours=int(config['assim_freq'])/2)
         window_begin = cdate - half_assim_freq
+        letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
+
+        self.config['letkf_yaml_template'] = path.join(letkf_yaml_dir, 'letkf.yaml.j2')
+        self.config['letkf_yaml_file'] = path.join(DATA, 'letkf.yaml')
 
         self.config['window_begin'] = window_begin
         self.config['BKG_LIST'] = 'bkg_list.yaml'
         self.config['bkg_dir'] = path.join(DATA, 'bkg')
+
+        exec_name_gridgen = path.join(self.config.JEDI_BIN, 'gdas_soca_gridgen.x')
+        self.config['gridgen_yaml'] = path.join(gdas_home, 'parm', 'soca', 'gridgen', 'gridgen.yaml')
+
+
+
 
     @logit(logger)
     def initialize(self):
@@ -80,6 +92,10 @@ class MarineLETKF(Analysis):
         logger.info("run")
 
         chdir(self.runtime_config.DATA)
+
+        exec_cmd_gridgen = Executable(self.config.APRUN_OCNANALLETKF)
+        exec_cmd_gridgen.add_default_arg(exec_name_gridgen)
+        exec_cmd_gridgen.add_default_arg(self.config.gridgen_yaml)
 
     @logit(logger)
     def finalize(self):
