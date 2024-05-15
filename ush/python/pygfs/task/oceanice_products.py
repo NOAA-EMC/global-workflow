@@ -64,7 +64,7 @@ class OceanIceProducts(Task):
             avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_OCN_GFS:03d}-{self.config.FORECAST_HOUR:03d}"
 
         if self.config.COMPONENT == 'ice':
-            avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_ICE_GFS:03d}-{self.config.FORECAST_HOUR:03d}" 
+            avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_ICE_GFS:03d}-{self.config.FORECAST_HOUR:03d}"
 
         localdict = AttrDict(
             {'component': self.config.COMPONENT,
