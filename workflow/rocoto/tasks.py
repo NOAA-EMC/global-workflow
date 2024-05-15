@@ -129,11 +129,16 @@ class Tasks:
         local_config = config.copy()
 
         # Ocean/Ice components do not have a HF output option like the atmosphere
-        if component in ['ocean', 'ice']:
+        if component in ['ocean']:
             local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']
-            local_config['FHOUT_HF_GFS'] = config['FHOUT_OCNICE_GFS']
-            local_config['FHOUT_GFS'] = config['FHOUT_OCNICE_GFS']
-            local_config['FHOUT_OCNICE'] = config['FHOUT_OCNICE_GFS']
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_OCN_GFS']
+            local_config['FHOUT_GFS'] = config['FHOUT_OCN_GFS']
+            local_config['FHOUT'] = config['FHOUT_OCN']
+        if component in ['ice']:
+            local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']                                                                                                                                
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_ICE_GFS']
+            local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
+            local_config['FHOUT'] = config['FHOUT_ICE']
 
         fhmin = local_config['FHMIN']
 
@@ -141,7 +146,7 @@ class Tasks:
         fhrs = []
         if cdump in ['gdas']:
             fhmax = local_config['FHMAX']
-            fhout = local_config['FHOUT_OCNICE']
+            fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif cdump in ['gfs', 'gefs']:
             fhmax = local_config['FHMAX_GFS']
