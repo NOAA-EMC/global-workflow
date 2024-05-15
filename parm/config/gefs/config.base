@@ -211,6 +211,14 @@ case "${APP}" in
     ;;
 esac
 
+# Output frequency of the forecast model (for cycling)
+export FHMIN=0
+export FHMAX=9
+export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
+export FHOUT_OCN=3
+export FHOUT_ICE=3
+
+
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
@@ -221,7 +229,9 @@ export FHMAX_GFS=@FHMAX_GFS@
 export FHOUT_GFS=6
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
-export FHOUT_OCNICE_GFS=24
+export FHOUT_OCN_GFS=24                                                                                                                                                                    
+export FHOUT_ICE_GFS=24 
+
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
