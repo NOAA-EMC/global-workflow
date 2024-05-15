@@ -60,8 +60,11 @@ class OceanIceProducts(Task):
 
         # TODO: This is a bit of a hack, but it works for now
         # FIXME: find a better way to provide the averaging period
-        # This will be different for ocean and ice, so when they are made flexible, this will need to be addressed
-        avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_OCN_GFS:03d}-{self.config.FORECAST_HOUR:03d}"
+        if self.config.COMPONENT == 'ocean':
+            avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_OCN_GFS:03d}-{self.config.FORECAST_HOUR:03d}"
+
+        if self.config.COMPONENT == 'ice':
+            avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_ICE_GFS:03d}-{self.config.FORECAST_HOUR:03d}" 
 
         localdict = AttrDict(
             {'component': self.config.COMPONENT,
