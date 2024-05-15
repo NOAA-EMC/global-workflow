@@ -45,20 +45,20 @@ class GEFSTasks(Tasks):
         if self.app_config.do_ocean:
             ocn_res = f"{self._base.get('OCNRES', '025'):03d}"
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/mem000/ocean"
-            data = f"{prefix}/{DTG_PREFIX}.MOM.res.nc"
+            data = f"{prefix}/{dtg_prefix}.MOM.res.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
             if ocn_res in ['025']:
                 # 0.25 degree ocean model also has these additional restarts
                 for res in [f'res_{res_index}' for res_index in range(1, 4)]:
-                    data = f"{prefix}/{DTG_PREFIX}.MOM.{res}.nc"
+                    data = f"{prefix}/{dtg_prefix}.MOM.{res}.nc"
                     dep_dict = {'type': 'data', 'data': data}
                     deps.append(rocoto.add_dependency(dep_dict))
 
         # Ice ICs
         if self.app_config.do_ice:
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ICEIC']}/@Y@m@d@H/mem000/ice"
-            data = f"{prefix}/{DTG_PREFIX}.cice_model.res.nc"
+            data = f"{prefix}/{dtg_prefix}.cice_model.res.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -66,7 +66,7 @@ class GEFSTasks(Tasks):
         if self.app_config.do_wave:
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/mem000/wave"
             for wave_grid in self._configs['waveinit']['waveGRD'].split():
-                data = f"{prefix}/{DTG_PREFIX}.restart.{wave_grid}"
+                data = f"{prefix}/{dtg_prefix}.restart.{wave_grid}"
                 dep_dict = {'type': 'data', 'data': data}
                 deps.append(rocoto.add_dependency(dep_dict))
 
