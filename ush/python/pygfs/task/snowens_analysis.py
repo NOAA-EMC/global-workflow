@@ -26,8 +26,6 @@ class SnowEnsAnalysis(Analysis):
     Class for global ensemble snow analysis tasks
     """
 
-    NMEM_SNOWENS = 2
-
     @logit(logger, name="SnowEnsAnalysis")
     def __init__(self, config):
         super().__init__(config)
@@ -54,7 +52,6 @@ class SnowEnsAnalysis(Analysis):
         # task_config is everything that this task should need
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
 
-
     @logit(logger)
     def initialize(self) -> None:
         """Initialize method for snow ensemble analysis
@@ -69,7 +66,6 @@ class SnowEnsAnalysis(Analysis):
 
         super().initialize()
 
-
     @logit(logger)
     def execute(self) -> None:
         """Run a series of tasks to create snow ensemble analysis
@@ -81,7 +77,6 @@ class SnowEnsAnalysis(Analysis):
         self : Analysis
            Instance of the SnowEnsAnalysis object
         """
-
 
     @logit(logger)
     def finalize(self) -> None:
@@ -144,7 +139,6 @@ class SnowEnsAnalysis(Analysis):
             'copy': bkglist
         }
         return bkg_dict
-
 
     @staticmethod
     @logit(logger)
