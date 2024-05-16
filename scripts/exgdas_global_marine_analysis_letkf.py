@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the aerosol analysis task
+    # Instantiate the marine letkf task
     MarineLetkf = MarineLETKF(config)
     MarineLetkf.initialize()
     MarineLetkf.run()
