@@ -5,7 +5,7 @@ gfsa:
     required:
         # TODO explicitly name all logs to include
         {% for log in glob("logs/" ~ cycle_YMDH ~ "/gfs*.log") %}
-        {% if log != "gfsarch.log" %}
+        {% if not "gfsarch.log" in log %}
         - "{{ log }}"
         {% endif %}
         {% endfor %}
@@ -28,6 +28,7 @@ gfsa:
         - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
         - "{{ COM_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
         #    - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
+        {% endif %}
         {% if AERO_ANL_CDUMP == "gfs" or AERO_ANL_CDUMP == "both" %}
         - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
         {% endif %}
@@ -36,7 +37,6 @@ gfsa:
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
         {% else %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
-        {% endif %}
         {% endif %}
         {% endif %}  # Full cycle
         {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
