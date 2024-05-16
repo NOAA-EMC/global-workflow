@@ -15,7 +15,7 @@ enkf_restarta_grp:
         - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_pc"
         {% endif %}
 
-        {% if DOHYBVAR and DOIAU_ENKF %}
+        {% if DOIAU_ENKF %}
         {% set anl_delta = "-3H" | to_timedelta %}
         {% else %}
         {% set anl_delta = "0H" | to_timedelta %}
@@ -24,12 +24,25 @@ enkf_restarta_grp:
         {% for itile in range(1, 7) %}
         - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
         {% endfor %}
+        {% if do_calc_increment %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
+        {% else %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
+        {% endif %}
         {% endfor %}  # first_group_mem to last_group_mem
     optional:
-        {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
         {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
+        {% set COM_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_MEM_list[imem] %}
+        {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
         - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
-        {% endfor %}
         {% endif %}
+        {% for iaufhr in iaufhrs if iaufhr != 6 %}
+        {% set iaufhr = iaufhr %}
+        {% if do_calc_increment %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iaufhr }}.nc"
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
+        {% endif %}
+        {% endfor %}  # iaufhr in iaufhrs
+        {% endfor %}

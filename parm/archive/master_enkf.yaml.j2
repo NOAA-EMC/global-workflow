@@ -64,11 +64,28 @@ datasets:
 {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}
 {% endfilter %}
-{% if current_cycle > SDATE %}
+
+# Determine if restarts should be saved
+{% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}
+
+# Save the increments and restarts every ARCH_WARMICFREQ days
+# The ensemble increments (group a) should be saved on the ARCH_CYC
+{% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
+{% if ARCH_CYC == cycle_HH | int and current_cycle != SDATE %}
 {% filter indent(width=4) %}
 {% include "enkf_restarta_grp.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+{% endif %}
+
+# The ensemble ICs (group b) are restarts and always lag increments by assim_freq
+{% set ics_offset = (assim_freq | string + "H") | to_timedelta %}
+{% if (current_cycle | add_to_datetime(ics_offset) - SDATE).days % ARCH_WARMICFREQ == 0 %}
+{% if (ARCH_CYC - assim_freq) % 24 == cycle_HH | int and current_cycle != SDATE %}
+{% filter indent(width=4) %}
 {% include "enkf_restartb_grp.yaml.j2" %}
 {% endfilter %}
+{% endif %}
 {% endif %}
 
 {% endif %}  # ENSGRP != 0

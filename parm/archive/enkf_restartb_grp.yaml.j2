@@ -5,6 +5,23 @@ enkf_restartb_grp:
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
         {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
+
+        # Grab surface analysis data.
+        # If IAU is on, grab the beginning of the window, otherwise grab the center.
+        {% if DOIAU_ENKF %}
+        {% set offset_td = "-3H" | to_timedelta %}
+        {% else %}
+        {% set offset_td = "0H" | to_timedelta %}
+        {% endif %}
+        {% set offset_dt = current_cycle | add_to_datetime(offset_td) %}
+        {% set offset_YMD = offset_dt | to_YMD %}
+        {% set offset_HH = offset_dt | strftime("%H") %}
+        {% set prefix = offset_YMD + "." + offset_HH + "0000" %}
+        {% for itile in range(1, 7) %}
+        - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ prefix }}.sfcanl_data.tile{{ itile }}.nc"
+        {% endfor %}
+
+        # Now get the restart files.
         {% for r_time in range(restart_interval, fhmax + 1, restart_interval) %}
         {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
         {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
