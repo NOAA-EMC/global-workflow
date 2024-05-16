@@ -13,6 +13,15 @@
 {% set iaufhrs = [IAUFHRS] %}
 {% endif %}
 
+{% if IAUFHRS_ENKF is string %}
+{% set iaufhrs_enkf = [] %}
+{% for iaufhr in IAUFHRS_ENKF.split(",") %}
+{% do iaufhrs_enkf.append(iaufhr | int) %}
+{% endfor %}
+{% else %}
+{% set iaufhrs_enkf = [IAUFHRS_ENKF] %}
+{% endif %}
+
 datasets:
 {% if ENSGRP == 0 %}
 {% filter indent(width=4) %}
