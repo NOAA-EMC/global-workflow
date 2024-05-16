@@ -36,12 +36,10 @@ gdas:
         {% endif %}
         {% endif %}
         {% if DO_VRFY_OCEANDA %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalecen.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalvrfy.log"
         {% endif %}
-        {% if DOIAU and DOHYBVAR %}
+        {% if DOHYBVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma003.ensres.nc"
-        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma009.ensres.nc"
         {% endif %}
         {% if DO_JEDIATMVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
@@ -98,6 +96,10 @@ gdas:
         {% endfor %}
     optional:
         {% if current_cycle != SDATE and MODE == "cycled" %}
+        {% if DOHYBVAR %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma003.ensres.nc"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma009.ensres.nc"
+        {% endif %}
         {% if DO_VERFRAD %}
         - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
         - "{{ COM_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
