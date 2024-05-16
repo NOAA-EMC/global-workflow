@@ -10,10 +10,10 @@ PTMP: '/gpfs/f5/epic/scratch/${USER}'
 NOSCRUB: $HOMEDIR
 ACCOUNT: epic
 SCHEDULER: slurm
-QUEUE: batch
-QUEUE_SERVICE: batch
-PARTITION_BATCH: cron_c5
-PARTITION_SERVICE: service
+QUEUE: normal
+QUEUE_SERVICE: normal
+PARTITION_BATCH: batch
+PARTITION_SERVICE: batch
 CHGRP_RSTPROD: 'NO'
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'NO'
