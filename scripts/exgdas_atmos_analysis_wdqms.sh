@@ -47,7 +47,7 @@ cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd into '${DATA}', ABORT!"; exit 
 # These should always be available
 cp "${COMIN}/${CNVSTAT}" .
 export err=$?
-(( err != 0 )) && ( msg="Unable to copy '${CNVSTAT}' from '${COMIN}'"; err_exit "${msg}" )
+(( err != 0 )) && ( msg="FATAL ERROR: Unable to copy '${CNVSTAT}' from '${COMIN}', ABORT!"; err_exit "${msg}" )
 for diagfile in "${INPUT_LIST[@]}"; do
   tar -xvf "${CNVSTAT}" "${diagfile}.gz"
   export err=$?
