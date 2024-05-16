@@ -9,6 +9,15 @@ enkf:
         - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
         {% endif %}
         {% endfor %}
+        {% for mem in range(1, nmem_ens + 1) %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem{{ '%03d' % mem }}.log"
+        {% endfor %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}epos*.log"
+        # TODO archive ecen logs based on actual groups.  Will need to emulate numpy.array_split to do so.
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen*.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}esfc.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}echgres.log"
+
         {% if current_cycle != SDATE %}
         {% if not DO_JEDIATMENS %}
         {% set da_files = ["enkfstat",
@@ -18,6 +27,7 @@ enkf:
                            "radstat.ensmean"] %}
         {% else %}
         {% set da_files = ["atmens.yaml",
+                           "atminc.ensmean.nc",
                            "atmensstat"] %}
         {% endif %}
         {% for file in da_files %}
@@ -34,7 +44,7 @@ enkf:
         {% endif %}  # fhr == IAU_OFFSET
         {% endfor %}  # IAUFHRS
         {% endif %}   # DOIAU
-        {% if DOHYBVAR %}
+
         {% if DO_JEDIATMENS %}
         {% set steps = ["atmensanlinit", "atmensanlrun", "atmensanlfinal"] %}
         {% else %}
@@ -46,18 +56,11 @@ enkf:
         {% do steps.append("eomg_mem{{ '%03d' % mem }}") %}
         {% endfor %}
         {% endif %}
-        {% do steps.append("echgres") %}
-        {% do steps.append("esfc") %}
-        # TODO archive ecen logs based on actual groups.  Will need to emulate numpy.array_split to do so.
-        {% do steps.append("ecen*") %}
         {% endif %}
+
         {% for step in steps %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}{{ step }}.log"
         {% endfor %}
-        {% for mem in range(1, nmem_ens + 1) %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem{{ '%03d' % mem }}.log"
-        {% endfor %}
-        {% endif %}  # lobsdiag_forenkf
         {% endif %}  # not the first cycle
     optional:
         {% if current_cycle != SDATE and DOIAU %}
