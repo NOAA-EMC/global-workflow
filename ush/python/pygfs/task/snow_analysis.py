@@ -299,7 +299,7 @@ class SnowAnalysis(Analysis):
         keys = ['HOMEgfs', 'DATA', 'current_cycle',
                 'COM_ATMOS_RESTART_PREV', 'COM_SNOW_ANALYSIS', 'APREFIX',
                 'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'OCNRES', 'ntiles',
-                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml',
+                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml', 'DOIAU', 'SNOW_WINDOW_BEGIN',
                 'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -357,12 +357,18 @@ class SnowAnalysis(Analysis):
         FileHandler(yaml_copy).sync()
 
         logger.info("Copy analysis to COM")
-        template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+        if self.task_config.DOIAU:
+            bkgtime = self.task_config.SNOW_WINDOW_BEGIN
+        else:
+            bkgtime = self.task_config.current_cycle
+        template_bkg = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
+        template_anl = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
         anllist = []
         for itile in range(1, self.task_config.ntiles + 1):
-            filename = template.format(tilenum=itile)
-            src = os.path.join(self.task_config.DATA, 'anl', filename)
-            dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
+            filename_anl = template_anl.format(tilenum=itile)
+            filename_bkg = template_bkg.format(tilenum=itile)
+            src = os.path.join(self.task_config.DATA, 'anl', filename_anl)
+            dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename_bkg)
             anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
@@ -542,6 +548,8 @@ class SnowAnalysis(Analysis):
              APPLY_INCR_NML_TMPL
              APPLY_INCR_EXE
              APRUN_APPLY_INCR
+             DOIAU
+             SNOW_WINDOW_BEGIN
 
         Raises
         ------
@@ -553,12 +561,18 @@ class SnowAnalysis(Analysis):
 
         # need backgrounds to create analysis from increments after LETKF
         logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")
-        template = f'{to_fv3time(config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+        if config.DOIAU:
+            bkgtime = config.SNOW_WINDOW_BEGIN
+        else:
+            bkgtime = config.current_cycle
+        template_bkg = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
+        template_anl = f'{to_fv3time(config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
         anllist = []
         for itile in range(1, config.ntiles + 1):
-            filename = template.format(tilenum=itile)
-            src = os.path.join(config.COM_ATMOS_RESTART_PREV, filename)
-            dest = os.path.join(config.DATA, "anl", filename)
+            filename_bkg = template_bkg.format(tilenum=itile)
+            filename_anl = template_anl.format(tilenum=itile)
+            src = os.path.join(config.COM_ATMOS_RESTART_PREV, filename_bkg)
+            dest = os.path.join(config.DATA, "anl", filename_anl)
             anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 

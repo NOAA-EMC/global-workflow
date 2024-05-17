@@ -2,7 +2,7 @@
 
 import os
 from logging import getLogger
-from typing import Dict, List
+from typing import Dict, List, Any
 from pprint import pformat
 import numpy as np
 from netCDF4 import Dataset
@@ -32,7 +32,7 @@ class SnowEnsAnalysis(Analysis):
 
         _res = int(self.config['CASE'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
-        _letkfoi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.letkfoi.yaml")
+        _recenter_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.land_recenter.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -43,9 +43,11 @@ class SnowEnsAnalysis(Analysis):
                 'npz': self.config.LEVS - 1,
                 'SNOW_WINDOW_BEGIN': _window_begin,
                 'SNOW_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
+                'ATM_WINDOW_BEGIN': _window_begin,
+                'ATM_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
                 'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
-                'jedi_yaml': _letkfoi_yaml
+                'jedi_yaml': _recenter_yaml,
             }
         )
 
@@ -65,6 +67,9 @@ class SnowEnsAnalysis(Analysis):
         """
 
         super().initialize()
+
+        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
+        logger.info(f"Wrote recentering YAML to: {self.task_config.jedi_yaml}")
 
     @logit(logger)
     def execute(self) -> None:
@@ -206,3 +211,17 @@ class SnowEnsAnalysis(Analysis):
             raise OSError(f"Failed to execute {exe}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exe}")
+
+    def get_obs_dict(self) -> Dict[str, Any]:
+        obs_dict = {
+            'mkdir': [],
+            'copy': [],
+        }
+        return obs_dict
+    
+    def get_bias_dict(self) -> Dict[str, Any]:
+        bias_dict = {
+            'mkdir': [],
+            'copy': [],
+        }
+        return bias_dict
