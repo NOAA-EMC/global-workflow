@@ -276,12 +276,12 @@ export USE_ATM_PERTURB_FILES=@USE_ATM_PERTURB_FILES@
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
 if [[ "${EXP_WARM_START}" = ".false." ]]; then
-  export IAU_FHROT=0
+  export IAU_FHROT=${OFFSET_START_HOUR}
 else
   if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
   else
-    export IAU_FHROT=0
+    export IAU_FHROT=${OFFSET_START_HOUR}
   fi
 fi
 

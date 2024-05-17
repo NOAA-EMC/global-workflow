@@ -8,13 +8,8 @@ GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
-END_OF_IAU_START=${END_OF_IAU_START:-"false"}
-if [[ "${END_OF_IAU_START}" == "true" ]]; then
-    RDATE=$(date --utc -d "${PDY} ${cyc} + 3 hours" +%Y%m%d%H)
-    DTG_PREFIX="${RDATE:0:8}.${RDATE:8:2}0000"
-else
-    DTG_PREFIX="${PDY}.${cyc}0000"
-fi
+RDATE=$(date --utc -d "${PDY} ${cyc} + ${OFFSET_START_HOUR} hours" +%Y%m%d%H)
+DTG_PREFIX="${RDATE:0:8}.${RDATE:8:2}0000"
 
 MEMDIR_ARRAY=()
 if [[ "${RUN:-}" = "gefs" ]]; then
@@ -42,7 +37,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
     [[ ! -d "${COM_ATMOS_RESTART_PREV}" ]] && mkdir -p "${COM_ATMOS_RESTART_PREV}"
     prev_atmos_copy_list=(fv_core.res.nc)
-    if [[ "${END_OF_IAU_START}" == "false" ]]; then
+    if (( ${OFFSET_START_HOUR} == 0 )); then
       prev_atmos_copy_list+=(coupler.res)
     fi
     for ftype in "${prev_atmos_copy_list[@]}"; do
