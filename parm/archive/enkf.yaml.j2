@@ -13,12 +13,13 @@ enkf:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem{{ '%03d' % mem }}.log"
         {% endfor %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}epos*.log"
-        # TODO archive ecen logs based on actual groups.  Will need to emulate numpy.array_split to do so.
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen*.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}esfc.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}echgres.log"
 
         {% if current_cycle != SDATE %}
+        # TODO archive ecen logs based on actual groups.  Will need to emulate numpy.array_split to do so.
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen*.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}esfc.log"
+
         {% if not DO_JEDIATMENS %}
         {% set da_files = ["enkfstat",
                            "gsistat.ensmean",
