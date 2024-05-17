@@ -34,7 +34,7 @@ FV3_postdet() {
     # Create an array of FV3 restart files
     local fv3_restart_files tile_files fv3_restart_file restart_file
     fv3_restart_files=(fv_core.res.nc) 
-    if [[ "${END_OF_IAU_START}" != "true" ]]; then
+    if (( ${OFFSET_START_HOUR} != 0 )); then
         fv3_restart_files+=(coupler.res) 
     fi
     tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
@@ -104,7 +104,7 @@ EOF
 
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
-      if [[ "${END_OF_IAU_START}" == "true" ]]; then
+      if (( ${OFFSET_START_HOUR} != 0 )); then
         inc_files=()
       elif [[ "${DOIAU}" == "YES" ]]; then
         # create an array of inc_files for each IAU hour

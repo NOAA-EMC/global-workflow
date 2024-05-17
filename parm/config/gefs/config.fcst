@@ -249,7 +249,7 @@ else
   export io_layout="1,1"
 fi
 
-if [[ ${END_OF_IAU_START} == "true" ]]; then
+if (( ${OFFSET_START_HOUR} != 0 )); then
     export reforecast="YES"
 fi
 # Remember config.efcs will over-ride these values for ensemble forecasts

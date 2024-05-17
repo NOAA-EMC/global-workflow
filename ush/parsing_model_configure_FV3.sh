@@ -22,11 +22,7 @@ local SMONTH=${model_start_date:4:2}
 local SDAY=${model_start_date:6:2}
 local SHOUR=${model_start_date:8:2}
 # FHMAX
-if [[ "${END_OF_IAU_START:-"false"}" == "true" ]]; then
-    local FHROT=3
-else
-    local FHROT=${IAU_FHROT:-0}
-fi
+local FHROT=${IAU_FHROT:-${OFFSET_START_HOUR}}
 local DT_ATMOS=${DELTIM}
 local RESTART_INTERVAL="${FV3_RESTART_FH[*]}"
 # QUILTING

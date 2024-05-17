@@ -13,13 +13,10 @@ class GEFSTasks(Tasks):
         cpl_ic = self._configs['stage_ic']
         deps = []
         dtg_prefix = "@Y@m@d.@H0000"
-        if self._configs['base']['END_OF_IAU_START']:
-            offset = "+03:00:00"
-        else:
-            offset = None
+        offset = str(self._configs['base']['OFFSET_START_HOUR']).zfill(2) + ":00:00"
         # Atm ICs
         if self.app_config.do_atm:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/atmos"
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/atmos/"
             if self._base['EXP_WARM_START']:
                 for file in ['fv_core.res.nc'] + \
                             [f'{datatype}.tile{tile}.nc'
@@ -28,7 +25,7 @@ class GEFSTasks(Tasks):
                     data = [prefix, f"{dtg_prefix}.{file}"]
                     dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                     deps.append(rocoto.add_dependency(dep_dict))
-                prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/med"
+                prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/med/"
                 data = [prefix, f"{dtg_prefix}.ufs.cpld.cpl.r.nc"]
                 dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                 deps.append(rocoto.add_dependency(dep_dict))
@@ -44,30 +41,30 @@ class GEFSTasks(Tasks):
         # Ocean ICs
         if self.app_config.do_ocean:
             ocn_res = f"{self._base.get('OCNRES', '025'):03d}"
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/mem000/ocean"
-            data = f"{prefix}/{dtg_prefix}.MOM.res.nc"
-            dep_dict = {'type': 'data', 'data': data}
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/mem000/ocean/"
+            data = [prefix, f"{dtg_prefix}.MOM.res.nc"]
+            dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
             deps.append(rocoto.add_dependency(dep_dict))
             if ocn_res in ['025']:
                 # 0.25 degree ocean model also has these additional restarts
                 for res in [f'res_{res_index}' for res_index in range(1, 4)]:
-                    data = f"{prefix}/{dtg_prefix}.MOM.{res}.nc"
-                    dep_dict = {'type': 'data', 'data': data}
+                    data = [prefix, f"{dtg_prefix}.MOM.{res}.nc"]
+                    dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                     deps.append(rocoto.add_dependency(dep_dict))
 
         # Ice ICs
         if self.app_config.do_ice:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ICEIC']}/@Y@m@d@H/mem000/ice"
-            data = f"{prefix}/{dtg_prefix}.cice_model.res.nc"
-            dep_dict = {'type': 'data', 'data': data}
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ICEIC']}/@Y@m@d@H/mem000/ice/"
+            data = [prefix, f"{dtg_prefix}.cice_model.res.nc"]
+            dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
             deps.append(rocoto.add_dependency(dep_dict))
 
         # Wave ICs
         if self.app_config.do_wave:
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/mem000/wave"
             for wave_grid in self._configs['waveinit']['waveGRD'].split():
-                data = f"{prefix}/{dtg_prefix}.restart.{wave_grid}"
-                dep_dict = {'type': 'data', 'data': data}
+                data = [prefix, f"{dtg_prefix}.restart.{wave_grid}"]
+                dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                 deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)

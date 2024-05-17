@@ -31,11 +31,7 @@ source "${USHgfs}/preamble.sh"
   workdir=$4
 
   YMDHE=$($NDATE $FHMAX_WAV_PNT $CDATE)
-  if [[ "${END_OF_IAU_START}" == "true" ]]; then
-    model_start_date=$(${NDATE} 3 "${PDY}${cyc}")
-  else
-    model_start_date="${PDY}${cyc}"
-  fi
+  model_start_date=$(${NDATE} ${OFFSET_START_HOUR} "${PDY}${cyc}")
 
   cd $workdir
 

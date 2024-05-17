@@ -269,7 +269,7 @@ export MEMDIR="mem${ENSMEM}"
 
 # initialize ocean ensemble members with perturbations
 #   if true, only occurs for members greater than zero
-export END_OF_IAU_START=@END_OF_IAU_START@
+export OFFSET_START_HOUR=@OFFSET_START_HOUR@
 export USE_OCN_PERTURB_FILES=@USE_OCN_PERTURB_FILES@
 export USE_ATM_PERTURB_FILES=@USE_ATM_PERTURB_FILES@
 

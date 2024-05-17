@@ -54,9 +54,10 @@ common_predet(){
   current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
   current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
   next_cycle_begin=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
+  offset_start_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${OFFSET_START_HOUR} hours" +%Y%m%d%H)
   #Define model start date for current_cycle and next_cycle as the time the forecast will start
-  if [[ "${END_OF_IAU_START}" == "true" ]]; then
-    model_start_date_current_cycle="${current_cycle_end}"
+  if (( ${OFFSET_START_HOUR} != 0 )); then
+    model_start_date_current_cycle="${offset_start_begin}"
   elif [[ "${DOIAU:-}" == "YES" ]]; then
     model_start_date_current_cycle="${current_cycle_begin}"
     model_start_date_next_cycle="${next_cycle_begin}"

@@ -9,7 +9,7 @@ base:
   DO_AWIPS: "NO"
   KEEPDATA: "NO" 
   FHMAX_GFS: 120
-  END_OF_IAU_START: "false"
+  OFFSET_START_HOUR: 0
   USE_ATM_PERTURB_FILES: "false"
   USE_OCN_PERTURB_FILES: "false"
 
