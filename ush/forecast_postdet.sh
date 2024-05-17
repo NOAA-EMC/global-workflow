@@ -543,21 +543,44 @@ CICE_postdet() {
   # Link CICE forecast output files from DATA/CICE_OUTPUT to COM
   local source_file dest_file
   for fhr in ${CICE_OUTPUT_FH}; do
-    fhr3=$(printf %03i "${fhr}")
 
     if [[ -z ${last_fhr:-} ]]; then
       last_fhr=${fhr}
       continue
     fi
 
-    (( interval = fhr - last_fhr ))
+    if [[ ${cyc} != "00" ]]  && (( ${FHOUT_ICE} % 24 == 0 )); then
+      if [[ ${fhr} -le 24 ]];then
+        (( fhr = 24 - cyc ))
+      else
+        (( fhr = last_fhr + 24 - cyc ))
+      fi
+    fi
+
+    fhr3=$(printf %03i "${fhr}")
+
+    if [[ "${cyc}" != "00" ]] && (( ${FHOUT_ICE} % 24 == 0 )); then
+      if [[  ${fhr} -le 24 ]]; then
+        interval=${cyc}
+        interval_source=24
+      else
+        interval=24
+        interval_source=${interval}
+      fi
+    else
+        (( interval = fhr - last_fhr ))
+    fi
 
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
     seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
     vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
     if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-      source_file="iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
+      if [[ "${cyc}" != "00" ]] && (( ${FHOUT_ICE} % 24 == 0 )); then
+        source_file="iceh_$(printf "%0.2d" "${interval_source}")h.${vdatestr}.nc"
+      else
+        source_file="iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
+      fi
       dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
     elif [[ "${RUN}" =~ "gdas" ]]; then
       source_file="iceh_inst.${vdatestr}.nc"
@@ -565,7 +588,12 @@ CICE_postdet() {
     fi
     ${NLN} "${COM_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
 
-    last_fhr=${fhr}
+
+     if [[ ${cyc} != "00" ]] && (( ${FHOUT_ICE} % 24 == 0 )); then
+       (( last_fhr = fhr + cyc ))
+     else
+       last_fhr=${fhr}
+     fi
   done
 
 }
