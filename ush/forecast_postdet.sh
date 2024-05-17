@@ -549,7 +549,7 @@ CICE_postdet() {
       continue
     fi
 
-    if [[ ${cyc} != "00" ]]  && (( ${FHOUT_ICE} % 24 == 0 )); then
+    if [[ ${cyc} != "00" ]]  && (( FHOUT_ICE % 24 == 0 )); then
       if [[ ${fhr} -le 24 ]];then
         (( fhr = 24 - cyc ))
       else
@@ -559,7 +559,7 @@ CICE_postdet() {
 
     fhr3=$(printf %03i "${fhr}")
 
-    if [[ "${cyc}" != "00" ]] && (( ${FHOUT_ICE} % 24 == 0 )); then
+    if [[ "${cyc}" != "00" ]] && (( FHOUT_ICE % 24 == 0 )); then
       if [[  ${fhr} -le 24 ]]; then
         interval=${cyc}
         interval_source=24
@@ -576,7 +576,7 @@ CICE_postdet() {
     vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
     if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-      if [[ "${cyc}" != "00" ]] && (( ${FHOUT_ICE} % 24 == 0 )); then
+      if [[ "${cyc}" != "00" ]] && (( FHOUT_ICE % 24 == 0 )); then
         source_file="iceh_$(printf "%0.2d" "${interval_source}")h.${vdatestr}.nc"
       else
         source_file="iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
@@ -589,7 +589,7 @@ CICE_postdet() {
     ${NLN} "${COM_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
 
 
-     if [[ ${cyc} != "00" ]] && (( ${FHOUT_ICE} % 24 == 0 )); then
+     if [[ ${cyc} != "00" ]] && (( FHOUT_ICE % 24 == 0 )); then
        (( last_fhr = fhr + cyc ))
      else
        last_fhr=${fhr}
