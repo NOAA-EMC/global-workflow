@@ -122,7 +122,8 @@ function create_experiment () {
   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
-  # system=$(grep "system:" "${yaml_config}" | cut -d":" -f2 | tr -d " ") || true
+  # Remove RUNDIRS dir incase this is a retry
+  rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
   "${HOMEgfs}/${system}/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
 
