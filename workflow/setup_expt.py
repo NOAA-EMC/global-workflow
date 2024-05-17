@@ -112,6 +112,7 @@ def fill_ROTDIR_cycled(host, inputs):
         src_ocn_rst_dir = os.path.join('ocean', 'RESTART')
         src_ocn_anl_dir = 'ocean'
         src_ice_rst_dir = os.path.join('ice', 'RESTART')
+        src_ice_anl_dir = dst_ice_anl_dir        
         src_atm_anl_dir = 'atmos'
     else:
         src_atm_dir = dst_atm_dir
