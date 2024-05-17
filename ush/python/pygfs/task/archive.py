@@ -172,8 +172,8 @@ class Archive(Task):
         else:
             self.cvf(atardir_set.target, atardir_set.fileset)
 
-    @logit(logger)
     @staticmethod
+    @logit(logger)
     def _create_fileset(atardir_set: Dict[str, Any]) -> List:
         """
         Collect the list of all available files from the parsed yaml dict.
@@ -212,8 +212,8 @@ class Archive(Task):
 
         return fileset
 
-    @logit(logger)
     @staticmethod
+    @logit(logger)
     def _has_rstprod(fileset: List) -> bool:
         """
         Checks if any files in the input fileset belongs to rstprod.
@@ -261,8 +261,8 @@ class Archive(Task):
                 raise RuntimeError(f"FATAL ERROR: Failed to protect {atardir_set.target}!\n"
                                    f"Please verify that it has been deleted!!")
 
-    @logit(logger)
     @staticmethod
+    @logit(logger)
     def _create_tarball(target: str, fileset: List) -> None:
         """Method to create a local tarball.
 
@@ -312,8 +312,8 @@ class Archive(Task):
 
         return rel_path_dict
 
-    @logit(logger)
     @staticmethod
+    @logit(logger)
     def _rename_cyclone_expt(arch_dict) -> None:
 
         # Rename the experiment in the tracker files from "AVNO" to the
