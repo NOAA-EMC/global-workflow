@@ -1,0 +1,39 @@
+#! /usr/bin/env bash                                                                                                                                                                                                                     
+
+########## config.extractvars ##########
+# Extractvars specific
+
+echo "BEGIN: config.extractvars"
+
+. "${EXPDIR}/config.resources" extractvars
+
+export RFHOME=/lfs/h2/emc/ens/noscrub/eric.sinsky/GEFSv13_RR
+export REFCST=${RFHOME}/REFCST
+
+export mpmdd="NO"
+export atmosextract=1
+export ocniceextract=1
+export wavextract=1
+
+export compress_ocn=0
+export compress_ice=0                                                                                                                                                                      
+export interp_ocn=0
+export interp_wav=1
+
+export EXTRCTVARA=${USHgfs}/gefs_atmos_extractvars.sh
+export EXTRCTVARO=${USHgfs}/gefs_ocn_extractvars.sh
+export EXTRCTVARW=${USHgfs}/gefs_wav_extractvars.sh
+
+export varlist_2d=${PARMgfs}/product/gefs_shortparmlist_2d.parm
+export varlist_3d=${PARMgfs}/product/gefs_shortparmlist_3d_h.parm
+export varlist_3d_d=${PARMgfs}/product/gefs_shortparmlist_3d_d.parm
+
+export varlist_wav=${PARMgfs}/product/gefs_wav_shortparmlist.parm
+
+export fhmax=222
+export FHMAXHF=240
+export FHOUTHF=3
+export FHOUTLF=6
+
+
+echo "END: config.extractvars"

@@ -268,6 +268,42 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def extractvars(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'ocean_prod_#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        extractvars_envars = self.envars.copy()
+        extractvars_dict = {'ENSMEM': '#member#',
+                          'MEMDIR': 'mem#member#',
+                          }
+        for key, value in extractvars_dict.items():
+            extractvars_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('extractvars')
+        task_name = f'extractvars_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': extractvars_envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/extractvars.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': 'extractvars',
+                                'task_dict': task_dict,
+                                'var_dict': member_var_dict
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
     def atmos_ensstat(self):
 
         resources = self.get_resource('atmos_ensstat')
