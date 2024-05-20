@@ -82,6 +82,8 @@ class MarineLETKF(Analysis):
         self.config.mom_input_nml_tmpl = path.join(DATA, 'mom_input.nml.tmpl')
         self.config.mom_input_nml = path.join(DATA, 'mom_input.nml')
 
+        self.config.data_output = 'data_output'
+        self.config.ensdir = 'ens'
 
 
 
@@ -101,6 +103,9 @@ class MarineLETKF(Analysis):
 
 
         FileHandler({'mkdir': [self.config.bkg_dir]}).sync()
+        FileHandler({'mkdir': [self.config.data_output]}).sync()
+        FileHandler({'mkdir': [self.config.ens_dir]}).sync()
+
         bkg_utils.gen_bkg_list(bkg_path=self.config.COM_OCEAN_HISTORY_PREV,
                                out_path=self.config.bkg_dir,
                                window_begin=self.config.window_begin,
