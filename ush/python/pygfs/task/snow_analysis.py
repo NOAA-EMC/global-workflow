@@ -357,19 +357,20 @@ class SnowAnalysis(Analysis):
         FileHandler(yaml_copy).sync()
 
         logger.info("Copy analysis to COM")
+        bkgtimes = []
         if self.task_config.DOIAU:
-            bkgtime = self.task_config.SNOW_WINDOW_BEGIN
-        else:
-            bkgtime = self.task_config.current_cycle
-        template_bkg = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
-        template_anl = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+            # need both beginning and middle of window
+            bkgtimes.append(self.task_config.SNOW_WINDOW_BEGIN)        
+        bkgtimes.append(self.task_config.current_cycle)
         anllist = []
-        for itile in range(1, self.task_config.ntiles + 1):
-            filename_anl = template_anl.format(tilenum=itile)
-            filename_bkg = template_bkg.format(tilenum=itile)
-            src = os.path.join(self.task_config.DATA, 'anl', filename_anl)
-            dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename_bkg)
-            anllist.append([src, dest])
+        for bkgtime in bkgtimes:
+            template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
+            for itile in range(1, self.task_config.ntiles + 1):
+                filename = template.format(tilenum=itile)
+                filename = template.format(tilenum=itile)
+                src = os.path.join(self.task_config.DATA, 'anl', filename)
+                dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
+                anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
         logger.info('Copy increments to COM')
@@ -561,44 +562,67 @@ class SnowAnalysis(Analysis):
 
         # need backgrounds to create analysis from increments after LETKF
         logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")
+        bkgtimes = []
         if config.DOIAU:
-            bkgtime = config.SNOW_WINDOW_BEGIN
-        else:
-            bkgtime = config.current_cycle
-        template_bkg = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
-        template_anl = f'{to_fv3time(config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+            # want analysis at beginning and middle of window
+            bkgtimes.append(config.SNOW_WINDOW_BEGIN)
+        bkgtimes.append(config.current_cycle)
         anllist = []
-        for itile in range(1, config.ntiles + 1):
-            filename_bkg = template_bkg.format(tilenum=itile)
-            filename_anl = template_anl.format(tilenum=itile)
-            src = os.path.join(config.COM_ATMOS_RESTART_PREV, filename_bkg)
-            dest = os.path.join(config.DATA, "anl", filename_anl)
-            anllist.append([src, dest])
+        for bkgtime in bkgtimes:
+            template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
+            for itile in range(1, config.ntiles + 1):
+                filename = template.format(tilenum=itile)
+                src = os.path.join(config.COM_ATMOS_RESTART_PREV, filename)
+                dest = os.path.join(config.DATA, "anl", filename)
+                anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
-        logger.info("Create namelist for APPLY_INCR_EXE")
-        nml_template = config.APPLY_INCR_NML_TMPL
-        nml_data = Jinja(nml_template, config).render
-        logger.debug(f"apply_incr_nml:\n{nml_data}")
+        if config.DOIAU:
+            logger.info("Copying increments to beginning of window")
+            template_in = f'snowinc.{to_fv3time(config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+            template_out = f'snowinc.{to_fv3time(config.SNOW_WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
+            inclist = []
+            for itile in range(1, config.ntiles + 1):
+                filename_in = template_in.format(tilenum=itile)
+                filename_out = template_out.format(tilenum=itile)
+                src = os.path.join(config.DATA, 'anl', filename_in)
+                dest = os.path.join(config.DATA, 'anl', filename_out)
+                inclist.append([src, dest])
+            FileHandler({'copy': inclist}).sync()
 
-        nml_file = os.path.join(config.DATA, "apply_incr_nml")
-        with open(nml_file, "w") as fho:
-            fho.write(nml_data)
+        # loop over times to apply increments
+        for bkgtime in bkgtimes:
+            logger.info("Processing analysis valid: {bkgtime}")
+            logger.info("Create namelist for APPLY_INCR_EXE")
+            nml_template = config.APPLY_INCR_NML_TMPL
+            nml_config = {
+                'current_cycle': bkgtime,
+                'CASE': config.CASE,
+                'DATA': config.DATA,
+                'HOMEgfs': config.HOMEgfs,
+                'OCNRES': config.OCNRES,
+            }
+            nml_data = Jinja(nml_template, nml_config).render
+            logger.debug(f"apply_incr_nml:\n{nml_data}")
 
-        logger.info("Link APPLY_INCR_EXE into DATA/")
-        exe_src = config.APPLY_INCR_EXE
-        exe_dest = os.path.join(config.DATA, os.path.basename(exe_src))
-        if os.path.exists(exe_dest):
-            rm_p(exe_dest)
-        os.symlink(exe_src, exe_dest)
+            nml_file = os.path.join(config.DATA, "apply_incr_nml")
+            with open(nml_file, "w") as fho:
+                fho.write(nml_data)
 
-        # execute APPLY_INCR_EXE to create analysis files
-        exe = Executable(config.APRUN_APPLY_INCR)
-        exe.add_default_arg(os.path.join(config.DATA, os.path.basename(exe_src)))
-        logger.info(f"Executing {exe}")
-        try:
-            exe()
-        except OSError:
-            raise OSError(f"Failed to execute {exe}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exe}")
+            logger.info("Link APPLY_INCR_EXE into DATA/")
+            exe_src = config.APPLY_INCR_EXE
+            exe_dest = os.path.join(config.DATA, os.path.basename(exe_src))
+            if os.path.exists(exe_dest):
+                rm_p(exe_dest)
+            os.symlink(exe_src, exe_dest)
+
+            # execute APPLY_INCR_EXE to create analysis files
+            exe = Executable(config.APRUN_APPLY_INCR)
+            exe.add_default_arg(os.path.join(config.DATA, os.path.basename(exe_src)))
+            logger.info(f"Executing {exe}")
+            try:
+                exe()
+            except OSError:
+                raise OSError(f"Failed to execute {exe}")
+            except Exception:
+                raise WorkflowException(f"An error occured during execution of {exe}")
