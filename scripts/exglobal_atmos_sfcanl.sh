@@ -168,14 +168,13 @@ if [[ ${DOIAU} = "YES" ]]; then
     # For now assume/hold dtfanl.nc valid at beginning of window
     for n in $(seq 1 ${ntiles}); do
         if [[ ${DO_JEDISNOWDA:-"NO"} = "YES" ]]; then
-            ${NCP} "${COM_SNOW_ANALYSIS}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
-                   "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
-            ${NLN} "${COM_SNOW_ANALYSIS}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
+            src_dir="${COM_SNOW_ANALYSIS}"
         else
-            ${NCP} "${COM_ATMOS_RESTART_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
-                   "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
-            ${NLN} "${COM_ATMOS_RESTART_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
+            src_dir="${COM_ATMOS_RESTART_PREV}"
         fi
+        ${NCP} "${src_dir}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
+               "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+        ${NLN} "${src_dir}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
         ${NLN} "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
         ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"                         "${DATA}/fngrid.00${n}"
         ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                     "${DATA}/fnorog.00${n}"
@@ -191,15 +190,9 @@ fi
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do
-    if [[ ${DO_JEDISNOWDA:-"NO"} = "YES" ]]; then
-        ${NCP} "${COM_SNOW_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
-               "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
-        ${NLN} "${COM_SNOW_ANALYSIS}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
-    else
-        ${NCP} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
-               "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
-        ${NLN} "${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
-    fi
+    ${NCP} "${src_dir}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+           "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+    ${NLN} "${src_dir}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
     ${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"   "${DATA}/fnbgso.00${n}"
     ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"                       "${DATA}/fngrid.00${n}"
     ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc"                   "${DATA}/fnorog.00${n}"
