@@ -58,20 +58,27 @@ class OceanIceProducts(Task):
 
         valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
 
-        # TODO: This is a bit of a hack, but it works for now
-        # FIXME: find a better way to provide the averaging period
-        if self.config.COMPONENT == 'ocean':
-            avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_OCN_GFS:03d}-{self.config.FORECAST_HOUR:03d}"
+        if self.config.COMPONENT == 'ice' and self.runtime_config.current_cycle.strftime("%H") != '00' and self.config.FHOUT_ICE_GFS == 24:
+            forecast_hour = self.config.FORECAST_HOUR-int(self.runtime_config.current_cycle.strftime("%H"))
+            if forecast_hour <= 24:
+                interval = 24-int(self.runtime_config.current_cycle.strftime("%H"))
+            else:
+                interval = 24
+        else:
+            forecast_hour = self.config.FORECAST_HOUR
+            interval = self.config.FHOUT_OCN_GFS
 
-        if self.config.COMPONENT == 'ice':
-            avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_ICE_GFS:03d}-{self.config.FORECAST_HOUR:03d}"
+        # TODO: This is a bit of a hack, but it works for now
+        # FIXME: find a better way to provide the averaging period   
+        avg_period = f"{forecast_hour-interval:03d}-{forecast_hour:03d}"
 
         localdict = AttrDict(
             {'component': self.config.COMPONENT,
-             'forecast_hour': self.config.FORECAST_HOUR,
+             'forecast_hour': forecast_hour,
              'valid_datetime': valid_datetime,
              'avg_period': avg_period,
              'model_grid': model_grid,
+             'interval': interval,
              'product_grids': self.VALID_PRODUCT_GRIDS[model_grid]}
         )
         self.task_config = AttrDict(**self.config, **self.runtime_config, **localdict)
