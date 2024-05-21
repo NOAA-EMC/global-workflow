@@ -220,18 +220,20 @@ for pr in ${pr_list}; do
       set +e
       export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
       rm -f "${LOGFILE_PATH}"
+      yaml_case_file="${HOMEgfs}/ci/cases/pr/${case}.yaml"
+      skip_hosts=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" --yaml "${yaml_case_file}" --key skip_ci_on_hosts --string)
+      if [[ "${skip_hosts}" == *"${MACHINE_ID}"* ]]; then
+        {
+          echo "Case setup: Skipped for experiment ${pslot}" || true
+        } >> "${output_ci}"
+        continue
+      fi
       "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml"  > "${LOGFILE_PATH}" 2>&1
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
-        last_line=$(tail -1 "${LOGFILE_PATH}")
-        if [[ "${last_line}" == *"Skipping creation"* ]]; then
-          action="Skipped"
-        else
-          action="Completed"
-        fi
         {
-          echo "Case setup: ${action} for experiment ${pslot}" || true
+          echo "Case setup: Completed for experiment ${pslot}" || true
         } >> "${output_ci}"
       else
         {
