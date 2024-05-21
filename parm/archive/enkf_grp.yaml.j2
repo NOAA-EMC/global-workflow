@@ -4,18 +4,20 @@ enkf_grp:
     required:
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
+        # Construct member COM directories
         {% set COM_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_MEM_list[imem] %}
         {% set COM_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_MEM_list[imem] %}
         {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
 
-        {% for iaufhr in iaufhrs_enkf %}
-        - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % iaufhr }}.nc"
+        # Forecast data
+        {% for fhr in range(fhmin, fhmax+1, fhout %}
+        - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
         {% endfor %}
 
-        {% if 6 in iaufhrs_enkf %}
+        # Only store the 6-hour surface forecast
         - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf006.nc"
-        {% endif %}
 
+        # Store the individual member analysis data
         {% if not lobsdiag_forenkf %}
         - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% endif %}

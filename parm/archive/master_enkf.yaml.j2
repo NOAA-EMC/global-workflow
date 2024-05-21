@@ -4,15 +4,19 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
 
+# Split IAUFHRS into a list; typically either "3,6,9" or 6 (integer)
 {% if IAUFHRS is string %}
+# "3,6,9"
 {% set iaufhrs = [] %}
 {% for iaufhr in IAUFHRS.split(",") %}
 {% do iaufhrs.append(iaufhr | int) %}
 {% endfor %}
 {% else %}
+# 6 (integer)
 {% set iaufhrs = [IAUFHRS] %}
 {% endif %}
 
+# Repeat for IAUFHRS_ENKF
 {% if IAUFHRS_ENKF is string %}
 {% set iaufhrs_enkf = [] %}
 {% for iaufhr in IAUFHRS_ENKF.split(",") %}
@@ -22,22 +26,29 @@
 {% set iaufhrs_enkf = [IAUFHRS_ENKF] %}
 {% endif %}
 
+# Determine which data to archive
 datasets:
 {% if ENSGRP == 0 %}
 {% filter indent(width=4) %}
+# Archive the ensemble means and spreads
 {% include "enkf.yaml.j2" %}
 {% endfilter %}
 {% else %}
+
+# Archive individual member data
+# First, construct individual member directories from templates
+#    COM_ATMOS_ANALYSIS_MEM, COM_ATMOS_HISTORY_MEM, and COM_ATMOS_RESTART_MEM
 
 # Declare to-be-filled lists of member COM directories
 {% set COM_ATMOS_ANALYSIS_MEM_list = [] %}
 {% set COM_ATMOS_RESTART_MEM_list = [] %}
 {% set COM_ATMOS_HISTORY_MEM_list = [] %}
 
+# Determine which ensemble members belong to this group
 {% set first_group_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
 {% set last_group_mem = [ ENSGRP * NMEM_EARCGRP, nmem_ens ] | min %}
 
-# Construct member COM directories
+# Construct member COM directories for the group
 {% for mem in range(first_group_mem, last_group_mem + 1) %}
 
 # Declare a dict of search and replace terms to run on each template
@@ -63,13 +74,14 @@ datasets:
 {% set com_ns.COM_ATMOS_RESTART_MEM = com_ns.COM_ATMOS_RESTART_MEM.replace(search_term, replace_term) %}
 {% endfor %}
 
+# Append the member COM directories
 {% do COM_ATMOS_ANALYSIS_MEM_list.append(com_ns.COM_ATMOS_ANALYSIS_MEM)%}
 {% do COM_ATMOS_HISTORY_MEM_list.append(com_ns.COM_ATMOS_HISTORY_MEM)%}
 {% do COM_ATMOS_RESTART_MEM_list.append(com_ns.COM_ATMOS_RESTART_MEM)%}
 
 {% endfor %}
 
-# Determine which members to archive
+# Archive member data
 {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}
 {% endfilter %}
@@ -97,4 +109,5 @@ datasets:
 {% endif %}
 {% endif %}
 
-{% endif %}  # ENSGRP != 0
+# End of individual member archiving
+{% endif %}
