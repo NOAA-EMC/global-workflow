@@ -1,12 +1,5 @@
 #! /usr/bin/env bash
 
-# shellcheck disable=SC2155,SC2312
-HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
-declare -rx HOMEgfs
-
-source "${HOMEgfs}/ush/load_fv3gfs_modules.sh" 1>/dev/null 2>&1
-source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products" 1>/dev/null 2>&1
-
 yyyy=${1?}
 mm=${2?}
 dd=${3?}
@@ -14,6 +7,7 @@ cyc=${4?}
 fhr=${5?}
 ROTDIR=${6?}
 member=${7?}
+FHOUT_ICE_GFS=${8?}
 
 fhri=$((10#${fhr}))
 
