@@ -15,7 +15,7 @@ fhr=${5?}
 ROTDIR=${6?}
 member=${7?}
 
-fhri=$(echo "${fhr}" | sed 's/^0*//')
+fhri=$((10#${fhr}))
 
 if [[ "${cyc}" != "00" ]] && (( FHOUT_ICE_GFS % 24 == 0 ));then
   (( fhri = fhri - cyc ))
