@@ -3,13 +3,26 @@
 import sys
 import os
 import copy
+from time import sleep
 
-from wxflow import which, Logger, CommandNotFoundError
+from wxflow import which, Logger, CommandNotFoundError, ProcessError
 from argparse import ArgumentParser, FileType
 
 from collections import Counter
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
+
+
+def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception_class=Exception):
+    attempt = 0
+    last_exception = None
+    while attempt < max_attempts:
+        try: return expression()
+        except exception_class as last_exception:
+            attempt += 1
+            sleep(sleep_duration)
+    else:
+        raise last_exception
 
 
 def input_args():
@@ -58,7 +71,7 @@ def rocotostat_summary(rocotostat):
     """
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--summary')
-    rocotostat_output = rocotostat(output=str)
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 90, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:2] for line in rocotostat_output]
 
@@ -87,7 +100,7 @@ def rocoto_statcount(rocotostat):
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--all')
 
-    rocotostat_output = rocotostat(output=str)
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 90, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
     rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
@@ -161,7 +174,6 @@ if __name__ == '__main__':
 
     rocotostat.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name)])
 
-    error_return = 0
     rocoto_status = rocoto_statcount(rocotostat)
     rocoto_status.update(rocotostat_summary(rocotostat))
 
@@ -173,12 +185,8 @@ if __name__ == '__main__':
     elif 'UNKNOWN' in rocoto_status:
         error_return = rocoto_status['UNKNOWN']
         rocoto_state = 'UNKNOWN'
-    elif is_stalled(rocoto_status):
-        #
-        #  TODO for now a STALLED state will be just a warning as it can
-        #  produce a false negative if there is a timestamp on a file dependency.
-        #
-        #   error_return = -3
+    elif attempt_multiple_times(is_stalled(rocoto_status), 3, 90):
+        error_return = 3
         rocoto_state = 'STALLED'
     else:
         rocoto_state = 'RUNNING'
