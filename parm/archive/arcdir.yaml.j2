@@ -14,7 +14,7 @@ deterministic:
         - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
         {% endif %}
     copy:
-        {% if current_cycle != SDATE and MODE == "cycled" %}
+        {% MODE == "cycled" %}
         {% if DO_JEDIATMVAR %}
         - ["{{ COM_ATMOS_ANALYSIS }}/{{ head }}atmstat", "{{ ARCDIR }}/atmstat.{{ RUN }}.{{ cycle_YMDH }}"]
         {% else %}
@@ -70,7 +70,7 @@ deterministic:
         - ["{{ COM_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
         {% endif %}
 {% endif %} # gfs or gdas
-{% if current_cycle != SDATE and (RUN == "enkfgdas" or RUN == "enkfgfs") %}
+{% if RUN == "enkfgdas" or RUN == "enkfgfs" %}
 ensemble:
     mkdir:
         - "{{ ARCDIR }}"

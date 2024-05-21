@@ -3,7 +3,7 @@ gdas_restarta:
     name: "GDAS_RESTARTA"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas_restarta.tar"
     required:
-        {% if current_cycle != SDATE and MODE == "cycled" %}
+        {% if MODE == "cycled" %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
         {% for iaufhr in iaufhrs if iaufhr != 6 %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iaufhr }}.nc"
@@ -33,7 +33,7 @@ gdas_restarta:
         {% endif %}
         {% endif %}
     optional:
-        {% if current_cycle != SDATE and MODE == "cycled" %}
+        {% if MODE == "cycled" %}
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"

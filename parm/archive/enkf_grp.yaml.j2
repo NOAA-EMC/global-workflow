@@ -16,7 +16,6 @@ enkf_grp:
         - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf006.nc"
         {% endif %}
 
-        {% if current_cycle != SDATE %}
         {% if not lobsdiag_forenkf %}
         - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% endif %}
@@ -24,6 +23,5 @@ enkf_grp:
         - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         {% else %}
         - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
-        {% endif %}
         {% endif %}
         {% endfor %}  # first_group_mem to last_group_mem

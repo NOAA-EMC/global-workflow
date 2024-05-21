@@ -15,7 +15,6 @@ enkf:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}epos*.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}echgres.log"
 
-        {% if current_cycle != SDATE %}
         # TODO archive ecen logs based on actual groups.  Will need to emulate numpy.array_split to do so.
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen*.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}esfc.log"
@@ -62,9 +61,8 @@ enkf:
         {% for step in steps %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}{{ step }}.log"
         {% endfor %}
-        {% endif %}  # not the first cycle
     optional:
-        {% if current_cycle != SDATE and DOIAU %}
+        {% if DOIAU %}
         {% for fhr in iaufhrs %}
         {% if fhr != IAU_OFFSET %}
         - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
