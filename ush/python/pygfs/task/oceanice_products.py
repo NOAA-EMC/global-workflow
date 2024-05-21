@@ -59,9 +59,9 @@ class OceanIceProducts(Task):
         valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
 
         if self.config.COMPONENT == 'ice' and self.runtime_config.current_cycle.strftime("%H") != '00' and self.config.FHOUT_ICE_GFS == 24:
-            forecast_hour = self.config.FORECAST_HOUR-int(self.runtime_config.current_cycle.strftime("%H"))
+            forecast_hour = self.config.FORECAST_HOUR - int(self.runtime_config.current_cycle.strftime("%H"))
             if forecast_hour <= 24:
-                interval = 24-int(self.runtime_config.current_cycle.strftime("%H"))
+                interval = 24 - int(self.runtime_config.current_cycle.strftime("%H"))
             else:
                 interval = 24
         else:
@@ -69,7 +69,7 @@ class OceanIceProducts(Task):
             interval = self.config.FHOUT_OCN_GFS
 
         # TODO: This is a bit of a hack, but it works for now
-        # FIXME: find a better way to provide the averaging period   
+        # FIXME: find a better way to provide the averaging period
         avg_period = f"{forecast_hour-interval:03d}-{forecast_hour:03d}"
 
         localdict = AttrDict(
