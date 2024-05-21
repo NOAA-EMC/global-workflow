@@ -6,6 +6,7 @@ base:
   DO_JEDIATMENS: "YES"
   ACCOUNT: {{ 'ACCOUNT' | getenv }}
   STMP: {{ 'STMP' | getenv }}
+  PTMP: {{ 'PTMP' | getenv }}
 atmanl:
   LAYOUT_X_ATMANL: 4
   LAYOUT_Y_ATMANL: 4

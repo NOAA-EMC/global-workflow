@@ -3,3 +3,4 @@ defaults:
 base:
   ACCOUNT: {{ 'ACCOUNT' | getenv }}
   STMP: {{ 'STMP' | getenv }}
+  PTMP: {{ 'PTMP' | getenv }}

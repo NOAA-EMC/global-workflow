@@ -4,6 +4,7 @@ defaults:
 base:
   ACCOUNT: {{ 'ACCOUNT' | getenv }}
   STMP: {{ 'STMP' | getenv }}
+  PTMP: {{ 'PTMP' | getenv }}
   DO_GOES: "YES"
   DO_BUFRSND: "YES"
   DO_GEMPAK: "YES"

@@ -5,3 +5,4 @@ base:
   DO_JEDISNOWDA: "YES"
   ACCOUNT: {{ 'ACCOUNT' | getenv }}
   STMP: {{ 'STMP' | getenv }}
+  PTMP: {{ 'PTMP' | getenv }}
