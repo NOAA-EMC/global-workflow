@@ -3,8 +3,10 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
 {% if RUN == "gdas" or RUN == "gfs" %}
+# Select data to store in the ARCDIR and VFYARC from deterministic runs
 deterministic:
     mkdir:
+        # Make the ARCDIR and VFYARC directories
         - "{{ ARCDIR }}"
         {% if RUN == "gfs" %}
         - "{{ ARCDIR }}/tracker.{{ cycle_YMDH }}/{{ RUN }}"
@@ -14,6 +16,7 @@ deterministic:
         - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
         {% endif %}
     copy:
+        # Analysis data (if we are running in cycled mode)
         {% MODE == "cycled" %}
         {% if DO_JEDIATMVAR %}
         - ["{{ COM_ATMOS_ANALYSIS }}/{{ head }}atmstat", "{{ ARCDIR }}/atmstat.{{ RUN }}.{{ cycle_YMDH }}"]
@@ -27,7 +30,9 @@ deterministic:
         - ["{{ COM_CHEM_ANALYSIS }}/{{ head }}aerostat", "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YMDH }}"]
         {% endif %}
         - ["{{ COM_ATMOS_GRIB_1p00 }}/{{ head }}pgrb2.1p00.anl", "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
-        {% endif %}  # Full cycle
+        {% endif %}  # End of analysis data
+
+        # Forecast GRIB2 products to archive
         {% if RUN == "gfs" %}
         {% set fhmax, fhout = FHMAX_GFS, FHOUT_GFS %}
         {% elif RUN == "gdas" %}
@@ -36,7 +41,33 @@ deterministic:
         {% for fhr in range(0, fhmax + fhout, fhout) %}
         - ["{{ COM_ATMOS_GRIB_1p00 }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}", "{{ ARCDIR }}/pgbf{{ '%02d' % fhr }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
         {% endfor %}
-        {% if RUN == "gfs" %}
+
+        # Cyclone forecasts, produced for both gdas and gfs cycles
+        {% if path_exists(COM_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH) %}
+        - ["{{ COM_ATMOS_TRACK }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
+        {% endif %}
+
+        # GFS-specific data to archive (cyclone genesis and tracking; Fit2Obs)
+        # Cyclone genesis data (only present if there are storms)
+        {% if path_exists(COM_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH) %}
+        - ["{{ COM_ATMOS_GENESIS }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_GENESIS }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"]
+        {% endif %}
+        {% if path_exists(COM_ATMOS_GENESIS ~ "/trak.gfso.atcfunix." ~ cycle_YMDH) %}
+        - ["{{ COM_ATMOS_GENESIS }}/trak.gfso.atcfunix.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"]
+        - ["{{ COM_ATMOS_GENESIS }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
+        {% endif %}
+
+        # Cyclone tracking data
+        ## Only created if tracking is on and there were systems to track
+        {% for basin in ["epac", "natl"] %}
+        {% if path_exists(COM_ATMOS_TRACK + "/" + basin) %}
+        - ["{{ COM_ATMOS_TRACK }}/{{ basin }}", "{{ ARCDIR }}/{{ basin }}"]
+        {% endif %}
+        {% endfor %}
+
+        # Data needed for Fit2Obs; sent to VFYARC
         {% if FITSARC %}
         {% if FHMAX_FITS is defined %}
         {% set fhmax = FHMAX_FITS %}
@@ -49,32 +80,18 @@ deterministic:
         - ["{{COM_ATMOS_HISTORY}}/{{ sfcfile }}", "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sfcfile }}"]
         - ["{{COM_ATMOS_HISTORY}}/{{ sigfile }}", "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sigfile }}"]
         {% endfor %}
-        {% endif %} ## FITSARC
-        {% if path_exists(COM_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH) %}
-        - ["{{ COM_ATMOS_GENESIS }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"]
-        - ["{{ COM_ATMOS_GENESIS }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"]
-        {% endif %}
-        {% if path_exists(COM_ATMOS_GENESIS ~ "/trak.gfso.atcfunix." ~ cycle_YMDH) %}
-        - ["{{ COM_ATMOS_GENESIS }}/trak.gfso.atcfunix.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"]
-        - ["{{ COM_ATMOS_GENESIS }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
-        {% endif %}
-        ## Only created if tracking is on and there were systems to track
-        {% for basin in ["epac", "natl"] %}
-        {% if path_exists(COM_ATMOS_TRACK + "/" + basin) %}
-        - ["{{ COM_ATMOS_TRACK }}/{{ basin }}", "{{ ARCDIR }}/{{ basin }}"]
-        {% endif %}
-        {% endfor %}
+        ## End of Fit2Obs data
+
         {% endif %} ## RUN == "gfs"
-        {% if path_exists(COM_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH) %}
-        - ["{{ COM_ATMOS_TRACK }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}"]
-        - ["{{ COM_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
-        {% endif %}
 {% endif %} # gfs or gdas
 {% if RUN == "enkfgdas" or RUN == "enkfgfs" %}
+# Select data to store in the ARCDIR and VFYARC from ensemble runs
 ensemble:
     mkdir:
+        # Make the ARCDIR
         - "{{ ARCDIR }}"
     copy:
+        # Copy ensemble analyses and forecast means
         {% if DO_JEDIATMENS %}
         - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}atmensstat", "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}"]
         - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}atminc.ensmean.nc", "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}.ensmean.nc"]
