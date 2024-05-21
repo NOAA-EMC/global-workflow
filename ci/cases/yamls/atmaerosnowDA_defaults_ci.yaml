@@ -3,5 +3,5 @@ defaults:
 base:
   DOIAU: "NO"
   DO_JEDISNOWDA: "YES"
-  ACCOUNT: {{ 'BATCH_ACCOUNT' | getenv }}
+  ACCOUNT: {{ 'ACCOUNT' | getenv }}
   STMP: {{ 'STMP' | getenv }}

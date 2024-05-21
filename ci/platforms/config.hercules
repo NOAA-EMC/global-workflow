@@ -4,6 +4,6 @@ export GFS_CI_ROOT=/work2/noaa/stmp/GFS_CI_ROOT/HERCULES
 export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
 export STMP="/work2/noaa/stmp/${USER}/HERCULES"
 export PTMP="/work2/noaa/stmp/${USER}/HERCULES"
-export BATCH_ACCOUNT=nems
+export ACCOUNT=nems
 export max_concurrent_cases=5
 export max_concurrent_pr=4
