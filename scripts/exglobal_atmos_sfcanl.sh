@@ -163,15 +163,17 @@ else
     export NST_FILE="NULL"
 fi
 
+# determine where the input snow restart files come from
+if [[ ${DO_JEDISNOWDA:-"NO"} = "YES" ]]; then
+    src_dir="${COM_SNOW_ANALYSIS}"
+else
+    src_dir="${COM_ATMOS_RESTART_PREV}"
+fi
+
 if [[ ${DOIAU} = "YES" ]]; then
     # update surface restarts at the beginning of the window, if IAU
     # For now assume/hold dtfanl.nc valid at beginning of window
     for n in $(seq 1 ${ntiles}); do
-        if [[ ${DO_JEDISNOWDA:-"NO"} = "YES" ]]; then
-            src_dir="${COM_SNOW_ANALYSIS}"
-        else
-            src_dir="${COM_ATMOS_RESTART_PREV}"
-        fi
         ${NCP} "${src_dir}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
                "${COM_ATMOS_RESTART}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
         ${NLN} "${src_dir}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" "${DATA}/fnbgsi.00${n}"
