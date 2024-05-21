@@ -8,6 +8,14 @@ FV3_postdet() {
   echo "warm_start = ${warm_start}"
   echo "RERUN = ${RERUN}"
 
+  PLATFORM_NAME="${PW_CSP:-NotOnPW_CSP}"
+  echo "PLATFORM_NAME: $PLATFORM_NAME"
+
+  if [[ "$PLATFORM_NAME" == "aws" ]]; then
+    NCP="rsync "
+    NLN="echo "
+  fi
+
   # cold start case
   if [[ "${warm_start}" == ".false." ]]; then
 
@@ -210,6 +218,14 @@ FV3_nml() {
 FV3_out() {
   echo "SUB ${FUNCNAME[0]}: copying output data for FV3"
 
+  PLATFORM_NAME="${PW_CSP:-NotOnPW_CSP}"
+  echo "PLATFORM_NAME: $PLATFORM_NAME"
+
+  if [[ "$PLATFORM_NAME" == "aws" ]]; then
+    NCP="rsync "
+    NLN="echo "
+  fi
+
   # Copy configuration files
   if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
     ${NCP} "${DATA}/input.nml" "${COM_CONF}/ufs.input.nml"
@@ -261,6 +277,14 @@ FV3_out() {
 # shellcheck disable=SC2034
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
+
+  PLATFORM_NAME="${PW_CSP:-NotOnPW_CSP}"
+  echo "PLATFORM_NAME: $PLATFORM_NAME"
+
+  if [[ "$PLATFORM_NAME" == "aws" ]]; then
+    NCP="rsync "
+    NLN="echo "
+  fi
 
   local ww3_grid
   # Copy initial condition files:

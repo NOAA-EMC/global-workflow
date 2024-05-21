@@ -80,7 +80,17 @@ FV3_predet(){
   if [[ ! -d "${COM_ATMOS_MASTER}" ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
   if [[ ! -d "${COM_ATMOS_RESTART}" ]]; then mkdir -p "${COM_ATMOS_RESTART}"; fi
   if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
-  ${NLN} "${DATArestart}/FV3_RESTART" "${DATA}/RESTART"
+
+  PLATFORM_NAME="${PW_CSP:-NotOnPW_CSP}"
+  echo "PLATFORM_NAME: $PLATFORM_NAME"
+
+  if [[ "$PLATFORM_NAME" == "aws" ]]; then
+    cp --reflink=always -r "${DATArestart}/FV3_RESTART" "${DATA}/RESTART"
+   #NCP="rsync -ut"
+    NCP="rsync "
+  else
+    ${NLN} "${DATArestart}/FV3_RESTART" "${DATA}/RESTART"
+  fi
 
   FHZER=${FHZER:-6}
   FHCYC=${FHCYC:-24}
@@ -353,11 +363,14 @@ FV3_predet(){
   [[ ! -f "${FNSMCC}" ]] && FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
 
   # Grid and orography data
-  if [[ "${cplflx}" == ".false." ]] ; then
-    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
-  else
-    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
-  fi
+ #if [[ "${cplflx}" == ".false." ]] ; then
+ # #${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+ #  echo ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+ #else
+ #  ${NCP} /contrib/Wei.Huang/data/ICs/C384/gfs.20240101/00/model_data/atmos/input/grid_spec.nc "${DATA}/INPUT/grid_spec.nc"
+ #  ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+ #  ${NCP} /contrib/Wei.Huang/data/hack-orion/fix/mom6/20231219/025/ocean_mosaic.nc "${DATA}/INPUT/ocean_mosaic.nc"
+ #fi
 
   # Files for GWD
   ${NCP} "${FIXgfs}/ugwd/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
@@ -468,7 +481,11 @@ WW3_predet(){
   if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
 
   if [[ ! -d "${DATArestart}/WAVE_RESTART" ]]; then mkdir -p "${DATArestart}/WAVE_RESTART"; fi
-  ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
+  if [[ "$PLATFORM_NAME" == "aws" ]]; then
+    cp --reflink=always -r "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
+  else
+    ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
+  fi
 
   # Files from wave prep and wave init jobs
   # Copy mod_def files for wave grids
@@ -546,7 +563,11 @@ CICE_predet(){
 
   if [[ ! -d "${DATA}/CICE_OUTPUT" ]]; then  mkdir -p "${DATA}/CICE_OUTPUT"; fi
   if [[ ! -d "${DATArestart}/CICE_RESTART" ]]; then mkdir -p "${DATArestart}/CICE_RESTART"; fi
-  ${NLN} "${DATArestart}/CICE_RESTART" "${DATA}/CICE_RESTART"
+  if [[ "$PLATFORM_NAME" == "aws" ]]; then
+    cp --reflink=always -r "${DATArestart}/CICE_RESTART" "${DATA}/CICE_RESTART"
+  else
+    ${NLN} "${DATArestart}/CICE_RESTART" "${DATA}/CICE_RESTART"
+  fi
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
@@ -569,7 +590,11 @@ MOM6_predet(){
 
   if [[ ! -d "${DATA}/MOM6_OUTPUT" ]]; then mkdir -p "${DATA}/MOM6_OUTPUT"; fi
   if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
-  ${NLN} "${DATArestart}/MOM6_RESTART" "${DATA}/MOM6_RESTART"
+  if [[ "$PLATFORM_NAME" == "aws" ]]; then
+    cp --reflink=always -r "${DATArestart}/MOM6_RESTART" "${DATA}/MOM6_RESTART"
+  else
+    ${NLN} "${DATArestart}/MOM6_RESTART" "${DATA}/MOM6_RESTART"
+  fi
 
   # MOM6 does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for MOM6
@@ -594,14 +619,15 @@ MOM6_predet(){
   ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
 
   # Copy coupled grid_spec
-  local spec_file
-  spec_file="${FIXgfs}/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
-  if [[ -s "${spec_file}" ]]; then
-    ${NCP} "${spec_file}" "${DATA}/INPUT/"
-  else
-    echo "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist"
-    exit 3
-  fi
+ #${NCP} /contrib/Wei.Huang/data/ICs/C384/gfs.20240101/00/model_data/atmos/input/grid_spec.nc "${DATA}/INPUT/grid_spec.nc"
+ #local spec_file
+ #spec_file="${FIXgfs}/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+ #if [[ -s "${spec_file}" ]]; then
+ #  ${NCP} "${spec_file}" "${DATA}/INPUT/"
+ #else
+ #  echo "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist"
+ #  exit 3
+ #fi
 
 }
 
@@ -611,7 +637,11 @@ CMEPS_predet(){
   if [[ ! -d "${COM_MED_RESTART}" ]]; then mkdir -p "${COM_MED_RESTART}"; fi
 
   if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
-  ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
+  if [[ "$PLATFORM_NAME" == "aws" ]]; then
+    cp --reflink=always -r "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
+  else
+    ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
+  fi
 
 }
 
