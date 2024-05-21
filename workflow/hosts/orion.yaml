@@ -4,8 +4,8 @@ BASE_CPLIC: '/work/noaa/global/glopara/data/ICSDIR/prototype_ICs'
 PACKAGEROOT: '/work/noaa/global/glopara/nwpara'
 COMINsyn: '/work/noaa/global/glopara/com/gfs/prod/syndat'
 HOMEDIR: '/work/noaa/global/${USER}'
-STMP: '/work/noaa/stmp/${USER}/ORION'
-PTMP: '/work/noaa/stmp/${USER}/ORION'
+STMP: '/work/noaa/stmp/${USER}'
+PTMP: '/work/noaa/stmp/${USER}'
 NOSCRUB: $HOMEDIR
 SCHEDULER: slurm
 ACCOUNT: fv3-cpu
