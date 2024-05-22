@@ -13,7 +13,6 @@ export WAV_SUBGRBSRC=""
 export WAV_SUBGRB=""
 
 # Options for point output (switch on/off boundary point output)
-export DOIBP_WAV='NO' # Input boundary points
 export DOFLD_WAV='YES' # Field data
 export DOPNT_WAV='YES' # Station data
 export DOGRB_WAV='YES' # Create grib2 files

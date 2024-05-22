@@ -18,7 +18,7 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 # Run archive script
 ###############################################################
 
-"${SCRgfs}/exgdas_enkf_earc.sh"
+"${SCRgfs}/exgdas_enkf_earc.py"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

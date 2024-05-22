@@ -1,0 +1,27 @@
+gdasocean_analysis:
+    {% set head = "gdas.t" + cycle_HH + "z." %}
+    name: "GDASOCEAN_ANALYSIS"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
+    required:
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocninc.nc'
+        {% set ocngrid_cycle = '%02d' % (((cycle_HH | int) - 3) % 24) %}
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/gdas.t{{ ocngrid_cycle }}z.ocngrid.nc'
+        {% for domain in ["ocn", "ice"] %}
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.bkgerr_stddev.nc'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.incr.nc'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}ana.nc'
+        {% if NMEM_ENS > 2 %}
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.recentering_error.nc'
+        {% endif %}
+        {% endfor %}
+        {% if NMEM_ENS > 2 %}
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.ssh_steric_stddev.nc'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.ssh_unbal_stddev.nc'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.ssh_total_stddev.nc'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.steric_explained_variance.nc'
+        {% endif %}
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.adt_rads_all.stats.csv'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.icec_amsr2_north.stats.csv'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.icec_amsr2_south.stats.csv'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/*.nc4'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/yaml/*.yaml'
