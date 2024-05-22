@@ -13,9 +13,10 @@ export CDATE=${CDATE:-${PDY}${cyc}}
 export GDUMP=${GDUMP:-"gdas"}
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OCEAN_ANALYSIS COM_ICE_RESTART
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OCEAN_ANALYSIS COM_ICE_ANALYSIS COM_ICE_RESTART
 
 mkdir -p "${COM_OCEAN_ANALYSIS}"
+mkdir -p "${COM_ICE_ANALYSIS}"
 mkdir -p "${COM_ICE_RESTART}"
 
 ##############################################
