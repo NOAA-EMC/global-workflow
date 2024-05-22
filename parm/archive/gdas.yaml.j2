@@ -3,7 +3,7 @@ gdas:
     name: "GDAS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas.tar"
     required:
-        {% MODE == "cycled" %}
+        {% if MODE == "cycled" %}
         # Cycled logs
         - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}prep.log"
@@ -44,16 +44,16 @@ gdas:
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
 
-        # Ensemble analysis residual
         {% if DOHYBVAR %}
-        {% for fhr in iaufhrs %}
-        {% if fhr == IAU_OFFSET %}
+        # Ensemble analysis residual
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
-        {% else %}
+        {% if DOIAU %}
+        # Ensemble IAU analysis residuals
+        {% for fhr in iaufhrs if fhr != 6 %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensres.nc"
-        {% endif %}
         {% endfor %}
-        # End of analysis mean increments/analyses
+        {% endif %}
+        # End of ensemble analysis mean residuals
         {% endif %}
 
         # Analysis state

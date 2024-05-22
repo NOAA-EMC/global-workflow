@@ -11,7 +11,7 @@ enkf:
         {% endfor %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}echgres.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}esfc.log"
-        {% for grp in range(len(iaufhrs)) %}
+        {% for grp in range(iaufhrs | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen{{ '%03d' % grp }}.log"
         {% endfor %}
 
@@ -58,24 +58,25 @@ enkf:
         {% endfor %}
 
         # Ensemble mean analyses/increments
-        {% for fhr in iaufhrs %}
+        # 6-hr analysis/increment
         {% if do_calc_increment %}
-        # Store increments
-        {% if fhr == IAU_OFFSET %}
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atminc.ensmean.nc"
-        {% else %}
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
-        {% endif %}
-        # End of increments
-
-        {% else %}
-
-        # Store analyses instead of increments
-        {% if fhr == IAU_OFFSET %}
         - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
         {% else %}
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atminc.ensmean.nc"
         {% endif %}
+
+        {% if DOIAU %}
+        # IAU increments/analyses
+
+        {% for fhr in iaufhrs if fhr != 6 %}
+        {% if do_calc_increment %}
+        # Store analyses instead of increments
+        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
+        {% else %}
+        # Store increments
+        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
         {% endif %}
         {% endfor %}
+
+        {% endif %}  # End IAU
         # End of analysis mean increments/analyses

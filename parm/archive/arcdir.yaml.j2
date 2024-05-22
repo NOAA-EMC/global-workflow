@@ -10,14 +10,14 @@ deterministic:
         - "{{ ARCDIR }}"
         {% if RUN == "gfs" %}
         - "{{ ARCDIR }}/tracker.{{ cycle_YMDH }}/{{ RUN }}"
-        {% endif %}
-        {% if FITSARC %}
+        {% if DO_FIT2OBS %}
         {% set VFYARC = ROTDIR + "/vrfyarch" %}
         - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
         {% endif %}
+        {% endif %}
     copy:
         # Analysis data (if we are running in cycled mode)
-        {% MODE == "cycled" %}
+        {% if MODE == "cycled" %}
         {% if DO_JEDIATMVAR %}
         - ["{{ COM_ATMOS_ANALYSIS }}/{{ head }}atmstat", "{{ ARCDIR }}/atmstat.{{ RUN }}.{{ cycle_YMDH }}"]
         {% else %}
@@ -68,21 +68,15 @@ deterministic:
         {% endfor %}
 
         # Data needed for Fit2Obs; sent to VFYARC
-        {% if FITSARC %}
-        {% if FHMAX_FITS is defined %}
-        {% set fhmax = FHMAX_FITS %}
-        {% else %}
-        {% set fhmax = FHMAX_GFS %}
-        {% endif %}
-        {% for fhr in range(0, fhmax + 6, 6) %}
+        {% if DO_FIT2OBS and RUN == "gfs" %}
+        {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
         {% set sfcfile = "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
         {% set sigfile = "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
         - ["{{COM_ATMOS_HISTORY}}/{{ sfcfile }}", "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sfcfile }}"]
         - ["{{COM_ATMOS_HISTORY}}/{{ sigfile }}", "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sigfile }}"]
         {% endfor %}
+        {% endif %}  ## DO_FIT2OBS and RUN == "gfs"
         ## End of Fit2Obs data
-
-        {% endif %} ## RUN == "gfs"
 {% endif %} # gfs or gdas
 {% if RUN == "enkfgdas" or RUN == "enkfgfs" %}
 # Select data to store in the ARCDIR and VFYARC from ensemble runs

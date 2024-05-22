@@ -10,7 +10,7 @@ enkf_grp:
         {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
 
         # Forecast data
-        {% for fhr in range(fhmin, fhmax+1, fhout %}
+        {% for fhr in range(3, 10, 3) %}
         - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
         {% endfor %}
 
