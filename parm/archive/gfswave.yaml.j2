@@ -1,0 +1,23 @@
+gfswave:
+    {% set head = "gfswave.t" + cycle_HH + "z." %}
+    name: "GFSWAVE"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
+    required:
+        {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
+        # NOTE This is as explicit as possible without major logic to parse wavepostGRD.
+        #      Matches files of the form "gfswave.tCCz.<region>.<res>.fHHH.grib2".
+        - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
+        - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
+        {% endfor %}
+        {% for fh in range(FHMAX_HF_WAV + FHOUT_WAV, FHMAX_WAV_GFS + FHOUT_WAV, FHOUT_WAV) %}
+        - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
+        - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
+        {% endfor %}
+        - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}bull_tar"
+        - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}cbull_tar"
+        - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}spec_tar.gz"
+        {% if DOIBP_WAV %}
+        - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpbull_tar"
+        - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpcbull_tar"
+        - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibp_tar"
+        {% endif %}
