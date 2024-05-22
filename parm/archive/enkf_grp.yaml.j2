@@ -1,0 +1,29 @@
+enkf_grp:
+    name: "ENKF_GRP"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_grp{{ ENSGRP }}.tar"
+    required:
+        {% for mem in range(first_group_mem, last_group_mem + 1) %}
+        {% set imem = mem - first_group_mem %}
+        {% set COM_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_MEM_list[imem] %}
+        {% set COM_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_MEM_list[imem] %}
+        {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
+
+        {% for iaufhr in iaufhrs_enkf %}
+        - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % iaufhr }}.nc"
+        {% endfor %}
+
+        {% if 6 in iaufhrs_enkf %}
+        - "{{ COM_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf006.nc"
+        {% endif %}
+
+        {% if current_cycle != SDATE %}
+        {% if not lobsdiag_forenkf %}
+        - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
+        {% endif %}
+        {% if do_calc_increment %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
+        {% else %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
+        {% endif %}
+        {% endif %}
+        {% endfor %}  # first_group_mem to last_group_mem
