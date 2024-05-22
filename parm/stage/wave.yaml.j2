@@ -2,8 +2,8 @@
 wave:
     #TODO: check if BASE_CPLIC/CPL_WAVIC exists?
     name: "WAVE"
-    source: "{{ BASE_CPLIC }}/{{ CPL_WAVIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/wave"
+    target: "{{ COM_WAVE_RESTART }}"
     required:
         {% for grdID in waveGRD %}
-        - "{{ COM_WAVE_RESTART | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ grdID }}"
+        - "{{ BASE_CPLIC }}/{{ CPL_WAVIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/wave/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ grdID }}"
         {% endfor %}

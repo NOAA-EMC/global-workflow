@@ -1,5 +1,5 @@
 ice:
     name: "ICE"
-    source: "{{ BASE_CPLIC }}/{{ CPL_ICEIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/ice"
+    target: "{{ COM_ICE_RESTART_PREV }}"
     required:
-        - "{{ COM_ICE_RESTART_PREV | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.cice_model.res.nc"
+        - "{{ BASE_CPLIC }}/{{ CPL_ICEIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/ice/{{ cycle_YMD }}.{{ cycle_HH }}0000.cice_model.res.nc"

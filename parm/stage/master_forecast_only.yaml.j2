@@ -3,9 +3,15 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 datasets:
 
+{% if EXP_WARM_START %}
 {% filter indent(width=4) %}
-{% include "fv3.yaml.j2" %}
+{% include "fv3_warm.yaml.j2" %}
 {% endfilter %}
+{% else %}
+{% filter indent(width=4) %}
+{% include "fv3_cold.yaml.j2" %}
+{% endfilter %}
+{% endif %}
 
 {% if DO_NEST %}
 {% filter indent(width=4) %}
@@ -21,11 +27,11 @@ datasets:
 {% endif %}
 {% endif %}
 
-{% if DO_OCEAN %}
+{% if DO_OCN %}
 {% if EXP_WARM_START %}
 {% filter indent(width=4) %}
 {% include "ocean.yaml.j2" %}
-{% include "mediator.yaml.j2" %}
+#TODO:#{% include "mediator.yaml.j2" %}
 {% endfilter %}
 {% endif %}
 {% endif %}

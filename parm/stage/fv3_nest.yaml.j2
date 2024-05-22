@@ -13,14 +13,14 @@
 #       ${NLN} "${COM_ATMOS_INPUT}/${ftype}.tile7.nc" "${COM_ATMOS_INPUT}/${ftype}.nest02.tile7.nc"
 fv3:
     name: "FV3"
-    source: "{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/atmos"
+    target: "{{ COM_ATMOS_RESTART_PREV }}"
     {% set ntile = 7 %}
     required:
         #---------------
         # WARM START
         #---------------
         {% if EXP_WARM_START %}
-        {% set head = "{{ COM_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000." %}
+        {% set head = "{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/atmos/{{ cycle_YMD }}.{{ cycle_HH }}0000." %}
         {% set ntile = 7 %}
         {% for ftype in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data %}
         #TODO: figure out how to copy one name to the other in here

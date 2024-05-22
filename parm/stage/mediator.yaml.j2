@@ -1,7 +1,5 @@
-#src="${BASE_CPLIC}/${CPL_MEDIC:-}/${PDY}${cyc}/${MEMDIR}/med/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
-#      tgt="${COM_MED_RESTART_PREV}/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
 mediator:
     name: "MEDIATOR"
-    source: "{{ BASE_CPLIC }}/{{ CPL_MEDIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/med"
+    target: "{{ COM_MED_RESTART_PREV }}"
     required:
-        - "{{ COM_MED_RESTART_PREV | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.ufs.cpld.cpl.r.nc"
+        - "{{ BASE_CPLIC }}/{{ CPL_MEDIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/med/{{ cycle_YMD }}.{{ cycle_HH }}0000.ufs.cpld.cpl.r.nc"
