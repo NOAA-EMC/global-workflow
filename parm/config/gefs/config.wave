@@ -79,12 +79,7 @@ export WAVEWND_DID=
 export WAVEWND_FID=
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
-export FHMAX_WAV=${FHMAX_GFS}
 export WAVHINDH=0
-export FHMIN_WAV=0
-export FHOUT_WAV=3
-export FHMAX_HF_WAV=120
-export FHOUT_HF_WAV=1
 export FHMAX_WAV_IBP=180
 if (( FHMAX_WAV < FHMAX_WAV_IBP )); then export FHMAX_WAV_IBP=${FHMAX_GFS} ; fi
 

@@ -163,9 +163,6 @@ export APP=@APP@
 shopt -s extglob
 # Adjust APP based on RUN
 case "${RUN}" in
-    gfs)   # Turn off aerosols
-        APP="${APP/%A}"
-        ;;
     enkf*) # Turn off aerosols and waves
         APP="${APP/%+([WA])}"
         ;;
@@ -181,8 +178,11 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
+export AERO_FCST_CDUMP="" # When to run aerosol forecast: gdas, gfs, or both
+export AERO_ANL_CDUMP="" # When to run aerosol analysis: gdas, gfs, or both
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
+export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
@@ -227,6 +227,8 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
+    export AERO_ANL_CDUMP="both"
+    export AERO_FCST_CDUMP="gdas"
     ;;
   ATMW)
     export DO_COUPLED="YES"
@@ -245,6 +247,8 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
+        export AERO_ANL_CDUMP="both"
+        export AERO_FCST_CDUMP="gdas"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
@@ -287,6 +291,13 @@ export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 export FHOUT_OCN_GFS=6
 export FHOUT_ICE_GFS=6   
+export FHMIN_WAV=0
+export FHOUT_WAV=3
+export FHMAX_HF_WAV=120
+export FHOUT_HF_WAV=1
+export FHMAX_WAV=${FHMAX:-9}
+export FHMAX_WAV_GFS=${FHMAX_GFS}
+>>>>>>> origin/develop
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
@@ -344,6 +355,7 @@ export NMEM_ENS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
+export DO_CALC_INCREMENT="NO"
 
 # Early-cycle EnKF parameters
 export NMEM_ENS_GFS=30
@@ -372,6 +384,9 @@ if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
     export IAUFHRS_ENKF="6"
 fi
 
+# Generate post-processing ensemble spread files
+export ENKF_SPREAD="YES"
+
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
@@ -380,6 +395,22 @@ if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} =
 fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
+
+# Determine restart intervals
+# For IAU, write restarts at beginning of window also
+if [[ "${DOIAU_ENKF:-}" == "YES" ]]; then
+  export restart_interval_enkfgdas="3"
+else
+  export restart_interval_enkfgdas="6"
+fi
+
+export restart_interval_enkfgfs=${restart_interval_enkfgdas}
+
+if [[ "${DOIAU}" == "YES" ]]; then
+  export restart_interval_gdas="3"
+else
+  export restart_interval_gdas="6"
+fi
 
 export GSI_SOILANAL=@GSI_SOILANAL@
 
@@ -436,5 +467,8 @@ if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
+
+# Number of regional collectives to create soundings for
+export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
 
 echo "END: config.base"

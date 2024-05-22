@@ -239,7 +239,7 @@ FV3_out() {
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     local restart_date
     restart_date=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-    while (( restart_date < forecast_end_cycle )); do
+    while (( restart_date <= forecast_end_cycle )); do
       echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
       for fv3_restart_file in "${fv3_restart_files[@]}"; do
         restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_restart_file}"
@@ -253,15 +253,15 @@ FV3_out() {
   # Copy the final restart files at the end of the forecast segment
   # The final restart written at the end of the forecast does not include the valid date
   # TODO: verify the above statement since RM found that it did!
-  # TODO: For other components, this is only for gfs/gefs - check to see if this should also have this 
-  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then 
+  # TODO: For other components, this is only for gfs/gefs - check to see if this should also have this
+  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
     echo "Copying FV3 restarts for 'RUN=${RUN}' at the end of the forecast segment: ${forecast_end_cycle}"
     for fv3_restart_file in "${fv3_restart_files[@]}"; do
       restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${fv3_restart_file}"
       ${NCP} "${DATArestart}/FV3_RESTART/${restart_file}" \
              "${COM_ATMOS_RESTART}/${restart_file}"
     done
-  fi 
+  fi
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
 
@@ -471,7 +471,7 @@ MOM6_nml() {
 MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 
-  # Copy MOM_input from DATA to COM_OCEAN_INPUT after the forecast is run (and successfull)
+  # Copy MOM_input from DATA to COM_CONF after the forecast is run (and successfull)
   ${NCP} "${DATA}/INPUT/MOM_input" "${COM_CONF}/ufs.MOM_input"
 
   # Create a list of MOM6 restart files
@@ -499,7 +499,7 @@ MOM6_out() {
         ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
                "${COM_OCEAN_RESTART}/${restart_file}"
       done
-    fi 
+    fi
   fi
 
   # Copy restarts for the next cycle for RUN=gdas|enkfgdas|enkfgfs
@@ -527,6 +527,9 @@ CICE_postdet() {
   else  # "${RERUN}" == "NO"
     restart_date="${model_start_date_current_cycle}"
     cice_restart_file="${COM_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
+    if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
+      cice_restart_file="${COM_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+    fi
   fi
 
   # Copy CICE ICs
@@ -620,7 +623,7 @@ CICE_out() {
       target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
       ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
              "${COM_ICE_RESTART}/${target_file}"
-    fi 
+    fi
   fi
 
   # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
@@ -756,7 +759,7 @@ CMEPS_out() {
     else
       echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
     fi
-  fi 
+  fi
 
   # Copy restarts for the next cycle to COM for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then

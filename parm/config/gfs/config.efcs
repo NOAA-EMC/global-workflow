@@ -85,11 +85,10 @@ if [[ ${RECENTER_ENKF:-"YES"} == "YES" ]]; then
    export PREFIX_ATMINC="r"
 fi
 
-# For IAU, write restarts at beginning of window also
-if [[ "${DOIAU_ENKF:-}" == "YES" ]]; then
-  export restart_interval="3"
-else
-  export restart_interval="6"
+# Set restart interval to enable restarting forecasts after failures
+export restart_interval=${restart_interval_enkfgdas:-6}
+if [[ ${RUN} == "enkfgfs" ]]; then
+    export restart_interval=${restart_interval_enkfgfs:-12}
 fi
 
 echo "END: config.efcs"
