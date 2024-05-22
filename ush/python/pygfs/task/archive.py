@@ -72,7 +72,9 @@ class Archive(Task):
         arch_dict['path_exists'] = os.path.exists
 
         # Parse the input jinja yaml template
-        arcdir_set = parse_j2yaml(arcdir_filename, arch_dict)
+        arcdir_set = parse_j2yaml(arcdir_filename,
+                                  arch_dict,
+                                  allow_missing=False)
 
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
@@ -108,7 +110,9 @@ class Archive(Task):
 
         master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
-        parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml), arch_dict)
+        parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml),
+                                   arch_dict,
+                                   allow_missing=False)
 
         atardir_sets = []
 
