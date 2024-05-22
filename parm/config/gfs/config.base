@@ -297,7 +297,6 @@ export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX:-9}
 export FHMAX_WAV_GFS=${FHMAX_GFS}
->>>>>>> origin/develop
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
