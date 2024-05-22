@@ -443,7 +443,8 @@ export DO_FIT2OBS="YES"      # Run fit to observations package
 export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
 #--online archive of netcdf files for fit2obs verification
-[[ ${FHMAX_GFS} -ge 132 ]] && export FHMAX_FITS=132 || export FHMAX_FITS=${FHMAX_GFS}
+export FHMAX_FITS=132
+[[ ${FHMAX_GFS} -lt 132 ]] && export FHMAX_FITS=${FHMAX_GFS}
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
