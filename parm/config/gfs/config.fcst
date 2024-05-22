@@ -8,10 +8,16 @@ echo "BEGIN: config.fcst"
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
 export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
-# Turn off waves if not used for this CDUMP
+# Turn off waves if not used for this RUN
 case ${WAVE_CDUMP} in
-  both | "${CDUMP/enkf}" ) ;; # Don't change
+  both | "${RUN/enkf}" ) ;; # Don't change
   *) DO_WAVE="NO" ;; # Turn waves off
+esac
+
+# Turn off aerosols if not used for this RUN
+case ${AERO_FCST_CDUMP} in
+  both | "${RUN/enkf}" ) ;; # Don't change
+  *) DO_AERO="NO" ;; # Turn aerosols off
 esac
 
 # Source model specific information that is resolution dependent
@@ -271,11 +277,8 @@ if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
     # Variables used in DA cycling
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
 
-    if [[ "${DOIAU}" == "YES" ]]; then
-      export restart_interval="3"
-    else
-      export restart_interval="6"
-    fi
+    # Write gfs restart files to rerun fcst from any break point
+    export restart_interval=${restart_interval_gdas:-6}
 
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
