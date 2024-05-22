@@ -7,23 +7,9 @@ from datetime import timedelta
 from logging import getLogger
 from typing import Any, Dict, List
 
-from wxflow import (AttrDict,
-                    FileHandler,
-                    Hsi,
-                    Htar,
-                    Task,
-                    cast_strdict_as_dtypedict,
-                    chgrp,
-                    get_gid,
-                    logit,
-                    mkdir_p,
-                    parse_j2yaml,
-                    rm_p,
-                    strftime,
-                    to_YMD,
-                    to_YMDH,
-                    Template,
-                    TemplateConstants)
+from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, cast_strdict_as_dtypedict,
+                    chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
+                    to_YMD, to_YMDH, Template, TemplateConstants)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -83,14 +69,54 @@ class Stage(Task):
 
         return rel_path_dict
 
+    @staticmethod
     @logit(logger)
-    def determine(self, stage_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
+    def _create_fileset(stage_set: Dict[str, Any]) -> List:
+        """
+        Collect the list of all available files from the parsed yaml dict.
+        Globs are expanded and if required files are missing, an error is
+        raised.
+
+        TODO: expand all globs in the jinja yaml files instead of expanding
+              them here and issue errors here if globbing patterns (*, ?, [])
+              are found.
+
+        Parameters
+        ----------
+        stage_set: Dict
+            Contains full paths for required and optional files to be staged.
+        """
+
+        fileset = []
+        if "required" in stage_set:
+            if stage_set.required is not None:
+                for item in stage_set.required:
+                    glob_set = glob.glob(item)
+                    if len(glob_set) == 0:
+                        raise FileNotFoundError(f"FATAL ERROR: Required file, directory, or glob {item} not found!")
+                    for entry in glob_set:
+                        fileset.append(entry)
+
+        if "optional" in stage_set:
+            if stage_set.optional is not None:
+                for item in stage_set.optional:
+                    glob_set = glob.glob(item)
+                    if len(glob_set) == 0:
+                        logger.warning(f"WARNING: optional file/glob {item} not found!")
+                    else:
+                        for entry in glob_set:
+                            fileset.append(entry)
+
+        return fileset
+
+    @logit(logger)
+    def determine_stage(self, stage_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
         """Determine which initial condition files need to be placed in ROTDIR.
 
         Parameters
         ----------
         stage_dict : Dict[str, Any]
-            Task specific keys, e.g. runtime options (DO_AERO, DO_ICE, etc)
+            Task specific keys, e.g. runtime options (DO_WAVE, DO_ICE, etc)
 
         Return
         ------
@@ -99,10 +125,6 @@ class Stage(Task):
         """
 
         stage_parm = os.path.join(stage_dict.PARMgfs, "stage")
-
-        # Add the glob.glob function for capturing log filenames
-        # TODO remove this kludge once log filenames are explicit
-        stage_dict['glob'] = glob.glob
 
         # Add the os.path.exists function to the dict for yaml parsing
         stage_dict['path_exists'] = os.path.exists
@@ -114,7 +136,8 @@ class Stage(Task):
             if stage_dict.MODE == "cycled":
                 master_yaml = "master_cycled.yaml.j2"
             elif stage_dict.MODE == "forecast-only":
-                master_yaml = "master_forecast_only.yaml.j2"
+                #master_yaml = "master_forecast_only.yaml.j2"
+                master_yaml = "fv3_cold.yaml.j2"
         elif stage_dict.RUN == "gefs":
             raise NotImplementedError("FATAL ERROR: Staging is not yet set up for GEFS runs")
         elif stage_dict.RUN == "sfs":
@@ -122,16 +145,36 @@ class Stage(Task):
         else:
             raise ValueError(f"FATAL ERROR: Staging is not enabled for {stage_dict.RUN} runs")
 
-        parsed_sets = parse_j2yaml(os.path.join(stage_parm, master_yaml), stage_dict)
+       #parsed_sets = parse_j2yaml(os.path.join(stage_parm, master_yaml), stage_dict)
+        stage_set = parse_j2yaml(os.path.join(stage_parm, master_yaml), stage_dict)
+       #print(f'parsed_sets = {parsed_sets}')
 
-        stage_sets = []
+       #stage_sets = []
 
-        for dataset in parsed_sets.datasets.values():
+       #for dataset in parsed_sets.datasets.values():
 
-            dataset["fileset"] = Stage._create_fileset(dataset)
+       #    dataset["fileset"] = Stage._create_fileset(dataset)
 
-            stage_sets.append(dataset)
+       #    stage_sets.append(dataset)
 
-        return stage_sets
+       #return stage_sets
+        return stage_set
 
-#TODO - create def for staging
+    @logit(logger)
+    def execute_stage(self, stage_set: Dict[str, Any]) -> None:
+        """Perform local staging of initial condition files.
+
+        Parameters
+        ----------
+        stage_set : Dict[str, Any]
+            FileHandler instructions to populate ROTDIR with
+
+        Return
+        ------
+        None
+        """
+
+        # Copy files to ROTDIR
+        for key in stage_set.keys():
+        #   print(f'key = {key}')
+            FileHandler(stage_set[key]).sync()

@@ -17,10 +17,13 @@ def main():
     stage = Stage(config)
 
     #Pull out all the configuration keys needed to run stage job
-    keys = ['RUN','MODE','EXP_WARM_START','CDUMP','rCDUMP',
+    keys = ['RUN','MODE','current_cycle','EXP_WARM_START','CDUMP','rCDUMP',
+            'ROTDIR','PARMgfs',
             'ntiles',
-            'BASE_CPLIC','waveGRD','OCNRES','USE_OCN_PERTURB_FILES',
-            'CPL_ATMIC','CPL_ICEIC','CPL_MEDIC','CPL_OCNIC','CPL_WAVIC']
+            'BASE_CPLIC','waveGRD','OCNRES',
+            #TODO: GEFS only#'USE_OCN_PERTURB_FILES',
+            #TODO: Need this#'CPL_MEDIC',
+            'CPL_ATMIC','CPL_ICEIC','CPL_OCNIC','CPL_WAVIC']
 
     stage_dict = AttrDict()
     for key in keys:
@@ -32,19 +35,23 @@ def main():
             stage_dict[key] = stage.task_config[key]
 
     #TEST PRINT
-    #for key in stage_dict:
-    #    print(f'{key} = {stage_dict[key]}')
+    for key in stage_dict:
+        print(f'{key} = {stage_dict[key]}')
 
     cwd = os.getcwd()
 
     os.chdir(config.ROTDIR)
 
     # Determine which ICs to stage
-    stage_set = stage.determine(stage_dict)
+    #stage_sets = stage.determine_stage(stage_dict)
+    stage_set = stage.determine_stage(stage_dict)
 
     # Stage ICs
-    # TODO - create and invoke copies
-    stage.execute(stage_set)
+    #for stage_set in stage_sets:
+    #   print(f'set = {stage_set}')
+    #   stage.execute_stage(stage_set)
+    print(f'set = {stage_set}')
+    stage.execute_stage(stage_set)
 
     os.chdir(cwd)
 
