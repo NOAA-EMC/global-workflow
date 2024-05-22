@@ -233,7 +233,6 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                                  "lev": levs,
                                  "infile": "'siginc.nc." + format(fh, '02') + "'",
                                  "outfile": "'inc.fullres." + format(fh, '02') + "'",
-                                 "jedi": python2fortran_bool[JEDI],
                                  }
             gsi_utils.write_nml(namelist, CalcAnlDir + '/fort.43')
 
