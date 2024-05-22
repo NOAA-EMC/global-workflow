@@ -43,6 +43,10 @@ load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 
 setenv("WGRIB2","wgrib2")
+
+-- Stop gap fix for wgrib with spack-stack 1.6.0
+-- TODO Remove this when spack-stack issue #1097 is resolved
+setenv("WGRIB","wgrib")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
 --prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
