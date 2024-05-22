@@ -3,4 +3,4 @@ defaults:
 base:
   DOIAU: "NO"
   DO_JEDISNOWDA: "YES"
-  ACCOUNT: {{ 'ACCOUNT' | getenv }}
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}

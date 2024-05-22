@@ -1,4 +1,4 @@
 defaults:
   !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
 base:
-  ACCOUNT: {{ 'ACCOUNT' | getenv }}
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
