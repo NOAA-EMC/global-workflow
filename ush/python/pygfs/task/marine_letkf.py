@@ -14,8 +14,10 @@ from wxflow import (AttrDict,
                     Executable,
                     FileHandler,
                     logit,
+                    parse_j2yaml,
                     Task,
-                    WorkflowException)
+                    WorkflowException,
+                    YAMLFile)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -83,10 +85,10 @@ class MarineLETKF(Analysis):
         self.config.mom_input_nml = path.join(DATA, 'mom_input.nml')
 
         self.config.data_output = 'data_output'
-        self.config.ensdir = 'ens'
+        self.config.ens_dir = 'ens'
 
-
-
+        self.config.ATM_WINDOW_BEGIN = window_begin_iso
+        self.config.ATM_WINDOW_MIDDLE = window_middle_iso
         
     @logit(logger)
     def initialize(self):
@@ -102,14 +104,55 @@ class MarineLETKF(Analysis):
         logger.info("initialize")
 
 
+        PDYstr = self.runtime_config.PDY.strftime("%Y%m%d")
+
         FileHandler({'mkdir': [self.config.bkg_dir]}).sync()
         FileHandler({'mkdir': [self.config.data_output]}).sync()
         FileHandler({'mkdir': [self.config.ens_dir]}).sync()
 
+
+        chdir(self.config.ens_dir)
+        for mem in range(1,self.config.NMEM_ENS+1):
+            #mem_dir = path.realpath(path.join(self.config.ens_dir , f'mem{str(mem).zfill(3)}'))
+            #mem_dir = path.realpath(path.join('fdsfsds' , f'mem{str(mem).zfill(3)}'))
+            mem_dir = f'mem{str(mem).zfill(3)}'
+            print('mem_dir: ',mem_dir)
+            FileHandler({'mkdir': [mem_dir]}).sync()
+        chdir(self.runtime_config.DATA)
         bkg_utils.gen_bkg_list(bkg_path=self.config.COM_OCEAN_HISTORY_PREV,
                                out_path=self.config.bkg_dir,
                                window_begin=self.config.window_begin,
                                yaml_name=self.config.BKG_LIST)
+
+        obs_list = YAMLFile(self.config.OBS_YAML)
+
+        # get the list of observations
+        obs_files = []
+        for ob in obs_list['observers']:
+            obs_name = ob['obs space']['name'].lower()
+            obs_filename = f"{self.runtime_config.RUN}.t{self.runtime_config.cyc}z.{ob['obs space']['name'].lower()}.{PDYstr}{self.runtime_config.cyc}.nc4"
+            obs_files.append((obs_filename,ob))
+        obs_list = []
+
+        obs_to_use = []
+        # copy obs from COM_OBS to DATA/obs
+        for obs_file, ob in obs_files:
+            logger.info(f"******* {obs_file}")
+            obs_src = path.join(self.config.COM_OBS, obs_file)
+            obs_dst = path.join(self.runtime_config.DATA, obs_file)
+            logger.info(f"******* {obs_src}")
+            if path.exists(obs_src):
+                logger.info(f"******* fetching {obs_file}")
+                obs_list.append([obs_src, obs_dst])
+                obs_to_use.append(ob)
+            else:
+                logger.info(f"******* {obs_file} is not in the database")
+
+        FileHandler({'copy': obs_list}).sync()
+
+        letkf_yaml = parse_j2yaml(self.config.letkf_yaml_template, self.config)
+        letkf_yaml.observations.observers = obs_to_use
+        letkf_yaml.save(self.config.letkf_yaml_file)
 
     @logit(logger)
     def run(self):

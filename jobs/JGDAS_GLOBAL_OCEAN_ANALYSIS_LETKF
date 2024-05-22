@@ -16,6 +16,8 @@ YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
    COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
    COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
