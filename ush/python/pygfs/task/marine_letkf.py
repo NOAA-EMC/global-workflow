@@ -44,8 +44,12 @@ class MarineLETKF(Analysis):
 
         PDY = self.runtime_config['PDY']
         cyc = self.runtime_config['cyc']
+        gcyc = str(self.config['gcyc']).zfill(2)
+        gPDY = self.config['gPDY']
+        RUN = self.runtime_config.RUN
         DATA = self.runtime_config.DATA
         cdate = PDY + timedelta(hours=cyc)
+        COM_TOP_PREV_ENS = self.config.COM_TOP_PREV_ENS
 
         gdas_home = path.join(config['HOMEgfs'], 'sorc', 'gdas.cd')
 
@@ -89,6 +93,46 @@ class MarineLETKF(Analysis):
 
         self.config.ATM_WINDOW_BEGIN = window_begin_iso
         self.config.ATM_WINDOW_MIDDLE = window_middle_iso
+
+        # set up lists of files for ens background
+        self.config.ocn_ens_bkg_filename = f"enkf{RUN}.ocean.t{gcyc}z.inst.f009.nc"
+        self.config.ice_ens_bkg_filename = f"enkf{RUN}.ice.t{gcyc}z.inst.f009.nc"
+
+        # create list of subdirs to make in initialize, and list of some of the files to stage
+        ens_bkg_files_to_stage = []
+        ens_mem_dirs = [self.config.bkg_dir, self.config.data_output]
+        for mem in range(1,self.config.NMEM_ENS+1):
+            mem_dir = f'mem{str(mem).zfill(3)}' # will make pattern mem001
+            ens_mem_dirs.append(path.join(self.config.ens_dir,mem_dir))
+            print(":COM_TOP_PREV_ENS ",COM_TOP_PREV_ENS)
+            print("mem_dir: ",mem_dir)
+            print("self.config.ocn_ens_bkg_filename: ",self.config.ocn_ens_bkg_filename)
+            ocn_file_path = path.join(COM_TOP_PREV_ENS,
+                                      mem_dir,
+                                      'model_data',
+                                      'ocean',
+                                      'history',
+                                      self.config.ocn_ens_bkg_filename)
+            ocn_file_dest = path.join(self.config.ens_dir,
+                                      mem_dir,
+                                      self.config.ocn_ens_bkg_filename)
+            ice_file_path = path.join(COM_TOP_PREV_ENS,
+                                      mem_dir,
+                                      'model_data',
+                                      'ice',
+                                      'history',
+                                      self.config.ice_ens_bkg_filename)
+            ice_file_dest = path.join(self.config.ens_dir,
+                                      mem_dir,
+                                      self.config.ice_ens_bkg_filename)
+            ens_bkg_files_to_stage.append((ocn_file_path, ocn_file_dest))
+            ens_bkg_files_to_stage.append((ice_file_path, ice_file_dest))
+
+        self.config.ens_bkg_files_to_stage = ens_bkg_files_to_stage
+        self.config.ens_mem_dirs = ens_mem_dirs
+
+
+
         
     @logit(logger)
     def initialize(self):
@@ -105,20 +149,14 @@ class MarineLETKF(Analysis):
 
 
         PDYstr = self.runtime_config.PDY.strftime("%Y%m%d")
+        ens_dir = self.config.ens_dir
+        RUN = self.runtime_config.RUN
 
-        FileHandler({'mkdir': [self.config.bkg_dir]}).sync()
-        FileHandler({'mkdir': [self.config.data_output]}).sync()
-        FileHandler({'mkdir': [self.config.ens_dir]}).sync()
+        # create directories under DATA
+        FileHandler({'mkdir': self.config.ens_mem_dirs }).sync()
+        # copy ensemble background to DATA/ens/mem???
+        FileHandler({'copy': self.config.ens_bkg_files_to_stage }).sync()
 
-
-        chdir(self.config.ens_dir)
-        for mem in range(1,self.config.NMEM_ENS+1):
-            #mem_dir = path.realpath(path.join(self.config.ens_dir , f'mem{str(mem).zfill(3)}'))
-            #mem_dir = path.realpath(path.join('fdsfsds' , f'mem{str(mem).zfill(3)}'))
-            mem_dir = f'mem{str(mem).zfill(3)}'
-            print('mem_dir: ',mem_dir)
-            FileHandler({'mkdir': [mem_dir]}).sync()
-        chdir(self.runtime_config.DATA)
         bkg_utils.gen_bkg_list(bkg_path=self.config.COM_OCEAN_HISTORY_PREV,
                                out_path=self.config.bkg_dir,
                                window_begin=self.config.window_begin,
