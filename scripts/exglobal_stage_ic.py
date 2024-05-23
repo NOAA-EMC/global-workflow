@@ -17,13 +17,17 @@ def main():
     stage = Stage(config)
 
     #Pull out all the configuration keys needed to run stage job
-    keys = ['RUN','MODE','current_cycle','EXP_WARM_START','CDUMP','rCDUMP',
-            'ROTDIR','PARMgfs',
-            'ntiles',
+    keys = ['RUN','MODE','DO_WAVE','DO_OCN','DO_ICE','DO_NEST',
+            'current_cycle','EXP_WARM_START','CDUMP','rCDUMP',
+            'ROTDIR','PARMgfs','ntiles','MEMDIR',
             'BASE_CPLIC','waveGRD','OCNRES',
-            #TODO: GEFS only#'USE_OCN_PERTURB_FILES',
-            #TODO: Need this#'CPL_MEDIC',
+            #TODO: Need this for mediator#'CPL_MEDIC',
             'CPL_ATMIC','CPL_ICEIC','CPL_OCNIC','CPL_WAVIC']
+
+    keys_gefs = ['USE_OCN_PERTURB_FILES']
+
+    if stage.task_config['RUN'] == "gefs":
+        keys.extend(keys_gefs)
 
     stage_dict = AttrDict()
     for key in keys:
