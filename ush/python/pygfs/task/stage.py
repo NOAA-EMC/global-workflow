@@ -36,78 +36,7 @@ class Stage(Task):
 
         rotdir = self.config.ROTDIR + os.sep
 
-        # Find all absolute paths in the environment and get their relative paths from ${ROTDIR}
-        path_dict = self._gen_relative_paths(rotdir)
-
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **path_dict)
-
-    @logit(logger)
-    def _gen_relative_paths(self, root_path: str) -> Dict:
-        """Generate a dict of paths in self.config relative to root_path
-
-        Parameters
-        ----------
-        root_path : str
-            Path to base all relative paths off of
-
-        Return
-        ------
-        rel_path_dict : Dict
-            Dictionary of paths relative to root_path.  Members will be named
-            based on the dict names in self.config.  For COM paths, the names will
-            follow COM_<NAME> --> <name>_dir.  For all other directories, the
-            names will follow <NAME> --> <name>_dir.
-        """
-
-        rel_path_dict = {}
-        for key, value in self.config.items():
-            if isinstance(value, str):
-                if root_path in value:
-                    rel_path = value.replace(root_path, "")
-                    rel_key = (key[4:] if key.startswith("COM_") else key).lower() + "_dir"
-                    rel_path_dict[rel_key] = rel_path
-
-        return rel_path_dict
-
-    @staticmethod
-    @logit(logger)
-    def _create_fileset(stage_set: Dict[str, Any]) -> List:
-        """
-        Collect the list of all available files from the parsed yaml dict.
-        Globs are expanded and if required files are missing, an error is
-        raised.
-
-        TODO: expand all globs in the jinja yaml files instead of expanding
-              them here and issue errors here if globbing patterns (*, ?, [])
-              are found.
-
-        Parameters
-        ----------
-        stage_set: Dict
-            Contains full paths for required and optional files to be staged.
-        """
-
-        fileset = []
-        if "required" in stage_set:
-            if stage_set.required is not None:
-                for item in stage_set.required:
-                    glob_set = glob.glob(item)
-                    if len(glob_set) == 0:
-                        raise FileNotFoundError(f"FATAL ERROR: Required file, directory, or glob {item} not found!")
-                    for entry in glob_set:
-                        fileset.append(entry)
-
-        if "optional" in stage_set:
-            if stage_set.optional is not None:
-                for item in stage_set.optional:
-                    glob_set = glob.glob(item)
-                    if len(glob_set) == 0:
-                        logger.warning(f"WARNING: optional file/glob {item} not found!")
-                    else:
-                        for entry in glob_set:
-                            fileset.append(entry)
-
-        return fileset
+        self.task_config = AttrDict(**self.config, **self.runtime_config)
 
     @logit(logger)
     def determine_stage(self, stage_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
