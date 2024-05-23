@@ -59,6 +59,12 @@ class Archive(Task):
             List of tarballs and instructions for creating them via tar or htar
         """
 
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        if arch_dict.RUN == "gefs":
+            raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
+
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
 
         # Collect the dataset to archive locally
@@ -97,16 +103,10 @@ class Archive(Task):
             self.tar_cmd = ""
             return arcdir_set, []
 
-        if not os.path.isdir(arch_dict.ROTDIR):
-            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
-
         if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
 
             # Copy the cyclone track files and rename the experiments
             Archive._rename_cyclone_expt(arch_dict)
-
-        if arch_dict.RUN == "gefs":
-            raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
 
         master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
