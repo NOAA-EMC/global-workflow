@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 import f90nml
+from glob import glob 
 from logging import getLogger
 from os import path
 from pygfs.task.analysis import Analysis
@@ -45,6 +46,7 @@ class MarineLETKF(Analysis):
         PDY = self.runtime_config['PDY']
         cyc = self.runtime_config['cyc']
         gcyc = str(self.config['gcyc']).zfill(2)
+        self.runtime_config.gcyc = gcyc
         gPDY = self.config['gPDY']
         RUN = self.runtime_config.RUN
         DATA = self.runtime_config.DATA
@@ -58,21 +60,6 @@ class MarineLETKF(Analysis):
         window_begin_iso = window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
         window_middle_iso = cdate.strftime('%Y-%m-%dT%H:%M:%SZ')
         letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
-        gdate = cdate - timedelta(hours=6)
-        self.runtime_config['gcyc'] = gdate.strftime("%H")
-
-        self.stage_config = AttrDict(
-            {'window_begin': f"{window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')}",
-             'ATM_WINDOW_BEGIN': window_begin_iso,
-             'ATM_WINDOW_MIDDLE': window_middle_iso,
-             'DATA': DATA,
-             'dump': self.runtime_config.RUN,
-             'fv3jedi_stage_files': self.config.FV3JEDI_STAGE_YAML,
-             'fv3jedi_stage': self.config.FV3JEDI_STAGE_YAML,
-             'stage_dir': DATA,
-             'soca_input_fix_dir': self.config.SOCA_INPUT_FIX_DIR,
-             'NMEM_ENS': self.config.NMEM_ENS,
-             'ATM_WINDOW_LENGTH': f"PT{config['assim_freq']}H"})
 
         self.config['letkf_yaml_template'] = path.join(letkf_yaml_dir, 'letkf.yaml.j2')
         self.config['letkf_yaml_file'] = path.join(DATA, 'letkf.yaml')
@@ -88,8 +75,9 @@ class MarineLETKF(Analysis):
         self.config.mom_input_nml_tmpl = path.join(DATA, 'mom_input.nml.tmpl')
         self.config.mom_input_nml = path.join(DATA, 'mom_input.nml')
 
-        self.config.data_output = 'data_output'
+        self.config.data_output_dir = 'data_output'
         self.config.ens_dir = 'ens'
+        self.config.obs_dir = 'obs'
 
         self.config.ATM_WINDOW_BEGIN = window_begin_iso
         self.config.ATM_WINDOW_MIDDLE = window_middle_iso
@@ -100,7 +88,7 @@ class MarineLETKF(Analysis):
 
         # create list of subdirs to make in initialize, and list of some of the files to stage
         ens_bkg_files_to_stage = []
-        dirs_to_make = [self.config.bkg_dir, self.config.data_output]
+        dirs_to_make = [self.config.bkg_dir, self.config.data_output_dir, self.config.obs_dir]
         for mem in range(1,self.config.NMEM_ENS+1):
             mem_dir = f'mem{str(mem).zfill(3)}' # will make pattern mem001
             dirs_to_make.append(path.join(self.config.ens_dir,mem_dir))
@@ -161,6 +149,7 @@ class MarineLETKF(Analysis):
                                window_begin=self.config.window_begin,
                                yaml_name=self.config.BKG_LIST)
 
+        # TODO(AFE): probably needs to be jinjafied
         obs_list = YAMLFile(self.config.OBS_YAML)
 
         # get the list of observations
@@ -176,7 +165,7 @@ class MarineLETKF(Analysis):
         for obs_file, ob in obs_files:
             logger.info(f"******* {obs_file}")
             obs_src = path.join(self.config.COM_OBS, obs_file)
-            obs_dst = path.join(DATA, obs_file)
+            obs_dst = path.join(DATA, self.config.obs_dir, obs_file)
             logger.info(f"******* {obs_src}")
             if path.exists(obs_src):
                 logger.info(f"******* fetching {obs_file}")
@@ -192,6 +181,24 @@ class MarineLETKF(Analysis):
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.config.letkf_yaml_file)
 
+        FileHandler({'copy': [[self.config.mom_input_nml_src,
+            self.config.mom_input_nml_tmpl]]}).sync()
+       
+        self.stage_fix_files()
+
+        bkg_utils.stage_ic(self.config.bkg_dir, self.runtime_config.DATA, self.runtime_config.gcyc)
+
+        # swap date and stack size
+        domain_stack_size = self.config.DOMAIN_STACK_SIZE
+        ymdhms = [int(s) for s in self.config.window_begin.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
+        with open(self.config.mom_input_nml_tmpl, 'r') as nml_file:
+            nml = f90nml.read(nml_file)
+            nml['ocean_solo_nml']['date_init'] = ymdhms
+            nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
+            ufsda.disk_utils.removefile(self.config.mom_input_nml)
+            nml.write(self.config.mom_input_nml)
+        
+
     @logit(logger)
     def run(self):
         """Method run for ocean and sea ice LETKF task
@@ -205,27 +212,6 @@ class MarineLETKF(Analysis):
 
         logger.info("run")
 
-        chdir(self.runtime_config.DATA)
-
-        FileHandler({'copy': [[self.config.mom_input_nml_src,
-            self.config.mom_input_nml_tmpl]]}).sync()
-       
-        ufsda.stage.soca_fix(self.stage_config)
-
-        bkg_utils.stage_ic(self.config.bkg_dir, self.runtime_config.DATA, self.runtime_config.gcyc)
-
-        # swap date and stack size
-        #domain_stack_size = os.getenv('DOMAIN_STACK_SIZE')
-        domain_stack_size = self.config.DOMAIN_STACK_SIZE
-        ymdhms = [int(s) for s in self.config.window_begin.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
-        with open(self.config.mom_input_nml_tmpl, 'r') as nml_file:
-            nml = f90nml.read(nml_file)
-            nml['ocean_solo_nml']['date_init'] = ymdhms
-            nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
-            ufsda.disk_utils.removefile(self.config.mom_input_nml)
-            nml.write(self.config.mom_input_nml)
-        
- 
         exec_cmd_gridgen = Executable(self.config.APRUN_OCNANALLETKF)
         exec_cmd_gridgen.add_default_arg(self.config.exec_name_gridgen)
         exec_cmd_gridgen.add_default_arg(self.config.gridgen_yaml)
@@ -252,3 +238,53 @@ class MarineLETKF(Analysis):
         """
 
         logger.info("finalize")
+
+    @logit(logger)
+    def stage_fix_files(self):
+        """Stage fixed files for marine DA
+        Parameters:
+        ------------
+        None
+        Returns:
+        --------
+        None
+        """
+        # adapted from ufsda stage_fix
+        #TODO(AFE): this method maybe should go in a different class
+
+        logger.info("stage_fix_files")
+
+        DATA = self.runtime_config.DATA
+        SOCA_INPUT_FIX_DIR = self.config.SOCA_INPUT_FIX_DIR
+
+        fix_files = []
+        # copy Rossby Radius file
+        fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'rossrad.dat'),
+                          path.join(DATA, 'rossrad.dat')])
+        # link name lists
+        fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'field_table'),
+                          path.join(DATA, 'field_table')])
+        fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'diag_table'),
+                          path.join(DATA, 'diag_table')])
+        fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'MOM_input'),
+                          path.join(DATA, 'MOM_input')])
+        # link field metadata
+        fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'fields_metadata.yaml'),
+                          path.join(DATA, 'fields_metadata.yaml')])
+    
+        # link ufo <---> soca name variable mapping
+        fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'obsop_name_map.yaml'),
+                          path.join(DATA, 'obsop_name_map.yaml')])
+    
+        # INPUT
+        src_input_dir = path.join(SOCA_INPUT_FIX_DIR, 'INPUT')
+        dst_input_dir = path.join(DATA, 'INPUT')
+        FileHandler({'mkdir': [dst_input_dir]}).sync()
+    
+        input_files = glob(f'{src_input_dir}/*')
+        for input_file in input_files:
+            fname = path.basename(input_file)
+            fix_files.append([path.join(src_input_dir, fname),
+                              path.join(dst_input_dir, fname)])
+    
+        FileHandler({'copy': fix_files}).sync()
