@@ -17,7 +17,9 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception
     attempt = 0
     last_exception = None
     while attempt < max_attempts:
-        try: return expression()
+        try:
+            pass
+            return expression()
         except exception_class as last_exception:
             attempt += 1
             sleep(sleep_duration)
