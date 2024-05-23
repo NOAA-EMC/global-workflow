@@ -1,9 +1,10 @@
-#TODO: these should be placed in $RUN.$gPDY/$gcyc)
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
 wave:
-    #TODO: check if BASE_CPLIC/CPL_WAVIC exists?
-    name: "WAVE"
-    target: "{{ COM_WAVE_RESTART }}"
-    required:
+    mkdir:
+        - "{{ COM_WAVE_RESTART }}"
+    copy:
         {% for grdID in waveGRD %}
-        - "{{ BASE_CPLIC }}/{{ CPL_WAVIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/wave/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ grdID }}"
+        - ["{{ BASE_CPLIC }}/{{ CPL_WAVIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/wave/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ grdID }}", "{{ COM_WAVE_RESTART }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ grdID }}"]
         {% endfor %}

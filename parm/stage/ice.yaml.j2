@@ -1,5 +1,8 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
 ice:
-    name: "ICE"
-    target: "{{ COM_ICE_RESTART_PREV }}"
-    required:
-        - "{{ BASE_CPLIC }}/{{ CPL_ICEIC }}/{{ cycle_YMD }}{{ cycle_HH }}/{{ MEMDIR }}/ice/{{ cycle_YMD }}.{{ cycle_HH }}0000.cice_model.res.nc"
+    mkdir:
+        - "{{ COM_ICE_RESTART_PREV }}"
+    copy:
+        - ["{{ BASE_CPLIC }}/{{ CPL_ICEIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/ice/{{ cycle_YMD }}.{{ cycle_HH }}0000.cice_model.res.nc", "{{ COM_ICE_RESTART_PREV }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.cice_model.res.nc"]

@@ -11,11 +11,14 @@
 #       tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
 # if (( ntiles > 6 )); then
 #       ${NLN} "${COM_ATMOS_INPUT}/${ftype}.tile7.nc" "${COM_ATMOS_INPUT}/${ftype}.nest02.tile7.nc"
-fv3:
-    name: "FV3"
-    target: "{{ COM_ATMOS_RESTART_PREV }}"
-    {% set ntile = 7 %}
-    required:
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set ntile = 7 %}
+fv3_nest:
+    mkdir:
+        - "{{ COM_ATMOS_RESTART_PREV }}"
+    copy:
         #---------------
         # WARM START
         #---------------
