@@ -1,0 +1,15 @@
+#!/bin/bash -x
+
+########## config.prepaeroobs ##########
+# Aerosol Variance specific
+
+echo "BEGIN: config.prepaeroobs"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" prepaeroobs
+
+export OBSPROCYAML="${PARMgfs}/gdas/aero/obs/list/aero_obsproc.yaml.j2"
+
+
+
+echo "END: config.prepaeroobs"

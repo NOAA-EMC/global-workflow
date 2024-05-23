@@ -13,7 +13,7 @@ if (( $# != 1 )); then
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "snowanl"
-    echo "aeroanlinit aeroanlrun aeroanlfinal"
+    echo "prepaeroobs aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -272,6 +272,14 @@ case ${step} in
     export npe_snowanl=$(( layout_x * layout_y * 6 ))
     export nth_snowanl=1
     export npe_node_snowanl=$(( npe_node_max / nth_snowanl ))
+    ;;
+
+  "prepaeroobs")
+    export wtime_prepaeroobs="00:15:00"
+    export npe_prepaeroobs=1
+    export nth_prepaeroobs=1
+    export npe_node_prepaeroobs=1
+    export memory_prepaeroobs="96GB"
     ;;
 
   "aeroanlinit")
