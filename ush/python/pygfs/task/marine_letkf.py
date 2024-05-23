@@ -95,41 +95,38 @@ class MarineLETKF(Analysis):
         self.config.ATM_WINDOW_MIDDLE = window_middle_iso
 
         # set up lists of files for ens background
-        self.config.ocn_ens_bkg_filename = f"enkf{RUN}.ocean.t{gcyc}z.inst.f009.nc"
-        self.config.ice_ens_bkg_filename = f"enkf{RUN}.ice.t{gcyc}z.inst.f009.nc"
+        ocn_ens_bkg_filename = f"enkf{RUN}.ocean.t{gcyc}z.inst.f009.nc"
+        ice_ens_bkg_filename = f"enkf{RUN}.ice.t{gcyc}z.inst.f009.nc"
 
         # create list of subdirs to make in initialize, and list of some of the files to stage
         ens_bkg_files_to_stage = []
-        ens_mem_dirs = [self.config.bkg_dir, self.config.data_output]
+        dirs_to_make = [self.config.bkg_dir, self.config.data_output]
         for mem in range(1,self.config.NMEM_ENS+1):
             mem_dir = f'mem{str(mem).zfill(3)}' # will make pattern mem001
-            ens_mem_dirs.append(path.join(self.config.ens_dir,mem_dir))
-            print(":COM_TOP_PREV_ENS ",COM_TOP_PREV_ENS)
-            print("mem_dir: ",mem_dir)
-            print("self.config.ocn_ens_bkg_filename: ",self.config.ocn_ens_bkg_filename)
+            dirs_to_make.append(path.join(self.config.ens_dir,mem_dir))
             ocn_file_path = path.join(COM_TOP_PREV_ENS,
                                       mem_dir,
                                       'model_data',
                                       'ocean',
                                       'history',
-                                      self.config.ocn_ens_bkg_filename)
+                                      ocn_ens_bkg_filename)
             ocn_file_dest = path.join(self.config.ens_dir,
                                       mem_dir,
-                                      self.config.ocn_ens_bkg_filename)
+                                      ocn_ens_bkg_filename)
             ice_file_path = path.join(COM_TOP_PREV_ENS,
                                       mem_dir,
                                       'model_data',
                                       'ice',
                                       'history',
-                                      self.config.ice_ens_bkg_filename)
+                                      ice_ens_bkg_filename)
             ice_file_dest = path.join(self.config.ens_dir,
                                       mem_dir,
-                                      self.config.ice_ens_bkg_filename)
+                                      ice_ens_bkg_filename)
             ens_bkg_files_to_stage.append((ocn_file_path, ocn_file_dest))
             ens_bkg_files_to_stage.append((ice_file_path, ice_file_dest))
 
         self.config.ens_bkg_files_to_stage = ens_bkg_files_to_stage
-        self.config.ens_mem_dirs = ens_mem_dirs
+        self.config.dirs_to_make = dirs_to_make
 
 
 
@@ -147,13 +144,15 @@ class MarineLETKF(Analysis):
 
         logger.info("initialize")
 
-
-        PDYstr = self.runtime_config.PDY.strftime("%Y%m%d")
+        cyc = self.runtime_config.cyc
+        DATA = self.runtime_config.DATA
         ens_dir = self.config.ens_dir
+        PDYstr = self.runtime_config.PDY.strftime("%Y%m%d")
         RUN = self.runtime_config.RUN
 
         # create directories under DATA
-        FileHandler({'mkdir': self.config.ens_mem_dirs }).sync()
+        FileHandler({'mkdir': self.config.dirs_to_make}).sync()
+
         # copy ensemble background to DATA/ens/mem???
         FileHandler({'copy': self.config.ens_bkg_files_to_stage }).sync()
 
@@ -168,26 +167,27 @@ class MarineLETKF(Analysis):
         obs_files = []
         for ob in obs_list['observers']:
             obs_name = ob['obs space']['name'].lower()
-            obs_filename = f"{self.runtime_config.RUN}.t{self.runtime_config.cyc}z.{ob['obs space']['name'].lower()}.{PDYstr}{self.runtime_config.cyc}.nc4"
+            obs_filename = f"{RUN}.t{cyc}z.{obs_name}.{PDYstr}{cyc}.nc4"
             obs_files.append((obs_filename,ob))
-        obs_list = []
 
+        obs_files_to_copy = []
         obs_to_use = []
         # copy obs from COM_OBS to DATA/obs
         for obs_file, ob in obs_files:
             logger.info(f"******* {obs_file}")
             obs_src = path.join(self.config.COM_OBS, obs_file)
-            obs_dst = path.join(self.runtime_config.DATA, obs_file)
+            obs_dst = path.join(DATA, obs_file)
             logger.info(f"******* {obs_src}")
             if path.exists(obs_src):
                 logger.info(f"******* fetching {obs_file}")
-                obs_list.append([obs_src, obs_dst])
+                obs_files_to_copy.append([obs_src, obs_dst])
                 obs_to_use.append(ob)
             else:
                 logger.info(f"******* {obs_file} is not in the database")
 
-        FileHandler({'copy': obs_list}).sync()
+        FileHandler({'copy': obs_files_to_copy}).sync()
 
+        # make the letkf.yaml
         letkf_yaml = parse_j2yaml(self.config.letkf_yaml_template, self.config)
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.config.letkf_yaml_file)
