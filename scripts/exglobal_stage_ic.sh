@@ -42,9 +42,13 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
       err=$((err + rc))
     done
     for ftype in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
-      for ((tt = 1; tt <= 6; tt++)); do
+      for ((tt = 1; tt <= ntiles; tt++)); do
         src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${PDY}.${cyc}0000.${ftype}.tile${tt}.nc"
-        tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.${ftype}.tile${tt}.nc"
+        if (( tt > 6 )) ; then
+            tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.${ftype}.nest0$((tt-5)).tile${tt}.nc"
+        else
+            tgt="${COM_ATMOS_RESTART_PREV}/${PDY}.${cyc}0000.${ftype}.tile${tt}.nc"
+        fi
         ${NCP} "${src}" "${tgt}"
         rc=$?
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
@@ -62,7 +66,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
     err=$((err + rc))
     for ftype in gfs_data sfc_data; do
-      for ((tt = 1; tt <= 6; tt++)); do
+      for ((tt = 1; tt <= ntiles; tt++)); do
         src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
         tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"
         ${NCP} "${src}" "${tgt}"
@@ -70,6 +74,9 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
         ((rc != 0)) && error_message "${src}" "${tgt}" "${rc}"
         err=$((err + rc))
       done
+      if (( ntiles > 6 )); then
+        ${NLN} "${COM_ATMOS_INPUT}/${ftype}.tile7.nc" "${COM_ATMOS_INPUT}/${ftype}.nest02.tile7.nc"
+      fi
     done
   fi
 

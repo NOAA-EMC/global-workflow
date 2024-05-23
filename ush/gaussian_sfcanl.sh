@@ -122,7 +122,6 @@ SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVSP1}.txt}
 CDATE=${CDATE:?}
 
 #  Other variables.
-export NLN=${NLN:-"/bin/ln -sf"}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export REDOUT=${REDOUT:-'1>'}
@@ -133,17 +132,9 @@ export REDERR=${REDERR:-'2>'}
 #  Preprocessing
 ${INISCRIPT:-}
 pwd=$(pwd)
-if [[ -d $DATA ]]
-then
-   mkdata=NO
-else
-   mkdir -p $DATA
-   mkdata=YES
-fi
-cd $DATA||exit 99
+cd "${DATA}" || exit 99
 [[ -d "${COM_ATMOS_ANALYSIS}" ]] || mkdir -p "${COM_ATMOS_ANALYSIS}"
 [[ -d "${COM_ATMOS_RESTART}" ]] || mkdir -p "${COM_ATMOS_RESTART}"
-cd $DATA
 
 ################################################################################
 #  Make surface analysis
@@ -207,6 +198,5 @@ $ERRSCRIPT||exit 2
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ $mkdata = YES ]]&&rmdir $DATA
 
 exit ${err}

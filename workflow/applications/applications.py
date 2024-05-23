@@ -77,6 +77,14 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             elif wave_cdump in ['gfs', 'gdas']:
                 self.wave_cdumps = [wave_cdump]
 
+        self.aero_anl_cdumps = None
+        if self.do_aero:
+            aero_anl_cdump = _base.get('AERO_ANL_CDUMP', 'BOTH').lower()
+            if aero_anl_cdump in ['both']:
+                self.aero_anl_cdumps = ['gfs', 'gdas']
+            elif aero_anl_cdump in ['gfs', 'gdas']:
+                self.aero_anl_cdumps = [aero_anl_cdump]
+
     def _init_finalize(self, conf: Configuration):
         print("Finalizing initialize")
 
@@ -145,7 +153,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += ['config.anal', 'config.eupd']
             elif config in ['efcs']:
                 files += ['config.fcst', 'config.efcs']
-            elif config in ['atmanlinit', 'atmanlrun']:
+            elif config in ['atmanlinit', 'atmanlvar', 'atmanlfv3inc']:
                 files += ['config.atmanl', f'config.{config}']
             elif config in ['atmensanlinit', 'atmensanlrun']:
                 files += ['config.atmensanl', f'config.{config}']

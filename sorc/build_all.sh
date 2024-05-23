@@ -16,11 +16,13 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-h][-j n][-v][-w]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -d:
     Build in debug mode
+  -f:
+    Build the UFS model using the -DFASTER=ON option
   -g:
     Build GSI
   -h:
@@ -53,9 +55,10 @@ _build_job_max=20
 _quick_kill="NO"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:dghj:kuvw" option; do
+while getopts ":a:dfghj:kuvw" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
+    f) _build_ufs_opt+="-f ";;
     d) _build_debug="-d" ;;
     g) _build_gsi="YES" ;;
     h) _usage;;
@@ -157,12 +160,8 @@ fi
 if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then
    build_jobs["gsi_utils"]=1
    build_opts["gsi_utils"]="${_verbose_opt} ${_build_debug}"
-   if [[ "${MACHINE_ID}" == "hercules" ]]; then
-      echo "NOTE: The GSI Monitor is not supported on Hercules.  Disabling build."
-   else
-      build_jobs["gsi_monitor"]=1
-      build_opts["gsi_monitor"]="${_verbose_opt} ${_build_debug}"
-   fi
+   build_jobs["gsi_monitor"]=1
+   build_opts["gsi_monitor"]="${_verbose_opt} ${_build_debug}"
 fi
 
 # Go through all builds and adjust CPU counts down if necessary
@@ -184,7 +183,7 @@ echo "Building ${build_list}"
 
 # Go through all builds and adjust CPU counts up if possible
 if [[ ${requested_cpus} -lt ${_build_job_max} && ${big_jobs} -gt 0 ]]; then
-   # Add cores to the gdas, ufs, and gsi build jobs
+   # Add cores to the gdas and ufs build jobs
    extra_cores=$(( _build_job_max - requested_cpus ))
    extra_cores=$(( extra_cores / big_jobs ))
    for build in "${!build_jobs[@]}"; do

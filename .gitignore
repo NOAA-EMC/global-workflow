@@ -48,6 +48,8 @@ parm/gdas/io
 parm/gdas/ioda
 parm/gdas/snow
 parm/gdas/soca
+parm/gdas/jcb-gdas
+parm/gdas/jcb-algorithms
 parm/monitor
 parm/post/AEROSOL_LUTS.dat
 parm/post/nam_micro_lookup.dat
@@ -106,6 +108,7 @@ parm/post/ice.csv
 parm/post/ocnicepost.nml.jinja2
 parm/ufs/noahmptable.tbl
 parm/ufs/model_configure.IN
+parm/ufs/model_configure_nest.IN
 parm/ufs/MOM_input_*.IN
 parm/ufs/MOM6_data_table.IN
 parm/ufs/ice_in.IN
@@ -177,7 +180,7 @@ ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/jediinc2fv3.py
 ush/ufsda
-ush/finddate.sh
+ush/soca
 ush/make_NTC_file.pl
 ush/make_ntc_bull.pl
 ush/make_tif.sh
@@ -194,3 +197,8 @@ versions/run.ver
 ush/python/wxflow
 workflow/wxflow
 ci/scripts/wxflow
+
+# jcb checkout and symlinks
+ush/python/jcb
+workflow/jcb
+ci/scripts/jcb

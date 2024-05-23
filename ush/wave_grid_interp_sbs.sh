@@ -85,18 +85,16 @@ source "${USHgfs}/preamble.sh"
   rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
 
   if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
-    cp ${PARMgfs}/wave/${grdID}_interp.inp.tmpl ${DATA}
+    cp "${PARMgfs}/wave/${grdID}_interp.inp.tmpl" "${DATA}/${grdID}_interp.inp.tmpl"
   fi
-  ln -sf ${DATA}/${grdID}_interp.inp.tmpl .
+  ${NLN} "${DATA}/${grdID}_interp.inp.tmpl" "${grdID}_interp.inp.tmpl"
 
-  for ID in $waveGRD
-  do
-    ln -sf ${DATA}/output_${ymdh}0000/out_grd.$ID .
+  for ID in ${waveGRD}; do
+    ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${ID}" "out_grd.${ID}"
   done
 
-  for ID in $waveGRD $grdID
-  do
-    ln -sf ${DATA}/mod_def.$ID .
+  for ID in ${waveGRD} ${grdID}; do
+    ${NLN} "${DATA}/mod_def.${ID}" "mod_def.${ID}"
   done
 
 # --------------------------------------------------------------------------- #
@@ -130,7 +128,7 @@ source "${USHgfs}/preamble.sh"
 # Check and link weights file
   if [ -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]
   then
-    ln -s ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ./WHTGRIDINT.bin
+    ${NLN} ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ./WHTGRIDINT.bin
   fi
 
 # 1.b Run interpolation code

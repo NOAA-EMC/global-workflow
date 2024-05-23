@@ -1,0 +1,87 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = "gdas.t" + cycle_HH + "z." %}
+
+{% if IAUFHRS is string %}
+{% set iaufhrs = [] %}
+{% for iaufhr in IAUFHRS.split(",") %}
+{% do iaufhrs.append(iaufhr | int) %}
+{% endfor %}
+{% else %}
+{% set iaufhrs = [IAUFHRS] %}
+{% endif %}
+
+datasets:
+{% filter indent(width=4) %}
+{% include "gdas.yaml.j2" %}
+{% endfilter %}
+
+{% if DO_ICE %}
+{% filter indent(width=4) %}
+{% include "gdasice.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if DO_OCN %}
+{% filter indent(width=4) %}
+{% include "gdasocean.yaml.j2" %}
+{% endfilter %}
+{% if DO_JEDIOCNVAR and current_cycle != SDATE and MODE == "cycled" %}
+{% filter indent(width=4) %}
+{% include "gdasocean_analysis.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+{% endif %}
+
+{% if DO_WAVE %}
+{% filter indent(width=4) %}
+{% include "gdaswave.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+# Determine if we will save restart ICs or not
+{% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}
+
+{% if ARCH_CYC == cycle_HH | int and current_cycle != SDATE%}
+# Save the warm and forecast-only cycle ICs every ARCH_WARMICFREQ days
+{% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
+{% set save_warm_start_forecast = True %}
+{% set save_warm_start_cycled = True %}
+# Save the forecast-only restarts every ARCH_FCSTICFREQ days
+{% elif (current_cycle - SDATE).days % ARCH_FCSTICFREQ == 0 %}
+{% set save_warm_start_forecast = True %}
+{% endif %}
+{% endif %}
+
+{% if save_warm_start_forecast %}
+{% filter indent(width=4) %}
+{% include "gdas_restarta.yaml.j2" %}
+{% endfilter %}
+
+{% if DO_WAVE %}
+{% filter indent(width=4) %}
+{% include "gdaswave_restart.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if DO_OCN %}
+{% filter indent(width=4) %}
+{% include "gdasocean_restart.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if DO_ICE %}
+{% filter indent(width=4) %}
+{% include "gdasice_restart.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% endif %}  # Save forecast-only restarts
+
+# Save cycled restarts
+{% if save_warm_start_cycled %}
+{% filter indent(width=4) %}
+{% include "gdas_restartb.yaml.j2" %}
+{% endfilter %}
+{% endif %}

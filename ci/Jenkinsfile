@@ -19,36 +19,66 @@ pipeline {
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
              // which is used to designate the Nodes in the Jenkins Controler by the agent label
              // Each Jenknis Node is connected to said machine via an JAVA agent via an ssh tunnel
+             // no op 2
 
-        stage('Get Machine') {
+        stage('1. Get Machine') {
             agent { label 'built-in' }
             steps {
                 script {
-                    machine = 'none'
-                    for (label in pullRequest.labels) {
-                        echo "Label: ${label}"
-                        if ((label.matches('CI-Hera-Ready'))) {
-                            machine = 'hera'
-                        } else if ((label.matches('CI-Orion-Ready'))) {
-                            machine = 'orion'
-                        } else if ((label.matches('CI-Hercules-Ready'))) {
-                            machine = 'hercules'
+
+                    def causes = currentBuild.rawBuild.getCauses()
+                    def isSpawnedFromAnotherJob = causes.any { cause ->
+                        cause instanceof hudson.model.Cause.UpstreamCause
+                    }
+
+                    def run_nodes = []
+                    if (isSpawnedFromAnotherJob) {
+                        echo "machine being set to value passed to this spawned job"
+                        echo "passed machine: ${params.machine}"
+                        machine = params.machine
+                    } else {
+                        echo "This is parent job so getting list of nodes matching labels:"
+                        for (label in pullRequest.labels) {
+                            if (label.matches("CI-(.*?)-Ready")) {
+                                def Machine_name = label.split('-')[1].toString()
+                                jenkins.model.Jenkins.get().computers.each { c ->
+                                    if (c.node.selfLabel.name == "${Machine_name}-EMC") {
+                                        run_nodes.add(c.node.selfLabel.name)
+                                    }
+                                }
+                            }
                         }
-                    } // createing a second machine varible with first letter capital
-                      // because the first letter of the machine name is captitalized in the GitHub labels
-                    Machine = machine[0].toUpperCase() + machine.substring(1)
+                        // Spawning all the jobs on the nodes matching the labels
+                        if (run_nodes.size() > 1) {
+                            run_nodes.init().each { node ->
+                                def machine_name = node.split('-')[0].toLowerCase()
+                                echo "Spawning job on node: ${node} with machine name: ${machine_name}"
+                                build job: "/global-workflow/EMC-Global-Pipeline/PR-${env.CHANGE_ID}", parameters: [
+                                    string(name: 'machine', value: machine_name),
+                                    string(name: 'Node', value: node) ],
+                                    wait: false
+                            }
+                            machine = run_nodes.last().split('-')[0].toLowerCase()
+                            echo "Running parent job: ${machine}"
+                        } else {
+                            machine = run_nodes[0].split('-')[0].toLowerCase()
+                            echo "Running only the parent job: ${machine}"
+                        }
+                    }
                 }
             }
         }
 
-        stage('Get Common Workspace') {
+        stage('2. Get Common Workspace') {
             agent { label "${machine}-emc" }
             steps {
                 script {
+                    Machine = machine[0].toUpperCase() + machine.substring(1)
+                    echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         HOME = "${WORKSPACE}"
-                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
+                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/*")
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
                     echo "Building and running on ${Machine} in directory ${HOME}"
@@ -56,7 +86,7 @@ pipeline {
             }
         }
 
-        stage('Build System') {
+        stage('3. Build System') {
             matrix {
                 agent { label "${machine}-emc" }
                 //options {
@@ -111,7 +141,7 @@ pipeline {
                                                     try {
                                                         sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}")
                                                         gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build **FAILED** on **${Machine}** with error logs:\n\\`\\`\\`${error_logs_message}\n\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build **FAILED** on **${Machine}** with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                     } catch (Exception error_comment) {
                                                         echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                     }
@@ -119,7 +149,7 @@ pipeline {
                                                 }
                                             }
                                             sh(script: './link_workflow.sh')
-                                            sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
+                                            //sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
                                         }
                                     }
                                     if (env.CHANGE_ID && system == 'gfs') {
@@ -140,7 +170,7 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('4. Run Tests') {
             failFast false 
             matrix {
                 agent { label "${machine}-emc" }
@@ -215,6 +245,7 @@ pipeline {
                                         STATUS = 'Failed'
                                         try {
                                             sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in\n\\`${HOME}/RUNTESTS/${pslot}\\`" """)
                                         } catch (Exception e) {
                                             echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                         }
@@ -227,7 +258,7 @@ pipeline {
                 }
             }
         }
-        stage( 'FINALIZE' ) {
+        stage( '5. FINALIZE' ) {
             when { 
                 expression {
                    STATUS == 'Passed'

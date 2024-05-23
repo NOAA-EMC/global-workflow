@@ -7,7 +7,7 @@
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034
-writing_ufs_configure() {
+UFS_configure() {
 
 echo "SUB ${FUNCNAME[0]}: ufs.configure begins"
 
@@ -93,7 +93,6 @@ else
   echo "INFO: using ufs.configure template: '${ufs_configure_template}'"
 fi
 
-source "${USHgfs}/atparse.bash"
 rm -f "${DATA}/ufs.configure"
 atparse < "${ufs_configure_template}" >> "${DATA}/ufs.configure"
 echo "Rendered ufs.configure:"

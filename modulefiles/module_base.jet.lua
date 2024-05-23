@@ -29,6 +29,7 @@ load(pathJoin("gsi-ncdiag", (os.getenv("gsi_ncdiag_ver") or "None")))
 load(pathJoin("crtm", (os.getenv("crtm_ver") or "None")))
 load(pathJoin("bufr", (os.getenv("bufr_ver") or "None")))
 load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
+load(pathJoin("py-f90nml", (os.getenv("py_f90nml_ver") or "None")))
 load(pathJoin("py-netcdf4", (os.getenv("py_netcdf4_ver") or "None")))
 load(pathJoin("py-pyyaml", (os.getenv("py_pyyaml_ver") or "None")))
 load(pathJoin("py-jinja2", (os.getenv("py_jinja2_ver") or "None")))
@@ -38,7 +39,14 @@ load(pathJoin("met", (os.getenv("met_ver") or "None")))
 load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
+-- Adding perl as a module; With Rocky8, perl packages will not be from the OS
+load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
+
 setenv("WGRIB2","wgrib2")
+
+-- Stop gap fix for wgrib with spack-stack 1.6.0
+-- TODO Remove this when spack-stack issue #1097 is resolved
+setenv("WGRIB","wgrib")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
 --prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))

@@ -96,6 +96,7 @@ def fill_ROTDIR_cycled(host, inputs):
     dst_ocn_rst_dir = os.path.join('model_data', 'ocean', 'restart')
     dst_ocn_anl_dir = os.path.join('analysis', 'ocean')
     dst_ice_rst_dir = os.path.join('model_data', 'ice', 'restart')
+    dst_ice_anl_dir = os.path.join('analysis', 'ice')
     dst_atm_anl_dir = os.path.join('analysis', 'atmos')
 
     if flat_structure:
@@ -111,6 +112,7 @@ def fill_ROTDIR_cycled(host, inputs):
         src_ocn_rst_dir = os.path.join('ocean', 'RESTART')
         src_ocn_anl_dir = 'ocean'
         src_ice_rst_dir = os.path.join('ice', 'RESTART')
+        src_ice_anl_dir = dst_ice_anl_dir
         src_atm_anl_dir = 'atmos'
     else:
         src_atm_dir = dst_atm_dir
@@ -118,6 +120,7 @@ def fill_ROTDIR_cycled(host, inputs):
         src_ocn_rst_dir = dst_ocn_rst_dir
         src_ocn_anl_dir = dst_ocn_anl_dir
         src_ice_rst_dir = dst_ice_rst_dir
+        src_ice_anl_dir = dst_ice_anl_dir
         src_atm_anl_dir = dst_atm_anl_dir
 
     def link_files_from_src_to_dst(src_dir, dst_dir):
@@ -203,8 +206,9 @@ def fill_ROTDIR_cycled(host, inputs):
 
     # Link ice files
     if do_ice:
-        dst_dir = os.path.join(rotdir, previous_cycle_dir, dst_ice_rst_dir)
-        src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_ice_rst_dir)
+        # First 1/2 cycle needs a CICE6 analysis restart
+        src_dir = os.path.join(inputs.icsdir, current_cycle_dir, src_ice_anl_dir)
+        dst_dir = os.path.join(rotdir, current_cycle_dir, src_ice_anl_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
@@ -231,6 +235,18 @@ def fill_ROTDIR_cycled(host, inputs):
             src_file = os.path.join(src_dir, fname)
             if os.path.exists(src_file):
                 os.symlink(src_file, os.path.join(dst_dir, fname))
+        if inputs.nens > 0:
+            current_cycle_dir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+            for ii in range(1, inputs.nens + 1):
+                memdir = f'mem{ii:03d}'
+                src_dir = os.path.join(inputs.icsdir, current_cycle_dir, memdir, src_atm_anl_dir)
+                dst_dir = os.path.join(rotdir, current_cycle_dir, memdir, dst_atm_anl_dir)
+                makedirs_if_missing(dst_dir)
+                for ftype in ['ratmi003.nc', 'ratminc.nc', 'ratmi009.nc']:
+                    fname = f'enkf{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
+                    src_file = os.path.join(src_dir, fname)
+                    if os.path.exists(src_file):
+                        os.symlink(src_file, os.path.join(dst_dir, fname))
 
     return
 

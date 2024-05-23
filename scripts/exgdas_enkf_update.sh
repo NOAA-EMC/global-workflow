@@ -23,8 +23,6 @@ source "${USHgfs}/preamble.sh"
 pwd=$(pwd)
 
 # Utilities
-NCP=${NCP:-"/bin/cp -p"}
-NLN=${NLN:-"/bin/ln -sf"}
 NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
