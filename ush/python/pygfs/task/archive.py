@@ -65,6 +65,12 @@ class Archive(Task):
         if arch_dict.RUN == "gefs":
             raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
 
+        if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
+
+            # Copy the cyclone track files and rename the experiments
+            # TODO This really doesn't belong in archiving and should be moved elsewhere
+            Archive._rename_cyclone_expt(arch_dict)
+
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
 
         # Collect the dataset to archive locally
@@ -102,11 +108,6 @@ class Archive(Task):
         else:  # Only perform local archiving.  Do not create tarballs.
             self.tar_cmd = ""
             return arcdir_set, []
-
-        if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
-
-            # Copy the cyclone track files and rename the experiments
-            Archive._rename_cyclone_expt(arch_dict)
 
         master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
