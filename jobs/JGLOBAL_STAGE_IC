@@ -58,6 +58,7 @@ error_message() {
 ###############################################################
 for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
+  export MEMDIR=${MEMDIR:-}
   # Execute the Script
   "${SCRgfs}/exglobal_stage_ic.py"
 
