@@ -62,7 +62,7 @@ class Archive(Task):
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
 
         # Collect the dataset to archive locally
-        arcdir_filename = os.path.join(archive_parm, "arcdir.yaml.j2")
+        arcdir_j2yaml = os.path.join(archive_parm, "arcdir.yaml.j2")
 
         # Add the glob.glob function for capturing log filenames
         # TODO remove this kludge once log filenames are explicit
@@ -72,9 +72,16 @@ class Archive(Task):
         arch_dict['path_exists'] = os.path.exists
 
         # Parse the input jinja yaml template
-        arcdir_set = parse_j2yaml(arcdir_filename,
-                                  arch_dict,
-                                  allow_missing=False)
+        arcdir_set = Archive._construct_arcdir_set(arcdir_j2yaml,
+                                                   arch_dict)
+
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
+
+            # Copy the cyclone track files and rename the experiments
+            Archive._rename_cyclone_expt(arch_dict)
 
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
@@ -96,14 +103,6 @@ class Archive(Task):
         else:  # Only perform local archiving.  Do not create tarballs.
             self.tar_cmd = ""
             return arcdir_set, []
-
-        if not os.path.isdir(arch_dict.ROTDIR):
-            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
-
-        if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
-
-            # Copy the cyclone track files and rename the experiments
-            Archive._rename_cyclone_expt(arch_dict)
 
         if arch_dict.RUN == "gefs":
             raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
@@ -315,6 +314,22 @@ class Archive(Task):
                     rel_path_dict[rel_key] = rel_path
 
         return rel_path_dict
+
+    @staticmethod
+    @logit(logger)
+    def _construct_arcdir_set(j2yaml, arch_dict) -> Dict:
+
+        # Parse the input jinja yaml template
+        arcdir_yaml = parse_j2yaml(j2yaml,
+                                   arch_dict,
+                                   allow_missing=True)
+
+        # Collect the needed FileHandler dicts and construct arcdir_set
+        arcdir_set = {}
+        for key, handler in arcdir_yaml[arch_dict.RUN].items():
+            arcdir_set.update(handler)
+
+        return arcidr_set
 
     @staticmethod
     @logit(logger)
