@@ -37,8 +37,38 @@ if [[ "${DO_WAVE:-}" = "YES" ]]; then
   export COM_WAVE_RESTART
 fi
 
-# Execute the Script
-"${SCRgfs}/exglobal_stage_ic.py"
+# Define MEMDIR_ARRAY
+MEMDIR_ARRAY=()
+if [[ "${RUN:-}" = "gefs" ]]; then
+  # Populate the member_dirs array based on the value of NMEM_ENS
+  for ((ii = 0; ii <= "${NMEM_ENS:-0}"; ii++)); do
+    MEMDIR_ARRAY+=("mem$(printf "%03d" "${ii}")")
+  done
+else
+  MEMDIR_ARRAY+=("")
+fi
+
+# Initialize return code
+err=0
+
+error_message() {
+  echo "FATAL ERROR: Unable to copy ${1} to ${2} (Error code ${3})"
+}
+
+###############################################################
+for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
+
+  # Execute the Script
+  "${SCRgfs}/exglobal_stage_ic.py"
+
+done # for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
+
+###############################################################
+# Check for errors and exit if any of the above failed
+if [[ "${err}" -ne 0 ]]; then
+  echo "FATAL ERROR: Unable to copy ICs from ${BASE_CPLIC} to ${ROTDIR}; ABORT!"
+  exit "${err}"
+fi
 
 ##########################################
 # Remove the Temporary working directory
