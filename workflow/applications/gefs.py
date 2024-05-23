@@ -27,6 +27,9 @@ class GEFSAppConfig(AppConfig):
         if self.do_ocean or self.do_ice:
             configs += ['oceanice_products']
 
+        if self.do_aero:
+            configs += ['prep_emissions']
+
         return configs
 
     @staticmethod
@@ -44,6 +47,9 @@ class GEFSAppConfig(AppConfig):
 
         if self.do_wave:
             tasks += ['waveinit']
+
+        if self.do_aero:
+            tasks += ['prep_emissions']
 
         tasks += ['fcst']
 

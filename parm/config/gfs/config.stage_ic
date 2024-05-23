@@ -41,4 +41,8 @@ case "${CASE}" in
     ;;
 esac
 
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+  export CPL_ATMIC="GLOBAL-NEST_${CASE}"
+fi
+
 echo "END: config.stage_ic"

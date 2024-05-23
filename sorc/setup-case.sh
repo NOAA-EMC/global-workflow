@@ -27,6 +27,11 @@
 #export IC_PREFIX=gdas
 #export IC_TYPE=restart
 
+#workflow/hosts/awspw.yaml
+ export STMP=/lustre/${USER}/stmp
+ export PTMP=/lustre/${USER}/ptmp
+ export NOSCRUB=/bucket/${USER}/archive
+
  source ${GLOBALWORKFLOWHOME}/workflow/gw_setup.sh
 
  ${GLOBALWORKFLOWHOME}/workflow/setup_expt.py ${EXPNAME} forecast-only \

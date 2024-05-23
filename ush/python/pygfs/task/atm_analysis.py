@@ -49,6 +49,9 @@ class AtmAnalysis(Analysis):
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
                 'jedi_yaml': _jedi_yaml,
+                'atm_obsdatain_path': f"{self.runtime_config.DATA}/obs/",
+                'atm_obsdataout_path': f"{self.runtime_config.DATA}/diags/",
+                'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
             }
         )
 
@@ -118,8 +121,10 @@ class AtmAnalysis(Analysis):
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_ATMANLVAR)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
         exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('variational')
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:
@@ -135,8 +140,9 @@ class AtmAnalysis(Analysis):
     @logit(logger)
     def init_fv3_increment(self: Analysis) -> None:
         # Setup JEDI YAML file
-        self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA, os.path.basename(self.task_config.JEDIYAML))
-        save_as_yaml(self.get_jedi_config(), self.task_config.jedi_yaml)
+        self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA,
+                                                  f"{self.task_config.JCB_ALGO}.yaml")
+        save_as_yaml(self.get_jedi_config(self.task_config.JCB_ALGO), self.task_config.jedi_yaml)
 
         # Link JEDI executable to run directory
         self.task_config.jedi_exe = self.link_jediexe()
@@ -144,10 +150,17 @@ class AtmAnalysis(Analysis):
     @logit(logger)
     def fv3_increment(self: Analysis) -> None:
         # Run executable
-        self.execute_jediexe(self.runtime_config.DATA,
-                             self.task_config.APRUN_ATMANLFV3INC,
-                             self.task_config.jedi_exe,
-                             self.task_config.jedi_yaml)
+        exec_cmd = Executable(self.task_config.APRUN_ATMANLFV3INC)
+        exec_cmd.add_default_arg(self.task_config.jedi_exe)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
