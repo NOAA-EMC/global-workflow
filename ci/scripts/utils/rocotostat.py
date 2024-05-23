@@ -177,6 +177,7 @@ if __name__ == '__main__':
     rocoto_status = rocoto_statcount(rocotostat)
     rocoto_status.update(rocotostat_summary(rocotostat))
 
+    error_return = 0
     if is_done(rocoto_status):
         rocoto_state = 'DONE'
     elif rocoto_status['DEAD'] > 0:
