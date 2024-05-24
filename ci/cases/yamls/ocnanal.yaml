@@ -1,0 +1,36 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
+
+base:
+  DOIAU: "YES"
+  DO_JEDIATMVAR: "NO"
+  DO_JEDIATMENS: "NO"
+  DO_JEDIOCNVAR: "YES"
+  DO_JEDISNOWDA: "NO"
+  DO_MERGENSST: "NO"
+  DOHYBVAR: "NO"
+  DO_FIT2OBS: "NO"
+  DO_VERFOZN: "NO"
+  DO_VERFRAD: "NO"
+  DO_VRFY_OCEANDA: "NO"
+  ACCOUNT: "marine-cpu"
+  FHMAX_GFS: 240
+  HPSS_PROJECT: emc-climate
+  HOMEDIR: {{ 'PWD' | getenv }}/HOMEDIR
+  STMP: {{ 'PWD' | getenv }}/TMP 
+  PTMP: {{ 'PWD' | getenv }}/TMP
+  NOSCRUB: {{ 'PWD' | getenv }}/TMP
+
+ocnanal:
+  SOCA_INPUT_FIX_DIR: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/1440x1080x75/soca
+  CASE_ANL: 'C24'
+  SOCA_OBS_LIST: {{ 'PWD' | getenv }}/obs_list.yaml
+  SOCA_NINNER: 100
+  SABER_BLOCKS_YAML: ''
+  NICAS_RESOL: 1
+  NICAS_GRID_SIZE: 15000
+
+prepoceanobs:
+  SOCA_OBS_LIST: {{ HOMEgfs }}/ci/cases/yamls/obs_list.yaml 
+  OBSPREP_YAML: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obsprep/obsprep_config.yaml
+  DMPDIR: /scratch1/NCEPDEV/da/common/

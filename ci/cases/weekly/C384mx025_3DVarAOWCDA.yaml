@@ -1,0 +1,18 @@
+experiment:
+  system: gfs
+  mode: cycled
+
+arguments:
+  pslot: {{ 'pslot' | getenv }}
+  app: S2S
+  resdetatmos: 384
+  resdetocean: 0.25
+  nens: 0
+  gfs_cyc: 4
+  start: cold
+  comroot: {{ 'PWD' | getenv }}/{{ 'pslot' | getenv }}/COMROOT
+  expdir:  {{ 'PWD' | getenv }}/{{ 'pslot' | getenv }}/EXPDIR
+  idate: 2021063000
+  edate: 2021070306
+  icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/ocnanal.yaml

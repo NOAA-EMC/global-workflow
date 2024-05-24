@@ -1,0 +1,17 @@
+observers:
+# ADT
+- !INC ${OBS_YAML_DIR}/adt_rads_all.yaml
+
+# SST
+- !INC ${OBS_YAML_DIR}/sst_avhrr_ma_l3u.yaml
+- !INC ${OBS_YAML_DIR}/sst_avhrr_mb_l3u.yaml
+- !INC ${OBS_YAML_DIR}/sst_avhrr_mc_l3u.yaml
+- !INC ${OBS_YAML_DIR}/sst_viirs_npp_l3u.yaml
+- !INC ${OBS_YAML_DIR}/sst_viirs_n20_l3u.yaml
+- !INC ${OBS_YAML_DIR}/sst_abi_g16_l3c.yaml
+- !INC ${OBS_YAML_DIR}/sst_abi_g17_l3c.yaml
+- !INC ${OBS_YAML_DIR}/sst_ahi_h08_l3c.yaml
+
+# Ice concentration
+- !INC ${OBS_YAML_DIR}/icec_amsr2_north.yaml
+- !INC ${OBS_YAML_DIR}/icec_amsr2_south.yaml
