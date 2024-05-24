@@ -169,7 +169,7 @@ class Tasks:
 
         task_config = self._configs[task_name]
 
-        account = task_config['ACCOUNT']
+        account = task_config['ACCOUNT_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['ACCOUNT']
 
         walltime = task_config[f'wtime_{task_name}']
         if self.cdump in ['gfs'] and f'wtime_{task_name}_gfs' in task_config.keys():
@@ -208,6 +208,8 @@ class Tasks:
                 native += ':shared'
         elif scheduler in ['slurm']:
             native = '--export=NONE'
+            if task_config['RESERVATION'] != "":
+                native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION'] 
 
         queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
 

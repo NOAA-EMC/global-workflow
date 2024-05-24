@@ -287,7 +287,12 @@ def update_configs(host, inputs):
     data = AttrDict(host.info, **inputs.__dict__)
     data.HOMEgfs = _top
     yaml_path = inputs.yaml
+    print(yaml_path) #gge.debug
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@') #gge.debug
     yaml_dict = _update_defaults(AttrDict(parse_j2yaml(yaml_path, data)))
+    print(yaml_dict) #gge.debug
+    print(yaml_dict.keys()) #gge.debug
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@') #gge.debug
 
     # First update config.base
     edit_baseconfig(host, inputs, yaml_dict)
