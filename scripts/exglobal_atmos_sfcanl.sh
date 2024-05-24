@@ -83,9 +83,9 @@ fi
 
 # determine where the input snow restart files come from
 if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
-    COMIN_RESTART="${COMIN_SNOW_ANALYSIS}"
+    sfcdata_dir="${COMIN_SNOW_ANALYSIS}"
 else
-    COMIN_RESTART="${COMIN_ATMOS_RESTART_PREV}"
+    sfcdata_dir="${COMIN_ATMOS_RESTART_PREV}"
 fi
 
 # global_cycle executable specific variables
@@ -126,8 +126,8 @@ for gcycle_date in "${gcycle_dates[@]}"; do
 
   # Copy inputs from COMIN to DATA
   for (( nn=1; nn <= ntiles; nn++ )); do
-    ${NCP} "${COMIN_RESTART}/${datestr}.sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-    ${NCP} "${DATA}/fnbgsi.00${nn}.nc"                         "${DATA}/fnbgso.00${nn}"
+    ${NCP} "${sfcdata_dir}/${datestr}.sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
+    ${NCP} "${DATA}/fnbgsi.00${nn}.nc"                       "${DATA}/fnbgso.00${nn}"
   done
 
   CDATE="${gcyle_date}" ${CYCLESH}
