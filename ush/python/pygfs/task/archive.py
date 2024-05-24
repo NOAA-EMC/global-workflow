@@ -338,7 +338,7 @@ class Archive(Task):
         for key, handler in arcdir_yaml[arch_dict.RUN].items():
             arcdir_set.update(handler)
 
-        return arcidr_set
+        return arcdir_set
 
     @staticmethod
     @logit(logger)
