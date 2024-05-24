@@ -4,7 +4,7 @@ base:
   DOIAU: "NO"
   DO_JEDIATMVAR: "YES"
   DO_JEDIATMENS: "YES"
-  ACCOUNT: {{ 'SLURM_ACCOUNT' | getenv }}
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
 atmanl:
   LAYOUT_X_ATMANL: 4
   LAYOUT_Y_ATMANL: 4
