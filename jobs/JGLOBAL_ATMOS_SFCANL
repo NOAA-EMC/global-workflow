@@ -31,7 +31,7 @@ mkdir -p "${COMOUT_ATMOS_RESTART}"
 
 ${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl.sh}
 status=$?
-(( status != 0 )) && exit ${status}
+(( status != 0 )) && exit "${status}"
 
 
 ##############################################
@@ -42,14 +42,14 @@ status=$?
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+  cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}"
+[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA}"
 
 
 exit 0
