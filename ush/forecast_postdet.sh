@@ -104,7 +104,7 @@ EOF
 
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
-      if (( ${OFFSET_START_HOUR} != 0 )); then
+      if (( OFFSET_START_HOUR != 0 )); then
         inc_files=()
       elif [[ "${DOIAU}" == "YES" ]]; then
         # create an array of inc_files for each IAU hour
