@@ -34,7 +34,7 @@ FV3_postdet() {
     # Create an array of FV3 restart files
     local fv3_restart_files tile_files fv3_restart_file restart_file
     fv3_restart_files=(fv_core.res.nc) 
-    if (( ${OFFSET_START_HOUR} == 0 )); then
+    if (( OFFSET_START_HOUR == 0 )); then
         fv3_restart_files+=(coupler.res) 
     fi
     tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
