@@ -9,9 +9,13 @@ export errchk=${errchk:-err_chk}
 export MP_PULSE=0
 
 # Set COM Paths and GETGES environment
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_PREP COM_WAVE_HISTORY COM_WAVE_STATION
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+   COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \
+   COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
 
-if [[ ! -d ${COM_WAVE_STATION} ]]; then mkdir -p "${COM_WAVE_STATION}"; fi
+
+if [[ ! -d ${COMIN_WAVE_STATION} ]]; then mkdir -p "${COMIN_WAVE_STATION}"; fi
 
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
@@ -36,7 +40,7 @@ if [ ${err} -ne 0 ]; then
 fi
 
 ##########################################
-# Remove the Temporary working directory
+# Remove the Temporary working directory 
 ##########################################
 cd ${DATAROOT}
 [[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
