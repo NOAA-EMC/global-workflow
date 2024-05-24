@@ -74,7 +74,7 @@ class AerosolObsPrep(Task):
             self.task_config.prepaero_config = self.get_obsproc_config(sensor)
 
         # generate converter YAML file
-            _prepaero_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.chem_prepobs_viirs_{sensor}.yaml")
+            _prepaero_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.prepaero_viirs_{sensor}.yaml")
             self.task_config.prepaero_yaml.append( _prepaero_yaml)
             logger.debug(f"Generate PrepAeroObs YAML file: {_prepaero_yaml}")
             save_as_yaml(self.task_config.prepaero_config, _prepaero_yaml)
