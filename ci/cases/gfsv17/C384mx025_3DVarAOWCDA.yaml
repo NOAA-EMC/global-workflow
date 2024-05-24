@@ -15,4 +15,4 @@ arguments:
   idate: 2021063000
   edate: 2021070306
   icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/ocnanal.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/ocnanal.yaml
