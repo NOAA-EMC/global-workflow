@@ -24,9 +24,14 @@ else
   ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model_data/ice/history/gefs.ice.t${cyc}z.${FHOUT_ICE_GFS}hr_avg.f${fhr}.nc
 fi
 
-ls -l "${ncfile}" 2>&1  # redirect stdout and stderr to /dev/null to suppress output in cron
-
-rc=$?
-# If there is no error, rc=0, else rc!=0
+#Check if netcdf file exists.
+if [[ ! -f "${ncfile}" ]];then
+  rc=1
+#Check if netcdf file is older than 2 minutes.
+elif [[ $(find "${ncfile}" -mmin -2) ]]; then
+  rc=1
+else
+  rc=0
+fi
 
 exit "${rc}"
