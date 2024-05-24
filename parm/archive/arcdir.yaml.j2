@@ -49,6 +49,7 @@ Deterministic: &deterministic
 
     {% endif %}
 
+{% if RUN == "gfs" %}
 gfs:  # GFS specific
     <<: *base
     <<: *deterministic
@@ -86,7 +87,9 @@ gfs:  # GFS specific
             {% endfor %}
 
     {% endif %}
+{% endif %}
 
+{% if RUN == "gdas" %}
 gdas:  # GDAS specific
     <<: *base
     <<: *deterministic
@@ -95,6 +98,7 @@ gdas:  # GDAS specific
             {% for fhr in range(0, FHMAX + 1, FHOUT) %}
             - ["{{ COM_ATMOS_GRIB_1p00 }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}", "{{ ARCDIR }}/pgbf{{ '%02d' % fhr }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
             {% endfor %}
+{% endif %}
 
 Ensemble: &ensemble # ENKFGDAS or ENKFGFS
     analysis:
@@ -108,10 +112,8 @@ Ensemble: &ensemble # ENKFGDAS or ENKFGFS
             - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}gsistat.ensmean", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}.ensmean"]
             {% endif %}
 
-enkfgdas:
+{% if "enkf" in RUN %}
+{{ RUN }}:
     <<: *base
     <<: *ensemble
-
-enkfgfs:
-    <<: *base
-    <<: *ensemble
+{% endif %}
