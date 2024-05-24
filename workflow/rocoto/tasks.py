@@ -209,7 +209,7 @@ class Tasks:
         elif scheduler in ['slurm']:
             native = '--export=NONE'
             if task_config['RESERVATION'] != "":
-                native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION'] 
+                native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
 
         queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
 
