@@ -25,8 +25,6 @@ source "${USHgfs}/preamble.sh"
 cd "${DATA}" || exit 99
 
 # Derived base variables
-# Ignore possible spelling error (nothing is misspelled)
-# shellcheck disable=SC2153
 
 # Dependent Scripts and Executables
 CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
@@ -44,6 +42,8 @@ export DELTSFC=${DELTSFC:-6}
 RUN_GETGES=${RUN_GETGES:-"NO"}
 GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
 GPREFIX="gdas.t${GDATE:8:2}z."
 OPREFIX="${RUN/enkf}.t${cyc}z."
 APREFIX="${RUN/enkf}.t${cyc}z."
