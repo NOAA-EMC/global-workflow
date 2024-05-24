@@ -582,7 +582,7 @@ CICE_nml() {
 CICE_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
 
-  # Copy ice_in namelist from DATA to COMOUTice after the forecast is run (and successfull)
+  # Copy ice_in namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
   ${NCP} "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
 
   # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs
