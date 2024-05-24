@@ -19,7 +19,7 @@ class Tasks:
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
-                   'prepaeroobs', 'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
+                   'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'prepsnowobs', 'snowanl',
                    'fcst',
                    'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',

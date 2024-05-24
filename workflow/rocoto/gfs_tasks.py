@@ -484,7 +484,6 @@ class GFSTasks(Tasks):
         return task
 
     def prepaeroobs(self):
-
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -510,7 +509,9 @@ class GFSTasks(Tasks):
     def aeroanlinit(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}prepaeroobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
+        if self.app_config.do_prep_aero_obs:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}prepaeroobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
