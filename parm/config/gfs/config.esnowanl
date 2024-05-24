@@ -8,12 +8,13 @@ echo "BEGIN: config.esnowanl"
 # Get task specific resources
 source "${EXPDIR}/config.resources" esnowanl
 
-export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
-export JCB_ALGO_YAML="${PARMgfs}/gdas/snow/fv3jedi_land_ensrecenter.yaml.j2"
+export JCB_BASE_YAML="${PARMgfs}/gdas/snow/jcb-base.yaml.j2"
+export JCB_ALGO_YAML="${PARMgfs}/gdas/snow/jcb-fv3jedi_land_ensrecenter.yaml.j2"
 
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIEXE=${EXECgfs}/gdasapp_land_ensrecenter.x
+export FREGRID=${EXECgfs}/fregrid.x
 
 echo "END: config.esnowanl"
