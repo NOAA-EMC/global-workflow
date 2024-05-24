@@ -27,11 +27,14 @@ fi
 #Check if netcdf file exists.
 if [[ ! -f "${ncfile}" ]];then
   rc=1
-#Check if netcdf file is older than 2 minutes.
-elif [[ $(find "${ncfile}" -mmin -2) ]]; then
-  rc=1
 else
-  rc=0
+  #Check if netcdf file is older than 2 minutes.
+  ncage="$(find "${ncfile}" -mmin -2)"
+  if [[ -n "${ncage}" ]]; then
+    rc=1
+  else
+    rc=0
+  fi
 fi
 
 exit "${rc}"
