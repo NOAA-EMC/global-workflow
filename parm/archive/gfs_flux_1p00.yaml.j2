@@ -1,0 +1,9 @@
+gfs_flux_1p00:
+    {% set head = "gfs.t" + cycle_HH + "z." %}
+    name: "GFS_FLUX_1P00"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_flux_1p00.tar"
+    required:
+        {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}flux.1p00.f{{ '%03d' % fhr }}"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}flux.1p00.f{{ '%03d' % fhr }}.idx"
+        {% endfor %}

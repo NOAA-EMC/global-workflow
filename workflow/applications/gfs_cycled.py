@@ -152,9 +152,6 @@ class GFSCycledAppConfig(AppConfig):
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
-        if self.do_aero:
-            gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
-
         if self.do_jedisnowda:
             gdas_gfs_common_tasks_before_fcst += ['prepsnowobs', 'snowanl']
 
@@ -182,6 +179,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks
+
+        if self.do_aero and 'gdas' in self.aero_anl_cdumps:
+            gdas_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
@@ -216,6 +216,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             gfs_tasks += wave_prep_tasks
+
+        if self.do_aero and 'gfs' in self.aero_anl_cdumps:
+            gfs_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 

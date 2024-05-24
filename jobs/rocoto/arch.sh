@@ -8,6 +8,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
+###############################################################
+# setup python path for workflow utilities and tasks
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
+export PYTHONPATH
+
 export job="arch"
 export jobid="${job}.$$"
 

@@ -84,6 +84,7 @@ declare -rx COM_OCEAN_NETCDF_TMPL=${COM_BASE}'/products/ocean/netcdf'
 declare -rx COM_OCEAN_GRIB_TMPL=${COM_BASE}'/products/ocean/grib2'
 declare -rx COM_OCEAN_GRIB_GRID_TMPL=${COM_OCEAN_GRIB_TMPL}'/${GRID}'
 
+declare -rx COM_ICE_ANALYSIS_TMPL=${COM_BASE}'/analysis/ice'
 declare -rx COM_ICE_INPUT_TMPL=${COM_BASE}'/model_data/ice/input'
 declare -rx COM_ICE_HISTORY_TMPL=${COM_BASE}'/model_data/ice/history'
 declare -rx COM_ICE_RESTART_TMPL=${COM_BASE}'/model_data/ice/restart'
