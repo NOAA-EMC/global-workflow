@@ -23,8 +23,8 @@ class AerosolObsPrep(Task):
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
 
-        _window_begin  = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
-        _window_end  = add_to_datetime(self.runtime_config.current_cycle, +to_timedelta(f"{self.config['assim_freq']}H") / 2)
+        _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
+        _window_end = add_to_datetime(self.runtime_config.current_cycle, +to_timedelta(f"{self.config['assim_freq']}H") / 2)
 
         local_dict = AttrDict(
             {
@@ -41,13 +41,11 @@ class AerosolObsPrep(Task):
         # task_config is everything that this task should need
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
 
-
-
     @logit(logger)
     def initialize(self) -> None:
         """
         List needed raw obs files.
-        Link over the raw obs files to COM_OBS.
+        Copy the raw obs files to $DATA/obs.
         Link over the needed executable.
         Generate corrosponding YMAL file.
         Run IODA converter.
@@ -129,6 +127,7 @@ class AerosolObsPrep(Task):
     @logit(logger)
     def copy_obs(self,inputfiles) -> Dict[str, Any]:
         """
+        Copy the raw obs files to $DATA/obs.
         """
         
         copylist = []
@@ -166,7 +165,7 @@ class AerosolObsPrep(Task):
     @logit(logger)
     def link_obsconvexe(self) -> None:
         """
-        This method links a JEDI executable to the run directory
+        This method links the gdas executable to the run directory
         Parameters
         ----------
         Task: GDAS task
@@ -186,6 +185,9 @@ class AerosolObsPrep(Task):
 
     @logit(logger)
     def runConverter(self) -> None:
+        """
+        Run the IODA converter gdas_obsprovider2ioda.x
+        """
         chdir(self.task_config.DATA)
         for prepaero_yaml in self.task_config.prepaero_yaml:
             exec_cmd = Executable(self.task_config.APRUN_PREPAEROOBS)
@@ -206,6 +208,11 @@ class AerosolObsPrep(Task):
 
     @logit(logger)
     def finalize(self) -> None:
+        """
+        Copy the output viirs files to COM_OBS.
+        Tar and archive the output files.
+        Tar and archive the raw obs files.
+        """
         # get list of viirs files
         obsfiles = glob.glob(os.path.join(self.task_config['DATA'], '*viirs*nc4'))
         copylist = []
