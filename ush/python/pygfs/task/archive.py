@@ -148,8 +148,7 @@ class Archive(Task):
         """
 
         # Copy files to the local ARCDIR
-        for key in arcdir_set.keys():
-            FileHandler(arcdir_set[key]).sync()
+        FileHandler(arcdir_set).sync()
 
     @logit(logger)
     def execute_backup_dataset(self, atardir_set: Dict[str, Any]) -> None:
