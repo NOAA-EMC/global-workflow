@@ -151,13 +151,13 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
      GRIBIN=$RUNwave.$cycle.$grdID.f${fhr}.clipped.grib2
      GRIBIN_chk=$GRIBIN.idx
 
-     ln -s $GRIBIN gribfile.$grdID.f${fhr}
+     ${NLN} $GRIBIN gribfile.$grdID.f${fhr}
 
      #
 # 1.d Input template files
      parmfile=${PARMgfs}/wave/grib2_${RUNwave}.$grdOut.f${fhr}
      if [ -f $parmfile ]; then
-       ln -s $parmfile awipsgrb.$grdID.f${fhr}
+       ${NLN} $parmfile awipsgrb.$grdID.f${fhr}
      else
        echo '*** ERROR : NO template  grib2_${RUNwave}.$grdID.f${fhr} *** '
        echo "$RUNwave $grdID $fhr prdgen $date $cycle : GRIB template file missing." >> $wavelog

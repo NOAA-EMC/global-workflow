@@ -37,6 +37,10 @@ load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
 setenv("WGRIB2","wgrib2")
+
+-- Stop gap fix for wgrib with spack-stack 1.6.0
+-- TODO Remove this when spack-stack issue #1097 is resolved
+setenv("WGRIB","wgrib")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
 prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles"))

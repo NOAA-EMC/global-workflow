@@ -110,8 +110,8 @@ if [[ ! -s "${COM_WAVE_GRID}/${outfile}.idx" ]]; then
 
   # 0.e Links to working directory
 
-  ln -s "${DATA}/mod_def.${grdID}" "mod_def.ww3"
-  ln -s "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "out_grd.ww3"
+  ${NLN} "${DATA}/mod_def.${grdID}" "mod_def.ww3"
+  ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "out_grd.ww3"
 
   # --------------------------------------------------------------------------- #
   # 1.  Generate GRIB file with all data

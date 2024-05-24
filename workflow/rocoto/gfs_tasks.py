@@ -853,7 +853,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:
+        if self.app_config.do_aero and self.cdump in self.app_config.aero_fcst_cdumps:
             # Calculate offset based on CDUMP = gfs | gdas
             interval = None
             if self.cdump in ['gfs']:
@@ -897,7 +897,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:
+        if self.app_config.do_aero and self.cdump in self.app_config.aero_anl_cdumps:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
@@ -1449,47 +1449,6 @@ class GFSTasks(Tasks):
                      }
 
         metatask_dict = {'task_name': f'{self.cdump}awips_20km_1p0deg',
-                         'task_dict': task_dict,
-                         'var_dict': var_dict
-                         }
-
-        task = rocoto.create_task(metatask_dict)
-
-        return task
-
-    def awips_g2(self):
-
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        awipsenvars = self.envars.copy()
-        awipsenvar_dict = {'FHRGRP': '#grp#',
-                           'FHRLST': '#lst#',
-                           'ROTDIR': self.rotdir}
-        for key, value in awipsenvar_dict.items():
-            awipsenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_awipsgroups(self.cdump, self._configs['awips'])
-        var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
-
-        resources = self.get_resource('awips')
-
-        task_name = f'{self.cdump}awips_g2#{varname1}#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': awipsenvars,
-                     'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/awips_g2.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        metatask_dict = {'task_name': f'{self.cdump}awips_g2',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }

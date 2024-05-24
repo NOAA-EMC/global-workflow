@@ -54,7 +54,14 @@ common_predet(){
   current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
   current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
   next_cycle_begin=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
-  next_cycle_end=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
+  #Define model start date for current_cycle and next_cycle as the time the forecast will start
+  if [[ "${DOIAU:-}" == "YES" ]]; then
+    model_start_date_current_cycle="${current_cycle_begin}"
+    model_start_date_next_cycle="${next_cycle_begin}"
+  else
+    model_start_date_current_cycle=${current_cycle} 
+    model_start_date_next_cycle=${next_cycle}
+  fi 
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
   FHMIN=${FHMIN:-0}
@@ -86,8 +93,18 @@ FV3_predet(){
   FHCYC=${FHCYC:-24}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  # Convert restart interval into an explicit list for FV3
   if (( restart_interval == 0 )); then
     restart_interval=${FHMAX}
+    FV3_RESTART_FH=("${restart_interval}")
+  else
+    # shellcheck disable=SC2312
+    mapfile -t FV3_RESTART_FH < <(seq "${restart_interval}" "${restart_interval}" "${FHMAX}")
+    # If the last forecast hour is not in the array, add it
+    local nrestarts=${#FV3_RESTART_FH[@]}
+    if (( FV3_RESTART_FH[nrestarts-1] != FHMAX )); then
+      FV3_RESTART_FH+=("${FHMAX}")
+    fi
   fi
 
   # Convert output settings into an explicit list for FV3
@@ -106,9 +123,6 @@ FV3_predet(){
   # IAU options
   IAUFHRS=${IAUFHRS:-0}
   IAU_DELTHRS=${IAU_DELTHRS:-0}
-
-  # Model config options
-  ntiles=6
 
   #------------------------------------------------------------------
   # changeable parameters
@@ -232,9 +246,16 @@ FV3_predet(){
 
   # Conserve total energy as heat globally
   consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+    consv_te=0
+    k_split=${k_split:-1}
+    k_split_nest=${k_split_nest:-4}
+  else
+    consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
+    k_split=${k_split:-2}
+  fi
 
   # time step parameters in FV3
-  k_split=${k_split:-2}
   n_split=${n_split:-5}
 
   if [[ "${MONO:0:4}" == "mono" ]]; then  # monotonic options
@@ -360,6 +381,13 @@ FV3_predet(){
     ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
     ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
   done
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+    ${NLN} "${DATA}/INPUT/oro_data.tile7.nc" "${DATA}/INPUT/oro_data.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc"     "${DATA}/INPUT/${CASE}_grid.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc"     "${DATA}/INPUT/grid.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/oro_data_ls.tile7.nc" "${DATA}/INPUT/oro_data_ls.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/oro_data_ss.tile7.nc" "${DATA}/INPUT/oro_data_ss.nest02.tile7.nc"
+  fi
 
   # NoahMP table
   local noahmptablefile="${PARMgfs}/ufs/noahmptable.tbl"

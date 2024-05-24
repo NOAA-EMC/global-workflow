@@ -10,7 +10,7 @@ function usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-h][-o]
+Usage: ${BASH_SOURCE[0]} [-h][-o][--nest]
   -h:
     Print this help message and exit
   -o:
@@ -23,12 +23,17 @@ RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":ho" option; do
+while getopts ":ho-:" option; do
   case "${option}" in
     h) usage ;;
     o)
       echo "-o option received, configuring for NCO"
       RUN_ENVIR="nco";;
+    -)
+      if [[ "${OPTARG}" == "nest" ]]; then
+        LINK_NEST=ON
+      fi
+      ;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
@@ -78,19 +83,28 @@ esac
 
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
+# global-nest uses different versions of orog and ugwd
+if [[ "${LINK_NEST:-OFF}" == "ON" ]] ; then
+  source "${HOMEgfs}/versions/fix.nest.ver"
+fi
 
-# Link wxflow in ush/python, workflow and ci/scripts
+# Link python pacakges in ush/python
+# TODO: This will be unnecessary when these are part of the virtualenv
+packages=("wxflow" "jcb")
+for package in "${packages[@]}"; do
+    cd "${HOMEgfs}/ush/python" || exit 1
+    [[ -s "${package}" ]] && rm -f "${package}"
+    ${LINK} "${HOMEgfs}/sorc/${package}/src/${package}" .
+done
+
+# Link wxflow in workflow and ci/scripts
 # TODO: This will be unnecessary when wxflow is part of the virtualenv
-cd "${HOMEgfs}/ush/python" || exit 1
-[[ -s "wxflow" ]] && rm -f wxflow
-${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
 cd "${HOMEgfs}/workflow" || exit 1
 [[ -s "wxflow" ]] && rm -f wxflow
 ${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
 cd "${HOMEgfs}/ci/scripts" || exit 1
 [[ -s "wxflow" ]] && rm -f wxflow
 ${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
-
 
 # Link fix directories
 if [[ -n "${FIX_DIR}" ]]; then
@@ -169,7 +183,7 @@ done
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
-declare -a ufs_templates=("model_configure.IN" \
+declare -a ufs_templates=("model_configure.IN" "model_configure_nest.IN"\
                           "MOM_input_025.IN" "MOM_input_050.IN" "MOM_input_100.IN" "MOM_input_500.IN" \
                           "MOM6_data_table.IN" \
                           "ice_in.IN" \
@@ -219,7 +233,7 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/parm/gdas" || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca")
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms")
   for comp in "${gdasapp_comps[@]}"; do
     [[ -d "${comp}" ]] && rm -rf "${comp}"
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
@@ -324,33 +338,16 @@ fi
 
 # GDASApp
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
-  declare -a JEDI_EXE=("fv3jedi_addincrement.x" \
-                       "fv3jedi_diffstates.x" \
-                       "fv3jedi_ensvariance.x" \
-                       "fv3jedi_hofx.x" \
-                       "fv3jedi_var.x" \
-                       "fv3jedi_convertincrement.x" \
-                       "fv3jedi_dirac.x" \
-                       "fv3jedi_error_covariance_training.x" \
-                       "fv3jedi_letkf.x" \
-                       "fv3jedi_convertstate.x" \
-                       "fv3jedi_eda.x" \
-                       "fv3jedi_forecast.x" \
+  declare -a JEDI_EXE=("gdas.x" \
+                       "gdas_soca_gridgen.x" \
+                       "gdas_soca_error_covariance_toolbox.x" \
+                       "gdas_soca_setcorscales.x" \
                        "fv3jedi_plot_field.x" \
-                       "fv3jedi_data_checker.py" \
-                       "fv3jedi_enshofx.x" \
-                       "fv3jedi_hofx_nomodel.x" \
-                       "fv3jedi_testdata_downloader.py" \
                        "fv3jedi_fv3inc.x" \
                        "gdas_ens_handler.x" \
                        "gdas_incr_handler.x" \
                        "gdas_obsprovider2ioda.x" \
                        "gdas_socahybridweights.x" \
-                       "soca_convertincrement.x" \
-                       "soca_error_covariance_training.x" \
-                       "soca_setcorscales.x" \
-                       "soca_gridgen.x" \
-                       "soca_var.x" \
                        "bufr2ioda.x" \
                        "calcfIMS.exe" \
                        "apply_incr.exe" )

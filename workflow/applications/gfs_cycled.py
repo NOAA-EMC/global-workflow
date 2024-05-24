@@ -179,6 +179,9 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks
 
+        if self.do_aero and 'gdas' in self.aero_anl_cdumps:
+            gdas_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+
         gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
         if self.do_upp:
@@ -212,6 +215,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             gfs_tasks += wave_prep_tasks
+
+        if self.do_aero and 'gfs' in self.aero_anl_cdumps:
+            gfs_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
@@ -264,7 +270,7 @@ class GFSCycledAppConfig(AppConfig):
                 gfs_tasks += ['gempakpgrb2spec']
 
         if self.do_awips:
-            gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']
+            gfs_tasks += ['awips_20km_1p0deg', 'fbwind']
 
         if self.do_mos:
             gfs_tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',

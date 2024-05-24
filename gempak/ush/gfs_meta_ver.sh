@@ -21,7 +21,7 @@ device="nc | ${metaname}"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
@@ -32,7 +32,7 @@ MDL2="GFSHPC"
 #GENERATING THE METAFILES.
 # seq won't give us any splitting problems, ignore warnings
 # shellcheck disable=SC2207,SC2312
-IFS=$'\n' lookbacks=($(seq 6 6 180) $(seq 192 12 216))
+lookbacks=($(IFS=$'\n' seq 6 6 180) $(IFS=$'\n' seq 192 12 216))
 for lookback in "${lookbacks[@]}"; do
     init_time="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${lookback} hours")"
     init_PDY=${init_time:0:8}
@@ -54,7 +54,7 @@ for lookback in "${lookbacks[@]}"; do
     HPCGFS="${RUN}.${init_time}"
     if [[ ! -L "${HPCGFS}" ]]; then
         YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
-        ln -sf "${source_dir}" "${HPCGFS}"
+        ${NLN} "${source_dir}" "${HPCGFS}"
     fi
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
