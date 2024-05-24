@@ -27,7 +27,6 @@ cd "${DATA}" || exit 99
 # Derived base variables
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 
 # Dependent Scripts and Executables
 CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
@@ -84,9 +83,9 @@ fi
 
 # determine where the input snow restart files come from
 if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
-    COMIN="${COMIN_SNOW_ANALYSIS}"
+    COMIN_RESTART="${COMIN_SNOW_ANALYSIS}"
 else
-    COMIN="${COMIN_ATMOS_RESTART_PREV}"
+    COMIN_RESTART="${COMIN_ATMOS_RESTART_PREV}"
 fi
 
 # global_cycle executable specific variables
@@ -127,8 +126,8 @@ for gcycle_date in "${gcycle_dates[@]}"; do
 
   # Copy inputs from COMIN to DATA
   for (( nn=1; nn <= ntiles; nn++ )); do
-    ${NCP} "${COMIN}/${datestr}.sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-    ${NCP} "${COMIN}/${datestr}.sfc_data.tile${nn}.nc" "${DATA}/fnbgso.00${nn}"
+    ${NCP} "${COMIN_RESTART}/${datestr}.sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
+    ${NCP} "${DATA}/fnbgsi.00${nn}.nc"                         "${DATA}/fnbgso.00${nn}"
   done
 
   CDATE="${gcyle_date}" ${CYCLESH}

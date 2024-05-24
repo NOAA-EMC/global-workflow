@@ -10,6 +10,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+export GDATE
 
 RUN="gdas" YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
   COMIN_OBS_PREV:COM_OBS_TMPL \
