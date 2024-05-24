@@ -1029,8 +1029,8 @@ case ${step} in
         fi
         ;;
       "C384")
-        export npe_eupd=270
-        export nth_eupd=8
+        export npe_eupd=80
+        export nth_eupd=5
         if [[ "${machine}" == "WCOSS2" ]]; then
           export npe_eupd=315
           export nth_eupd=14
