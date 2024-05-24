@@ -20,8 +20,6 @@ gdasocean_analysis:
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.ssh_total_stddev.nc'
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.steric_explained_variance.nc'
         {% endif %}
-        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.adt_rads_all.stats.csv'
-        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.icec_amsr2_north.stats.csv'
-        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.icec_amsr2_south.stats.csv'
+        - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.*.stats.csv'
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/*.nc4'
         - '{{ COM_OCEAN_ANALYSIS | relpath(ROTDIR) }}/yaml/*.yaml'
