@@ -562,7 +562,7 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ntasks_ww3=262
       ;;
     "glo_100")
-      ntasks_ww3=30
+      ntasks_ww3=20
       nthreads_ww3=1
       ;;
     "glo_200")
