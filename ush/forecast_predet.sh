@@ -36,6 +36,40 @@ nhour(){
   echo "${hours}"
 }
 
+FV3_coldstarts(){
+  # Function to return an comma-separated string of cold-start input files for FV3
+  # Create an array of chgres-ed FV3 files
+  local fv3_input_files tile_files
+  fv3_input_files=(gfs_ctrl.nc)
+  tile_files=(gfs_data sfc_data)
+  local nn tt
+  for (( nn = 1; nn <= ntiles; nn++ )); do
+    for tt in "${tile_files[@]}"; do
+      fv3_input_files+=("${tt}.tile${nn}.nc")
+    done
+  done
+  # Create a comma separated string from array using IFS
+  IFS=,
+  echo "${fv3_input_files[*]}"
+}
+
+FV3_restarts(){
+  # Function to return an comma-separated string of warm-start input files for FV3
+  # Create an array of FV3 restart files
+  local fv3_restart_files tile_files
+  fv3_restart_files=(coupler.res fv_core.res.nc)
+  tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
+  local nn tt
+  for (( nn = 1; nn <= ntiles; nn++ )); do
+    for tt in "${tile_files[@]}"; do
+      fv3_restart_files+=("${tt}.tile${nn}.nc")
+    done
+  done
+  # Create a comma separated string from array using IFS
+  IFS=,
+  echo "${fv3_restart_files[*]}"
+}
+
 # shellcheck disable=SC2034
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through model components"
@@ -54,15 +88,20 @@ common_predet(){
   current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
   current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
   next_cycle_begin=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
-  #Define model start date for current_cycle and next_cycle as the time the forecast will start
+  forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+
+  # Define model start date for current_cycle and next_cycle as the time the forecast will start
   if [[ "${DOIAU:-}" == "YES" ]]; then
     model_start_date_current_cycle="${current_cycle_begin}"
     model_start_date_next_cycle="${next_cycle_begin}"
   else
-    model_start_date_current_cycle=${current_cycle} 
+    if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
+      model_start_date_current_cycle=${current_cycle_end}
+    else
+      model_start_date_current_cycle=${current_cycle}
+    fi
     model_start_date_next_cycle=${next_cycle}
-  fi 
-  forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+  fi
 
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
