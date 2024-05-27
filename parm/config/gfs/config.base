@@ -188,6 +188,7 @@ export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
   export ntiles=7
   export NEST_OUTPUT_GRID="regional_latlon"
+  export FIXgfs="${HOMEgfs}/fix/nest"
 else
   export ntiles=6
 fi

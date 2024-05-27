@@ -39,6 +39,7 @@ fix/sfc_climo
 fix/ugwd
 fix/verif
 fix/wave
+fix/nest
 
 # Ignore parm file symlinks
 #--------------------------
