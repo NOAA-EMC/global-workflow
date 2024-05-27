@@ -145,7 +145,7 @@ do
     [[ "${RUN_ENVIR}" == "nco" ]] && chmod -R 755 "${dir}"
     rm -rf "${dir}"
   fi
-  ln -snf ../${dir} .
+  ln -snf ../"${dir}" .
 done
 for dir in orog \
            ugwd
