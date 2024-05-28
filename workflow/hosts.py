@@ -50,6 +50,8 @@ class Host:
             machine = 'WCOSS2'
         elif os.path.exists('/data/prod'):
             machine = 'S4'
+        elif os.path.exists('/gpfs/f5'):
+            machine = 'GAEA'
         elif container is not None:
             machine = 'CONTAINER'
         elif pw_csp is not None:

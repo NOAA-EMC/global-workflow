@@ -64,7 +64,7 @@ while true; do
   rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 
   # Wait before running rocotostat
-  sleep 10
+  sleep 60
 
   # Get job statistics
   echo "Gather Rocoto statistics"

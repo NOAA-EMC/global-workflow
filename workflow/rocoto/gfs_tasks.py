@@ -851,7 +851,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:
+        if self.app_config.do_aero and self.cdump in self.app_config.aero_fcst_cdumps:
             # Calculate offset based on CDUMP = gfs | gdas
             interval = None
             if self.cdump in ['gfs']:
@@ -895,7 +895,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:
+        if self.app_config.do_aero and self.cdump in self.app_config.aero_anl_cdumps:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 

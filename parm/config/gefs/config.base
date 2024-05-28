@@ -134,8 +134,11 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
+export AERO_FCST_CDUMP="" # When to run aerosol forecast: gdas, gfs, or both
+export AERO_ANL_CDUMP="" # When to run aerosol analysis: gdas, gfs, or both
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
+export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
@@ -179,6 +182,8 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
+    export AERO_ANL_CDUMP="both"
+    export AERO_FCST_CDUMP="gdas"
     ;;
   ATMW)
     export DO_COUPLED="YES"
@@ -197,6 +202,8 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
+        export AERO_ANL_CDUMP="both"
+        export AERO_FCST_CDUMP="gdas"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
@@ -222,6 +229,11 @@ export FHOUT_GFS=6
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 export FHOUT_OCNICE_GFS=6
+export FHMIN_WAV=0
+export FHOUT_WAV=3
+export FHMAX_HF_WAV=120
+export FHOUT_HF_WAV=1
+export FHMAX_WAV=${FHMAX_GFS}
 if (( gfs_cyc != 0 )); then
     export STEP_GFS=$(( 24 / gfs_cyc ))
 else
@@ -235,6 +247,7 @@ export FHOUT_ENKF=${FHOUT_GFS}
 
 # GFS restart interval in hours
 export restart_interval_gfs=12
+export restart_interval_enkfgfs=12
 # NOTE: Do not set this to zero.  Instead set it to $FHMAX_GFS
 # TODO: Remove this variable from config.base and reference from config.fcst
 # TODO: rework logic in config.wave and push it to parsing_nameslist_WW3.sh where it is actually used
@@ -312,5 +325,8 @@ export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capabili
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
 export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
+
+# Number of regional collectives to create soundings for
+export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
 
 echo "END: config.base"

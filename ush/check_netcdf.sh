@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/load_fv3gfs_modules.sh" 1>/dev/null 2>&1
 
 ncfile=${1?}
 
-ncdump -h "${ncfile}" 1>/dev/null 2>&1  # redirect stdout and stderr to /dev/null to suppress output in cron
+(( $(ncdump "${ncfile}" 2> /dev/null | grep -Po '(?<=time = UNLIMITED ; // \()\d+(?= currently)' || echo 0) > 0 )) # redirect stdout and stderr to /dev/null to suppress output in cron
 rc=$?
 # If there is no error, rc=0, else rc!=0
 
