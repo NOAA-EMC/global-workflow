@@ -30,9 +30,9 @@ module load "module_gwsetup.${MACHINE_ID}"
 source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
 
 JAVA_HOME="${JENKINS_AGENT_LANUCH_DIR}/JAVA/jdk-17.0.10"
-if [ ! -d "${JAVA_HOME}" ]; then
+if [[ ! -d "${JAVA_HOME}" ]]; then
   JAVA_HOME=/usr/lib/jvm/jre-17
-  if [ ! -d "${JAVA_HOME}" ]; then
+  if [[ ! -d "${JAVA_HOME}" ]]; then
     echo "ERROR: JAVA_HOME not found. Exiting with error."
     exit 1
   fi
@@ -44,7 +44,7 @@ ${JAVA} -version
 
 export GH="${HOME}/bin/gh"
 command -v "${GH}"
-$GH --version
+${GH} --version
 
 if [[ -d "${JENKINS_AGENT_LANUCH_DIR}" ]]; then
   echo "Jenkins Agent Lanuch Directory: ${JENKINS_AGENT_LANUCH_DIR}"
@@ -61,7 +61,7 @@ fi
 JENKINS_TOKEN=$(cat jenkins_token)
 
 # 
-offline=$(curl --silent -u "${controller_user}:$JENKINS_TOKEN" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true" | grep '\"offline\"' | awk '{gsub(/,/,"");print $3}') || true
+offline=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true" | grep '\"offline\"' | awk '{gsub(/,/,"");print $3}') || true
 echo "Jenkins Agent offline setting: ${offline}"
 
 if [[ "${offline}" == "true" ]]; then
