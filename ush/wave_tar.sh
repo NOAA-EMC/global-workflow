@@ -111,7 +111,7 @@ source "${USHgfs}/preamble.sh"
     then
 
       filename="${ID}.${cycle}.${type}_tar" 
-      if ! [ -f wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ]; then
+      if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
         set +x
         echo ' '
         echo '***************************************** '
