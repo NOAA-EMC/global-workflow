@@ -127,7 +127,7 @@ for gcycle_date in "${gcycle_dates[@]}"; do
   # Copy inputs from COMIN to DATA
   for (( nn=1; nn <= ntiles; nn++ )); do
     ${NCP} "${sfcdata_dir}/${datestr}.sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-    ${NCP} "${DATA}/fnbgsi.00${nn}.nc"                       "${DATA}/fnbgso.00${nn}"
+    ${NCP} "${DATA}/fnbgsi.00${nn}"                       "${DATA}/fnbgso.00${nn}"
   done
 
   CDATE="${gcyle_date}" ${CYCLESH}
