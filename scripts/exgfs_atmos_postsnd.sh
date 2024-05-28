@@ -73,16 +73,16 @@ export FINT=$NINT1
 
    filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${FEND}.${logfm}"
    if ! -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
-     err_exit "FATAL ERROR: logf${FEND} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
+     err_exit "FATAL ERROR: logf${FEND} not found after waiting $((sleep_interval * ( max_tries - 1) )) secs"
    fi
 
 ## 1-hourly output before $NEND1, 3-hourly output after
-   if [ $FEND -gt $NEND1 ]; then
+   if [[ "${FEND}" -gt "${NEND1}" ]]; then
      export FINT=$NINT3
    fi
    ${USHgfs}/gfs_bufr.sh
   
-   export FSTART=$FEND
+   export FSTART="${FEND}"
 done
 
 ##############################################################

@@ -44,8 +44,9 @@ source "${USHgfs}/product_functions.sh"
 # Wait for the availability of the pgrb file
 ###############################################
 sleep_interval=10
+max_tries=180
 idxfile="${COM_ATMOS_GRIB_0p25}/${RUN}.${cycle}.pgrb2b.0p25.f${fcsthrs}.idx"
-if ! -s wait_for_file "${idxfile}" "${sleep_interval}" "180"; then
+if ! -s wait_for_file "${idxfile}" "${sleep_interval}" "${max_tries}"; then
   msg="FATAL ERROR: No GFS pgrb2 file after waiting"
   err_exit "${msg}"
   exit 5
