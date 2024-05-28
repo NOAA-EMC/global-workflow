@@ -1,0 +1,25 @@
+BASE_GIT: '/gpfs/f5/epic/proj-shared/global/glopara/data/git'
+DMPDIR: '/gpfs/f5/epic/proj-shared/global/glopara/data/dump'
+BASE_CPLIC: '/gpfs/f5/epic/proj-shared/global/glopara/data/ICSDIR/prototype_ICs'
+PACKAGEROOT: '/gpfs/f5/epic/proj-shared/global/glopara/data/nwpara'
+COMROOT: '/gpfs/f5/epic/proj-shared/global/glopara/data/com'
+COMINsyn: '${COMROOT}/gfs/prod/syndat'
+HOMEDIR: '/gpfs/f5/epic/scratch/${USER}'
+STMP: '/gpfs/f5/epic/scratch/${USER}'
+PTMP: '/gpfs/f5/epic/scratch/${USER}'
+NOSCRUB: $HOMEDIR
+ACCOUNT: epic
+SCHEDULER: slurm
+QUEUE: normal
+QUEUE_SERVICE: normal
+PARTITION_BATCH: batch
+PARTITION_SERVICE: batch
+CHGRP_RSTPROD: 'NO'
+CHGRP_CMD: 'chgrp rstprod'
+HPSSARCH: 'NO'
+HPSS_PROJECT: emc-global
+LOCALARCH: 'NO'
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+MAKE_NSSTBUFR: 'NO'
+MAKE_ACFTBUFR: 'NO'
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
