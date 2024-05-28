@@ -1,10 +1,9 @@
-
 #!/bin/env bash
-set -ex
+set -e
 
 controller_url="https://jenkins.epic.oarcloud.noaa.gov"
 controller_user="terry.mcguinness"
-HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../../.." >/dev/null 2>&1 && pwd )"
+HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
 host=$(hostname)
 
 #########################################################################
@@ -27,9 +26,9 @@ rm -f "${LOG}"
 
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
-module load "module_gwsetup.${MACHINE_ID}
+module load "module_gwsetup.${MACHINE_ID}"
 
-JAVA_HOME="${JENKINS_AGENT_JAVA_HOME}/JAVA/jdk-17.0.10/bin
+JAVA_HOME="${JENKINS_AGENT_JAVA_HOME}/JAVA/jdk-17.0.10/bin"
 JAVA="${JAVA_HOME}/java"
 echo "JAVA VERSION: "
 ${JAVA} -version
@@ -38,6 +37,7 @@ export GH="${HOME}/bin/gh"
 command -v $GH
 $GH --version
 
+echo "JENKINS_AGENT_LANUCH_DIR: ${JENKINS_AGENT_LANUCH_DIR}"
 cd "${JENKINS_AGENT_LANUCH_DIR}"
 
 if ! [ -f agent.jar ]; then
@@ -46,7 +46,7 @@ fi
 
 JENKINS_TOKEN=$(cat jenkins_token)
 
-offline=$(curl --silent -u "${contoller_user}:$JENKINS_TOKEN" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true" | grep '\"offline\"' | awk '{gsub(/,/,"");print $3}')
+offline=$(curl --silent -u "${controller_user}:$JENKINS_TOKEN" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true" | grep '\"offline\"' | awk '{gsub(/,/,"");print $3}')
 
 echo "Jenkins Agent offline setting: ${offline}"
 
