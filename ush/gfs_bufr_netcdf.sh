@@ -68,6 +68,7 @@ hh=$FSTART
    fi
 
 sleep_interval=10
+max_tries=360   
 while  test $hh -le $FEND
 do  
    if test $hh -lt 100
@@ -78,7 +79,7 @@ do
    fi
 
    filename="${COMIN}/${RUN}.${cycle}.logf${hh2}.txt"
-   if ! -f wait_for_file "${filename}" "${sleep_interval}" "360"; then
+   if ! -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
      err_exit "COULD NOT LOCATE logf${hh2} file"
    fi
       if [ $ic -ge 360 ]

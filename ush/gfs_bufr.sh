@@ -52,6 +52,7 @@ cat << EOF > gfsparm
 EOF
 
 sleep_interval=10
+max_tries=1000
 for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    hh2=$(printf %02i "${hr}")
    hh3=$(printf %03i "${hr}")
@@ -59,7 +60,7 @@ for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    #---------------------------------------------------------
    # Make sure all files are available:
    filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}"
-   if ! -f wait_for_file "${filename}" "${sleep_interval}" "1000"; then
+   if ! -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
      echo "FATAL: COULD NOT LOCATE logf${hh3} file"
      exit 2
    fi

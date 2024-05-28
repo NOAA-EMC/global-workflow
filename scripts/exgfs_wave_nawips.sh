@@ -73,15 +73,8 @@ while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
     esac
     GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
     GRIBIN_chk=${GRIBIN}.idx
-    if ! wait_for_file "${GRIBIN}" "${sleep_interval}" "${maxtries}"; then
-      msg="ABORTING waiting for ${GRIBIN}."
-      echo ' '
-      echo '**************************** '
-      echo '*** ERROR : NO GRIB FILE *** '
-      echo '**************************** '
-      echo ' '
-      echo "${msg}"
-      set_trace
+    if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${maxtries}"; then
+      echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
       echo "${RUNwave} ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB file missing." >> "${wavelog}"
       err=1;export err;"${errchk}" || exit "${err}"
     fi
