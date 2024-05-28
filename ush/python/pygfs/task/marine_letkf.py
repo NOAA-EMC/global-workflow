@@ -39,13 +39,12 @@ class MarineLETKF(Analysis):
         logger.info("init")
         super().__init__(config)
 
-        PDY = self.runtime_config['PDY']
-        cyc = self.runtime_config['cyc']
-        gcyc = str(self.config['gcyc']).zfill(2)
+        PDY = self.runtime_config.PDY
+        cyc = self.runtime_config.cyc
+        gcyc = str(self.config.gcyc).zfill(2)
         self.runtime_config.gcyc = gcyc
-        gPDY = self.config['gPDY']
         RUN = self.runtime_config.RUN
-        DATA = self.runtime_config.DATA
+        DATA = path.realpath(self.runtime_config.DATA)
         cdate = PDY + timedelta(hours=cyc)
         COM_TOP_PREV_ENS = self.config.COM_TOP_PREV_ENS
 
@@ -56,6 +55,8 @@ class MarineLETKF(Analysis):
         window_begin = cdate - half_assim_freq
         window_begin_iso = window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
         window_middle_iso = cdate.strftime('%Y-%m-%dT%H:%M:%SZ')
+        self.config.ATM_WINDOW_BEGIN = window_begin_iso
+        self.config.ATM_WINDOW_MIDDLE = window_middle_iso
 
         self.config.letkf_exec = path.join(exec_dir, 'gdas.x')
         letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
@@ -75,12 +76,9 @@ class MarineLETKF(Analysis):
         self.config.mom_input_nml_tmpl = path.join(DATA, 'mom_input.nml.tmpl')
         self.config.mom_input_nml = path.join(DATA, 'mom_input.nml')
 
-        self.config.data_output_dir = 'data_output'
-        self.config.ens_dir = 'ens'
-        self.config.obs_dir = 'obs'
-
-        self.config.ATM_WINDOW_BEGIN = window_begin_iso
-        self.config.ATM_WINDOW_MIDDLE = window_middle_iso
+        self.config.data_output_dir = path.join(DATA, 'data_output')
+        self.config.ens_dir = path.join(DATA, 'ens')
+        self.config.obs_dir = path.join(DATA, 'obs')
 
         # set up lists of files for ens background
         ocn_ens_bkg_filename = f"enkf{RUN}.ocean.t{gcyc}z.inst.f009.nc"
@@ -224,7 +222,10 @@ class MarineLETKF(Analysis):
 
         exec_cmd_letkf = Executable(self.config.APRUN_OCNANALLETKF)
         exec_cmd_letkf.add_default_arg(self.config.letkf_exec)
-        exec_cmd_letkf.add_default_arg(self.config.letkf_exec_args )
+#        exec_cmd_letkf.add_default_arg(self.config.letkf_exec_args )
+        exec_cmd_letkf.add_default_arg('fv3jedi') 
+        exec_cmd_letkf.add_default_arg('localensembleda')
+        exec_cmd_letkf.add_default_arg(self.config.letkf_yaml_file )
 
         try:
             logger.debug(f"Executing {exec_cmd_letkf}")
