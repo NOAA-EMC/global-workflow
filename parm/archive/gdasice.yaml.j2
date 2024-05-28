@@ -1,0 +1,10 @@
+gdasice:
+    {% set head = "gdas.ice.t" + cycle_HH + "z." %}
+    name: "GDASICE"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice.tar"
+    required:
+        - "{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}ic.nc"
+        {% for fhr in range(FHOUT_OCNICE, FHMAX+1, FHOUT_OCNICE) %}
+        - "{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % fhr }}.nc"
+        {% endfor %}
+        - '{{ COM_CONF | relpath(ROTDIR) }}/ufs.ice_in'

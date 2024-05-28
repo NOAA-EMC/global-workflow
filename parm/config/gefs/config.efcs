@@ -78,6 +78,6 @@ if [[ "${USE_OCN_PERTURB_FILES:-false}" == "true" ]]; then
 else
     export ODA_INCUPD="False"
 fi
-export restart_interval="${restart_interval_gfs}"
+export restart_interval="${restart_interval_enkfgfs:-12}"
 
 echo "END: config.efcs"

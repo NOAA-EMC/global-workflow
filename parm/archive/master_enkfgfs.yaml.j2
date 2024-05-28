@@ -1,0 +1,6 @@
+# Set variables specific to gfsenkf runs then parse the master_enkf template
+{% set (fhmin, fhmax, fhout) = (FHMIN_ENKF, FHMAX_ENKF_GFS, FHOUT_ENKF_GFS) %}
+{% set do_calc_increment = DO_CALC_INCREMENT_ENKF_GFS %}
+{% set nmem_ens = NMEM_ENS_GFS %}
+{% set restart_interval = restart_interval_enkfgfs %}
+{% include "master_enkf.yaml.j2" %}
