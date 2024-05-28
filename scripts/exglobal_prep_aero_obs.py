@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # exglobal_prep_aero_obs.py
-# This script collect available viirs 
+# This script collect available viirs
 # obs files, combine and preprocess
-# them. 
+# them.
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -10,7 +10,6 @@ from pygfs.task.aero_prepobs import AerosolObsPrep
 
 # Initialize root logger
 logger = Logger(level='DEBUG', colored_log=True)
-
 
 
 if __name__ == '__main__':
