@@ -72,7 +72,7 @@ export FINT=$NINT1
    fi
 
    filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${FEND}.${logfm}"
-   if ! -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
+   if ! [ -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}" ]; then
      err_exit "FATAL ERROR: logf${FEND} not found after waiting $((sleep_interval * ( max_tries - 1) )) secs"
    fi
 

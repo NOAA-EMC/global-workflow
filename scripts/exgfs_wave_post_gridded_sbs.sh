@@ -256,7 +256,7 @@ source "${USHgfs}/preamble.sh"
     if [ $fhr = $fhrg ]
     then
       # Gridded data (main part, need to be run side-by-side with forecast
-      for wavGRD in "${waveGRD}"; do
+      for wavGRD in ${waveGRD}; do
         gfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
         if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"

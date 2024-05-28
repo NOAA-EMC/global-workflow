@@ -60,8 +60,8 @@ for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    #---------------------------------------------------------
    # Make sure all files are available:
    filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}"
-   if ! -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
-     echo "FATAL: COULD NOT LOCATE logf${hh3} file"
+   if ! [ -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}" ]; then
+     echo "FATAL ERROR: COULD NOT LOCATE logf${hh3} file"
      exit 2
    fi
    

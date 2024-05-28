@@ -49,7 +49,6 @@ else
 fi
 
 SFCF="sfc"
-CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
   levs=$LEVS,makebufr=$bufrflag,
@@ -79,14 +78,10 @@ do
    fi
 
    filename="${COMIN}/${RUN}.${cycle}.logf${hh2}.txt"
-   if ! -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
-     err_exit "COULD NOT LOCATE logf${hh2} file"
+   if ! [ -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}" ]; then
+     err_exit "FATAL ERROR COULD NOT LOCATE logf${hh2} file"
    fi
-      if [ $ic -ge 360 ]
-      then
-         err_exit "COULD NOT LOCATE logf${hh2} file AFTER 1 HOUR"
-      fi
-   done
+
 #------------------------------------------------------------------
    ${NLN} $COMIN/${RUN}.${cycle}.atmf${hh2}.nc sigf${hh}
    ${NLN} $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
