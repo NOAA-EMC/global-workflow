@@ -29,7 +29,7 @@ module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
 
-JAVA_HOME="${JENKINS_AGENT_JAVA_HOME}/JAVA/jdk-17.0.10/bin"
+JAVA_HOME="${JENKINS_AGENT_LANUCH_DIR}/JAVA/jdk-17.0.10"
 if [ ! -d "${JAVA_HOME}" ]; then
   JAVA_HOME=/usr/lib/jvm/jre-17
   if [ ! -d "${JAVA_HOME}" ]; then
@@ -38,7 +38,7 @@ if [ ! -d "${JAVA_HOME}" ]; then
   fi
 fi
 
-JAVA="${JAVA_HOME}/java"
+JAVA="${JAVA_HOME}/bin/java"
 echo "JAVA VERSION: "
 ${JAVA} -version
 
