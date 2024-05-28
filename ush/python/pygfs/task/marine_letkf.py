@@ -9,14 +9,10 @@ from pygfs.task.analysis import Analysis
 from soca import bkg_utils
 from typing import Dict
 import ufsda
-from ufsda.stage import soca_fix
-from wxflow import (AttrDict,
-                    chdir,
-                    Executable,
+from wxflow import (Executable,
                     FileHandler,
                     logit,
                     parse_j2yaml,
-                    Task,
                     WorkflowException,
                     YAMLFile)
 
@@ -54,15 +50,19 @@ class MarineLETKF(Analysis):
         COM_TOP_PREV_ENS = self.config.COM_TOP_PREV_ENS
 
         gdas_home = path.join(config['HOMEgfs'], 'sorc', 'gdas.cd')
-
+        exec_dir = path.join(gdas_home, 'build', 'bin')
+    
         half_assim_freq = timedelta(hours=int(config['assim_freq'])/2)
         window_begin = cdate - half_assim_freq
         window_begin_iso = window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
         window_middle_iso = cdate.strftime('%Y-%m-%dT%H:%M:%SZ')
-        letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
 
+        self.config.letkf_exec = path.join(exec_dir, 'gdas.x')
+        letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
         self.config['letkf_yaml_template'] = path.join(letkf_yaml_dir, 'letkf.yaml.j2')
-        self.config['letkf_yaml_file'] = path.join(DATA, 'letkf.yaml')
+        letkf_yaml_file = path.join(DATA, 'letkf.yaml')
+        self.config.letkf_exec_args =  f"fv3jedi localensembleda {letkf_yaml_file}"
+        self.config.letkf_yaml_file = letkf_yaml_file
 
         self.config['window_begin'] = window_begin
         self.config['BKG_LIST'] = 'bkg_list.yaml'
@@ -116,9 +116,6 @@ class MarineLETKF(Analysis):
         self.config.ens_bkg_files_to_stage = ens_bkg_files_to_stage
         self.config.dirs_to_make = dirs_to_make
 
-
-
-        
     @logit(logger)
     def initialize(self):
         """Method initialize for ocean and sea ice LETKF task
@@ -223,6 +220,19 @@ class MarineLETKF(Analysis):
             raise OSError(f"Failed to execute {exec_cmd_gridgen}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd_gridgen}")
+        pass
+
+        exec_cmd_letkf = Executable(self.config.APRUN_OCNANALLETKF)
+        exec_cmd_letkf.add_default_arg(self.config.letkf_exec)
+        exec_cmd_letkf.add_default_arg(self.config.letkf_exec_args )
+
+        try:
+            logger.debug(f"Executing {exec_cmd_letkf}")
+            exec_cmd_letkf()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd_letkf}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd_letkf}")
         pass
 
 
