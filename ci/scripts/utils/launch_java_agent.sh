@@ -27,6 +27,7 @@ rm -f "${LOG}"
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
+source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
 
 JAVA_HOME="${JENKINS_AGENT_JAVA_HOME}/JAVA/jdk-17.0.10/bin"
 JAVA="${JAVA_HOME}/java"
@@ -37,7 +38,6 @@ export GH="${HOME}/bin/gh"
 command -v $GH
 $GH --version
 
-echo "JENKINS_AGENT_LANUCH_DIR: ${JENKINS_AGENT_LANUCH_DIR}"
 cd "${JENKINS_AGENT_LANUCH_DIR}"
 
 if ! [ -f agent.jar ]; then
