@@ -47,12 +47,16 @@ fi
 JENKINS_TOKEN=$(cat jenkins_token)
 
 offline=$(curl --silent -u "${controller_user}:$JENKINS_TOKEN" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true" | grep '\"offline\"' | awk '{gsub(/,/,"");print $3}')
-
 echo "Jenkins Agent offline setting: ${offline}"
 
-exit 0
-
-command="nohup ${JAVA} -jar agent.jar -jnlpUrl https://jenkins.epic.oarcloud.noaa.gov/computer/Hera%2DEMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir /scratch1/NCEPDEV/global/Terry.McGuinness"
-echo -e "Lanuching Jenkins Agent on $host with the command:\n${command}" >& "${LOG}"
-${command} >> "${LOG}" 2>&1 &
-ps -efx | grep agent.jar >> "${LOG}" 2>&1
+if [ "${offline}" == "true" ]; then
+  echo "Jenkins Agent is offline. Lanuching Jenkins Agent on $host"
+  command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
+  echo -e "Lanuching Jenkins Agent on $host with the command:\n${command}" >& "${LOG}"
+  ${command} >> "${LOG}" 2>&1 &
+  nohup_PID=$!
+  echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
+  echo "Java agent running on PID: ${nohup_PID}"
+else
+  echo "Jenkins Agent is online (nothing done)"
+fi
