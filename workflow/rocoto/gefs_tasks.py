@@ -270,7 +270,7 @@ class GEFSTasks(Tasks):
 
     def extractvars(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'ocean_prod_#member#'}
+        dep_dict = {'type': 'task', 'name': f'wave_post_grid_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
