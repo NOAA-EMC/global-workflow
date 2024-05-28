@@ -58,11 +58,15 @@ class MarineLETKF(Analysis):
         self.config.ATM_WINDOW_BEGIN = window_begin_iso
         self.config.ATM_WINDOW_MIDDLE = window_middle_iso
 
-        self.config.letkf_exec = path.join(exec_dir, 'gdas.x')
+#        self.config.letkf_exec = path.join(exec_dir, 'gdas.x')
+        letkf_exec = path.join(exec_dir, 'gdas.x')
         letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
         self.config['letkf_yaml_template'] = path.join(letkf_yaml_dir, 'letkf.yaml.j2')
         letkf_yaml_file = path.join(DATA, 'letkf.yaml')
-        self.config.letkf_exec_args =  f"fv3jedi localensembleda {letkf_yaml_file}"
+        self.config.letkf_exec_args =  [letkf_exec,
+                                        'fv3jedi',
+                                        'localensembleda',
+                                        letkf_yaml_file]
         self.config.letkf_yaml_file = letkf_yaml_file
 
         self.config['window_begin'] = window_begin
@@ -221,11 +225,13 @@ class MarineLETKF(Analysis):
         pass
 
         exec_cmd_letkf = Executable(self.config.APRUN_OCNANALLETKF)
-        exec_cmd_letkf.add_default_arg(self.config.letkf_exec)
-#        exec_cmd_letkf.add_default_arg(self.config.letkf_exec_args )
-        exec_cmd_letkf.add_default_arg('fv3jedi') 
-        exec_cmd_letkf.add_default_arg('localensembleda')
-        exec_cmd_letkf.add_default_arg(self.config.letkf_yaml_file )
+        for letkf_exec_arg in self.config.letkf_exec_args:
+            exec_cmd_letkf.add_default_arg(letkf_exec_arg)
+
+        # exec_cmd_letkf.add_default_arg(self.config.letkf_exec)
+        # exec_cmd_letkf.add_default_arg('fv3jedi') 
+        # exec_cmd_letkf.add_default_arg('localensembleda')
+        # exec_cmd_letkf.add_default_arg(self.config.letkf_yaml_file )
 
         try:
             logger.debug(f"Executing {exec_cmd_letkf}")
