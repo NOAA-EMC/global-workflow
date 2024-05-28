@@ -130,7 +130,7 @@ for gcycle_date in "${gcycle_dates[@]}"; do
     ${NCP} "${DATA}/fnbgsi.00${nn}"                       "${DATA}/fnbgso.00${nn}"
   done
 
-  CDATE="${gcyle_date}" ${CYCLESH}
+  CDATE="${gcycle_date}" ${CYCLESH}
   export err=$?; err_chk
 
   # Copy outputs from DATA to COMOUT
