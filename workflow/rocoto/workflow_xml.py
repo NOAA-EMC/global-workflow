@@ -158,6 +158,8 @@ class RocotoXML(ABC):
         strings = ['',
                    f'#################### {pslot} ####################',
                    f'MAILTO="{replyto}"',
+                   f'SHELL="/bin/bash"',
+                   f'BASH_ENV="/etc/bashrc"',
                    f'{cronintstr} {rocotorunstr}',
                    '#################################################################',
                    '']
