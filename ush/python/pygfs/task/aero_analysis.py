@@ -109,8 +109,10 @@ class AerosolAnalysis(Analysis):
         chdir(self.task_config.DATA)
 
         exec_cmd = Executable(self.task_config.APRUN_AEROANL)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_var.x')
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
         exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('variational')
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:

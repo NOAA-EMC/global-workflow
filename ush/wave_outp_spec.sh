@@ -135,8 +135,8 @@ source "${USHgfs}/preamble.sh"
 
 # 0.f Links to mother directory
 
-  ln -s ${DATA}/output_${ymdh}0000/mod_def.${waveuoutpGRD} ./mod_def.ww3
-  ln -s ${DATA}/output_${ymdh}0000/out_pnt.${waveuoutpGRD} ./out_pnt.ww3
+  ${NLN} ${DATA}/output_${ymdh}0000/mod_def.${waveuoutpGRD} ./mod_def.ww3
+  ${NLN} ${DATA}/output_${ymdh}0000/out_pnt.${waveuoutpGRD} ./out_pnt.ww3
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate spectral data file

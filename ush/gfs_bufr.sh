@@ -65,24 +65,24 @@ for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    fi
    
    #------------------------------------------------------------------
-   ln -sf "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}" 
-   ln -sf "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
+   ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}"
+   ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
 done
 
 #  define input BUFR table file.
-ln -sf "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
-ln -sf "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
+${NLN} "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
+${NLN} "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
 
 case "${CASE}" in
     "C768")
-        ln -sf "${PARMgfs}/product/bufr_ij13km.txt" fort.7
+        ${NLN} "${PARMgfs}/product/bufr_ij13km.txt" fort.7
         ;;
     "C1152")
-        ln -sf "${PARMgfs}/product/bufr_ij9km.txt"  fort.7
+        ${NLN} "${PARMgfs}/product/bufr_ij9km.txt"  fort.7
         ;;
     *)
         echo "WARNING: No bufr table for this resolution, using the one for C768"
-        ln -sf "${PARMgfs}/product/bufr_ij13km.txt" fort.7
+        ${NLN} "${PARMgfs}/product/bufr_ij13km.txt" fort.7
         ;;
 esac
 

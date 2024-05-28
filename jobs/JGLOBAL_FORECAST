@@ -36,7 +36,7 @@ declare -rx gcyc="${GDATE:8:2}"
 
 # Construct COM variables from templates (see config.com)
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
-  COM_ATMOS_HISTORY COM_ATMOS_MASTER COM_TOP COM_CONF
+  COM_ICE_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER COM_TOP COM_CONF
 
 RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
   COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
@@ -99,6 +99,6 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
-[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA} ${DATArestart}"  # do not remove DATAjob. It contains DATAoutput
+[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA}" "${DATArestart}"  # do not remove DATAjob. It contains DATAoutput
 
 exit 0

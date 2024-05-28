@@ -38,9 +38,6 @@ bPDY=$(echo ${BDATE} | cut -c1-8)
 bcyc=$(echo ${BDATE} | cut -c9-10)
 
 # Utilities
-export NCP=${NCP:-"/bin/cp"}
-export NMV=${NMV:-"/bin/mv"}
-export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
@@ -387,8 +384,13 @@ ${NLN} ${FIXgfs}/gsi/IASI_CLDDET.NL   IASI_CLDDET.NL
 #If using correlated error, link to the covariance files
 if [ ${USE_CORRELATED_OBERRS} == "YES" ];  then
   if grep -q "Rcov" ${ANAVINFO} ;  then
-     if ls ${FIXgfs}/gsi/Rcov* 1> /dev/null 2>&1; then
-       ${NLN} ${FIXgfs}/gsi/Rcov* ${DATA}
+     # shellcheck disable=SC2312
+     mapfile -t covfile_array < <(find "${FIXgfs}/gsi/" -name "Rcov*")
+     if (( ${#covfile_array[@]} > 0 )); then
+       for covfile in "${covfile_array[@]}"; do
+         covfile_base=$(basename "${covfile}")
+         ${NLN} "${covfile}" "${DATA}/${covfile_base}"
+       done
        echo "using correlated obs error"
      else
        echo "FATAL ERROR: Satellite error covariance files (Rcov) are missing."
@@ -883,7 +885,9 @@ OBS_INPUT::
   l_hyb_ens=${l_hyb_ens},
   generate_ens=.false.,
   beta_s0=0.125,readin_beta=.false.,
-  s_ens_h=800.,s_ens_v=-0.8,readin_localization=.true.,
+  s_ens_h=1000.0,300.0,150.0,685.0,219.2,s_ens_v=-0.5,-0.5,-0.5,0.0,0.0,
+  readin_localization=.false.,global_spectral_filter_sd=.false.,
+  r_ensloccov4scl=1,nsclgrp=3,naensloc=5,
   aniso_a_en=.false.,oz_univ_static=.false.,uv_hyb_ens=.true.,
   ensemble_path='./ensemble_data/',
   ens_fast_read=.true.,

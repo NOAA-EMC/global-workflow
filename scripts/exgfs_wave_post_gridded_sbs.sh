@@ -253,22 +253,24 @@ source "${USHgfs}/preamble.sh"
     export GRIBDATA=${DATA}/output_$YMDHMS
     export GRDIDATA=${DATA}/output_$YMDHMS
 
-    # Gridded data (main part, need to be run side-by-side with forecast
-    for wavGRD in "${waveGRD}"; do
-      gfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
-      if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
-        echo '*************************************************** '
-        echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID} "
-        echo '*************************************************** '
-        echo ' '
-        set_trace
-        echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
-        err=3; export err; "${errchk}"
-        exit "${err}"
-      fi
-      ${NLN} "${gfile}" "./out_grd.${wavGRD}"
-    done
-
+    if [ $fhr = $fhrg ]
+    then
+      # Gridded data (main part, need to be run side-by-side with forecast
+      for wavGRD in "${waveGRD}"; do
+        gfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
+        if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
+          echo '*************************************************** '
+          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID} "
+          echo '*************************************************** '
+          echo ' '
+          set_trace
+          echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
+          err=3; export err; "${errchk}"
+          exit "${err}"
+        fi
+        ${NLN} "${gfile}" "./out_grd.${wavGRD}"
+      done
+      
       if [ "$DOGRI_WAV" = 'YES' ]
       then
         nigrd=1
