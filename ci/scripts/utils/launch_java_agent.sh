@@ -30,6 +30,14 @@ module load "module_gwsetup.${MACHINE_ID}"
 source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
 
 JAVA_HOME="${JENKINS_AGENT_JAVA_HOME}/JAVA/jdk-17.0.10/bin"
+if [ ! -d "${JAVA_HOME}" ]; then
+  JAVA_HOME=/usr/lib/jvm/jre-17
+  if [ ! -d "${JAVA_HOME}" ]; then
+    echo "ERROR: JAVA_HOME not found. Exiting with error."
+    exit 1
+  fi
+fi
+
 JAVA="${JAVA_HOME}/java"
 echo "JAVA VERSION: "
 ${JAVA} -version
@@ -38,6 +46,12 @@ export GH="${HOME}/bin/gh"
 command -v $GH
 $GH --version
 
+if [[ -d "${JENKINS_AGENT_LANUCH_DIR}" ]]; then
+  echo "Jenkins Agent Lanuch Directory: ${JENKINS_AGENT_LANUCH_DIR}"
+else
+  echo "ERROR: Jenkins Agent Lanuch Directory not found. Exiting with error."
+  exit 1
+fi
 cd "${JENKINS_AGENT_LANUCH_DIR}"
 
 if ! [ -f agent.jar ]; then
