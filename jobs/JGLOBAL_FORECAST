@@ -79,7 +79,7 @@ fi
 
 if [[ "${DO_AERO}" == "YES" ]]; then
   YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMOUT_CHEM_HISTORY:COMOUT_CHEM_HISTORY_TMPL
+    COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
 fi
 
 
