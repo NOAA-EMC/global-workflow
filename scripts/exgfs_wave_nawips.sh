@@ -44,6 +44,7 @@ pdsext=no
 g2tbls=g2varswmo2.tbl
 NAGRIB=nagrib2
 
+sleep_interval=20
 maxtries=15
 fhcnt=${fstart}
 while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
@@ -72,7 +73,6 @@ while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
     esac
     GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
     GRIBIN_chk=${GRIBIN}.idx
-    sleep_inteval=20
     if ! wait_for_file "${GRIBIN}" "${sleep_interval}" "${maxtries}"; then
       msg="ABORTING waiting for ${GRIBIN}."
       echo ' '

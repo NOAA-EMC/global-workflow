@@ -231,6 +231,7 @@ source "${USHgfs}/preamble.sh"
     fhr=$FHMIN_WAV
   fi
   fhrg=$fhr
+  sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
 
@@ -253,7 +254,6 @@ source "${USHgfs}/preamble.sh"
     export GRDIDATA=${DATA}/output_$YMDHMS
 
     # Gridded data (main part, need to be run side-by-side with forecast
-    sleep_interval=10
     for wavGRD in "${waveGRD}"; do
       gfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
       if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
@@ -266,7 +266,7 @@ source "${USHgfs}/preamble.sh"
         err=3; export err; "${errchk}"
         exit "${err}"
       fi
-      ln -s "${gfile}" "./out_grd.${wavGRD}"
+      ${NLN} "${gfile}" "./out_grd.${wavGRD}"
     done
 
       if [ "$DOGRI_WAV" = 'YES' ]
