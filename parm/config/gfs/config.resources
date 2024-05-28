@@ -35,6 +35,7 @@ echo "BEGIN: config.resources"
 case ${machine} in
   "WCOSS2")   npe_node_max=128;;
   "HERA")     npe_node_max=40;;
+  "GAEA")     npe_node_max=128;;
   "ORION")    npe_node_max=40;;
   "HERCULES") npe_node_max=80;;
   "JET")
