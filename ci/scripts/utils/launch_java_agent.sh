@@ -43,7 +43,7 @@ echo "JAVA VERSION: "
 ${JAVA} -version
 
 export GH="${HOME}/bin/gh"
-command -v $GH
+command -v "${GH}"
 $GH --version
 
 if [[ -d "${JENKINS_AGENT_LANUCH_DIR}" ]]; then
@@ -54,19 +54,20 @@ else
 fi
 cd "${JENKINS_AGENT_LANUCH_DIR}"
 
-if ! [ -f agent.jar ]; then
+if ! [[ -f agent.jar ]]; then
   curl -sO "${controller_url}/jnlpJars/agent.jar"
 fi
 
 JENKINS_TOKEN=$(cat jenkins_token)
 
-offline=$(curl --silent -u "${controller_user}:$JENKINS_TOKEN" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true" | grep '\"offline\"' | awk '{gsub(/,/,"");print $3}')
+# 
+offline=$(curl --silent -u "${controller_user}:$JENKINS_TOKEN" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true" | grep '\"offline\"' | awk '{gsub(/,/,"");print $3}') || true
 echo "Jenkins Agent offline setting: ${offline}"
 
-if [ "${offline}" == "true" ]; then
-  echo "Jenkins Agent is offline. Lanuching Jenkins Agent on $host"
+if [[ "${offline}" == "true" ]]; then
+  echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
   command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
-  echo -e "Lanuching Jenkins Agent on $host with the command:\n${command}" >& "${LOG}"
+  echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
   ${command} >> "${LOG}" 2>&1 &
   nohup_PID=$!
   echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
