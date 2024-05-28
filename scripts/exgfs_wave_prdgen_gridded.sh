@@ -99,7 +99,7 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
      GRIBIN_chk="${GRIBIN}.idx"
      sleep_interval=5
      max_tries=1000
-     if ! wait_for_file "${GRIBIN}" "${sleep_interval}" "${max_tries}"; then
+     if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
        echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
        echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
        err=1;export err;${errchk} || exit ${err}

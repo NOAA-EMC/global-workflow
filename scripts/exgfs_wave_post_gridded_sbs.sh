@@ -259,11 +259,7 @@ source "${USHgfs}/preamble.sh"
       for wavGRD in "${waveGRD}"; do
         gfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
         if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
-          echo '*************************************************** '
-          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID} "
-          echo '*************************************************** '
-          echo ' '
-          set_trace
+          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"
           echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
           err=3; export err; "${errchk}"
           exit "${err}"
