@@ -8,6 +8,4 @@ echo "BEGIN: config.ocnanalletkf"
 # Get task specific resources
 . "${EXPDIR}/config.resources" ocnanalletkf
 
-KEEPDATA="YES"
-
 echo "END: config.ocnanalletkf"
