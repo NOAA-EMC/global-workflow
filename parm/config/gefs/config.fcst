@@ -8,10 +8,16 @@ echo "BEGIN: config.fcst"
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
 export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
-# Turn off waves if not used for this CDUMP
+# Turn off waves if not used for this RUN
 case ${WAVE_CDUMP} in
-  both | "${CDUMP/enkf}" ) ;; # Don't change
+  both | "${RUN/enkf}" ) ;; # Don't change
   *) DO_WAVE="NO" ;; # Turn waves off
+esac
+
+# Turn off aerosols if not used for this RUN
+case ${AERO_FCST_CDUMP} in
+  both | "${RUN/enkf}" ) ;; # Don't change
+  *) DO_AERO="NO" ;; # Turn waves off
 esac
 
 # Source model specific information that is resolution dependent
@@ -109,18 +115,10 @@ if (( gwd_opt == 2 )); then
 fi
 
 # Sponge layer settings
-export tau=0.
-export rf_cutoff=10.
 export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
 export n_sponge=42
-if (( LEVS == 128 )) && [[ "${CDUMP}" =~ "gdas" ]]; then
-   export tau=5.0
-   export rf_cutoff=1.0e3
-   export d2_bg_k1=0.20
-   export d2_bg_k2=0.0
-fi
 
 # PBL/turbulance schemes
 export hybedmf=".false."

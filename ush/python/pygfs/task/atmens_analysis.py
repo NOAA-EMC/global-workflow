@@ -132,7 +132,7 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self: Analysis) -> None:
+    def letkf(self: Analysis) -> None:
         """Execute a global atmens analysis
 
         This method will execute a global atmens analysis using JEDI.
@@ -150,8 +150,9 @@ class AtmEnsAnalysis(Analysis):
         """
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMENSANL)
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLLETKF)
         exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
+
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg('fv3jedi')
         exec_cmd.add_default_arg('localensembleda')
@@ -166,6 +167,31 @@ class AtmEnsAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
         pass
+
+    @logit(logger)
+    def init_fv3_increment(self: Analysis) -> None:
+        # Setup JEDI YAML file
+        self.task_config.jedi_yaml = os.path.join(self.runtime_config.DATA,
+                                                  f"{self.task_config.JCB_ALGO}.yaml")
+        save_as_yaml(self.get_jedi_config(self.task_config.JCB_ALGO), self.task_config.jedi_yaml)
+
+        # Link JEDI executable to run directory
+        self.task_config.jedi_exe = self.link_jediexe()
+
+    @logit(logger)
+    def fv3_increment(self: Analysis) -> None:
+        # Run executable
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLFV3INC)
+        exec_cmd.add_default_arg(self.task_config.jedi_exe)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
@@ -218,42 +244,6 @@ class AtmEnsAnalysis(Analysis):
         }
         FileHandler(yaml_copy).sync()
 
-        # Create UFS model readable atm increment file from UFS-DA atm increment
-        logger.info("Create UFS model readable atm increment file from UFS-DA atm increment")
-        self.jedi2fv3inc()
-
-    def clean(self):
-        super().clean()
-
-    @logit(logger)
-    def jedi2fv3inc(self: Analysis) -> None:
-        """Generate UFS model readable analysis increment
-
-        This method writes a UFS DA atm increment in UFS model readable format.
-        This includes:
-        - write UFS-DA atm increments using variable names expected by UFS model
-        - compute and write delp increment
-        - compute and write hydrostatic delz increment
-
-        Please note that some of these steps are temporary and will be modified
-        once the modle is able to directly read atm increments.
-
-        Parameters
-        ----------
-        Analysis: parent class for GDAS task
-
-        Returns
-        ----------
-        None
-        """
-        # Select the atm guess file based on the analysis and background resolutions
-        # Fields from the atm guess are used to compute the delp and delz increments
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
-
-        # Reference the python script which does the actual work
-        incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
-
         # create template dictionaries
         template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
         tmpl_inc_dict = {
@@ -263,14 +253,10 @@ class AtmEnsAnalysis(Analysis):
             'HH': self.task_config.current_cycle.strftime('%H')
         }
 
-        template_ges = self.task_config.COM_ATMOS_HISTORY_TMPL
-        tmpl_ges_dict = {
-            'ROTDIR': self.task_config.ROTDIR,
-            'RUN': self.task_config.RUN,
-            'YMD': to_YMD(self.task_config.previous_cycle),
-            'HH': self.task_config.previous_cycle.strftime('%H')
-        }
-
+        # copy FV3 atm increment to comrot directory
+        logger.info("Copy UFS model readable atm increment file")
+        cdate = to_fv3time(self.task_config.current_cycle)
+        cdate_inc = cdate.replace('.', '_')
         # loop over ensemble members
         for imem in range(1, self.task_config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"
@@ -278,20 +264,15 @@ class AtmEnsAnalysis(Analysis):
             # create output path for member analysis increment
             tmpl_inc_dict['MEMDIR'] = memchar
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
+            src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.nc4")
+            dest = os.path.join(incdir, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc")
 
-            # rewrite UFS-DA atmens increments
-            tmpl_ges_dict['MEMDIR'] = memchar
-            gesdir = Template.substitute_structure(template_ges, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_ges_dict.get)
-            atmges_fv3 = os.path.join(gesdir, f"{self.task_config.CDUMP}.t{self.task_config.previous_cycle.hour:02d}z.atmf006.nc")
-            atminc_jedi = os.path.join(self.task_config.DATA, 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
-            atminc_fv3 = os.path.join(incdir, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc")
+            # copy increment
+            logger.debug(f"Copying {src} to {dest}")
+            inc_copy = {
+                'copy': [[src, dest]]
+            }
+            FileHandler(inc_copy).sync()
 
-            # Execute incpy to create the UFS model atm increment file
-            # TODO: use MPMD or parallelize with mpi4py
-            # See https://github.com/NOAA-EMC/global-workflow/pull/1373#discussion_r1173060656
-            cmd = Executable(incpy)
-            cmd.add_default_arg(atmges_fv3)
-            cmd.add_default_arg(atminc_jedi)
-            cmd.add_default_arg(atminc_fv3)
-            logger.debug(f"Executing {cmd}")
-            cmd(output='stdout', error='stderr')
+    def clean(self):
+        super().clean()
