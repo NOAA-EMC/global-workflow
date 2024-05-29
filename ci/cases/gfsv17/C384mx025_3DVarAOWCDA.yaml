@@ -10,8 +10,8 @@ arguments:
   nens: 0
   gfs_cyc: 4
   start: cold
-  comroot: {{ 'PWD' | getenv }}/{{ 'pslot' | getenv }}/COMROOT
-  expdir:  {{ 'PWD' | getenv }}/{{ 'pslot' | getenv }}/EXPDIR
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021063000
   edate: 2021070306
   icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
