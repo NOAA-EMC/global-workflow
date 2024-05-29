@@ -33,7 +33,7 @@ class GFSTasks(Tasks):
                 base_cplic = f"{cpl_ic['BASE_CPLIC']}"
                #cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
                 cpl_atmic = os.environ.get('CPL_ATMIC')
-                print('cpl_atmic = ', os.environ.get('CPL_ATMIC')
+                print('cpl_atmic = ', os.environ.get('CPL_ATMIC'))
                 icdir = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}"
                 if('IC_PREFIX' in cpl_ic.keys()):
                     cpl_ic_prefix = f"{icdir}/{cpl_ic['IC_PREFIX']}"
