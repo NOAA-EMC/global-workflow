@@ -325,16 +325,41 @@ class Archive(Task):
 
     @staticmethod
     @logit(logger)
-    def _construct_arcdir_set(j2yaml, arch_dict) -> Dict:
+    def _construct_arcdir_set(arcdir_j2yaml, arch_dict) -> Dict:
+        """Construct the list of files to send to the ARCDIR and Fit2Obs
+           directories from a template.
+
+           TODO Copying Fit2Obs data doesn't belong in archiving should be
+                moved elsewhere.
+
+        Parameters
+        ----------
+        arcdir_j2yaml: str
+            The filename of the ARCDIR jinja template to parse.
+
+        arch_dict: Dict
+            The context dictionary to parse arcdir_j2yaml with.
+
+        Return
+        ------
+        arcdir_set : Dict
+            FileHandler dictionary (i.e. with top level "mkdir" and "copy" keys)
+            containing all directories that need to be created and what data
+            files need to be copied to the ARCDIR and the Fit2Obs directory.
+        """
 
         # Parse the input jinja yaml template
-        arcdir_yaml = parse_j2yaml(j2yaml,
+        arcdir_yaml = parse_j2yaml(arcdir_j2yaml,
                                    arch_dict,
                                    allow_missing=True)
 
         # Collect the needed FileHandler dicts and construct arcdir_set
         arcdir_set = {}
         for key, handler in arcdir_yaml[arch_dict.RUN].items():
+            # Different RUNs can have different filesets that need to be copied.
+            # Each fileset is stored as a dictionary.  Collect the contents of
+            # each (which should be 'mkdir' and/or 'copy') to produce singular
+            # mkdir and copy lists.
             arcdir_set.update(handler)
 
         return arcdir_set
