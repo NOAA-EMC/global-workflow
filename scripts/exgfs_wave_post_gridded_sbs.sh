@@ -253,6 +253,8 @@ source "${USHgfs}/preamble.sh"
     export GRIBDATA=${DATA}/output_$YMDHMS
     export GRDIDATA=${DATA}/output_$YMDHMS
 
+# Gridded data (main part, need to be run side-by-side with forecast
+    
     if [ $fhr = $fhrg ]
     then
       # Gridded data (main part, need to be run side-by-side with forecast
