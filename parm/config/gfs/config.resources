@@ -1044,7 +1044,7 @@ case ${step} in
         fi
         ;;
       "C384")
-        export npe_eupd=80
+        export npe_eupd=270
         export nth_eupd=5
         if [[ "${machine}" == "WCOSS2" ]]; then
           export npe_eupd=315
@@ -1055,6 +1055,8 @@ case ${step} in
 	elif [[ "${machine}" == "HERA" ]]; then
            export npe_eupd=80
            export nth_eupd=8
+	   export npe_node_eupd=5
+	   export nth_eupd=8
 	   export npe_node_eupd=$(( npe_node_max / nth_eupd ))
         fi
         ;;
