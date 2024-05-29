@@ -60,6 +60,7 @@ jobs:
           cd "${GITHUB_WORKSPACE}/ci/scripts" || exit 1
           [[ -s "wxflow" ]] && rm -f wxflow
           ln -fs "${GITHUB_WORKSPACE}/sorc/wxflow/src/wxflow" .
+          export PYTHONPATH="${GITHUB_WORKSPACE}/sorc/wxflow/src/wxflow:${GITHUB_WORKSPACE}/workflow:${GITHUB_WORKSPACE}/ci/scripts:${PYTHONPATH}"
 
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
