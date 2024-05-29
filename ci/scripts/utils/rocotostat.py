@@ -102,11 +102,7 @@ def rocoto_statcount(rocotostat):
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--all')
 
-<<<<<<< HEAD
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 90, ProcessError)
-=======
     rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 4, 120, ProcessError)
->>>>>>> develop
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
     rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
