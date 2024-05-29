@@ -69,8 +69,32 @@ FV3_postdet() {
   fi  # if [[ "${warm_start}" == ".true." ]]; then
 
   #============================================================================
+  # Determine increment files when doing cold start
+  if [[ "${warm_start}" == ".false." ]]; then
+
+    if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
+      IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+      if (( MEMBER == 0 )); then
+        inc_files=()
+      else
+        inc_files=("atminc.nc")
+        read_increment=".true."
+        res_latlon_dynamics="atminc.nc"
+      fi
+      local increment_file
+      for inc_file in "${inc_files[@]}"; do
+        increment_file="${COM_ATMOS_INPUT}/${RUN}.t${cyc}z.${inc_file}"
+        if [[ -f "${increment_file}" ]]; then
+          ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
+        else
+          echo "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
+          exit 1
+        fi
+      done
+    fi
+
   # Determine IAU and increment files when doing warm start
-  if [[ "${warm_start}" == ".true." ]]; then
+  elif [[ "${warm_start}" == ".true." ]]; then
 
     #--------------------------------------------------------------------------
     if [[ "${RERUN}" == "YES" ]]; then
@@ -136,11 +160,7 @@ EOF
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
-          increment_file="${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.${inc_file}"
-        else
-          increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
-        fi
+        increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
