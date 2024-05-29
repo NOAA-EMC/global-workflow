@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 import f90nml
-from glob import glob 
+from glob import glob
 from logging import getLogger
 from os import path
 from pygfs.task.analysis import Analysis
@@ -50,8 +50,8 @@ class MarineLETKF(Analysis):
         JEDI_BIN = self.config.JEDI_BIN
 
         gdas_home = path.join(self.config.HOMEgfs, 'sorc', 'gdas.cd')
-    
-        half_assim_freq = timedelta(hours=int(self.config.assim_freq)/2)
+
+        half_assim_freq = timedelta(hours=int(self.config.assim_freq) / 2)
         window_begin = cdate - half_assim_freq
         window_begin_iso = window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
         window_middle_iso = cdate.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -62,7 +62,7 @@ class MarineLETKF(Analysis):
         letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
         self.config['letkf_yaml_template'] = path.join(letkf_yaml_dir, 'letkf.yaml.j2')
         letkf_yaml_file = path.join(DATA, 'letkf.yaml')
-        self.config.letkf_exec_args =  [letkf_exec,
+        self.config.letkf_exec_args = [letkf_exec,
                                         'fv3jedi',
                                         'localensembleda',
                                         letkf_yaml_file]
@@ -90,9 +90,9 @@ class MarineLETKF(Analysis):
         # create list of subdirs to make in initialize, and list of some of the files to stage
         ens_bkg_files_to_stage = []
         dirs_to_make = [self.config.bkg_dir, self.config.data_output_dir, self.config.obs_dir]
-        for mem in range(1,self.config.NMEM_ENS+1):
-            mem_dir = f'mem{str(mem).zfill(3)}' # will make pattern mem001
-            dirs_to_make.append(path.join(self.config.ens_dir,mem_dir))
+        for mem in range(1, self.config.NMEM_ENS+1):
+            mem_dir = f'mem{str(mem).zfill(3)}'  # will make pattern mem001
+            dirs_to_make.append(path.join(self.config.ens_dir, mem_dir))
             ocn_file_path = path.join(COM_TOP_PREV_ENS,
                                       mem_dir,
                                       'model_data',
@@ -140,7 +140,7 @@ class MarineLETKF(Analysis):
         FileHandler({'mkdir': self.config.dirs_to_make}).sync()
 
         # copy ensemble background to DATA/ens/mem???
-        FileHandler({'copy': self.config.ens_bkg_files_to_stage }).sync()
+        FileHandler({'copy': self.config.ens_bkg_files_to_stage}).sync()
 
         bkg_utils.gen_bkg_list(bkg_path=self.config.COM_OCEAN_HISTORY_PREV,
                                out_path=self.config.bkg_dir,
@@ -155,7 +155,7 @@ class MarineLETKF(Analysis):
         for ob in obs_list['observers']:
             obs_name = ob['obs space']['name'].lower()
             obs_filename = f"{RUN}.t{cyc}z.{obs_name}.{PDYstr}{cyc}.nc4"
-            obs_files.append((obs_filename,ob))
+            obs_files.append((obs_filename, ob))
 
         obs_files_to_copy = []
         obs_to_use = []
@@ -180,8 +180,8 @@ class MarineLETKF(Analysis):
         letkf_yaml.save(self.config.letkf_yaml_file)
 
         FileHandler({'copy': [[self.config.mom_input_nml_src,
-            self.config.mom_input_nml_tmpl]]}).sync()
-       
+                               self.config.mom_input_nml_tmpl]]}).sync()
+
         self.stage_fix_files()
 
         bkg_utils.stage_ic(self.config.bkg_dir, self.runtime_config.DATA, self.runtime_config.gcyc)
@@ -195,7 +195,6 @@ class MarineLETKF(Analysis):
             nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
             ufsda.disk_utils.removefile(self.config.mom_input_nml)
             nml.write(self.config.mom_input_nml)
-        
 
     @logit(logger)
     def run(self):
@@ -209,7 +208,6 @@ class MarineLETKF(Analysis):
         """
 
         logger.info("run")
-
 
     @logit(logger)
     def finalize(self):
@@ -260,12 +258,12 @@ class MarineLETKF(Analysis):
         # link ufo <---> soca name variable mapping
         fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'obsop_name_map.yaml'),
                           path.join(DATA, 'obsop_name_map.yaml')])
-    
+
         # INPUT
         src_input_dir = path.join(SOCA_INPUT_FIX_DIR, 'INPUT')
         dst_input_dir = path.join(DATA, 'INPUT')
         FileHandler({'mkdir': [dst_input_dir]}).sync()
-    
+
         input_files = glob(f'{src_input_dir}/*')
         for input_file in input_files:
             fname = path.basename(input_file)
