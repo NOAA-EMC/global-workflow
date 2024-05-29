@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 from typing import Union, List, Dict, Any
 
 '''
@@ -145,9 +146,10 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     strings.append(f'\t<walltime>{walltime}</walltime>\n')
     strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
 
-   #on AWS, check memory failed. So, comment out here to by-pass memory check.
-   #if memory is not None:
-   #    strings.append(f'\t<memory>{memory}</memory>\n')
+    pw_csp = os.environ.get('PW_CSP')
+    if pw_csp not in ['aws', 'azure', 'google']:
+        if memory is not None:
+            strings.append(f'\t<memory>{memory}</memory>\n')
     if native is not None:
         strings.append(f'\t<native>{native}</native>\n')
     strings.append('\n')

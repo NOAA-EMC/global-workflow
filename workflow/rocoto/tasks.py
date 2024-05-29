@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
@@ -167,11 +168,6 @@ class Tasks:
 
         scheduler = self.app_config.scheduler
 
-       #print('In workflow/rocoto/tasks.py')
-       #print('self.app_config = ', self.app_config)
-       #print('dir(self.app_config) = ', dir(self.app_config))
-       #print('vars(self.app_config) = ', vars(self.app_config))
-
         task_config = self._configs[task_name]
 
         account = task_config['ACCOUNT']
@@ -212,9 +208,11 @@ class Tasks:
             else:
                 native += ':shared'
         elif scheduler in ['slurm']:
-           #native = '--export=NONE'
-           #On AWS, need to set as:
-            native = '--export=ALL --exclusive'
+            pw_csp = os.environ.get('PW_CSP')
+            if ( pw_csp in ['aws', 'azure', 'google'] ):
+                native = '--export=ALL --exclusive'
+            else:
+                native = '--export=NONE'
 
         queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
 

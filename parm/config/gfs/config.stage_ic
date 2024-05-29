@@ -9,22 +9,29 @@ source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
   "C48" | "C96" | "C192")
-   #export CPL_ATMIC="workflow_${CASE}_refactored"
-    export CPL_ATMIC="${CASE}"
-    export CPL_ICEIC="workflow_${CASE}_refactored"
-    export CPL_OCNIC="workflow_${CASE}_refactored"
-    export CPL_WAVIC="workflow_${CASE}_refactored"
-    ;;
+    echo "COM_ATMOS_INPUT: $COM_ATMOS_INPUT"
+    echo "BASE_CPLIC: $BASE_CPLIC"
+    echo "CPL_ATMIC: $CPL_ATMIC"
+    echo "PW_CSP: $PW_CSP"
+
+    case "${PW_CSP}" in
+      "aws" | "azure" | "google")
+        export CPL_ATMIC="${CASE}"
+        ;;
+      *)
+        export CPL_ATMIC="workflow_${CASE}_refactored"
+        export CPL_ICEIC="workflow_${CASE}_refactored"
+        export CPL_OCNIC="workflow_${CASE}_refactored"
+        export CPL_WAVIC="workflow_${CASE}_refactored"
+        ;;
   "C384")
-   #export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c_refactored
-    export CPL_ATMIC="${CASE}"
+    export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c_refactored
     export CPL_ICEIC=CPC_refactored
     export CPL_OCNIC=CPC3Dvar_refactored
     export CPL_WAVIC=workflow_C384_refactored
     ;;
   "C768")
-   #export CPL_ATMIC=HR3C768
-    export CPL_ATMIC="${CASE}"
+    export CPL_ATMIC=HR3C768
     export CPL_ICEIC=HR3marine
     export CPL_OCNIC=HR3marine
     export CPL_WAVIC=HR3marine

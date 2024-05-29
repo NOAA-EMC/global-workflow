@@ -92,13 +92,8 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
 # TODO: This can likely be made more general once other cloud
 # platforms come online.
 elif [[ ${MACHINE_ID} = "noaacloud" ]]; then
+    # We are on NOAA Cloud
     module purge
-
-   #module use /contrib/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core
-   #module load stack-intel/2021.3.0  stack-intel-oneapi-mpi/2021.3.0
-   #export SPACK_ROOT=/contrib/spack-stack/spack-stack-1.6.0/spack
-   #export PATH=${PATH}:${SPACK_ROOT}/bin
-   #. "${SPACK_ROOT}"/share/spack/setup-env.sh
 
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2

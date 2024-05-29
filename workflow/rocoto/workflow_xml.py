@@ -8,6 +8,7 @@ from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
 import rocoto.rocoto as rocoto
+import numpy as np
 from abc import ABC, abstractmethod
 
 
@@ -133,9 +134,9 @@ class RocotoXML(ABC):
         with open(xml_file, 'w') as fh:
             fh.write(self.xml)
 
-    def _write_crontab(self, crontab_file: str = None, cronint: int = 2) -> None:
+    def _write_crontab(self, crontab_file: str = None, cronint: int = 5) -> None:
         """
-        Create crontab to execute rocotorun every cronint (2) minutes
+        Create crontab to execute rocotorun every cronint (5) minutes
         """
 
         # No point creating a crontab if rocotorun is not available.
@@ -156,13 +157,21 @@ class RocotoXML(ABC):
             replyto = ''
 
         strings = ['',
-                   f'#################### {pslot} ####################',
-                   f'MAILTO="{replyto}"',
-                   f'SHELL="/bin/bash"',
-                   f'BASH_ENV="/etc/bashrc"',
-                   f'{cronintstr} {rocotorunstr}',
-                   '#################################################################',
-                   '']
+                  f'#################### {pslot} ####################',
+                  f'MAILTO="{replyto}"'
+                  ]
+        pw_csp = os.environ.get('PW_CSP')
+        if ( pw_csp in ['aws', 'azure', 'google'] ):
+             strings = np.append(strings,
+                       [
+                       f'SHELL="/bin/bash"',
+                       f'BASH_ENV="/etc/bashrc"'
+                       ])
+        strings = np.append(strings,
+                  [
+                  f'{cronintstr} {rocotorunstr}',
+                  '#################################################################',
+                  ''])
 
         if crontab_file is None:
             crontab_file = f"{expdir}/{pslot}.crontab"

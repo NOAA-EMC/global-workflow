@@ -3,7 +3,7 @@
 #SBATCH --account=$USER
 #SBATCH --qos=batch
 #SBATCH --partition=compute
-#SBATCH -t 01:15:00
+#SBATCH -t 04:15:00
 #SBATCH --nodes=1
 ##SBATCH --tasks-per-node=36
 ##SBATCH --cpus-per-task=1

@@ -3,7 +3,6 @@
 
 #set -x
 
- GLOBALWORKFLOWTEMP=/contrib/Wei.Huang/run
  GLOBALWORKFLOWHOME=/contrib/Wei.Huang/src/global-workflow-cloud
 #ATMOSRES=48
  ATMOSRES=96
@@ -17,8 +16,13 @@
  EDATE=2024010100
 #IDATE=2021032306
 #EDATE=2021032306
+
+ GLOBALWORKFLOWTEMP=/lustre/Wei.Huang/run
  COMROOT=${GLOBALWORKFLOWTEMP}/comroot
+
+ GLOBALWORKFLOWTEMP=/lustre/Wei.Huang/run
  EXPDIR=${GLOBALWORKFLOWTEMP}/expdir
+
  CONFIGDIR=${GLOBALWORKFLOWHOME}/parm/config
  export BASE_CPLIC=/contrib/Wei.Huang/data/ICs
  export CPL_ATMIC=C${ATMOSRES}
@@ -30,7 +34,7 @@
 #workflow/hosts/awspw.yaml
  export STMP=/lustre/${USER}/stmp
  export PTMP=/lustre/${USER}/ptmp
- export NOSCRUB=/bucket/${USER}/archive
+ export NOSCRUB=/s3bucket/${USER}/archive
 
  source ${GLOBALWORKFLOWHOME}/workflow/gw_setup.sh
 

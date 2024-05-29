@@ -68,22 +68,17 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     # Stage the FV3 cold-start initial conditions to ROTDIR
     YMD=${PDY} HH=${cyc} declare_from_tmpl COM_ATMOS_INPUT
     [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
-    if [[ "${RUN:-}" = "gefs" ]]; then
-      src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}PDY}/${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
-    else
+
+    echo "COM_ATMOS_INPUT: $COM_ATMOS_INPUT"
+    echo "BASE_CPLIC: $BASE_CPLIC"
+    echo "CPL_ATMIC: $CPL_ATMIC"
+
+    src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}/${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
+    if [[ ! -f ${src} ]]; then
+      echo "PW_CSP: $PW_CSP"
       src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${PDY}/${cyc}/model_data/atmos/input/gfs_ctrl.nc"
     fi
     tgt="${COM_ATMOS_INPUT}/gfs_ctrl.nc"
-
-    echo "BASE_CPLIC=$BASE_CPLIC"
-    echo "CPL_ATMIC=$CPL_ATMIC"
-    echo "PDY=$PDY"
-    echo "cyc=$cyc"
-    echo "COM_ATMOS_INPUT=$COM_ATMOS_INPUT"
-    echo "MEMDIR=$MEMDIR"
-    echo "NCP=$NCP"
-    echo "src=$src"
-    echo "tgt=$tgt"
     if [ ! -f ${tgt} ]; then
       ${NCP} "${src}" "${tgt}"
       rc=$?
@@ -95,9 +90,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     for ftype in gfs_data sfc_data; do
       for ((tt = 1; tt <= ntiles; tt++)); do
         src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
-        if [[ "${RUN:-}" = "gefs" ]]; then
-          src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/${ftype}.tile${tt}.nc"
-        else
+        if [[ ! -f ${src} ]]; then
           src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${PDY}/${cyc}/model_data/atmos/input/${ftype}.tile${tt}.nc"
         fi
         tgt="${COM_ATMOS_INPUT}/${ftype}.tile${tt}.nc"

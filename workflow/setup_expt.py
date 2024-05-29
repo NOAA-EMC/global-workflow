@@ -283,15 +283,6 @@ def update_configs(host, inputs):
         defaults.update(dict_in)
         return defaults
 
-    print('host:', host)
-    print('inputs:', inputs)
-
-    print('dir(host):', dir(host))
-    print('dir(inputs):', dir(inputs))
-
-    print('vars(host):', vars(host))
-    print('vars(inputs):', vars(inputs))
-
     # Read in the YAML file to fill out templates and override host defaults
     data = AttrDict(host.info, **inputs.__dict__)
     data.HOMEgfs = _top
@@ -600,8 +591,6 @@ def main(*argv):
     print(f'EXPDIR: {expdir}')
     print(f'ROTDIR: {rotdir}')
     print(f"*" * 100)
-    print('host:', host)
-    print('user_inputs:', user_inputs)
 
 if __name__ == '__main__':
 

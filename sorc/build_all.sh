@@ -145,7 +145,7 @@ build_opts["ww3prepost"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_buil
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
-   build_jobs["gdas"]=24
+   build_jobs["gdas"]=8
    big_jobs=$((big_jobs+1))
    build_opts["gdas"]="${_verbose_opt} ${_build_debug}"
 fi

@@ -19,8 +19,6 @@ EOF
   exit 1
 }
 
-set -x
-
 RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced

@@ -3,6 +3,7 @@ from rocoto.tasks import Tasks
 from wxflow import timedelta_to_HMS
 import rocoto.rocoto as rocoto
 import numpy as np
+import os
 
 
 class GFSTasks(Tasks):
@@ -25,28 +26,24 @@ class GFSTasks(Tasks):
         # Atm ICs
         if self.app_config.do_atm:
             pslot = self._base['PSLOT']
-           #print('cpl_ic:', cpl_ic)
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
-            base_cplic = f"{cpl_ic['BASE_CPLIC']}"
-            cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
-            print('base_cplic =', base_cplic)
-            print('cpl_atmic =', cpl_atmic)
-            print('pslot =', pslot)
-            print('prefix =', prefix)
-           #prefix = f"{self.rotdir}/gfs.@Y@m@d/@H/model_data/atmos/input"
-           #prefix = f"{cpl_ic['BASE_CPLIC']}/{self._base['PSLOT']}/gfs.@Y@m@d/@H/model_data/atmos/input"
-           #prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/gfs.@Y@m@d/@H/model_data/atmos/input"
-            icdir = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}"
-            if('IC_PREFIX' in cpl_ic.keys()):
-                cpl_ic_prefix = f"{icdir}/{cpl_ic['IC_PREFIX']}"
-            else:
-                cpl_ic_prefix = 'gfs'
-            if('IC_TYPE'  in cpl_ic.keys()):
-                cpl_ic_type = f"{cpl_ic['IC_TYPE']}"
-            else:
-                cpl_ic_type = 'input'
-            prefix = f"{icdir}/{cpl_ic_prefix}.@Y@m@d/@H/model_data/atmos/{cpl_ic_type}"
-            print('prefix =', prefix)
+
+            pw_csp = os.environ.get('PW_CSP')
+            if ( pw_csp in ['aws', 'azure', 'google'] ):
+                base_cplic = f"{cpl_ic['BASE_CPLIC']}"
+               #cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
+                cpl_atmic = os.environ.get('CPL_ATMIC')
+                print('cpl_atmic = ', os.environ.get('CPL_ATMIC')
+                icdir = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}"
+                if('IC_PREFIX' in cpl_ic.keys()):
+                    cpl_ic_prefix = f"{icdir}/{cpl_ic['IC_PREFIX']}"
+                else:
+                    cpl_ic_prefix = 'gfs'
+                if('IC_TYPE'  in cpl_ic.keys()):
+                    cpl_ic_type = f"{cpl_ic['IC_TYPE']}"
+                else:
+                    cpl_ic_type = 'input'
+                prefix = f"{icdir}/{cpl_ic_prefix}.@Y@m@d/@H/model_data/atmos/{cpl_ic_type}"
             for file in ['gfs_ctrl.nc'] + \
                         [f'{datatype}_data.tile{tile}.nc'
                          for datatype in ['gfs', 'sfc']
