@@ -1052,12 +1052,9 @@ case ${step} in
         elif [[ "${machine}" == "S4" ]]; then
            export npe_eupd=160
            export nth_eupd=2
-	elif [[ "${machine}" == "HERA" ]]; then
-           export npe_eupd=80
-           export nth_eupd=8
-	   export npe_node_eupd=5
-	   export nth_eupd=8
-	   export npe_node_eupd=$(( npe_node_max / nth_eupd ))
+        elif [[ "${machine}" == "HERA" ]]; then
+          export npe_eupd=80
+          export nth_eupd=8
         fi
         ;;
       "C192" | "C96" | "C48")
