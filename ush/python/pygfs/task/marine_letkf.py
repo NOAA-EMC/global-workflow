@@ -47,19 +47,18 @@ class MarineLETKF(Analysis):
         DATA = path.realpath(self.runtime_config.DATA)
         cdate = PDY + timedelta(hours=cyc)
         COM_TOP_PREV_ENS = self.config.COM_TOP_PREV_ENS
+        JEDI_BIN = self.config.JEDI_BIN
 
-        gdas_home = path.join(config['HOMEgfs'], 'sorc', 'gdas.cd')
-        exec_dir = path.join(gdas_home, 'build', 'bin')
+        gdas_home = path.join(self.config.HOMEgfs, 'sorc', 'gdas.cd')
     
-        half_assim_freq = timedelta(hours=int(config['assim_freq'])/2)
+        half_assim_freq = timedelta(hours=int(self.config.assim_freq)/2)
         window_begin = cdate - half_assim_freq
         window_begin_iso = window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
         window_middle_iso = cdate.strftime('%Y-%m-%dT%H:%M:%SZ')
         self.config.ATM_WINDOW_BEGIN = window_begin_iso
         self.config.ATM_WINDOW_MIDDLE = window_middle_iso
 
-#        self.config.letkf_exec = path.join(exec_dir, 'gdas.x')
-        letkf_exec = path.join(exec_dir, 'gdas.x')
+        letkf_exec = path.join(JEDI_BIN, 'gdas.x')
         letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
         self.config['letkf_yaml_template'] = path.join(letkf_yaml_dir, 'letkf.yaml.j2')
         letkf_yaml_file = path.join(DATA, 'letkf.yaml')
@@ -69,12 +68,12 @@ class MarineLETKF(Analysis):
                                         letkf_yaml_file]
         self.config.letkf_yaml_file = letkf_yaml_file
 
-        self.config['window_begin'] = window_begin
-        self.config['BKG_LIST'] = 'bkg_list.yaml'
-        self.config['bkg_dir'] = path.join(DATA, 'bkg')
+        self.config.window_begin = window_begin
+        self.config.BKG_LIST = 'bkg_list.yaml'
+        self.config.bkg_dir = path.join(DATA, 'bkg')
 
-        self.config.exec_name_gridgen = path.join(self.config.JEDI_BIN, 'gdas_soca_gridgen.x')
-        self.config['gridgen_yaml'] = path.join(gdas_home, 'parm', 'soca', 'gridgen', 'gridgen.yaml')
+        self.config.exec_name_gridgen = path.join(JEDI_BIN, 'gdas_soca_gridgen.x')
+        self.config.gridgen_yaml = path.join(gdas_home, 'parm', 'soca', 'gridgen', 'gridgen.yaml')
 
         self.config.mom_input_nml_src = path.join(gdas_home, 'parm', 'soca', 'fms', 'input.nml')
         self.config.mom_input_nml_tmpl = path.join(DATA, 'mom_input.nml.tmpl')
@@ -227,11 +226,6 @@ class MarineLETKF(Analysis):
         exec_cmd_letkf = Executable(self.config.APRUN_OCNANALLETKF)
         for letkf_exec_arg in self.config.letkf_exec_args:
             exec_cmd_letkf.add_default_arg(letkf_exec_arg)
-
-        # exec_cmd_letkf.add_default_arg(self.config.letkf_exec)
-        # exec_cmd_letkf.add_default_arg('fv3jedi') 
-        # exec_cmd_letkf.add_default_arg('localensembleda')
-        # exec_cmd_letkf.add_default_arg(self.config.letkf_yaml_file )
 
         try:
             logger.debug(f"Executing {exec_cmd_letkf}")
