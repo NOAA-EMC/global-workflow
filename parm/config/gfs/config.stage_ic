@@ -25,6 +25,7 @@ case "${CASE}" in
         export CPL_WAVIC="workflow_${CASE}_refactored"
         ;;
     esac
+    ;;
   "C384")
     export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c_refactored
     export CPL_ICEIC=CPC_refactored
