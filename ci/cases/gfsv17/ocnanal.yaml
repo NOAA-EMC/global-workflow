@@ -15,10 +15,6 @@ base:
   DO_VRFY_OCEANDA: "NO"
   FHMAX_GFS: 240
   HPSS_PROJECT: {{ 'HPSS_PROJECT' | getenv }}
-  HOMEDIR: {{ 'PWD' | getenv }}/HOMEDIR
-  STMP: {{ 'PWD' | getenv }}/TMP 
-  PTMP: {{ 'PWD' | getenv }}/TMP
-  NOSCRUB: {{ 'PWD' | getenv }}/TMP
 
 ocnanal:
   SOCA_INPUT_FIX_DIR: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/1440x1080x75/soca
