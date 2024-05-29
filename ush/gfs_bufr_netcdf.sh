@@ -78,7 +78,7 @@ do
    fi
 
    filename="${COMIN}/${RUN}.${cycle}.logf${hh2}.txt"
-   if ! [ -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}" ]; then
+   if ! wait_for_file "${filename}" "${sleep_interval}" "${max_tries}" ; then
      err_exit "FATAL ERROR COULD NOT LOCATE logf${hh2} file"
    fi
 
