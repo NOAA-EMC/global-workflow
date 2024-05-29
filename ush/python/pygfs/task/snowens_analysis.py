@@ -30,15 +30,16 @@ class SnowEnsAnalysis(Analysis):
     def __init__(self, config):
         super().__init__(config)
 
-        _res = int(self.config['CASE'][1:])
+        _res_det = int(self.config['CASE'][1:])
+        _res_ens = int(self.config['CASE_ENS'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
         _recenter_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.land_recenter.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'npx_ges': _res + 1,
-                'npy_ges': _res + 1,
+                'npx_ges': _res_ens + 1,
+                'npy_ges': _res_ens + 1,
                 'npz_ges': self.config.LEVS - 1,
                 'npz': self.config.LEVS - 1,
                 'SNOW_WINDOW_BEGIN': _window_begin,
