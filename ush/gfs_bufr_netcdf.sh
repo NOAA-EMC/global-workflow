@@ -49,6 +49,7 @@ else
 fi
 
 SFCF="sfc"
+CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
   levs=$LEVS,makebufr=$bufrflag,
