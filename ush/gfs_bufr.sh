@@ -22,7 +22,7 @@
 #
 source "${USHgfs}/preamble.sh"
 
-if [[ "${F00FLAG}" == "YES" ]]; then
+if [[ "${f00flag}" == "YES" ]]; then
    f00flag=".true."
 else
    f00flag=".false."
@@ -60,7 +60,7 @@ for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    #---------------------------------------------------------
    # Make sure all files are available:
    filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}"
-   if ! [ -f wait_for_file "${filename}" "${sleep_interval}" "${max_tries}" ]; then
+   if ! wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
      echo "FATAL ERROR: COULD NOT LOCATE logf${hh3} file"
      exit 2
    fi
@@ -90,11 +90,11 @@ esac
 ${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
 export err=$?
 
-if [ $err -ne 0 ]; then
+if [[ "${err}" -ne 0 ]]; then
    echo "GFS postsnd job error, Please check files "
    echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh2}.${atmfm}"
    echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh2}.${atmfm}"
    err_chk
 fi
 
-exit ${err}
+exit "${err}"
