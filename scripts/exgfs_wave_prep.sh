@@ -162,12 +162,12 @@ source "${USHgfs}/preamble.sh"
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]
+    if [ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]
     then
       set +x
-      echo " Mod def file for $grdID found in ${COM_WAVE_PREP}. copying ...."
+      echo " Mod def file for $grdID found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
-      cp ${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID} mod_def.$grdID
+      cp ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       set +x
@@ -322,7 +322,7 @@ source "${USHgfs}/preamble.sh"
       ymdh_rtofs=$ymdh_beg
 
       if [  "$FHMAX_WAV_CUR" -le 72 ]; then 
-        rtofsfile1="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
+        rtofsfile1="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
         rtofsfile2="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f048_prog.nc"
         rtofsfile3="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
         if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ]; then 

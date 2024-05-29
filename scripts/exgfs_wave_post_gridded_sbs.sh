@@ -103,12 +103,12 @@ source "${USHgfs}/preamble.sh"
 
 # 1.a.1 Copy model definition files
   for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
-    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
+      echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
     fi
   done
 
@@ -258,7 +258,7 @@ source "${USHgfs}/preamble.sh"
     then
       iwait=0
       for wavGRD in ${waveGRD} ; do
-        gfile=${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
+        gfile=${COMOUT_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
         while [ ! -s ${gfile} ]; do sleep 10; let iwait=iwait+1; done
         if [ $iwait -eq $iwaitmax ]; then
           echo '*************************************************** '
@@ -407,7 +407,7 @@ source "${USHgfs}/preamble.sh"
       ENSTAG=""
       if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
       gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-      if [ ! -s ${COM_WAVE_GRID}/${gribchk} ]; then
+      if [ ! -s ${COMOUT_WAVE_GRID}/${gribchk} ]; then
         set +x
         echo ' '
         echo '********************************************'
