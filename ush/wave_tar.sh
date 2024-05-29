@@ -107,7 +107,7 @@ source "${USHgfs}/preamble.sh"
     
     nf=$(ls | awk '/'$ID.*.$filext'/ {a++} END {print a}')
     nbm2=$(( $nb - 2 ))
-    if [ $nf -ge $nbm2 ]
+    if [[ "${nf}" -ge "${nbm2}" ]]
     then
 
       filename="${ID}.${cycle}.${type}_tar" 
@@ -121,7 +121,7 @@ source "${USHgfs}/preamble.sh"
         set_trace
         exit 3
       fi
-      tar -cf $ID.$cycle.${type}_tar ./$ID.*.$filext
+      tar -cf "${ID}.${cycle}.${type}_tar" "./${ID}.*.${filext}"
       exit=$?
 
       if  [[ "${exit}" != '0' ]]
@@ -144,7 +144,7 @@ source "${USHgfs}/preamble.sh"
 
   done
 
-  if [[ "$tardone" = 'no' ]]
+  if [[ "${tardone}" = 'no' ]]
   then
     set +x
     echo ' '
@@ -156,15 +156,15 @@ source "${USHgfs}/preamble.sh"
     exit 3
   fi
 
-  if [[ "$type" = 'spec' ]]
+  if [[ "${type}" = 'spec' ]]
   then
-    if [ -s $ID.$cycle.${type}_tar ]
+    if [[ -s "${ID}.${cycle}.${type}_tar" ]]
     then
-      file_name=$ID.$cycle.${type}_tar.gz
-      /usr/bin/gzip -c $ID.$cycle.${type}_tar > ${file_name}
+      file_name="${ID}.${cycle}.${type}_tar.gz"
+      /usr/bin/gzip -c "${ID}.${cycle}.${type}_tar" > "${file_name}"
       exit=$?
 
-      if  [[ "$exit" != '0' ]]
+      if  [[ "${exit}" != '0' ]]
       then
         set +x
         echo ' '
