@@ -63,9 +63,9 @@ class MarineLETKF(Analysis):
         self.config['letkf_yaml_template'] = path.join(letkf_yaml_dir, 'letkf.yaml.j2')
         letkf_yaml_file = path.join(DATA, 'letkf.yaml')
         self.config.letkf_exec_args = [letkf_exec,
-                                        'fv3jedi',
-                                        'localensembleda',
-                                        letkf_yaml_file]
+                                       'fv3jedi',
+                                       'localensembleda',
+                                       letkf_yaml_file]
         self.config.letkf_yaml_file = letkf_yaml_file
 
         self.config.window_begin = window_begin
@@ -90,7 +90,7 @@ class MarineLETKF(Analysis):
         # create list of subdirs to make in initialize, and list of some of the files to stage
         ens_bkg_files_to_stage = []
         dirs_to_make = [self.config.bkg_dir, self.config.data_output_dir, self.config.obs_dir]
-        for mem in range(1, self.config.NMEM_ENS+1):
+        for mem in range(1, self.config.NMEM_ENS + 1):
             mem_dir = f'mem{str(mem).zfill(3)}'  # will make pattern mem001
             dirs_to_make.append(path.join(self.config.ens_dir, mem_dir))
             ocn_file_path = path.join(COM_TOP_PREV_ENS,
@@ -233,7 +233,7 @@ class MarineLETKF(Analysis):
         None
         """
         # adapted from ufsda stage_fix
-        #TODO(AFE): this method maybe should go in a different class
+        # TODO(AFE): this method maybe should go in a different class
 
         logger.info("stage_fix_files")
 
@@ -254,7 +254,7 @@ class MarineLETKF(Analysis):
         # link field metadata
         fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'fields_metadata.yaml'),
                           path.join(DATA, 'fields_metadata.yaml')])
-    
+        
         # link ufo <---> soca name variable mapping
         fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'obsop_name_map.yaml'),
                           path.join(DATA, 'obsop_name_map.yaml')])
@@ -269,5 +269,5 @@ class MarineLETKF(Analysis):
             fname = path.basename(input_file)
             fix_files.append([path.join(src_input_dir, fname),
                               path.join(dst_input_dir, fname)])
-    
+
         FileHandler({'copy': fix_files}).sync()
