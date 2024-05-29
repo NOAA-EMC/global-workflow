@@ -122,13 +122,21 @@ EOF
         inc_files=("atminc.nc")
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
+        if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
+          IAU_FHROT=3  # Replay ICs start at the end of the current cycle assimilation window
+          # Control member has no perturbation
+          if (( MEMBER == 0 )); then
+            inc_files=()
+            read_increment=".false."
+            res_latlon_dynamics='""'
+          fi
+        fi
       fi
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
         if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
           increment_file="${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.${inc_file}"
-          IAU_FHROT=3  # Replay ICs start at the end of the current cycle assimilation window
         else
           increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
         fi
