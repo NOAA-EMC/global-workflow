@@ -25,10 +25,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest
           pip install pytest-xdist
-          cd $GITHUB_WORKSPACE/sorc
-          ./link_workflow.sh
-          # If you have a requirements.txt file, you can install all dependencies using:
-          # pip install -r requirements.txt
+          # Link python pacakges in ush/python
+          # TODO: This will be unnecessary when these are part of the virtualenv
+          packages=("wxflow" "jcb")
+          for package in "${packages[@]}"; do
+              cd "${GITHUB_WORKSPACE}/ush/python" || exit 1
+              [[ -s "${package}" ]] && rm -f "${package}"
+              ln -fs "${GITHUB_WORKSPACE}/sorc/${package}/src/${package}" .
+          done
+
+          # Link wxflow in workflow and ci/scripts
+          # TODO: This will be unnecessary when wxflow is part of the virtualenv
+          cd "${GITHUB_WORKSPACE}/workflow" || exit 1
+          [[ -s "wxflow" ]] && rm -f wxflow
+          ln -fs "${GITHUB_WORKSPACE}/sorc/wxflow/src/wxflow" .
+          cd "${GITHUB_WORKSPACE}/ci/scripts" || exit 1
+          [[ -s "wxflow" ]] && rm -f wxflow
+          ln -fs "${GITHUB_WORKSPACE}/sorc/wxflow/src/wxflow" .
 
       - name: Cache Rocoto Install
         uses: actions/cache@v4
