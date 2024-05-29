@@ -112,7 +112,7 @@ source "${USHgfs}/preamble.sh"
 
       filename="${ID}.${cycle}.${type}_tar" 
       if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
-        echo "FATAL ERROR: File ${filename} not found after waiting $(( sleep_interval * (countMAX + 1) secs"
+        echo "FATAL ERROR: File ${filename} not found after waiting $(( sleep_interval * (countMAX + 1) )) secs"
         exit 3
       fi
       tar -cf "${ID}.${cycle}.${type}_tar" "./${ID}.*.${filext}"
