@@ -123,7 +123,7 @@ EOF
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
         if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
-          IAU_FHROT=3  # Replay ICs start at the end of the current cycle assimilation window
+          IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
           # Control member has no perturbation
           if (( MEMBER == 0 )); then
             inc_files=()
