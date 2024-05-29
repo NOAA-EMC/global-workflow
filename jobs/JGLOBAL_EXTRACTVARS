@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "extractvars" -c "base extractvars"
+
+# Set COM Paths
+for grid in '0p25' '0p50' '1p00'; do
+  prod_dir="COM_ATMOS_GRIB_${grid}"
+  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+  if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
+done
+
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_OCEAN_HISTORY"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_OCEAN_GRIB"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_OCEAN_NETCDF"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_ICE_HISTORY"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_ICE_GRIB"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_ICE_NETCDF"  
+
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_WAVE_GRID"
+
+# Execute the Script
+${SCRgfs}/exglobal_extractvars.sh
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+
+
+exit 0
