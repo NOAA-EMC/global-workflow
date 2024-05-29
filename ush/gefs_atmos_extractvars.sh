@@ -13,19 +13,18 @@ cd $subdata
 
 for outtype in "f2d" "f3d"; do
 
-  if [[ "$outtype" == "f2d" ]];then
+  if [[ "${outtype}" == "f2d" ]];then
     varlist=$varlist_2d
-    outdirpre="${subdata}/f2d"
-  elif [[ "$outtype" == "f3d" ]];then 
+  elif [[ "${outtype}" == "f3d" ]];then 
     varlist=$varlist_3d
     varlist_d=$varlist_3d_d
-    outdirpre="${subdata}/f3d"
   fi
 
+  outdirpre="${subdata}/${outtype}"
   if [ ! -d ${outdirpre} ]; then mkdir -p ${outdirpre}; fi 
 
   nh=${FHMIN}
-  while [[ $nh -le $fhmax ]];do
+  while [[ $nh -le $FHMAX ]];do
     fnh=`printf "%3.3d" ${nh}`
     echo "extracting f${fnh}"
 
@@ -62,13 +61,13 @@ for outtype in "f2d" "f3d"; do
     if [ -f $infile1 ]; then #check if input file exists before extraction
       $WGRIB2 $infile1 | grep -F -f $varlist | $WGRIB2 -i $infile1 -append -grib $oufile>/dev/null
     else
-      echo "WARNING: $infile1 does not exist. Please check it."
+      echo "WARNING: $infile1 does not exist."
     fi 
 
     if [ -f $infile2 ]; then #check if input file exists before extraction
       $WGRIB2 $infile2 | grep -F -f $varlist | $WGRIB2 -i $infile2 -append -grib $oufile>/dev/null
     else
-      echo "WARNING: $infile2 does not exist. Please check it."
+      echo "WARNING: $infile2 does not exist."
     fi
 
     #Compute daily average for a subset of variables
@@ -97,6 +96,7 @@ for outtype in "f2d" "f3d"; do
     fi #if outtype == f3d
     nh=$(($nh + $outfreq))
   done #fhr
+
 done #f2d,f3d
 
 exit 0                                                                                                                                                                                        

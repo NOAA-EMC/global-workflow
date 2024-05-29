@@ -20,10 +20,11 @@ export varlist_wav=${varlist_wav:-"${PARMgfs}/product/gefs_wav_shortparmlist.par
 
 # Variables used in this job
 export FHMIN=${FHMIN:-0} #The total number of lead hours
-export fhmax=${fhmax:-120} #The total number of lead hours
+export FHMAX=${FHMAX:-120} #The total number of lead hours
 export FHMAXHF=${FHMAXHF:-60} #The maximum lead hour that will use a high output frequency  
 export FHOUTHF=${FHOUTHF:-6} #The high output frequency (in hours)
 export FHOUTLF=${FHOUTLF:-12} #The low output frequency (in hours)
+export cycle=${cycle:-"t00z"} #cycle
 
 subdata="${DATA}/mem${ENSMEM}_atmos"
 if [ ! -d ${subdata} ]; then mkdir -p ${subdata}; fi

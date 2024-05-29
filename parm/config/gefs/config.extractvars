@@ -26,7 +26,7 @@ export varlist_3d_d=${PARMgfs}/product/gefs_shortparmlist_3d_d.parm
 
 export varlist_wav=${PARMgfs}/product/gefs_wav_shortparmlist.parm
 
-export fhmax=120
+export FHMAX=120
 export FHMAXHF=60
 export FHOUTHF=6
 export FHOUTLF=12
