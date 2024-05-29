@@ -13,9 +13,8 @@ base:
   DO_VERFOZN: "YES"
   DO_VERFRAD: "YES"
   DO_VRFY_OCEANDA: "NO"
-  ACCOUNT: "marine-cpu"
   FHMAX_GFS: 240
-  HPSS_PROJECT: emc-climate
+  HPSS_PROJECT: {{ 'HPSS_PROJECT' | getenv }}
   HOMEDIR: {{ 'PWD' | getenv }}/HOMEDIR
   STMP: {{ 'PWD' | getenv }}/TMP 
   PTMP: {{ 'PWD' | getenv }}/TMP
