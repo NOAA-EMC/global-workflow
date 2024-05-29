@@ -254,7 +254,7 @@ class MarineLETKF(Analysis):
         # link field metadata
         fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'fields_metadata.yaml'),
                           path.join(DATA, 'fields_metadata.yaml')])
-        
+
         # link ufo <---> soca name variable mapping
         fix_files.append([path.join(SOCA_INPUT_FIX_DIR, 'obsop_name_map.yaml'),
                           path.join(DATA, 'obsop_name_map.yaml')])
