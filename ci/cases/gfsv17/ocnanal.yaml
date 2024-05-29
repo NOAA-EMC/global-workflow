@@ -14,7 +14,6 @@ base:
   DO_VERFRAD: "YES"
   DO_VRFY_OCEANDA: "NO"
   FHMAX_GFS: 240
-  HPSS_PROJECT: {{ 'HPSS_PROJECT' | getenv }}
 
 ocnanal:
   SOCA_INPUT_FIX_DIR: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/1440x1080x75/soca
