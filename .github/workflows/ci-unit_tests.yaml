@@ -23,7 +23,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
           python -m pip install --upgrade pip
-          pip install pytest wxflow
+          pip install pytest
+          pip install pytest-xdist
+          cd $GITHUB_WORKSPACE/sorc
+          ./link_workflows.sh
           # If you have a requirements.txt file, you can install all dependencies using:
           # pip install -r requirements.txt
 
