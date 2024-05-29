@@ -13,6 +13,7 @@ FV3_postdet() {
   # cold start case
   if [[ "${warm_start}" == ".false." ]]; then
 
+    # Get list of FV3 cold start files
     local file_list file_array
     file_list=$(FV3_coldstarts)
     IFS=',' read -ra file_array <<< "${file_list}"
@@ -37,12 +38,13 @@ FV3_postdet() {
       restart_dir="${COM_ATMOS_RESTART_PREV}"
     fi
 
+    # Get list of FV3 restart files
     local file_list file_array
     file_list=$(FV3_restarts)
     IFS=',' read -ra file_array <<< "${file_list}"
 
     echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
-    local fv3_file
+    local fv3_file restart_file
     for fv3_file in "${file_array[@]}"; do
       restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_file}"
       ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${fv3_file}" \
@@ -124,7 +126,12 @@ EOF
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+        if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
+          increment_file="${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.${inc_file}"
+          IAU_FHROT=3  # Replay ICs start at the end of the current cycle assimilation window
+        else
+          increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+        fi
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
@@ -221,44 +228,35 @@ FV3_out() {
     ${NCP} "${DATA}/diag_table" "${COM_CONF}/ufs.diag_table"
   fi
 
-  # Create an array of fv3 restart files
-  local fv3_restart_files tile_files fv3_restart_file restart_file
-  fv3_restart_files=(coupler.res fv_core.res.nc)
-  tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
-  local nn tt
-  for (( nn = 1; nn <= ntiles; nn++ )); do
-    for tt in "${tile_files[@]}"; do
-      fv3_restart_files+=("${tt}.tile${nn}.nc")
-    done
-  done
-
+  # Determine the dates for restart files to be copied to COM
+  local restart_date restart_dates
+  restart_dates=()
   # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
-    local restart_date
-    restart_date=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${restart_interval} hours" +%Y%m%d%H)
     while (( restart_date <= forecast_end_cycle )); do
-      echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
-      for fv3_restart_file in "${fv3_restart_files[@]}"; do
-        restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_restart_file}"
-        ${NCP} "${DATArestart}/FV3_RESTART/${restart_file}" \
-               "${COM_ATMOS_RESTART}/${restart_file}"
-      done
+      restart_dates+=("${restart_date:0:8}.${restart_date:8:2}0000")
       restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
     done
   fi
-
   # Copy the final restart files at the end of the forecast segment
-  # The final restart written at the end of the forecast does not include the valid date
-  # TODO: verify the above statement since RM found that it did!
-  # TODO: For other components, this is only for gfs/gefs - check to see if this should also have this
   if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
-    echo "Copying FV3 restarts for 'RUN=${RUN}' at the end of the forecast segment: ${forecast_end_cycle}"
-    for fv3_restart_file in "${fv3_restart_files[@]}"; do
-      restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${fv3_restart_file}"
-      ${NCP} "${DATArestart}/FV3_RESTART/${restart_file}" \
-             "${COM_ATMOS_RESTART}/${restart_file}"
-    done
+    restart_dates+=("${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000")
   fi
+
+  # Get list of FV3 restart files
+  local file_list file_array fv3_file
+  file_list=$(FV3_restarts)
+  IFS=',' read -ra file_array <<< "${file_list}"
+
+  # Copy restarts for the dates collected above to COM
+  for restart_date in "${restart_dates[@]}"; do
+    echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
+    for fv3_file in "${file_array[@]}"; do
+      ${NCP} "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
+             "${COM_ATMOS_RESTART}/${restart_date}.${fv3_file}"
+    done
+  done
+
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
 
