@@ -64,9 +64,10 @@ FV3_postdet() {
           break
         fi
       done
-    fi  # if [[ "${RERUN}" == "NO" ]]; then
+    fi  # if [[ "${RERUN}" != "YES" ]]; then
 
-  fi
+  fi  # if [[ "${warm_start}" == ".true." ]]; then
+
   #============================================================================
   # Determine IAU and increment files when doing warm start
   if [[ "${warm_start}" == ".true." ]]; then
