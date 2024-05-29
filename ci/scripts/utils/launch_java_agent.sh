@@ -13,12 +13,12 @@ host=$(hostname)
 source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2)
-   echo "Launch Jenkins Java Controler on ${MACHINE_ID}"
-   ;;
- *)
-   echo "Unsupported platform. Exiting with error."
-   exit 1
-   ;;
+    echo "Launch Jenkins Java Controler on ${MACHINE_ID}"
+    ;;
+  *)
+    echo "Unsupported platform. Exiting with error."
+    exit 1
+    ;;
 esac
 
 LOG=lanuched_agent-$(date +%Y%m%d%M).log
