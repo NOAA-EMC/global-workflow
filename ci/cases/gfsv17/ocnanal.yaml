@@ -18,7 +18,7 @@ base:
 ocnanal:
   SOCA_INPUT_FIX_DIR: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/1440x1080x75/soca
   CASE_ANL: 'C24'
-  SOCA_OBS_LIST: {{ 'PWD' | getenv }}/obs_list.yaml
+  SOCA_OBS_LIST: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
   SOCA_NINNER: 100
   SABER_BLOCKS_YAML: ''
   NICAS_RESOL: 1
