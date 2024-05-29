@@ -65,7 +65,7 @@ class Archive(Task):
         if arch_dict.RUN == "gefs":
             raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
 
-        if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
+        if arch_dict.RUN in ["gdas", "gfs"]:
 
             # Copy the cyclone track files and rename the experiments
             # TODO This really doesn't belong in archiving and should be moved elsewhere
@@ -90,7 +90,7 @@ class Archive(Task):
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
-        if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
+        if arch_dict.RUN in ["gdas", "gfs"]:
 
             # Copy the cyclone track files and rename the experiments
             Archive._rename_cyclone_expt(arch_dict)
