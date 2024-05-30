@@ -360,7 +360,7 @@ class SnowAnalysis(Analysis):
         bkgtimes = []
         if self.task_config.DOIAU:
             # need both beginning and middle of window
-            bkgtimes.append(self.task_config.SNOW_WINDOW_BEGIN)        
+            bkgtimes.append(self.task_config.SNOW_WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)
         anllist = []
         for bkgtime in bkgtimes:

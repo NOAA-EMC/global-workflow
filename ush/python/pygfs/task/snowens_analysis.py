@@ -77,7 +77,7 @@ class SnowEnsAnalysis(Analysis):
         # stage fix files for fv3-jedi
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
         jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_list).sync()        
+        FileHandler(jedi_fix_list).sync()
 
         # write land ensemble recentering YAML
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
@@ -106,14 +106,13 @@ class SnowEnsAnalysis(Analysis):
     def finalize(self) -> None:
         """Performs closing actions of the snow ensemble analysis task
         This method:
-        - 
+        - does nothing yet
 
         Parameters
         ----------
         self : Analysis
             Instance of the SnowEnsAnalysis object
         """
-
 
     @staticmethod
     @logit(logger)
@@ -237,7 +236,7 @@ class SnowEnsAnalysis(Analysis):
             'copy': [],
         }
         return obs_dict
-    
+
     def get_bias_dict(self) -> Dict[str, Any]:
         bias_dict = {
             'mkdir': [],
