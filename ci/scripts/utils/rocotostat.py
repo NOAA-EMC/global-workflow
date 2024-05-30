@@ -15,12 +15,10 @@ logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=Fals
 
 def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception_class=Exception):
     """
-    attempt_multiple_times retries a function multiple times.
+    Retries a function multiple times.
 
-    attempt_multiple_times(expression, max_attempts, sleep_duration, exception_class)
-    tries to execute the function expression up to max_attempts times. If the function
-    raises an exception of type exception_class, it waits for sleep_duration seconds
-    before trying again.
+    Try to execute the function expression up to max_attempts times ignoring any exceptions
+    of the type exception_class, It waits for sleep_duration seconds between attempts.
 
     Parameters
     ----------
