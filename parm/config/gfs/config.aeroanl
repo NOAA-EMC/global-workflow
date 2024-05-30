@@ -20,7 +20,6 @@ export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIEXE="${EXECgfs}/gdas.x"
 
-
 if [[ "${DOIAU}" == "YES" ]]; then
   export aero_bkg_times="3,6,9"
   export JEDIYAML="${PARMgfs}/gdas/aero/variational/3dvar_fgat_gfs_aero.yaml.j2"
