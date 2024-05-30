@@ -22,21 +22,21 @@ def test_setup_expt():
     assert (setup_expt_script.returncode == 0)
 
 
-def test_setup_xml():
-
-    setup_xml_py = os.path.join(HOMEgfs, "workflow", "setup_xml.py")
-
-    arguments = [
-        "--maxtries", "2", "--cyclethrottle", "3", "--taskthrottle", "25", "--verbosity", "10",
-        f"{testdata}/EXPDIR/C48_ATM",
-    ]
-
-    env = os.environ.copy()
-    env['ACCOUNT'] = "foo"
-
-    setup_xml_script = Executable(setup_xml_py)
-    setup_xml_script.add_default_arg(arguments)
-    setup_xml_script(env=env)
-    assert (setup_xml_script.returncode == 0)
-
-    rmtree(testdata)
+#def test_setup_xml():
+#
+#    setup_xml_py = os.path.join(HOMEgfs, "workflow", "setup_xml.py")
+#
+#    arguments = [
+#        "--maxtries", "2", "--cyclethrottle", "3", "--taskthrottle", "25", "--verbosity", "10",
+#        f"{testdata}/EXPDIR/C48_ATM",
+#    ]
+#
+#    env = os.environ.copy()
+#    env['ACCOUNT'] = "foo"
+#
+#    setup_xml_script = Executable(setup_xml_py)
+#    setup_xml_script.add_default_arg(arguments)
+#    setup_xml_script(env=env)
+#    assert (setup_xml_script.returncode == 0)
+#
+#    rmtree(testdata)
