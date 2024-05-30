@@ -52,11 +52,11 @@ source "${USHgfs}/preamble.sh"
 
 # 1.  Get necessary files
  set +x
- echo "   Copying bulletins from ${COM_WAVE_STATION}"
+ echo "   Copying bulletins from ${COMIN_WAVE_STATION}"
  set_trace
 
 # 1.a Link the input file and untar it
- BullIn="${COM_WAVE_STATION}/${RUNwave}.${cycle}.cbull_tar"
+ BullIn="${COMIN_WAVE_STATION}/${RUNwave}.${cycle}.cbull_tar"
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else
@@ -170,7 +170,7 @@ source "${USHgfs}/preamble.sh"
    set_trace
    
    formbul.pl -d "${headr}" -f "${fname}" -j "${job}" -m "${RUNwave}" \
-              -p "${COM_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
+              -p "${COMOUT_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
    OK=$?
 
    if [ "$OK" != '0' ] || [ ! -f $oname ]; then
@@ -196,15 +196,15 @@ source "${USHgfs}/preamble.sh"
 
 # 3. Send output files to the proper destination
 set_trace
-cp "awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
+cp "awipsbull.${cycle}.${RUNwave}" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
 if [ "$SENDDBN_NTC" = YES ]; then
     make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" "${DATA}/awipsbull.${cycle}.${RUNwave}" \
-		     "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
+		     "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
 else
     if [ "${envir}" = "para" ] || [ "${envir}" = "test" ] || [ "${envir}" = "dev" ]; then
 	echo "Making NTC bulletin for parallel environment, but do not alert."
 	(export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
-					     "${DATA}/awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}")
+					     "${DATA}/awipsbull.${cycle}.${RUNwave}" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}")
     fi
 fi
 
