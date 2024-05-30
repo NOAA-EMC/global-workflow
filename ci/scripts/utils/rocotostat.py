@@ -29,7 +29,7 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception
     sleep_duration : int, optional
         The number of seconds to wait between attempts. Default is 0.
     exception_class : Exception, optional
-        The type of exception to catch. Default is Exception.
+        The type of exception to catch. Default is the base Exception class, catching all exceptions.
 
     Returns
     -------
