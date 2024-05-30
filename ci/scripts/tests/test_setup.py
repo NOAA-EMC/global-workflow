@@ -3,7 +3,7 @@ from shutil import rmtree
 import os
 
 HOMEgfs = os.path.dirname(os.path.join(os.path.dirname(__file__), '../../../..'))
-testdata = os.path.join(HOMEgfs, 'ci/scripts/tests/testdata/RUNDIR'  )
+testdata = os.path.join(HOMEgfs, 'ci/scripts/tests/testdata/RUNDIR')
 
 
 def test_setup_expt():
@@ -31,9 +31,12 @@ def test_setup_xml():
         f"{testdata}/EXPDIR/C48_ATM",
     ]
 
+    env = os.environ.copy()
+    del env['EXPDIR']
+
     setup_xml_script = Executable(setup_xml_py)
     setup_xml_script.add_default_arg(arguments)
-    setup_xml_script()
+    setup_xml_script(env=env)
     assert (setup_xml_script.returncode == 0)
 
     rmtree(testdata)
