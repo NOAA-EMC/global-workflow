@@ -32,7 +32,7 @@ def test_setup_xml():
     ]
 
     env = os.environ.copy()
-    #env['ACCOUNT'] = "foo"
+    env['ACCOUNT'] = "foo"
 
     setup_xml_script = Executable(setup_xml_py)
     setup_xml_script.add_default_arg(arguments)
