@@ -7,11 +7,13 @@ STMP: '/lustre/${USER}/stmp2/'
 PTMP: '/lustre/${USER}/stmp4/'
 NOSCRUB: ${HOMEDIR}
 ACCOUNT: hwufscpldcld
+ACCOUNT_SERVICE: hwufscpldcld
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
 PARTITION_BATCH: compute
 PARTITION_SERVICE: compute
+RESERVATION: ''
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 HPSSARCH: 'YES'

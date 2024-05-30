@@ -283,6 +283,7 @@ source "${USHgfs}/preamble.sh"
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
+              glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
               glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
               glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
@@ -317,7 +318,8 @@ source "${USHgfs}/preamble.sh"
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
               reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
               glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
+              glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
+	      glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
               glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
               gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
           esac
