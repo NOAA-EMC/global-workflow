@@ -5,6 +5,4 @@ wave:
     mkdir:
         - "{{ COM_WAVE_RESTART }}"
     copy:
-        {% for grdID in waveGRD %}
-        - ["{{ BASE_CPLIC }}/{{ CPL_WAVIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/wave/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ grdID }}", "{{ COM_WAVE_RESTART }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ grdID }}"]
-        {% endfor %}
+        - ["{{ BASE_CPLIC }}/{{ CPL_WAVIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/wave/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ waveGRD }}", "{{ COM_WAVE_RESTART }}"]

@@ -3,9 +3,9 @@ fv3_cold:
     mkdir:
         - "{{ COM_ATMOS_INPUT }}"
     copy:
-        - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/gfs_ctrl.nc", "{{ COM_ATMOS_INPUT }}/gfs_ctrl.nc"]
+        - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/gfs_ctrl.nc", "{{ COM_ATMOS_INPUT }}"]
         {% for ftype in ["gfs_data", "sfc_data"] %}
         {% for ntile in range(1, ntiles + 1) %}
-        - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/{{ ftype }}.tile{{ ntile }}.nc", "{{ COM_ATMOS_INPUT }}/{{ ftype }}.tile{{ ntile }}.nc"]
+        - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/{{ ftype }}.tile{{ ntile }}.nc", "{{ COM_ATMOS_INPUT }}"]
         {% endfor %} # ntile
         {% endfor %} # ftype

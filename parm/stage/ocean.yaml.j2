@@ -5,22 +5,21 @@ ocean:
     mkdir:
         - "{{ COM_OCEAN_RESTART_PREV }}"
     copy:
-        {% set head = "{{ BASE_CPLIC }}/{{ CPL_OCNIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/ocean" %}
         #-------------------------
         # Ocean initial conditions
         #-------------------------
-        - ["{{ head }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.MOM.res.nc", "{{ COM_OCEAN_RESTART_PREV }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.MOM.res.nc"]
+        - ["{{ BASE_CPLIC }}/{{ CPL_OCNIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/ocean/{{ cycle_YMD }}.{{ cycle_HH }}0000.MOM.res.nc", "{{ COM_OCEAN_RESTART_PREV }}"]
         #------------------------------------
         # Resolution based initial conditions
         #------------------------------------
-        #NOTE: {% if OCNRES == 500 or OCNRES == 100 %} # Nothing more to do for these resolutions
-        {% if OCNRES == 025 %}
-        {% for nn in $(seq 1 3) %}
-        - ["{{ head }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.MOM.res_{{ nn }}.nc", "{{ COM_OCEAN_RESTART_PREV }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.MOM.res_{{ nn }}.nc"]
+        {% if OCNRES == "025" %}
+        {% for nn in range(1, 3) %}
+        - ["{{ BASE_CPLIC }}/{{ CPL_OCNIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/ocean/{{ cycle_YMD }}.{{ cycle_HH }}0000.MOM.res_{{ nn }}.nc", "{{ COM_OCEAN_RESTART_PREV }}"]
         {% endfor %}
         {% endif %}
         #-------------------------
         # Ocean Perturbation Files
         #-------------------------
-        {% if MEMDIR > 0 and USE_OCN_PERTURB_FILES %}
-        - ["{{ head }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.mom6_increment.nc", "{{ COM_OCEAN_RESTART_PREV }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.mom6_increment.nc"]
+        {% if MEMDIR and USE_OCN_PERTURB_FILES %}
+        - ["{{ BASE_CPLIC }}/{{ CPL_OCNIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/ocean/{{ cycle_YMD }}.{{ cycle_HH }}0000.mom6_increment.nc", "{{ COM_OCEAN_RESTART_PREV }}"]
+        {% endif %}
