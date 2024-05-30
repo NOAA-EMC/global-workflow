@@ -627,7 +627,6 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
         return task
 
-
     def prepoceanobs(self):
 
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
