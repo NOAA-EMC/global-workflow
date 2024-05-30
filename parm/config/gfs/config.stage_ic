@@ -9,22 +9,19 @@ source "${EXPDIR}/config.resources" stage_ic
 
 case "${CASE}" in
   "C48" | "C96" | "C192")
-    echo "COM_ATMOS_INPUT: $COM_ATMOS_INPUT"
-    echo "BASE_CPLIC: $BASE_CPLIC"
-    echo "CPL_ATMIC: $CPL_ATMIC"
-    echo "PW_CSP: $PW_CSP"
 
-    case "${PW_CSP}" in
-      "aws" | "azure" | "google")
-        export CPL_ATMIC="${CASE}"
-        ;;
-      *)
-        export CPL_ATMIC="workflow_${CASE}_refactored"
-        export CPL_ICEIC="workflow_${CASE}_refactored"
-        export CPL_OCNIC="workflow_${CASE}_refactored"
-        export CPL_WAVIC="workflow_${CASE}_refactored"
-        ;;
-    esac
+    if [ -z ${PW_CSP+x} ]; then
+      export CPL_ATMIC="workflow_${CASE}_refactored"
+      export CPL_ICEIC="workflow_${CASE}_refactored"
+      export CPL_OCNIC="workflow_${CASE}_refactored"
+      export CPL_WAVIC="workflow_${CASE}_refactored"
+    else
+      echo "PW_CSP: $PW_CSP"
+      export CPL_ATMIC="${CASE}"
+      export CPL_ICEIC="${CASE}"
+      export CPL_OCNIC="${CASE}"
+      export CPL_WAVIC="${CASE}"
+    fi
     ;;
   "C384")
     export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c_refactored
