@@ -147,7 +147,7 @@ EOF
     inc_file="fv3_perturbation.nc"
     read_increment=".true."
     res_latlon_dynamics="fv3_perturbation.nc"
-    perturbation_file="${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.${inc_file}"
+    perturbation_file="${COMIN_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.${inc_file}"
     if [[ -f "${perturbation_file}" ]]; then
         ${NCP} "${perturbation_file}" "${DATA}/INPUT/${inc_file}"
     else
@@ -425,7 +425,7 @@ MOM6_postdet() {
     # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
     #     to ensure it does not interfere with the GFS when ensemble is updated in the GFS
     if (( MEMBER > 0 )) && [[ "${USE_OCN_PERTURB_FILES:-false}" == "true" ]] && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      ${NCP} "${COM_OCEAN_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.mom6_perturbation.nc" "${DATA}/INPUT/mom6_increment.nc" \
+      ${NCP} "${COMIN_OCEAN_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.mom6_perturbation.nc" "${DATA}/INPUT/mom6_increment.nc" \
       || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
     fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then

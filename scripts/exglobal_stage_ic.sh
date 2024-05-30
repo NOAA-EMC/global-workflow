@@ -36,10 +36,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     # Stage the FV3 restarts to ROTDIR (warm start)
     RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
     [[ ! -d "${COM_ATMOS_RESTART_PREV}" ]] && mkdir -p "${COM_ATMOS_RESTART_PREV}"
-    prev_atmos_copy_list=(fv_core.res.nc)
-    if (( OFFSET_START_HOUR == 0 )); then
-      prev_atmos_copy_list+=(coupler.res)
-    fi
+    prev_atmos_copy_list=(fv_core.res.nc coupler.res)
     for ftype in "${prev_atmos_copy_list[@]}"; do
       src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${DTG_PREFIX}.${ftype}"
       tgt="${COM_ATMOS_RESTART_PREV}/${DTG_PREFIX}.${ftype}"
