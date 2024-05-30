@@ -39,7 +39,7 @@ class Stage(Task):
         self.task_config = AttrDict(**self.config, **self.runtime_config)
 
     @logit(logger)
-    def determine_stage(self, stage_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
+    def determine_stage(self, stage_dict: Dict[str, Any]) -> List[str]:
         """Determine which initial condition files need to be placed in ROTDIR.
 
         Parameters
@@ -49,52 +49,39 @@ class Stage(Task):
 
         Return
         ------
-        stage_set : Dict[str, Any]
-            Set of FileHandler instructions to copy files to the ROTDIR
+        stage_sets : List
+            List of yamls to parse for staging
         """
 
-        stage_parm = os.path.join(stage_dict.PARMgfs, "stage")
+        stage_sets = []
 
-        # Add the os.path.exists function to the dict for yaml parsing
-        stage_dict['path_exists'] = os.path.exists
-
-        if not os.path.isdir(stage_dict.ROTDIR):
-            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
-
-        if stage_dict.RUN == "gfs" or stage_dict.RUN == "gdas":
-            if stage_dict.MODE == "cycled":
-                master_yaml = "master_cycled.yaml.j2"
-            elif stage_dict.MODE == "forecast-only":
-                #master_yaml = "master_forecast_only.yaml.j2"
-                master_yaml = "fv3_cold.yaml.j2"
-        elif stage_dict.RUN == "gefs":
-            raise NotImplementedError("FATAL ERROR: Staging is not yet set up for GEFS runs")
-        elif stage_dict.RUN == "sfs":
-            raise NotImplementedError("FATAL ERROR: Staging is not yet set up for SFS runs")
+        if stage_dict.EXP_WARM_START:
+            stage_sets.append("fv3_warm.yaml.j2")
         else:
-            raise ValueError(f"FATAL ERROR: Staging is not enabled for {stage_dict.RUN} runs")
+            stage_sets.append("fv3_cold.yaml.j2")
 
-       #parsed_sets = parse_j2yaml(os.path.join(stage_parm, master_yaml), stage_dict)
-        stage_set = parse_j2yaml(os.path.join(stage_parm, master_yaml), stage_dict)
-       #print(f'parsed_sets = {parsed_sets}')
+        if stage_dict.DO_WAVE:
+            stage_sets.append("wave.yaml.j2")
 
-       #stage_sets = []
+        if stage_dict.DO_OCN:
+            stage_sets.append("ocean.yaml.j2")
 
-       #for dataset in parsed_sets.datasets.values():
+        if stage_dict.DO_ICE:
+            stage_sets.append("ice.yaml.j2")
 
-       #    dataset["fileset"] = Stage._create_fileset(dataset)
+        if stage_dict.DO_NEST:
+            stage_sets.append("fv3_nest.yaml.j2")
 
-       #    stage_sets.append(dataset)
-
-       #return stage_sets
-        return stage_set
+        return stage_sets
 
     @logit(logger)
-    def execute_stage(self, stage_set: Dict[str, Any]) -> None:
+    def execute_stage(self, stage_dict: Dict[str, Any], stage_sets: List) -> None:
         """Perform local staging of initial condition files.
 
         Parameters
         ----------
+        stage_sets : List
+            List of stage sets to send to FileHandler
         stage_set : Dict[str, Any]
             FileHandler instructions to populate ROTDIR with
 
@@ -103,7 +90,15 @@ class Stage(Task):
         None
         """
 
-        # Copy files to ROTDIR
-        for key in stage_set.keys():
-        #   print(f'key = {key}')
-            FileHandler(stage_set[key]).sync()
+        stage_parm = os.path.join(stage_dict.PARMgfs, "stage")
+
+        if not os.path.isdir(stage_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
+
+        for set_yaml in stage_sets:
+
+            stage_set = parse_j2yaml(os.path.join(stage_parm, set_yaml), stage_dict)
+
+            # Copy files to ROTDIR
+            for key in stage_set.keys():
+                FileHandler(stage_set[key]).sync()
