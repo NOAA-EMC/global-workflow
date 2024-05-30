@@ -57,7 +57,7 @@ export RESTART_postsnd="NO"
 
 nrestarts=$(find "$DATA_ATMOS_RESTART" -maxdepth 1 -type f -name '*.bufr.logf*' | wc -l)
 
-echo ${nrestarts}
+echo "${nrestarts}"
 
 if (( nrestarts == 0 )); then
   echo "No restarts found in '${DATA_ATMOS_RESTART}', RESTART_postsnd='${RESTART_postsnd}'"
@@ -118,7 +118,10 @@ done
 ##############################################################
 cd "${COM_ATMOS_BUFR}" || exit 2
 tar -cf - . | /usr/bin/gzip > "${RUN}.${cycle}.bufrsnd.tar.gz"
-cd "${DATA}" || exit 2
+cd "${DATA}"
+if [ $? -ne 0 ]; then
+    exit 2
+fi
 
 ########################################
 # Send the single tar file to OSO

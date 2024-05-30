@@ -32,7 +32,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
 # Create a restart directory in ptmp to hold temporary output from the job JGFS_ATMOS_POSTSND
 
 export DATA_ATMOS_RESTART=${DATAROOT}/${RUN}.${PDY}/${cyc}/products/atmos/restart
-if [[ ! -d ${DATA_ATMOS_RESTART} ]]; then mkdir -p ${DATA_ATMOS_RESTART}; fi
+if [[ ! -d ${DATA_ATMOS_RESTART} ]]; then mkdir -p "${DATA_ATMOS_RESTART}"; fi
 
 ########################################################
 # Execute the script.
