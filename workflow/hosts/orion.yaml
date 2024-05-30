@@ -4,15 +4,17 @@ BASE_CPLIC: '/work/noaa/global/glopara/data/ICSDIR/prototype_ICs'
 PACKAGEROOT: '/work/noaa/global/glopara/nwpara'
 COMINsyn: '/work/noaa/global/glopara/com/gfs/prod/syndat'
 HOMEDIR: '/work/noaa/global/${USER}'
-STMP: '/work/noaa/stmp/${USER}'
-PTMP: '/work/noaa/stmp/${USER}'
+STMP: '/work/noaa/stmp/${USER}/ORION'
+PTMP: '/work/noaa/stmp/${USER}/ORION'
 NOSCRUB: $HOMEDIR
 SCHEDULER: slurm
 ACCOUNT: fv3-cpu
+ACCOUNT_SERVICE: fv3-cpu
 QUEUE: batch
 QUEUE_SERVICE: batch
 PARTITION_BATCH: orion
 PARTITION_SERVICE: service
+RESERVATION: ''
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'NO'
