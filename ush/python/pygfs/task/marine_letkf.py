@@ -209,32 +209,6 @@ class MarineLETKF(Analysis):
 
         logger.info("run")
 
-        exec_cmd_gridgen = Executable(self.config.APRUN_OCNANALLETKF)
-        exec_cmd_gridgen.add_default_arg(self.config.exec_name_gridgen)
-        exec_cmd_gridgen.add_default_arg(self.config.gridgen_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd_gridgen}")
-            exec_cmd_gridgen()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd_gridgen}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd_gridgen}")
-        pass
-
-        exec_cmd_letkf = Executable(self.config.APRUN_OCNANALLETKF)
-        for letkf_exec_arg in self.config.letkf_exec_args:
-            exec_cmd_letkf.add_default_arg(letkf_exec_arg)
-
-        try:
-            logger.debug(f"Executing {exec_cmd_letkf}")
-            exec_cmd_letkf()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd_letkf}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd_letkf}")
-        pass
-
     @logit(logger)
     def finalize(self):
         """Method finalize for ocean and sea ice LETKF task
