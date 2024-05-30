@@ -87,7 +87,7 @@ class SnowEnsAnalysis(Analysis):
         # placeholder, currently already done by the analysis parent class
 
         # copy fregrid executable
-        fregrid_copy = {'copy': [os.path.join(self.task_config.EXECgfs, 'fregrid'), os.path.join(self.task_config.DATA, 'fregrid.x')]}
+        fregrid_copy = {'copy': [[os.path.join(self.task_config.EXECgfs, 'fregrid'), os.path.join(self.task_config.DATA, 'fregrid.x')]]}
         FileHandler(fregrid_copy).sync()
 
     @logit(logger)
