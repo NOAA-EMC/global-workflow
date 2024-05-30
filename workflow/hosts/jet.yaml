@@ -8,11 +8,13 @@ STMP: '/lfs4/HFIP/hfv3gfs/${USER}/stmp'
 PTMP: '/lfs4/HFIP/hfv3gfs/${USER}/ptmp'
 NOSCRUB: $HOMEDIR
 ACCOUNT: hfv3gfs
+ACCOUNT_SERVICE: hfv3gfs
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
 PARTITION_BATCH: kjet
 PARTITION_SERVICE: service
+RESERVATION: ''
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'YES'
