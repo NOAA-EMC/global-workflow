@@ -6,7 +6,7 @@ UFS_det(){
   echo "SUB ${FUNCNAME[0]}: Run type determination for UFS"
 
   # Determine if the current cycle is a warm start (based on the availability of restarts)
-  if [[ -f "${COM_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.coupler.res" ]]; then
+  if [[ -f "${COMIN_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.coupler.res" ]]; then
     warm_start=".true."
   fi 
 
@@ -16,8 +16,8 @@ UFS_det(){
     # Since restarts are not available from the previous cycle, this is likely a cold start
     # Ensure cold start ICs are present when warm start is not set
     # TODO: add checks for other cold start ICs as well
-    if [[ ! -f "${COM_ATMOS_INPUT}/gfs_ctrl.nc" ]]; then
-      echo "FATAL ERROR: Cold start ICs are missing from '${COM_ATMOS_INPUT}'"
+    if [[ ! -f "${COMIN_ATMOS_INPUT}/gfs_ctrl.nc" ]]; then
+      echo "FATAL ERROR: Cold start ICs are missing from '${COMIN_ATMOS_INPUT}'"
       exit 1
     fi
 
