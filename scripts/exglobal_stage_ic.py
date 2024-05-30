@@ -20,14 +20,9 @@ def main():
     keys = ['RUN','MODE','DO_WAVE','DO_OCN','DO_ICE','DO_NEST',
             'current_cycle','EXP_WARM_START','CDUMP','rCDUMP',
             'ROTDIR','PARMgfs','ntiles','MEMDIR',
-            'BASE_CPLIC','waveGRD','OCNRES',
+            'BASE_CPLIC','waveGRD','OCNRES','USE_OCN_PERTURB_FILES',
             #TODO: Need this for mediator#'CPL_MEDIC',
             'CPL_ATMIC','CPL_ICEIC','CPL_OCNIC','CPL_WAVIC']
-
-    keys_gefs = ['USE_OCN_PERTURB_FILES']
-
-    if stage.task_config['RUN'] == "gefs":
-        keys.extend(keys_gefs)
 
     stage_dict = AttrDict()
     for key in keys:
@@ -42,22 +37,14 @@ def main():
     for key in stage_dict:
         print(f'{key} = {stage_dict[key]}')
 
-    cwd = os.getcwd()
-
-    os.chdir(config.ROTDIR)
+    # Add the os.path.exists function to the dict for yaml parsing
+    stage_dict['path_exists'] = os.path.exists
 
     # Determine which ICs to stage
-    #stage_sets = stage.determine_stage(stage_dict)
-    stage_set = stage.determine_stage(stage_dict)
+    stage_sets = stage.determine_stage(stage_dict)
 
     # Stage ICs
-    #for stage_set in stage_sets:
-    #   print(f'set = {stage_set}')
-    #   stage.execute_stage(stage_set)
-    print(f'set = {stage_set}')
-    stage.execute_stage(stage_set)
-
-    os.chdir(cwd)
+    stage.execute_stage(stage_dict,stage_sets)
 
 if __name__ == '__main__':
     main()
