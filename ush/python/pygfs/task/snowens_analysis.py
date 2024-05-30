@@ -69,13 +69,26 @@ class SnowEnsAnalysis(Analysis):
 
         super().initialize()
 
-        # stage files
+        # stage background and increment files
         logger.info(f"Staging files from {self.task_config.SNOW_ENS_STAGE_TMPL}")
         snow_stage_list = parse_j2yaml(self.task_config.SNOW_ENS_STAGE_TMPL, self.task_config)
         FileHandler(snow_stage_list).sync()
 
+        # stage fix files for fv3-jedi
+        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        FileHandler(jedi_fix_list).sync()        
+
+        # write land ensemble recentering YAML
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote recentering YAML to: {self.task_config.jedi_yaml}")
+
+        # link recentering executable
+        # placeholder, currently already done by the analysis parent class
+
+        # copy fregrid executable
+        fregrid_copy = {'copy': [os.path.join(self.task_config.EXECgfs, 'fregrid'), os.path.join(self.task_config.DATA, 'fregrid.x')]}
+        FileHandler(fregrid_copy).sync()
 
     @logit(logger)
     def execute(self) -> None:
