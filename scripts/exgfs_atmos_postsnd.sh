@@ -18,6 +18,7 @@
 #   7) 2018-07-18       Guang Ping Lou Generalize this version to other platforms
 #   8) 2019-10-18       Guang Ping Lou Transition to reading in NetCDF model data
 #   9) 2019-12-18       Guang Ping Lou generalizing to reading in NetCDF or nemsio
+#  10) 2024_05_15       Bo Cui  Add restart capability
 ################################################################
 
 source "${USHgfs}/preamble.sh"
@@ -48,9 +49,28 @@ GETDIM="${USHgfs}/getncdimlen"
 LEVS=$(${GETDIM} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
 declare -x LEVS
 
+# Assume there was no run before and hence this is not a RESTART for job postsnd
+
+export RESTART_postsnd="NO"
+
+# However, if there was a run before, a directory DATA_ATMOS_RESTART must exist with data in it.
+
+nrestarts=$(find "$DATA_ATMOS_RESTART" -maxdepth 1 -type f -name '*.bufr.logf*' | wc -l)
+
+echo ${nrestarts}
+
+if (( nrestarts == 0 )); then
+  echo "No restarts found in '${DATA_ATMOS_RESTART}', RESTART_postsnd='${RESTART_postsnd}'"
+
+else 
+  echo "Restarts found in '${DATA_ATMOS_RESTART}', RESTART_postsnd='YES'"
+  export RESTART_postsnd="YES"
+fi
+
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
 #
+
 while [ $FSTART -lt $ENDHOUR ]
 do
 export FINT=$NINT1

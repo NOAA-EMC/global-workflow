@@ -29,6 +29,10 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
 [[ ! -d ${COM_ATMOS_GEMPAK} ]] && mkdir -p "${COM_ATMOS_GEMPAK}"
 [[ ! -d ${COM_ATMOS_WMO} ]] && mkdir -p "${COM_ATMOS_WMO}"
 
+# Create a restart directory in ptmp to hold temporary output from the job JGFS_ATMOS_POSTSND
+
+export DATA_ATMOS_RESTART=${DATAROOT}/${RUN}.${PDY}/${cyc}/products/atmos/restart
+if [[ ! -d ${DATA_ATMOS_RESTART} ]]; then mkdir -p ${DATA_ATMOS_RESTART}; fi
 
 ########################################################
 # Execute the script.
