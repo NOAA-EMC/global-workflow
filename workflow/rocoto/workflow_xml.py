@@ -8,6 +8,7 @@ from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
 import rocoto.rocoto as rocoto
+import numpy as np
 from abc import ABC, abstractmethod
 
 
@@ -156,11 +157,21 @@ class RocotoXML(ABC):
             replyto = ''
 
         strings = ['',
-                   f'#################### {pslot} ####################',
-                   f'MAILTO="{replyto}"',
-                   f'{cronintstr} {rocotorunstr}',
-                   '#################################################################',
-                   '']
+                  f'#################### {pslot} ####################',
+                  f'MAILTO="{replyto}"'
+                  ]
+        pw_csp = os.environ.get('PW_CSP')
+        if ( pw_csp in ['aws', 'azure', 'google'] ):
+             strings = np.append(strings,
+                       [
+                       f'SHELL="/bin/bash"',
+                       f'BASH_ENV="/etc/bashrc"'
+                       ])
+        strings = np.append(strings,
+                  [
+                  f'{cronintstr} {rocotorunstr}',
+                  '#################################################################',
+                  ''])
 
         if crontab_file is None:
             crontab_file = f"{expdir}/{pslot}.crontab"

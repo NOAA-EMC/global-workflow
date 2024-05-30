@@ -1,6 +1,6 @@
 [submodule "sorc/ufs_model.fd"]
   path = sorc/ufs_model.fd
-  url = https://github.com/ufs-community/ufs-weather-model
+  url = https://github.com/NOAA-EPIC/ufs-weather-model-cloud.git
   ignore = dirty
 [submodule "sorc/wxflow"]
   path = sorc/wxflow
@@ -30,3 +30,7 @@
   path = sorc/upp.fd
   url = https://github.com/NOAA-EMC/UPP.git
   ignore = dirty
+[submodule "sorc/jcb"]
+  path = sorc/jcb
+  url = https://github.com/noaa-emc/jcb
+  fetchRecurseSubmodules = false

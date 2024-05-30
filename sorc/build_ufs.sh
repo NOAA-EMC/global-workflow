@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-set -eu
+set -eux
 
 cwd=$(pwd)
 
@@ -41,21 +41,9 @@ COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
-echo "MACHINE_ID: ${MACHINE_ID}"
-
-if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
-  BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
-  mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
-  mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
-  cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
-else
-  echo "MACHINE_ID: ${MACHINE_ID}"
-  echo "COMPILE_NR: ${COMPILE_NR}"
-
-  BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
-  mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
-  mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
-  cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
-fi
+BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
+mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
+cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 
 exit 0

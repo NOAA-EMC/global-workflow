@@ -3,6 +3,7 @@ from rocoto.tasks import Tasks
 from wxflow import timedelta_to_HMS
 import rocoto.rocoto as rocoto
 import numpy as np
+import os
 
 
 class GFSTasks(Tasks):
@@ -26,14 +27,23 @@ class GFSTasks(Tasks):
         if self.app_config.do_atm:
             pslot = self._base['PSLOT']
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
-            base_cplic = f"{cpl_ic['BASE_CPLIC']}"
-            cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
-            print('base_cplic =', base_cplic)
-            print('cpl_atmic =', cpl_atmic)
-            print('pslot =', pslot)
-            print('prefix =', prefix)
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{self._base['PSLOT']}/gfs.@Y@m@d/@H/model_data/atmos/input"
-            print('prefix =', prefix)
+
+            pw_csp = os.environ.get('PW_CSP')
+            if ( pw_csp in ['aws', 'azure', 'google'] ):
+                base_cplic = f"{cpl_ic['BASE_CPLIC']}"
+               #cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
+                cpl_atmic = os.environ.get('CPL_ATMIC')
+                print('cpl_atmic = ', os.environ.get('CPL_ATMIC'))
+                icdir = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}"
+                if('IC_PREFIX' in cpl_ic.keys()):
+                    cpl_ic_prefix = f"{icdir}/{cpl_ic['IC_PREFIX']}"
+                else:
+                    cpl_ic_prefix = 'gfs'
+                if('IC_TYPE'  in cpl_ic.keys()):
+                    cpl_ic_type = f"{cpl_ic['IC_TYPE']}"
+                else:
+                    cpl_ic_type = 'input'
+                prefix = f"{icdir}/{cpl_ic_prefix}.@Y@m@d/@H/model_data/atmos/{cpl_ic_type}"
             for file in ['gfs_ctrl.nc'] + \
                         [f'{datatype}_data.tile{tile}.nc'
                          for datatype in ['gfs', 'sfc']
@@ -838,7 +848,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:
+        if self.app_config.do_aero and self.cdump in self.app_config.aero_fcst_cdumps:
             # Calculate offset based on CDUMP = gfs | gdas
             interval = None
             if self.cdump in ['gfs']:
@@ -882,7 +892,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:
+        if self.app_config.do_aero and self.cdump in self.app_config.aero_anl_cdumps:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
@@ -1434,47 +1444,6 @@ class GFSTasks(Tasks):
                      }
 
         metatask_dict = {'task_name': f'{self.cdump}awips_20km_1p0deg',
-                         'task_dict': task_dict,
-                         'var_dict': var_dict
-                         }
-
-        task = rocoto.create_task(metatask_dict)
-
-        return task
-
-    def awips_g2(self):
-
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        awipsenvars = self.envars.copy()
-        awipsenvar_dict = {'FHRGRP': '#grp#',
-                           'FHRLST': '#lst#',
-                           'ROTDIR': self.rotdir}
-        for key, value in awipsenvar_dict.items():
-            awipsenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_awipsgroups(self.cdump, self._configs['awips'])
-        var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
-
-        resources = self.get_resource('awips')
-
-        task_name = f'{self.cdump}awips_g2#{varname1}#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': awipsenvars,
-                     'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/awips_g2.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        metatask_dict = {'task_name': f'{self.cdump}awips_g2',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
@@ -2447,7 +2416,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def atmensanlrun(self):
+    def atmensanlletkf(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlinit'}
@@ -2456,14 +2425,40 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('atmensanlrun')
-        task_name = f'{self.cdump}atmensanlrun'
+        resources = self.get_resource('atmensanlletkf')
+        task_name = f'{self.cdump}atmensanlletkf'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmensanlrun.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmensanlletkf.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def atmensanlfv3inc(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlletkf'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('atmensanlfv3inc')
+        task_name = f'{self.cdump}atmensanlfv3inc'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.cdump.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmensanlfv3inc.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2476,7 +2471,7 @@ class GFSTasks(Tasks):
     def atmensanlfinal(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlrun'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlfv3inc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 

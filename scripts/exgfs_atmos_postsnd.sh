@@ -113,7 +113,7 @@ fi
 # add appropriate WMO Headers.
 ########################################
 rm -rf poe_col
-for (( m = 1; m <10 ; m++ )); do
+for (( m = 1; m <= NUM_SND_COLLECTIVES ; m++ )); do
     echo "sh ${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
 done
 

@@ -15,8 +15,8 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET', 'HERCULES',
-                       'WCOSS2', 'S4', 'CONTAINER',
-                       'AWSPW', 'AZUREPW', 'GCPPW']
+                       'WCOSS2', 'S4', 'CONTAINER', 'GAEA',
+                       'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
 
@@ -50,10 +50,12 @@ class Host:
             machine = 'WCOSS2'
         elif os.path.exists('/data/prod'):
             machine = 'S4'
+        elif os.path.exists('/gpfs/f5'):
+            machine = 'GAEA'
         elif container is not None:
             machine = 'CONTAINER'
         elif pw_csp is not None:
-            if pw_csp.lower() not in ['azure', 'aws', 'gcp']:
+            if pw_csp.lower() not in ['azure', 'aws', 'google']:
                 raise ValueError(
                     f'NOAA cloud service provider "{pw_csp}" is not supported.')
             machine = f"{pw_csp.upper()}PW"
