@@ -262,7 +262,8 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/marine/bufr2ioda_insitu_surface_${platform}.py" .
   done
 fi
-exit
+
+
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
 #------------------------------
