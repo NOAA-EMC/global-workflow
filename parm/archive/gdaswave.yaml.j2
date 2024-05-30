@@ -1,0 +1,8 @@
+gdaswave:
+    {% set head = "gdas.wave.t" + cycle_HH + "z." %}
+    name: "GDASWAVE"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave.tar"
+    required:
+        # TODO explicitly name the wave grid/station files to archive
+        - "{{ COM_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*"
+        - "{{ COM_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}*"

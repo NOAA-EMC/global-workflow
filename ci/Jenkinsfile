@@ -78,7 +78,7 @@ pipeline {
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         HOME = "${WORKSPACE}"
-                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/error.logs")
+                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/*")
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
                     echo "Building and running on ${Machine} in directory ${HOME}"
@@ -149,7 +149,7 @@ pipeline {
                                                 }
                                             }
                                             sh(script: './link_workflow.sh')
-                                            sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
+                                            //sh(script: "echo ${HOMEgfs} > BUILT_semaphor")
                                         }
                                     }
                                     if (env.CHANGE_ID && system == 'gfs') {

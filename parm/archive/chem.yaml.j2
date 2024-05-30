@@ -1,0 +1,7 @@
+chem:
+    {% set head = "gocart" %}
+    name: "CHEM"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/chem.tar"
+    required:
+        # TODO explicitize this set
+        - "{{ COM_CHEM_HISTORY | relpath(ROTDIR) }}/{{ head }}*"

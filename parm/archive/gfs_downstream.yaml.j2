@@ -1,0 +1,12 @@
+gfs_downstream:
+    {% set head = "gfs.t" + cycle_HH + "z." %}
+    name: "GFS_DOWNSTREAM"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_downstream.tar"
+    required:
+        - "{{ COM_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.sfc"
+        - "{{ COM_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.snd"
+        {% for i in range(1, NUM_SND_COLLECTIVES) %}
+        - "{{ COM_ATMOS_WMO | relpath(ROTDIR) }}/gfs_collective{{ i }}.postsnd_{{ cycle_HH }}"
+        {% endfor %}
+        - "{{ COM_ATMOS_BUFR | relpath(ROTDIR) }}/bufr.t{{ cycle_HH }}z"
+        - "{{ COM_ATMOS_BUFR | relpath(ROTDIR) }}/gfs.t{{ cycle_HH }}z.bufrsnd.tar.gz"
