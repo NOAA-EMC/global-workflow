@@ -44,6 +44,7 @@ jobs:
       - name: Run tests
         run: |
           sudo mkdir -p /work/noaa
+          unset EXPDIR
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
 
