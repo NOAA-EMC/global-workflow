@@ -290,7 +290,7 @@ case ${step} in
     ;;
 
   "prepaeroobs")
-    export wtime_prepaeroobs="00:15:00"
+    export wtime_prepaeroobs="00:30:00"
     export npe_prepaeroobs=1
     export nth_prepaeroobs=1
     export npe_node_prepaeroobs=1

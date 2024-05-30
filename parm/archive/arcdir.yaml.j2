@@ -26,6 +26,10 @@ deterministic:
         {% if AERO_ANL_CDUMP == RUN or AERO_ANL_CDUMP == "both" %}
         - ["{{ COM_CHEM_ANALYSIS }}/{{ head }}aerostat", "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YMDH }}"]
         {% endif %}
+        {% if DO_PREP_AERO_OBS %}
+        - ["{{ COM_OBS }}/{{ head }}aeroobs", "{{ ARCDIR }}/aeroobs.{{ RUN }}.{{ cycle_YMDH }}"]
+        - ["{{ COM_OBS }}/{{ head }}aerorawobs", "{{ ARCDIR }}/aerorawobs.{{ RUN }}.{{ cycle_YMDH }}"]
+        {% endif %}
         - ["{{ COM_ATMOS_GRIB_1p00 }}/{{ head }}pgrb2.1p00.anl", "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
         {% endif %}  # Full cycle
         {% if RUN == "gfs" %}

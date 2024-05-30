@@ -32,6 +32,10 @@ gfsa:
         {% if AERO_ANL_CDUMP == "gfs" or AERO_ANL_CDUMP == "both" %}
         - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
         {% endif %}
+        {% if DO_PREP_AERO_OBS %}
+        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
+        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"
+        {% endif %}
         {% if DO_JEDIATMVAR %}
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
         - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
