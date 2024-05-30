@@ -45,23 +45,23 @@ function _ice_nc2grib2 {
 # tables in wgrib2 v2.0.8:
 
 #  -import_netcdf "${infile}" "hs_h" "0:1:${latlon_dims}" \
-#    -set_var ??? -set center 7 \
+#    -set_var SNVOLSI -set center 7 \
 #    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "frzmlt_h" "0:1:${latlon_dims}" \
-#    -set_var ??? -set center 7 \
+#    -set_var FRZMLTPOT -set center 7 \
 #    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "albsni_h" "0:1:${latlon_dims}" \
-#    -set_var ALBICE -set center 7 -rpn "100.0:/" \
+#    -set_var ALBDOICE -set center 7 -rpn "100.0:/" \
 #    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "mlt_onset_h" "0:1:${latlon_dims}" \
-#    -set_var ??? -set center 7 \
+#    -set_var MLTDATE -set center 7 \
 #    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
 #  -import_netcdf "${infile}" "frz_onset_h" "0:1:${latlon_dims}" \
-#    -set_var ??? -set center 7 \
+#    -set_var FRZDATE -set center 7 \
 #    -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
 #    -set_scaling same same -set_grib_type c1 -grib_out "${outfile}"
 
@@ -121,11 +121,11 @@ function _ocean2D_nc2grib2 {
     -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "SW" "0:1:${latlon_dims}" \
-    -set_var DSWRF -set center 7 \
+    -set_var NSWRF -set center 7 \
     -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "LW" "0:1:${latlon_dims}" \
-    -set_var DLWRF -set center 7 \
+    -set_var NLWRF -set center 7 \
     -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
     -set_scaling same same -set_grib_type c1 -grib_out "${outfile}" \
   -import_netcdf "${infile}" "LwLatSens" "0:1:${latlon_dims}" \
@@ -187,22 +187,22 @@ function _ocean3D_nc2grib2 {
     ${WGRIB2} "${template}" \
     -import_netcdf "${infile}" "temp" "0:1:${zl}:1:${latlon_dims}" \
       -set_var WTMP -set center 7 -rpn "273.15:+" \
-      -set_lev "${depth} m below water surface" \
+      -set_lev "${depth} m below sea level" \
       -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2 \
     -import_netcdf "${infile}" "so" "0:1:${zl}:1:${latlon_dims}" \
       -set_var SALIN -set center 7 \
-      -set_lev "${depth} m below water surface" \
+      -set_lev "${depth} m below sea level" \
       -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2 \
     -import_netcdf "${infile}" "uo" "0:1:${zl}:1:${latlon_dims}" \
       -set_var UOGRD -set center 7 \
-      -set_lev "${depth} m below water surface" \
+      -set_lev "${depth} m below sea level" \
       -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2 \
     -import_netcdf "${infile}" "vo" "0:1:${zl}:1:${latlon_dims}" \
       -set_var VOGRD -set center 7 \
-      -set_lev "${depth} m below water surface" \
+      -set_lev "${depth} m below sea level" \
       -set_date "${current_cycle}" -set_ftime "${aperiod} hour ave fcst" \
       -set_scaling same same -set_grib_type c1 -grib_out tmp.gb2
 
