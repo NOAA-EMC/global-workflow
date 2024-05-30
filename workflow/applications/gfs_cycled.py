@@ -295,6 +295,7 @@ class GFSCycledAppConfig(AppConfig):
             if self.do_hybvar and 'gfs' in self.eupd_cdumps:
                 enkfgfs_tasks = hybrid_tasks + hybrid_after_eupd_tasks
                 enkfgfs_tasks.remove("echgres")
+                enkfgfs_tasks.remove("esnowanl")
                 tasks['enkfgfs'] = enkfgfs_tasks
 
         return tasks
