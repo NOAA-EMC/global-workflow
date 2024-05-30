@@ -69,6 +69,11 @@ class SnowEnsAnalysis(Analysis):
 
         super().initialize()
 
+        # stage files
+        logger.info(f"Staging files from {self.task_config.SNOW_ENS_STAGE_TMPL}")
+        snow_stage_list = parse_j2yaml(self.task_config.SNOW_ENS_STAGE_TMPL, self.task_config)
+        FileHandler(snow_stage_list).sync()
+
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote recentering YAML to: {self.task_config.jedi_yaml}")
 
