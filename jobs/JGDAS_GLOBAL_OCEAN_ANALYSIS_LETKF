@@ -17,7 +17,6 @@ YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
    COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS 
-ROTDIR=${COMROOT} RUN=enkf${RUN} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COM_TOP_PREV_ENS:COM_TOP_TMPL
 
 ##############################################
 # Begin JOB SPECIFIC work
