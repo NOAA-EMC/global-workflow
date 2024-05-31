@@ -1,8 +1,0 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMD = current_cycle | to_YMD %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-mediator:
-    mkdir:
-        - "{{ COM_MED_RESTART_PREV }}"
-    copy:
-        - ["{{ BASE_CPLIC }}/{{ CPL_MEDIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/med/{{ cycle_YMD }}.{{ cycle_HH }}0000.ufs.cpld.cpl.r.nc", "{{ COM_MED_RESTART_PREV }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.ufs.cpld.cpl.r.nc"]

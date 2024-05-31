@@ -3,7 +3,7 @@
 import os
 
 from pygfs.task.stage import Stage
-from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, chdir, logit
+from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
 
 # Initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
@@ -21,7 +21,6 @@ def main():
             'current_cycle','EXP_WARM_START','CDUMP','rCDUMP',
             'ROTDIR','PARMgfs','ntiles','MEMDIR',
             'BASE_CPLIC','waveGRD','OCNRES','USE_OCN_PERTURB_FILES',
-            #TODO: Need this for mediator#'CPL_MEDIC',
             'CPL_ATMIC','CPL_ICEIC','CPL_OCNIC','CPL_WAVIC']
 
     stage_dict = AttrDict()
@@ -32,10 +31,6 @@ def main():
     for key in stage.task_config.keys():
         if key.startswith("COM"):
             stage_dict[key] = stage.task_config[key]
-
-    #TEST PRINT
-    for key in stage_dict:
-        print(f'{key} = {stage_dict[key]}')
 
     # Add the os.path.exists function to the dict for yaml parsing
     stage_dict['path_exists'] = os.path.exists
