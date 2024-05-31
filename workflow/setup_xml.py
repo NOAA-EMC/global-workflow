@@ -60,6 +60,7 @@ def main(*argv):
     print("expdir:",user_inputs.expdir)
     cfg = Configuration(user_inputs.expdir)
 
+    print(f'config.base: {cfg.find_config("config.base")}')
     base = cfg.parse_config('config.base')
     print("base dictionary:", base)
     if 'EXPDIR' in base:
