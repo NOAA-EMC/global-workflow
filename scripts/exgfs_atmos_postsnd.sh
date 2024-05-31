@@ -55,7 +55,7 @@ export RESTART_postsnd="NO"
 
 # However, if there was a run before, a directory DATA_ATMOS_RESTART must exist with data in it.
 
-nrestarts=$(find "$DATA_ATMOS_RESTART" -maxdepth 1 -type f -name '*.bufr.logf*' | wc -l)
+nrestarts=$(find "$DATA_ATMOS_RESTART" -maxdepth 1 -type f -name '*.bufr.logf*' | wc -l || true)
 
 echo "${nrestarts}"
 
@@ -118,10 +118,7 @@ done
 ##############################################################
 cd "${COM_ATMOS_BUFR}" || exit 2
 tar -cf - . | /usr/bin/gzip > "${RUN}.${cycle}.bufrsnd.tar.gz"
-cd "${DATA}"
-if [ $? -ne 0 ]; then
-    exit 2
-fi
+cd "${DATA}" || exit
 
 ########################################
 # Send the single tar file to OSO
@@ -136,7 +133,7 @@ fi
 # add appropriate WMO Headers.
 ########################################
 rm -rf poe_col
-for (( m = 1; m <= NUM_SND_COLLECTIVES ; m++ )); do
+for (( m = 1; m <10 ; m++ )); do
     echo "sh ${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
 done
 
