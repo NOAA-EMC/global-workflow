@@ -109,7 +109,7 @@ common_predet(){
   FHMAX_HF=${FHMAX_HF:-0}
   FHOUT_HF=${FHOUT_HF:-1}
 
-  if [[ ! -d "${COM_CONF}" ]]; then mkdir -p "${COM_CONF}"; fi
+  if [[ ! -d "${COMOUT_CONF}" ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
   cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 
@@ -122,9 +122,9 @@ common_predet(){
 FV3_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
 
-  if [[ ! -d "${COM_ATMOS_HISTORY}" ]]; then mkdir -p "${COM_ATMOS_HISTORY}"; fi
-  if [[ ! -d "${COM_ATMOS_MASTER}" ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
-  if [[ ! -d "${COM_ATMOS_RESTART}" ]]; then mkdir -p "${COM_ATMOS_RESTART}"; fi
+  if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then mkdir -p "${COMOUT_ATMOS_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
+  if [[ ! -d "${COMOUT_ATMOS_RESTART}" ]]; then mkdir -p "${COMOUT_ATMOS_RESTART}"; fi
   if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
   ${NLN} "${DATArestart}/FV3_RESTART" "${DATA}/RESTART"
 
@@ -521,8 +521,8 @@ FV3_predet(){
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
 
-  if [[ ! -d "${COM_WAVE_HISTORY}" ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
-  if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
+  if [[ ! -d "${COMOUT_WAVE_HISTORY}" ]]; then mkdir -p "${COMOUT_WAVE_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then mkdir -p "${COMOUT_WAVE_RESTART}" ; fi
 
   if [[ ! -d "${DATArestart}/WAVE_RESTART" ]]; then mkdir -p "${DATArestart}/WAVE_RESTART"; fi
   ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
@@ -538,17 +538,17 @@ WW3_predet(){
     grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
     for ww3_grid in ${grdALL}; do
-      ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
-      || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${ww3_grid}' from '${COM_WAVE_PREP}'"; exit 1 )
+      ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
+      || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${ww3_grid}' from '${COMIN_WAVE_PREP}'"; exit 1 )
     done
   else
     #if shel, only 1 waveGRD which is linked to mod_def.ww3
-    ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
-    || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COM_WAVE_PREP}'"; exit 1 )
+    ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
+    || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
   fi
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
-    local wavicefile="${COM_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
+    local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
     if [[ ! -f "${wavicefile}" ]]; then
       echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
       exit 1
@@ -558,7 +558,7 @@ WW3_predet(){
   fi
 
   if [[ "${WW3CURINP}" == "YES" ]]; then
-    local wavcurfile="${COM_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
+    local wavcurfile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
     if [[ ! -f "${wavcurfile}" ]]; then
       echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
       exit 1
@@ -597,9 +597,9 @@ WW3_predet(){
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
 
-  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi
-  if [[ ! -d "${COM_ICE_RESTART}" ]]; then mkdir -p "${COM_ICE_RESTART}"; fi
-  if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
+  if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_ICE_RESTART}" ]]; then mkdir -p "${COMOUT_ICE_RESTART}"; fi
+  if [[ ! -d "${COMIN_ICE_INPUT}" ]]; then mkdir -p "${COMIN_ICE_INPUT}"; fi
 
   if [[ ! -d "${DATA}/CICE_OUTPUT" ]]; then  mkdir -p "${DATA}/CICE_OUTPUT"; fi
   if [[ ! -d "${DATArestart}/CICE_RESTART" ]]; then mkdir -p "${DATArestart}/CICE_RESTART"; fi
@@ -620,9 +620,9 @@ CICE_predet(){
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
 
-  if [[ ! -d "${COM_OCEAN_HISTORY}" ]]; then mkdir -p "${COM_OCEAN_HISTORY}"; fi
-  if [[ ! -d "${COM_OCEAN_RESTART}" ]]; then mkdir -p "${COM_OCEAN_RESTART}"; fi
-  if [[ ! -d "${COM_OCEAN_INPUT}" ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
+  if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then mkdir -p "${COMOUT_OCEAN_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_OCEAN_RESTART}" ]]; then mkdir -p "${COMOUT_OCEAN_RESTART}"; fi
+  if [[ ! -d "${COMIN_OCEAN_INPUT}" ]]; then mkdir -p "${COMIN_OCEAN_INPUT}"; fi
 
   if [[ ! -d "${DATA}/MOM6_OUTPUT" ]]; then mkdir -p "${DATA}/MOM6_OUTPUT"; fi
   if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
@@ -665,7 +665,7 @@ MOM6_predet(){
 CMEPS_predet(){
   echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 
-  if [[ ! -d "${COM_MED_RESTART}" ]]; then mkdir -p "${COM_MED_RESTART}"; fi
+  if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then mkdir -p "${COMOUT_MED_RESTART}"; fi
 
   if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
   ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
@@ -676,7 +676,7 @@ CMEPS_predet(){
 GOCART_predet(){
   echo "SUB ${FUNCNAME[0]}: GOCART before run type determination"
 
-  if [[ ! -d "${COM_CHEM_HISTORY}" ]]; then mkdir -p "${COM_CHEM_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then mkdir -p "${COMOUT_CHEM_HISTORY}"; fi
 
   GOCART_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "6" "${FHMAX}")
   # TODO: AERO_HISTORY.rc has hardwired output frequency to 6 hours

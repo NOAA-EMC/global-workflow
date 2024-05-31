@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# exglobal_atmens_analysis_run.py
+# exglobal_atmens_analysis_letkf.py
 # This script creates an AtmEnsAnalysis object
-# and runs the execute method
+# and runs the letkf method
 # which executes the global atm local ensemble analysis
 import os
 
@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     # Instantiate the atmens analysis task
     AtmEnsAnl = AtmEnsAnalysis(config)
-    AtmEnsAnl.execute()
+    AtmEnsAnl.letkf()
