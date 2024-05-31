@@ -10,7 +10,7 @@ from netCDF4 import Dataset
 from wxflow import (AttrDict,
                     FileHandler,
                     to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
-                    rm_p,
+                    rm_p, chdir,
                     parse_j2yaml, save_as_yaml,
                     Jinja,
                     logit,
@@ -51,6 +51,8 @@ class SnowEnsAnalysis(Analysis):
                 'jedi_yaml': _recenter_yaml,
             }
         )
+        bkg_time = _window_begin if self.config.DOIAU else self.runtime_config.current_cycle
+        local_dict['bkg_time'] = bkg_time
 
         # task_config is everything that this task should need
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
@@ -74,6 +76,11 @@ class SnowEnsAnalysis(Analysis):
         snow_stage_list = parse_j2yaml(self.task_config.SNOW_ENS_STAGE_TMPL, self.task_config)
         FileHandler(snow_stage_list).sync()
 
+        # stage orography files
+        logger.info(f"Staging orography files specified in {self.task_config.SNOW_OROG_STAGE_TMPL}")
+        snow_orog_stage_list = parse_j2yaml(self.task_config.SNOW_OROG_STAGE_TMPL, self.task_config)
+        FileHandler(snow_orog_stage_list).sync()
+
         # stage fix files for fv3-jedi
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
         jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
@@ -91,10 +98,66 @@ class SnowEnsAnalysis(Analysis):
         FileHandler(fregrid_copy).sync()
 
     @logit(logger)
-    def execute(self) -> None:
-        """Run a series of tasks to create snow ensemble analysis
-        This method:
+    def regridDetBkg(self) -> None:
+        """Run fregrid to regrid the deterministic snow background
+        to the ensemble resolution
 
+        Parameters
+        ----------
+        self : Analysis
+           Instance of the SnowEnsAnalysis object
+        """
+
+        # below is an example of running from jiarui
+        """
+        fregrid --input_mosaic ${orogdir}/C96/C96_mosaic.nc --input_dir ${input_dir} --input_file ${input_file} --scalar_field snodl
+        --output_dir ${output_dir} --output_file ${output_file} --output_mosaic ${orogdir}/C48/C48_mosaic.nc --interp_method conserve_order1 
+        --weight_file ${orogdir}/C96/C96.mx500_oro_data --weight_field land_frac
+        """
+        chdir(self.task_config.DATA)
+
+        exec_name = os.path.join(self.task_config.DATA, 'fregrid.x')
+        exec_cmd = Executable(exec_name)
+        # why does below not work
+        # exec_cmd.add_default_arg(f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc")
+        # exec_cmd.add_default_arg(f"--input_dir ./bkg/det/")
+        # exec_cmd.add_default_arg(f"--input_file {to_fv3time(self.task_config.bkg_time)}.sfc_data")
+        # exec_cmd.add_default_arg(f"--scalar_field snodl")
+        # exec_cmd.add_default_arg(f"--output_dir ./bkg/det_ensres/")
+        # exec_cmd.add_default_arg(f"--output_file {to_fv3time(self.task_config.bkg_time)}.ensres.sfc_data")
+        # exec_cmd.add_default_arg(f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc")
+        # exec_cmd.add_default_arg(f"--interp_method conserve_order1")
+        # exec_cmd.add_default_arg(f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data")
+        # exec_cmd.add_default_arg(f"--weight_field land_frac")
+        # below does not work either, does this stupid code need a shell script constructed that calls this???
+        # exec_cmd.add_default_arg(f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc --input_dir ./bkg/det/ --input_file {to_fv3time(self.task_config.bkg_time)}.sfc_data --scalar_field snodl --output_dir ./bkg/det_ensres/ --output_file {to_fv3time(self.task_config.bkg_time)}.ensres.sfc_data --output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc --interp_method conserve_order1 --weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data --weight_field land_frac")
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
+    @logit(logger)
+    def regridDetInc(self) -> None:
+        """Run fregrid to regrid the deterministic snow increment
+        to the ensemble resolution
+
+        Parameters
+        ----------
+        self : Analysis
+           Instance of the SnowEnsAnalysis object
+        """
+
+    @logit(logger)
+    def recenterEns(self) -> None:
+        """Run recentering code to create an ensemble of snow increments
+        based on the deterministic increment, and the difference
+        between the determinstic and ensemble mean forecast
 
         Parameters
         ----------
@@ -137,29 +200,10 @@ class SnowEnsAnalysis(Analysis):
         bkg_dict: Dict
             a dictionary containing the list of model background files to copy for FileHandler
         """
-        # NOTE for now this is FV3 RESTART files and just assumed to be fh006
-
-        # get FV3 sfc_data RESTART files, this will be a lot simpler when using history files
-        rst_dir = os.path.join(config.COM_ATMOS_RESTART_PREV)  # for now, option later?
-        run_dir = os.path.join(config.DATA, 'bkg')
-
-        # Start accumulating list of background files to copy
-        bkglist = []
-
-        # snow DA needs coupler
-        basename = f'{to_fv3time(config.current_cycle)}.coupler.res'
-        bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        # snow DA only needs sfc_data
-        for ftype in ['sfc_data']:
-            template = f'{to_fv3time(config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
-            for itile in range(1, config.ntiles + 1):
-                basename = template.format(tilenum=itile)
-                bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
+ 
         bkg_dict = {
-            'mkdir': [run_dir],
-            'copy': bkglist
+            'mkdir': [],
+            'copy': [],
         }
         return bkg_dict
 

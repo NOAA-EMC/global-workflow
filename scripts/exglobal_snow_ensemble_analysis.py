@@ -20,5 +20,7 @@ if __name__ == '__main__':
     # Instantiate the snow ensemble analysis task
     anl = SnowEnsAnalysis(config)
     anl.initialize()
-    anl.execute()
+    anl.regridDetBkg()
+    anl.regridDetInc()
+    anl.recenterEns()
     anl.finalize()
