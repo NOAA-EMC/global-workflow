@@ -468,7 +468,7 @@ def input_args(*argv):
     description = """
         Setup files and directories to start a GFS parallel.\n
         Create EXPDIR, copy config files.\n
-        Create ROTDIR experiment directory,
+        Create ROTDIR experiment directory structure,
         """
 
     parser = ArgumentParser(description=description,
@@ -580,6 +580,7 @@ def main(*argv):
 
     if create_rotdir:
         makedirs_if_missing(rotdir)
+        fill_ROTDIR(host, user_inputs)
 
     if create_expdir:
         makedirs_if_missing(expdir)
