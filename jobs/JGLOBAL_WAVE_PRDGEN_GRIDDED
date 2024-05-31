@@ -19,7 +19,6 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 
-mkdir -p "${COMOUT_WAVE_WMO}"
 
 ###################################
 # Execute the Script
