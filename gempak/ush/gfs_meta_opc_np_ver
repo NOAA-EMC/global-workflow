@@ -17,7 +17,7 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ln -sf "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 mdl=gfs
@@ -33,8 +33,8 @@ fcsthr="f00"
 # seq won't give us any splitting problems, ignore warnings
 # shellcheck disable=SC2207,SC2312
 case ${cyc} in
-    00 | 12) IFS=$'\n' lookbacks=($(seq 6 6 84) $(seq 96 12 120)) ;;
-    06 | 18) IFS=$'\n' lookbacks=($(seq 6 6 84) $(seq 90 12 126)) ;;
+    00 | 12) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 96 12 120)) ;;
+    06 | 18) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 90 12 126)) ;;
     *)
         echo "FATAL ERROR: Invalid cycle ${cyc} passed to ${BASH_SOURCE[0]}"
         exit 100
@@ -64,7 +64,7 @@ for lookback in "${lookbacks[@]}"; do
     HPCGFS="${RUN}.${init_time}"
     if [[ ! -L "${HPCGFS}" ]]; then
         YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
-        ln -sf "${source_dir}" "${HPCGFS}"
+        ${NLN} "${source_dir}" "${HPCGFS}"
     fi
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"

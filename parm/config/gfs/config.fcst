@@ -6,11 +6,18 @@
 echo "BEGIN: config.fcst"
 
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
+export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
-# Turn off waves if not used for this CDUMP
+# Turn off waves if not used for this RUN
 case ${WAVE_CDUMP} in
-  both | "${CDUMP/enkf}" ) ;; # Don't change
+  both | "${RUN/enkf}" ) ;; # Don't change
   *) DO_WAVE="NO" ;; # Turn waves off
+esac
+
+# Turn off aerosols if not used for this RUN
+case ${AERO_FCST_CDUMP} in
+  both | "${RUN/enkf}" ) ;; # Don't change
+  *) DO_AERO="NO" ;; # Turn aerosols off
 esac
 
 # Source model specific information that is resolution dependent
@@ -120,22 +127,18 @@ if (( gwd_opt == 2 )); then
 fi
 
 # Sponge layer settings
-export tau=0.
-export rf_cutoff=10.
 export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
 export n_sponge=42
-if (( LEVS == 128 )) && [[ "${CDUMP}" =~ "gdas" ]]; then
-   export tau=5.0
-   export rf_cutoff=1.0e3
-   export d2_bg_k1=0.20
-   export d2_bg_k2=0.0
-fi
 
 # PBL/turbulance schemes
 export hybedmf=".false."
-export satmedmf=".true."
+if [[ "${CCPP_SUITE}" == "FV3_global_nest"* ]]; then
+  export satmedmf=".false."
+else
+  export satmedmf=".true."
+fi
 export isatmedmf=1
 tbf=""
 if [[ "${satmedmf}" == ".true." ]]; then tbf="_satmedmf" ; fi
@@ -207,6 +210,20 @@ case ${imp_physics} in
         export nord=2
         export dddmp=0.1
         export d4_bg=0.12
+
+        if [[ "${CCPP_SUITE}" == "FV3_global_nest"* ]]; then
+          export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_thompson_aero_tke${tbp}"
+          export ltaerosol=".true."
+          export lcnorm=".true."
+          export do_mynnedmf=".true."
+          export do_mynnsfclay=".true."
+          export imfshalcnv=5
+          export imfdeepcnv=5
+          export betascu=0.5
+          export betamcu=1.5
+          export betadcu=8.0
+        fi
+
         ;;
     11) # GFDL
         export ncld=5
@@ -236,6 +253,9 @@ export DO_SKEB=${DO_SKEB:-"NO"}
 export DO_SHUM=${DO_SHUM:-"NO"}
 export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
 export DO_CA=${DO_CA:-"YES"}
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+  export DO_CA="NO"  # CA does not work with nesting.
+fi
 
 #coupling settings
 export cplmode="ufs.frac"
@@ -257,11 +277,8 @@ if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
     # Variables used in DA cycling
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
 
-    if [[ "${DOIAU}" == "YES" ]]; then
-      export restart_interval="3"
-    else
-      export restart_interval="6"
-    fi
+    # Write gfs restart files to rerun fcst from any break point
+    export restart_interval=${restart_interval_gdas:-6}
 
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."

@@ -74,7 +74,7 @@ set +e
 source "${HOMEgfs}/ush/module-setup.sh"
 export BUILD_JOBS=8
 rm -rf log.build
-./build_all.sh -g  >> log.build 2>&1
+./build_all.sh -gk  >> log.build 2>&1
 build_status=$?
 
 DATE=$(date +'%D %r')
@@ -83,6 +83,7 @@ if [[ ${build_status} != 0 ]]; then
     echo "Build: *** FAILED ***"
     echo "Build: Failed at ${DATE}"
     cat "${PWD}/log.build"
+    cat "${PWD}/logs/error.logs"
   } >> "${outfile}"
   exit "${build_status}"
 else

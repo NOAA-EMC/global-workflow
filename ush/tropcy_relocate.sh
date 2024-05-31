@@ -531,10 +531,10 @@ else
      rm fort.*
    fi
 
-   ln -sf $DATA/tcvitals.now1      fort.11
-   ln -sf $DATA/model_track.all    fort.30
-   ln -sf $DATA/rel_inform1        fort.62
-   ln -sf $DATA/tcvitals.relocate0 fort.65
+   ${NLN} $DATA/tcvitals.now1      fort.11
+   ${NLN} $DATA/model_track.all    fort.30
+   ${NLN} $DATA/rel_inform1        fort.62
+   ${NLN} $DATA/tcvitals.relocate0 fort.65
 
    i1=20
    i2=53
@@ -548,8 +548,8 @@ else
        tpref=p$fhr
      fi
 
-     ln -sf $DATA/sg${tpref}prep          fort.$i1
-     ln -sf $DATA/sg${tpref}prep.relocate fort.$i2
+     ${NLN} $DATA/sg${tpref}prep          fort.$i1
+     ${NLN} $DATA/sg${tpref}prep.relocate fort.$i2
 
      i1=$((i1+1))
      i2=$((i2+BKGFREQ))

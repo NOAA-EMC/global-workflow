@@ -38,7 +38,7 @@ class GFSCycledAppConfig(AppConfig):
         configs = ['prep']
 
         if self.do_jediatmvar:
-            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal']
+            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
         else:
             configs += ['anal', 'analdiag']
 
@@ -57,7 +57,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_hybvar:
             if self.do_jediatmens:
-                configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
+                configs += ['atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
@@ -136,7 +136,7 @@ class GFSCycledAppConfig(AppConfig):
         gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
 
         if self.do_jediatmvar:
-            gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlrun', 'atmanlfinal']
+            gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
         else:
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
@@ -150,9 +150,6 @@ class GFSCycledAppConfig(AppConfig):
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
-        if self.do_aero:
-            gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
-
         if self.do_jedisnowda:
             gdas_gfs_common_tasks_before_fcst += ['prepsnowobs', 'snowanl']
 
@@ -164,7 +161,7 @@ class GFSCycledAppConfig(AppConfig):
         hybrid_after_eupd_tasks = []
         if self.do_hybvar:
             if self.do_jediatmens:
-                hybrid_tasks += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal', 'echgres']
+                hybrid_tasks += ['atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
@@ -178,6 +175,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks
+
+        if self.do_aero and 'gdas' in self.aero_anl_cdumps:
+            gdas_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
@@ -212,6 +212,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             gfs_tasks += wave_prep_tasks
+
+        if self.do_aero and 'gfs' in self.aero_anl_cdumps:
+            gfs_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
@@ -264,7 +267,7 @@ class GFSCycledAppConfig(AppConfig):
                 gfs_tasks += ['gempakpgrb2spec']
 
         if self.do_awips:
-            gfs_tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']
+            gfs_tasks += ['awips_20km_1p0deg', 'fbwind']
 
         if self.do_mos:
             gfs_tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',

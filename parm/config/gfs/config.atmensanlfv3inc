@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.atmensanlfv3inc ##########
+# Atm Var Analysis specific
+
+echo "BEGIN: config.atmensanlfv3inc"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmensanlfv3inc
+
+export JCB_ALGO=fv3jedi_fv3inc_lgetkf
+export JEDIEXE=${EXECgfs}/fv3jedi_fv3inc.x
+
+echo "END: config.atmensanlfv3inc"

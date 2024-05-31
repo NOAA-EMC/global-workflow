@@ -91,7 +91,8 @@ function get_pslot () {
     # loop over expdir directories in RUNTESTS
     # and return the name of the pslot with its tag that matches the case
     #############################################################
-    for pslot_dir in "${RUNTESTS}/EXPDIR/"*; do
+    # shellcheck disable=SC2045
+    for pslot_dir in $(ls -td "${RUNTESTS}/EXPDIR/"*); do
       pslot=$(basename "${pslot_dir}")
       check_case=$(echo "${pslot}" | rev | cut -d"_" -f2- | rev) || true
       if [[ "${check_case}" == "${case}" ]]; then
@@ -121,8 +122,36 @@ function create_experiment () {
   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
-  # system=$(grep "system:" "${yaml_config}" | cut -d":" -f2 | tr -d " ") || true
+  # Remove RUNDIRS dir incase this is a retry
+  rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
   "${HOMEgfs}/${system}/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
 
+}
+
+function publish_logs() {
+    # publish_logs function
+    # This function takes a directory path and a list of files as arguments.
+    # It calls the publish_logs.py script to publish the logs and returns its gist URL.
+    # Usage: publish_logs <ID> <dir_path> <file1> <file2> ... <fileN>
+    local PR_header="$1"
+    local dir_path="$2"
+    local file="$3"
+
+    local full_paths=""
+    while IFS= read -r line; do
+        full_path="${dir_path}/${line}"
+        if [[ -f "${full_path}" ]]; then
+            full_paths+="${full_path} "
+        else
+            echo "File ${full_path} does not exist"
+        fi
+    done < "${file}"
+
+    if [[ -n "${full_paths}" ]]; then
+        # shellcheck disable=SC2027,SC2086
+        ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
+        URL="$("${HOMEgfs}/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
+    fi
+    echo "${URL}"
 }
