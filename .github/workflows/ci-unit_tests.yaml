@@ -46,9 +46,8 @@ jobs:
           sudo mkdir -p /work/noaa
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
-          ls -lrt $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM
           echo "EXPDIR: ${EXPDIR}"
-          cat $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
+          grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
 
       - name: List test directory
         run: ls -la $GITHUB_WORKSPACE/ci/scripts/tests
