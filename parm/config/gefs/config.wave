@@ -56,6 +56,12 @@ case "${waveGRD}" in
     export wavepostGRD='glo_025'
     export waveuoutpGRD=${waveGRD}
     ;;
+  "glo_100")
+    #Global regular lat/lon 1deg deg grid
+    export waveinterpGRD=''
+    export wavepostGRD='glo_100'
+    export waveuoutpGRD=${waveGRD}
+    ;;
   "glo_200")
     #Global regular lat/lon 2deg deg grid
     export waveinterpGRD=''
