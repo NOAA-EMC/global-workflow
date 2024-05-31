@@ -40,7 +40,7 @@ if [ ${err} -ne 0 ]; then
 fi
 
 ##########################################
-# Remove the Temporary working directory 
+# Remove the Temporary working directory
 ##########################################
 cd ${DATAROOT}
 [[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
