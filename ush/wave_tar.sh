@@ -110,7 +110,7 @@ source "${USHgfs}/preamble.sh"
     if [[ "${nf}" -ge "${nbm2}" ]]
     then
 
-      tar -cf "${ID}.${cycle}.${type}_tar" "./${ID}.*.${filext}"
+      tar -cf "${ID}.${cycle}.${type}_tar" ./${ID}.*.${filext}
       exit=$?
       filename="${ID}.${cycle}.${type}_tar" 
       if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
