@@ -57,10 +57,14 @@ def main(*argv):
                          'taskthrottle': user_inputs.taskthrottle,
                          'verbosity': user_inputs.verbosity}
 
+    print("expdir:",user_inputs.expdir)
     cfg = Configuration(user_inputs.expdir)
 
     base = cfg.parse_config('config.base')
-    print("base Dict", base)
+    if 'EXPDIR' in base:
+        print("base EXPDIR", base['EXPDIR'])
+    else:
+        print("base EXPDIR is not in base")
 
     check_expdir(user_inputs.expdir, base['EXPDIR'])
 
