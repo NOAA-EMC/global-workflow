@@ -14,7 +14,6 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL
 
-mkdir -m 775 -p "${COMIN_WAVE_PREP}"
 mkdir -m 775 -p "${COMOUT_WAVE_PREP}"
 
 # Set mpi serial command
