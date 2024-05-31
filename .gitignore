@@ -35,11 +35,12 @@ fix/gsi
 fix/lut
 fix/mom6
 fix/orog
+fix/orog_nest
 fix/sfc_climo
 fix/ugwd
+fix/ugwd_nest
 fix/verif
 fix/wave
-fix/nest
 
 # Ignore parm file symlinks
 #--------------------------
