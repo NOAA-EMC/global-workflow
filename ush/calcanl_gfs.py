@@ -135,7 +135,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
     ExecCMDMPI1 = ExecCMDMPI.replace("$ncmd", str(1))
     ExecCMDMPI = ExecCMDMPI.replace("$ncmd", str(nFH))
     ExecCMDLevs = ExecCMDMPI.replace("$ncmd", str(levs))
-    ExecCMDMPI10 = ExecCMDMPI.replace("$ncmd", str(10))
+    ExecCMDMPI13 = ExecCMDMPI.replace("$ncmd", str(13))
 
     # are we using mpirun with lsf, srun, or aprun with Cray?
     launcher = ExecCMDMPI.split(' ')[0]
@@ -156,7 +156,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             ExecCMDMPILevs_host = 'mpirun -np ' + str(levs) + ' --hostfile hosts'
             ExecCMDMPILevs_nohost = 'mpirun -np ' + str(levs)
         ExecCMDMPI1_host = 'mpirun -np 1 --hostfile hosts'
-        ExecCMDMPI10_host = 'mpirun -np 10 --hostfile hosts'
+        ExecCMDMPI13_host = 'mpirun -np 13 --hostfile hosts'
     elif launcher == 'mpiexec':
         hostfile = os.getenv('PBS_NODEFILE', '')
         with open(hostfile) as f:
@@ -175,7 +175,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             ExecCMDMPILevs_host = 'mpiexec -l -n ' + str(levs)
             ExecCMDMPILevs_nohost = 'mpiexec -l -n ' + str(levs)
         ExecCMDMPI1_host = 'mpiexec -l -n 1 --cpu-bind depth --depth ' + str(NThreads)
-        ExecCMDMPI10_host = 'mpiexec -l -n 10 --cpu-bind depth --depth ' + str(NThreads)
+        ExecCMDMPI13_host = 'mpiexec -l -n 13 --cpu-bind depth --depth ' + str(NThreads)
     elif launcher == 'srun':
         nodes = os.getenv('SLURM_JOB_NODELIST', '')
         hosts_tmp = subprocess.check_output('scontrol show hostnames ' + nodes, shell=True)
@@ -200,7 +200,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             ExecCMDMPILevs_host = 'srun -n ' + str(levs) + ' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
             ExecCMDMPILevs_nohost = 'srun -n ' + str(levs) + ' --verbose --export=ALL'
         ExecCMDMPI1_host = 'srun -n 1 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
-        ExecCMDMPI10_host = 'srun -n 10 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
+        ExecCMDMPI13_host = 'srun -n 13 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
     elif launcher == 'aprun':
         hostfile = os.getenv('LSB_DJOB_HOSTFILE', '')
         with open(hostfile) as f:
@@ -213,7 +213,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         ExecCMDMPILevs_host = 'aprun -l hosts -d ' + str(NThreads) + ' -n ' + str(levs)
         ExecCMDMPILevs_nohost = 'aprun -d ' + str(NThreads) + ' -n ' + str(levs)
         ExecCMDMPI1_host = 'aprun -l hosts -d ' + str(NThreads) + ' -n 1'
-        ExecCMDMPI10_host = 'aprun -l hosts -d ' + str(NThreads) + ' -n 10'
+        ExecCMDMPI13_host = 'aprun -l hosts -d ' + str(NThreads) + ' -n 13'
     else:
         print('unknown MPI launcher. Failure.')
         sys.exit(1)
@@ -248,7 +248,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                         ihost += 1
                         for a in range(0, 5):
                             hostfile.write(hosts[ihost] + '\n')
-                    for a in range(0, 9):  # need 9 more of the same host for the 10 tasks for chgres_inc
+                    for a in range(0, 12):  # need 9 more of the same host for the 10 tasks for chgres_inc
                         hostfile.write(hosts[ihost] + '\n')
             if launcher == 'srun':
                 os.environ['SLURM_HOSTFILE'] = CalcAnlDir + '/hosts'
