@@ -47,7 +47,7 @@ jobs:
           cd $GITHUB_WORKSPACE/sorc/wxflow
           git checkout config_env_xor
           cd $GITHUB_WORKSPACE/sorc
-          link_workflow.sh
+          ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           pytest -v test_setup.py  --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
           ls $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM
