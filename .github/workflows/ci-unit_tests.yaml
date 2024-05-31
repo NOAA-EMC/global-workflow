@@ -42,8 +42,8 @@ jobs:
           echo "$HOME/rocoto/bin" >> $GITHUB_PATH
 
       - name: Run tests
+        shell: bash
         run: |
-          /usr/bin/bash
           echo $SHELL
           python --version
           sudo mkdir -p /work/noaa
