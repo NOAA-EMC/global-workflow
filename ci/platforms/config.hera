@@ -5,3 +5,6 @@ export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
 export HPC_ACCOUNT=nems
 export max_concurrent_cases=5
 export max_concurrent_pr=4
+
+export JENKINS_AGENT_LANUCH_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/Jenkins
+export JENKINS_WORK_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness
