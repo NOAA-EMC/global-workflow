@@ -15,7 +15,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
    COMOUT_WAVE_STATION:COM_WAVE_STATION_TMPL
 
-if [[ ! -d ${COMIN_WAVE_STATION} ]]; then mkdir -p "${COMIN_WAVE_STATION}"; fi
+for out_dir in "${COMOUT_WAVE_HISTORY}" "${COMOUT_WAVE_STATION}"; do
+    if [[ ! -d ${out_dir} ]]; then mkdir -p "${out_dir}"; fi
+done
 
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
