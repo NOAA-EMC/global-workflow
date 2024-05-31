@@ -47,6 +47,7 @@ jobs:
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           pytest -v test_setup.py  --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
           grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
+          ${GITHUB_WORKSPACE}/workflow/setup_xml.py $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM
 
       - name: List test directory
         run: ls -la $GITHUB_WORKSPACE/ci/scripts/tests
