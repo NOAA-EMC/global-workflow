@@ -108,8 +108,8 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_aero:
             configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
-            if self.do_prep_aero_obs:
-                configs += ['prepaeroobs']
+            if self.do_prep_obs_aero:
+                configs += ['prepobsaero']
 
         if self.do_jedisnowda:
             configs += ['prepsnowobs', 'snowanl']
@@ -180,8 +180,8 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_aero and 'gdas' in self.aero_anl_cdumps:
             gdas_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
-            if self.do_prep_aero_obs:
-                gdas_tasks += ['prepaeroobs']
+            if self.do_prep_obs_aero:
+                gdas_tasks += ['prepobsaero']
 
         gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 
@@ -219,8 +219,8 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_aero and 'gfs' in self.aero_anl_cdumps:
             gfs_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
-            if self.do_prep_aero_obs:
-                gfs_tasks += ['prepaeroobs']
+            if self.do_prep_obs_aero:
+                gfs_tasks += ['prepobsaero']
 
         gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
 

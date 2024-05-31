@@ -1,12 +1,12 @@
 #!/bin/bash -x
 
-########## config.prepaeroobs ##########
-# Aerosol Variance specific
+########## config.prepobsaero ##########
+# Prepare and thin/superob aerosol observations
 
-echo "BEGIN: config.prepaeroobs"
+echo "BEGIN: config.prepobsaero"
 
 # Get task specific resources
-source "${EXPDIR}/config.resources" prepaeroobs
+source "${EXPDIR}/config.resources" prepobsaero
 
 export OBSPROCYAML="${PARMgfs}/gdas/aero/obs/lists/gdas_aero_obsproc.yaml.j2"
 export OBSPROCEXE="${EXECgfs}/gdas_obsprovider2ioda.x"

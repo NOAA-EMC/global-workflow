@@ -4,6 +4,7 @@ import os
 import glob
 import gzip
 import tarfile
+import re
 from logging import getLogger
 from typing import List, Dict, Any, Union
 
@@ -47,14 +48,9 @@ class AerosolObsPrep(Task):
         List needed raw obs files.
         Copy the raw obs files to $DATA/obs.
         Link over the needed executable.
-        Generate corrosponding YMAL file.
+        Generate corresponding YMAL file.
         Run IODA converter.
         """
-        self.task_config.COM_OBS_CHEM = os.path.join(self.task_config.COM_OBS, 'chem')
-        if os.path.exists(self.task_config.COM_OBS_CHEM):
-            rmdir(self.task_config.COM_OBS_CHEM)
-        FileHandler({'mkdir': [self.task_config.COM_OBS_CHEM]}).sync()
-
         self.task_config.DATA_OBS = os.path.join(self.task_config.DATA, 'obs')
         if os.path.exists(self.task_config.DATA_OBS):
             rmdir(self.task_config.DATA_OBS)
@@ -82,8 +78,8 @@ class AerosolObsPrep(Task):
         """
         if sensor == 'n20':
             sensor = 'j01'
-        dir1 = f"{self.task_config.data_dir}/{datetime_to_YMD(self.task_config.window_begin)}"
-        dir2 = f"{self.task_config.data_dir}/{datetime_to_YMD(self.task_config.window_end)}"
+        dir1 = os.path.join(self.task_config.data_dir, datetime_to_YMD(self.task_config.window_begin))
+        dir2 = os.path.join(self.task_config.data_dir, datetime_to_YMD(self.task_config.window_end))
 
         if dir1 == dir2:
             files = os.listdir(dir1)
@@ -98,13 +94,11 @@ class AerosolObsPrep(Task):
         matching_files = []
         try:
             for file in allfiles:
-                fshort = file.split('/')[-1].split('.')
-                yyyy = fshort[0][18:22]
-                mm = fshort[0][22:24]
-                dd = fshort[0][24:26]
-                HH = fshort[0][26:28]
-                MM = fshort[0][28:30]
-                fstart = to_datetime(yyyy + '-' + mm + '-' + dd + 'T' + HH + ':' + MM + 'Z')
+                fshort = file.split('/')[-1].split('.')[0].split('_')[3]
+                pattern = r"s(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{3})"
+                match = re.match(pattern, fshort)
+                yyyy, mm, dd, HH, MM = match.group(1), match.group(2), match.group(3), match.group(4), match.group(5)
+                fstart = to_datetime(f'{yyyy}-{mm}-{dd}T{HH}:{MM}Z')
                 if sensor in file:
                     # temporally select obs files based on time stamp inthe filename.
                     if (fstart > self.task_config.window_begin) and (fstart < self.task_config.window_end):
@@ -177,7 +171,7 @@ class AerosolObsPrep(Task):
         """
         chdir(self.task_config.DATA)
         for prepaero_yaml in self.task_config.prepaero_yaml:
-            exec_cmd = Executable(self.task_config.APRUN_PREPAEROOBS)
+            exec_cmd = Executable(self.task_config.APRUN_PREPOBSAERO)
             exec_name = os.path.join(self.task_config.DATA, 'gdas_obsprovider2ioda.x')
             exec_cmd.add_default_arg(exec_name)
             exec_cmd.add_default_arg(prepaero_yaml)
@@ -195,7 +189,7 @@ class AerosolObsPrep(Task):
     @logit(logger)
     def finalize(self) -> None:
         """
-        Copy the output viirs files to COM_OBS.
+        Copy the output viirs files to COMIN_OBS.
         Tar and archive the output files.
         Tar and archive the raw obs files.
         """
@@ -205,7 +199,7 @@ class AerosolObsPrep(Task):
         for obsfile in obsfiles:
             basename = os.path.basename(obsfile)
             src = os.path.join(self.task_config['DATA'], basename)
-            dest = os.path.join(self.task_config.COM_OBS, basename)
+            dest = os.path.join(self.task_config.COMOUT_OBS, basename)
             copylist.append([src, dest])
         FileHandler({'copy': copylist}).sync()
 
@@ -214,7 +208,7 @@ class AerosolObsPrep(Task):
             with open(obsfile, 'rb') as f_in, gzip.open(f"{obsfile}.gz", 'wb') as f_out:
                 f_out.writelines(f_in)
 
-        aeroobs = os.path.join(self.task_config.COM_OBS, f"{self.task_config['APREFIX']}aeroobs")
+        aeroobs = os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config['APREFIX']}aeroobs")
         # open tar file for writing
         with tarfile.open(aeroobs, "w") as archive:
             for obsfile in obsfiles:
@@ -227,7 +221,7 @@ class AerosolObsPrep(Task):
             with open(rawfile, 'rb') as f_in, gzip.open(f"{rawfile}.gz", 'wb') as f_out:
                 f_out.writelines(f_in)
 
-        aerorawobs = os.path.join(self.task_config.COM_OBS_CHEM, f"{self.task_config['APREFIX']}aerorawobs")
+        aerorawobs = os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config['APREFIX']}aerorawobs")
         # open tar file for writing
         with tarfile.open(aerorawobs, "w") as archive:
             for rawfile in rawfiles:
@@ -236,7 +230,7 @@ class AerosolObsPrep(Task):
         copylist = []
         for prepaero_yaml in self.task_config.prepaero_yaml:
             basename = os.path.basename(prepaero_yaml)
-            dest = os.path.join(self.task_config.COM_OBS, basename)
+            dest = os.path.join(self.task_config.COMOUT_OBS, basename)
             copylist.append([prepaero_yaml, dest])
         FileHandler({'copy': copylist}).sync()
 

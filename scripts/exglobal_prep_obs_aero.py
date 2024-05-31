@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_prep_aero_obs.py
+# exglobal_prep_obs_aero.py
 # This script collect available viirs
 # obs files, combine and preprocess
 # them.
@@ -17,7 +17,6 @@ if __name__ == '__main__':
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the aerosol prep obs tasks
     AeroObs = AerosolObsPrep(config)
     AeroObs.initialize()
     AeroObs.runConverter()
