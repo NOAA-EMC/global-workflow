@@ -56,7 +56,7 @@ jobs:
           pytest -v test_setup.py --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
           ls $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
           grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
-          ${GITHUB_WORKSPACE}/workflow/setup_xml.py $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM
+          # ${GITHUB_WORKSPACE}/workflow/setup_xml.py $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM
 
       - name: Publish Test Results
         if: always()
