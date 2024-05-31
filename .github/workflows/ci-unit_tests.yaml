@@ -49,16 +49,17 @@ jobs:
           sudo mkdir -p /work/noaa
           cd $GITHUB_WORKSPACE/sorc/wxflow
           git submodule update --init
+          git checkout config_env_xor
           cd $GITHUB_WORKSPACE/sorc/gsi_utils.fd
           git submodule update --init
           cd $GITHUB_WORKSPACE/sorc
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           ln -s $GITHUB_WORKSPACE/sorc/wxflow/src/wxflow .
-          pytest -v test_setup.py --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
-          ls $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
-          grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
-          python3 ${GITHUB_WORKSPACE}/workflow/setup_xml.py $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM
+          pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
+          #ls $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
+          #grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
+          # ${GITHUB_WORKSPACE}/workflow/setup_xml.py $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM
 
       - name: Publish Test Results
         if: always()

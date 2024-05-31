@@ -31,13 +31,11 @@ def test_setup_xml():
         f"{RUNDIR}/EXPDIR/C48_ATM",
     ]
 
-    #env = os.environ.copy()
-    #env['ACCOUNT'] = "foo"
+    env = os.environ.copy()
+    env['ACCOUNT'] = "foo"
 
     setup_xml_script = Executable(setup_xml_py)
     setup_xml_script.add_default_arg(arguments)
-    #setup_xml_script()
-    #assert (setup_xml_script.returncode == 0)
-    assert ( True )
-
-#    rmtree(testdata)
+    setup_xml_script(env=env)
+    assert (setup_xml_script.returncode == 0)
+    rmtree(RUNDIR)
