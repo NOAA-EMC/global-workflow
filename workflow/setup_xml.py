@@ -61,6 +61,7 @@ def main(*argv):
     cfg = Configuration(user_inputs.expdir)
 
     base = cfg.parse_config('config.base')
+    print("base dictionary:", base)
     if 'EXPDIR' in base:
         print("base EXPDIR", base['EXPDIR'])
     else:
