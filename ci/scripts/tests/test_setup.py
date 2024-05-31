@@ -1,6 +1,5 @@
 from wxflow import Executable
 from shutil import rmtree
-import time
 import os
 
 _here = os.path.dirname(__file__)
@@ -26,19 +25,12 @@ def test_setup_expt():
 
 def test_setup_xml():
 
-    setup_xml_py = os.path.join(HOMEgfs, "workflow", "setup_xml.py")
-
-    arguments = [
-        "--maxtries", "2", "--cyclethrottle", "3", "--taskthrottle", "25", "--verbosity", "10",
-        f"{RUNDIR}/EXPDIR/C48_ATM",
-    ]
-
     env = os.environ.copy()
     env['ACCOUNT'] = "foo"
     env['HOMEgfs'] = "bar"
 
-    setup_xml_script = Executable(setup_xml_py)
-    setup_xml_script.add_default_arg(arguments)
+    setup_xml_script = Executable(os.path.join(HOMEgfs, "workflow", "setup_xml.py"))
+    setup_xml_script.add_default_arg(f"{RUNDIR}/EXPDIR/C48_ATM")
     setup_xml_script(env=env)
     assert (setup_xml_script.returncode == 0)
     rmtree(RUNDIR)
