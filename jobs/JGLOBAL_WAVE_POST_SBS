@@ -15,7 +15,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
     COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
 
-mkdir -p "${COMOUT_WAVE_GRID}"
+for out_dir in "${COMOUT_WAVE_HISTORY}" "${COMOUT_WAVE_GRID}"; do
+    if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
+done
 
 
 # Set wave model ID tag to include member number
