@@ -19,7 +19,6 @@ from wxflow import (AttrDict,
 
 logger = getLogger(__name__.split('.')[-1])
 
-
 class MarineLETKF(Analysis):
     """
     Class for global ocean and sea ice analysis LETKF task
@@ -40,51 +39,30 @@ class MarineLETKF(Analysis):
         logger.info("init")
         super().__init__(config)
 
-        self.config.gcyc = self.runtime_config.previous_cycle.strftime('%H')
-        RUN = self.runtime_config.RUN
-        DATA = path.realpath(self.runtime_config.DATA)
+        _half_assim_freq = timedelta(hours=int(self.config.assim_freq) / 2)
+        _window_begin = self.runtime_config.current_cycle - _half_assim_freq
+        _window_begin_iso = _window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
+        _window_middle_iso = self.runtime_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ')
+        _letkf_yaml_file = 'letkf.yaml'
+        _letkf_exec_args = [self.config.MARINE_LETKF_EXEC,
+                            'fv3jedi',
+                            'localensembleda',
+                            _letkf_yaml_file]
 
-        gdas_home = path.join(self.config.HOMEgfs, 'sorc', 'gdas.cd')
+        local_dict = AttrDict(
+            {
+                'ATM_WINDOW_BEGIN': _window_begin_iso,
+                'ATM_WINDOW_MIDDLE': _window_middle_iso,
+                'window_begin': _window_begin,
+                'letkf_exec_args': _letkf_exec_args,
+                'letkf_yaml_file': _letkf_yaml_file,
+                'mom_input_nml_tmpl':  path.join(self.runtime_config.DATA, 'mom_input.nml.tmpl'),
+                'mom_input_nml': path.join(self.runtime_config.DATA, 'mom_input.nml'),
+                'obs_dir': path.join(self.runtime_config.DATA, 'obs')
+            }
+        )
 
-        half_assim_freq = timedelta(hours=int(self.config.assim_freq) / 2)
-        window_begin = self.runtime_config.current_cycle - half_assim_freq
-        window_begin_iso = window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
-        window_middle_iso = self.runtime_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ')
-        self.config.ATM_WINDOW_BEGIN = window_begin_iso
-        self.config.ATM_WINDOW_MIDDLE = window_middle_iso
-
-        letkf_exec = path.join(self.config.JEDI_BIN, 'gdas.x')
-        letkf_yaml_dir = path.join(gdas_home, 'parm', 'soca', 'letkf')
-        self.config['letkf_yaml_template'] = path.join(letkf_yaml_dir, 'letkf.yaml.j2')
-        self.config['letkf_stage_yaml_template'] = path.join(letkf_yaml_dir, 'letkf_stage.yaml.j2')
-        letkf_yaml_file = path.join(DATA, 'letkf.yaml')
-        self.config.letkf_exec_args = [letkf_exec,
-                                       'fv3jedi',
-                                       'localensembleda',
-                                       letkf_yaml_file]
-        self.config.letkf_yaml_file = letkf_yaml_file
-
-        self.config.window_begin = window_begin
-        self.config.BKG_LIST = 'bkg_list.yaml'
-        self.config.bkg_dir = path.join(DATA, 'bkg')
-
-        self.config.exec_name_gridgen = path.join(self.config.JEDI_BIN, 'gdas_soca_gridgen.x')
-        self.config.gridgen_yaml = path.join(gdas_home, 'parm', 'soca', 'gridgen', 'gridgen.yaml')
-
-        self.config.mom_input_nml_src = path.join(gdas_home, 'parm', 'soca', 'fms', 'input.nml')
-        self.config.mom_input_nml_tmpl = path.join(DATA, 'mom_input.nml.tmpl')
-        self.config.mom_input_nml = path.join(DATA, 'mom_input.nml')
-
-        self.config.data_output_dir = path.join(DATA, 'data_output')
-        self.config.ens_dir = path.join(DATA, 'ens')
-        self.config.obs_dir = path.join(DATA, 'obs')
-
-        # set up lists of files for ens background
-        self.config.ocn_ens_bkg_filename = f"enkf{RUN}.ocean.t{self.config.gcyc}z.inst.f009.nc"
-        self.config.ice_ens_bkg_filename = f"enkf{RUN}.ice.t{self.config.gcyc}z.inst.f009.nc"
-
-        self.task_config = AttrDict(dict(**self.config, **self.runtime_config))
-
+        self.task_config = AttrDict(dict(**self.config, **self.runtime_config, **local_dict))
 
     @logit(logger)
     def initialize(self):
@@ -100,7 +78,7 @@ class MarineLETKF(Analysis):
         logger.info("initialize")
 
         # make directories and stage ensemble background files
-        letkf_stage_list = parse_j2yaml(self.task_config.letkf_stage_yaml_template, self.task_config)
+        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_list).sync()
 
         # TODO(AFE): probably needs to be jinjafied
@@ -129,17 +107,15 @@ class MarineLETKF(Analysis):
             else:
                 logger.info(f"******* {obs_file} is not in the database")
 
+        # stage the desired obs files
         FileHandler({'copy': obs_files_to_copy}).sync()
 
         # make the letkf.yaml
-        letkf_yaml = parse_j2yaml(self.task_config.letkf_yaml_template, self.task_config)
+        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, self.task_config)
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.task_config.letkf_yaml_file)
 
-        FileHandler({'copy': [[self.task_config.mom_input_nml_src,
-                               self.task_config.mom_input_nml_tmpl]]}).sync()
-
-        # swap date and stack size
+        # swap date and stack size in mom_input.nml
         domain_stack_size = self.task_config.DOMAIN_STACK_SIZE
         ymdhms = [int(s) for s in self.task_config.window_begin.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
         with open(self.task_config.mom_input_nml_tmpl, 'r') as nml_file:
@@ -163,8 +139,8 @@ class MarineLETKF(Analysis):
         logger.info("run")
 
         exec_cmd_gridgen = Executable(self.task_config.APRUN_OCNANALLETKF)
-        exec_cmd_gridgen.add_default_arg(self.task_config.exec_name_gridgen)
-        exec_cmd_gridgen.add_default_arg(self.task_config.gridgen_yaml)
+        exec_cmd_gridgen.add_default_arg(self.task_config.GRIDGEN_EXEC)
+        exec_cmd_gridgen.add_default_arg(self.task_config.GRIDGEN_YAML)
 
         try:
             logger.debug(f"Executing {exec_cmd_gridgen}")
