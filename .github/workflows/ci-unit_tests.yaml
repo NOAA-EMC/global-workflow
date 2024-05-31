@@ -43,7 +43,7 @@ jobs:
       - name: Run tests
         run: |
           sudo mkdir -p /work/noaa
-          git submodule upate --init $GITHUB_WORKSPACE/sorc/wxflow
+          git submodule update --init $GITHUB_WORKSPACE/sorc/wxflow
           cd $GITHUB_WORKSPACE/sorc/wxflow
           git checkout config_env_xor
           cd $GITHUB_WORKSPACE/sorc
