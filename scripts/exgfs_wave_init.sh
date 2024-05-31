@@ -83,15 +83,15 @@ source "${USHgfs}/preamble.sh"
   grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
   for grdID in ${grdALL}; do
-    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
+      echo " Mod def file for ${grdID} found in ${COMOUT_WAVE_PREP}. copying ...."
       set_trace
-      cp "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
 
     else
       set +x
-      echo " Mod def file for ${grdID} not found in ${COMIN_WAVE_PREP}. Setting up to generate ..."
+      echo " Mod def file for ${grdID} not found in ${COMOUT_WAVE_PREP}. Setting up to generate ..."
       echo ' '
       set_trace
       if [ -f ${FIXgfs}/wave/ww3_grid.inp.$grdID ]
