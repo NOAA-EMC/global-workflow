@@ -44,6 +44,7 @@ jobs:
         run: |
           sudo mkdir -p /work/noaa
           git submodule update --init $GITHUB_WORKSPACE/sorc/wxflow
+          git submodule update --recursive --init $GITHUB_WORKSPACE/sorc/gfs_utils.fd
           cd $GITHUB_WORKSPACE/sorc/wxflow
           git checkout config_env_xor
           cd $GITHUB_WORKSPACE/sorc
