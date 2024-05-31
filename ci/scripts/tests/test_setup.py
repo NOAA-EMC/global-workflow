@@ -7,6 +7,7 @@ _here = os.path.dirname(__file__)
 HOMEgfs = os.sep.join(_here.split(os.sep)[:-3])
 RUNDIR = os.path.join(_here, 'testdata/RUNDIR')
 
+
 def test_setup_expt():
 
     setup_expt_py = os.path.join(HOMEgfs, "workflow", "setup_expt.py")
@@ -22,6 +23,7 @@ def test_setup_expt():
     setup_expt_script()
     assert (setup_expt_script.returncode == 0)
 
+
 def test_setup_xml():
 
     setup_xml_py = os.path.join(HOMEgfs, "workflow", "setup_xml.py")
@@ -33,6 +35,7 @@ def test_setup_xml():
 
     env = os.environ.copy()
     env['ACCOUNT'] = "foo"
+    env['HOMEgfs'] = "bar"
 
     setup_xml_script = Executable(setup_xml_py)
     setup_xml_script.add_default_arg(arguments)

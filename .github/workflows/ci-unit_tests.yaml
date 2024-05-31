@@ -24,7 +24,7 @@ jobs:
           sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
           python -m pip install --upgrade pip
           pip install pytest
-          pip install wxflow
+          pip install git+https://github.com/TerrenceMcGuinness-NOAA/wxflow.git@config_env_xor
 
       - name: Cache Rocoto Install
         uses: actions/cache@v4
@@ -44,8 +44,6 @@ jobs:
       - name: Run tests
         shell: bash
         run: |
-          echo $SHELL
-          python --version
           sudo mkdir -p /work/noaa
           cd $GITHUB_WORKSPACE/sorc/wxflow
           git submodule update --init
@@ -55,11 +53,7 @@ jobs:
           cd $GITHUB_WORKSPACE/sorc
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
-          ln -s $GITHUB_WORKSPACE/sorc/wxflow/src/wxflow .
           pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
-          #ls $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
-          #grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM/config.base
-          # ${GITHUB_WORKSPACE}/workflow/setup_xml.py $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/EXPDIR/C48_ATM
 
       - name: Publish Test Results
         if: always()
