@@ -47,7 +47,7 @@ enkf:
         {% endif %}   # DOIAU
 
         {% if DO_JEDIATMENS %}
-        {% set steps = ["atmensanlinit", "atmensanlrun", "atmensanlfinal"] %}
+        {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal"] %}
         {% else %}
         {% set steps = ["eobs", "eupd"] %}
         {% if lobsdiag_forenkf %}
