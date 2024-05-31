@@ -1,5 +1,6 @@
 from wxflow import Executable
 from shutil import rmtree
+import time
 import os
 
 _here = os.path.dirname(__file__)
@@ -21,8 +22,9 @@ def test_setup_expt():
     setup_expt_script()
     assert (setup_expt_script.returncode == 0)
 
+    time.sleep(30)
 
-def test_setup_xml():
+#def test_setup_xml():
 
     setup_xml_py = os.path.join(HOMEgfs, "workflow", "setup_xml.py")
 
