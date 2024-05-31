@@ -105,12 +105,12 @@ export FINT=$NINT1
    done
 
 ## 1-hourly output before $NEND1, 3-hourly output after
-   if [ $FEND -gt $NEND1 ]; then
-     export FINT=$NINT3
+   if [[ "${FEND}" -gt "${NEND1}" ]]; then
+     export FINT="${NINT3}"
    fi
-   ${USHgfs}/gfs_bufr.sh
+   "${USHgfs}/gfs_bufr.sh"
   
-   export FSTART=$FEND
+   export FSTART="${FEND}"
 done
 
 ##############################################################

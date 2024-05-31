@@ -103,7 +103,6 @@ if [[ ${RESTART_postsnd} == "YES" ]]; then
 
     cp -p "${DATA_ATMOS_RESTART}/${RUN}.${cycle}.bufr.logf${FEND}.${logfm}" .
     while IFS= read -r fortname; do
-#     echo "Copy job postsnd files from restart directory: $fortname"
       cp -p "${DATA_ATMOS_RESTART}/${RUN}.${cycle}.bufr_${fortname}" "${fortname}"
     done < "${RUN}.${cycle}.bufr.logf${FEND}.${logfm}"
     err=0
