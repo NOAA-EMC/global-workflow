@@ -2,6 +2,6 @@
 
 export GFS_CI_ROOT=/lfs/h2/emc/global/noscrub/globalworkflow.ci/GFS_CI_ROOT
 export ICSDIR_ROOT=/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR
-export HPC_ACCOUNT=GFS-DEV
+export ACCOUNT=GFS-DEV
 export max_concurrent_cases=5
 export max_concurrent_pr=4
