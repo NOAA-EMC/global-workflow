@@ -18,10 +18,10 @@ FV3_postdet() {
     file_list=$(FV3_coldstarts)
     IFS=',' read -ra file_array <<< "${file_list}"
 
-    echo "Copying FV3 cold start files for 'RUN=${RUN}' at '${current_cycle}' from '${COM_ATMOS_INPUT}'"
+    echo "Copying FV3 cold start files for 'RUN=${RUN}' at '${current_cycle}' from '${COMIN_ATMOS_INPUT}'"
     local fv3_file
     for fv3_file in "${file_array[@]}"; do
-      ${NCP} "${COM_ATMOS_INPUT}/${fv3_file}" "${DATA}/INPUT/${fv3_file}" \
+      ${NCP} "${COMIN_ATMOS_INPUT}/${fv3_file}" "${DATA}/INPUT/${fv3_file}" \
       || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
     done
 
@@ -83,7 +83,7 @@ FV3_postdet() {
       fi
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        increment_file="${COM_ATMOS_INPUT}/${RUN}.t${cyc}z.${inc_file}"
+        increment_file="${COMIN_ATMOS_INPUT}/${RUN}.t${cyc}z.${inc_file}"
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
@@ -283,7 +283,7 @@ FV3_out() {
     echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
     for fv3_file in "${file_array[@]}"; do
       ${NCP} "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
-             "${COM_ATMOS_RESTART}/${restart_date}.${fv3_file}"
+             "${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}"
     done
   done
 
