@@ -9,15 +9,13 @@ RUNDIR = os.path.join(_here, 'testdata/RUNDIR')
 
 def test_setup_expt():
 
-    setup_expt_py = os.path.join(HOMEgfs, "workflow", "setup_expt.py")
-
     arguments = [
         "gfs", "forecast-only",
         "--pslot", "C48_ATM", "--app", "ATM", "--resdetatmos", "48",
         "--comroot", f"{RUNDIR}/COMROT", "--expdir", f"{RUNDIR}/EXPDIR",
         "--idate", "2021032312", "--edate", "2021032312", "--overwrite"
     ]
-    setup_expt_script = Executable(setup_expt_py)
+    setup_expt_script = Executable(os.path.join(HOMEgfs, "workflow", "setup_expt.py"))
     setup_expt_script.add_default_arg(arguments)
     setup_expt_script()
     assert (setup_expt_script.returncode == 0)
