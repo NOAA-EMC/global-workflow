@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.7.16
 
       - name: Install dependencies
         run: |
@@ -43,6 +43,9 @@ jobs:
 
       - name: Run tests
         run: |
+          /usr/bin/bash
+          echo $SHELL
+          python --version
           sudo mkdir -p /work/noaa
           cd $GITHUB_WORKSPACE
           git submodule update --init --recursive
