@@ -14,8 +14,8 @@ export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
-       	COMOUT_WAVE_WMO:COM_WAVE_WMO
+    COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
+    COMOUT_WAVE_WMO:COM_WAVE_WMO
 
 if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 
