@@ -47,11 +47,10 @@ jobs:
           echo $SHELL
           python --version
           sudo mkdir -p /work/noaa
-          cd $GITHUB_WORKSPACE
-          git submodule update --init --recursive sorc/wxflow
-          git submodule update --init --recursive sorc/gsi_utils.fd
           cd $GITHUB_WORKSPACE/sorc/wxflow
-          git checkout develop
+          git submodule update --init
+          cd $GITHUB_WORKSPACE/sorc/gsi_utils.fd
+          git submodule update --init
           cd $GITHUB_WORKSPACE/sorc
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
