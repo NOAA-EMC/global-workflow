@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
-import glob
 import os
-import shutil
-from datetime import timedelta
 from logging import getLogger
 from typing import Any, Dict, List
 
-from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, cast_strdict_as_dtypedict,
-                    chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
+from wxflow import (AttrDict, FileHandler, Task, cast_strdict_as_dtypedict,
+                    logit, parse_j2yaml, strftime,
                     to_YMD, to_YMDH, Template, TemplateConstants)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -68,9 +65,6 @@ class Stage(Task):
 
         if stage_dict.DO_ICE:
             stage_sets.append("ice.yaml.j2")
-
-        if stage_dict.DO_NEST:
-            stage_sets.append("fv3_nest.yaml.j2")
 
         return stage_sets
 
