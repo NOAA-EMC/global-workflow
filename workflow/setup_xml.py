@@ -57,12 +57,10 @@ def main(*argv):
                          'taskthrottle': user_inputs.taskthrottle,
                          'verbosity': user_inputs.verbosity}
 
-    print(user_inputs)
-    print(user_inputs.expdir)
     cfg = Configuration(user_inputs.expdir)
 
     base = cfg.parse_config('config.base')
-    print(base)
+    print("base Dict", base)
 
     check_expdir(user_inputs.expdir, base['EXPDIR'])
 
