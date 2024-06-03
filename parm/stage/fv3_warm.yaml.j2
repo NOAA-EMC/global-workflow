@@ -9,7 +9,7 @@ fv3_warm:
         - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/{{ cycle_YMD }}.{{ cycle_HH }}0000.{{ ftype }}", "{{ COM_ATMOS_RESTART_PREV }}"]
         {% endfor %}
         {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data sfc_data"] %}
-        {% for ntile in range(1, ntiles + 1) %}
+            {% for ntile in range(1, ntiles + 1) %}
         - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/{{ cycle_YMD }}.{{ cycle_HH }}0000.{{ ftype }}.tile{{ ntile }}.nc", "{{ COM_ATMOS_RESTART_PREV }}"]
-        {% endfor %} # ntile
+            {% endfor %} # ntile
         {% endfor %} # ftype

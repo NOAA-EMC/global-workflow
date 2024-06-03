@@ -13,13 +13,13 @@ ocean:
         # Resolution based initial conditions
         #------------------------------------
         {% if OCNRES == "025" %}
-        {% for nn in range(1, 3) %}
+            {% for nn in range(1, 3) %}
         - ["{{ BASE_CPLIC }}/{{ CPL_OCNIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/ocean/{{ cycle_YMD }}.{{ cycle_HH }}0000.MOM.res_{{ nn }}.nc", "{{ COM_OCEAN_RESTART_PREV }}"]
-        {% endfor %}
+            {% endfor %}
         {% endif %}
         #-------------------------
         # Ocean Perturbation Files
         #-------------------------
-        {% if MEMDIR and USE_OCN_PERTURB_FILES %}
+        {% if MEMDIR and USE_OCN_PERTURB_FILES == True %}
         - ["{{ BASE_CPLIC }}/{{ CPL_OCNIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/ocean/{{ cycle_YMD }}.{{ cycle_HH }}0000.mom6_increment.nc", "{{ COM_OCEAN_RESTART_PREV }}"]
         {% endif %}
