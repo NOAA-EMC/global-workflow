@@ -2,14 +2,12 @@
 
 from datetime import timedelta
 import f90nml
-from glob import glob
 from logging import getLogger
 from os import path
 from pygfs.task.analysis import Analysis
-from soca import bkg_utils
 from typing import Dict
-import ufsda
 from wxflow import (AttrDict,
+                    datetime_to_YMDH,
                     Executable,
                     FileHandler,
                     logit,
@@ -40,9 +38,6 @@ class MarineLETKF(Analysis):
         super().__init__(config)
 
         _half_assim_freq = timedelta(hours=int(self.config.assim_freq) / 2)
-        _window_begin = self.runtime_config.current_cycle - _half_assim_freq
-        _window_begin_iso = _window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
-        _window_middle_iso = self.runtime_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ')
         _letkf_yaml_file = 'letkf.yaml'
         _letkf_exec_args = [self.config.MARINE_LETKF_EXEC,
                             'fv3jedi',
@@ -51,9 +46,8 @@ class MarineLETKF(Analysis):
 
         local_dict = AttrDict(
             {
-                'ATM_WINDOW_BEGIN': _window_begin_iso,
-                'ATM_WINDOW_MIDDLE': _window_middle_iso,
-                'window_begin': _window_begin,
+                'WINDOW_BEGIN': self.runtime_config.current_cycle - _half_assim_freq,
+                'WINDOW_MIDDLE': self.runtime_config.current_cycle,
                 'letkf_exec_args': _letkf_exec_args,
                 'letkf_yaml_file': _letkf_yaml_file,
                 'mom_input_nml_tmpl':  path.join(self.runtime_config.DATA, 'mom_input.nml.tmpl'),
@@ -85,7 +79,7 @@ class MarineLETKF(Analysis):
         obs_list = YAMLFile(self.task_config.OBS_YAML)
 
         # get the list of observations
-        CDATE = self.runtime_config.current_cycle.strftime("%Y%m%d%H")
+        CDATE = datetime_to_YMDH(self.runtime_config.current_cycle)
         obs_files = []
         for ob in obs_list['observers']:
             obs_name = ob['obs space']['name'].lower()
@@ -117,13 +111,12 @@ class MarineLETKF(Analysis):
 
         # swap date and stack size in mom_input.nml
         domain_stack_size = self.task_config.DOMAIN_STACK_SIZE
-        ymdhms = [int(s) for s in self.task_config.window_begin.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
+        ymdhms = [int(s) for s in self.task_config.WINDOW_BEGIN.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
         with open(self.task_config.mom_input_nml_tmpl, 'r') as nml_file:
             nml = f90nml.read(nml_file)
             nml['ocean_solo_nml']['date_init'] = ymdhms
             nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
-            ufsda.disk_utils.removefile(self.task_config.mom_input_nml)
-            nml.write(self.task_config.mom_input_nml)
+            nml.write(self.task_config.mom_input_nml, force=True) # force to overwrite if necessary
 
     @logit(logger)
     def run(self):
