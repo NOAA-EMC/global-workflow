@@ -33,6 +33,9 @@ export ocn_dataformat=${ocn_dataformat:-"grib2"} #the data format of the ocean p
 export ice_dataformat=${ice_dataformat:-"grib2"} #the data format of the ice products to be read
 export ocnres=${ocnres:-"5p00"} #Resolution of ocean products
 export iceres=${iceres:-"5p00"} #Resolution of ice products
+export ocnres=${ocnres:-"5p00"} #Resolution of ocean products
+export wavinres=${wavinres:-"5p00"} #Resolution of wave products
+export wavoures=${wavoures:-"1p00"} #Resolution of wave products
 export compress_ocn=${compress_ocn:-1} #1: compress extracted ocean product, 0: do not compress extracted ocean product
 export compress_ice=${compress_ice:-1} #1: compress extracted ice product, 0: do not compress extracted ice product 
 
@@ -55,5 +58,12 @@ if [ ! -d "${DATA}/mem${ENSMEM}_ice" ]; then
   mkdir -p "${DATA}/mem${ENSMEM}_ice" 
 fi                                                                                                                                                                                                                                       
 ${EXTRCTVARO} ${ENSMEM} "${DATA}/mem${ENSMEM}_ice" ${varlist_ice_grib2} ${ice_dataformat} ${iceres} ${compress_ice}
+
+#Extract variables for wave
+export component_name="wav"
+if [ ! -d "${DATA}/mem${ENSMEM}_wav" ]; then 
+  mkdir -p "${DATA}/mem${ENSMEM}_wav" 
+fi
+${EXTRCTVARW} ${ENSMEM} "${DATA}/mem${ENSMEM}_wav"
 
 exit 0
