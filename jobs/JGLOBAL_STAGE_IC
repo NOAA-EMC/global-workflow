@@ -33,7 +33,7 @@ err=0
 for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
   # Export MEMDIR; need even if empty
-  export MEMDIR=${MEMDIR:-}
+  export MEMDIR
 
   # Declare COMs
   if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
