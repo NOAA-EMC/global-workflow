@@ -156,7 +156,7 @@ source "${USHgfs}/preamble.sh"
     cp -f ${PARMgfs}/wave/wave_${NET}.buoys buoy.loc.temp
     if [ "$DOBNDPNT_WAV" = YES ]; then
       #only do boundary points
-      sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
+      sed -n '/^\$.*IBP.*/!p' buoy.loc.temp > buoy.loc || {
           echo "WARNING: No boundary points found in buoy file ${PARMgfs}/wave/wave_${NET}.buoys"
           echo "         Ending job without doing anything."
           exit 0
@@ -289,7 +289,7 @@ source "${USHgfs}/preamble.sh"
     fi
 
 # Create new buoy_log.ww3
-    cat buoy.loc | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
+    awk '{print $3}' buoy.loc | sed 's/'\''//g' > ibp_tags
     grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
     rm -f buoy_log.dat
     mv buoy_log.tmp buoy_log.dat
@@ -385,19 +385,13 @@ source "${USHgfs}/preamble.sh"
     if [ "$DOSPC_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      for buoy in $buoys
-      do
-        echo "${USHgfs}/wave_outp_spec.sh $buoy $ymdh spec $SPECDATA > $SPECDATA/spec_$buoy.out 2>&1" >> tmpcmdfile.$FH3
-      done
+      echo ${bouys} | sed "g/(^.*$)/${USHgfs}\/wave_outp_spec.sh \1 ${ymdh} spec ${SPECDATA} > ${SPECDATA}\/spec_\1.out 2>&1/" > tmpcmdfile.${FH3}
     fi
 
     if [ "$DOBLL_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      for buoy in $buoys
-      do
-        echo "${USHgfs}/wave_outp_spec.sh $buoy $ymdh bull $SPECDATA > $SPECDATA/bull_$buoy.out 2>&1" >> tmpcmdfile.$FH3
-      done
+      echo ${bouys} | sed "g/(^.*$)/${USHgfs}\/wave_outp_spec.sh \1 ${ymdh} bull ${SPECDATA} > ${SPECDATA}\/bull_\1.out 2>&1/" > tmpcmdfile.${FH3}
     fi
 
     split -n l/1/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.01
