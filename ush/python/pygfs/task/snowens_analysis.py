@@ -108,16 +108,24 @@ class SnowEnsAnalysis(Analysis):
            Instance of the SnowEnsAnalysis object
         """
 
-        # below is an example of running from jiarui
-        """
-        fregrid --input_mosaic ${orogdir}/C96/C96_mosaic.nc --input_dir ${input_dir} --input_file ${input_file} --scalar_field snodl
-        --output_dir ${output_dir} --output_file ${output_file} --output_mosaic ${orogdir}/C48/C48_mosaic.nc --interp_method conserve_order1 
-        --weight_file ${orogdir}/C96/C96.mx500_oro_data --weight_field land_frac
-        """
         chdir(self.task_config.DATA)
 
-        exec_name = os.path.join(self.task_config.DATA, 'fregrid.x')
-        exec_cmd = Executable(exec_name)
+        #exec_name = os.path.join(self.task_config.DATA, 'fregrid.x')
+        #exec_cmd = Executable(exec_name)
+        arg_list = [
+            f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc",
+            f"--input_dir ./bkg/det/",
+            f"--input_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
+            f"--scalar_field snodl",
+            f"--output_dir ./bkg/det_ensres/",
+            f"--output_file {to_fv3time(self.task_config.bkg_time)}.ensres.sfc_data",
+            f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
+            f"--interp_method conserve_order1",
+            f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data",
+            f"--weight_field land_frac",
+        ]
+        fregrid = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
+        exec_cmd = Executable(fregrid)
         # why does below not work
         # exec_cmd.add_default_arg(f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc")
         # exec_cmd.add_default_arg(f"--input_dir ./bkg/det/")
@@ -131,6 +139,7 @@ class SnowEnsAnalysis(Analysis):
         # exec_cmd.add_default_arg(f"--weight_field land_frac")
         # below does not work either, does this stupid code need a shell script constructed that calls this???
         # exec_cmd.add_default_arg(f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc --input_dir ./bkg/det/ --input_file {to_fv3time(self.task_config.bkg_time)}.sfc_data --scalar_field snodl --output_dir ./bkg/det_ensres/ --output_file {to_fv3time(self.task_config.bkg_time)}.ensres.sfc_data --output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc --interp_method conserve_order1 --weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data --weight_field land_frac")
+        # doing exec_cmd(arg_list) also does not work, but I have a hacky solution working...
 
         try:
             logger.debug(f"Executing {exec_cmd}")
@@ -152,6 +161,33 @@ class SnowEnsAnalysis(Analysis):
         self : Analysis
            Instance of the SnowEnsAnalysis object
         """
+
+        chdir(self.task_config.DATA)
+
+        arg_list = [
+            f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc",
+            f"--input_dir ./inc/det/",
+            f"--input_file snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data",
+            f"--scalar_field snodl",
+            f"--output_dir ./inc/det_ensres/",
+            f"--output_file snowinc.{to_fv3time(self.task_config.current_cycle)}.ensres.sfc_data",
+            f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
+            f"--interp_method conserve_order1",
+            f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data",
+            f"--weight_field land_frac",
+        ]
+        fregrid = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
+        exec_cmd = Executable(fregrid)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
 
     @logit(logger)
     def recenterEns(self) -> None:
