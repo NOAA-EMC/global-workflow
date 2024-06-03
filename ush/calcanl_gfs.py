@@ -253,8 +253,8 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             if launcher == 'srun':
                 os.environ['SLURM_HOSTFILE'] = CalcAnlDir + '/hosts'
             print('interp_inc', fh, namelist)
-            job = subprocess.Popen(ExecCMDMPI10_host + ' ' + CalcAnlDir + '/chgres_inc.x', shell=True, cwd=CalcAnlDir)
-            print(ExecCMDMPI10_host + ' ' + CalcAnlDir + '/chgres_inc.x submitted on ' + hosts[ihost])
+            job = subprocess.Popen(ExecCMDMPI13_host + ' ' + CalcAnlDir + '/chgres_inc.x', shell=True, cwd=CalcAnlDir)
+            print(ExecCMDMPI13_host + ' ' + CalcAnlDir + '/chgres_inc.x submitted on ' + hosts[ihost])
             sys.stdout.flush()
             ec = job.wait()
             if ec != 0:
