@@ -38,6 +38,7 @@ export wavinres=${wavinres:-"5p00"} #Resolution of wave products
 export wavoures=${wavoures:-"1p00"} #Resolution of wave products
 export compress_ocn=${compress_ocn:-1} #1: compress extracted ocean product, 0: do not compress extracted ocean product
 export compress_ice=${compress_ice:-1} #1: compress extracted ice product, 0: do not compress extracted ice product 
+export FHOUT_WAV_NOSCRUB=${FHOUT_WAV_NOSCRUB:-6} #Frequency of wave output to be saved on disk
 
 #Extract variables for atmosphere
 if [ ! -d "${DATA}/mem${ENSMEM}_atmos" ]; then 

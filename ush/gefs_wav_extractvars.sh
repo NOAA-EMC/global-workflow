@@ -8,7 +8,7 @@ ensname=$1
 DATA=$2
 cd $DATA
 
-outfreq=6
+outfreq=${FHOUT_WAV_NOSCRUB}
 
 dointerp=1
 option1=' -set_grib_type same -new_grid_winds earth '
