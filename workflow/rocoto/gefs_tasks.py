@@ -276,8 +276,8 @@ class GEFSTasks(Tasks):
 
         extractvars_envars = self.envars.copy()
         extractvars_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          }
+                            'MEMDIR': 'mem#member#',
+                            }
         for key, value in extractvars_dict.items():
             extractvars_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
