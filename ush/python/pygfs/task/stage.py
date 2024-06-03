@@ -66,6 +66,9 @@ class Stage(Task):
         if stage_dict.DO_ICE:
             stage_sets.append("ice.yaml.j2")
 
+        if stage_dict.DO_NEST:
+            stage_sets.append("fv3_nest.yaml.j2")
+
         return stage_sets
 
     @logit(logger)
