@@ -17,11 +17,11 @@ def main():
     stage = Stage(config)
 
     #Pull out all the configuration keys needed to run stage job
-    keys = ['RUN','MODE','DO_WAVE','DO_OCN','DO_ICE','DO_NEST',
-            'current_cycle','EXP_WARM_START','CDUMP','rCDUMP',
-            'ROTDIR','PARMgfs','ntiles','MEMDIR',
-            'BASE_CPLIC','waveGRD','OCNRES','USE_OCN_PERTURB_FILES',
-            'CPL_ATMIC','CPL_ICEIC','CPL_OCNIC','CPL_WAVIC']
+    keys = ['RUN', 'MODE', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST',
+            'current_cycle', 'EXP_WARM_START', 'CDUMP', 'rCDUMP',
+            'ROTDIR', 'PARMgfs', 'ntiles', 'MEMDIR',
+            'BASE_CPLIC', 'waveGRD', 'OCNRES', 'USE_OCN_PERTURB_FILES',
+            'CPL_ATMIC', 'CPL_ICEIC', 'CPL_OCNIC', 'CPL_WAVIC']
 
     stage_dict = AttrDict()
     for key in keys:
@@ -39,7 +39,7 @@ def main():
     stage_sets = stage.determine_stage(stage_dict)
 
     # Stage ICs
-    stage.execute_stage(stage_dict,stage_sets)
+    stage.execute_stage(stage_dict, stage_sets)
 
 if __name__ == '__main__':
     main()
