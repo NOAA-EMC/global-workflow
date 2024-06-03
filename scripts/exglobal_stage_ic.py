@@ -8,6 +8,7 @@ from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
 # Initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
+
 @logit(logger)
 def main():
 
@@ -16,7 +17,7 @@ def main():
     # Instantiate the Stage object
     stage = Stage(config)
 
-    #Pull out all the configuration keys needed to run stage job
+    # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST',
             'current_cycle', 'EXP_WARM_START', 'CDUMP', 'rCDUMP',
             'ROTDIR', 'PARMgfs', 'ntiles', 'MEMDIR',
@@ -40,6 +41,7 @@ def main():
 
     # Stage ICs
     stage.execute_stage(stage_dict, stage_sets)
+
 
 if __name__ == '__main__':
     main()
