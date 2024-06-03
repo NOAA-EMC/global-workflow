@@ -1045,7 +1045,7 @@ case ${step} in
         ;;
       "C384")
         export npe_eupd=270
-        export nth_eupd=5
+        export nth_eupd=8
         if [[ "${machine}" == "WCOSS2" ]]; then
           export npe_eupd=315
           export nth_eupd=14
@@ -1054,7 +1054,6 @@ case ${step} in
            export nth_eupd=2
         elif [[ "${machine}" == "HERA" ]]; then
           export npe_eupd=80
-          export nth_eupd=8
         fi
         ;;
       "C192" | "C96" | "C48")
