@@ -10,8 +10,6 @@ cd $DATA
 
 outfreq=6
 
-varlist=$varlist_wav
-
 dointerp=1
 option1=' -set_grib_type same -new_grid_winds earth '
 option21=' -new_grid_interpolation bilinear'
@@ -22,8 +20,8 @@ while [[ $nh -le $fhmax ]];do
   fnh=`printf "%3.3d" ${nh}`
   echo "extracting f${fnh}"
 
-  infile=$COM_WAVE_GRID/gefswave.${cycle}.global.${wavinres}.f${fnh}.grib2
-  oufile1=$DATA/gefswave.${cycle}.global.${wavinres}.f${fnh}.mem${ensname}.rfcst.grib2
+  infile=${COM_WAVE_GRID}/gefswave.${cycle}.global.${wavinres}.f${fnh}.grib2
+  oufile1=${DATA}/gefswave.${cycle}.global.${wavinres}.f${fnh}.mem${ensname}.rfcst.grib2
   rm -f $oufile1 #remove outfile if it already exists before extraction
             
   if [ -f $infile ]; then #check if input file exists before extraction
@@ -32,7 +30,7 @@ while [[ $nh -le $fhmax ]];do
       $WGRIB2 $infile $option1 $option21 -new_grid $grid1p00 $oufile2>/dev/null      
       infile=$oufile2
     fi 
-      $WGRIB2 $infile | grep -F -f $varlist | $WGRIB2 -i $infile -append -grib $oufile1>/dev/null
+      $WGRIB2 $infile | grep -F -f $varlist_wav | $WGRIB2 -i $infile -append -grib $oufile1>/dev/null
   else
     echo "WARNING: $infile does not exist."
   fi 
