@@ -61,7 +61,7 @@ class GEFSTasks(Tasks):
 
         # Wave ICs
         if self.app_config.do_wave:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/mem000/wave"
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/mem000/wave/"
             for wave_grid in self._configs['waveinit']['waveGRD'].split():
                 data = [prefix, f"{dtg_prefix}.restart.{wave_grid}"]
                 dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
