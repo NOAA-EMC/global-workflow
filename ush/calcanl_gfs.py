@@ -248,7 +248,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                         ihost += 1
                         for a in range(0, 5):
                             hostfile.write(hosts[ihost] + '\n')
-                    for a in range(0, 12):  # need 9 more of the same host for the 10 tasks for chgres_inc
+                    for a in range(0, 12):  # need 12 more of the same host for the 13 tasks for chgres_inc
                         hostfile.write(hosts[ihost] + '\n')
             if launcher == 'srun':
                 os.environ['SLURM_HOSTFILE'] = CalcAnlDir + '/hosts'
