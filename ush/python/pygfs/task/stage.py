@@ -10,6 +10,7 @@ from wxflow import (AttrDict, FileHandler, Task, cast_strdict_as_dtypedict,
 
 logger = getLogger(__name__.split('.')[-1])
 
+
 class Stage(Task):
     """Task to stage initial conditions
     """
