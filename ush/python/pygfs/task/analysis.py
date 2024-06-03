@@ -195,44 +195,6 @@ class Analysis(Task):
                         pass  # checksum is missing, move on
 
     @logit(logger)
-    def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Compile a dictionary of model background files to copy
-
-        This method is a placeholder for now... will be possibly made generic at a later date
-
-        Parameters
-        ----------
-        task_config: Dict
-            a dictionary containing all of the configuration needed for the task
-
-        Returns
-        ----------
-        bkg_dict: Dict
-            a dictionary containing the list of model background files to copy for FileHandler
-        """
-        bkg_dict = {'foo': 'bar'}
-        return bkg_dict
-
-    @logit(logger)
-    def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Compile a dictionary of background error files to copy
-
-        This method is a placeholder for now... will be possibly made generic at a later date
-
-        Parameters
-        ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
-
-        Returns
-        ----------
-        berror_dict: Dict
-            a dictionary containing the list of background error files to copy for FileHandler
-        """
-        berror_dict = {'foo': 'bar'}
-        return berror_dict
-
-    @logit(logger)
     def link_jediexe(self) -> None:
         """Compile a dictionary of background error files to copy
 
@@ -257,68 +219,6 @@ class Analysis(Task):
         os.symlink(exe_src, exe_dest)
 
         return exe_dest
-
-    @staticmethod
-    @logit(logger)
-    def get_fv3ens_dict(config: Dict[str, Any]) -> Dict[str, Any]:
-        """Compile a dictionary of ensemble member restarts to copy
-
-        This method constructs a dictionary of ensemble FV3 restart files (coupler, core, tracer)
-        that are needed for global atmens DA and returns said dictionary for use by the FileHandler class.
-
-        Parameters
-        ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
-
-        Returns
-        ----------
-        ens_dict: Dict
-            a dictionary containing the list of ensemble member restart files to copy for FileHandler
-        """
-        # NOTE for now this is FV3 restart files and just assumed to be fh006
-
-        # define template
-        template_res = config.COM_ATMOS_RESTART_TMPL
-        prev_cycle = config.previous_cycle
-        tmpl_res_dict = {
-            'ROTDIR': config.ROTDIR,
-            'RUN': config.RUN,
-            'YMD': to_YMD(prev_cycle),
-            'HH': prev_cycle.strftime('%H'),
-            'MEMDIR': None
-        }
-
-        # construct ensemble member file list
-        dirlist = []
-        enslist = []
-        for imem in range(1, config.NMEM_ENS + 1):
-            memchar = f"mem{imem:03d}"
-
-            # create directory path for ensemble member restart
-            dirlist.append(os.path.join(config.DATA, config.dirname, f'mem{imem:03d}'))
-
-            # get FV3 restart files, this will be a lot simpler when using history files
-            tmpl_res_dict['MEMDIR'] = memchar
-            rst_dir = Template.substitute_structure(template_res, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_res_dict.get)
-            run_dir = os.path.join(config.DATA, config.dirname, memchar)
-
-            # atmens DA needs coupler
-            basename = f'{to_fv3time(config.current_cycle)}.coupler.res'
-            enslist.append([os.path.join(rst_dir, basename), os.path.join(config.DATA, config.dirname, memchar, basename)])
-
-            # atmens DA needs core, srf_wnd, tracer, phy_data, sfc_data
-            for ftype in ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']:
-                template = f'{to_fv3time(config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
-                for itile in range(1, config.ntiles + 1):
-                    basename = template.format(tilenum=itile)
-                    enslist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        ens_dict = {
-            'mkdir': dirlist,
-            'copy': enslist,
-        }
-        return ens_dict
 
     @staticmethod
     @logit(logger)

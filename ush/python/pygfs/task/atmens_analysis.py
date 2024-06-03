@@ -77,27 +77,6 @@ class AtmEnsAnalysis(Analysis):
         """
         super().initialize()
 
-        # Make member directories in DATA for background and in DATA and ROTDIR for analysis files
-        # create template dictionary for output member analysis directories
-        template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
-        tmpl_inc_dict = {
-            'ROTDIR': self.task_config.ROTDIR,
-            'RUN': self.task_config.RUN,
-            'YMD': to_YMD(self.task_config.current_cycle),
-            'HH': self.task_config.current_cycle.strftime('%H')
-        }
-        dirlist = []
-        for imem in range(1, self.task_config.NMEM_ENS + 1):
-            dirlist.append(os.path.join(self.task_config.DATA, 'bkg', f'mem{imem:03d}'))
-            dirlist.append(os.path.join(self.task_config.DATA, 'anl', f'mem{imem:03d}'))
-
-            # create output directory path for member analysis
-            tmpl_inc_dict['MEMDIR'] = f"mem{imem:03d}"
-            incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-            dirlist.append(incdir)
-
-        FileHandler({'mkdir': dirlist}).sync()
-
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
         crtm_fix_list = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
@@ -110,13 +89,8 @@ class AtmEnsAnalysis(Analysis):
 
         # stage backgrounds
         logger.info(f"Stage ensemble member background files")
-        localconf = AttrDict()
-        keys = ['COM_ATMOS_RESTART_TMPL', 'previous_cycle', 'ROTDIR', 'RUN',
-                'NMEM_ENS', 'DATA', 'current_cycle', 'ntiles']
-        for key in keys:
-            localconf[key] = self.task_config[key]
-        localconf.dirname = 'bkg'
-        FileHandler(self.get_fv3ens_dict(localconf)).sync()
+        bkg_fix_list = parse_j2yaml(self.task_config.LGETKF_BKG_STAGING_YAML, self.task_config)
+        FileHandler(bkg_fix_list).sync()
 
         # generate ensemble da YAML file
         logger.debug(f"Generate ensemble da YAML file: {self.task_config.jedi_yaml}")

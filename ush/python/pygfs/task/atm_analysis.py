@@ -85,22 +85,22 @@ class AtmAnalysis(Analysis):
 
         # stage static background error files, otherwise it will assume ID matrix
         logger.info(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
-        FileHandler(self.get_berror_dict(self.task_config)).sync()
+        if self.task_config.STATICB_TYPE != 'identity':
+            berror_fix_list = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
+        else:
+            berror_fix_list = {}
+        FileHandler(berror_fix_list).sync()
 
         # stage ensemble files for use in hybrid background error
         if self.task_config.DOHYBVAR:
             logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
-            localconf = AttrDict()
-            keys = ['COM_ATMOS_RESTART_TMPL', 'previous_cycle', 'ROTDIR', 'RUN',
-                    'NMEM_ENS', 'DATA', 'current_cycle', 'ntiles']
-            for key in keys:
-                localconf[key] = self.task_config[key]
-            localconf.RUN = 'enkfgdas'
-            localconf.dirname = 'ens'
-            FileHandler(self.get_fv3ens_dict(localconf)).sync()
+            fv3ens_fix_list = parse_j2yaml(self.task_config.FV3ENS_STAGING_YAML, self.task_config)
+            FileHandler(fv3ens_fix_list).sync()
 
         # stage backgrounds
-        FileHandler(self.get_bkg_dict(AttrDict(self.task_config))).sync()
+        logger.info(f"Staging background files from {self.task_config.BKG_FIX_YAML}") 
+        bkg_fix_list = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
+        FileHandler(bkg_fix_list).sync()
 
         # generate variational YAML file
         logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")
@@ -253,189 +253,3 @@ class AtmAnalysis(Analysis):
 
     def clean(self):
         super().clean()
-
-    @logit(logger)
-    def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Compile a dictionary of model background files to copy
-
-        This method constructs a dictionary of FV3 restart files (coupler, core, tracer)
-        that are needed for global atm DA and returns said dictionary for use by the FileHandler class.
-
-        Parameters
-        ----------
-        task_config: Dict
-            a dictionary containing all of the configuration needed for the task
-
-        Returns
-        ----------
-        bkg_dict: Dict
-            a dictionary containing the list of model background files to copy for FileHandler
-        """
-        # NOTE for now this is FV3 restart files and just assumed to be fh006
-
-        # get FV3 restart files, this will be a lot simpler when using history files
-        rst_dir = os.path.join(task_config.COM_ATMOS_RESTART_PREV)  # for now, option later?
-        run_dir = os.path.join(task_config.DATA, 'bkg')
-
-        # Start accumulating list of background files to copy
-        bkglist = []
-
-        # atm DA needs coupler
-        basename = f'{to_fv3time(task_config.current_cycle)}.coupler.res'
-        bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        # atm DA needs core, srf_wnd, tracer, phy_data, sfc_data
-        for ftype in ['core', 'srf_wnd', 'tracer']:
-            template = f'{to_fv3time(self.task_config.current_cycle)}.fv_{ftype}.res.tile{{tilenum}}.nc'
-            for itile in range(1, task_config.ntiles + 1):
-                basename = template.format(tilenum=itile)
-                bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        for ftype in ['phy_data', 'sfc_data']:
-            template = f'{to_fv3time(self.task_config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
-            for itile in range(1, task_config.ntiles + 1):
-                basename = template.format(tilenum=itile)
-                bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        bkg_dict = {
-            'mkdir': [run_dir],
-            'copy': bkglist,
-        }
-        return bkg_dict
-
-    @logit(logger)
-    def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Compile a dictionary of background error files to copy
-
-        This method will construct a dictionary of either bump of gsibec background
-        error files for global atm DA and return said dictionary for use by the
-        FileHandler class.
-
-        Parameters
-        ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
-
-        Returns
-        ----------
-        berror_dict: Dict
-            a dictionary containing the list of atm background error files to copy for FileHandler
-        """
-        SUPPORTED_BERROR_STATIC_MAP = {'identity': self._get_berror_dict_identity,
-                                       'bump': self._get_berror_dict_bump,
-                                       'gsibec': self._get_berror_dict_gsibec}
-
-        try:
-            berror_dict = SUPPORTED_BERROR_STATIC_MAP[config.STATICB_TYPE](config)
-        except KeyError:
-            raise KeyError(f"{config.STATICB_TYPE} is not a supported background error type.\n" +
-                           f"Currently supported background error types are:\n" +
-                           f'{" | ".join(SUPPORTED_BERROR_STATIC_MAP.keys())}')
-
-        return berror_dict
-
-    @staticmethod
-    @logit(logger)
-    def _get_berror_dict_identity(config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Identity BE does not need any files for staging.
-
-        This is a private method and should not be accessed directly.
-
-        Parameters
-        ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
-        Returns
-        ----------
-        berror_dict: Dict
-            Empty dictionary [identity BE needs not files to stage]
-        """
-        logger.info(f"Identity background error does not use staged files.  Return empty dictionary")
-        return {}
-
-    @staticmethod
-    @logit(logger)
-    def _get_berror_dict_bump(config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Compile a dictionary of atm bump background error files to copy
-
-        This method will construct a dictionary of atm bump background error
-        files for global atm DA and return said dictionary to the parent
-
-        This is a private method and should not be accessed directly.
-
-        Parameters
-        ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
-
-        Returns
-        ----------
-        berror_dict: Dict
-            a dictionary of atm bump background error files to copy for FileHandler
-        """
-        # BUMP atm static-B needs nicas, cor_rh, cor_rv and stddev files.
-        b_dir = config.BERROR_DATA_DIR
-        b_datestr = to_fv3time(config.BERROR_DATE)
-        berror_list = []
-        for ftype in ['cor_rh', 'cor_rv', 'stddev']:
-            coupler = f'{b_datestr}.{ftype}.coupler.res'
-            berror_list.append([
-                os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
-            ])
-
-            template = '{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
-            for itile in range(1, config.ntiles + 1):
-                tracer = template.format(tilenum=itile)
-                berror_list.append([
-                    os.path.join(b_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
-                ])
-
-        nproc = config.ntiles * config.layout_x * config.layout_y
-        for nn in range(1, nproc + 1):
-            berror_list.append([
-                os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc'),
-                os.path.join(config.DATA, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc')
-            ])
-
-        # create dictionary of background error files to stage
-        berror_dict = {
-            'mkdir': [os.path.join(config.DATA, 'berror')],
-            'copy': berror_list,
-        }
-        return berror_dict
-
-    @staticmethod
-    @logit(logger)
-    def _get_berror_dict_gsibec(config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Compile a dictionary of atm gsibec background error files to copy
-
-        This method will construct a dictionary of atm gsibec background error
-        files for global atm DA and return said dictionary to the parent
-
-        This is a private method and should not be accessed directly.
-
-        Parameters
-        ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
-
-        Returns
-        ----------
-        berror_dict: Dict
-            a dictionary of atm gsibec background error files to copy for FileHandler
-        """
-        # GSI atm static-B needs namelist and coefficient files.
-        b_dir = os.path.join(config.HOMEgfs, 'fix', 'gdas', 'gsibec', config.CASE_ANL)
-        berror_list = []
-        for ftype in ['gfs_gsi_global.nml', 'gsi-coeffs-gfs-global.nc4']:
-            berror_list.append([
-                os.path.join(b_dir, ftype),
-                os.path.join(config.DATA, 'berror', ftype)
-            ])
-
-        # create dictionary of background error files to stage
-        berror_dict = {
-            'mkdir': [os.path.join(config.DATA, 'berror')],
-            'copy': berror_list,
-        }
-        return berror_dict
