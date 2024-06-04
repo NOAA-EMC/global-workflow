@@ -385,13 +385,13 @@ source "${USHgfs}/preamble.sh"
     if [ "$DOSPC_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_spec.sh \1 ${ymdh} spec ${SPECDATA//\//\\\/} > ${SPECDATA//\//\\\/}\/spec_\1.out 2>&1/" buoy_lst.txt >> tmpcmdfile.${FH3}
+      sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_spec.sh \1 ${ymdh} spec ${SPECDATA//\//\\\/} > ${SPECDATA//\//\\\/}\/spec_\1.out 2>&1/" buoy_lst.txt >> "tmpcmdfile.${FH3}"
     fi
 
     if [ "$DOBLL_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_spec.sh \1 ${ymdh} bull ${SPECDATA//\//\\\/} > ${SPECDATA//\//\\\/}\/bull_\1.out 2>&1/" buoy_lst.txt >> tmpcmdfile.${FH3}
+      sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_spec.sh \1 ${ymdh} bull ${SPECDATA//\//\\\/} > ${SPECDATA//\//\\\/}\/bull_\1.out 2>&1/" buoy_lst.txt >> "tmpcmdfile.${FH3}"
     fi
 
     split -n l/1/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.01
@@ -554,9 +554,9 @@ source "${USHgfs}/preamble.sh"
   if [ "$wavenproc" -gt '1' ]
   then
     if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprogbuoy
+      ${wavempexec} -n "${wavenproc}" "${wave_mpmd}" cmdmprogbuoy
     else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile.buoy
+      ${wavempexec} "${wavenproc}" "${wave_mpmd}" cmdfile.buoy
     fi
     exit=$?
   else

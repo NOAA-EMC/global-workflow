@@ -191,27 +191,27 @@ source "${USHgfs}/preamble.sh"
    then
      if [ "$specdir" = "bull" ]
      then
-       sed '9,$d' "${outfile}" >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
-       sed '8,$d' "${coutfile}" >> ${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
+       sed '9,$d' "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.bull"
+       sed '8,$d' "${coutfile}" >> "${STA_DIR}/c${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.cbull"
      else
-       cat $outfile >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
+       cat $outfile >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.spec"
      fi
    elif [ "${ymdh}" = "${YMDHE}" ]
    then
      if [ "$specdir" = "bull" ]
      then
-       sed '1,7d' "${outfile}" >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
-       sed '1,6d' "${coutfile}" >> ${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
+       sed '1,7d' "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.bull"
+       sed '1,6d' "${coutfile}" >> "${STA_DIR}/c${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.cbull"
      else
-       sed -n "/^${YMD} ${HMS}$/,\$p" "${outfile}" >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
+       sed -n "/^${YMD} ${HMS}$/,\$p" "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.spec"
      fi
    else
      if [ "$specdir" = "bull" ]
      then
-       sed '8q;d' "${outfile}" >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
-       sed '7q;d' "${coutfile}" >> ${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
+       sed '8q;d' "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.bull"
+       sed '7q;d' "${coutfile}" >> "${STA_DIR}/c${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.cbull"
      else
-       sed -n "/^${YMD} ${HMS}$/,\$p" "${outfile}" >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
+       sed -n "/^${YMD} ${HMS}$/,\$p" "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.spec"
      fi
    fi
   else
