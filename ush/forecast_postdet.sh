@@ -72,7 +72,7 @@ FV3_postdet() {
   # Determine increment files when doing cold start
   if [[ "${warm_start}" == ".false." ]]; then
 
-    if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
+    if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
       IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
       if (( MEMBER == 0 )); then
         inc_files=()
@@ -147,7 +147,7 @@ EOF
         inc_files=("atminc.nc")
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
-        if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
+        if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
           IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
           # Control member has no perturbation
           if (( MEMBER == 0 )); then

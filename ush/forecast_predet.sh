@@ -49,8 +49,7 @@ FV3_coldstarts(){
     done
   done
   # Create a comma separated string from array using IFS
-  IFS=,
-  echo "${fv3_input_files[*]}"
+  IFS=, echo "${fv3_input_files[*]}"
 }
 
 FV3_restarts(){
@@ -66,8 +65,7 @@ FV3_restarts(){
     done
   done
   # Create a comma separated string from array using IFS
-  IFS=,
-  echo "${fv3_restart_files[*]}"
+  IFS=, echo "${fv3_restart_files[*]}"
 }
 
 # shellcheck disable=SC2034
@@ -91,11 +89,11 @@ common_predet(){
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
   # Define model start date for current_cycle and next_cycle as the time the forecast will start
-  if [[ "${DOIAU:-}" == "YES" ]]; then
+  if [[ "${DOIAU:-NO}" == "YES" ]]; then
     model_start_date_current_cycle="${current_cycle_begin}"
     model_start_date_next_cycle="${next_cycle_begin}"
   else
-    if [[ "${REPLAY_ICS:-}" == "YES" ]]; then
+    if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
       model_start_date_current_cycle=${current_cycle_end}
     else
       model_start_date_current_cycle=${current_cycle}
