@@ -9,7 +9,7 @@ echo "BEGIN: config.aeroanlgenb"
 source "${EXPDIR}/config.resources" aeroanlgenb
 
 export BMATYAML="${PARMgfs}/gdas/aero/berror/aero_diagb.yaml.j2"
-export DIFFYAML="${PARMgfs}/gdas/aero/berror/aero_diffparm.yaml.j2"
+export DIFFFFYAML="${PARMgfs}/gdas/aero/berror/aero_diffusionparm.yaml.j2"
 export iterations=10
 export fixed value=1.0
 

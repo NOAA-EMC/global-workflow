@@ -27,7 +27,7 @@ class BMatrix(Task):
         super().initialize()
         # all BMatrix tasks need a config
         self.task_config.bmat_config = self.get_bmat_config()
-        self.task_config.diff_config = self.get_diff_config()
+        self.task_config.diffusion_config = self.get_diffusion_config()
 
     def finalize(self) -> None:
         super().finalize()
@@ -50,26 +50,26 @@ class BMatrix(Task):
         bmat_config = parse_j2yaml(self.task_config.BMATYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
         logger.debug(f"BMAT config:\n{pformat(bmat_config)}")
 
-        return bmat_config 
+        return bmat_config
 
-    def get_diff_config(self) -> Dict[str, Any]:
-        """Compile a dictionary of diffusion operator configuration from DIFFYAML template file
+    def get_diffusion_config(self) -> Dict[str, Any]:
+        """Compile a dictionary of diffusion operator configuration from DIFFUSIONYAML template file
 
         Parameters
         ----------
-        diff_iter
+        diffusion_iter
         fixed_val
         horiz_len
 
         Returns
         ----------
-        diff_config : Dict
+        diffusion_config : Dict
             a dictionary containing the fully rendered diffusion operator yaml configuration
         """
 
         # generate JEDI YAML file for diffusion parameters
-        logger.info(f"Generate Diff Parmameter YAML config: {self.task_config.diff_yaml}")
-        diff_config = parse_j2yaml(self.task_config.DIFFYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
-        logger.debug(f"DIFF config:\n{pformat(diff_config)}")
+        logger.info(f"Generate Diff Parmameter YAML config: {self.task_config.diffusion_yaml}")
+        diffusion_config = parse_j2yaml(self.task_config.DIFFUSIONYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+        logger.debug(f"DIFFUSION config:\n{pformat(diffusion_config)}")
 
-        return diff_config
+        return diffusion_config
