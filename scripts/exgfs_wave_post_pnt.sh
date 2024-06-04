@@ -519,7 +519,7 @@ source "${USHgfs}/preamble.sh"
     ifile=0
     iline=1
     ifirst='yes'
-    nlines=$( wc -l cmdfile.buoy | awk '{print $1}' )
+    nlines=$( wc -l < cmdfile.buoy)
     while [ $iline -le $nlines ]; do
       line=$( sed -n ''$iline'p' cmdfile.buoy )
       if [ -z "$line" ]; then
@@ -541,7 +541,7 @@ source "${USHgfs}/preamble.sh"
     done
   fi
 
-  wavenproc=$(wc -l cmdfile.buoy | awk '{print $1}')
+  wavenproc=$(wc -l < cmdfile.buoy)
   wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
   set +x
