@@ -60,7 +60,7 @@ for (( current_date=first_date; current_date <= last_date; \
         # shellcheck disable=SC2312
         if [[ $(tail -n 1 "${rocotolog}") =~ "This cycle is complete: Success" ]]; then
             YMD="${current_PDY}" HH="${current_cyc}" declare_from_tmpl \
-		    COMOUT_TOP:COM_TOP_TMPL
+		        COMOUT_TOP:COM_TOP_TMPL
             if [[ -d "${COMOUT_TOP}" ]]; then
                 IFS=", " read -r -a exclude_list <<< "${exclude_string:-}"
                 remove_files "${COMOUT_TOP}" "${exclude_list[@]:-}"
