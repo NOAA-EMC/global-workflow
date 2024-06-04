@@ -130,7 +130,7 @@ class Tasks:
 
         # Ocean/Ice components do not have a HF output option like the atmosphere
         if component in ['ocean', 'ice']:
-            local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']
+            local_config['FHMAX_HF_GFS'] = 0
 
         if component in ['ocean']:
             local_config['FHOUT_HF_GFS'] = config['FHOUT_OCN_GFS']
