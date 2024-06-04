@@ -25,6 +25,7 @@ class AerosolBMatrix(BMatrix):
         _res_anl = int(self.config['CASE_ANL'][1:])
 
         _bmat_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
+        _diff_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.chem_diff.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -41,6 +42,7 @@ class AerosolBMatrix(BMatrix):
                 'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
                 'bmat_yaml': _bmat_yaml,
+                'diff_yaml': _diff_yaml,
             }
         )
 
@@ -62,6 +64,11 @@ class AerosolBMatrix(BMatrix):
         logger.debug(f"Generate bmat YAML file: {self.task_config.bmat_yaml}")
         save_as_yaml(self.task_config.bmat_config, self.task_config.bmat_yaml)
         logger.info(f"Wrote bmat YAML to: {self.task_config.bmat_yaml}")
+
+        # generate diffusion parameters YAML file
+        logger.debug(f"Generate diff YAML file: {self.task_config.diff_yaml}")
+        save_as_yaml(self.task_config.diff_config, self.task_config.diff_yaml)
+        logger.info(f"Wrote diff YAML to: {self.task_config.diff_yaml}")
 
         # create output directory
         FileHandler({'mkdir': [os.path.join(self.task_config['DATA'], 'stddev')]}).sync()
@@ -95,9 +102,12 @@ class AerosolBMatrix(BMatrix):
         # copy full YAML from executable to ROTDIR
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
         dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
+        src_diff = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diff.yaml")
+        dest_diff = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diff.yaml")
         yaml_copy = {
             'mkdir': [self.task_config.COM_CHEM_ANALYSIS],
-            'copy': [[src, dest]]
+            'copy': [[src, dest]],
+            'copy': [[src_diff, dest_diff]]
         }
         FileHandler(yaml_copy).sync()
 
