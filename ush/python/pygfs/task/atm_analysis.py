@@ -98,7 +98,7 @@ class AtmAnalysis(Analysis):
             FileHandler(fv3ens_fix_list).sync()
 
         # stage backgrounds
-        logger.info(f"Staging background files from {self.task_config.BKG_FIX_YAML}") 
+        logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}") 
         bkg_fix_list = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
         FileHandler(bkg_fix_list).sync()
 
