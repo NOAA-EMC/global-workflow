@@ -43,27 +43,26 @@ for outtype in "f2d" "f3d"; do
       outfreq=${FHOUTLF}
     fi                                      
 
-    echo $ensname ==============
-    if [[ "$outres" == "0p25" ]];then
+    if [[ "${outres}" == "0p25" ]];then
       infile1=${COM_ATMOS_GRIB_0p25}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
       infile2=${COM_ATMOS_GRIB_0p25}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}
-    elif [[ "$outres" == "0p50" ]];then
+    elif [[ "${outres}" == "0p50" ]];then
       infile1=${COM_ATMOS_GRIB_0p50}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
       infile2=${COM_ATMOS_GRIB_0p50}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}
-    elif [[ "$outres" == "1p00" ]];then
+    elif [[ "${outres}" == "1p00" ]];then
       infile1=${COM_ATMOS_GRIB_1p00}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
       infile2=${COM_ATMOS_GRIB_1p00}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}
     fi
     oufile=${outdirpre}/ge${ensname}.${cycle}.pgrb2.${outres}.f${fnh}
-    rm -f ${oufile} #remove outfile if it already exists before extraction
+    rm -f "${oufile}" #remove outfile if it already exists before extraction
             
-    if [[ -f $infile1 ]]; then #check if input file exists before extraction
+    if [[ -f "${infile1}" ]]; then #check if input file exists before extraction
       ${WGRIB2} "${infile1}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile1}" -append -grib "${oufile}">/dev/null
     else
       echo "WARNING: $infile1 does not exist."
     fi 
 
-    if [ -f $infile2 ]; then #check if input file exists before extraction
+    if [ -f "${infile2}" ]; then #check if input file exists before extraction
       ${WGRIB2} "${infile2}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile2}" -append -grib "${oufile}">/dev/null
     else
       echo "WARNING: ${infile2} does not exist."
@@ -79,7 +78,7 @@ for outtype in "f2d" "f3d"; do
           fnd=$(printf "%2.2d" "${dcnt}")
           davg_file=${outdirpre}/ge${ensname}.${cycle}.pgrb2.${outres}.ldy${fnd}
           vcnt=1
-          while read vari; do
+          while read -r vari; do
             davgtmp=${subdata}/ge${ensname}.${cycle}.tmp.pgrb2.${outres}.ldy${fnd}.${vcnt}
             ${WGRIB2} "${outfile}" | grep "${vari}" | ${WGRIB2} -i "${outfile}" -fcst_ave 6hr "${davgtmp}">/dev/null
             ${WGRIB2} "${davgtmp}" | ${WGRIB2} -i "${davgtmp}" -append -grib "${davg_file}">/dev/null
