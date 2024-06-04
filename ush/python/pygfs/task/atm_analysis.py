@@ -86,21 +86,21 @@ class AtmAnalysis(Analysis):
         # stage static background error files, otherwise it will assume ID matrix
         logger.info(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
         if self.task_config.STATICB_TYPE != 'identity':
-            berror_fix_list = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
+            berror_staging_dict = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
         else:
-            berror_fix_list = {}
-        FileHandler(berror_fix_list).sync()
+            berror_staging_dict = {}
+        FileHandler(berror_staging_dict).sync()
 
         # stage ensemble files for use in hybrid background error
         if self.task_config.DOHYBVAR:
             logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
-            fv3ens_fix_list = parse_j2yaml(self.task_config.FV3ENS_STAGING_YAML, self.task_config)
-            FileHandler(fv3ens_fix_list).sync()
+            fv3ens_staging_dict = parse_j2yaml(self.task_config.FV3ENS_STAGING_YAML, self.task_config)
+            FileHandler(fv3ens_staging_dict).sync()
 
         # stage backgrounds
         logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}")
-        bkg_fix_list = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
-        FileHandler(bkg_fix_list).sync()
+        bkg_staging_dict = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
+        FileHandler(bkg_staging_dict).sync()
 
         # generate variational YAML file
         logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")

@@ -89,8 +89,8 @@ class AtmEnsAnalysis(Analysis):
 
         # stage backgrounds
         logger.info(f"Stage ensemble member background files")
-        bkg_fix_list = parse_j2yaml(self.task_config.LGETKF_BKG_STAGING_YAML, self.task_config)
-        FileHandler(bkg_fix_list).sync()
+        bkg_staging_dict = parse_j2yaml(self.task_config.LGETKF_BKG_STAGING_YAML, self.task_config)
+        FileHandler(bkg_staging_dict).sync()
 
         # generate ensemble da YAML file
         logger.debug(f"Generate ensemble da YAML file: {self.task_config.jedi_yaml}")
