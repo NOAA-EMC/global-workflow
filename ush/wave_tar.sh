@@ -76,7 +76,7 @@ source "${USHgfs}/preamble.sh"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [[ -z "${cycle}" ]] || [[ -z "${COMIN_WAVE_STATION}" ]] || [[ -z "${WAV_MOD_TAG}" ]] ||  \
+  if [[ -z "${cycle}" ]] || [[ -z "${COMOUT_WAVE_STATION}" ]] || [[ -z "${WAV_MOD_TAG}" ]] ||  \
      [[ -z "${SENDDBN}" ]] || [[ -z "${STA_DIR}" ]]; then
     set +x
     echo ' '
