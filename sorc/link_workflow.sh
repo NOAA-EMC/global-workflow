@@ -91,11 +91,19 @@ fi
 
 # Link python pacakges in ush/python
 # TODO: This will be unnecessary when these are part of the virtualenv
-packages=("wxflow" "jcb")
+packages=("wxflow")
 for package in "${packages[@]}"; do
     cd "${HOMEgfs}/ush/python" || exit 1
     [[ -s "${package}" ]] && rm -f "${package}"
     ${LINK} "${HOMEgfs}/sorc/${package}/src/${package}" .
+done
+
+# Link GDASapp python packages in ush/python
+packages=("jcb")
+for package in "${packages[@]}"; do
+    cd "${HOMEgfs}/ush/python" || exit 1
+    [[ -s "${package}" ]] && rm -f "${package}"
+    ${LINK} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
 
 # Link wxflow in workflow and ci/scripts
