@@ -27,7 +27,7 @@ status=$?
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT} || true
+cd "${DATAROOT}" || true
 [[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
