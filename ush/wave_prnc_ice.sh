@@ -55,7 +55,7 @@ source "${USHgfs}/preamble.sh"
   echo "Making ice fields."
 
   if [[ -z "${YMDH}" ]] || [[ -z "${cycle}" ]] || \
-     [[ -z "${COMIN_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECgfs}" ]] || \
+     [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECgfs}" ]] || \
      [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${WAVEICE_FID}" ]] || [[ -z "${COMIN_OBS}" ]]; then
   
     set +x
