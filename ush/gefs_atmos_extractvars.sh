@@ -9,36 +9,35 @@ dcnt=1
 ensname=$1
 subdata=$2
 
-cd $subdata
+cd "${subdata}" || true
 
 for outtype in "f2d" "f3d"; do
 
   if [[ "${outtype}" == "f2d" ]];then
-    varlist=$varlist_2d
+    varlist=${varlist_2d}
   elif [[ "${outtype}" == "f3d" ]];then 
-    varlist=$varlist_3d
-    varlist_d=$varlist_3d_d
+    varlist=${varlist_3d}
+    varlist_d=${varlist_3d_d}
   fi
 
   outdirpre="${subdata}/${outtype}"
-  if [ ! -d ${outdirpre} ]; then mkdir -p ${outdirpre}; fi 
+  if [[ ! -d "${outdirpre}" ]]; then mkdir -p "${outdirpre}"; fi 
 
   nh=${FHMIN}
-  while [[ $nh -le $FHMAX ]];do
-    fnh=`printf "%3.3d" ${nh}`
-    echo "extracting f${fnh}"
+  while [[ ${nh} -le ${FHMAX} ]];do
+    fnh=$(printf "%3.3d" "${nh}")
 
-    if [[ "$outtype" == "f2d" ]];then
-      if [[ $nh -le $FHMAXHF ]];then
+    if [[ "${outtype}" == "f2d" ]];then
+      if [[ ${nh} -le ${FHMAXHF} ]];then
         outres="0p25"
       else
         outres="0p50"
       fi
-    elif [[ "$outtype" == "f3d" ]];then
+    elif [[ "${outtype}" == "f3d" ]];then
       outres="1p00"
     fi
 
-    if [[ $nh -lt $FHMAXHF ]];then
+    if [[ ${nh} -lt ${FHMAXHF} ]];then
       outfreq=$FHOUTHF
     else
       outfreq=$FHOUTLF
