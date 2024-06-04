@@ -57,13 +57,13 @@ for outtype in "f2d" "f3d"; do
     rm -f "${oufile}" #remove outfile if it already exists before extraction
             
     if [[ -f "${infile1}" ]]; then #check if input file exists before extraction
-      ${WGRIB2} "${infile1}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile1}" -append -grib "${oufile}">/dev/null
+      ${WGRIB2} "${infile1}" | grep -F -f "${varlist}" #| ${WGRIB2} -i "${infile1}" -append -grib "${oufile}">/dev/null
     else
-      echo "WARNING: $infile1 does not exist."
+      echo "WARNING: ${infile1} does not exist."
     fi 
 
-    if [ -f "${infile2}" ]; then #check if input file exists before extraction
-      ${WGRIB2} "${infile2}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile2}" -append -grib "${oufile}">/dev/null
+    if [[ -f "${infile2}" ]]; then #check if input file exists before extraction
+      ${WGRIB2} "${infile2}" | grep -F -f "${varlist}" #| ${WGRIB2} -i "${infile2}" -append -grib "${oufile}">/dev/null
     else
       echo "WARNING: ${infile2} does not exist."
     fi
@@ -72,8 +72,8 @@ for outtype in "f2d" "f3d"; do
     if [[ "${outtype}" == "f3d" ]];then
       if ! (( nh % 6 ));then
         outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.${ensname}.grib2
-        ${WGRIB2} "${infile1}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile1}" -append -grib "${outfile}">/dev/null
-        ${WGRIB2} "${infile2}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile2}" -append -grib "${outfile}">/dev/null                                             
+        ${WGRIB2} "${infile1}" | grep -F -f "${varlist_d}" #| ${WGRIB2} -i "${infile1}" -append -grib "${outfile}">/dev/null
+        ${WGRIB2} "${infile2}" | grep -F -f "${varlist_d}" #| ${WGRIB2} -i "${infile2}" -append -grib "${outfile}">/dev/null                                             
         if [[ ${fcnt} -eq 4 ]];then
           fnd=$(printf "%2.2d" "${dcnt}")
           davg_file=${outdirpre}/ge${ensname}.${cycle}.pgrb2.${outres}.ldy${fnd}
