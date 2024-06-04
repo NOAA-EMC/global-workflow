@@ -22,7 +22,7 @@
 #
 source "${USHgfs}/preamble.sh"
 
-if [[ "${f00flag}" == "YES" ]]; then
+if [[ "${F00FLAG}" == "YES" ]]; then
    f00flag=".true."
 else
    f00flag=".false."
