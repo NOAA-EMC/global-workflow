@@ -30,7 +30,4 @@
   path = sorc/upp.fd
   url = https://github.com/NOAA-EMC/UPP.git
   ignore = dirty
-[submodule "sorc/jcb"]
-  path = sorc/jcb
-  url = https://github.com/noaa-emc/jcb
-  fetchRecurseSubmodules = false
+
