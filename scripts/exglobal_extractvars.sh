@@ -41,30 +41,30 @@ export compress_ice=${compress_ice:-1} #1: compress extracted ice product, 0: do
 export FHOUT_WAV_NOSCRUB=${FHOUT_WAV_NOSCRUB:-6} #Frequency of wave output to be saved on disk
 
 #Extract variables for atmosphere
-if [ ! -d "${DATA}/mem${ENSMEM}_atmos" ]; then 
+if [[ ! -d "${DATA}/mem${ENSMEM}_atmos" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_atmos" 
 fi
-${EXTRCTVARA} ${ENSMEM} "${DATA}/mem${ENSMEM}_atmos"
+${EXTRCTVARA} "${ENSMEM}" "${DATA}/mem${ENSMEM}_atmos"
 
 #Extract variables for ocean
 export component_name="ocn"
-if [ ! -d "${DATA}/mem${ENSMEM}_ocn" ]; then 
+if [[ ! -d "${DATA}/mem${ENSMEM}_ocn" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_ocn" 
 fi
-${EXTRCTVARO} ${ENSMEM} "${DATA}/mem${ENSMEM}_ocn" ${varlist_ocn_grib2} ${ocn_dataformat} ${ocnres} ${compress_ocn}
+${EXTRCTVARO} "${ENSMEM}" "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn_grib2}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}"
 
 #Extract variables for ice
 export component_name="ice"
-if [ ! -d "${DATA}/mem${ENSMEM}_ice" ]; then 
+if [[ ! -d "${DATA}/mem${ENSMEM}_ice" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_ice" 
 fi                                                                                                                                                                                                                                       
-${EXTRCTVARO} ${ENSMEM} "${DATA}/mem${ENSMEM}_ice" ${varlist_ice_grib2} ${ice_dataformat} ${iceres} ${compress_ice}
+${EXTRCTVARO} "${ENSMEM}" "${DATA}/mem${ENSMEM}_ice" "${varlist_ice_grib2}" "${ice_dataformat}" "${iceres}" "${compress_ice}"
 
 #Extract variables for wave
 export component_name="wav"
-if [ ! -d "${DATA}/mem${ENSMEM}_wav" ]; then 
+if [[ ! -d "${DATA}/mem${ENSMEM}_wav" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_wav" 
 fi
-${EXTRCTVARW} ${ENSMEM} "${DATA}/mem${ENSMEM}_wav"
+${EXTRCTVARW} "${ENSMEM}" "${DATA}/mem${ENSMEM}_wav"
 
 exit 0
