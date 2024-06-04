@@ -1,0 +1,53 @@
+enkf_restarta_grp:
+    name: "ENKF_RESTARTA_GRP"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restarta_grp{{ ENSGRP }}.tar"
+    required:
+        {% for mem in range(first_group_mem, last_group_mem + 1) %}
+        {% set imem = mem - first_group_mem %}
+        # Construct the pertinent member COM directories
+        {% set COM_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_MEM_list[imem] %}
+        {% set COM_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_MEM_list[imem] %}
+        {% set COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_MEM_list[imem] %}
+
+        # Store bias data
+        {% if not lobsdiag_forenkf %}
+        - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias"
+        - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_air"
+        - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_int"
+        - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_pc"
+        {% endif %}
+
+        # Member surface analysis data
+        {% if DOIAU_ENKF %}
+        {% set anl_delta = "-3H" | to_timedelta %}
+        {% else %}
+        {% set anl_delta = "0H" | to_timedelta %}
+        {% endif %}
+        {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
+        {% for itile in range(1, 7) %}
+        - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
+        {% endfor %}
+
+        # Member atmospheric analysis data
+        {% if do_calc_increment %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
+        {% else %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
+        {% endif %}
+
+        # Member increments
+        {% for iaufhr in iaufhrs if iaufhr != 6 %}
+        {% set iaufhr = iaufhr %}
+        {% if do_calc_increment %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iaufhr }}.nc"
+        {% else %}
+        - "{{ COM_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
+        {% endif %}
+        {% endfor %}  # iaufhr in iaufhrs
+
+        # Conventional data
+        {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
+        - "{{ COM_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
+        {% endif %}
+
+        {% endfor %}  # first_group_mem to last_group_mem

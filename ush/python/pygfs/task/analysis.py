@@ -6,8 +6,9 @@ import tarfile
 from logging import getLogger
 from pprint import pformat
 from netCDF4 import Dataset
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Optional
 
+from jcb import render
 from wxflow import (parse_j2yaml, FileHandler, rm_p, logit,
                     Task, Executable, WorkflowException, to_fv3time, to_YMD,
                     Template, TemplateConstants)
@@ -46,11 +47,14 @@ class Analysis(Task):
         self.link_jediexe()
 
     @logit(logger)
-    def get_jedi_config(self) -> Dict[str, Any]:
+    def get_jedi_config(self, algorithm: Optional[str] = None) -> Dict[str, Any]:
         """Compile a dictionary of JEDI configuration from JEDIYAML template file
 
         Parameters
         ----------
+        algorithm (optional) : str
+            Name of the algorithm to use in the JEDI configuration. Will override the algorithm
+            set in the self.config.JCB_<>_YAML file
 
         Returns
         ----------
@@ -60,7 +64,31 @@ class Analysis(Task):
 
         # generate JEDI YAML file
         logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
-        jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config, searchpath=self.gdasapp_j2tmpl_dir)
+
+        if 'JCB_BASE_YAML' in self.task_config.keys():
+            # Step 1: fill templates of the jcb base YAML file
+            jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
+
+            # Step 2: (optional) fill templates of algorithm override YAML and merge
+            if 'JCB_ALGO_YAML' in self.task_config.keys():
+                jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
+                jcb_config = {**jcb_config, **jcb_algo_config}
+
+            # If algorithm is present override the algorithm in the JEDI config
+            if algorithm:
+                jcb_config['algorithm'] = algorithm
+
+            # Step 3: generate the JEDI Yaml using JCB driving YAML
+            jedi_config = render(jcb_config)
+        elif 'JEDIYAML' in self.task_config.keys():
+            # Generate JEDI YAML file (without using JCB)
+            logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
+            jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
+                                       searchpath=self.gdasapp_j2tmpl_dir)
+            logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
+        else:
+            raise KeyError(f"Task config must contain JCB_BASE_YAML or JEDIYAML")
+
         logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
 
         return jedi_config
@@ -82,7 +110,7 @@ class Analysis(Task):
             a dictionary containing the list of observation files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of observation files from {self.task_config.JEDIYAML}")
+        logger.info(f"Extracting a list of observation files from Jedi config file")
         observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
         logger.debug(f"observations:\n{pformat(observations)}")
 
@@ -116,7 +144,7 @@ class Analysis(Task):
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of bias correction files from {self.task_config.JEDIYAML}")
+        logger.info(f"Extracting a list of bias correction files from Jedi config file")
         observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
         logger.debug(f"observations:\n{pformat(observations)}")
 
@@ -307,6 +335,7 @@ class Analysis(Task):
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(diagdir, 'diags', 'diag*nc'))
+        diags.extend(glob.glob(os.path.join(diagdir, 'diags', 'diag*nc4')))
 
         logger.info(f"Compressing {len(diags)} diag files to {statfile}")
 

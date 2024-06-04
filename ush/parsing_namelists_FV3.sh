@@ -360,6 +360,7 @@ cat >> input.nml <<EOF
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
+  xr_cnvcld    = ${xr_cnvcld:-".true."}
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
   progsigma    = ${progsigma:-".true."}

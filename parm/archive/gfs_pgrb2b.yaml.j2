@@ -1,0 +1,19 @@
+gfs_pgrb2b:
+    {% set head = "gfs.t" + cycle_HH + "z." %}
+    name: "GFS_PGRB2B"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_pgrb2b.tar"
+    required:
+        {% if MODE == "cycled" %}
+        - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2b.0p25.anl"
+        - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2b.0p25.anl.idx"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2b.1p00.anl"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2b.1p00.anl.idx"
+        {% endif %}
+        {% if ARCH_GAUSSIAN %}
+        {% for fhr in range(0, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+        - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2b.0p25.f{{ '%03d' % fhr }}"
+        - "{{ COM_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2b.0p25.f{{ '%03d' % fhr }}.idx"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2b.1p00.f{{ '%03d' % fhr }}"
+        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2b.1p00.f{{ '%03d' % fhr }}.idx"
+        {% endfor %}
+        {% endif %}
