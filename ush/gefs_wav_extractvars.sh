@@ -16,7 +16,7 @@ option21=' -new_grid_interpolation bilinear'
 grid1p00="latlon 0:360:1.0 90:181:-1.0"
 
 nh=6
-while [[ $nh -le $fhmax ]];do
+while [[ $nh -le $FHMAX_WAV ]];do
   fnh=`printf "%3.3d" ${nh}`
   echo "extracting f${fnh}"
 
