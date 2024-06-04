@@ -296,7 +296,7 @@ source "${USHgfs}/preamble.sh"
 
     grep -F -f ibp_tags buoy_lst.loc > buoy_tmp1.loc
     #sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
-    buoys=$(awk '{ print $1 }' buoy_tmp1.loc)
+    awk '{ print $1 }' buoy_tmp1.loc > buoy_lst.txt
     Nb=$(wc buoy_tmp1.loc | awk '{ print $1 }')
     rm -f buoy_tmp1.loc
 
@@ -385,13 +385,13 @@ source "${USHgfs}/preamble.sh"
     if [ "$DOSPC_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      echo ${bouys} | sed "g/(^.*$)/${USHgfs}\/wave_outp_spec.sh \1 ${ymdh} spec ${SPECDATA} > ${SPECDATA}\/spec_\1.out 2>&1/" > tmpcmdfile.${FH3}
+      sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_spec.sh \1 ${ymdh} spec ${SPECDATA//\//\\\/} > ${SPECDATA//\//\\\/}\/spec_\1.out 2>&1/" buoy_lst.txt >> tmpcmdfile.${FH3}
     fi
 
     if [ "$DOBLL_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      echo ${bouys} | sed "g/(^.*$)/${USHgfs}\/wave_outp_spec.sh \1 ${ymdh} bull ${SPECDATA} > ${SPECDATA}\/bull_\1.out 2>&1/" > tmpcmdfile.${FH3}
+      sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_spec.sh \1 ${ymdh} bull ${SPECDATA//\//\\\/} > ${SPECDATA//\//\\\/}\/bull_\1.out 2>&1/" buoy_lst.txt >> tmpcmdfile.${FH3}
     fi
 
     split -n l/1/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.01
@@ -497,27 +497,21 @@ source "${USHgfs}/preamble.sh"
 
   cd $DATA
 
-  echo "Before create cmdfile for cat bouy : $(date)"
-  rm -f cmdfile.bouy
-  touch cmdfile.bouy
-  chmod 744 cmdfile.bouy
+  echo "Before create cmdfile for cat buoy : $(date)"
+  rm -f cmdfile.buoy
+  touch cmdfile.buoy
+  chmod 744 cmdfile.buoy
   CATOUTDIR=${DATA}/pnt_cat_out
   mkdir -p ${CATOUTDIR}
 
   if [ "$DOSPC_WAV" = 'YES' ]
   then
-    for buoy in $buoys
-    do
-      echo "${USHgfs}/wave_outp_cat.sh $buoy $FHMAX_WAV_PNT spec > ${CATOUTDIR}/spec_cat_$buoy.out 2>&1" >> cmdfile.bouy
-    done
+    sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} spec > ${CATOUTDIR//\//\\\/}\/spec_cat_\1.out 2>&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
   if [ "$DOBLL_WAV" = 'YES' ]
   then
-    for buoy in $buoys
-    do
-      echo "${USHgfs}/wave_outp_cat.sh $buoy $FHMAX_WAV_PNT bull > ${CATOUTDIR}/bull_cat_$buoy.out 2>&1" >> cmdfile.bouy
-    done
+    sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} bull > ${CATOUTDIR//\//\\\/}\/bull_cat_\1.out 2>&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
@@ -525,18 +519,18 @@ source "${USHgfs}/preamble.sh"
     ifile=0
     iline=1
     ifirst='yes'
-    nlines=$( wc -l cmdfile.bouy | awk '{print $1}' )
+    nlines=$( wc -l cmdfile.buoy | awk '{print $1}' )
     while [ $iline -le $nlines ]; do
-      line=$( sed -n ''$iline'p' cmdfile.bouy )
+      line=$( sed -n ''$iline'p' cmdfile.buoy )
       if [ -z "$line" ]; then
         break
       else
         if [ "$ifirst" = 'yes' ]; then
-          echo "#!/bin/sh" > cmdfile.bouy.$nfile
-          echo "$nfile cmdfile.bouy.$nfile" >> cmdmprogbouy
-          chmod 744 cmdfile.bouy.$nfile
+          echo "#!/bin/sh" > cmdfile.buoy.$nfile
+          echo "$nfile cmdfile.buoy.$nfile" >> cmdmprogbuoy
+          chmod 744 cmdfile.buoy.$nfile
         fi
-        echo $line >> cmdfile.bouy.$nfile
+        echo $line >> cmdfile.buoy.$nfile
         nfile=$(( nfile + 1 ))
         if [ $nfile -eq $NTASKS ]; then
           nfile=0
@@ -547,7 +541,7 @@ source "${USHgfs}/preamble.sh"
     done
   fi
 
-  wavenproc=$(wc -l cmdfile.bouy | awk '{print $1}')
+  wavenproc=$(wc -l cmdfile.buoy | awk '{print $1}')
   wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
   set +x
@@ -560,9 +554,9 @@ source "${USHgfs}/preamble.sh"
   if [ "$wavenproc" -gt '1' ]
   then
     if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprogbouy
+      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprogbuoy
     else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile.bouy
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile.buoy
     fi
     exit=$?
   else

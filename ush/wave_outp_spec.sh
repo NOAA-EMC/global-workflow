@@ -73,21 +73,7 @@ source "${USHgfs}/preamble.sh"
     exit 1
   else
     buoy=$bloc
-    grep $buoy ${DATA}/buoy_log.ww3 > tmp_list.loc
-    while read line
-    do
-      buoy_name=$(echo $line | awk '{print $2}')
-      if [ $buoy = $buoy_name ]
-      then
-        point=$(echo $line | awk '{ print $1 }')
-        set +x
-        echo "              Location ID/#   : $buoy (${point})"
-        echo "   Spectral output start time : $ymdh "
-        echo ' '
-        set_trace
-        break
-      fi
-    done < tmp_list.loc
+    point=$(awk "{if (\$2 == \"${buoy}\"){print \$1; exit} }" "${DATA}/buoy_log.ww3")
     if [ -z "$point" ]
     then
       set +x
@@ -97,6 +83,11 @@ source "${USHgfs}/preamble.sh"
       echo ' '
       set_trace
       exit 2
+    else
+      set +x
+      echo "              Location ID/#   : $buoy (${point})"
+      echo "   Spectral output start time : $ymdh "
+      echo ' '
     fi
   fi
 
