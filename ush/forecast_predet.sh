@@ -568,7 +568,14 @@ CICE_predet(){
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
-  CICE_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}")
+  ((offset = ( cyc + FHMIN ) % FHOUT_ICE))
+  if (( offset == 0 )); then
+    CICE_OUTPUT_FH=($(seq -s ' ' "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}"))
+  else
+    CICE_OUTPUT_FH=("${FHMIN}")
+    CICE_OUTPUT_FH+=($(seq -s ' ' "$((FHMIN+offset))" "${FHOUT_ICE}" "${FHMAX}"))
+    CICE_OUTPUT_FH+=("${FHMAX}")
+  fi
 
   # Fix files
   ${NCP} "${FIXgfs}/cice/${ICERES}/${CICE_GRID}" "${DATA}/"
