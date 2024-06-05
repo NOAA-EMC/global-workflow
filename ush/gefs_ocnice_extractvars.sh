@@ -22,7 +22,7 @@ while [[ ${nh} -le ${FHMAX} ]];do
     if [[ ${component_name} == "ice" ]];then
       infile=${COM_ICE_GRIB}/${datares}/gefs.ice.${cycle}.${datares}.f${fnh}.grib2
     fi                                                                                                                                                                                                                                   
-    oufile1=$outdirpre/gefs.${component_name}.${cycle}.${datares}.f${fnh}.rfcst.grib2
+    oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.rfcst.grib2
   fi
 
   if [[ "${dataformat}" == "netcdf" ]];then
@@ -32,20 +32,21 @@ while [[ ${nh} -le ${FHMAX} ]];do
     if [[ ${component_name} == "ice" ]];then
       infile=${COM_ICE_NETCDF}/${datares}/gefs.ice.${cycle}.${datares}.f${fnh}.nc
     fi   
-    oufile1=$outdirpre/gefs.${component_name}.${cycle}.${datares}.f${fnh}.rfcst.grib2
+    oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.rfcst.grib2
   fi
 
-  if [ -f $infile ]; then #check if input file exists before extraction
-    $WGRIB2 $infile | grep -F -f ${varlist} | $WGRIB2 -i $infile -append -grib $oufile1>/dev/null 
+  if [[ -f "${infile}" ]]; then #check if input file exists before extraction
+    # shellcheck disable=SC2312
+    ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile1}">/dev/null 
     if [[ ${datacompress} -eq 1 ]];then
       echo "Compressing ${oufile1}"
-      bzip2 $oufile1
+      bzip2 "${oufile1}"
     fi 
   else
     echo "WARNING: ${infile} does not exist."
   fi
 
-  nh=$((${nh} + 6))
+  nh=$(( nh + 6 ))
 done
 
 exit 0                                                                                                                                                                                        
