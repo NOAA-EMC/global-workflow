@@ -5,39 +5,34 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 
 
 ##############################################
-# Set variables used in the script
-##############################################
-export CDUMP="${RUN/enkf}"
-
-
-##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-# shellcheck disable=
-gPDY=${GDATE:0:8}
-gcyc=${GDATE:8:2}
-export GDUMP="gdas"
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+export GDATE
 
-export OPREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+RUN="gdas" YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
+  COMIN_OBS_PREV:COM_OBS_TMPL \
+  COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_ATMOS_ANALYSIS COM_ATMOS_RESTART \
-    COM_SNOW_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMIN_OBS:COM_OBS_TMPL \
+  COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+  COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_OBS_PREV:COM_OBS_TMPL \
-    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+
+mkdir -p "${COMOUT_ATMOS_RESTART}"
+
 
 ###############################################################
 # Run relevant script
 
 ${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl.sh}
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+(( status != 0 )) && exit "${status}"
 
 
 ##############################################
@@ -48,14 +43,14 @@ status=$?
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+  cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}"
+[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA}"
 
 
 exit 0
