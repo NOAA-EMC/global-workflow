@@ -6,7 +6,7 @@ source "${USHgfs}/preamble.sh"
 
 ensname=${1}
 DATA=${2}
-cd ${DATA} || true
+cd "${DATA}" || true
 
 dointerp=1
 option1=' -set_grib_type same -new_grid_winds earth '
@@ -15,7 +15,7 @@ grid1p00="latlon 0:360:1.0 90:181:-1.0"
 
 nh=6
 while [[ ${nh} -le ${FHMAX_WAV} ]];do
-  fnh=`printf "%3.3d" ${nh}`
+  fnh=$(printf "%3.3d" "${nh}")
 
   infile=${COM_WAVE_GRID}/gefswave.${cycle}.global.${wavinres}.f${fnh}.grib2
   oufile1=${DATA}/gefswave.${cycle}.global.${wavinres}.f${fnh}.mem${ensname}.rfcst.grib2
