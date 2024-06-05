@@ -6,8 +6,8 @@ source "${USHgfs}/preamble.sh"
 
 fcnt=1
 dcnt=1 
-ensname=$1
-subdata=$2
+ensname=${1}
+subdata=${2}
 
 cd "${subdata}" || true
 
