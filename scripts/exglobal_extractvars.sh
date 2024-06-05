@@ -51,14 +51,14 @@ export component_name="ocn"
 if [[ ! -d "${DATA}/mem${ENSMEM}_ocn" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_ocn" 
 fi
-${EXTRCTVARO} "${ENSMEM}" "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn_grib2}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}"
+${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn_grib2}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}"
 
 #Extract variables for ice
 export component_name="ice"
 if [[ ! -d "${DATA}/mem${ENSMEM}_ice" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_ice" 
 fi                                                                                                                                                                                                                                       
-${EXTRCTVARO} "${ENSMEM}" "${DATA}/mem${ENSMEM}_ice" "${varlist_ice_grib2}" "${ice_dataformat}" "${iceres}" "${compress_ice}"
+${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice_grib2}" "${ice_dataformat}" "${iceres}" "${compress_ice}"
 
 #Extract variables for wave
 export component_name="wav"

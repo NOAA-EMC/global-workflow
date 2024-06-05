@@ -4,12 +4,11 @@
 #
 source "${USHgfs}/preamble.sh"
 
-ensname=${1}
-outdirpre=${2}
-varlist=${3}
-dataformat=${4}
-datares=${5}
-datacompress=${6}
+outdirpre=${1}
+varlist=${2}
+dataformat=${3}
+datares=${4}
+datacompress=${5}
 cd "${outdirpre}" || true
 
 nh=6
