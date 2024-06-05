@@ -54,9 +54,9 @@ class Stage(Task):
         stage_sets = []
 
         if stage_dict.EXP_WARM_START:
-            stage_sets.append("fv3_warm.yaml.j2")
+            stage_sets.append("atmosphere_warm.yaml.j2")
         else:
-            stage_sets.append("fv3_cold.yaml.j2")
+            stage_sets.append("atmosphere_cold.yaml.j2")
 
         if stage_dict.DO_WAVE:
             stage_sets.append("wave.yaml.j2")
@@ -68,7 +68,7 @@ class Stage(Task):
             stage_sets.append("ice.yaml.j2")
 
         if stage_dict.DO_NEST:
-            stage_sets.append("fv3_nest.yaml.j2")
+            stage_sets.append("atmosphere_nest.yaml.j2")
 
         return stage_sets
 
