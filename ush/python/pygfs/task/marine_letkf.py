@@ -17,6 +17,7 @@ from wxflow import (AttrDict,
 
 logger = getLogger(__name__.split('.')[-1])
 
+
 class MarineLETKF(Analysis):
     """
     Class for global ocean and sea ice analysis LETKF task
@@ -50,7 +51,7 @@ class MarineLETKF(Analysis):
                 'WINDOW_MIDDLE': self.runtime_config.current_cycle,
                 'letkf_exec_args': _letkf_exec_args,
                 'letkf_yaml_file': _letkf_yaml_file,
-                'mom_input_nml_tmpl':  path.join(self.runtime_config.DATA, 'mom_input.nml.tmpl'),
+                'mom_input_nml_tmpl': path.join(self.runtime_config.DATA, 'mom_input.nml.tmpl'),
                 'mom_input_nml': path.join(self.runtime_config.DATA, 'mom_input.nml'),
                 'obs_dir': path.join(self.runtime_config.DATA, 'obs')
             }
@@ -74,6 +75,8 @@ class MarineLETKF(Analysis):
         # make directories and stage ensemble background files
         letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_list).sync()
+        letkf_stage_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_STAGE_YAML_TMPL, self.task_config)
+        FileHandler(letkf_stage_fix_list).sync()
 
         # TODO(AFE): probably needs to be jinjafied
         obs_list = YAMLFile(self.task_config.OBS_YAML)
@@ -114,7 +117,7 @@ class MarineLETKF(Analysis):
             nml = f90nml.read(nml_file)
             nml['ocean_solo_nml']['date_init'] = ymdhms
             nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
-            nml.write(self.task_config.mom_input_nml, force=True) # force to overwrite if necessary
+            nml.write(self.task_config.mom_input_nml, force=True)  # force to overwrite if necessary
 
     @logit(logger)
     def run(self):
