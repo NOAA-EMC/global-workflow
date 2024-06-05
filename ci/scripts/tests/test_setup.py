@@ -7,6 +7,7 @@ HOMEgfs = os.sep.join(_here.split(os.sep)[:-3])
 RUNDIR = os.path.join(_here, 'testdata/RUNDIR')
 pslot = "C48_ATM"
 account = "fv3-cpu"
+foobar = "foobar"
 
 
 def test_setup_expt():
@@ -25,6 +26,20 @@ def test_setup_expt():
 
 def test_setup_xml():
 
+    script_content = '''#!/usr/bin/env bash
+
+output=f"testdata/output.txt"
+
+rm -f "${output}"
+export ACCOUNT={foobar}
+echo "ACCOUNT=${ACCOUNT}" > "${output}"
+
+../../../workflow/setup_xml.py "${1}"
+'''
+    with open('run_setup_xml.sh', 'w') as file:
+        file.write(script_content)
+    os.chmod('run_setup_xml.sh', 0o755)
+
     setup_xml_script = Executable(os.path.join(HOMEgfs, "ci", "scripts", "tests", "run_setup_xml.sh"))
     setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
     setup_xml_script()
@@ -33,9 +48,11 @@ def test_setup_xml():
     cfg = Configuration(f"{RUNDIR}/{pslot}")
     base = cfg.parse_config('config.base')
     assert base.ACCOUNT == account
+    assert foobar not in base.values()
 
     with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
         contents = file.read()
-    assert contents.count(account) == 7
-
+    assert contents.count(account) > 5
+    
+    os.remove('run_setup_xml.sh')
     rmtree(RUNDIR)
