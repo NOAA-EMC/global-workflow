@@ -79,5 +79,3 @@ def test_rocoto_stalled():
     assert is_stalled(result)
 
     rmtree(testdata_full_path)
-
-
