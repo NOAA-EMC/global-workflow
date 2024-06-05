@@ -5,13 +5,14 @@ import os
 _here = os.path.dirname(__file__)
 HOMEgfs = os.sep.join(_here.split(os.sep)[:-3])
 RUNDIR = os.path.join(_here, 'testdata/RUNDIR')
-
+pslot = "C48_ATM"
+account = "fv3-cpu"
 
 def test_setup_expt():
 
     arguments = [
         "gfs", "forecast-only",
-        "--pslot", "C48_ATM", "--app", "ATM", "--resdetatmos", "48",
+        "--pslot", pslot, "--app", "ATM", "--resdetatmos", "48",
         "--comroot", f"{RUNDIR}", "--expdir", f"{RUNDIR}",
         "--idate", "2021032312", "--edate", "2021032312", "--overwrite"
     ]
@@ -23,16 +24,17 @@ def test_setup_expt():
 
 def test_setup_xml():
 
-    env = os.environ.copy()
-    env['ACCOUNT'] = "foo"
-
-    setup_xml_script = Executable(os.path.join(HOMEgfs, "workflow", "setup_xml.py"))
-    setup_xml_script.add_default_arg(f"{RUNDIR}/C48_ATM")
-    setup_xml_script(env=env)
+    setup_xml_script = Executable(os.path.join(HOMEgfs, "ci", "scripts", "tests", "run_setup_xml.sh"))
+    setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
+    setup_xml_script()
     assert (setup_xml_script.returncode == 0)
 
-    cfg = Configuration(f"{RUNDIR}/C48_ATM")
+    cfg = Configuration(f"{RUNDIR}/{pslot}")
     base = cfg.parse_config('config.base')
-    assert base.ACCOUNT == 'fv3-cpu' 
+    assert base.ACCOUNT == account
+
+    with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
+        contents = file.read()
+    assert contents.count(account) == 7
 
     rmtree(RUNDIR)

@@ -1,5 +1,6 @@
 import sys
 import os
+from shutil import rmtree
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(os.path.dirname(script_dir), 'utils'))
@@ -53,10 +54,14 @@ def test_rocoto_done():
 
     assert is_done(result)
 
+    rmtree(testdata_full_path)
+
 
 def test_rocoto_stalled():
     testdata_path = 'testdata/rocotostat_stalled'
     testdata_full_path = os.path.join(script_dir, testdata_path)
+    xml = os.path.join(testdata_full_path, 'stalled.xml')
+    db = os.path.join(testdata_full_path, 'stalled.db')
 
     wget = which('wget')
     if not os.path.isfile(os.path.join(testdata_full_path, 'stalled.db')):
@@ -66,9 +71,13 @@ def test_rocoto_stalled():
         wget()
 
     rocotostat = which('rocotostat')
-    rocotostat.add_default_arg(['-w', os.path.join(testdata_path, 'stalled.xml'), '-d', os.path.join(testdata_path, 'stalled.db')])
+    rocotostat.add_default_arg(['-w', xml, '-d', db])
 
     result = rocoto_statcount(rocotostat)
 
     assert result['SUCCEEDED'] == 110
     assert is_stalled(result)
+
+    rmtree(testdata_full_path)
+
+
