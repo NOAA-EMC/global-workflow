@@ -87,7 +87,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
         tasks = ['stage_ic']
 
         if self.do_aero:
-            tasks += ['aerosol_init']
+            aero_fcst_cdump = _base.get('AERO_FCST_CDUMP', 'BOTH').lower()
+            if self._base['CDUMP'] in aero_fcst_cdump or aero_fcst_cdump == "both":
+                tasks += ['aerosol_init']
 
         if self.do_wave:
             tasks += ['waveinit']
@@ -124,7 +126,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['gempak', 'gempakmeta', 'gempakncdcupapgif', 'gempakpgrb2spec']
 
             if self.do_awips:
-                tasks += ['awips_20km_1p0deg', 'awips_g2', 'fbwind']
+                tasks += ['awips_20km_1p0deg', 'fbwind']
 
         if self.do_ocean:
             tasks += ['ocean_prod']

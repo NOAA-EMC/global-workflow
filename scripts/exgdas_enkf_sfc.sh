@@ -30,8 +30,6 @@ export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
 
 # Utilities
-NCP=${NCP:-"/bin/cp -p"}
-NLN=${NLN:-"/bin/ln -sf"}
 NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 
 # Scripts

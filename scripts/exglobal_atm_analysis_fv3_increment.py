@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # exglobal_atm_analysis_fv3_increment.py
 # This script creates an AtmAnalysis object
-# and runs the increment method
-# which converts the JEDI increment into an FV3 increment
+# and runs the init_fv3_increment and fv3_increment methods
+# which convert the JEDI increment into an FV3 increment
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict

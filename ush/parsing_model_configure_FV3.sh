@@ -24,7 +24,7 @@ local SHOUR=${model_start_date:8:2}
 # FHMAX
 local FHROT=${IAU_FHROT:-0}
 local DT_ATMOS=${DELTIM}
-local RESTART_INTERVAL="${restart_interval} -1"
+local RESTART_INTERVAL="${FV3_RESTART_FH[*]}"
 # QUILTING
 local QUILTING_RESTART=".true."
 local WRITE_GROUP=${WRITE_GROUP:-1}
@@ -52,7 +52,13 @@ local OUTPUT_FH=${FV3_OUTPUT_FH}
 local IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Ensure the template exists
-template="${PARMgfs}/ufs/model_configure.IN"
+if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+  local NEST_IMO=${npx_nest}
+  local NEST_JMO=${npy_nest}
+  template="${PARMgfs}/ufs/model_configure_nest.IN"
+else
+  template="${PARMgfs}/ufs/model_configure.IN"
+fi
 if [[ ! -f ${template} ]]; then
   echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
   exit 1

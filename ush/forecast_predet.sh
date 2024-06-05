@@ -54,7 +54,14 @@ common_predet(){
   current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
   current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
   next_cycle_begin=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
-  next_cycle_end=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
+  #Define model start date for current_cycle and next_cycle as the time the forecast will start
+  if [[ "${DOIAU:-}" == "YES" ]]; then
+    model_start_date_current_cycle="${current_cycle_begin}"
+    model_start_date_next_cycle="${next_cycle_begin}"
+  else
+    model_start_date_current_cycle=${current_cycle} 
+    model_start_date_next_cycle=${next_cycle}
+  fi 
   forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
   FHMIN=${FHMIN:-0}
@@ -63,7 +70,7 @@ common_predet(){
   FHMAX_HF=${FHMAX_HF:-0}
   FHOUT_HF=${FHOUT_HF:-1}
 
-  if [[ ! -d "${COM_CONF}" ]]; then mkdir -p "${COM_CONF}"; fi
+  if [[ ! -d "${COMOUT_CONF}" ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
   cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
 
@@ -76,9 +83,9 @@ common_predet(){
 FV3_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
 
-  if [[ ! -d "${COM_ATMOS_HISTORY}" ]]; then mkdir -p "${COM_ATMOS_HISTORY}"; fi
-  if [[ ! -d "${COM_ATMOS_MASTER}" ]]; then mkdir -p "${COM_ATMOS_MASTER}"; fi
-  if [[ ! -d "${COM_ATMOS_RESTART}" ]]; then mkdir -p "${COM_ATMOS_RESTART}"; fi
+  if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then mkdir -p "${COMOUT_ATMOS_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
+  if [[ ! -d "${COMOUT_ATMOS_RESTART}" ]]; then mkdir -p "${COMOUT_ATMOS_RESTART}"; fi
   if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
   ${NLN} "${DATArestart}/FV3_RESTART" "${DATA}/RESTART"
 
@@ -86,8 +93,18 @@ FV3_predet(){
   FHCYC=${FHCYC:-24}
   restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  # Convert restart interval into an explicit list for FV3
   if (( restart_interval == 0 )); then
     restart_interval=${FHMAX}
+    FV3_RESTART_FH=("${restart_interval}")
+  else
+    # shellcheck disable=SC2312
+    mapfile -t FV3_RESTART_FH < <(seq "${restart_interval}" "${restart_interval}" "${FHMAX}")
+    # If the last forecast hour is not in the array, add it
+    local nrestarts=${#FV3_RESTART_FH[@]}
+    if (( FV3_RESTART_FH[nrestarts-1] != FHMAX )); then
+      FV3_RESTART_FH+=("${FHMAX}")
+    fi
   fi
 
   # Convert output settings into an explicit list for FV3
@@ -106,9 +123,6 @@ FV3_predet(){
   # IAU options
   IAUFHRS=${IAUFHRS:-0}
   IAU_DELTHRS=${IAU_DELTHRS:-0}
-
-  # Model config options
-  ntiles=6
 
   #------------------------------------------------------------------
   # changeable parameters
@@ -232,9 +246,16 @@ FV3_predet(){
 
   # Conserve total energy as heat globally
   consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+    consv_te=0
+    k_split=${k_split:-1}
+    k_split_nest=${k_split_nest:-4}
+  else
+    consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
+    k_split=${k_split:-2}
+  fi
 
   # time step parameters in FV3
-  k_split=${k_split:-2}
   n_split=${n_split:-5}
 
   if [[ "${MONO:0:4}" == "mono" ]]; then  # monotonic options
@@ -360,6 +381,13 @@ FV3_predet(){
     ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
     ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
   done
+  if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
+    ${NLN} "${DATA}/INPUT/oro_data.tile7.nc" "${DATA}/INPUT/oro_data.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc"     "${DATA}/INPUT/${CASE}_grid.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc"     "${DATA}/INPUT/grid.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/oro_data_ls.tile7.nc" "${DATA}/INPUT/oro_data_ls.nest02.tile7.nc"
+    ${NLN} "${DATA}/INPUT/oro_data_ss.tile7.nc" "${DATA}/INPUT/oro_data_ss.nest02.tile7.nc"
+  fi
 
   # NoahMP table
   local noahmptablefile="${PARMgfs}/ufs/noahmptable.tbl"
@@ -454,8 +482,8 @@ FV3_predet(){
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
 
-  if [[ ! -d "${COM_WAVE_HISTORY}" ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
-  if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
+  if [[ ! -d "${COMOUT_WAVE_HISTORY}" ]]; then mkdir -p "${COMOUT_WAVE_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then mkdir -p "${COMOUT_WAVE_RESTART}" ; fi
 
   if [[ ! -d "${DATArestart}/WAVE_RESTART" ]]; then mkdir -p "${DATArestart}/WAVE_RESTART"; fi
   ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
@@ -471,17 +499,17 @@ WW3_predet(){
     grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
     for ww3_grid in ${grdALL}; do
-      ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
-      || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${ww3_grid}' from '${COM_WAVE_PREP}'"; exit 1 )
+      ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
+      || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${ww3_grid}' from '${COMIN_WAVE_PREP}'"; exit 1 )
     done
   else
     #if shel, only 1 waveGRD which is linked to mod_def.ww3
-    ${NCP} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
-    || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COM_WAVE_PREP}'"; exit 1 )
+    ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
+    || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
   fi
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
-    local wavicefile="${COM_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
+    local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
     if [[ ! -f "${wavicefile}" ]]; then
       echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
       exit 1
@@ -491,7 +519,7 @@ WW3_predet(){
   fi
 
   if [[ "${WW3CURINP}" == "YES" ]]; then
-    local wavcurfile="${COM_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
+    local wavcurfile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
     if [[ ! -f "${wavcurfile}" ]]; then
       echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
       exit 1
@@ -530,9 +558,9 @@ WW3_predet(){
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
 
-  if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi
-  if [[ ! -d "${COM_ICE_RESTART}" ]]; then mkdir -p "${COM_ICE_RESTART}"; fi
-  if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
+  if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_ICE_RESTART}" ]]; then mkdir -p "${COMOUT_ICE_RESTART}"; fi
+  if [[ ! -d "${COMIN_ICE_INPUT}" ]]; then mkdir -p "${COMIN_ICE_INPUT}"; fi
 
   if [[ ! -d "${DATA}/CICE_OUTPUT" ]]; then  mkdir -p "${DATA}/CICE_OUTPUT"; fi
   if [[ ! -d "${DATArestart}/CICE_RESTART" ]]; then mkdir -p "${DATArestart}/CICE_RESTART"; fi
@@ -553,9 +581,9 @@ CICE_predet(){
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
 
-  if [[ ! -d "${COM_OCEAN_HISTORY}" ]]; then mkdir -p "${COM_OCEAN_HISTORY}"; fi
-  if [[ ! -d "${COM_OCEAN_RESTART}" ]]; then mkdir -p "${COM_OCEAN_RESTART}"; fi
-  if [[ ! -d "${COM_OCEAN_INPUT}" ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
+  if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then mkdir -p "${COMOUT_OCEAN_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_OCEAN_RESTART}" ]]; then mkdir -p "${COMOUT_OCEAN_RESTART}"; fi
+  if [[ ! -d "${COMIN_OCEAN_INPUT}" ]]; then mkdir -p "${COMIN_OCEAN_INPUT}"; fi
 
   if [[ ! -d "${DATA}/MOM6_OUTPUT" ]]; then mkdir -p "${DATA}/MOM6_OUTPUT"; fi
   if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
@@ -598,7 +626,7 @@ MOM6_predet(){
 CMEPS_predet(){
   echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 
-  if [[ ! -d "${COM_MED_RESTART}" ]]; then mkdir -p "${COM_MED_RESTART}"; fi
+  if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then mkdir -p "${COMOUT_MED_RESTART}"; fi
 
   if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
   ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
@@ -609,7 +637,7 @@ CMEPS_predet(){
 GOCART_predet(){
   echo "SUB ${FUNCNAME[0]}: GOCART before run type determination"
 
-  if [[ ! -d "${COM_CHEM_HISTORY}" ]]; then mkdir -p "${COM_CHEM_HISTORY}"; fi
+  if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then mkdir -p "${COMOUT_CHEM_HISTORY}"; fi
 
   GOCART_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "6" "${FHMAX}")
   # TODO: AERO_HISTORY.rc has hardwired output frequency to 6 hours

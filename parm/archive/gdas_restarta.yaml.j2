@@ -1,0 +1,54 @@
+gdas_restarta:
+    {% set head = "gdas.t" + cycle_HH + "z." %}
+    name: "GDAS_RESTARTA"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas_restarta.tar"
+    required:
+        # Deterministic analysis increments
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
+        # IAU increments
+        {% for iaufhr in iaufhrs if iaufhr != 6 %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iaufhr }}.nc"
+        {% endfor %}
+
+        # Surface analysis tiles
+        {% if DOHYBVAR and DOIAU %}
+        {% set anl_offset = "-3H" %}
+        {% else %}
+        {% set anl_offset = "0H" %}
+        {% endif %}
+        {% set anl_timedelta = anl_offset | to_timedelta %}
+        {% set anl_time = current_cycle | add_to_datetime(anl_timedelta) %}
+        {% for itile in range(1,7) %}
+        - "{{ COM_ATMOS_RESTART | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
+        {% endfor %}
+
+        # Initial biases
+        {% if not DO_JEDIATMVAR %}
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
+        - "{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
+        {% endif %}
+
+        # Snow surface data
+        {% if DO_JEDISNOWDA %}
+        {% for itile in range(1,7) %}
+        # Snow analysis is 3dvar
+        - "{{ COM_SNOW_ANALYSIS | relpath(ROTDIR) }}/snowinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
+        - "{{ COM_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
+        {% endfor %}
+        {% endif %}
+
+        # Snow configuration yaml
+        {% if DO_JEDISNOWDA %}
+        - "{{ COM_CONF | relpath(ROTDIR) }}/{{ head }}letkfoi.yaml"
+        {% endif %}
+
+        # Input BUFR files
+        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
+        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
+        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"

@@ -18,7 +18,7 @@ export JEDI_FIX_YAML="${PARMgfs}/gdas/aero_jedi_fix.yaml.j2"
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE="${EXECgfs}/fv3jedi_var.x"
+export JEDIEXE="${EXECgfs}/gdas.x"
 export BMATEXE="${EXECgfs}/gdasapp_chem_diagb.x"
 
 if [[ "${DOIAU}" == "YES" ]]; then
