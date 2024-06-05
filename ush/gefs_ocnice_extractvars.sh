@@ -10,11 +10,11 @@ varlist=${3}
 dataformat=${4}
 datares=${5}
 datacompress=${6}
-cd ${outdirpre}
+cd "${outdirpre}" || true
 
 nh=6
-while [[ $nh -le ${FHMAX} ]];do
-  fnh=`printf "%3.3d" ${nh}`
+while [[ ${nh} -le ${FHMAX} ]];do
+  fnh=$(printf "%3.3d" "${nh}")
   VDATE=$($NDATE +${nh} ${PDY}${cyc})
   yyyyv=$(echo  $VDATE | cut -c1-4)
   mmv=$(echo $VDATE | cut -c5-6)
