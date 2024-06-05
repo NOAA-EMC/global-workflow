@@ -48,8 +48,8 @@ jobs:
           cd $GITHUB_WORKSPACE/sorc/wxflow
           git submodule update --init
           git checkout config_env_xor
-          cd $GITHUB_WORKSPACE/sorc/gsi_utils.fd
-          git submodule update --init
+          #cd $GITHUB_WORKSPACE/sorc/gsi_utils.fd
+          #git submodule update --init
           cd $GITHUB_WORKSPACE/sorc
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
