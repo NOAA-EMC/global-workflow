@@ -349,6 +349,8 @@ source "${USHgfs}/preamble.sh"
 
 # 1.a.2 Loop over forecast time to generate post files
   fhr=$FHMIN_WAV
+  # Generated sed-searchable paths
+  escaped_USHgfs="${USHgfs//\//\\\/}"
   while [ $fhr -le $FHMAX_WAV_PNT ]; do
 
     echo "   Creating the wave point scripts at : $(date)"
@@ -365,6 +367,7 @@ source "${USHgfs}/preamble.sh"
 
 # Create instances of directories for spec and gridded output
     export SPECDATA=${DATA}/output_$YMDHMS
+    escaped_SPECDATA="${SPECDATA//\//\\\/}"
     export BULLDATA=${DATA}/output_$YMDHMS
     cp $DATA/mod_def.${waveuoutpGRD} mod_def.${waveuoutpGRD}
 
@@ -385,13 +388,15 @@ source "${USHgfs}/preamble.sh"
     if [ "$DOSPC_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_spec.sh \1 ${ymdh} spec ${SPECDATA//\//\\\/} > ${SPECDATA//\//\\\/}\/spec_\1.out 2>&1/" buoy_lst.txt >> "tmpcmdfile.${FH3}"
+      # Construct the wave_outp_spec (spec) command to run on each buoy in buoy_lst.txt
+      sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_spec.sh \1 ${ymdh} spec ${escaped_SPECDATA} > ${escaped_SPECDATA}\/spec_\1.out 2>&1/" buoy_lst.txt >> "tmpcmdfile.${FH3}"
     fi
 
     if [ "$DOBLL_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_spec.sh \1 ${ymdh} bull ${SPECDATA//\//\\\/} > ${SPECDATA//\//\\\/}\/bull_\1.out 2>&1/" buoy_lst.txt >> "tmpcmdfile.${FH3}"
+      # Construct the wave_outp_spec (bull) command to run on each buoy in buoy_lst.txt
+      sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_spec.sh \1 ${ymdh} bull ${escaped_SPECDATA} > ${escaped_SPECDATA}\/bull_\1.out 2>&1/" buoy_lst.txt >> "tmpcmdfile.${FH3}"
     fi
 
     split -n l/1/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.01
@@ -502,16 +507,19 @@ source "${USHgfs}/preamble.sh"
   touch cmdfile.buoy
   chmod 744 cmdfile.buoy
   CATOUTDIR=${DATA}/pnt_cat_out
+  escaped_CATOUTDIR="${CATOUTDIR//\//\\\/}"
   mkdir -p ${CATOUTDIR}
 
   if [ "$DOSPC_WAV" = 'YES' ]
   then
-    sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} spec > ${CATOUTDIR//\//\\\/}\/spec_cat_\1.out 2>&1/" buoy_lst.txt >> cmdfile.buoy
+    # Construct wave_outp_cat (spec) call for each buoy in buoy_lst.txt
+    sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} spec > ${escaped_CATOUTDIR}\/spec_cat_\1.out 2>&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
   if [ "$DOBLL_WAV" = 'YES' ]
   then
-    sed "s/^\(.*\)$/${USHgfs//\//\\\/}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} bull > ${CATOUTDIR//\//\\\/}\/bull_cat_\1.out 2>&1/" buoy_lst.txt >> cmdfile.buoy
+    # Construct wave_outp_cat (bull) call for each buoy in buoy_lst.txt
+    sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} bull > ${escaped_CATOUTDIR}\/bull_cat_\1.out 2>&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
