@@ -53,6 +53,6 @@ echo "ACCOUNT=${ACCOUNT}" > "${output}"
     with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
         contents = file.read()
     assert contents.count(account) > 5
-    
+
     os.remove('run_setup_xml.sh')
     rmtree(RUNDIR)
