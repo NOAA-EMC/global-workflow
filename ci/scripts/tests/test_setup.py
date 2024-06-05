@@ -27,13 +27,8 @@ def test_setup_expt():
 def test_setup_xml():
 
     script_content = '''#!/usr/bin/env bash
-
-output=f"testdata/output.txt"
-
-rm -f "${output}"
-export ACCOUNT={foobar}
-export HOMEgfs={foobar}
-
+export ACCOUNT=foobar
+export HOMEgfs=foobar
 ../../../workflow/setup_xml.py "${1}"
 '''
     with open('run_setup_xml.sh', 'w') as file:
