@@ -2129,7 +2129,6 @@ class GFSTasks(Tasks):
 
     def arch(self):
         deps = []
-        dependencies = []
         if self.app_config.mode in ['cycled']:
             if self.cdump in ['gfs']:
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlprod'}
@@ -2137,26 +2136,21 @@ class GFSTasks(Tasks):
                 if self.app_config.do_vminmon:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
-            elif self.cdump in ['gdas']:  # Block for handling half cycle dependencies
-                deps2 = []
+            elif self.cdump in ['gdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlprod'}
-                deps2.append(rocoto.add_dependency(dep_dict))
+                deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_fit2obs:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
-                    deps2.append(rocoto.add_dependency(dep_dict))
+                    deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_verfozn:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}verfozn'}
-                    deps2.append(rocoto.add_dependency(dep_dict))
+                    deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_verfrad:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}verfrad'}
-                    deps2.append(rocoto.add_dependency(dep_dict))
+                    deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_vminmon:
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}vminmon'}
-                    deps2.append(rocoto.add_dependency(dep_dict))
-                dependencies = rocoto.create_dependency(dep_condition='and', dep=deps2)
-                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
-                dependencies.append(rocoto.add_dependency(dep_dict))
-                dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+                    deps.append(rocoto.add_dependency(dep_dict))
         if self.cdump in ['gfs'] and self.app_config.do_tracker:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}tracker'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -2195,9 +2189,7 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}mos_{job}'}
                 deps.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps + dependencies)
-
-        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('arch')
         task_name = f'{self.cdump}arch'
@@ -2205,7 +2197,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': cycledef,
+                     'cycledef': self.cdump.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/arch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -2723,8 +2715,6 @@ class GFSTasks(Tasks):
         n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
-        cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump.replace('enkf', '')
-
         resources = self.get_resource('earc')
 
         var_dict = {'grp': groups}
@@ -2734,7 +2724,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': earcenvars,
-                     'cycledef': cycledef,
+                     'cycledef': self.cdump.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/earc.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
