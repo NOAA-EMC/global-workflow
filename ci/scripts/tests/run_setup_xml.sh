@@ -2,8 +2,8 @@
 
 output="testdata/output.txt"
 
-rm -f $output
+rm -f "${output}"
 export ACCOUNT=foo
 echo "ACCOUNT=$ACCOUNT" > $output
 
-../../../workflow/setup_xml.py $1
+../../../workflow/setup_xml.py "${1}"
