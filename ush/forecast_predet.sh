@@ -575,7 +575,7 @@ CICE_predet(){
   else
     CICE_OUTPUT_FH=("${FHMIN}")
     #CICE_OUTPUT_FH+=($(seq -s ' ' "$((FHMIN+offset))" "${FHOUT_ICE}" "${FHMAX}"))
-    mapfile -t CICE_OUTPUT_FH < <(seq -s ' ' "$((FHMIN+offset))" "${FHOUT_ICE}" "${FHMAX}")
+    mapfile -t -O "${#CICE_OUTPUT_FH[@]}"  CICE_OUTPUT_FH < <(seq -s ' ' "$((FHMIN+offset))" "${FHOUT_ICE}" "${FHMAX}")
     CICE_OUTPUT_FH+=("${FHMAX}")
   fi
 
