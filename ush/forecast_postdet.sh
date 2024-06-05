@@ -569,7 +569,6 @@ CICE_postdet() {
     ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
 
     last_fhr=${fhr}
-
   done
 
 }
