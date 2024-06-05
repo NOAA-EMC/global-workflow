@@ -94,13 +94,13 @@ class AerosolObsPrep(Task):
         matching_files = []
         try:
             for file in allfiles:
-                fshort = file.split('/')[-1].split('.')[0].split('_')[3]
+                basename = os.path.basename(file)
                 pattern = r"s(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{3})"
-                match = re.match(pattern, fshort)
+                match = re.match(pattern, basename.split('_')[3])
                 yyyy, mm, dd, HH, MM = match.group(1), match.group(2), match.group(3), match.group(4), match.group(5)
                 fstart = to_datetime(f'{yyyy}-{mm}-{dd}T{HH}:{MM}Z')
-                if sensor in file:
-                    # temporally select obs files based on time stamp inthe filename.
+                if sensor == basename.split('_')[2]:
+                    # temporally select obs files based on time stamp in the filename.
                     if (fstart > self.task_config.window_begin) and (fstart < self.task_config.window_end):
                         matching_files.append(os.path.join(self.task_config.data_dir, file))
             logger.info("Found %d matching files.", len(matching_files))
