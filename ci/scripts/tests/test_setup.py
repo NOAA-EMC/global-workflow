@@ -32,7 +32,7 @@ output=f"testdata/output.txt"
 
 rm -f "${output}"
 export ACCOUNT={foobar}
-echo "ACCOUNT=${ACCOUNT}" > "${output}"
+export HOMEgfs={foobar}
 
 ../../../workflow/setup_xml.py "${1}"
 '''
@@ -48,7 +48,9 @@ echo "ACCOUNT=${ACCOUNT}" > "${output}"
     cfg = Configuration(f"{RUNDIR}/{pslot}")
     base = cfg.parse_config('config.base')
     assert base.ACCOUNT == account
+
     assert foobar not in base.values()
+    assert "UNKOWN" not in base.values()
 
     with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
         contents = file.read()
