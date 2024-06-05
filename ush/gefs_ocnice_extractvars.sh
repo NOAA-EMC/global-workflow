@@ -15,12 +15,6 @@ cd "${outdirpre}" || true
 nh=6
 while [[ ${nh} -le ${FHMAX} ]];do
   fnh=$(printf "%3.3d" "${nh}")
-  VDATE=$($NDATE +${nh} ${PDY}${cyc})
-  yyyyv=$(echo  $VDATE | cut -c1-4)
-  mmv=$(echo $VDATE | cut -c5-6)
-  ddv=$(echo $VDATE | cut -c7-8)
-  hhv=$(echo $VDATE | cut -c9-10)
-  echo "extracting f${fnh} valid at ${VDATE} for ${ensname}"
 
   if [[ "${dataformat}" == "grib2" ]];then
     if [[ ${component_name} == "ocn" ]];then
