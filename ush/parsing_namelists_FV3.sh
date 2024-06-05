@@ -77,7 +77,6 @@ local CCPP_SUITE=${CCPP_SUITE}
 local MAX_OUTPUT_FIELDS=300
 
 local DOMAINS_STACK_SIZE=${domains_stack_size:-3000000}
-local PRINT_MEMORY_USAGE=${print_memory_usage:-".false."}
 
 local INPES=${layout_x}
 local JNPES=${layout_y}
@@ -88,9 +87,7 @@ local NTILES=${ntiles}
 local NPZ=${npz}
 local DZ_MIN=${dz_min:-"6"}
 local PSM_BC=${psm_bc:-"0"}
-local MAKE_NH=${make_nh}
-local FV_DEBUG=${fv_debug:-".false."} 
-local RANGE_WARN=${range_warn:-".true."} 
+local MAKE_NH=${make_nh} 
 local N_SPONGE=${n_sponge:-"10"} 
 local NUDGE_QV=${nudge_qv:-".false."} 
 local NUDGE_DZ=${nudge_dz:-".false."} 
@@ -137,7 +134,6 @@ local FAST_TAU_W_SEC=${fast_tau_w_sec:-"0.2"}
 local PRINT_FREQ=${print_freq} 
 local WARM_START=${warm_start} 
 local NO_DYCORE=${no_dycore} 
-local AGRID_VEL_RST=${agrid_vel_rst:-".true."} 
 local READ_INCREMENT=${read_increment}
 local RES_LATLON_DYNAMICS=${res_latlon_dynamics}
 
@@ -146,7 +142,6 @@ local NPZP=${LEVS}
 local GFS_DWINDS=${gfs_dwinds} 
 
 local FHZERO=${FHZER}
-local H2O_PHYS=${h2o_phys:-".true."} 
 local LDIAG3D=${ldiag3d:-".false."}
 local QDIAG3D=${qdiag3d:-".false."}
 local PRINT_DIFF_PGR=${print_diff_pgr:-".false."}
@@ -537,10 +532,11 @@ local FTSFS=${FTSFS:-90}
 local FSICL=${FSICL:-99999}
 local FSICS=${FSICS:-99999}
 
-local HIDE_MOM6='!'
-local LNDP_MODEL_TYPE=0
 local MOM6_RESTART_SETTING=n
 local MOM6_RESTART_DIR='./RESTART/'
+}
+
+generate_inputnml(){
 local template='/scratch1/NCEPDEV/stmp2/Daniel.Sarmiento/global-workflow/global_control.nml.IN'
 atparse < "${template}" >> "input.nml"
 }
