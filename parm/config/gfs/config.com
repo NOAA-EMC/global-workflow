@@ -92,6 +92,11 @@ declare -rx COM_ICE_NETCDF_TMPL=${COM_BASE}'/products/ice/netcdf'
 declare -rx COM_ICE_GRIB_TMPL=${COM_BASE}'/products/ice/grib2'
 declare -rx COM_ICE_GRIB_GRID_TMPL=${COM_ICE_GRIB_TMPL}'/${GRID}'
 
+declare -rx COM_RFCST_PROD_ATMOS_TMPL=${COM_BASE}'/products/rfcst/atmos'
+declare -rx COM_RFCST_PROD_OCN_TMPL=${COM_BASE}'/products/rfcst/ocn'
+declare -rx COM_RFCST_PROD_ICE_TMPL=${COM_BASE}'/products/rfcst/ice'
+declare -rx COM_RFCST_PROD_WAV_TMPL=${COM_BASE}'/products/rfcst/wav'
+
 declare -rx COM_CHEM_HISTORY_TMPL=${COM_BASE}'/model_data/chem/history'
 declare -rx COM_CHEM_ANALYSIS_TMPL=${COM_BASE}'/analysis/chem'
 

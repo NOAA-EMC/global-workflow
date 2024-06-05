@@ -45,6 +45,7 @@ if [[ ! -d "${DATA}/mem${ENSMEM}_atmos" ]]; then
   mkdir -p "${DATA}/mem${ENSMEM}_atmos" 
 fi
 ${EXTRCTVARA} "${ENSMEM}" "${DATA}/mem${ENSMEM}_atmos"
+cp -pr ${DATA}/mem${ENSMEM}_atmos/* ${COM_RFCST_PROD_ATMOS}
 
 #Extract variables for ocean
 export component_name="ocn"
@@ -52,13 +53,15 @@ if [[ ! -d "${DATA}/mem${ENSMEM}_ocn" ]]; then
   mkdir -p "${DATA}/mem${ENSMEM}_ocn" 
 fi
 ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn_grib2}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}"
+cp -pr ${DATA}/mem${ENSMEM}_ocn/* ${COM_RFCST_PROD_OCN}
 
 #Extract variables for ice
 export component_name="ice"
 if [[ ! -d "${DATA}/mem${ENSMEM}_ice" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_ice" 
-fi                                                                                                                                                                                                                                       
+fi    
 ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice_grib2}" "${ice_dataformat}" "${iceres}" "${compress_ice}"
+cp -pr ${DATA}/mem${ENSMEM}_ice/* ${COM_RFCST_PROD_ICE}
 
 #Extract variables for wave
 export component_name="wav"
@@ -66,5 +69,6 @@ if [[ ! -d "${DATA}/mem${ENSMEM}_wav" ]]; then
   mkdir -p "${DATA}/mem${ENSMEM}_wav" 
 fi
 ${EXTRCTVARW} "${ENSMEM}" "${DATA}/mem${ENSMEM}_wav"
+cp -pr ${DATA}/mem${ENSMEM}_wav/* ${COM_RFCST_PROD_WAV}
 
 exit 0
