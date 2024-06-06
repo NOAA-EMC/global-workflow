@@ -11,11 +11,14 @@ FHOUT_ICE_GFS=${8?}
 
 fhri=$((10#${fhr}))
 
-if [[ "${cyc}" != "00" ]] && (( FHOUT_ICE_GFS % 24 == 0 ));then
+#Will need to consider fhmin in the future to calculate the offset if we are to stick with this approach. 
+((offset = ( cyc ) % FHOUT_ICE_GFS))
+
+if (( offset != 0  )); then
   (( fhri = fhri - cyc ))
   fhr3=$(printf %03i "${fhri}")
-  if (( fhri <= 24  )); then
-    (( interval = 24 - cyc )) 
+  if (( fhri <= FHOUT_ICE_GFS  )); then
+    (( interval = FHOUT_ICE_GFS - cyc )) 
     ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model_data/ice/history/gefs.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc
   else
     ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model_data/ice/history/gefs.ice.t${cyc}z.${FHOUT_ICE_GFS}hr_avg.f${fhr3}.nc
