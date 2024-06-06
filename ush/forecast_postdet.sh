@@ -545,8 +545,9 @@ CICE_postdet() {
 
   # Link CICE forecast output files from DATA/CICE_OUTPUT to COM
   local source_file dest_file
-  for fhr in ${CICE_OUTPUT_FH[*]}; do
+  for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
+    fhr=$((10#${fhr}))
     if [[ -z ${last_fhr:-} ]]; then
       last_fhr=${fhr}
       continue
