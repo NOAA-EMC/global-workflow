@@ -2,6 +2,13 @@
 
 source "${USHgfs}/preamble.sh"
 
+# Remove DATAoutput from the forecast model run
+# TODO: Handle this better
+DATAfcst="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
+#DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
+rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
+
 ###############################################################
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
