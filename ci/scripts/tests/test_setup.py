@@ -27,7 +27,7 @@ def test_setup_expt():
 def test_setup_xml():
 
     script_content = '''#!/usr/bin/env bash
-export ACCOUNT=foobar
+export ACCOUNT=fv3-cpu
 export HOMEgfs=foobar
 ../../../workflow/setup_xml.py "${1}"
 '''
