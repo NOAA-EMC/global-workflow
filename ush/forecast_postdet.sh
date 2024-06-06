@@ -217,7 +217,7 @@ FV3_out() {
   echo "SUB ${FUNCNAME[0]}: copying output data for FV3"
 
   # Copy configuration files
-  if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
+  if [[ "${RUN}" == "gfs" || "${RUN}" == "gdas" || "${RUN}" == "gefs" ]]; then
     ${NCP} "${DATA}/input.nml" "${COMOUT_CONF}/ufs.input.nml"
     ${NCP} "${DATA}/model_configure" "${COMOUT_CONF}/ufs.model_configure"
     ${NCP} "${DATA}/ufs.configure" "${COMOUT_CONF}/ufs.ufs.configure"
