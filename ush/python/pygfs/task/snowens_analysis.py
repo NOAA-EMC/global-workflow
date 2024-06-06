@@ -185,10 +185,10 @@ class SnowEnsAnalysis(Analysis):
            Instance of the SnowEnsAnalysis object
         """
         logger.info("Running recentering code")
-        exec_cmd = Executable(localconf.APRUN_ESNOWANL)
-        exec_name = os.path.join(localconf.DATA, 'gdasapp_land_ensrecenter.x')
+        exec_cmd = Executable(self.task_config.APRUN_ESNOWANL)
+        exec_name = os.path.join(self.task_config.DATA, 'gdasapp_land_ensrecenter.x')
         exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(localconf.jedi_yaml)
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
