@@ -367,7 +367,6 @@ class SnowAnalysis(Analysis):
             template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
             for itile in range(1, self.task_config.ntiles + 1):
                 filename = template.format(tilenum=itile)
-                filename = template.format(tilenum=itile)
                 src = os.path.join(self.task_config.DATA, 'anl', filename)
                 dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
                 anllist.append([src, dest])

@@ -59,10 +59,22 @@ class Archive(Task):
             List of tarballs and instructions for creating them via tar or htar
         """
 
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        if arch_dict.RUN == "gefs":
+            raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
+
+        if arch_dict.RUN in ["gdas", "gfs"]:
+
+            # Copy the cyclone track files and rename the experiments
+            # TODO This really doesn't belong in archiving and should be moved elsewhere
+            Archive._rename_cyclone_expt(arch_dict)
+
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
 
         # Collect the dataset to archive locally
-        arcdir_filename = os.path.join(archive_parm, "arcdir.yaml.j2")
+        arcdir_j2yaml = os.path.join(archive_parm, "arcdir.yaml.j2")
 
         # Add the glob.glob function for capturing log filenames
         # TODO remove this kludge once log filenames are explicit
@@ -72,7 +84,16 @@ class Archive(Task):
         arch_dict['path_exists'] = os.path.exists
 
         # Parse the input jinja yaml template
-        arcdir_set = parse_j2yaml(arcdir_filename, arch_dict)
+        arcdir_set = Archive._construct_arcdir_set(arcdir_j2yaml,
+                                                   arch_dict)
+
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        if arch_dict.RUN in ["gdas", "gfs"]:
+
+            # Copy the cyclone track files and rename the experiments
+            Archive._rename_cyclone_expt(arch_dict)
 
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
@@ -95,20 +116,11 @@ class Archive(Task):
             self.tar_cmd = ""
             return arcdir_set, []
 
-        if not os.path.isdir(arch_dict.ROTDIR):
-            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
-
-        if arch_dict.RUN == "gdas" or arch_dict.RUN == "gfs":
-
-            # Copy the cyclone track files and rename the experiments
-            Archive._rename_cyclone_expt(arch_dict)
-
-        if arch_dict.RUN == "gefs":
-            raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
-
         master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
-        parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml), arch_dict)
+        parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml),
+                                   arch_dict,
+                                   allow_missing=False)
 
         atardir_sets = []
 
@@ -136,8 +148,7 @@ class Archive(Task):
         """
 
         # Copy files to the local ARCDIR
-        for key in arcdir_set.keys():
-            FileHandler(arcdir_set[key]).sync()
+        FileHandler(arcdir_set).sync()
 
     @logit(logger)
     def execute_backup_dataset(self, atardir_set: Dict[str, Any]) -> None:
@@ -311,6 +322,47 @@ class Archive(Task):
                     rel_path_dict[rel_key] = rel_path
 
         return rel_path_dict
+
+    @staticmethod
+    @logit(logger)
+    def _construct_arcdir_set(arcdir_j2yaml, arch_dict) -> Dict:
+        """Construct the list of files to send to the ARCDIR and Fit2Obs
+           directories from a template.
+
+           TODO Copying Fit2Obs data doesn't belong in archiving should be
+                moved elsewhere.
+
+        Parameters
+        ----------
+        arcdir_j2yaml: str
+            The filename of the ARCDIR jinja template to parse.
+
+        arch_dict: Dict
+            The context dictionary to parse arcdir_j2yaml with.
+
+        Return
+        ------
+        arcdir_set : Dict
+            FileHandler dictionary (i.e. with top level "mkdir" and "copy" keys)
+            containing all directories that need to be created and what data
+            files need to be copied to the ARCDIR and the Fit2Obs directory.
+        """
+
+        # Parse the input jinja yaml template
+        arcdir_yaml = parse_j2yaml(arcdir_j2yaml,
+                                   arch_dict,
+                                   allow_missing=True)
+
+        # Collect the needed FileHandler dicts and construct arcdir_set
+        arcdir_set = {}
+        for key, handler in arcdir_yaml[arch_dict.RUN].items():
+            # Different RUNs can have different filesets that need to be copied.
+            # Each fileset is stored as a dictionary.  Collect the contents of
+            # each (which should be 'mkdir' and/or 'copy') to produce singular
+            # mkdir and copy lists.
+            arcdir_set.update(handler)
+
+        return arcdir_set
 
     @staticmethod
     @logit(logger)
