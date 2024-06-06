@@ -22,7 +22,7 @@ HPC helpdesks
 * Hercules:  rdhpcs.hercules.help@noaa.gov
 * HPSS: rdhpcs.hpss.help@noaa.gov
 * Gaea: oar.gfdl.help@noaa.gov
-* S4: david.huber@noaa.gov
+* S4: innocent.souopgui@noaa.gov
 * Jet: rdhpcs.jet.help@noaa.gov
 * Cloud: rdhpcs.cloud.help@noaa.gov
 
@@ -48,7 +48,7 @@ https://aim.rdhpcs.noaa.gov/
 Optimizing the global workflow on S4
 ====================================
 
-The S4 cluster is relatively small and so optimizations are recommended to improve cycled runtimes. Please contact David Huber (david.huber@noaa.gov) if you are planning on running a cycled experiment on this system to obtain optimized configuration files.
+The S4 cluster is relatively small and so optimizations are recommended to improve cycled runtimes. Please contact Innocent Souopgui (innocent.souopgui@noaa.gov) if you are planning on running a cycled experiment on this system to obtain optimized configuration files.
 
 ============
 Git settings
