@@ -58,7 +58,7 @@ class OceanIceProducts(Task):
 
         valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
 
-        #For CICE cases where FHOUT_ICE_GFS is equal to 24 and where the cycle is not t00z, forecast_hours needs to be offset.
+        # For CICE cases where FHOUT_ICE_GFS is equal to 24 and where the cycle is not t00z, forecast_hours needs to be offset.
         if self.config.COMPONENT == 'ice' and self.runtime_config.current_cycle.strftime("%H") != '00' and self.config.FHOUT_ICE_GFS == 24:
             forecast_hour = self.config.FORECAST_HOUR - int(self.runtime_config.current_cycle.strftime("%H"))
             if forecast_hour <= 24:
