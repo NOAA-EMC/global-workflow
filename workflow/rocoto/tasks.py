@@ -155,16 +155,8 @@ class Tasks:
             fhout = local_config['FHOUT_GFS']
             fhmax_hf = local_config['FHMAX_HF_GFS']
             fhout_hf = local_config['FHOUT_HF_GFS']
-
-            sdate = config['SDATE']
-            cyc = sdate.hour
-            offset = (cyc + fhmin) % fhout
-            if component in 'ice' and offset != 0:
-                fhrs_hf = range(fhmin + 12, fhmax_hf + fhout_hf, fhout_hf)
-                fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax, fhout))
-            else:
-                fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
-                fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
+            fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
         # ocean/ice components do not have fhr 0 as they are averaged output
         if component in ['ocean', 'ice'] and 0 in fhrs:
