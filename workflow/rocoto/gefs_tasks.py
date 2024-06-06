@@ -223,6 +223,8 @@ class GEFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         if component in ['ocean']:
+            dep_dict = {'type': 'data', 'data': data, 'age': 120}
+            deps.append(rocoto.add_dependency(dep_dict))
             command = f"{self.HOMEgfs}/ush/check_netcdf.sh {history_path}/{history_file_tmpl}"
             dep_dict = {'type': 'sh', 'command': command}
             deps.append(rocoto.add_dependency(dep_dict))
