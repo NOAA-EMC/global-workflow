@@ -446,6 +446,10 @@ export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config
 export DO_FIT2OBS="YES"      # Run fit to observations package
 export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
+#--online archive of netcdf files for fit2obs verification
+export FHMAX_FITS=132
+[[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
+
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export LOCALARCH="@LOCALARCH@"        # save data to local archive
@@ -456,11 +460,6 @@ fi
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
-
-#--online archive of nemsio files for fit2obs verification
-export FITSARC="YES"
-export FHMAX_FITS=132
-[[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
 # The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
