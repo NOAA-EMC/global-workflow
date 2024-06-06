@@ -570,10 +570,10 @@ CICE_predet(){
   # Convert output settings into an explicit list for CICE
   ((offset = ( cyc + FHMIN ) % FHOUT_ICE))
   if (( offset == 0 )); then
-    mapfile -t CICE_OUTPUT_FH < <(seq -s ' ' "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || true
+    mapfile -t -d ' ' CICE_OUTPUT_FH < <(seq -s ' ' "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || true
   else
     CICE_OUTPUT_FH=("${FHMIN}")
-    mapfile -t -O "${#CICE_OUTPUT_FH[@]}"  CICE_OUTPUT_FH < <(seq -s ' ' "$((FHMIN+offset))" "${FHOUT_ICE}" "${FHMAX}") || true
+    mapfile -t -d ' ' -O "${#CICE_OUTPUT_FH[@]}"  CICE_OUTPUT_FH < <(seq -s ' ' "$((FHMIN+offset))" "${FHOUT_ICE}" "${FHMAX}") || true
     CICE_OUTPUT_FH+=("${FHMAX}")
   fi
 
