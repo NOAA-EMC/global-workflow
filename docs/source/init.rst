@@ -315,7 +315,7 @@ Manual Generation
 *****************
 
 .. note::
-   Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact David Huber (david.huber@noaa.gov).
+   Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact Innocent Souopgui (innocent.souopgui@noaa.gov).
 
 .. _coldstarts:
 
