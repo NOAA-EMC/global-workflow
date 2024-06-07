@@ -46,8 +46,8 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL
 
 for grid in "0p25" "0p50" "1p00"; do
-  YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
-	  "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+    YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
+       "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 ###############################################################

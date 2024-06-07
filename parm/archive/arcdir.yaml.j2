@@ -15,15 +15,15 @@ Deterministic: &deterministic
         copy:
             # Cyclone forecasts, produced for both gdas and gfs cycles
             ## Only created if tracking is on and there were systems to track
-            {% if path_exists(COMOUT_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH) %}
-            - ["{{ COMOUT_ATMOS_TRACK }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}"]
-            - ["{{ COMOUT_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
+            {% if path_exists(COMIN_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH) %}
+            - ["{{ COMIN_ATMOS_TRACK }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}"]
+            - ["{{ COMIN_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}", "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
             {% endif %}
 
             # Cyclone tracking data
             {% for basin in ["epac", "natl"] %}
-                {% if path_exists(COMOUT_ATMOS_TRACK + "/" + basin) %}
-            - ["{{ COMOUT_ATMOS_TRACK }}/{{ basin }}", "{{ ARCDIR }}/{{ basin }}"]
+                {% if path_exists(COMIN_ATMOS_TRACK + "/" + basin) %}
+            - ["{{ COMIN_ATMOS_TRACK }}/{{ basin }}", "{{ ARCDIR }}/{{ basin }}"]
                 {% endif %}
             {% endfor %}
 
