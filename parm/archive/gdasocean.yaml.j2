@@ -4,6 +4,6 @@ gdasocean:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean.tar"
     required:
         {% for fhr in range(FHMIN, FHMAX + 1, FHOUT_OCNICE) %}
-        - "{{ COM_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMOUT_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
-        - '{{ COM_CONF | relpath(ROTDIR) }}/ufs.MOM_input'
+        - '{{ COMOUT_CONF | relpath(ROTDIR) }}/ufs.MOM_input'

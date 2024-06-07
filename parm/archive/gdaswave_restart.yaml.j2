@@ -3,4 +3,4 @@ gdaswave_restart:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave_restart.tar"
     required:
         # TODO explicitly name the wave restart files to archive
-        - "{{ COM_WAVE_RESTART | relpath(ROTDIR) }}/*"
+        - "{{ COMOUT_WAVE_RESTART | relpath(ROTDIR) }}/*"

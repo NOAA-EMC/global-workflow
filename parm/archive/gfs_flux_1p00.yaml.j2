@@ -4,6 +4,6 @@ gfs_flux_1p00:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_flux_1p00.tar"
     required:
         {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}flux.1p00.f{{ '%03d' % fhr }}"
-        - "{{ COM_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}flux.1p00.f{{ '%03d' % fhr }}.idx"
+        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}flux.1p00.f{{ '%03d' % fhr }}"
+        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}flux.1p00.f{{ '%03d' % fhr }}.idx"
         {% endfor %}

@@ -4,6 +4,6 @@ gfs_netcdfb:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_netcdfb.tar"
     required:
         {% for fhr in range(0, ARCH_GAUSSIAN_FHMAX + ARCH_GAUSSIAN_FHINC, ARCH_GAUSSIAN_FHINC) %}
-        - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
-        - "{{ COM_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
+        - "{{ COMOUT_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
+        - "{{ COMOUT_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
         {% endfor %}

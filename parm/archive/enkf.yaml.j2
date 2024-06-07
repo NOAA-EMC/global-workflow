@@ -34,10 +34,10 @@ enkf:
 
         # Ensemble mean and spread
         {% for fhr in range(3, fhmax + 1, 3) %}
-        - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensmean.nc"
-        - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COMOUT_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COMOUT_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.ensmean.nc"
         {% if ENKF_SPREAD %}
-        - "{{ COM_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
+        - "{{ COMOUT_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
         {% endif %}
         {% endfor %}
 
@@ -54,15 +54,15 @@ enkf:
                            "atmensstat"] %}
         {% endif %}
         {% for file in da_files %}
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
+        - "{{ COMOUT_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
         {% endfor %}
 
         # Ensemble mean analyses/increments
         # 6-hr analysis/increment
         {% if do_calc_increment %}
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
+        - "{{ COMOUT_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
         {% else %}
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atminc.ensmean.nc"
+        - "{{ COMOUT_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atminc.ensmean.nc"
         {% endif %}
 
         {% if DOIAU %}
@@ -71,10 +71,10 @@ enkf:
         {% for fhr in iaufhrs if fhr != 6 %}
         {% if do_calc_increment %}
         # Store analyses instead of increments
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COMOUT_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
         {% else %}
         # Store increments
-        - "{{ COM_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COMOUT_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
         {% endif %}
         {% endfor %}
 
