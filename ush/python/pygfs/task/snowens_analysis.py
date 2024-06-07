@@ -151,10 +151,10 @@ class SnowEnsAnalysis(Analysis):
         arg_list = [
             f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc",
             f"--input_dir ./inc/det/",
-            f"--input_file snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data",
+            f"--input_file snowinc.{to_fv3time(self.task_config.bkg_time)}.sfc_data",
             f"--scalar_field snodl",
             f"--output_dir ./inc/det_ensres/",
-            f"--output_file snowinc.{to_fv3time(self.task_config.current_cycle)}.ensres.sfc_data",
+            f"--output_file snowinc.{to_fv3time(self.task_config.bkg_time)}.ensres.sfc_data",
             f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
             f"--interp_method conserve_order1",
             f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data",
