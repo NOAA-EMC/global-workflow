@@ -71,7 +71,7 @@ copy:
 {% set com_ns.COM_SNOW_ANALYSIS_MEM = com_ns.COM_SNOW_ANALYSIS_MEM.replace(search_term, replace_term) %}
 {% endfor %}
 {% for tile in range(1, 7) %}
-- ["{{ com_ns.COM_SNOW_ANALYSIS_MEM }}/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/inc/det/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ com_ns.COM_SNOW_ANALYSIS_MEM }}/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/inc/det/snowinc.{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
 {% endfor %}
 ######################################
 # copy ensemble background files
