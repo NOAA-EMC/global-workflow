@@ -568,12 +568,11 @@ CICE_predet(){
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
-  ((offset = ( cyc + FHMIN ) % FHOUT_ICE))
-  if (( offset == 0 )); then
+  if (( $(( ( cyc + FHMIN ) % FHOUT_ICE )) == 0 )); then
     mapfile -t -d ' ' CICE_OUTPUT_FH < <(seq -s ' ' "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || true
   else
     CICE_OUTPUT_FH=("${FHMIN}")
-    mapfile -t -d ' ' -O "${#CICE_OUTPUT_FH[@]}"  CICE_OUTPUT_FH < <(seq -s ' ' "$((FHMIN+offset))" "${FHOUT_ICE}" "${FHMAX}") || true
+    mapfile -t -d ' ' -O "${#CICE_OUTPUT_FH[@]}"  CICE_OUTPUT_FH < <(seq -s ' ' "$(( FHMIN + $(( ( cyc + FHMIN ) % FHOUT_ICE )) ))" "${FHOUT_ICE}" "${FHMAX}") || true
     CICE_OUTPUT_FH+=("${FHMAX}")
   fi
 
