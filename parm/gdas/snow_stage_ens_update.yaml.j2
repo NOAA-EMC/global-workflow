@@ -21,6 +21,7 @@ mkdir:
 - "{{ DATA }}//inc/ensmean"
 {% for mem in range(1, NMEM_ENS + 1) %}
 - "{{ DATA }}/bkg/mem{{ '%03d' % mem }}"
+- "{{ DATA }}/anl/mem{{ '%03d' % mem }}"
 {% endfor %}
 copy:
 ######################################
@@ -96,7 +97,9 @@ copy:
 {% set replace_term = tmpl_dict[key] %}
 {% set com_prev_ns.COM_ATMOS_RESTART_MEM = com_prev_ns.COM_ATMOS_RESTART_MEM.replace(search_term, replace_term) %}
 {% endfor %}
+# we need to copy them to two places, one serves as the basis for the analysis
 {% for tile in range(1, 7) %}
 - ["{{ com_prev_ns.COM_ATMOS_RESTART_MEM }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ com_prev_ns.COM_ATMOS_RESTART_MEM }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
 {% endfor %}
 {% endfor %}
