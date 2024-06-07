@@ -374,7 +374,8 @@ class Archive(Task):
         if len(arch_dict.PSLOT) > 4:
             pslot4 = arch_dict.PSLOT[0:4].upper()
 
-        track_dir = arch_dict.COMOUT_ATMOS_TRACK
+        track_dir_in = arch_dict.COMIN_ATMOS_TRACK
+        track_dir_out = arch_dict.COMOUT_ATMOS_TRACK
         run = arch_dict.RUN
         cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
