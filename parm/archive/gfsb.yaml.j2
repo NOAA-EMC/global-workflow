@@ -5,16 +5,16 @@ gfsb:
     required:
         {% if MODE == "cycled" %}
         # GRIB2 (subsampled) analysis data
-        - "{{ COMOUT_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.anl"
-        - "{{ COMOUT_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.anl.idx"
-        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
-        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.anl"
+        - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.anl.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
         {% endif %}
 
         # GRIB2 orecast data
         {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-        - "{{ COMOUT_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}"
-        - "{{ COMOUT_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}.idx"
-        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
-        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}"
+        - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
         {% endfor %}

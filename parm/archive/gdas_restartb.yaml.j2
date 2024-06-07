@@ -12,14 +12,14 @@ gdas_restartb:
         {% set offset_HH = offset_dt | strftime("%H") %}
         {% set prefix = offset_YMD + "." + offset_HH + "0000" %}
         {% for itile in range(1, 7) %}
-        - "{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ prefix }}.sfcanl_data.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ prefix }}.sfcanl_data.tile{{ itile }}.nc"
         {% endfor %}
         {% endif %}
 
         # Regardless, always grab the center surface analysis data.
         {% set prefix = cycle_YMD + "." + cycle_HH + "0000" %}
         {% for itile in range(1, 7) %}
-        - "{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ prefix }}.sfcanl_data.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ prefix }}.sfcanl_data.tile{{ itile }}.nc"
         {% endfor %}
 
         # Now get the restart files.
@@ -31,9 +31,9 @@ gdas_restartb:
         {% set r_prefix = r_YMD + "." + r_HH + "0000" %}
         {% for itile in range(1, 7) %}
         {% for datatype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
-        - "{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
         {% endfor %}
         {% endfor %}
-        - "{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
-        - "{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
+        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
+        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
         {% endfor %}

@@ -5,25 +5,25 @@ enkf_grp:
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
         # Construct member COM directories
-        {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
-        {% set COMOUT_ATMOS_HISTORY_MEM = COMOUT_ATMOS_HISTORY_MEM_list[imem] %}
-        {% set COMOUT_ATMOS_RESTART_MEM = COMOUT_ATMOS_RESTART_MEM_list[imem] %}
+        {% set COMIN_ATMOS_ANALYSIS_MEM = COMIN_ATMOS_ANALYSIS_MEM_list[imem] %}
+        {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
+        {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
 
         # Forecast data
         {% for fhr in range(3, 10, 3) %}
-        - "{{ COMOUT_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
         {% endfor %}
 
         # Only store the 6-hour surface forecast
-        - "{{ COMOUT_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf006.nc"
+        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf006.nc"
 
         # Store the individual member analysis data
         {% if not lobsdiag_forenkf %}
-        - "{{ COMOUT_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
+        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% endif %}
         {% if do_calc_increment %}
-        - "{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         {% else %}
-        - "{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
         {% endif %}
         {% endfor %}  # first_group_mem to last_group_mem

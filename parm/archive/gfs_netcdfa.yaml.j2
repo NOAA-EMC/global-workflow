@@ -3,14 +3,14 @@ gfs_netcdfa:
     name: "GFS_NETCDFA"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_netcdfa.tar"
     required:
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
         {% for iauhr in iaufhrs if iauhr != 6 %}
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iauhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iauhr }}.nc"
         {% endfor %}
     optional:
         {% if not DO_JEDIATMVAR %}
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
         {% endif %}

@@ -12,12 +12,12 @@ gfs_restarta:
         {% set anl_timedelta = anl_offset | to_timedelta %}
         {% set anl_time = current_cycle | add_to_datetime(anl_timedelta) %}
         {% for i_tile in range(1, 7) %}
-        - "{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ i_tile }}.nc"
+        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ i_tile }}.nc"
         {% endfor %}
         {% elif MODE == "forecast-only" %}
-        - "{{ COMOUT_ATMOS_INPUT | relpath(ROTDIR) }}/gfs_ctrl.nc"
+        - "{{ COMIN_ATMOS_INPUT | relpath(ROTDIR) }}/gfs_ctrl.nc"
         {% for i_tile in range(1, 7) %}
-        - "{{ COMOUT_ATMOS_INPUT | relpath(ROTDIR) }}/gfs_data.tile{{ i_tile }}.nc"
-        - "{{ COMOUT_ATMOS_INPUT | relpath(ROTDIR) }}/sfc_data.tile{{ i_tile }}.nc"
+        - "{{ COMIN_ATMOS_INPUT | relpath(ROTDIR) }}/gfs_data.tile{{ i_tile }}.nc"
+        - "{{ COMIN_ATMOS_INPUT | relpath(ROTDIR) }}/sfc_data.tile{{ i_tile }}.nc"
         {% endfor %}
         {% endif %}

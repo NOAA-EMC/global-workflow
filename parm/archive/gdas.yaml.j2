@@ -35,22 +35,22 @@ gdas:
         {% endif %}
 
         # Analysis GRIB2 (sub-sampled) data
-        - "{{ COMOUT_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
-        - "{{ COMOUT_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl.idx"
-        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
-        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.anl.idx"
 
         # Analysis netCDF (raw) data
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
 
         {% if DOHYBVAR %}
         # Ensemble analysis residual
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
         {% if DOIAU %}
         # Ensemble IAU analysis residuals
         {% for fhr in iaufhrs if fhr != 6 %}
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensres.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensres.nc"
         {% endfor %}
         {% endif %}
         # End of ensemble analysis mean residuals
@@ -58,47 +58,47 @@ gdas:
 
         # Analysis state
         {% if DO_JEDIATMVAR %}
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
         {% else %}
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
         {% endif %}
         {% if AERO_ANL_CDUMP == "gdas" or AERO_ANL_CDUMP == "both" %}
-        - "{{ COMOUT_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
+        - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
         {% endif %}
         {% if DO_JEDISNOWDA %}
-        - "{{ COMOUT_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
+        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
         {% endif %}
 
         # Ozone verification
         {% if DO_VERFOZN %}
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_cnt.{{ cycle_YMDH }}"
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_diag.{{ cycle_YMDH }}"
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_cnt.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_diag.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}verfozn.log"
         {% endif %}
 
         # Radiance verification
         {% if DO_VERFRAD %}
-        - "{{ COMOUT_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_angle.tar.gz"
-        - "{{ COMOUT_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcoef.tar.gz"
-        - "{{ COMOUT_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcor.tar.gz"
-        - "{{ COMOUT_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_time.tar.gz"
+        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_angle.tar.gz"
+        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcoef.tar.gz"
+        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcor.tar.gz"
+        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_time.tar.gz"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}verfrad.log"
         {% endif %}
 
         # Minimization monitor
         {% if DO_VMINMON %}
-        - "{{ COMOUT_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.costs.txt"
-        - "{{ COMOUT_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.cost_terms.txt"
-        - "{{ COMOUT_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
-        - "{{ COMOUT_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
-        - "{{ COMOUT_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
+        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.costs.txt"
+        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.cost_terms.txt"
+        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
+        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
+        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
         {% endif %}
         {% endif %}  # End of cycled data
@@ -114,27 +114,27 @@ gdas:
 
         {% for fhr in range(0, FHMAX + 1, 3) %}
         # Forecast GRIB2 data
-        - "{{ COMOUT_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"
-        - "{{ COMOUT_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
-        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
-        - "{{ COMOUT_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
         # Forecast GRIB2 fluxes
-        - "{{ COMOUT_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
-        - "{{ COMOUT_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
+        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2"
+        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ '%03d' % fhr }}.grib2.idx"
         # FV3 log
-        - "{{ COMOUT_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ '%03d' % fhr }}.txt"
+        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ '%03d' % fhr }}.txt"
         # Raw netCDF forecasts
-        - "{{ COMOUT_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
-        - "{{ COMOUT_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
         {% endfor %}
     optional:
         {% if MODE == "cycled" %}
         {% if DO_VERFRAD %}
         # Radiance verification (only created if there are problems)
-        - "{{ COMOUT_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
-        - "{{ COMOUT_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
-        - "{{ COMOUT_ATMOS_RADMON | relpath(ROTDIR) }}/low_count.{{ cycle_YMDH }}"
-        - "{{ COMOUT_ATMOS_RADMON | relpath(ROTDIR) }}/warning.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/low_count.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/warning.{{ cycle_YMDH }}"
         {% endif %}
 
         {% if DO_VERFOZN %}
@@ -146,10 +146,10 @@ gdas:
         {% for group in [ "horiz", "time" ] %}
         {% if group == "horiz" %} {% set suffix = ".gz" %} {% else %} {% set suffix = "" %} {% endif %}
         {% for type in oznmon_types %}
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.ctl"
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.ctl"
-        - "{{ COMOUT_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.ctl"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.ctl"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
         {% endfor %}
         {% endfor %}
         {% endif %}

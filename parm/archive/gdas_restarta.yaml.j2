@@ -4,10 +4,10 @@ gdas_restarta:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas_restarta.tar"
     required:
         # Deterministic analysis increments
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
         # IAU increments
         {% for iaufhr in iaufhrs if iaufhr != 6 %}
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iaufhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iaufhr }}.nc"
         {% endfor %}
 
         # Surface analysis tiles
@@ -19,36 +19,36 @@ gdas_restarta:
         {% set anl_timedelta = anl_offset | to_timedelta %}
         {% set anl_time = current_cycle | add_to_datetime(anl_timedelta) %}
         {% for itile in range(1,7) %}
-        - "{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
         {% endfor %}
 
         # Initial biases
         {% if not DO_JEDIATMVAR %}
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
-        - "{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
         {% endif %}
 
         # Snow surface data
         {% if DO_JEDISNOWDA %}
         {% for itile in range(1,7) %}
         # Snow analysis is 3dvar
-        - "{{ COMOUT_SNOW_ANALYSIS | relpath(ROTDIR) }}/snowinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
-        - "{{ COMOUT_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
+        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/snowinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
+        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
         {% endfor %}
         {% endif %}
 
         # Snow configuration yaml
         {% if DO_JEDISNOWDA %}
-        - "{{ COMOUT_CONF | relpath(ROTDIR) }}/{{ head }}letkfoi.yaml"
+        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}letkfoi.yaml"
         {% endif %}
 
         # Input BUFR files
-        - "{{ COMOUT_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
-        - "{{ COMOUT_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
-        - "{{ COMOUT_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
