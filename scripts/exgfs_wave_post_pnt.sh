@@ -562,9 +562,11 @@ source "${USHgfs}/preamble.sh"
   if [ "$wavenproc" -gt '1' ]
   then
     if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n "${wavenproc}" "${wave_mpmd}" cmdmprogbuoy
+      # shellcheck disable=SC2086
+      ${wavempexec} -n "${wavenproc}" ${wave_mpmd} cmdmprogbuoy
     else
-      ${wavempexec} "${wavenproc}" "${wave_mpmd}" cmdfile.buoy
+      # shellcheck disable=SC2086
+      ${wavempexec} "${wavenproc}" ${wave_mpmd} cmdfile.buoy
     fi
     exit=$?
   else
