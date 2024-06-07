@@ -1063,9 +1063,11 @@ case ${step} in
         if [[ "${machine}" == "WCOSS2" ]]; then
           export npe_eupd=315
           export nth_eupd=14
-        elif [[ ${machine} == "S4" ]]; then
+        elif [[ "${machine}" == "S4" ]]; then
            export npe_eupd=160
            export nth_eupd=2
+        elif [[ "${machine}" == "HERA" ]]; then
+          export npe_eupd=80
         fi
         ;;
       "C192" | "C96" | "C48")
