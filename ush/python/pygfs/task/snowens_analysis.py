@@ -238,7 +238,6 @@ class SnowEnsAnalysis(Analysis):
             }
             self.add_increments(memdict)
 
-
     @staticmethod
     @logit(logger)
     def get_bkg_dict(config: Dict) -> Dict[str, List[str]]:
