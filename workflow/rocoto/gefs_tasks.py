@@ -253,7 +253,7 @@ class GEFSTasks(Tasks):
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
-                          'FHRLST': '#fhr#',
+                          'FHR3': '#fhr#',
                           'COMPONENT': component}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
@@ -303,7 +303,7 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#fhr#'}
+        postenvar_dict = {'FHR3': '#fhr#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
