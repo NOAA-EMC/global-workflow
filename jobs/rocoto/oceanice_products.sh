@@ -21,8 +21,7 @@ export PYTHONPATH
 export job="oceanice_products"
 export jobid="${job}.$$"
 
-fhr3_base="10#${FHR3}"
-export FORECAST_HOUR=$(( ${fhr3_base/10#-/-10#} ))
+export FORECAST_HOUR=$(( 10#${FHR3} ))
 
 ###############################################################
 # Execute the JJOB

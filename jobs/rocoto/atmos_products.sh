@@ -15,6 +15,7 @@ if (( status != 0 )); then exit "${status}"; fi
 export job="atmos_products"
 export jobid="${job}.$$"
 
+# Negatation needs to be before the base
 fhr3_base="10#${FHR3}"
 export FORECAST_HOUR=$(( ${fhr3_base/10#-/-10#} ))
 
