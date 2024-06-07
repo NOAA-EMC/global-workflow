@@ -114,7 +114,7 @@ class SnowEnsAnalysis(Analysis):
             f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc",
             f"--input_dir ./bkg/det/",
             f"--input_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
-            f"--scalar_field snodl",
+            f"--scalar_field snodl,slmsk",
             f"--output_dir ./bkg/det_ensres/",
             f"--output_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
             f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
@@ -212,6 +212,35 @@ class SnowEnsAnalysis(Analysis):
 
     @staticmethod
     @logit(logger)
+    def addEnsIncrements(self) -> None:
+        """Loop through all ensemble members and apply increment to create
+        a surface analysis for snow
+
+        Parameters
+        ----------
+        self : Analysis
+            Instance of the SnowEnsAnalysis object
+        """
+        for mem in range(1, self.task_config.NMEM_ENS + 1):
+            # for now, just looping serially, should parallelize this eventually
+            logger.info(f"Now applying increment to member mem{mem:03}")
+            chdir(os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}"))
+            memdict = {
+                'HOMEgfs': self.task_config.HOMEgfs,
+                'DATA': os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}"),
+                'current_cycle': self.task_config.bkg_time,
+                'CASE_ENS': self.task_config.CASE_ENS,
+                'OCNRES': self.task_config.OCNRES,
+                'ntiles': 6,
+                'ENS_APPLY_INCR_NML_TMPL': self.task_config.ENS_APPLY_INCR_NML_TMPL,
+                'APPLY_INCR_EXE': self.task_config.APPLY_INCR_EXE,
+                'APRUN_APPLY_INCR': self.task_config.APRUN_APPLY_INCR,
+            }
+            self.add_increments(memdict)
+
+
+    @staticmethod
+    @logit(logger)
     def get_bkg_dict(config: Dict) -> Dict[str, List[str]]:
         """Compile a dictionary of model background files to copy
 
@@ -251,7 +280,6 @@ class SnowEnsAnalysis(Analysis):
              Dictionary of key-value pairs needed in this method
              Should contain the following keys:
              HOMEgfs
-             COM_ATMOS_RESTART_PREV
              DATA
              current_cycle
              CASE
@@ -269,19 +297,8 @@ class SnowEnsAnalysis(Analysis):
             All other exceptions
         """
 
-        # need backgrounds to create analysis from increments after LETKF
-        logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")
-        template = f'{to_fv3time(config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
-        anllist = []
-        for itile in range(1, config.ntiles + 1):
-            filename = template.format(tilenum=itile)
-            src = os.path.join(config.COM_ATMOS_RESTART_PREV, filename)
-            dest = os.path.join(config.DATA, "anl", filename)
-            anllist.append([src, dest])
-        FileHandler({'copy': anllist}).sync()
-
         logger.info("Create namelist for APPLY_INCR_EXE")
-        nml_template = config.APPLY_INCR_NML_TMPL
+        nml_template = config.ENS_APPLY_INCR_NML_TMPL
         nml_data = Jinja(nml_template, config).render
         logger.debug(f"apply_incr_nml:\n{nml_data}")
 

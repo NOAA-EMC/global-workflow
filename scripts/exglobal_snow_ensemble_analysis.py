@@ -23,5 +23,5 @@ if __name__ == '__main__':
     anl.regridDetBkg()
     anl.regridDetInc()
     anl.recenterEns()
-    anl.addIncrements()
+    anl.addEnsIncrements()
     anl.finalize()
