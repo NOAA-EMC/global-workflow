@@ -37,9 +37,9 @@ def main():
     for key in keys:
         archive_dict[key] = archive.task_config[key]
 
-    # Also import all COM* directory and template variables
+    # Also import all COMOUT* directory and template variables
     for key in archive.task_config.keys():
-        if key.startswith("COM"):
+        if key.startswith("COMOUT"):
             archive_dict[key] = archive.task_config[key]
 
     cwd = os.getcwd()

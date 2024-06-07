@@ -309,7 +309,7 @@ class Archive(Task):
         rel_path_dict : Dict
             Dictionary of paths relative to root_path.  Members will be named
             based on the dict names in self.config.  For COM paths, the names will
-            follow COM_<NAME> --> <name>_dir.  For all other directories, the
+            follow COMOUT_<NAME> --> <name>_dir.  For all other directories, the
             names will follow <NAME> --> <name>_dir.
         """
 
@@ -318,7 +318,7 @@ class Archive(Task):
             if isinstance(value, str):
                 if root_path in value:
                     rel_path = value.replace(root_path, "")
-                    rel_key = (key[4:] if key.startswith("COM_") else key).lower() + "_dir"
+                    rel_key = (key[4:] if key.startswith("COMOUT_") else key).lower() + "_dir"
                     rel_path_dict[rel_key] = rel_path
 
         return rel_path_dict
@@ -374,7 +374,7 @@ class Archive(Task):
         if len(arch_dict.PSLOT) > 4:
             pslot4 = arch_dict.PSLOT[0:4].upper()
 
-        track_dir = arch_dict.COM_ATMOS_TRACK
+        track_dir = arch_dict.COMOUT_ATMOS_TRACK
         run = arch_dict.RUN
         cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
