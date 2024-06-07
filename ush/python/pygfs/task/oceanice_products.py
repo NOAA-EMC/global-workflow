@@ -49,33 +49,34 @@ class OceanIceProducts(Task):
         """
         super().__init__(config)
 
-        if self.config.COMPONENT not in self.VALID_COMPONENTS:
-            raise NotImplementedError(f'{self.config.COMPONENT} is not a valid model component.\n' +
+        if self.task_config.COMPONENT not in self.VALID_COMPONENTS:
+            raise NotImplementedError(f'{self.task_config.COMPONENT} is not a valid model component.\n' +
                                       'Valid model components are:\n' +
                                       f'{", ".join(self.VALID_COMPONENTS)}')
 
-        model_grid = f"mx{self.config[self.COMPONENT_RES_MAP[self.config.COMPONENT]]:03d}"
+        model_grid = f"mx{self.task_config[self.COMPONENT_RES_MAP[self.task_config.COMPONENT]]:03d}"
 
-        valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
+        valid_datetime = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.FORECAST_HOUR}H"))
 
         # TODO: This is a bit of a hack, but it works for now
         # FIXME: find a better way to provide the averaging period
         # This will be different for ocean and ice, so when they are made flexible, this will need to be addressed
-        avg_period = f"{self.config.FORECAST_HOUR-self.config.FHOUT_OCNICE_GFS:03d}-{self.config.FORECAST_HOUR:03d}"
+        avg_period = f"{self.task_config.FORECAST_HOUR-self.task_config.FHOUT_OCNICE_GFS:03d}-{self.task_config.FORECAST_HOUR:03d}"
 
+        # Extend task_config with localdict
         localdict = AttrDict(
-            {'component': self.config.COMPONENT,
-             'forecast_hour': self.config.FORECAST_HOUR,
+            {'component': self.task_config.COMPONENT,
+             'forecast_hour': self.task_config.FORECAST_HOUR,
              'valid_datetime': valid_datetime,
              'avg_period': avg_period,
              'model_grid': model_grid,
              'product_grids': self.VALID_PRODUCT_GRIDS[model_grid]}
         )
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **localdict)
+        self.task_config = AttrDict(**self.task_config, **localdict)
 
         # Read the oceanice_products.yaml file for common configuration
-        logger.info(f"Read the ocean ice products configuration yaml file {self.config.OCEANICEPRODUCTS_CONFIG}")
-        self.task_config.oceanice_yaml = parse_j2yaml(self.config.OCEANICEPRODUCTS_CONFIG, self.task_config)
+        logger.info(f"Read the ocean ice products configuration yaml file {self.task_config.OCEANICEPRODUCTS_CONFIG}")
+        self.task_config.oceanice_yaml = parse_j2yaml(self.task_config.OCEANICEPRODUCTS_CONFIG, self.task_config)
         logger.debug(f"oceanice_yaml:\n{pformat(self.task_config.oceanice_yaml)}")
 
     @staticmethod

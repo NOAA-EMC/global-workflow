@@ -35,12 +35,13 @@ class Archive(Task):
         """
         super().__init__(config)
 
-        rotdir = self.config.ROTDIR + os.sep
+        rotdir = self.task_config.ROTDIR + os.sep
 
         # Find all absolute paths in the environment and get their relative paths from ${ROTDIR}
         path_dict = self._gen_relative_paths(rotdir)
 
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **path_dict)
+        # Extend task_config with path_dict
+        self.task_config = AttrDict(**self.task_config, **path_dict)
 
     @logit(logger)
     def configure(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
@@ -297,7 +298,7 @@ class Archive(Task):
 
     @logit(logger)
     def _gen_relative_paths(self, root_path: str) -> Dict:
-        """Generate a dict of paths in self.config relative to root_path
+        """Generate a dict of paths in self.task_config relative to root_path
 
         Parameters
         ----------
@@ -308,13 +309,13 @@ class Archive(Task):
         ------
         rel_path_dict : Dict
             Dictionary of paths relative to root_path.  Members will be named
-            based on the dict names in self.config.  For COM paths, the names will
+            based on the dict names in self.task_config.  For COM paths, the names will
             follow COM_<NAME> --> <name>_dir.  For all other directories, the
             names will follow <NAME> --> <name>_dir.
         """
 
         rel_path_dict = {}
-        for key, value in self.config.items():
+        for key, value in self.task_config.items():
             if isinstance(value, str):
                 if root_path in value:
                     rel_path = value.replace(root_path, "")

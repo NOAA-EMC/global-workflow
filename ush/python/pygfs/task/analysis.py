@@ -27,7 +27,7 @@ class Analysis(Task):
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
         # Store location of GDASApp jinja2 templates
-        self.gdasapp_j2tmpl_dir = os.path.join(self.config.PARMgfs, 'gdas')
+        self.gdasapp_j2tmpl_dir = os.path.join(self.task_config.PARMgfs, 'gdas')
 
     def initialize(self) -> None:
         super().initialize()
@@ -54,7 +54,7 @@ class Analysis(Task):
         ----------
         algorithm (optional) : str
             Name of the algorithm to use in the JEDI configuration. Will override the algorithm
-            set in the self.config.JCB_<>_YAML file
+            set in the self.task_config.JCB_<>_YAML file
 
         Returns
         ----------
@@ -120,7 +120,7 @@ class Analysis(Task):
             basename = os.path.basename(obfile)
             copylist.append([os.path.join(self.task_config['COM_OBS'], basename), obfile])
         obs_dict = {
-            'mkdir': [os.path.join(self.runtime_config['DATA'], 'obs')],
+            'mkdir': [os.path.join(self.task_config['DATA'], 'obs')],
             'copy': copylist
         }
         return obs_dict
@@ -161,7 +161,7 @@ class Analysis(Task):
                     # TODO: Why is this specific to ATMOS?
 
         bias_dict = {
-            'mkdir': [os.path.join(self.runtime_config.DATA, 'bc')],
+            'mkdir': [os.path.join(self.task_config.DATA, 'bc')],
             'copy': copylist
         }
         return bias_dict
@@ -180,7 +180,7 @@ class Analysis(Task):
            List of increment variables to add to the background
         """
 
-        for itile in range(1, self.config.ntiles + 1):
+        for itile in range(1, self.task_config.ntiles + 1):
             inc_path = inc_file_tmpl.format(tilenum=itile)
             bkg_path = bkg_file_tmpl.format(tilenum=itile)
             with Dataset(inc_path, mode='r') as incfile, Dataset(bkg_path, mode='a') as rstfile:
