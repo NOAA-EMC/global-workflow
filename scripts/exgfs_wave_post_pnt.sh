@@ -156,7 +156,7 @@ source "${USHgfs}/preamble.sh"
     cp -f ${PARMgfs}/wave/wave_${NET}.buoys buoy.loc.temp
     if [ "$DOBNDPNT_WAV" = YES ]; then
       #only do boundary points
-      sed -n '/^\$.*IBP.*/!p' buoy.loc.temp > buoy.loc || {
+      sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
           echo "WARNING: No boundary points found in buoy file ${PARMgfs}/wave/wave_${NET}.buoys"
           echo "         Ending job without doing anything."
           exit 0
