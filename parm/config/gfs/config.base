@@ -467,6 +467,7 @@ if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
 fi
 
 # If starting ICs that are not at cycle hour
+export REPLAY_ICS="NO"
 export OFFSET_START_HOUR=0
 
 # Number of regional collectives to create soundings for

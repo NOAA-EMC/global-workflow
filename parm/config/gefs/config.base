@@ -284,9 +284,10 @@ export MEMDIR="mem${ENSMEM}"
 
 # initialize ocean ensemble members with perturbations
 #   if true, only occurs for members greater than zero
-export OFFSET_START_HOUR=@OFFSET_START_HOUR@
-export USE_OCN_PERTURB_FILES=@USE_OCN_PERTURB_FILES@
-export USE_ATM_PERTURB_FILES=@USE_ATM_PERTURB_FILES@
+export REPLAY_ICS=@REPLAY_ICS@
+if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+    export OFFSET_START_HOUR=$(( assim_freq / 2 ))
+fi
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
@@ -296,7 +297,7 @@ else
   if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
   else
-    export IAU_FHROT=${OFFSET_START_HOUR}
+    export IAU_FHROT=0
   fi
 fi
 

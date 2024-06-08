@@ -16,11 +16,9 @@ FV3_postdet() {
     # Get list of FV3 cold start files
     local file_list file_array
     file_list=$(FV3_coldstarts)
-    IFS=',' read -ra file_array <<< "${file_list}"
-
     echo "Copying FV3 cold start files for 'RUN=${RUN}' at '${current_cycle}' from '${COMIN_ATMOS_INPUT}'"
     local fv3_file
-    for fv3_file in "${file_array[@]}"; do
+    for fv3_file in ${file_list}; do
       ${NCP} "${COMIN_ATMOS_INPUT}/${fv3_file}" "${DATA}/INPUT/${fv3_file}" \
       || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
     done
@@ -41,11 +39,9 @@ FV3_postdet() {
     # Get list of FV3 restart files
     local file_list file_array
     file_list=$(FV3_restarts)
-    IFS=',' read -ra file_array <<< "${file_list}"
-
     echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     local fv3_file restart_file
-    for fv3_file in "${file_array[@]}"; do
+    for fv3_file in ${file_list}; do
       restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_file}"
       ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${fv3_file}" \
       || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
@@ -127,9 +123,7 @@ EOF
 
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
-      if (( OFFSET_START_HOUR != 0 )); then
-        inc_files=()
-      elif [[ "${DOIAU}" == "YES" ]]; then
+      if [[ "${DOIAU}" == "YES" ]]; then
         # create an array of inc_files for each IAU hour
         IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
         inc_files=()
@@ -433,8 +427,8 @@ MOM6_postdet() {
     # GEFS perturbations
     # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
     #     to ensure it does not interfere with the GFS when ensemble is updated in the GFS
-    if (( MEMBER > 0 )) && [[ "${USE_OCN_PERTURB_FILES:-false}" == "true" ]] && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      ${NCP} "${COMIN_OCEAN_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.mom6_perturbation.nc" "${DATA}/INPUT/mom6_increment.nc" \
+    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+      ${NCP} "${COMIN_OCEAN_ANALYSIS}/mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc" \
       || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
     fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then
