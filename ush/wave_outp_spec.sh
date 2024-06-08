@@ -238,6 +238,6 @@ source "${USHgfs}/preamble.sh"
 # 3.b Clean up the rest
 
 cd ..
-rm -rf ${specdir}_${bloc}
+rm -rf "${specdir}_${bloc}"
 
 # End of ww3_outp_spec.sh ---------------------------------------------------- #
