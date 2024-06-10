@@ -969,6 +969,13 @@ case ${step} in
     export npe_node_eobs=$(( npe_node_max / nth_eobs ))
     export is_exclusive=True
     export npe_node_eomg=${npe_node_eobs}
+    # Unset npe_node_eobs if it is not a multiple of npe_node_max
+    # to prevent dropping data on the floor.  This should be set int
+    # config.resources.{machine} instead.  This will result in an error at
+    # experiment setup time if not set in config.resources.{machine}.
+    if [[ $(( npe_node_max % npe_node_eobs )) != 0 ]]; then
+      unset npe_node_max
+    fi
     ;;
 
   "ediag")

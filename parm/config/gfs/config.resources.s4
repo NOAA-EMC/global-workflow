@@ -36,12 +36,11 @@ case ${step} in
     esac
     ;;
 
-  "eobs" | "eomg")
+  "eobs")
     # The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     # For S4, this is accomplished by running 10 tasks/node
     export npe_node_eobs=10
-    export npe_node_eomg=${npe_node_eobs}
     ;;
 
   "eupd")

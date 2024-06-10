@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+
+# Gaea-specific job resources
+
+case ${step} in
+  "eobs")
+    # The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+    case ${CASE} in
+      "C768" | "C384")
+        export npe_node_eobs=50
+        ;;
+      *)
+        export npe_node_eobs=40
+        ;;
+    esac
+
+  *)
+    ;;
+
+esac

@@ -22,6 +22,15 @@ case ${step} in
     fi
     ;;
 
+  "eobs")
+    if [[ "${PARTITION_BATCH}" == "xjet" ]]; then
+      # The number of tasks and cores used must be the same for eobs
+      # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+      # This would also be an issues for vjet and sjet if anyone runs on those nodes.
+      export npe_node_eobs=10
+    fi
+    ;;
+
   "eupd")
     case ${CASE} in
       "C384")

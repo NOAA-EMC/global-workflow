@@ -45,6 +45,16 @@ case ${step} in
     export npe_node_eupd=$(( npe_node_max / nth_eupd ))
     ;;
 
+  "eobs")
+    case ${CASE} in
+      "C768" | "C384")
+        export npe_node_eobs=50
+        ;;
+      *)
+        export npe_node_eobs=40
+        ;;
+    esac
+
   *)
     ;;
 
