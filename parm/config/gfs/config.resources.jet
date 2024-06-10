@@ -17,8 +17,7 @@ case ${step} in
     if "${CASE}" == "C384"; then
       export npe_anal_gdas=270
       export npe_anal_gfs=270
-      export nth_anal_gdas=8
-      export nth_anal_gfs=8
+      export nth_anal=8
     fi
     ;;
 

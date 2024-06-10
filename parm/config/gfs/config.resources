@@ -527,15 +527,13 @@ case ${step} in
     export wtime_anal_gdas="01:20:00"
     export wtime_anal_gfs="01:00:00"
     export npe_anal_gdas=780
-    export nth_anal_gdas=5
+    export nth_anal=5
     export npe_anal_gfs=825
-    export nth_anal_gfs=5
     case ${CASE} in
       "C384")
         export npe_anal_gdas=160
         export npe_anal_gfs=160
-        export nth_anal_gdas=10
-        export nth_anal_gfs=10
+        export nth_anal=10
         ;;
       "C192" | "C96" | "C48")
         export npe_anal_gdas=84

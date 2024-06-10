@@ -15,14 +15,12 @@ case ${step} in
           export npe_anal_gfs=416
         fi
         #S4 is small, so run this task with just 1 thread
-        export nth_anal_gdas=1
-        export nth_anal_gfs=1
+        export nth_anal=1
         export wtime_anal_gdas="02:00:00"
         export wtime_anal_gfs="02:00:00"
         ;;
       "C192" | "C96" | "C48")
-        export nth_anal_gdas=4
-        export nth_anal_gfs=4
+        export nth_anal=4
         if [[ ${PARTITION_BATCH} == "s4" ]]; then
           export npe_anal_gdas=88
           export npe_anal_gfs=88

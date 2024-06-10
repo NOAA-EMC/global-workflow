@@ -8,9 +8,9 @@ case ${step} in
     ;;
 
   "anal")
-    export nth_anal_gdas=8
-    export nth_anal_gfs=8
+    export nth_anal=8
     ;;
+
   "upp")
     if [[ "${CASE}" == "C768" ]]; then
         then export memory_upp="480GB"
