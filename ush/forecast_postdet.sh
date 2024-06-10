@@ -547,7 +547,6 @@ CICE_postdet() {
   local source_file dest_file
   for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
-    fhr=$((10#${fhr}))
     if [[ -z ${last_fhr:-} ]]; then
       last_fhr=${fhr}
       continue
