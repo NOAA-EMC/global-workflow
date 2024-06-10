@@ -342,6 +342,9 @@ EOF
   do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
   do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
   do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
+  do_gwd_opt_psl       = ${do_gwd_opt_psl:-".false."}
+  psl_gwd_dx_factor    = ${psl_gwd_dx_factor:-"6.0"}
+  psl_gwd_z0m_factor   = ${psl_gwd_z0m_factor:-"0.003"}
   do_ugwp_v1_orog_only = ${do_ugwp_v1_orog_only:-".false."}
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
