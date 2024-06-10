@@ -305,17 +305,13 @@ class AerosolAnalysis(Analysis):
                     os.path.join(analysis_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
                 ])
 
-        # the remaining B matrix files are fixed and come from a fix directory
-        radius = 'cor_aero_universe_radius'
-        berror_list.append([
-            os.path.join(b_dir, radius), os.path.join(config.DATA, 'berror', radius)
-        ])
-        nproc = config.ntiles * config.layout_x * config.layout_y
-        for nn in range(1, nproc + 1):
-            berror_list.append([
-                os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc'),
-                os.path.join(config.DATA, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc')
-            ])
+        # the diffusion correlation files are computed every cycle and are available in COM
+        diff_hz = 'diffusion_hz.nc'
+        diff_vt = 'diffusion_vt.nc'
+        berror_list.append([ 
+            os.path.join(b_dir, diff_hz), os.path.join(config.DATA, 'berror',diff_hz)
+            os.path.join(b_dir, diff_vt), os.path.join(config.DATA, 'berror',diff_vt)
+
         berror_dict = {
             'mkdir': [os.path.join(config.DATA, 'berror')],
             'copy': berror_list,

@@ -61,20 +61,26 @@ class AerosolBMatrix(BMatrix):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # generate diagb YAML file
-        logger.debug(f"Generate bmat YAML file: {self.task_config.bmat_yaml}")
+        logger.info(f"Generate bmat YAML file: {self.task_config.bmat_yaml}")
         save_as_yaml(self.task_config.bmat_config, self.task_config.bmat_yaml)
         logger.info(f"Wrote bmat YAML to: {self.task_config.bmat_yaml}")
 
         # generate diffusion parameters YAML file
-        logger.debug(f"Generate diffusion YAML file: {self.task_config.diffusion_yaml}")
+        logger.info(f"Generate diffusion YAML file: {self.task_config.diffusion_yaml}")
         save_as_yaml(self.task_config.diffusion_config, self.task_config.diffusion_yaml)
         logger.info(f"Wrote diffusion YAML to: {self.task_config.diffusion_yaml}")
 
         # create output directory
         FileHandler({'mkdir': [os.path.join(self.task_config['DATA'], 'stddev')]}).sync()
 
+        # create diffusion output directory
+        FileHandler({'mkdir': [os.path.join(self.task_config['DATA'], 'diffusion')]}).sync()
+
         # link executable to run directory
+        logger.info(f'before link_bmatexe')
         self.link_bmatexe()
+        logger.info(f'before link_diffusion_exe')
+        self.link_diffusion_exe()
 
     @logit(logger)
     def computeVariance(self) -> None:
@@ -93,6 +99,26 @@ class AerosolBMatrix(BMatrix):
             raise OSError(f"Failed to execute {exec_cmd}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
+    @logit(logger)
+    def computeDiffusion(self) -> None:
+
+        chdir(self.task_config.DATA)
+
+        exec_cmd_diffusion = Executable(self.task_config.APRUN_AEROGENB)
+        exec_name_diffusion = os.path.join(self.task_config.DATA, 'gdas_fv3jedi_error_covariance_toolbox.x')
+        exec_cmd_diffusion.add_default_arg(exec_name_diffusion)
+        exec_cmd_diffusion.add_default_arg(self.task.config.diffusion_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd_diffusion}")
+            exec_cmd_diffusion()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd_diffusion}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd_diffusion}")
 
         pass
 
@@ -128,6 +154,8 @@ class AerosolBMatrix(BMatrix):
         stddevlist.append([src, dest])
 
         FileHandler({'copy': stddevlist}).sync()
+        # Diffusion files
+
 
     @logit(logger)
     def link_bmatexe(self) -> None:
@@ -154,6 +182,36 @@ class AerosolBMatrix(BMatrix):
         os.symlink(exe_src, exe_dest)
 
         return
+
+    @logit(logger)
+    def link_diffusion_exe(self) -> None:
+        """
+
+        This method links a JEDI (fv3jedi_error_covariance_toolbox.x) 
+        executable to the run directory
+
+        Parameters
+        ----------
+        Task: GDAS task
+
+        Returns
+        ----------
+        None
+        """
+
+        exe_src_diffusion = self.task_config.DIFFUSIONEXE
+
+        # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
+        logger.info(f"Link executable {exe_src_diffusion} to DATA/")
+        logger.warn("Linking is not permitted per EE2.")
+        exe_dest_diffusion = os.path.join(self.task_config.DATA, os.path.basename(exe_src_diffusion))
+        if os.path.exists(exe_dest_diffusion):
+            rm_p(exe_dest_diffusion)
+        os.symlink(exe_src_diffusion, exe_dest_diffusion)
+
+        return
+
+
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:

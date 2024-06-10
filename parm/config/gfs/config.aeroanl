@@ -20,6 +20,7 @@ export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIEXE="${EXECgfs}/gdas.x"
 export BMATEXE="${EXECgfs}/gdasapp_chem_diagb.x"
+export DIFFUSIONEXE="${EXECgfs}/fv3jedi_error_covariance_toolbox.x"
 
 if [[ "${DOIAU}" == "YES" ]]; then
   export aero_bkg_times="3,6,9"

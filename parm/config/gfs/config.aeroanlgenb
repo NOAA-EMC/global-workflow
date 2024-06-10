@@ -10,8 +10,9 @@ source "${EXPDIR}/config.resources" aeroanlgenb
 
 export BMATYAML="${PARMgfs}/gdas/aero/berror/aero_diagb.yaml.j2"
 export DIFFUSIONYAML="${PARMgfs}/gdas/aero/berror/aero_diffusionparm.yaml.j2"
-export iterations=10
-export fixed value=1.0
+export diff_iter=10
+export horiz_len=2500e3
+export fixed_val=1.0
 
 
 echo "END: config.aeroanlgenb"
