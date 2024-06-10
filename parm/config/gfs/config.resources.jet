@@ -1,0 +1,54 @@
+#!/usr/bin/bash
+
+# Jet-specific job resources
+
+case ${PARTITION_BATCH} in
+  "xjet") node_mem="61GB";;
+  "vjet") node_mem="61GB";;
+  "sjet") node_mem="29GB";;
+  "kjet") node_mem="93GB";;
+  *)
+    echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for Jet"
+    exit 3
+esac
+
+case ${step} in
+  "anal")
+    if "${CASE}" == "C384"; then
+      export npe_anal_gdas=270
+      export npe_anal_gfs=270
+      export nth_anal_gdas=8
+      export nth_anal_gfs=8
+    fi
+    ;;
+
+  "eupd")
+    case ${CASE} in
+      "C384")
+        export npe_eupd=80
+        ;;
+      "C192" | "C96" | "C48")
+        export nth_eupd=4
+        ;;
+      *)
+        ;;
+    esac
+    export npe_node_eupd=$(( npe_node_max / nth_eupd ))
+    ;;
+
+  "ecen")
+    if [[ "${CASE}" == "C768" ]]; then export nth_ecen=6; fi
+    export npe_node_ecen=$(( npe_node_max / nth_ecen ))
+    ;;
+
+  "upp")
+    export memory_upp="${node_mem}"
+    ;;
+
+  "esfc")
+    export memory_esfc="${node_mem}"
+    ;;
+
+  *)
+    ;;
+esac
