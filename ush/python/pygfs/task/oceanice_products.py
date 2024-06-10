@@ -58,16 +58,21 @@ class OceanIceProducts(Task):
 
         valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
 
-        # For CICE cases where offset is not 0, forecast_hour needs to be adjusted based on the offset.
-        # TODO: Consider FHMIN when calculating offset.
-        offset = int(self.runtime_config.current_cycle.strftime("%H")) % self.config.FHOUT_ICE_GFS
-        if self.config.COMPONENT == 'ice' and offset != 0:
-            forecast_hour = self.config.FORECAST_HOUR - int(self.runtime_config.current_cycle.strftime("%H"))
-            if forecast_hour <= self.config.FHOUT_ICE_GFS:
-                interval = self.config.FHOUT_ICE_GFS - int(self.runtime_config.current_cycle.strftime("%H"))
+        if self.config.COMPONENT == 'ice':
+            offset = int(self.runtime_config.current_cycle.strftime("%H")) % self.config.FHOUT_ICE_GFS
+            # For CICE cases where offset is not 0, forecast_hour needs to be adjusted based on the offset.
+            # TODO: Consider FHMIN when calculating offset.
+            if offset != 0:
+                forecast_hour = self.config.FORECAST_HOUR - int(self.runtime_config.current_cycle.strftime("%H"))
+                # For the first forecast hour, the interval may be different from the intervals of subsequent forecast hours
+                if forecast_hour <= self.config.FHOUT_ICE_GFS:
+                    interval = self.config.FHOUT_ICE_GFS - int(self.runtime_config.current_cycle.strftime("%H"))
+                else:
+                    interval = self.config.FHOUT_ICE_GFS
             else:
+                forecast_hour = self.config.FORECAST_HOUR
                 interval = self.config.FHOUT_ICE_GFS
-        else:
+        if self.config.COMPONENT == 'ocean':
             forecast_hour = self.config.FORECAST_HOUR
             interval = self.config.FHOUT_OCN_GFS
 
