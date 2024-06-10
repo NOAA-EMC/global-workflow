@@ -6,8 +6,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 ############################################
 # Set up model and cycle specific variables
 ############################################
-export finc=${finc:-3}
-export fstart=${fstart:-0}
 export model=${model:-gfs}
 export GRIB=${GRIB:-pgrb2f}
 export EXT=""
@@ -15,11 +13,6 @@ export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GFS_GEMPAK}
 
 # For half-degree P Grib files
 export DO_HD_PGRB=${DO_HD_PGRB:-YES}
-
-###################################
-# Specify NET and RUN Name and model
-####################################
-export model=${model:-gfs}
 
 ##############################################
 # Define COM directories
@@ -40,73 +33,129 @@ for grid in 1p00 0p50 0p25 40km 35km_atl 35km_pac; do
   fi
 done
 
-# TODO: These actions belong in an ex-script not a j-job
-if [[ -f poescript ]]; then
-   rm -f poescript
-fi
-
 ocean_domain_max=180
 if (( ocean_domain_max > FHMAX_GFS )); then
   ocean_domain_max=${FHMAX_GFS}
 fi
 
-{
-  #################################################################
-  # Execute the script for the 384 hour 1 degree grib
-  ##################################################################
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
+#################################################################
+# Execute the script for the 384 hour 1 degree grib
+##################################################################
+fhmin=0
+fhmax=240
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 3 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} ${fcsthrs}
+  fi
+fi
 
-  #################################################################
-  # Execute the script for the half-degree grib
-  ##################################################################
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50}"
+fhmin=252
+fhmax=384
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 12 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} ${fcsthrs}
+  fi
+fi
 
-  #################################################################
-  # Execute the script for the quater-degree grib
-  ####################################################################
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
+#################################################################
+# Execute the script for the half-degree grib
+##################################################################
+fhmin=0
+fhmax=240
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 3 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} ${fcsthrs}
+  fi
+fi
 
-  ####################################################################
-  # Execute the script to create the 35km Pacific grids for OPC
-  #####################################################################
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_pac ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_pac}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_pac ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_pac}"
+fhmin=246
+fhmax=276
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 6 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} ${fcsthrs}
+  fi
+fi
 
-  ####################################################################
-  # Execute the script to create the 35km Atlantic grids for OPC
-  #####################################################################
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_atl ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_atl}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_atl ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_atl}"
+fhmin=288
+fhmax=384
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 12 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} ${fcsthrs}
+  fi
+fi
 
-  #####################################################################
-  # Execute the script to create the 40km grids for HPC
-  ######################################################################
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 40km ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_40km}"
-  echo "time ${SCRgfs}/exgfs_atmos_nawips.sh 40km ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_40km}"
-} > poescript
+#################################################################
+# Execute the script for the quater-degree grib
+####################################################################
+fhmin=0
+fhmax=120
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 1 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25} ${fcsthrs}
+  fi
+fi
 
-cat poescript
+fhmin=123
+fhmax=240
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 3 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25} ${fcsthrs}
+  fi
+fi
 
-"${HOMEgfs}/ush/run_mpmd.sh" poescript
+fhmin=252
+fhmax=384
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 12 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25} ${fcsthrs}
+  fi
+fi
+
+####################################################################
+# Execute the script to create the 35km Pacific grids for OPC
+#####################################################################
+fhmin=0
+fhmax=180
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 3 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_pac ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_pac} ${fcsthrs}
+  fi
+fi
+
+if (( ${fcsthrs} > fhmax )); then
+  continue
+fi
+
+####################################################################
+# Execute the script to create the 35km Atlantic grids for OPC
+#####################################################################
+fhmin=0
+fhmax=180
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 3 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_atl ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_atl} ${fcsthrs}
+  fi
+fi
+
+if (( ${fcsthrs} > fhmax )); then
+  continue
+fi
+
+#####################################################################
+# Execute the script to create the 40km grids for HPC
+######################################################################
+fhmin=0
+fhmax=180
+if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
+  if ((${fcsthrs} % 3 == 0)); then
+    time ${SCRgfs}/exgfs_atmos_nawips.sh 40km ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_40km} ${fcsthrs}
+  fi
+fi
+
+if (( ${fcsthrs} > fhmax )); then
+  continue
+fi
+
 export err=$?; err_chk
 
 ############################################
