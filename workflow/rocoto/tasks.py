@@ -140,8 +140,8 @@ class Tasks:
         # Get a list of all forecast hours
         fhrs = []
         if cdump in ['gdas']:
-            fhmax = local_config['FHMAX']
-            fhout = local_config['FHOUT']
+            fhmax = local_config['FHMAX_GDAS']
+            fhout = local_config['FHOUT_GDAS']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif cdump in ['gfs', 'gefs']:
             fhmax = local_config['FHMAX_GFS']
@@ -171,25 +171,34 @@ class Tasks:
 
         account = task_config['ACCOUNT_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['ACCOUNT']
 
-        walltime = task_config[f'wtime_{task_name}']
-        if self.cdump in ['gfs'] and f'wtime_{task_name}_gfs' in task_config.keys():
-            walltime = task_config[f'wtime_{task_name}_gfs']
+        if f'wtime_{task_name}_{self.cdump}' in task_config:
+            walltime = task_config[f'wtime_{task_name}_{self.cdump}']
+        else:
+            walltime = task_config[f'wtime_{task_name}']
 
-        cores = task_config[f'npe_{task_name}']
-        if self.cdump in ['gfs'] and f'npe_{task_name}_gfs' in task_config.keys():
-            cores = task_config[f'npe_{task_name}_gfs']
+        if f'npe_{task_name}_{self.cdump}' in task_config:
+            cores = task_config[f'npe_{task_name}_{self.cdump}']
+        else:
+            cores = task_config[f'npe_{task_name}']
 
-        ppn = task_config[f'npe_node_{task_name}']
-        if self.cdump in ['gfs'] and f'npe_node_{task_name}_gfs' in task_config.keys():
-            ppn = task_config[f'npe_node_{task_name}_gfs']
+        if f'npe_node_{task_name}_{self.cdump}' in task_config:
+            ppn = task_config[f'npe_node_{task_name}_{self.cdump}']
+        else:
+            ppn = task_config[f'npe_node_{task_name}']
 
         nodes = int(np.ceil(float(cores) / float(ppn)))
 
-        threads = task_config[f'nth_{task_name}']
-        if self.cdump in ['gfs'] and f'nth_{task_name}_gfs' in task_config.keys():
-            threads = task_config[f'nth_{task_name}_gfs']
+        if f'nth_{task_name}_{self.cdump}' in task_config:
+            threads = task_config[f'nth_{task_name}_{self.cdump}']
+        else:
+            threads = task_config[f'nth_{task_name}']
 
-        memory = task_config.get(f'memory_{task_name}', None)
+        if f'memory_{task_name}_{self.cdump}' in task_config:
+            memory = task_config[f'memory_{task_name}_{self.cdump}']
+        else:
+            # Memory is not required
+            memory = task_config.get(f'memory_{task_name}', None)
+
         if scheduler in ['pbspro']:
             if task_config.get('prepost', False):
                 memory += ':prepost=true'

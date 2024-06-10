@@ -77,11 +77,7 @@ case ${step} in
     export npe_prep=4
     export npe_node_prep=2
     export nth_prep=1
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      export is_exclusive=True
-    else
-      export memory_prep="40GB"
-    fi
+    export memory_prep="40GB"
     ;;
 
   "prepsnowobs")
@@ -117,27 +113,27 @@ case ${step} in
     ;;
 
   "waveprep")
-    export wtime_waveprep="00:10:00"
-    export npe_waveprep=5
+    export wtime_waveprep_gdas="00:10:00"
+    export npe_waveprep_gdas=5
     export npe_waveprep_gfs=65
-    export nth_waveprep=1
+    export nth_waveprep_gdas=1
     export nth_waveprep_gfs=1
-    export npe_node_waveprep=$(( npe_node_max / nth_waveprep ))
+    export npe_node_waveprep_gdas=$(( npe_node_max / nth_waveprep_gdas ))
     export npe_node_waveprep_gfs=$(( npe_node_max / nth_waveprep_gfs ))
-    export NTASKS=${npe_waveprep}
+    export NTASKS_gdas=${npe_waveprep_gdas}
     export NTASKS_gfs=${npe_waveprep_gfs}
-    export memory_waveprep="100GB"
+    export memory_waveprep_gdas="100GB"
     export memory_waveprep_gfs="150GB"
     ;;
 
   "wavepostsbs")
-    export wtime_wavepostsbs="00:20:00"
+    export wtime_wavepostsbs_gdas="00:20:00"
     export wtime_wavepostsbs_gfs="03:00:00"
     export npe_wavepostsbs=8
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
     export NTASKS=${npe_wavepostsbs}
-    export memory_wavepostsbs="10GB"
+    export memory_wavepostsbs_gdas="10GB"
     export memory_wavepostsbs_gfs="10GB"
     ;;
 
@@ -229,11 +225,12 @@ case ${step} in
     export layout_y=${layout_y_atmanl}
 
     export wtime_atmanlvar="00:30:00"
-    export npe_atmanlvar=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlvar_gdas=$(( layout_x * layout_y * 6 ))
     export npe_atmanlvar_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlvar=1
-    export nth_atmanlvar_gfs=${nth_atmanlvar}
-    export npe_node_atmanlvar=$(( npe_node_max / nth_atmanlvar ))
+    export nth_atmanlvar_gdas=1
+    export nth_atmanlvar_gfs=${nth_atmanlvar_gdas}
+    export npe_node_atmanlvar_gdas=$(( npe_node_max / nth_atmanlvar_gdas ))
+    export npe_node_atmanlvar_gfs=$(( npe_node_max / nth_atmanlvar_gfs ))
     export memory_atmanlvar="96GB"
     export is_exclusive=True
     ;;
@@ -243,11 +240,12 @@ case ${step} in
     export layout_y=${layout_y_atmanl}
 
     export wtime_atmanlfv3inc="00:30:00"
-    export npe_atmanlfv3inc=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlfv3inc_gdas=$(( layout_x * layout_y * 6 ))
     export npe_atmanlfv3inc_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlfv3inc=1
-    export nth_atmanlfv3inc_gfs=${nth_atmanlfv3inc}
-    export npe_node_atmanlfv3inc=$(( npe_node_max / nth_atmanlfv3inc ))
+    export nth_atmanlfv3inc_gdas=1
+    export nth_atmanlfv3inc_gfs=${nth_atmanlfv3inc_gdas}
+    export npe_node_atmanlfv3inc_gdas=$(( npe_node_max / nth_atmanlfv3inc_gdas ))
+    export npe_node_atmanlfv3inc_gfs=$(( npe_node_max / nth_atmanlfv3inc_gfs ))
     export memory_atmanlfv3inc="96GB"
     export is_exclusive=True
     ;;
@@ -351,11 +349,12 @@ case ${step} in
     export layout_y
 
     export wtime_aeroanlrun="00:30:00"
-    export npe_aeroanlrun=$(( layout_x * layout_y * 6 ))
+    export npe_aeroanlrun_gdas=$(( layout_x * layout_y * 6 ))
     export npe_aeroanlrun_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_aeroanlrun=1
+    export nth_aeroanlrun_gdas=1
     export nth_aeroanlrun_gfs=1
-    export npe_node_aeroanlrun=$(( npe_node_max / nth_aeroanlrun ))
+    export npe_node_aeroanlrun_gdas=$(( npe_node_max / nth_aeroanlrun_gdas ))
+    export npe_node_aeroanlrun_gfs=$(( npe_node_max / nth_aeroanlrun_gfs ))
     export is_exclusive=True
     ;;
 
@@ -525,56 +524,22 @@ case ${step} in
     ;;
 
   "anal")
-    export wtime_anal="01:20:00"
+    export wtime_anal_gdas="01:20:00"
     export wtime_anal_gfs="01:00:00"
-    export npe_anal=780
-    export nth_anal=5
+    export npe_anal_gdas=780
+    export nth_anal_gdas=5
     export npe_anal_gfs=825
     export nth_anal_gfs=5
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      export nth_anal=8
-      export nth_anal_gfs=8
-    fi
     case ${CASE} in
       "C384")
-        export npe_anal=160
+        export npe_anal_gdas=160
         export npe_anal_gfs=160
-        export nth_anal=10
+        export nth_anal_gdas=10
         export nth_anal_gfs=10
-        if [[ ${machine} = "HERA" ]]; then
-          export npe_anal=270
-          export npe_anal_gfs=270
-          export nth_anal=8
-          export nth_anal_gfs=8
-        fi	  
-        if [[ ${machine} = "S4" ]]; then
-          #On the S4-s4 partition, this is accomplished by increasing the task
-          #count to a multiple of 32
-          if [[ ${PARTITION_BATCH} = "s4" ]]; then
-            export npe_anal=416
-            export npe_anal_gfs=416
-          fi
-          #S4 is small, so run this task with just 1 thread
-          export nth_anal=1
-          export nth_anal_gfs=1
-          export wtime_anal="02:00:00"
-        fi
         ;;
       "C192" | "C96" | "C48")
-        export npe_anal=84
+        export npe_anal_gdas=84
         export npe_anal_gfs=84
-        if [[ ${machine} == "S4" ]]; then
-          export nth_anal=4
-          export nth_anal_gfs=4
-          #Adjust job count for S4
-          if [[ ${PARTITION_BATCH} == "s4" ]]; then
-            export npe_anal=88
-            export npe_anal_gfs=88
-          elif [[ ${PARTITION_BATCH} == "ivy" ]]; then
-            export npe_anal=90
-            export npe_anal_gfs=90
-          fi
-        fi
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
@@ -592,9 +557,9 @@ case ${step} in
     export npe_analcalc=127
     export ntasks="${npe_analcalc}"
     export nth_analcalc=1
-    export nth_echgres=4
-    export nth_echgres_gfs=12
     export npe_node_analcalc=$(( npe_node_max / nth_analcalc ))
+    export nth_echgres_gdas=4
+    export nth_echgres_gfs=12
     export is_exclusive=True
     export memory_analcalc="48GB"
     ;;
@@ -635,6 +600,15 @@ case ${step} in
         ntasks_quilt=${ntasks_quilt_gfs}
         nthreads_fv3=${nthreads_fv3_gfs}
         nthreads_ufs=${nthreads_ufs_gfs}
+      elif [[ "${_CDUMP}" =~ "gdas" ]]; then
+        export layout_x=${layout_x_gdas}
+        export layout_y=${layout_y_gdas}
+        export WRITE_GROUP=${WRITE_GROUP_GDAS}
+        export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GDAS}
+        ntasks_fv3=${ntasks_fv3_gdas}
+        ntasks_quilt=${ntasks_quilt_gdas}
+        nthreads_fv3=${nthreads_fv3_gdas}
+        nthreads_ufs=${nthreads_ufs_gdas}
       fi
 
       # Determine if using ESMF-managed threading or traditional threading
@@ -729,29 +703,28 @@ case ${step} in
 
       echo "Total PETS for ${_CDUMP} = ${NTASKS_TOT}"
 
-      if [[ "${_CDUMP}" =~ "gfs" ]]; then
-        declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
-        declare -x "nth_${step}_gfs"="${UFS_THREADS}"
-        declare -x "npe_node_${step}_gfs"="${npe_node_max}"
-      else
-        declare -x "npe_${step}"="${NTASKS_TOT}"
-        declare -x "nth_${step}"="${UFS_THREADS}"
-        declare -x "npe_node_${step}"="${npe_node_max}"
-      fi
+      declare -x "npe_${step}_${_CDUMP}"="${NTASKS_TOT}"
+      declare -x "nth_${step}_${_CDUMP}"="${UFS_THREADS}"
+      declare -x "npe_node_${step}_${_CDUMP}"="${npe_node_max}"
 
     done
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}"="00:20:00"
+        declare -x "wtime_${step}_gdas"="00:20:00"
+        declare -x "wtime_${step}_enkfgdas"="00:20:00"
         declare -x "wtime_${step}_gfs"="03:00:00"
+        declare -x "wtime_${step}_enkfgfs"="00:20:00"
         ;;
       "C384")
-        declare -x "wtime_${step}"="00:30:00"
+        declare -x "wtime_${step}_gdas"="00:30:00"
+        declare -x "wtime_${step}_enkfgdas"="00:30:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
+        declare -x "wtime_${step}_enkfgfs"="00:30:00"
         ;;
       "C768" | "C1152")
-        declare -x "wtime_${step}"="00:30:00"
+        # Not valid resolutions for ensembles
+        declare -x "wtime_${step}_gdas"="00:30:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
@@ -784,14 +757,12 @@ case ${step} in
       "C768")
         export npe_upp=120
         export memory_upp="96GB"
-        if [[ ${machine} == "WCOSS2" ]]; then export memory_upp="480GB" ; fi
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
       ;;
     esac
-    if [[ ${machine} == "JET" ]]; then unset memory_upp ; fi
     export npe_node_upp=${npe_upp}
 
     export nth_upp=1
@@ -808,10 +779,6 @@ case ${step} in
     export npe_atmos_products=24
     export nth_atmos_products=1
     export npe_node_atmos_products="${npe_atmos_products}"
-    export wtime_atmos_products_gfs="${wtime_atmos_products}"
-    export npe_atmos_products_gfs="${npe_atmos_products}"
-    export nth_atmos_products_gfs="${nth_atmos_products}"
-    export npe_node_atmos_products_gfs="${npe_node_atmos_products}"
     export is_exclusive=True
     ;;
 
@@ -836,10 +803,6 @@ case ${step} in
     export npe_vminmon=1
     export nth_vminmon=1
     export npe_node_vminmon=1
-    export wtime_vminmon_gfs="00:05:00"
-    export npe_vminmon_gfs=1
-    export nth_vminmon_gfs=1
-    export npe_node_vminmon_gfs=1
     export memory_vminmon="1G"
     ;;
 
@@ -873,17 +836,14 @@ case ${step} in
     export nth_fit2obs=1
     export npe_node_fit2obs=1
     export memory_fit2obs="20G"
-    if [[ ${machine} == "WCOSS2" ]]; then export npe_node_fit2obs=3 ; fi
     ;;
 
   "metp")
     export nth_metp=1
-    export wtime_metp="03:00:00"
+    export wtime_metp_gdas="03:00:00"
+    export wtime_metp_gfs="06:00:00"
     export npe_metp=4
     export npe_node_metp=4
-    export wtime_metp_gfs="06:00:00"
-    export npe_metp_gfs=4
-    export npe_node_metp_gfs=4
     export is_exclusive=True
     ;;
 
@@ -892,9 +852,6 @@ case ${step} in
     export npe_echgres=3
     export nth_echgres=${npe_node_max}
     export npe_node_echgres=1
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      export memory_echgres="200GB"
-    fi
     ;;
 
   "init")
@@ -925,9 +882,6 @@ case ${step} in
     declare -x "npe_node_${step}"="1"
     declare -x "nth_${step}"="1"
     declare -x "memory_${step}"="4096M"
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      declare -x "memory_${step}"="50GB"
-    fi
     ;;
 
   "cleanup")
@@ -962,11 +916,12 @@ case ${step} in
     export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlletkf="00:30:00"
-    export npe_atmensanlletkf=$(( layout_x * layout_y * 6 ))
-    export npe_atmensanlletkf_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmensanlletkf=1
-    export nth_atmensanlletkf_gfs=${nth_atmensanlletkf}
-    export npe_node_atmensanlletkf=$(( npe_node_max / nth_atmensanlletkf ))
+    export npe_atmensanlletkf_enkfgdas=$(( layout_x * layout_y * 6 ))
+    export npe_atmensanlletkf_enkfgfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmensanlletkf_enkfgdas=1
+    export nth_atmensanlletkf_enkfgfs=${nth_atmensanlletkf_enkfgdas}
+    export npe_node_atmensanlletkf_gdas=$(( npe_node_max / nth_atmensanlletkf_enkfgdas ))
+    export npe_node_atmensanlletkf_gfs=$(( npe_node_max / nth_atmensanlletkf_enkfgfs ))
     export memory_atmensanlletkf="96GB"
     export is_exclusive=True
     ;;
@@ -976,11 +931,12 @@ case ${step} in
     export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlfv3inc="00:30:00"
-    export npe_atmensanlfv3inc=$(( layout_x * layout_y * 6 ))
-    export npe_atmensanlfv3inc_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmensanlfv3inc=1
-    export nth_atmensanlfv3inc_gfs=${nth_atmensanlfv3inc}
-    export npe_node_atmensanlfv3inc=$(( npe_node_max / nth_atmensanlfv3inc ))
+    export npe_atmensanlfv3inc_enkfgdas=$(( layout_x * layout_y * 6 ))
+    export npe_atmensanlfv3inc_enkfgfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmensanlfv3inc_enkfgdas=1
+    export nth_atmensanlfv3inc_enkfgfs=${nth_atmensanlfv3inc_enkfgdas}
+    export npe_node_atmensanlfv3inc_enkfgdas=$(( npe_node_max / nth_atmensanlfv3inc_enkfgdas ))
+    export npe_node_atmensanlfv3inc_enkfgfs=$(( npe_node_max / nth_atmensanlfv3inc_enkfgfs ))
     export memory_atmensanlfv3inc="96GB"
     export is_exclusive=True
     ;;
@@ -1008,19 +964,10 @@ case ${step} in
     export npe_eomg=${npe_eobs}
     export nth_eobs=2
     export nth_eomg=${nth_eobs}
+    # NOTE The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     export npe_node_eobs=$(( npe_node_max / nth_eobs ))
     export is_exclusive=True
-    # The number of tasks and cores used must be the same for eobs
-    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
-    # For S4, this is accomplished by running 10 tasks/node
-    if [[ ${machine} = "S4" ]]; then
-      export npe_node_eobs=10
-    elif [[ ${machine} = "HERCULES" ]]; then
-      # For Hercules, this is only an issue at C384; use 20 tasks/node
-      if [[ ${CASE} = "C384" ]]; then
-        export npe_node_eobs=20
-      fi
-    fi
     export npe_node_eomg=${npe_node_eobs}
     ;;
 
@@ -1038,30 +985,14 @@ case ${step} in
       "C768")
         export npe_eupd=480
         export nth_eupd=6
-        if [[ "${machine}" == "WCOSS2" ]]; then
-          export npe_eupd=315
-          export nth_eupd=14
-        fi
         ;;
       "C384")
         export npe_eupd=270
         export nth_eupd=8
-        if [[ "${machine}" == "WCOSS2" ]]; then
-          export npe_eupd=315
-          export nth_eupd=14
-        elif [[ "${machine}" == "S4" ]]; then
-           export npe_eupd=160
-           export nth_eupd=2
-        elif [[ "${machine}" == "HERA" ]]; then
-          export npe_eupd=80
-        fi
         ;;
       "C192" | "C96" | "C48")
         export npe_eupd=42
         export nth_eupd=2
-        if [[ "${machine}" == "HERA" || "${machine}" == "JET" ]]; then
-          export nth_eupd=4
-        fi
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
@@ -1076,7 +1007,6 @@ case ${step} in
     export wtime_ecen="00:10:00"
     export npe_ecen=80
     export nth_ecen=4
-    if [[ "${machine}" == "HERA" ]]; then export nth_ecen=6; fi
     if [[ ${CASE} == "C384" || ${CASE} == "C192" || ${CASE} == "C96" || ${CASE} == "C48" ]]; then
       export nth_ecen=2
     fi
@@ -1093,7 +1023,6 @@ case ${step} in
     export npe_node_esfc=$(( npe_node_max / nth_esfc ))
     export nth_cycle=${nth_esfc}
     export npe_node_cycle=$(( npe_node_max / nth_cycle ))
-    if [[ ${machine} != "JET" ]]; then export memory_esfc="80G" ; fi
     ;;
 
   "epos")
@@ -1136,12 +1065,12 @@ case ${step} in
 
   "gempak")
     export wtime_gempak="03:00:00"
-    export npe_gempak=2
+    export npe_gempak_gdas=2
     export npe_gempak_gfs=28
-    export npe_node_gempak=2
+    export npe_node_gempak_gdas=2
     export npe_node_gempak_gfs=28
     export nth_gempak=1
-    export memory_gempak="4GB"
+    export memory_gempak_gdas="4GB"
     export memory_gempak_gfs="2GB"
     ;;
 
