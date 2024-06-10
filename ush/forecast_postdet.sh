@@ -14,7 +14,7 @@ FV3_postdet() {
   if [[ "${warm_start}" == ".false." ]]; then
 
     # Get list of FV3 cold start files
-    local file_list file_array
+    local file_list
     file_list=$(FV3_coldstarts)
     echo "Copying FV3 cold start files for 'RUN=${RUN}' at '${current_cycle}' from '${COMIN_ATMOS_INPUT}'"
     local fv3_file
@@ -37,7 +37,7 @@ FV3_postdet() {
     fi
 
     # Get list of FV3 restart files
-    local file_list file_array
+    local file_list 
     file_list=$(FV3_restarts)
     echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     local fv3_file restart_file
@@ -270,14 +270,12 @@ FV3_out() {
   fi
 
   # Get list of FV3 restart files
-  local file_list file_array fv3_file
-  file_list=$(FV3_restarts)
-  IFS=',' read -ra file_array <<< "${file_list}"
+  local file_list fv3_file
 
   # Copy restarts for the dates collected above to COM
   for restart_date in "${restart_dates[@]}"; do
     echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
-    for fv3_file in "${file_array[@]}"; do
+    for fv3_file in ${file_list}; do
       ${NCP} "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
              "${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}"
     done
