@@ -140,8 +140,8 @@ class Tasks:
         # Get a list of all forecast hours
         fhrs = []
         if cdump in ['gdas']:
-            fhmax = local_config['FHMAX_GDAS']
-            fhout = local_config['FHOUT_GDAS']
+            fhmax = local_config['FHMAX']
+            fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif cdump in ['gfs', 'gefs']:
             fhmax = local_config['FHMAX_GFS']
