@@ -225,26 +225,48 @@ class SnowEnsAnalysis(Analysis):
         self : Analysis
             Instance of the SnowEnsAnalysis object
         """
-        for mem in range(1, self.task_config.NMEM_ENS + 1):
-            # for now, just looping serially, should parallelize this eventually
-            logger.info(f"Now applying increment to member mem{mem:03}")
-            logger.info(f'{os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}")}')
-            memdict = AttrDict(
-                {
-                    'HOMEgfs': self.task_config.HOMEgfs,
-                    'DATA': os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}"),
-                    'DATAROOT': self.task_config.DATA,
-                    'current_cycle': self.task_config.bkg_time,
-                    'CASE_ENS': self.task_config.CASE_ENS,
-                    'OCNRES': self.task_config.OCNRES,
-                    'ntiles': 6,
-                    'ENS_APPLY_INCR_NML_TMPL': self.task_config.ENS_APPLY_INCR_NML_TMPL,
-                    'APPLY_INCR_EXE': self.task_config.APPLY_INCR_EXE,
-                    'APRUN_APPLY_INCR': self.task_config.APRUN_APPLY_INCR,
-                    'MYMEM': f"{mem:03}",
-                }
-            )
-            self.add_increments(memdict)
+
+        bkg_times = []
+        # no matter what, we want to process the center of the window
+        bkg_times.append(self.task_config.current_cycle)
+        # if DOIAU, we need to copy the increment to be valid at the center of the window
+        # and compute the analysis there to restart the model
+        if self.task_config.DOIAU:
+            logger.info("Copying increments to beginning of window")
+            template_in = f'snowinc.{to_fv3time(self.task_config.SNOW_WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
+            template_out = f'snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+            inclist = []
+            for itile in range(1, 7):
+                filename_in = template_in.format(tilenum=itile)
+                filename_out = template_out.format(tilenum=itile)
+                src = os.path.join(self.task_config.DATA, 'inc', 'ensmean',  filename_in)
+                dest = os.path.join(self.task_config.DATA, 'inc', 'ensmean', filename_out)
+                inclist.append([src, dest])
+            FileHandler({'copy': inclist}).sync()
+            # if running with IAU, we also need an analysis at the beginning of the window
+            bkg_times.append(self.task_config.SNOW_WINDOW_BEGIN)    
+
+        for bkg_time in bkg_times:
+            for mem in range(1, self.task_config.NMEM_ENS + 1):
+                # for now, just looping serially, should parallelize this eventually
+                logger.info(f"Now applying increment to member mem{mem:03}")
+                logger.info(f'{os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}")}')
+                memdict = AttrDict(
+                    {
+                        'HOMEgfs': self.task_config.HOMEgfs,
+                        'DATA': os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}"),
+                        'DATAROOT': self.task_config.DATA,
+                        'current_cycle': bkg_time,
+                        'CASE_ENS': self.task_config.CASE_ENS,
+                        'OCNRES': self.task_config.OCNRES,
+                        'ntiles': 6,
+                        'ENS_APPLY_INCR_NML_TMPL': self.task_config.ENS_APPLY_INCR_NML_TMPL,
+                        'APPLY_INCR_EXE': self.task_config.APPLY_INCR_EXE,
+                        'APRUN_APPLY_INCR': self.task_config.APRUN_APPLY_INCR,
+                        'MYMEM': f"{mem:03}",
+                    }
+                )
+                self.add_increments(memdict)
 
     @staticmethod
     @logit(logger)

@@ -99,7 +99,15 @@ copy:
 {% endfor %}
 # we need to copy them to two places, one serves as the basis for the analysis
 {% for tile in range(1, 7) %}
-- ["{{ com_prev_ns.COM_ATMOS_RESTART_MEM }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
-- ["{{ com_prev_ns.COM_ATMOS_RESTART_MEM }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ com_prev_ns.COM_ATMOS_RESTART_MEM }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ com_prev_ns.COM_ATMOS_RESTART_MEM }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
 {% endfor %}
+{% if DOIAU %}
+# if using IAU, also need backgrounds copied at the beginning of the window
+# we need to copy them to two places, one serves as the basis for the analysis
+{% for tile in range(1, 7) %}
+- ["{{ com_prev_ns.COM_ATMOS_RESTART_MEM }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ com_prev_ns.COM_ATMOS_RESTART_MEM }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+{% endfor %}
+{% endif %}
 {% endfor %}
