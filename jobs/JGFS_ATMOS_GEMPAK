@@ -43,17 +43,17 @@ fi
 ##################################################################
 fhmin=0
 fhmax=240
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 3 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 3 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "1p00" "${FHMAX_GFS}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_1p00}" "${fcsthrs}"
   fi
 fi
 
 fhmin=252
 fhmax=384
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 12 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 1p00 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_1p00} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 12 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "1p00" "${FHMAX_GFS}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_1p00}" "${fcsthrs}"
   fi
 fi
 
@@ -62,25 +62,25 @@ fi
 ##################################################################
 fhmin=0
 fhmax=240
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 3 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 3 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "0p50" "${FHMAX_GFS}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_0p50}" "${fcsthrs}"
   fi
 fi
 
 fhmin=246
 fhmax=276
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 6 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 6 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "0p50" "${FHMAX_GFS}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_0p50}" "${fcsthrs}"
   fi
 fi
 
 fhmin=288
 fhmax=384
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 12 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p50 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p50} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 12 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "0p50" "${FHMAX_GFS}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_0p50}" "${fcsthrs}"
   fi
 fi
 
@@ -89,25 +89,25 @@ fi
 ####################################################################
 fhmin=0
 fhmax=120
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 1 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 1 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "0p25" "${FHMAX_GFS}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}" "${fcsthrs}"
   fi
 fi
 
 fhmin=123
 fhmax=240
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 3 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 3 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "0p25" "${FHMAX_GFS}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}" "${fcsthrs}"
   fi
 fi
 
 fhmin=252
 fhmax=384
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 12 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 0p25 ${FHMAX_GFS} GFS_GEMPAK ${COM_ATMOS_GEMPAK_0p25} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 12 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "0p25" "${FHMAX_GFS}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}" "${fcsthrs}"
   fi
 fi
 
@@ -116,14 +116,10 @@ fi
 #####################################################################
 fhmin=0
 fhmax=180
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 3 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_pac ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_pac} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 3 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "35km_pac" "${ocean_domain_max}" "GFS_GEMPAK_WWB" "${COM_ATMOS_GEMPAK_35km_pac}" "${fcsthrs}"
   fi
-fi
-
-if (( ${fcsthrs} > fhmax )); then
-  continue
 fi
 
 ####################################################################
@@ -131,14 +127,10 @@ fi
 #####################################################################
 fhmin=0
 fhmax=180
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 3 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 35km_atl ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_35km_atl} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 3 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "35km_atl" "${ocean_domain_max}" "GFS_GEMPAK_WWB" "${COM_ATMOS_GEMPAK_35km_atl}" "${fcsthrs}"
   fi
-fi
-
-if (( ${fcsthrs} > fhmax )); then
-  continue
 fi
 
 #####################################################################
@@ -146,14 +138,10 @@ fi
 ######################################################################
 fhmin=0
 fhmax=180
-if (( ${fcsthrs} >= fhmin && ${fcsthrs} <= fhmax )); then
-  if ((${fcsthrs} % 3 == 0)); then
-    time ${SCRgfs}/exgfs_atmos_nawips.sh 40km ${ocean_domain_max} GFS_GEMPAK_WWB ${COM_ATMOS_GEMPAK_40km} ${fcsthrs}
+if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
+  if ((fcsthrs % 3 == 0)); then
+    time "${SCRgfs}/exgfs_atmos_nawips.sh" "40km" "${ocean_domain_max}" "GFS_GEMPAK_WWB" "${COM_ATMOS_GEMPAK_40km}" "${fcsthrs}"
   fi
-fi
-
-if (( ${fcsthrs} > fhmax )); then
-  continue
 fi
 
 export err=$?; err_chk
