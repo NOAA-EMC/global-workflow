@@ -42,7 +42,7 @@ case ${step} in
     ;;
 
   "eupd")
-    if [[ "$CASE" == "C384" ]]; then
+    if [[ "${CASE}" == "C384" ]]; then
       export npe_eupd=160
       export nth_eupd=2
     fi

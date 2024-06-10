@@ -13,7 +13,7 @@ case ${step} in
 
   "upp")
     if [[ "${CASE}" == "C768" ]]; then
-        then export memory_upp="480GB"
+        export memory_upp="480GB"
     fi
     ;;
 

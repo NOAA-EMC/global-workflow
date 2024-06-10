@@ -14,6 +14,7 @@ case ${step} in
         export npe_node_eobs=40
         ;;
     esac
+    ;;
 
   *)
     ;;

@@ -4,7 +4,7 @@
 
 case ${step} in
   "anal")
-    if "${CASE}" == "C384"; then
+    if [[ "${CASE}" == "C384" ]]; then
       export npe_anal_gdas=270
       export npe_anal_gfs=270
       export nth_anal=8
