@@ -1176,12 +1176,15 @@ class GFSTasks(Tasks):
 
     def wavepostbndpntbll(self):
 
-        # The wavepostbndpntbll job runs on forecast hours up to 180 hours
+        # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
+        wave_cfg = self._configs['wave']
         last_fhr = Tasks._get_forecast_hours(self.cdump,
-                                             self._configs['wavepostbndpntbll'],
+                                             wave_cfg,
                                              component='atmos')[-1]
-        if last_fhr > 180:
-            last_fhr = 180
+
+        fhmax_wav_ibp = wave_cfg['FHMAX_WAV_IBP']
+        if last_fhr > fhmax_wav_ibp:
+            last_fhr = fhmax_wav_ibp
 
         deps = []
         atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
