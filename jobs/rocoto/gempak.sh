@@ -10,6 +10,7 @@ export jobid="${job}.$$"
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
+# shellcheck disable=SC2153
 fhrlst=$(echo "${FHRLST}" | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 for fhr3 in ${fhrlst}; do
