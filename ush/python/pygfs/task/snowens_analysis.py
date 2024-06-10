@@ -215,7 +215,6 @@ class SnowEnsAnalysis(Analysis):
         snow_final_list = parse_j2yaml(self.task_config.SNOW_ENS_FINALIZE_TMPL, self.task_config)
         FileHandler(snow_final_list).sync()
 
-    @staticmethod
     @logit(logger)
     def addEnsIncrements(self) -> None:
         """Loop through all ensemble members and apply increment to create
@@ -229,18 +228,22 @@ class SnowEnsAnalysis(Analysis):
         for mem in range(1, self.task_config.NMEM_ENS + 1):
             # for now, just looping serially, should parallelize this eventually
             logger.info(f"Now applying increment to member mem{mem:03}")
-            chdir(os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}"))
-            memdict = {
-                'HOMEgfs': self.task_config.HOMEgfs,
-                'DATA': os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}"),
-                'current_cycle': self.task_config.bkg_time,
-                'CASE_ENS': self.task_config.CASE_ENS,
-                'OCNRES': self.task_config.OCNRES,
-                'ntiles': 6,
-                'ENS_APPLY_INCR_NML_TMPL': self.task_config.ENS_APPLY_INCR_NML_TMPL,
-                'APPLY_INCR_EXE': self.task_config.APPLY_INCR_EXE,
-                'APRUN_APPLY_INCR': self.task_config.APRUN_APPLY_INCR,
-            }
+            logger.info(f'{os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}")}')
+            memdict = AttrDict(
+                {
+                    'HOMEgfs': self.task_config.HOMEgfs,
+                    'DATA': os.path.join(self.task_config.DATA, "anl", f"mem{mem:03}"),
+                    'DATAROOT': self.task_config.DATA,
+                    'current_cycle': self.task_config.bkg_time,
+                    'CASE_ENS': self.task_config.CASE_ENS,
+                    'OCNRES': self.task_config.OCNRES,
+                    'ntiles': 6,
+                    'ENS_APPLY_INCR_NML_TMPL': self.task_config.ENS_APPLY_INCR_NML_TMPL,
+                    'APPLY_INCR_EXE': self.task_config.APPLY_INCR_EXE,
+                    'APRUN_APPLY_INCR': self.task_config.APRUN_APPLY_INCR,
+                    'MYMEM': f"{mem:03}",
+                }
+            )
             self.add_increments(memdict)
 
     @staticmethod
@@ -285,6 +288,7 @@ class SnowEnsAnalysis(Analysis):
              Should contain the following keys:
              HOMEgfs
              DATA
+             DATAROOT
              current_cycle
              CASE
              OCNRES
@@ -300,6 +304,7 @@ class SnowEnsAnalysis(Analysis):
         WorkflowException
             All other exceptions
         """
+        os.chdir(config.DATA)
 
         logger.info("Create namelist for APPLY_INCR_EXE")
         nml_template = config.ENS_APPLY_INCR_NML_TMPL
@@ -318,6 +323,7 @@ class SnowEnsAnalysis(Analysis):
         os.symlink(exe_src, exe_dest)
 
         # execute APPLY_INCR_EXE to create analysis files
+        print(os.getcwd())
         exe = Executable(config.APRUN_APPLY_INCR)
         exe.add_default_arg(os.path.join(config.DATA, os.path.basename(exe_src)))
         logger.info(f"Executing {exe}")
