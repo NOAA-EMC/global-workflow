@@ -918,8 +918,8 @@ case ${step} in
     export npe_atmensanlletkf_enkfgfs=$(( layout_x * layout_y * 6 ))
     export nth_atmensanlletkf_enkfgdas=1
     export nth_atmensanlletkf_enkfgfs=${nth_atmensanlletkf_enkfgdas}
-    export npe_node_atmensanlletkf_gdas=$(( npe_node_max / nth_atmensanlletkf_enkfgdas ))
-    export npe_node_atmensanlletkf_gfs=$(( npe_node_max / nth_atmensanlletkf_enkfgfs ))
+    export npe_node_atmensanlletkf_enkfgdas=$(( npe_node_max / nth_atmensanlletkf_enkfgdas ))
+    export npe_node_atmensanlletkf_enkfgfs=$(( npe_node_max / nth_atmensanlletkf_enkfgfs ))
     export memory_atmensanlletkf="96GB"
     export is_exclusive=True
     ;;
