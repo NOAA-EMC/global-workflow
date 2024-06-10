@@ -202,13 +202,18 @@ class SnowEnsAnalysis(Analysis):
     def finalize(self) -> None:
         """Performs closing actions of the snow ensemble analysis task
         This method:
-        - does nothing yet
+        - copies the ensemble snow analyses to the proper locations
+        - copies the ensemble mean increment to COM
 
         Parameters
         ----------
         self : Analysis
             Instance of the SnowEnsAnalysis object
         """
+        # save files to COM
+        logger.info(f"Copying files described in {self.task_config.SNOW_ENS_FINALIZE_TMPL}")
+        snow_final_list = parse_j2yaml(self.task_config.SNOW_ENS_FINALIZE_TMPL, self.task_config)
+        FileHandler(snow_final_list).sync()
 
     @staticmethod
     @logit(logger)

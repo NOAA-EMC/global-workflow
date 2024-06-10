@@ -21,7 +21,7 @@ export GDUMP
 ##############################################
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_ATMOS_ANALYSIS COM_CONF
-YMD=${PDY} HH=${cyc} declare_from_tmpl COM_SNOW_ANALYSIS
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl COM_SNOW_ANALYSIS
 
 mkdir -m 775 -p "${COM_SNOW_ANALYSIS}" "${COM_CONF}"
 
