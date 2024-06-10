@@ -3,11 +3,6 @@
 ######################################
 {% set PDY = current_cycle | to_YMD %}
 {% set cyc = current_cycle | strftime("%H") %}
-{% if DOIAU %}
-{% set bkg_time = SNOW_WINDOW_BEGIN | to_fv3time %}
-{% else %}
-{% set bkg_time = current_cycle | to_fv3time %}
-{% endif %}
 copy:
 ######################################
 # copy analyses to directories
@@ -33,8 +28,14 @@ copy:
 {% set com_ns.COM_SNOW_ANALYSIS_MEM = com_ns.COM_SNOW_ANALYSIS_MEM.replace(search_term, replace_term) %}
 {% endfor %}
 {% for tile in range(1, 7) %}
-- ["{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COM_SNOW_ANALYSIS_MEM }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COM_SNOW_ANALYSIS_MEM }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
 {% endfor %}
+{% if DOIAU %}
+# if using IAU, also need analyses copied at the beginning of the window
+{% for tile in range(1, 7) %}
+- ["{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COM_SNOW_ANALYSIS_MEM }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+{% endfor %}
+{% endif %}
 {% endfor %}
 ######################################
 # copy ensemble mean increment to COM
@@ -59,5 +60,11 @@ copy:
 {% set com_ns.COM_SNOW_ANALYSIS_MEM = com_ns.COM_SNOW_ANALYSIS_MEM.replace(search_term, replace_term) %}
 {% endfor %}
 {% for tile in range(1, 7) %}
-- ["{{ DATA }}/inc/ensmean/snowinc.{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COM_SNOW_ANALYSIS_MEM }}/snowinc.{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ DATA }}/inc/ensmean/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COM_SNOW_ANALYSIS_MEM }}/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
 {% endfor %}
+{% if DOIAU %}
+# if using IAU, also need increment copied at the beginning of the window
+{% for tile in range(1, 7) %}
+- ["{{ DATA }}/inc/ensmean/snowinc.{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COM_SNOW_ANALYSIS_MEM }}/snowinc.{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+{% endfor %}
+{% endif %}

@@ -239,12 +239,12 @@ class SnowEnsAnalysis(Analysis):
             for itile in range(1, 7):
                 filename_in = template_in.format(tilenum=itile)
                 filename_out = template_out.format(tilenum=itile)
-                src = os.path.join(self.task_config.DATA, 'inc', 'ensmean',  filename_in)
+                src = os.path.join(self.task_config.DATA, 'inc', 'ensmean', filename_in)
                 dest = os.path.join(self.task_config.DATA, 'inc', 'ensmean', filename_out)
                 inclist.append([src, dest])
             FileHandler({'copy': inclist}).sync()
             # if running with IAU, we also need an analysis at the beginning of the window
-            bkg_times.append(self.task_config.SNOW_WINDOW_BEGIN)    
+            bkg_times.append(self.task_config.SNOW_WINDOW_BEGIN)
 
         for bkg_time in bkg_times:
             for mem in range(1, self.task_config.NMEM_ENS + 1):
