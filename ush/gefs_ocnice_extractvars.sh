@@ -11,7 +11,7 @@ datares=${4}
 datacompress=${5}
 cd "${outdirpre}" || true
 
-nh=6
+nh=${FHMIN_GFS}
 while [[ ${nh} -le ${FHMAX} ]];do
   fnh=$(printf "%3.3d" "${nh}")
 
@@ -39,14 +39,13 @@ while [[ ${nh} -le ${FHMAX} ]];do
     # shellcheck disable=SC2312
     ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile1}">/dev/null 
     if [[ ${datacompress} -eq 1 ]];then
-      echo "Compressing ${oufile1}"
-      bzip2 "${oufile1}"
+      bzip2 "${oufile1}" 
     fi 
   else
     echo "WARNING: ${infile} does not exist."
   fi
 
-  nh=$(( nh + 6 ))
+  nh=$(( nh + FHOUT_OCNICE_GFS ))
 done
 
 exit 0                                                                                                                                                                                        

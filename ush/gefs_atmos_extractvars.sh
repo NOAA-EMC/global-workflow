@@ -6,8 +6,7 @@ source "${USHgfs}/preamble.sh"
 
 fcnt=1
 dcnt=1 
-ensname=${1}
-subdata=${2}
+subdata=${1}
 
 cd "${subdata}" || true
 
@@ -53,7 +52,7 @@ for outtype in "f2d" "f3d"; do
       infile1=${COM_ATMOS_GRIB_1p00}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
       infile2=${COM_ATMOS_GRIB_1p00}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}
     fi
-    oufile=${outdirpre}/ge${ensname}.${cycle}.pgrb2.${outres}.f${fnh}
+    oufile=${outdirpre}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
     rm -f "${oufile}" #remove outfile if it already exists before extraction
             
     if [[ -f "${infile1}" ]]; then #check if input file exists before extraction
@@ -73,17 +72,17 @@ for outtype in "f2d" "f3d"; do
     #Compute daily average for a subset of variables
     if [[ "${outtype}" == "f3d" ]];then
       if ! (( nh % 6 ));then
-        outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.${ensname}.grib2
+        outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
         # shellcheck disable=SC2312
         ${WGRIB2} "${infile1}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile1}" -append -grib "${outfile}">/dev/null
         # shellcheck disable=SC2312
         ${WGRIB2} "${infile2}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile2}" -append -grib "${outfile}">/dev/null                                             
         if [[ ${fcnt} -eq 4 ]];then
           fnd=$(printf "%2.2d" "${dcnt}")
-          davg_file=${outdirpre}/ge${ensname}.${cycle}.pgrb2.${outres}.ldy${fnd}
+          davg_file=${outdirpre}/gefs.${cycle}.pgrb2.${outres}.24hr_avg.ldy${fnd}
           vcnt=1
           while read -r vari; do
-            davgtmp=${subdata}/ge${ensname}.${cycle}.tmp.pgrb2.${outres}.ldy${fnd}.${vcnt}
+            davgtmp=${subdata}/gefs.${cycle}.tmp.pgrb2.${outres}.ldy${fnd}.${vcnt}
             # shellcheck disable=SC2312
             ${WGRIB2} "${outfile}" | grep "${vari}" | ${WGRIB2} -i "${outfile}" -fcst_ave 6hr "${davgtmp}">/dev/null
             # shellcheck disable=SC2312

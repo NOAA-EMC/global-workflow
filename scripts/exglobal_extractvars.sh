@@ -34,8 +34,7 @@ export ice_dataformat=${ice_dataformat:-"grib2"} #the data format of the ice pro
 export ocnres=${ocnres:-"5p00"} #Resolution of ocean products
 export iceres=${iceres:-"5p00"} #Resolution of ice products
 export ocnres=${ocnres:-"5p00"} #Resolution of ocean products
-export wavinres=${wavinres:-"5p00"} #Resolution of wave products
-export wavoures=${wavoures:-"1p00"} #Resolution of wave products
+export wavres=${wavinres:-"5p00"} #Resolution of wave products
 export compress_ocn=${compress_ocn:-1} #1: compress extracted ocean product, 0: do not compress extracted ocean product
 export compress_ice=${compress_ice:-1} #1: compress extracted ice product, 0: do not compress extracted ice product 
 export FHOUT_WAV_NOSCRUB=${FHOUT_WAV_NOSCRUB:-6} #Frequency of wave output to be saved on disk
@@ -44,8 +43,9 @@ export FHOUT_WAV_NOSCRUB=${FHOUT_WAV_NOSCRUB:-6} #Frequency of wave output to be
 if [[ ! -d "${DATA}/mem${ENSMEM}_atmos" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_atmos" 
 fi
-${EXTRCTVARA} "${ENSMEM}" "${DATA}/mem${ENSMEM}_atmos"
-cp -pr ${DATA}/mem${ENSMEM}_atmos/* ${COM_RFCST_PROD_ATMOS}
+${EXTRCTVARA} "${DATA}/mem${ENSMEM}_atmos"
+cp -pr "${DATA}/mem${ENSMEM}_atmos/f2d" "${COM_RFCST_PROD_ATMOS}"
+cp -pr "${DATA}/mem${ENSMEM}_atmos/f3d" "${COM_RFCST_PROD_ATMOS}"
 
 #Extract variables for ocean
 export component_name="ocn"
@@ -53,7 +53,7 @@ if [[ ! -d "${DATA}/mem${ENSMEM}_ocn" ]]; then
   mkdir -p "${DATA}/mem${ENSMEM}_ocn" 
 fi
 ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn_grib2}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}"
-cp -pr ${DATA}/mem${ENSMEM}_ocn/* ${COM_RFCST_PROD_OCN}
+cp -pr "${DATA}/mem${ENSMEM}_ocn/." "${COM_RFCST_PROD_OCN}"
 
 #Extract variables for ice
 export component_name="ice"
@@ -61,7 +61,7 @@ if [[ ! -d "${DATA}/mem${ENSMEM}_ice" ]]; then
   mkdir -p "${DATA}/mem${ENSMEM}_ice" 
 fi    
 ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice_grib2}" "${ice_dataformat}" "${iceres}" "${compress_ice}"
-cp -pr ${DATA}/mem${ENSMEM}_ice/* ${COM_RFCST_PROD_ICE}
+cp -pr "${DATA}/mem${ENSMEM}_ice/." "${COM_RFCST_PROD_ICE}"
 
 #Extract variables for wave
 export component_name="wav"
@@ -69,6 +69,6 @@ if [[ ! -d "${DATA}/mem${ENSMEM}_wav" ]]; then
   mkdir -p "${DATA}/mem${ENSMEM}_wav" 
 fi
 ${EXTRCTVARW} "${ENSMEM}" "${DATA}/mem${ENSMEM}_wav"
-cp -pr ${DATA}/mem${ENSMEM}_wav/* ${COM_RFCST_PROD_WAV}
+cp -pr "${DATA}/mem${ENSMEM}_wav/." "${COM_RFCST_PROD_WAV}"
 
 exit 0
