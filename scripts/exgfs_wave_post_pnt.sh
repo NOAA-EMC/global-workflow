@@ -249,8 +249,8 @@ source "${USHgfs}/preamble.sh"
 
     ${NLN} mod_def.$waveuoutpGRD mod_def.ww3
     HMS="${cyc}0000"
-    if [[ -f "${COMOUT_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
-      ${NLN} "${COMOUT_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
+    if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
+      ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
         "./out_pnt.${waveuoutpGRD}"
     else
       echo '*************************************************** '
@@ -368,7 +368,7 @@ source "${USHgfs}/preamble.sh"
     export BULLDATA=${DATA}/output_$YMDHMS
     cp $DATA/mod_def.${waveuoutpGRD} mod_def.${waveuoutpGRD}
 
-    pfile="${COMOUT_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
+    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
     if [ -f  ${pfile} ]
     then
       ${NLN} ${pfile} ./out_pnt.${waveuoutpGRD}
