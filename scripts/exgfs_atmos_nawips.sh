@@ -13,10 +13,9 @@ export ILPOST=${ILPOST:-1}
 
 cd "${DATA}" || exit 1
 grid=$1
-fend=$2
+fhr=$2
 DBN_ALERT_TYPE=$3
 destination=$4
-fhr=$5
 
 DATA_RUN="${DATA}/${grid}"
 mkdir -p "${DATA_RUN}"
