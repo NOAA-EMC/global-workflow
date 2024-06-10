@@ -35,10 +35,6 @@ case ${step} in
         export npe_eupd=315
         export nth_eupd=14
         ;;
-      "C384")
-        export npe_eupd=315
-        export nth_eupd=14
-        ;;
       *)
       ;;
     esac
