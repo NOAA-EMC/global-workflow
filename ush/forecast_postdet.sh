@@ -271,6 +271,7 @@ FV3_out() {
 
   # Get list of FV3 restart files
   local file_list fv3_file
+  file_list=$(FV3_restarts)
 
   # Copy restarts for the dates collected above to COM
   for restart_date in "${restart_dates[@]}"; do
