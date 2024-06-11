@@ -8,16 +8,16 @@ mkdir:
 
 copy:
 {% for ftype in ftype_list %}
-{% set prefix = BERROR_DATE | to_fv3time ~ '.' ~ ftype %}
-{% set fname = prefix ~ '.coupler.res' %}
+   {% set prefix = BERROR_DATE | to_fv3time ~ '.' ~ ftype %}
+   {% set fname = prefix ~ '.coupler.res' %}
 - ['{{ src_dir }}/{{ fname }}', '{{ dest_dir }}/{{ fname }}']
-{% for itile in range(1,7) %}
-{% set fname = prefix ~ '.fv_tracer.res.tile' ~  itile ~ '.nc' %}
+   {% for itile in range(1,7) %}
+      {% set fname = prefix ~ '.fv_tracer.res.tile' ~  itile ~ '.nc' %}
 - ['{{ src_dir }}/{{ fname }}', '{{ dest_dir }}/{{ fname }}']
-{% endfor %}
+   {% endfor %}
 {% endfor %}
 
 {% for nn in range(1,nprocs+1) %}
-{% set fname = 'nicas_aero_nicas_local_%06d-%06d.nc' | format(nprocs, nn) %}
+   {% set fname = 'nicas_aero_nicas_local_%06d-%06d.nc' | format(nprocs, nn) %}
 - ['{{ src_dir }}/{{ fname }}', '{{ dest_dir }}/{{ fname }}']
 {% endfor %}
