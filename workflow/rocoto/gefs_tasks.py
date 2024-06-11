@@ -388,14 +388,7 @@ class GEFSTasks(Tasks):
         atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'MEMDIR': 'mem#member#'})
 
         # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
-        wave_cfg = self._configs['wave']
-        last_fhr = Tasks._get_forecast_hours(self.cdump,
-                                             wave_cfg,
-                                             component='atmos')[-1]
-
-        fhmax_wav_ibp = wave_cfg['FHMAX_WAV_IBP']
-        if last_fhr > fhmax_wav_ibp:
-            last_fhr = fhmax_wav_ibp
+        last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
 
         data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
         dep_dict = {'type': 'data', 'data': data}
