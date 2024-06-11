@@ -30,6 +30,8 @@ export FIXgfs=${HOMEgfs}/fix
 export PARMgfs=${HOMEgfs}/parm
 export SCRgfs=${HOMEgfs}/scripts
 export USHgfs=${HOMEgfs}/ush
+export FIXorog=${FIXgfs}/orog
+export FIXugwd=${FIXgfs}/ugwd
 
 ########################################################################
 
