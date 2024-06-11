@@ -598,6 +598,8 @@ case ${step} in
         ntasks_quilt=${ntasks_quilt_gfs}
         nthreads_fv3=${nthreads_fv3_gfs}
         nthreads_ufs=${nthreads_ufs_gfs}
+        # Will not be set if we are skipping the mediator
+        nthreads_mediator=${nthreads_mediator_gfs:-}
       elif [[ "${_CDUMP}" =~ "gdas" ]]; then
         export layout_x=${layout_x_gdas}
         export layout_y=${layout_y_gdas}
@@ -607,6 +609,7 @@ case ${step} in
         ntasks_quilt=${ntasks_quilt_gdas}
         nthreads_fv3=${nthreads_fv3_gdas}
         nthreads_ufs=${nthreads_ufs_gdas}
+        nthreads_mediator=${nthreads_mediator_gdas:-}
       fi
 
       # Determine if using ESMF-managed threading or traditional threading

@@ -19,12 +19,10 @@ if [[ "${CDUMP}" = "gfs" ]] ; then
   export DIAG_TARBALL="YES"
 fi
 
-if [[ "${CDUMP}" == "gfs" ]] ; then
+if [[ "${RUN}" =~ "gfs" ]] ; then
   export npe_gsi=${npe_anal_gfs}
-  export nth_anal=${nth_anal_gfs}
-elif [[ "${CDUMP}" == "gdas" ]]; then
+elif [[ "${RUN}" =~ "gdas" ]]; then
   export npe_gsi=${npe_anal_gdas}
-  export nth_anal=${nth_anal_gdas}
 fi
 
 # Set parameters specific to L127
