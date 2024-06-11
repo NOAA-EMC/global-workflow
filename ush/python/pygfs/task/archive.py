@@ -380,22 +380,22 @@ class Archive(Task):
         cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
         if run == "gfs":
-            in_track_file = (track_dir + "/avno.t" +
+            in_track_file = (track_dir_out + "/avno.t" +
                              cycle_HH + "z.cycle.trackatcfunix")
-            in_track_p_file = (track_dir + "/avnop.t" +
+            in_track_p_file = (track_dir_out + "/avnop.t" +
                                cycle_HH + "z.cycle.trackatcfunixp")
         elif run == "gdas":
-            in_track_file = (track_dir + "/gdas.t" +
+            in_track_file = (track_dir_in + "/gdas.t" +
                              cycle_HH + "z.cycle.trackatcfunix")
-            in_track_p_file = (track_dir + "/gdasp.t" +
+            in_track_p_file = (track_dir_in + "/gdasp.t" +
                                cycle_HH + "z.cycle.trackatcfunixp")
 
         if not os.path.isfile(in_track_file):
             # Do not attempt to archive the outputs
             return
 
-        out_track_file = track_dir + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
-        out_track_p_file = track_dir + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
+        out_track_file = track_dir_out + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
+        out_track_p_file = track_dir_out + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
 
         def replace_string_from_to_file(filename_in, filename_out, search_str, replace_str):
 
