@@ -437,10 +437,6 @@ MOM6_postdet() {
 
       # Daily output
       if (( fhr > 0 & fhr % 24 == 0 )); then
- 
-        # For daily output, the valid date in the file is based on the beginning of avg. period
-        vdate=$(date --utc -d "${vdate:0:8} ${vdate:8:2} - 24 hours" +%Y%m%d%H)
-
         source_file="ocn_daily_${vdate:0:4}_${vdate:4:2}_${vdate:6:2}.nc"
         dest_file="${RUN}.ocean.t${cyc}z.daily.f${fhr3}.nc"
         ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATA}/MOM6_OUTPUT/${source_file}"
