@@ -274,7 +274,7 @@ case ${step} in
         layout_y=1
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
     esac
 
@@ -308,7 +308,7 @@ case ${step} in
         layout_y=1
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
     esac
 
@@ -341,7 +341,7 @@ case ${step} in
         layout_y=1
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
     esac
 
@@ -389,7 +389,7 @@ case ${step} in
       "050")  npes=16;;
       "500")  npes=16;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -416,7 +416,7 @@ case ${step} in
         memory_ocnanalrun="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -444,7 +444,7 @@ case ${step} in
         memory_ocnanalecen="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -472,7 +472,7 @@ case ${step} in
         memory_ocnanalletkf="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -501,7 +501,7 @@ case ${step} in
         memory_ocnanalchkpt="32GB"
         npes=8;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
     export npe_ocnanalchkpt=${npes}
@@ -526,10 +526,12 @@ case ${step} in
   "anal")
     export wtime_anal_gdas="01:20:00"
     export wtime_anal_gfs="01:00:00"
-    export npe_anal_gdas=780
-    export nth_anal=5
-    export npe_anal_gfs=825
     case ${CASE} in
+      "C768")
+        export npe_anal_gdas=780
+        export npe_anal_gfs=825
+        export nth_anal=5
+        ;;
       "C384")
         export npe_anal_gdas=160
         export npe_anal_gfs=160
@@ -538,9 +540,10 @@ case ${step} in
       "C192" | "C96" | "C48")
         export npe_anal_gdas=84
         export npe_anal_gfs=84
+        export nth_anal=5
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
@@ -729,7 +732,7 @@ case ${step} in
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
@@ -760,7 +763,7 @@ case ${step} in
         export memory_upp="96GB"
       ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
       ;;
     esac
@@ -958,7 +961,7 @@ case ${step} in
       "C384")                 export npe_eobs=100;;
       "C192" | "C96" | "C48") export npe_eobs=40;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
@@ -1003,7 +1006,7 @@ case ${step} in
         export nth_eupd=2
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
