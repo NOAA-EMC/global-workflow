@@ -287,6 +287,8 @@ export MEMDIR="mem${ENSMEM}"
 export REPLAY_ICS=@REPLAY_ICS@
 if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
     export OFFSET_START_HOUR=$(( assim_freq / 2 ))
+else
+    export OFFSET_START_HOUR=0
 fi
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
