@@ -430,7 +430,18 @@ ${NLN} ${CRTM_FIX}/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.Em
 ${NLN} ${CRTM_FIX}/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
 ${NLN} ${CRTM_FIX}/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
 ${NLN} ${CRTM_FIX}/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
-${NLN} ${CRTM_FIX}/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
+if (( imp_physics == 8 )); then
+   echo "using CRTM Thompson cloud optical table"
+   ${NLN} "${CRTM_FIX}/CloudCoeff.Thompson08.-109z-1.bin" ./crtm_coeffs/CloudCoeff.bin
+elif (( imp_physics == 11 )); then
+   echo "using CRTM GFDL cloud optical table"
+   ${NLN} "${CRTM_FIX}/CloudCoeff.GFDLFV3.-109z-1.bin" ./crtm_coeffs/CloudCoeff.bin
+else
+   echo "INVALID imp_physics = ${imp_physics}"
+   echo "FATAL ERROR: No valid CRTM cloud optical table found for imp_physics =  ${imp_physics}"
+   exit 1
+fi
+
 
 ##############################################################
 # Observational data
