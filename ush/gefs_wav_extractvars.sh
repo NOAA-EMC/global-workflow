@@ -4,8 +4,7 @@
 #
 source "${USHgfs}/preamble.sh"
 
-ensname=${1}
-DATA=${2}
+DATA=${1}
 cd "${DATA}" || true
 
 nh=6
