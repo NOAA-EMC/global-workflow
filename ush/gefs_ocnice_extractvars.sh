@@ -9,6 +9,7 @@ varlist=${2}
 dataformat=${3}
 datares=${4}
 datacompress=${5}
+fhout_ocnice=${6}
 cd "${outdirpre}" || true
 
 nh=${FHMIN_GFS}
@@ -45,7 +46,7 @@ while [[ ${nh} -le ${FHMAX} ]];do
     echo "WARNING: ${infile} does not exist."
   fi
 
-  nh=$(( nh + FHOUT_OCNICE_GFS ))
+  nh=$(( nh + fhout_ocnice ))
 done
 
 exit 0                                                                                                                                                                                        
