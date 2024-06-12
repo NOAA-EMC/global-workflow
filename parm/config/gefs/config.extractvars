@@ -7,10 +7,6 @@ echo "BEGIN: config.extractvars"
 
 . "${EXPDIR}/config.resources" extractvars
 
-export RFHOME=/lfs/h2/emc/ens/noscrub/eric.sinsky/GEFSv13_RR
-export REFCST=${RFHOME}/REFCST
-
-export mpmdd="NO"
 export atmosextract=1
 export ocniceextract=1
 export wavextract=1
@@ -24,5 +20,8 @@ export FHMAX=120
 export FHMAXHF=60
 export FHOUTHF=6
 export FHOUTLF=12
+
+export ocn_dataformat="netcdf"
+export ice_dataformat="netcdf"
 
 echo "END: config.extractvars"
