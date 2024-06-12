@@ -23,22 +23,30 @@ while [[ ${nh} -le ${FHMAX} ]];do
     if [[ ${component_name} == "ice" ]];then
       infile=${COM_ICE_GRIB}/${datares}/gefs.ice.${cycle}.${datares}.f${fnh}.grib2
     fi                                                                                                                                                                                                                                   
-    oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.rfcst.grib2
+    oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.grib2
   fi
 
   if [[ "${dataformat}" == "netcdf" ]];then
     if [[ ${component_name} == "ocn" ]];then
-      infile=${COM_OCEAN_NETCDF}/${datares}/gefs.ocean.${cycle}.${datares}.f${fnh}.nc
+      infile=${COM_OCEAN_NETCDF}/gefs.ocean.${cycle}.${datares}.f${fnh}.nc
     fi
     if [[ ${component_name} == "ice" ]];then
-      infile=${COM_ICE_NETCDF}/${datares}/gefs.ice.${cycle}.${datares}.f${fnh}.nc
+      infile=${COM_ICE_NETCDF}/gefs.ice.${cycle}.${datares}.f${fnh}.nc
     fi   
-    oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.rfcst.grib2
+    oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.nc
   fi
 
   if [[ -f "${infile}" ]]; then #check if input file exists before extraction
-    # shellcheck disable=SC2312
-    ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile1}">/dev/null 
+    if [[ "${dataformat}" == "grib2" ]];then
+      # shellcheck disable=SC2312
+      ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile1}">/dev/null 
+    fi
+    if [[ "${dataformat}" == "netcdf" ]];then
+#     mapfile -t -d ocnice_vars < "${varlist}"
+      ocnice_vars=$(paste -sd, "${varlist}")
+      echo ${ocnice_vars}
+      ncks -v "${ocnice_vars}" "$infile" "$oufile1"
+    fi  
     if [[ ${datacompress} -eq 1 ]];then
       bzip2 "${oufile1}" 
     fi 

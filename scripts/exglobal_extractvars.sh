@@ -52,7 +52,9 @@ export component_name="ocn"
 if [[ ! -d "${DATA}/mem${ENSMEM}_ocn" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_ocn" 
 fi
-${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn_grib2}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}"
+if [[ "${ocn_dataformat}" == "netcdf" ]]; then varlist_ocn=${varlist_ocn_netcdf}; fi
+if [[ "${ocn_dataformat}" == "grib2" ]]; then varlist_ocn=${varlist_ocn_grib2}; fi  
+${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}"
 cp -pr "${DATA}/mem${ENSMEM}_ocn/." "${COM_RFCST_PROD_OCN}"
 
 #Extract variables for ice
@@ -60,7 +62,9 @@ export component_name="ice"
 if [[ ! -d "${DATA}/mem${ENSMEM}_ice" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_ice" 
 fi    
-${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice_grib2}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" 
+if [[ "${ice_dataformat}" == "netcdf" ]]; then varlist_ice=${varlist_ice_netcdf}; fi
+if [[ "${ice_dataformat}" == "grib2" ]]; then varlist_ice=${varlist_ice_grib2}; fi  
+${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" 
 cp -pr "${DATA}/mem${ENSMEM}_ice/." "${COM_RFCST_PROD_ICE}"
 
 #Extract variables for wave
