@@ -3,6 +3,8 @@
 ########## config.resources ##########
 # Set resource information for job tasks
 # e.g. walltime, node, cores per node, memory etc.
+# Note: machine-specific resources should be placed into the appropriate config file:
+#       config.resources.${machine}
 
 if (( $# != 1 )); then
 
@@ -1238,5 +1240,9 @@ case ${step} in
     ;;
 
 esac
+
+if [[ -f "${EXPDIR}/config.resources.${machine}" ]]; then
+   source "${EXPDIR}/config.resources.${machine}"
+fi
 
 echo "END: config.resources"
