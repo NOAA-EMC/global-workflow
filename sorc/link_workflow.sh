@@ -84,10 +84,6 @@ esac
 
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
-# global-nest uses different versions of orog and ugwd
-if [[ "${LINK_NEST:-OFF}" == "ON" ]] ; then
-  source "${HOMEgfs}/versions/fix.nest.ver"
-fi
 
 # Link python pacakges in ush/python
 # TODO: This will be unnecessary when these are part of the virtualenv
@@ -134,7 +130,20 @@ do
   fix_ver="${dir}_ver"
   ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
 done
-
+# global-nest uses different versions of orog and ugwd
+if [[ "${LINK_NEST:-OFF}" == "ON" ]] ; then
+  for dir in orog \
+             ugwd
+  do
+    nestdir=${dir}_nest
+    if [[ -d "${nestdir}" ]]; then
+      [[ "${RUN_ENVIR}" == "nco" ]] && chmod -R 755 "${nestdir}"
+      rm -rf "${nestdir}"
+    fi
+    fix_ver="${dir}_nest_ver"
+    ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${nestdir}"
+  done
+fi
 
 #---------------------------------------
 #--add files from external repositories
