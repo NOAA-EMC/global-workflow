@@ -13,8 +13,6 @@ export wavextract=1
 
 export compress_ocn=0
 export compress_ice=0                                                                                                                                                                      
-export interp_ocn=0
-export interp_wav=1
 
 export FHMAX=120
 export FHMAXHF=60
