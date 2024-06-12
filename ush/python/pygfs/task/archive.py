@@ -380,7 +380,7 @@ class Archive(Task):
         cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
         if run == "gfs":
-            in_track_file = (track_dir_out + "/avno.t" +
+            in_track_file = (track_dir_in + "/avno.t" +
                              cycle_HH + "z.cycle.trackatcfunix")
             in_track_p_file = (track_dir_in + "/avnop.t" +
                                cycle_HH + "z.cycle.trackatcfunixp")
