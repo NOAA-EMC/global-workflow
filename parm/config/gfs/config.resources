@@ -557,6 +557,7 @@ case ${step} in
 
   "analcalc")
     export wtime_analcalc="00:10:00"
+    [[ ${CASE} == "C384" || ${CASE} == "C768" ]] && export wtime_analcalc="00:15:00"
     export npe_analcalc=127
     export ntasks="${npe_analcalc}"
     export nth_analcalc=1
@@ -565,6 +566,9 @@ case ${step} in
     export nth_echgres_gfs=12
     export is_exclusive=True
     export memory_analcalc="48GB"
+    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" ]]; then
+       memory_analcalc="80GB"
+    fi
     ;;
 
   "analdiag")
@@ -1040,6 +1044,7 @@ case ${step} in
 
   "epos")
     export wtime_epos="00:15:00"
+    [[ ${CASE} == "C768" ]] && export wtime_epos="00:25:00"
     export npe_epos=80
     export nth_epos=1
     export npe_node_epos=$(( npe_node_max / nth_epos ))
