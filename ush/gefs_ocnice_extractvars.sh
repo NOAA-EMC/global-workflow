@@ -44,8 +44,7 @@ while [[ ${nh} -le ${FHMAX} ]];do
     if [[ "${dataformat}" == "netcdf" ]];then
 #     mapfile -t -d ocnice_vars < "${varlist}"
       ocnice_vars=$(paste -sd, "${varlist}")
-      echo ${ocnice_vars}
-      ncks -v "${ocnice_vars}" "$infile" "$oufile1"
+      ncks -v "${ocnice_vars}" "${infile}" "${oufile1}"
     fi  
     if [[ ${datacompress} -eq 1 ]];then
       bzip2 "${oufile1}" 
