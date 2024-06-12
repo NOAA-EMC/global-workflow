@@ -59,17 +59,32 @@ local CICE_RUNID="unknown"
 local CICE_USE_RESTART_TIME=${use_restart_time}
 local CICE_RESTART_DIR="./CICE_RESTART/"
 local CICE_RESTART_FILE="cice_model.res"
+local CICE_RESTART_DEFLATE=0
+local CICE_RESTART_CHUNK=0,0
+local CICE_RESTART_STRIDE=-99
+local CICE_RESTART_ROOT=-99
+local CICE_RESTART_REARR="box"
+local CICE_RESTART_IOTASKS=-99
+local CICE_RESTART_FORMAT="pnetcdf2"
 local CICE_DUMPFREQ="y"  # "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 local CICE_DUMPFREQ_N=10000  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
 local CICE_DIAGFREQ=$(( 86400 / DT_CICE ))  # frequency of diagnostic output in timesteps, recommended for 1x per day
-local CICE_HISTFREQ_N="0, 0, ${FHOUT_OCNICE}, 1, 1"
+local CICE_HISTFREQ_N="0, 0, ${FHOUT_ICE}, 1, 1"
 if [[ "${RUN}" =~ "gdas" ]]; then
   local CICE_HIST_AVG=".false., .false., .false., .false., .false."   # DA needs instantaneous
 else
   local CICE_HIST_AVG=".true., .true., .true., .true., .true."    # GFS long forecaset wants averaged over CICE_HISTFREQ_N
 fi
+local CICE_HISTORY_FORMAT="pnetcdf2"
 local CICE_HISTORY_DIR="./CICE_OUTPUT/"
 local CICE_INCOND_DIR="./CICE_OUTPUT/"
+local CICE_HISTORY_IOTASKS=-99
+local CICE_HISTORY_REARR="box"
+local CICE_HISTORY_ROOT=-99
+local CICE_HISTORY_STRIDE=-99
+local CICE_HISTORY_CHUNK=0,0
+local CICE_HISTORY_DEFLATE=0
+local CICE_HISTORY_PREC=4
 # grid_nml section
 # CICE_GRID
 # CICE_MASK

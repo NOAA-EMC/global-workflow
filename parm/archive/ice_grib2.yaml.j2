@@ -3,7 +3,8 @@ ice_grib2:
     name: "ICE_GRIB2"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ice_grib2.tar"
     required:
-        {% for fhr in range(FHOUT_OCNICE_GFS, FHMAX_GFS + FHOUT_OCNICE_GFS, FHOUT_OCNICE_GFS) %}
+        # Ice forecast GRIB2 products
+        {% for fhr in range(FHOUT_ICE_GFS, FHMAX_GFS + FHOUT_ICE_GFS, FHOUT_ICE_GFS) %}
         {% set fhr3 = '%03d' % fhr %}
         {% if ICERES == 500 %}
         - "{{ COM_ICE_GRIB | relpath(ROTDIR) }}/5p00/{{ head }}5p00.f{{ fhr3 }}.grib2"
