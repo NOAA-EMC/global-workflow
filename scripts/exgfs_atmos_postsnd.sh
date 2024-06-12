@@ -77,7 +77,7 @@ export FINT=$NINT1
    fi
 
 ## 1-hourly output before $NEND1, 3-hourly output after
-   if [[ "${FEND}" -gt "${NEND1}" ]]; then
+   if [[ $((10#$FEND)) -gt $((10#$NEND1)) ]]; then
      export FINT=$NINT3
    fi
    ${USHgfs}/gfs_bufr.sh
