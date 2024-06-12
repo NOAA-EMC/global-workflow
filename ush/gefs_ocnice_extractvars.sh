@@ -42,7 +42,6 @@ while [[ ${nh} -le ${FHMAX} ]];do
       ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile1}">/dev/null 
     fi
     if [[ "${dataformat}" == "netcdf" ]];then
-#     mapfile -t -d ocnice_vars < "${varlist}"
       ocnice_vars=$(paste -sd, "${varlist}")
       ncks -v "${ocnice_vars}" "${infile}" "${oufile1}"
     fi  
