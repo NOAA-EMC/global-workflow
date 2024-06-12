@@ -198,15 +198,17 @@ class GEFSTasks(Tasks):
 
     def _atmosoceaniceprod(self, component: str):
 
+        fhout_ocn_gfs = self._configs['base']['FHOUT_OCN_GFS']
+        fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
                                    'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.6hr_avg.f#fhr#.nc'},
+                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.6hr_avg.f#fhr#.nc'}}
+                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -218,14 +220,21 @@ class GEFSTasks(Tasks):
         history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
         deps = []
         data = f'{history_path}/{history_file_tmpl}'
-        dep_dict = {'type': 'data', 'data': data, 'age': 120}
-        deps.append(rocoto.add_dependency(dep_dict))
         if component in ['ocean']:
+            dep_dict = {'type': 'data', 'data': data, 'age': 120}
+            deps.append(rocoto.add_dependency(dep_dict))
             command = f"{self.HOMEgfs}/ush/check_netcdf.sh {history_path}/{history_file_tmpl}"
             dep_dict = {'type': 'sh', 'command': command}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        elif component in ['ice']:
+            command = f"{self.HOMEgfs}/ush/check_ice_netcdf.sh @Y @m @d @H #fhr# &ROTDIR; #member# {fhout_ice_gfs}"
+            dep_dict = {'type': 'sh', 'command': command}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
         else:
+            dep_dict = {'type': 'data', 'data': data, 'age': 120}
+            deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
 
         postenvars = self.envars.copy()
@@ -247,10 +256,10 @@ class GEFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
 
-        fhrs = self._get_forecast_hours('gefs', self._configs[config])
+        fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
 
         # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice']:
+        if component in ['ocean', 'ice'] and 0 in fhrs:
             fhrs.remove(0)
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
