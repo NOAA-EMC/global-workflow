@@ -15,6 +15,7 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \
+    COMIN_WAVE_WMO:COM_WAVE_WMO_TMPL \
     COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
 
 if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi

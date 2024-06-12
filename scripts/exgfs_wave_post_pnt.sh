@@ -22,6 +22,10 @@
 # 2020-07-30  Jessica Meixner: Points only - no gridded data
 # 2020-09-29  Jessica Meixner: optimized by changing loop structures
 #
+# COM inputs:
+#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}
+#  - ${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}
+#
 # $Id$
 #
 # Attributes:

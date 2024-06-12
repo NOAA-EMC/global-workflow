@@ -8,6 +8,10 @@
 # Remarks :                                                                   #
 # - Supplemental error output is witten to the gfswave_prdgbulls.log file.    #
 #                                                                             #
+# COM inputs:                                                                 #
+#  - ${COMIN_WAVE_STATION}/${RUNwave}.${cycle}.cbull_tar                      #
+# COM outputs:                                                                #
+#  - ${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}                         #
 #                                                                             #
 # Origination  : 05/02/2007                                                   #
 # Last update  : 08/20/2020                                                   # 

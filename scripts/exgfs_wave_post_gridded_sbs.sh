@@ -20,6 +20,11 @@
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 # 2020-07-31  Jessica Meixner: Removing points, now gridded data only
 #
+# COM inputs:
+#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}
+#  - ${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
+#  - ${COMIN_WAVE_GRID}/${gribchk}
+#
 # $Id$
 #
 # Attributes:
@@ -258,7 +263,7 @@ source "${USHgfs}/preamble.sh"
     then
       iwait=0
       for wavGRD in ${waveGRD} ; do
-        gfile=${COMOUT_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
+        gfile=${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
         while [ ! -s ${gfile} ]; do sleep 10; let iwait=iwait+1; done
         if [ $iwait -eq $iwaitmax ]; then
           echo '*************************************************** '
@@ -409,7 +414,7 @@ source "${USHgfs}/preamble.sh"
       ENSTAG=""
       if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
       gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-      if [ ! -s ${COMOUT_WAVE_GRID}/${gribchk} ]; then
+      if [ ! -s ${COMIN_WAVE_GRID}/${gribchk} ]; then
         set +x
         echo ' '
         echo '********************************************'

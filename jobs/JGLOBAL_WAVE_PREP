@@ -19,6 +19,7 @@ export CDO=${CDO_ROOT}/bin/cdo
 # Set COM Paths and GETGES environment
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_OBS:COM_OBS_TMPL \
+	COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
 	COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
 	COMIN_RTOFS:COM_RTOFS_TMPL
 if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -m 775 -p "${COMOUT_WAVE_PREP}"; fi

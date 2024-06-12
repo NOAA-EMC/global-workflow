@@ -17,6 +17,13 @@
 # Remarks :                                                                   #
 # - For non-fatal errors output is witten to the wave.log file.               #
 #                                                                             #
+# COM inputs:                                                                 #
+#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}                           #
+#  - ${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc        #
+#                                                                             #
+# COM outputs:                                                                #
+#  - ${COMOUT_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.$cycle.cur                 #
+#                                                                             #
 #  Update record :                                                            #
 #                                                                             #
 # - Origination:                                               01-Mar-2007    #
