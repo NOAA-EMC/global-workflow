@@ -58,18 +58,36 @@ class OceanIceProducts(Task):
 
         valid_datetime = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.FORECAST_HOUR}H"))
 
+        if self.task_config.COMPONENT == 'ice':
+            offset = int(self.task_config.current_cycle.strftime("%H")) % self.task_config.FHOUT_ICE_GFS
+            # For CICE cases where offset is not 0, forecast_hour needs to be adjusted based on the offset.
+            # TODO: Consider FHMIN when calculating offset.
+            if offset != 0:
+                forecast_hour = self.task_config.FORECAST_HOUR - int(self.task_config.current_cycle.strftime("%H"))
+                # For the first forecast hour, the interval may be different from the intervals of subsequent forecast hours
+                if forecast_hour <= self.task_config.FHOUT_ICE_GFS:
+                    interval = self.task_config.FHOUT_ICE_GFS - int(self.task_config.current_cycle.strftime("%H"))
+                else:
+                    interval = self.task_config.FHOUT_ICE_GFS
+            else:
+                forecast_hour = self.task_config.FORECAST_HOUR
+                interval = self.task_config.FHOUT_ICE_GFS
+        if self.task_config.COMPONENT == 'ocean':
+            forecast_hour = self.task_config.FORECAST_HOUR
+            interval = self.task_config.FHOUT_OCN_GFS
+
         # TODO: This is a bit of a hack, but it works for now
         # FIXME: find a better way to provide the averaging period
-        # This will be different for ocean and ice, so when they are made flexible, this will need to be addressed
-        avg_period = f"{self.task_config.FORECAST_HOUR-self.task_config.FHOUT_OCNICE_GFS:03d}-{self.task_config.FORECAST_HOUR:03d}"
+        avg_period = f"{forecast_hour-interval:03d}-{forecast_hour:03d}"
 
         # Extend task_config with localdict
         localdict = AttrDict(
             {'component': self.task_config.COMPONENT,
-             'forecast_hour': self.task_config.FORECAST_HOUR,
+             'forecast_hour': forecast_hour,
              'valid_datetime': valid_datetime,
              'avg_period': avg_period,
              'model_grid': model_grid,
+             'interval': interval,
              'product_grids': self.VALID_PRODUCT_GRIDS[model_grid]}
         )
         self.task_config = AttrDict(**self.task_config, **localdict)
