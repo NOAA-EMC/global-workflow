@@ -370,11 +370,10 @@ fi
 #--link source code directories
 #------------------------------
 cd "${HOMEgfs}/sorc" || exit 8
-# TODO: Commenting out until UPP is up-to-date with Rocky-8.
-#if [[ -d ufs_model.fd ]]; then
-#  [[ -d upp.fd ]] && rm -rf upp.fd
-#  ${LINK} ufs_model.fd/FV3/upp upp.fd
-#fi
+if [[ -d ufs_model.fd ]]; then
+  [[ -d upp.fd ]] && rm -rf upp.fd
+  ${LINK} ufs_model.fd/FV3/upp upp.fd
+fi
 
 if [[ -d gsi_enkf.fd ]]; then
   [[ -d gsi.fd ]] && rm -rf gsi.fd
