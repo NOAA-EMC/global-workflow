@@ -368,7 +368,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
-      if [[ ${RUN} == "enkfgfs" || "${RUN}" == "gdas" ]];
+      if [[ ${RUN} == "enkfgfs" || "${RUN}" == "gdas" ]]; then
         MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
         MOM6_DIAG_MISVAL="0.0"
       else
