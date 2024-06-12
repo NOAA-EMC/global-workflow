@@ -545,14 +545,14 @@ CICE_postdet() {
 
   # Link CICE forecast output files from DATA/CICE_OUTPUT to COM
   local source_file dest_file
-  for fhr in ${CICE_OUTPUT_FH}; do
-    fhr3=$(printf %03i "${fhr}")
+  for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
     if [[ -z ${last_fhr:-} ]]; then
       last_fhr=${fhr}
       continue
     fi
 
+    fhr3=$(printf %03i "${fhr}")
     (( interval = fhr - last_fhr ))
 
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
@@ -560,7 +560,7 @@ CICE_postdet() {
     vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
     if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-      source_file="iceh_$(printf "%0.2d" "${interval}")h.${vdatestr}.nc"
+      source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
       dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
     elif [[ "${RUN}" =~ "gdas" ]]; then
       source_file="iceh_inst.${vdatestr}.nc"
