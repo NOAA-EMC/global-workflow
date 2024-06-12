@@ -68,7 +68,7 @@ export component_name="wav"
 if [[ ! -d "${DATA}/mem${ENSMEM}_wav" ]]; then 
   mkdir -p "${DATA}/mem${ENSMEM}_wav" 
 fi
-${EXTRCTVARW} "${ENSMEM}" "${DATA}/mem${ENSMEM}_wav"
+${EXTRCTVARW} "${DATA}/mem${ENSMEM}_wav"
 cp -pr "${DATA}/mem${ENSMEM}_wav/." "${COM_RFCST_PROD_WAV}"
 
 exit 0
