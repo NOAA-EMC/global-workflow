@@ -382,7 +382,7 @@ class Archive(Task):
         if run == "gfs":
             in_track_file = (track_dir_out + "/avno.t" +
                              cycle_HH + "z.cycle.trackatcfunix")
-            in_track_p_file = (track_dir_out + "/avnop.t" +
+            in_track_p_file = (track_dir_in + "/avnop.t" +
                                cycle_HH + "z.cycle.trackatcfunixp")
         elif run == "gdas":
             in_track_file = (track_dir_in + "/gdas.t" +
