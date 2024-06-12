@@ -110,7 +110,7 @@ class AerosolBMatrix(BMatrix):
         exec_cmd_diffusion = Executable(self.task_config.APRUN_AEROGENB)
         exec_name_diffusion = os.path.join(self.task_config.DATA, 'gdas_fv3jedi_error_covariance_toolbox.x')
         exec_cmd_diffusion.add_default_arg(exec_name_diffusion)
-        exec_cmd_diffusion.add_default_arg(self.task.config.diffusion_yaml)
+        exec_cmd_diffusion.add_default_arg(self.task_config.diffusion_yaml)
 
         try:
             logger.debug(f"Executing {exec_cmd_diffusion}")
@@ -132,8 +132,7 @@ class AerosolBMatrix(BMatrix):
         dest_diffusion = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diffusion.yaml")
         yaml_copy = {
             'mkdir': [self.task_config.COM_CHEM_ANALYSIS],
-            'copy': [[src, dest]],
-            'copy': [[src_diffusion, dest_diffusion]]
+            'copy': [[src, dest], [src_diffusion, dest_diffusion]]
         }
         FileHandler(yaml_copy).sync()
 
@@ -154,8 +153,16 @@ class AerosolBMatrix(BMatrix):
         stddevlist.append([src, dest])
 
         FileHandler({'copy': stddevlist}).sync()
-        # Diffusion files
 
+        # Diffusion files
+        diff_hz = 'diffusion_hz.nc'
+        diff_vt = 'diffusion_vt.nc'
+        src_hz = os.path.join(self.task_config.DATA, diff_hz)
+        dest_hz = os.path.join(self.task_config.COM_CHEM_ANALYSIS, diff_hz)
+        src_vt = os.path.join(self.task_config.DATA, diff_vt)
+        dest_vt = os.path.join(self.task_config.COM_CHEM_ANALYSIS, diff_vt)
+        difflist = [[src_hz, dest_hz], [src_vt, dest_vt]]
+        FileHandler({'copy': difflist}).sync()
 
     @logit(logger)
     def link_bmatexe(self) -> None:
@@ -187,7 +194,7 @@ class AerosolBMatrix(BMatrix):
     def link_diffusion_exe(self) -> None:
         """
 
-        This method links a JEDI (fv3jedi_error_covariance_toolbox.x) 
+        This method links a JEDI (fv3jedi_error_covariance_toolbox.x)
         executable to the run directory
 
         Parameters
@@ -210,8 +217,6 @@ class AerosolBMatrix(BMatrix):
         os.symlink(exe_src_diffusion, exe_dest_diffusion)
 
         return
-
-
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:

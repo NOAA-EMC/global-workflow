@@ -286,7 +286,6 @@ class AerosolAnalysis(Analysis):
             a dictionary containing the list of background error files to copy for FileHandler
         """
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
-        b_dir = config.BERROR_DATA_DIR
         b_datestr = to_fv3time(config.BERROR_DATE)
         analysis_dir = config.COM_CHEM_ANALYSIS
         cycle_datestr = to_fv3time(config.current_cycle)
@@ -308,9 +307,12 @@ class AerosolAnalysis(Analysis):
         # the diffusion correlation files are computed every cycle and are available in COM
         diff_hz = 'diffusion_hz.nc'
         diff_vt = 'diffusion_vt.nc'
-        berror_list.append([ 
-            os.path.join(b_dir, diff_hz), os.path.join(config.DATA, 'berror',diff_hz)
-            os.path.join(b_dir, diff_vt), os.path.join(config.DATA, 'berror',diff_vt)
+        berror_list.append([
+            os.path.join(config.COM_CHEM_ANALYSIS, diff_hz), os.path.join(config.DATA, 'berror', diff_hz)
+        ])
+        berror_list.append([
+            os.path.join(config.COM_CHEM_ANALYSIS, diff_vt), os.path.join(config.DATA, 'berror', diff_vt)
+        ])
 
         berror_dict = {
             'mkdir': [os.path.join(config.DATA, 'berror')],
