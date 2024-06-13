@@ -247,8 +247,9 @@ source "${USHgfs}/preamble.sh"
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
-    ${NLN} mod_def.$waveuoutpGRD mod_def.ww3
-    HMS="${cyc}0000"
+    ${NLN} mod_def.${waveuoutpGRD} mod_def.ww3
+    HH=$(date --utc -d "${PDY:0:8} ${cyc} + ${FHMIN_WAV} hours" +%H)
+    HMS="${HH}0000"
     if [[ -f "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
       ${NLN} "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
         "./out_pnt.${waveuoutpGRD}"
