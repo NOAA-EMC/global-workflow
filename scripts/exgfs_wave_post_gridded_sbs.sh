@@ -231,6 +231,7 @@ source "${USHgfs}/preamble.sh"
     fhr=$FHMIN_WAV
   fi
   fhrg=$fhr
+  sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
 
@@ -253,26 +254,21 @@ source "${USHgfs}/preamble.sh"
     export GRDIDATA=${DATA}/output_$YMDHMS
 
 # Gridded data (main part, need to be run side-by-side with forecast
-
+    
     if [ $fhr = $fhrg ]
     then
-      iwait=0
-      for wavGRD in ${waveGRD} ; do
-        gfile=${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
-        while [ ! -s ${gfile} ]; do sleep 10; let iwait=iwait+1; done
-        if [ $iwait -eq $iwaitmax ]; then
-          echo '*************************************************** '
-          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
-          echo '*************************************************** '
-          echo ' '
-          set_trace
-          echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
-          err=3; export err;${errchk}
-          exit $err
-        fi
-        ${NLN} ${gfile} ./out_grd.${wavGRD}
-      done
 
+      for wavGRD in ${waveGRD}; do
+        gfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
+        if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
+          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"
+          echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
+          err=3; export err; "${errchk}"
+          exit "${err}"
+        fi
+        ${NLN} "${gfile}" "./out_grd.${wavGRD}"
+      done
+      
       if [ "$DOGRI_WAV" = 'YES' ]
       then
         nigrd=1
