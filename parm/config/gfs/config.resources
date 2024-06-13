@@ -131,7 +131,7 @@ case ${step} in
     var_npe="npe_waveprep_${RUN}"; var_NTASKS="ntasks_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
-    if [[ ! -z "${!var_npe_node+0}" ]]; then
+    if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_waveprep"="${!var_npe_node}" nth_waveprep="${!var_nth}" \
             "npe_waveprep"="${!var_npe}" NTASKS="${!var_NTASKS}"
     fi
@@ -247,7 +247,7 @@ case ${step} in
 
     var_npe_node="npe_node_atmanlvar_${RUN}"; var_nth="nth_atmanlvar_${RUN}"
     var_npe="npe_atmanlvar_${RUN}"
-    if [[ ! -z "${!var_npe_node+0}" ]]; then
+    if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_atmanlvar"="${!var_npe_node}" nth_atmanlvar="${!var_nth}" \
             "npe_atmanlvar"="${!var_npe}"
     fi
@@ -269,7 +269,7 @@ case ${step} in
 
     var_npe_node="npe_node_atmanlfv3inc_${RUN}"; var_nth="nth_atmanlfv3inc_${RUN}"
     var_npe="npe_atmanlfv3inc_${RUN}"
-    if [[ ! -z "${!var_npe_node+0}" ]]; then
+    if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_atmanlfv3inc"="${!var_npe_node}" nth_atmanlfv3inc="${!var_nth}" \
             "npe_atmanlfv3inc"="${!var_npe}"
     fi
@@ -384,7 +384,7 @@ case ${step} in
 
     var_npe_node="npe_node_aeroanlrun_${RUN}"; var_nth="nth_aeroanlrun_${RUN}"
     var_npe="npe_aeroanlrun_${RUN}"
-    if [[ ! -z "${!var_npe_node+0}" ]]; then
+    if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_aeroanlrun"="${!var_npe_node}" nth_aeroanlrun="${!var_nth}" \
             "npe_aeroanlrun"="${!var_npe}"
     fi
@@ -585,7 +585,7 @@ case ${step} in
     export is_exclusive=True
 
     var_npe="npe_anal_${RUN}"
-    if [[ ! -z "${!var_npe+0}" ]]; then
+    if [[ -n "${!var_npe+0}" ]]; then
       declare -x "npe_anal"="${!var_npe}"
     fi
     ;;
@@ -606,7 +606,7 @@ case ${step} in
     fi
 
     var_nth="nth_echgres_${RUN}"
-    if [[ ! -z "${!var_nth+0}" ]]; then
+    if [[ -n "${!var_nth+0}" ]]; then
       declare -x nth_echgres="${!var_nth}"
     fi
     ;;
@@ -785,7 +785,7 @@ case ${step} in
 
     var_npe_node="npe_node_${step}_${RUN}"; var_nth="nth_${step}_${RUN}"
     var_npe="npe_${step}_${RUN}"
-    if [[ ! -z "${!var_npe_node+0}" ]]; then
+    if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_${step}"="${!var_npe_node}" "nth_${step}"="${!var_nth}" \
             "npe_${step}"="${!var_npe}"
     fi
@@ -986,7 +986,7 @@ case ${step} in
     var_npe="npe_atmensanlletkf_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
-    if [[ ! -z "${!var_npe_node+0}" ]]; then
+    if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_atmensanlletkf"="${!var_npe_node}" nth_atmensanlletkf="${!var_nth}" \
                  "npe_atmensanlletkf"="${!var_npe}"
     fi
@@ -1010,7 +1010,7 @@ case ${step} in
     var_npe="npe_atmensanlletkf_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
-    if [[ ! -z "${!var_npe_node+0}" ]]; then
+    if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_atmensanlletkf"="${!var_npe_node}" nth_atmensanlletkf="${!var_nth}" \
                  "npe_atmensanlletkf"="${!var_npe}"
     fi
@@ -1160,7 +1160,7 @@ case ${step} in
     var_npe="npe_gempak_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
-    if [[ ! -z "${!var_npe_node+0}" ]]; then
+    if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_gempak"="${!var_npe_node}" nth_gempak="${!var_nth}" \
                  "npe_gempak"="${!var_npe}"
     fi
