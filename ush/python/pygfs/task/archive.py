@@ -348,19 +348,11 @@ class Archive(Task):
             files need to be copied to the ARCDIR and the Fit2Obs directory.
         """
 
-        # Parse the input jinja yaml template
-        arcdir_yaml = parse_j2yaml(arcdir_j2yaml,
-                                   arch_dict,
-                                   allow_missing=True)
-
-        # Collect the needed FileHandler dicts and construct arcdir_set
-        arcdir_set = {}
-        for key, handler in arcdir_yaml[arch_dict.RUN].items():
-            # Different RUNs can have different filesets that need to be copied.
-            # Each fileset is stored as a dictionary.  Collect the contents of
-            # each (which should be 'mkdir' and/or 'copy') to produce singular
-            # mkdir and copy lists.
-            arcdir_set.update(handler)
+        # Get the FileHandler dictionary for creating directories and copying
+        # to the ARCDIR and VFYARC directories.
+        arcdir_set = parse_j2yaml(arcdir_j2yaml,
+                                  arch_dict,
+                                  allow_missing=True)
 
         return arcdir_set
 
