@@ -3,7 +3,7 @@ ocean_grib2:
     name: "OCEAN_GRIB2"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_grib2.tar"
     required:
-        {% for fhr in range(FHOUT_OCNICE_GFS, FHMAX_GFS + FHOUT_OCNICE_GFS, FHOUT_OCNICE_GFS) %}
+        {% for fhr in range(FHOUT_OCN_GFS, FHMAX_GFS + FHOUT_OCN_GFS, FHOUT_OCN_GFS) %}
         {% set fhr3 = '%03d' % fhr %}
         {% if OCNRES == 500 %}
         - "{{ COM_OCEAN_GRIB | relpath(ROTDIR) }}/5p00/{{ head }}5p00.f{{ fhr3 }}.grib2"

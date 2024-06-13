@@ -29,7 +29,7 @@ source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
-  cd $DATA
+  cd "${DATA}"
   echo "Making TAR FILE"
 
   alertName=$(echo $RUN|tr [a-z] [A-Z])
@@ -47,7 +47,7 @@ source "${USHgfs}/preamble.sh"
 
 # 0.b Check if type set
 
-  if [ "$#" -lt '3' ]
+  if [[ "$#" -lt '3' ]]
   then
     set +x
     echo ' '
@@ -64,9 +64,9 @@ source "${USHgfs}/preamble.sh"
   fi
 
   filext=$type
-  if [ "$type" = "ibp" ]; then filext='spec'; fi
-  if [ "$type" = "ibpbull" ]; then filext='bull'; fi
-  if [ "$type" = "ibpcbull" ]; then filext='cbull'; fi
+  if [[ "$type" = "ibp" ]]; then filext='spec'; fi
+  if [[ "$type" = "ibpbull" ]]; then filext='bull'; fi
+  if [[ "$type" = "ibpcbull" ]]; then filext='cbull'; fi
 
 
   rm -rf TAR_${filext}_$ID 
@@ -88,7 +88,7 @@ source "${USHgfs}/preamble.sh"
     exit 2
   fi
 
-  cd ${STA_DIR}/${filext}
+  cd "${STA_DIR}/${filext}"
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate tar file (spectral files are compressed)
@@ -98,21 +98,27 @@ source "${USHgfs}/preamble.sh"
   echo '   Making tar file ...'
   set_trace
 
-  count=0
   countMAX=5
   tardone='no'
-
-  while [ "$count" -lt "$countMAX" ] && [ "$tardone" = 'no' ]
+  sleep_interval=10
+  
+  while [[ "${tardone}" = "no" ]]
   do
     
     nf=$(ls | awk '/'$ID.*.$filext'/ {a++} END {print a}')
     nbm2=$(( $nb - 2 ))
-    if [ $nf -ge $nbm2 ]
-    then 
-      tar -cf $ID.$cycle.${type}_tar ./$ID.*.$filext
-      exit=$?
+    if [[ "${nf}" -ge "${nbm2}" ]]
+    then
 
-      if  [ "$exit" != '0' ]
+      tar -cf "${ID}.${cycle}.${type}_tar" ./${ID}.*.${filext}
+      exit=$?
+      filename="${ID}.${cycle}.${type}_tar" 
+      if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
+        echo "FATAL ERROR: File ${filename} not found after waiting $(( sleep_interval * (countMAX + 1) )) secs"
+        exit 3
+      fi
+
+      if  [[ "${exit}" != '0' ]]
       then
         set +x
         echo ' '
@@ -124,21 +130,15 @@ source "${USHgfs}/preamble.sh"
         exit 3
       fi
       
-      if [ -f "$ID.$cycle.${type}_tar" ]
+      if [[ -f "${ID}.${cycle}.${type}_tar" ]]
       then
         tardone='yes'
       fi
-    else
-      set +x
-      echo ' All files not found for tar. Sleeping 10 seconds and trying again ..'
-      set_trace
-      sleep 10
-      count=$(expr $count + 1)
     fi
 
   done
 
-  if [ "$tardone" = 'no' ]
+  if [[ "${tardone}" = 'no' ]]
   then
     set +x
     echo ' '
@@ -150,15 +150,15 @@ source "${USHgfs}/preamble.sh"
     exit 3
   fi
 
-  if [ "$type" = 'spec' ]
+  if [[ "${type}" = 'spec' ]]
   then
-    if [ -s $ID.$cycle.${type}_tar ]
+    if [[ -s "${ID}.${cycle}.${type}_tar" ]]
     then
-      file_name=$ID.$cycle.${type}_tar.gz
-      /usr/bin/gzip -c $ID.$cycle.${type}_tar > ${file_name}
+      file_name="${ID}.${cycle}.${type}_tar.gz"
+      /usr/bin/gzip -c "${ID}.${cycle}.${type}_tar" > "${file_name}"
       exit=$?
 
-      if  [ "$exit" != '0' ]
+      if  [[ "${exit}" != '0' ]]
       then
         set +x
         echo ' '
@@ -171,7 +171,7 @@ source "${USHgfs}/preamble.sh"
       fi
     fi
   else
-    file_name=$ID.$cycle.${type}_tar
+    file_name="${ID}.${cycle}.${type}_tar"
   fi
 
 # --------------------------------------------------------------------------- #
@@ -186,7 +186,7 @@ source "${USHgfs}/preamble.sh"
 
   exit=$?
 
-  if  [ "$exit" != '0' ]
+  if  [[ "${exit}" != '0' ]]
   then
     set +x
     echo ' '
@@ -198,7 +198,7 @@ source "${USHgfs}/preamble.sh"
     exit 4
   fi
 
-  if [ "$SENDDBN" = 'YES' ]
+  if [[ "${SENDDBN}" = 'YES' ]]
   then
     set +x
     echo ' '
@@ -212,7 +212,7 @@ source "${USHgfs}/preamble.sh"
 # --------------------------------------------------------------------------- #
 # 4.  Final clean up
 
-cd $DATA
+cd "${DATA}"
 
 if [[ ${KEEPDATA:-NO} == "NO" ]]; then
   set -v

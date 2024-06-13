@@ -35,11 +35,9 @@ export FIXam="${FIXgfs}/am"
 export FIXaer="${FIXgfs}/aer"
 export FIXcpl="${FIXgfs}/cpl"
 export FIXlut="${FIXgfs}/lut"
-export FIXorog="${FIXgfs}/orog"
 export FIXcice="${FIXgfs}/cice"
 export FIXmom="${FIXgfs}/mom6"
 export FIXreg2grb2="${FIXgfs}/reg2grb2"
-export FIXugwd="${FIXgfs}/ugwd"
 export FIXgdas="${FIXgfs}/gdas"
 
 ########################################################################
@@ -190,8 +188,12 @@ export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
   export ntiles=7
   export NEST_OUTPUT_GRID="regional_latlon"
+  export FIXugwd="${FIXgfs}/ugwd_nest"
+  export FIXorog="${FIXgfs}/orog_nest"
 else
   export ntiles=6
+  export FIXugwd="${FIXgfs}/ugwd"
+  export FIXorog="${FIXgfs}/orog"
 fi
 
 # Set operational resolution
@@ -276,7 +278,8 @@ fi
 export FHMIN=0
 export FHMAX=9
 export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
-export FHOUT_OCNICE=3
+export FHOUT_OCN=3
+export FHOUT_ICE=3
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="@EUPD_CYC@"
@@ -290,7 +293,8 @@ export FHMAX_GFS=@FHMAX_GFS@
 export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
-export FHOUT_OCNICE_GFS=6
+export FHOUT_OCN_GFS=6
+export FHOUT_ICE_GFS=6   
 export FHMIN_WAV=0
 export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
@@ -465,6 +469,10 @@ if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
+
+# If starting ICs that are not at cycle hour
+export REPLAY_ICS="NO"
+export OFFSET_START_HOUR=0
 
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
