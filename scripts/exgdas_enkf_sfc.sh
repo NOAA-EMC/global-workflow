@@ -159,7 +159,7 @@ if [ $DOIAU = "YES" ]; then
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
             
-                        # determine where the input snow restart files come from
+            # determine where the input snow restart files come from
             if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
                 sfcdata_dir="${COMIN_SNOW_ANALYSIS_MEM}"
             else

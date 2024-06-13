@@ -11,7 +11,7 @@ arguments:
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48
   idate: 2021122012
   edate: 2021122100
-  nens: 0
+  nens: 80
   gfs_cyc: 1
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
