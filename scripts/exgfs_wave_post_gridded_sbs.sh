@@ -263,7 +263,7 @@ source "${USHgfs}/preamble.sh"
     if [ $fhr = $fhrg ]
     then
       for wavGRD in ${waveGRD}; do
-        gfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
+        gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
         if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"
           echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
