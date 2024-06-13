@@ -592,6 +592,7 @@ def main(*argv):
     print(f'ROTDIR: {rotdir}')
     print(f"*" * 100)
 
+
 if __name__ == '__main__':
 
     main()
