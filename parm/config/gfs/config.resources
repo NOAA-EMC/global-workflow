@@ -115,7 +115,7 @@ case ${step} in
     ;;
 
   "waveprep")
-    export wtime_waveprep_gdas="00:10:00"
+    export wtime_waveprep="00:10:00"
     export npe_waveprep_gdas=5
     export npe_waveprep_gfs=65
     export nth_waveprep_gdas=1
