@@ -69,13 +69,8 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
     YMD=${PDY} HH=${cyc} declare_from_tmpl COM_ATMOS_INPUT
     [[ ! -d "${COM_ATMOS_INPUT}" ]] && mkdir -p "${COM_ATMOS_INPUT}"
 
-    echo "COM_ATMOS_INPUT: $COM_ATMOS_INPUT"
-    echo "BASE_CPLIC: $BASE_CPLIC"
-    echo "CPL_ATMIC: $CPL_ATMIC"
-
     mkdir -p ${COM_ATMOS_INPUT}
 
-   #src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}/${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
     src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/gfs_ctrl.nc"
     if [[ ! -f ${src} ]]; then
       src="${BASE_CPLIC}/${CPL_ATMIC:-}/${RUN}.${PDY}/${cyc}/model_data/atmos/input/gfs_ctrl.nc"
