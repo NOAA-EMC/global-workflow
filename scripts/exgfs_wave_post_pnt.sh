@@ -701,6 +701,6 @@ source "${USHgfs}/preamble.sh"
 # 4.  Ending output
 
 
-exit $exit_code
+exit "${exit_code}"
 
 # End of MWW3 point prostprocessor script ---------------------------------------- #
