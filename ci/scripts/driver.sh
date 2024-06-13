@@ -228,7 +228,7 @@ for pr in ${pr_list}; do
         } >> "${output_ci}"
         continue
       fi
-      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml"  > "${LOGFILE_PATH}" 2>&1
+      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" --overwrite  > "${LOGFILE_PATH}" 2>&1
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then

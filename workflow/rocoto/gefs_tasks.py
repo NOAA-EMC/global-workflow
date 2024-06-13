@@ -1,6 +1,7 @@
 from applications.applications import AppConfig
 from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
+from datetime import datetime, timedelta
 
 
 class GEFSTasks(Tasks):
@@ -9,49 +10,61 @@ class GEFSTasks(Tasks):
         super().__init__(app_config, cdump)
 
     def stage_ic(self):
-
         cpl_ic = self._configs['stage_ic']
-
         deps = []
-
+        dtg_prefix = "@Y@m@d.@H0000"
+        offset = str(self._configs['base']['OFFSET_START_HOUR']).zfill(2) + ":00:00"
         # Atm ICs
         if self.app_config.do_atm:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/atmos"
-            for file in ['gfs_ctrl.nc'] + \
-                        [f'{datatype}_data.tile{tile}.nc'
-                         for datatype in ['gfs', 'sfc']
-                         for tile in range(1, self.n_tiles + 1)]:
-                data = f"{prefix}/{file}"
-                dep_dict = {'type': 'data', 'data': data}
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/atmos/"
+            if self._base['EXP_WARM_START']:
+                for file in ['fv_core.res.nc'] + \
+                            [f'{datatype}.tile{tile}.nc'
+                             for datatype in ['ca_data', 'fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data']
+                             for tile in range(1, self.n_tiles + 1)]:
+                    data = [prefix, f"{dtg_prefix}.{file}"]
+                    dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/mem000/med/"
+                data = [prefix, f"{dtg_prefix}.ufs.cpld.cpl.r.nc"]
+                dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                 deps.append(rocoto.add_dependency(dep_dict))
+            else:
+                for file in ['gfs_ctrl.nc'] + \
+                            [f'{datatype}_data.tile{tile}.nc'
+                             for datatype in ['gfs', 'sfc']
+                             for tile in range(1, self.n_tiles + 1)]:
+                    data = f"{prefix}/{file}"
+                    dep_dict = {'type': 'data', 'data': data}
+                    deps.append(rocoto.add_dependency(dep_dict))
 
         # Ocean ICs
         if self.app_config.do_ocean:
             ocn_res = f"{self._base.get('OCNRES', '025'):03d}"
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/mem000/ocean"
-            data = f"{prefix}/@Y@m@d.@H0000.MOM.res.nc"
-            dep_dict = {'type': 'data', 'data': data}
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_OCNIC']}/@Y@m@d@H/mem000/ocean/"
+            data = [prefix, f"{dtg_prefix}.MOM.res.nc"]
+            dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
             deps.append(rocoto.add_dependency(dep_dict))
             if ocn_res in ['025']:
                 # 0.25 degree ocean model also has these additional restarts
                 for res in [f'res_{res_index}' for res_index in range(1, 4)]:
-                    data = f"{prefix}/@Y@m@d.@H0000.MOM.{res}.nc"
-                    dep_dict = {'type': 'data', 'data': data}
+                    data = [prefix, f"{dtg_prefix}.MOM.{res}.nc"]
+                    dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                     deps.append(rocoto.add_dependency(dep_dict))
 
         # Ice ICs
         if self.app_config.do_ice:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ICEIC']}/@Y@m@d@H/mem000/ice"
-            data = f"{prefix}/@Y@m@d.@H0000.cice_model.res.nc"
-            dep_dict = {'type': 'data', 'data': data}
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ICEIC']}/@Y@m@d@H/mem000/ice/"
+            data = [prefix, f"{dtg_prefix}.cice_model.res.nc"]
+            dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
             deps.append(rocoto.add_dependency(dep_dict))
 
         # Wave ICs
         if self.app_config.do_wave:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/mem000/wave"
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_WAVIC']}/@Y@m@d@H/mem000/wave/"
             for wave_grid in self._configs['waveinit']['waveGRD'].split():
-                data = f"{prefix}/@Y@m@d.@H0000.restart.{wave_grid}"
-                dep_dict = {'type': 'data', 'data': data}
+                data = [prefix, f"{dtg_prefix}.restart.{wave_grid}"]
+                dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
                 deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -198,15 +211,17 @@ class GEFSTasks(Tasks):
 
     def _atmosoceaniceprod(self, component: str):
 
+        fhout_ocn_gfs = self._configs['base']['FHOUT_OCN_GFS']
+        fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
                                    'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.6hr_avg.f#fhr#.nc'},
+                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.6hr_avg.f#fhr#.nc'}}
+                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -218,14 +233,21 @@ class GEFSTasks(Tasks):
         history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
         deps = []
         data = f'{history_path}/{history_file_tmpl}'
-        dep_dict = {'type': 'data', 'data': data, 'age': 120}
-        deps.append(rocoto.add_dependency(dep_dict))
         if component in ['ocean']:
+            dep_dict = {'type': 'data', 'data': data, 'age': 120}
+            deps.append(rocoto.add_dependency(dep_dict))
             command = f"{self.HOMEgfs}/ush/check_netcdf.sh {history_path}/{history_file_tmpl}"
             dep_dict = {'type': 'sh', 'command': command}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        elif component in ['ice']:
+            command = f"{self.HOMEgfs}/ush/check_ice_netcdf.sh @Y @m @d @H #fhr# &ROTDIR; #member# {fhout_ice_gfs}"
+            dep_dict = {'type': 'sh', 'command': command}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
         else:
+            dep_dict = {'type': 'data', 'data': data, 'age': 120}
+            deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
 
         postenvars = self.envars.copy()
@@ -247,10 +269,10 @@ class GEFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
 
-        fhrs = self._get_forecast_hours('gefs', self._configs[config])
+        fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
 
         # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice']:
+        if component in ['ocean', 'ice'] and 0 in fhrs:
             fhrs.remove(0)
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}

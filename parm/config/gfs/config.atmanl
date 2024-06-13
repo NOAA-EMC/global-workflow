@@ -6,9 +6,9 @@
 echo "BEGIN: config.atmanl"
 
 export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
-export JCB_ALGO_YAML="${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
+export JCB_ALGO_YAML=@JCB_ALGO_YAML@
 
-export STATICB_TYPE="gsibec"
+export STATICB_TYPE=@STATICB_TYPE@
 export LOCALIZATION_TYPE="bump"
 export INTERP_METHOD='barycentric'
 

@@ -8,9 +8,6 @@
 [submodule "sorc/gfs_utils.fd"]
   path = sorc/gfs_utils.fd
   url = https://github.com/NOAA-EMC/gfs-utils
-[submodule "sorc/ufs_utils.fd"]
-  path = sorc/ufs_utils.fd
-  url = https://github.com/ufs-community/UFS_UTILS.git
 [submodule "sorc/verif-global.fd"]
   path = sorc/verif-global.fd
   url = https://github.com/NOAA-EMC/EMC_verif-global.git
@@ -26,11 +23,3 @@
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
-[submodule "sorc/upp.fd"]
-  path = sorc/upp.fd
-  url = https://github.com/NOAA-EMC/UPP.git
-  ignore = dirty
-[submodule "sorc/jcb"]
-  path = sorc/jcb
-  url = https://github.com/noaa-emc/jcb
-  fetchRecurseSubmodules = false

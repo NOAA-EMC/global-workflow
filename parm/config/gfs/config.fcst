@@ -39,7 +39,8 @@ case ${RUN} in
     export FHOUT=${FHOUT_GFS}
     export FHMAX_HF=${FHMAX_HF_GFS}
     export FHOUT_HF=${FHOUT_HF_GFS}
-    export FHOUT_OCNICE=${FHOUT_OCNICE_GFS}
+    export FHOUT_OCN=${FHOUT_OCN_GFS}
+    export FHOUT_ICE=${FHOUT_ICE_GFS}
     ;;
   *gdas)
     export FHMAX_HF=0
