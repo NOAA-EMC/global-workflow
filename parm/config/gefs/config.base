@@ -30,6 +30,8 @@ export FIXgfs=${HOMEgfs}/fix
 export PARMgfs=${HOMEgfs}/parm
 export SCRgfs=${HOMEgfs}/scripts
 export USHgfs=${HOMEgfs}/ush
+export FIXorog=${FIXgfs}/orog
+export FIXugwd=${FIXgfs}/ugwd
 
 ########################################################################
 
@@ -292,12 +294,17 @@ export MEMDIR="mem${ENSMEM}"
 
 # initialize ocean ensemble members with perturbations
 #   if true, only occurs for members greater than zero
-export USE_OCN_PERTURB_FILES=@USE_OCN_PERTURB_FILES@
+export REPLAY_ICS=@REPLAY_ICS@
+if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+    export OFFSET_START_HOUR=$(( assim_freq / 2 ))
+else
+    export OFFSET_START_HOUR=0
+fi
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
 if [[ "${EXP_WARM_START}" = ".false." ]]; then
-  export IAU_FHROT=0
+  export IAU_FHROT=${OFFSET_START_HOUR}
 else
   if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
