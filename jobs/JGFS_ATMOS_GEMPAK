@@ -11,15 +11,15 @@ export GRIB=${GRIB:-pgrb2f}
 export EXT=""
 export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GFS_GEMPAK}
 
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
 # For half-degree P Grib files
 export DO_HD_PGRB=${DO_HD_PGRB:-YES}
 
 ##############################################
 # Define COM directories
 ##############################################
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-
 for grid in 0p25 0p50 1p00; do
   GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
