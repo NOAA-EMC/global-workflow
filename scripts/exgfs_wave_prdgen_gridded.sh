@@ -100,32 +100,15 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
      esac
      #
 
-     GRIBIN="${COMIN_WAVE_GRID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2"
-     GRIBIN_chk=$GRIBIN.idx
-
-     icnt=1
-     while [ $icnt -lt 1000 ]; do
-       if [ -r $GRIBIN_chk ] ; then
-         break
-       else
-         echo "Waiting for input file: $GRIBIN"
-         let "icnt=icnt+1"
-         sleep 5
-       fi
-       if [ $icnt -ge $maxtries ]; then
-         msg="ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
-         echo ' '
-         echo '**************************** '
-         echo '*** ERROR : NO GRIB FILE *** '
-         echo '**************************** '
-         echo ' '
-         echo $msg
-         set_trace
-         echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
-         err=1;export err;${errchk} || exit ${err}
-       fi
-     done
-
+     GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2"
+     GRIBIN_chk="${GRIBIN}.idx"
+     sleep_interval=5
+     max_tries=1000
+     if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
+       echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
+       echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
+       err=1;export err;${errchk} || exit ${err}
+     fi
      GRIBOUT=$RUNwave.$cycle.$grdID.f${fhr}.clipped.grib2
 
      iparam=1
