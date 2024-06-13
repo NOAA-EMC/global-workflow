@@ -26,15 +26,22 @@ class GFSTasks(Tasks):
         # Atm ICs
         if self.app_config.do_atm:
             pslot = self._base['PSLOT']
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
+
+            if ( 'BASE_CPLIC' in cpl_ic.keys() ):
+                base_cplic = f"{cpl_ic['BASE_CPLIC']}"
+            else:
+                base_cplic = os.environ.get('BASE_CPLIC')
+            if ( 'CPL_ATMIC' in cpl_ic.keys() ):
+                cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
+            else:
+                cpl_atmic = os.environ.get('CPL_ATMIC')
+
+            prefix = f"{base_cplic}/{cpl_atmic}/@Y@m@d@H/atmos"
 
             pw_csp = os.environ.get('PW_CSP')
-            if ( pw_csp in ['aws', 'azure', 'google'] ):
-                base_cplic = f"{cpl_ic['BASE_CPLIC']}"
-               #cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
-                cpl_atmic = os.environ.get('CPL_ATMIC')
-                print('cpl_atmic = ', os.environ.get('CPL_ATMIC'))
-                icdir = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}"
+            use_ufs_utils_format = os.environ.get('USE_UFS_UTILS_FORMAT', False)
+            if ( pw_csp in ['aws', 'azure', 'google'] or use_ufs_utils_format):
+                icdir = f"{base_cplic}/{cpl_atmic}"
                 if('IC_PREFIX' in cpl_ic.keys()):
                     cpl_ic_prefix = f"{icdir}/{cpl_ic['IC_PREFIX']}"
                 else:
