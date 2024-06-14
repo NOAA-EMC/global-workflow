@@ -170,19 +170,18 @@ class AerosolObsPrep(Task):
         Run the IODA converter gdas_obsprovider2ioda.x
         """
         chdir(self.task_config.DATA)
-        for prepaero_yaml in self.task_config.prepaero_yaml:
-            exec_cmd = Executable(self.task_config.APRUN_PREPOBSAERO)
-            exec_name = os.path.join(self.task_config.DATA, 'gdas_obsprovider2ioda.x')
-            exec_cmd.add_default_arg(exec_name)
-            exec_cmd.add_default_arg(prepaero_yaml)
+        exec_cmd = Executable(self.task_config.APRUN_PREPOBSAERO)
+        exec_name = os.path.join(self.task_config.DATA, 'gdas_obsprovider2ioda.x')
+        exec_cmd.add_default_arg(exec_name)
 
+        for prepaero_yaml in self.task_config.prepaero_yaml:
             try:
-                logger.debug(f"Executing {exec_cmd}")
-                exec_cmd()
+                logger.debug(f"Executing {exec_cmd} on {prepaero_yaml}")
+                exec_cmd(f"{prepaero_yaml}")
             except OSError:
-                raise OSError(f"Failed to execute {exec_cmd}")
+                raise OSError(f"Failed to execute {exec_cmd} on {prepaero_yaml}")
             except Exception:
-                raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+                raise WorkflowException(f"An error occured during execution of {exec_cmd} on {prepaero_yaml}")
 
         pass
 
