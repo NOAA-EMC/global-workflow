@@ -281,8 +281,8 @@ fi
 
 ################################################################################
 # Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+cd "${pwd}" || exit 1
+[[ ${mkdata} = "YES" ]] && rm -rf "${DATA}"
 
 
-exit $err
+exit ${err}
