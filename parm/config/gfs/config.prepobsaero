@@ -1,0 +1,17 @@
+#!/bin/bash -x
+
+########## config.prepobsaero ##########
+# Prepare and thin/superob aerosol observations
+
+echo "BEGIN: config.prepobsaero"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" prepobsaero
+
+export OBSPROCYAML="${PARMgfs}/gdas/aero/obs/lists/gdas_aero_obsproc.yaml.j2"
+export OBSPROCEXE="${EXECgfs}/gdas_obsprovider2ioda.x"
+export VIIRS_DATA_DIR="/scratch2/NCEPDEV/stmp3/Yaping.Wang/VIIRS/AWS/"
+export SENSORS="npp,n20"
+
+
+echo "END: config.prepaeroobs"
