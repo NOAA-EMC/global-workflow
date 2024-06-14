@@ -84,10 +84,6 @@ esac
 
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
-# global-nest uses different versions of orog and ugwd
-if [[ "${LINK_NEST:-OFF}" == "ON" ]] ; then
-  source "${HOMEgfs}/versions/fix.nest.ver"
-fi
 
 # Link python pacakges in ush/python
 # TODO: This will be unnecessary when these are part of the virtualenv
@@ -134,7 +130,20 @@ do
   fix_ver="${dir}_ver"
   ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
 done
-
+# global-nest uses different versions of orog and ugwd
+if [[ "${LINK_NEST:-OFF}" == "ON" ]] ; then
+  for dir in orog \
+             ugwd
+  do
+    nestdir=${dir}_nest
+    if [[ -d "${nestdir}" ]]; then
+      [[ "${RUN_ENVIR}" == "nco" ]] && chmod -R 755 "${nestdir}"
+      rm -rf "${nestdir}"
+    fi
+    fix_ver="${dir}_nest_ver"
+    ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${nestdir}"
+  done
+fi
 
 #---------------------------------------
 #--add files from external repositories
@@ -253,6 +262,14 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
+  declare -a gdasapp_ocn_insitu_profile_platforms=("argo" "bathy" "glider" "marinemammal" "tesac" "xbtctd")
+  for platform in "${gdasapp_ocn_insitu_profile_platforms[@]}"; do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/marine/bufr2ioda_insitu_profile_${platform}.py" .
+  done
+  declare -a gdasapp_ocn_insitu_sfc_platforms=("altkob" "trkob")
+  for platform in "${gdasapp_ocn_insitu_sfc_platforms[@]}"; do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/marine/bufr2ioda_insitu_surface_${platform}.py" .
+  done
 fi
 
 
@@ -363,11 +380,10 @@ fi
 #--link source code directories
 #------------------------------
 cd "${HOMEgfs}/sorc" || exit 8
-# TODO: Commenting out until UPP is up-to-date with Rocky-8.
-#if [[ -d ufs_model.fd ]]; then
-#  [[ -d upp.fd ]] && rm -rf upp.fd
-#  ${LINK} ufs_model.fd/FV3/upp upp.fd
-#fi
+if [[ -d ufs_model.fd ]]; then
+  [[ -d upp.fd ]] && rm -rf upp.fd
+  ${LINK} ufs_model.fd/FV3/upp upp.fd
+fi
 
 if [[ -d gsi_enkf.fd ]]; then
   [[ -d gsi.fd ]] && rm -rf gsi.fd

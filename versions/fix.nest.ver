@@ -1,4 +1,0 @@
-#!/bin/bash
-# Fix file subfolder versions
-export orog_ver=global-nest.20240419
-export ugwd_ver=global-nest.20240419
