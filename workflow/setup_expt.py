@@ -58,6 +58,8 @@ def update_configs(host, inputs):
     data = AttrDict(host.info, **inputs.__dict__)
     data.HOMEgfs = _top
     yaml_path = inputs.yaml
+    if not os.path.exists(yaml_path):
+        raise IOError(f'YAML file does not exist, check path:' + yaml_path)
     yaml_dict = _update_defaults(AttrDict(parse_j2yaml(yaml_path, data)))
 
     # First update config.base
