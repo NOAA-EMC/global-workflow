@@ -282,7 +282,7 @@ pipeline {
                     """, returnStatus: true)
                     sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
                     sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI ${STATUS}** ${Machine} at <br>Built and ran in directory \\`${HOME}\\`" """, returnStatus: true)
-                    if STATUS == 'Passed' {
+                    if (STATUS == 'Passed') {
                         try {
                             sh(script: "rm -Rf ${HOME}/*")
                         } catch (Exception e) {
