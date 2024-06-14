@@ -605,9 +605,9 @@ class GFSTasks(Tasks):
     def esnowanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}prepsnowobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}prepsnowobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}snowanl'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}snowanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
