@@ -234,9 +234,9 @@ EOFdiag
    for rtype in $rlist; do
       set +e
       for rfile in *"${rtype}"*; do 
-	 if [[ -s "${rfile}" ]]; then
+         if [[ -s "${rfile}" ]]; then
             ${CHGRP_CMD} "${rfile}"
-	    ${STRICT_ON:-set -e}
+            ${STRICT_ON:-set -e}
          fi
       done
    done
