@@ -34,8 +34,8 @@ class AerosolObsPrep(Task):
                 'sensors': str(self.config['SENSORS']).split(','),
                 'data_dir': self.config['VIIRS_DATA_DIR'],
                 'input_files': '',
-                'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",
-                'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z."
+                'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
+                'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z."
             }
         )
 
