@@ -70,8 +70,8 @@ gdas:
         - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
         {% endif %}
         {% if DO_PREP_OBS_AERO %}
-        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
-        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"
         {% endif %}
         {% if DO_JEDISNOWDA %}
         - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"

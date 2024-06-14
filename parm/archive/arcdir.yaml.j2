@@ -48,8 +48,8 @@ Deterministic: &deterministic
             {% endif %}
 
             {% if DO_PREP_OBS_AERO %}
-            - ["{{ COM_OBS }}/{{ head }}aeroobs", "{{ ARCDIR }}/aeroobs.{{ RUN }}.{{ cycle_YMDH }}"]
-            - ["{{ COM_OBS }}/{{ head }}aerorawobs", "{{ ARCDIR }}/aerorawobs.{{ RUN }}.{{ cycle_YMDH }}"]
+            - ["{{ COMIN_OBS }}/{{ head }}aeroobs", "{{ ARCDIR }}/aeroobs.{{ RUN }}.{{ cycle_YMDH }}"]
+            - ["{{ COMIN_OBS }}/{{ head }}aerorawobs", "{{ ARCDIR }}/aerorawobs.{{ RUN }}.{{ cycle_YMDH }}"]
             {% endif %}
 
     {% endif %}
