@@ -47,7 +47,7 @@ while [[ ${nh} -le ${FHMAX} ]];do
       varsavailable=""
       for i in ${varsrequested}; do
         #check if variable from parm file is available in netcdf file. If variable is not in netcdf file, do not try to extract that variable. 
-        if [[ $varsinfile == *"${i}"* ]]; then
+        if [[ ${varsinfile} == *"${i}"* ]]; then
           varsavailable+="${i},"
         else
           echo "WARNING: ${i} is not available in ${infile}."
