@@ -1344,6 +1344,7 @@ unset var_NTASKS \
       var_npe_node \
       var_nth
 
+# Get machine-specific resources, overriding/extending the above assignments
 if [[ -f "${EXPDIR}/config.resources.${machine}" ]]; then
    source "${EXPDIR}/config.resources.${machine}"
 fi
