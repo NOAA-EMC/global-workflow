@@ -9,9 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
 ##############################################
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-gPDY=${GDATE:0:8}
-gcyc=${GDATE:8:2}
 GDUMP="gdas"
 GDUMP_ENS="enkf${GDUMP}"
 export GDUMP
@@ -25,7 +22,7 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl COM_SNOW_ANALYSIS
 
 mkdir -m 775 -p "${COM_SNOW_ANALYSIS}" "${COM_CONF}"
 
-for imem in $(seq 1 ${NMEM_ENS}); do
+for imem in $(seq 1 "${NMEM_ENS}"); do
     memchar="mem$(printf %03i "${imem}")"
     MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl COM_SNOW_ANALYSIS
     mkdir -m 775 -p "${COM_SNOW_ANALYSIS}"
@@ -53,7 +50,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || exit 1
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0

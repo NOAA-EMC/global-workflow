@@ -256,14 +256,14 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
         export err=$?; err_chk
 
         # Copy outputs from DATA to COMOUT
-        for imem in $(seq 1 $NMEM_ENS); do
+        for imem in $(seq 1 "${NMEM_ENS}"); do
             smem=$((imem + mem_offset))
             if (( smem > NMEM_ENS_MAX )); then
                smem=$((smem - NMEM_ENS_MAX))
             fi
-            gmemchar="mem"$(printf %03i "$smem")
-            cmem=$(printf %03i $imem)
-            memchar="mem$cmem"
+            gmemchar="mem"$(printf %03i "${smem}")
+            cmem=$(printf %03i "${imem}")
+            memchar="mem${cmem}"
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
