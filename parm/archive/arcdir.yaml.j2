@@ -47,6 +47,11 @@ Deterministic: &deterministic
             - ["{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aerostat", "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YMDH }}"]
             {% endif %}
 
+            {% if DO_PREP_OBS_AERO %}
+            - ["{{ COM_OBS }}/{{ head }}aeroobs", "{{ ARCDIR }}/aeroobs.{{ RUN }}.{{ cycle_YMDH }}"]
+            - ["{{ COM_OBS }}/{{ head }}aerorawobs", "{{ ARCDIR }}/aerorawobs.{{ RUN }}.{{ cycle_YMDH }}"]
+            {% endif %}
+
     {% endif %}
 
 {% if RUN == "gfs" %}
