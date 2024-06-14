@@ -4,8 +4,15 @@
 mkdir:
 {% for imem in range(1,NMEM_ENS+1) %}
    {% set memchar = 'mem%03d' | format(imem) %}
+   {% set tmpl_dict = ({ '${ROTDIR}': ROTDIR,
+                         '${RUN}': RUN, 
+                         '${YMD}': current_cycle | to_YMD,	
+                         '${HH}': current_cycle | strftime('%H'),
+                         '${MEMDIR}': memchar }) %}
+   {% set anl_rotdir = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
 - '{{ DATA }}/bkg/{{ memchar }}'
 - '{{ DATA }}/anl/{{ memchar }}'
+- '{{ anl_rotdir }}'
 {% endfor %}
 copy:
 {% for time in time_list %}
@@ -17,7 +24,7 @@ copy:
                             '${YMD}': previous_cycle | to_YMD,	
                             '${HH}': previous_cycle | strftime('%H'),
                             '${MEMDIR}': memchar }) %}
-      {% set src_dir = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
+      {% set src_dir = COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
       {% set dest_dir = DATA ~ '/bkg/' ~ memchar %}
       {% set fname = prefix ~ '.coupler.res' %}
 - ['{{ src_dir }}/{{ fname }}', '{{ dest_dir }}/{{ fname }}']
