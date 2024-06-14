@@ -53,7 +53,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean or self.do_ice:
             configs += ['oceanice_products']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -163,7 +163,7 @@ class GFSCycledAppConfig(AppConfig):
             if self.do_jediatmens:
                 hybrid_tasks += ['atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
             else:
-                hybrid_tasks += ['eobs', 'eupd', 'echgres']
+                hybrid_tasks += ['stage_ic', 'eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
             hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
@@ -179,7 +179,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_aero and 'gdas' in self.aero_anl_cdumps:
             gdas_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
-        gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
+        gdas_tasks += ['stage_ic', 'atmanlupp', 'atmanlprod', 'fcst']
 
         if self.do_upp:
             gdas_tasks += ['atmupp']

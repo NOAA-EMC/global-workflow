@@ -18,6 +18,8 @@ class GFSTasks(Tasks):
     # Specific Tasks begin here
     def stage_ic(self):
 
+        cycledef = 'gdas_half' if self.cdump in ['gdas', 'enkfgdas'] else self.cdump
+
         cpl_ic = self._configs['stage_ic']
 
         resources = self.get_resource('stage_ic')
@@ -25,7 +27,7 @@ class GFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
-                     'cycledef': self.cdump,
+                     'cycledef': cycledef,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/stage_ic.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -833,9 +835,10 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         if self.cdump in ['gdas']:
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
@@ -2520,7 +2523,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.cdump}esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
