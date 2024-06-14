@@ -48,7 +48,7 @@ class AerosolObsPrep(Task):
         List needed raw obs files.
         Copy the raw obs files to $DATA/obs.
         Link over the needed executable.
-        Generate corresponding YMAL file.
+        Generate corresponding YAML file.
         Run IODA converter.
         """
         self.task_config.DATA_OBS = os.path.join(self.task_config.DATA, 'obs')
