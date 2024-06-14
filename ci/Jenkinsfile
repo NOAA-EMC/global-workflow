@@ -43,7 +43,7 @@ pipeline {
                             if (label.matches("CI-(.*?)-Ready")) {
                                 def Machine_name = label.split('-')[1].toString()
                                 jenkins.model.Jenkins.get().computers.each { c ->
-                                    if (c.node.selfLabel.name == "${Machine_name}-EMC") {
+                                    if (c.node.selfLabel.name == NodeName[Machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
                                     }
                                 }
@@ -53,8 +53,10 @@ pipeline {
                         if (run_nodes.size() > 1) {
                             run_nodes.init().each { node ->
                                 def machine_name = node.split('-')[0].toLowerCase()
+                                Machine = machine_name[0].toUpperCase() + machine_name.substring(1)
                                 echo "Spawning job on node: ${node} with machine name: ${machine_name}"
                                 build job: "/global-workflow/EMC-Global-Pipeline/PR-${env.CHANGE_ID}", parameters: [
+                                    string(name: 'Machine', value: Machine),
                                     string(name: 'machine', value: machine_name),
                                     string(name: 'Node', value: node) ],
                                     wait: false
@@ -71,10 +73,9 @@ pipeline {
         }
 
         stage('2. Get Common Workspace') {
-            agent { label NodeName[machine].toLowerCase() }
+            agent { label NodeName[Machine].toLowerCase() }
             steps {
                 script {
-                    Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
@@ -89,7 +90,7 @@ pipeline {
 
         stage('3. Build System') {
             matrix {
-                agent { label NodeName[machine].toLowerCase() }
+                agent { label NodeName[Machine].toLowerCase() }
                 //options {
                 //    throttle(['global_matrix_build'])
                 //}
@@ -183,7 +184,7 @@ pipeline {
         stage('4. Run Tests') {
             failFast false 
             matrix {
-                agent { label NodeName[machine].toLowerCase() }
+                agent { label NodeName[Machine].toLowerCase() }
                 axes {
                     axis {
                         name 'Case'
@@ -269,7 +270,7 @@ pipeline {
             }
         }
         stage( '5. FINALIZE' ) {
-            agent { label NodeName[machine].toLowerCase() }
+            agent { label NodeName[Machine].toLowerCase() }
             steps {
                 script {
                     sh(script: """
