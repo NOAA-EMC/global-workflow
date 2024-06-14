@@ -18,10 +18,11 @@ def main():
     stage = Stage(config)
 
     # Pull out all the configuration keys needed to run stage job
-    keys = ['RUN', 'MODE', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST',
-            'current_cycle', 'EXP_WARM_START', 'CDUMP', 'rCDUMP',
-            'ROTDIR', 'PARMgfs', 'ntiles', 'MEMDIR',
-            'BASE_CPLIC', 'waveGRD', 'OCNRES', 'USE_OCN_PERTURB_FILES',
+    keys = ['RUN', 'MODE', 'CASE', 'CASE_ENS', 'OCNRES', 'ICERES', 'waveGRD',
+            'EXP_WARM_START', 'current_cycle', 'CDUMP', 'rCDUMP',
+            'ROTDIR', 'PARMgfs', 'ICSDIR',
+            'ntiles', 'MEMDIR', 'USE_OCN_PERTURB_FILES',
+            'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', # TODO: Add DO_MED
             'CPL_ATMIC', 'CPL_ICEIC', 'CPL_OCNIC', 'CPL_WAVIC']
 
     stage_dict = AttrDict()
