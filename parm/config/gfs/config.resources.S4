@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#! /usr/bin/env bash
 
 # S4-specific job resources
 
