@@ -42,4 +42,22 @@ if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
   export CPL_ATMIC="GLOBAL-NEST_${CASE}"
 fi
 
+# Set ICSDIR
+
+if [[ -z "${ICSDIR}" ]] ; then
+
+  IC_VER="20240610"
+
+  if [[ "${CASE_ENS}" != "@CASEENS@" ]] ; then
+    ENSIC="${CASE_ENS}"
+  fi
+
+  if [[ "${DO_OCN:-NO}" == "YES" ]] ; then
+    OCNIC="mx${OCNRES}"
+  fi
+
+  export ICSDIR="${BASE_IC}/${CASE}${ENSIC:-}${OCNIC:-}/${IC_VER}"
+
+fi
+
 echo "END: config.stage_ic"

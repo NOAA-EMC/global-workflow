@@ -26,4 +26,10 @@ case "${CASE}" in
     ;;
 esac
 
+if [[ -z "${ICSDIR}" ]] ; then
+
+  export ICSDIR="${BASE_IC}/${CPL_ATMIC}"
+
+fi
+
 echo "END: config.stage_ic"
