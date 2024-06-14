@@ -37,7 +37,8 @@ export USHgfs=${HOMEgfs}/ush
 export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
-export BASE_CPLIC="@BASE_CPLIC@"
+export ICSDIR="@ICSDIR@"
+export BASE_IC="@BASE_IC@"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
