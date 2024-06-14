@@ -53,6 +53,9 @@ class Stage(Task):
 
         stage_sets = []
 
+        if stage_dict.MODE == "cycled" and stage_dict.RUN == "gdas":
+            stage_sets.append("analysis.yaml.j2")
+
         if stage_dict.EXP_WARM_START:
             stage_sets.append("atmosphere_warm.yaml.j2")
         else:
