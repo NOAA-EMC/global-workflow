@@ -127,8 +127,10 @@ case ${step} in
     export memory_waveprep_gdas="100GB"
     export memory_waveprep_gfs="150GB"
 
-    var_npe_node="npe_node_waveprep_${RUN}"; var_nth="nth_waveprep_${RUN}"
-    var_npe="npe_waveprep_${RUN}"; var_NTASKS="ntasks_${RUN}"
+    var_npe_node="npe_node_waveprep_${RUN}"
+    var_nth="nth_waveprep_${RUN}"
+    var_npe="npe_waveprep_${RUN}"
+    var_NTASKS="ntasks_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
     if [[ -n "${!var_npe_node+0}" ]]; then
@@ -245,7 +247,8 @@ case ${step} in
     export memory_atmanlvar="96GB"
     export is_exclusive=True
 
-    var_npe_node="npe_node_atmanlvar_${RUN}"; var_nth="nth_atmanlvar_${RUN}"
+    var_npe_node="npe_node_atmanlvar_${RUN}"
+    var_nth="nth_atmanlvar_${RUN}"
     var_npe="npe_atmanlvar_${RUN}"
     if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_atmanlvar"="${!var_npe_node}" nth_atmanlvar="${!var_nth}" \
@@ -267,7 +270,8 @@ case ${step} in
     export memory_atmanlfv3inc="96GB"
     export is_exclusive=True
 
-    var_npe_node="npe_node_atmanlfv3inc_${RUN}"; var_nth="nth_atmanlfv3inc_${RUN}"
+    var_npe_node="npe_node_atmanlfv3inc_${RUN}"
+    var_nth="nth_atmanlfv3inc_${RUN}"
     var_npe="npe_atmanlfv3inc_${RUN}"
     if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_atmanlfv3inc"="${!var_npe_node}" nth_atmanlfv3inc="${!var_nth}" \
@@ -382,7 +386,8 @@ case ${step} in
     export npe_node_aeroanlrun_gfs=$(( npe_node_max / nth_aeroanlrun_gfs ))
     export is_exclusive=True
 
-    var_npe_node="npe_node_aeroanlrun_${RUN}"; var_nth="nth_aeroanlrun_${RUN}"
+    var_npe_node="npe_node_aeroanlrun_${RUN}"
+    var_nth="nth_aeroanlrun_${RUN}"
     var_npe="npe_aeroanlrun_${RUN}"
     if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_aeroanlrun"="${!var_npe_node}" nth_aeroanlrun="${!var_nth}" \
@@ -783,7 +788,8 @@ case ${step} in
         ;;
     esac
 
-    var_npe_node="npe_node_${step}_${RUN}"; var_nth="nth_${step}_${RUN}"
+    var_npe_node="npe_node_${step}_${RUN}"
+    var_nth="nth_${step}_${RUN}"
     var_npe="npe_${step}_${RUN}"
     if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_${step}"="${!var_npe_node}" "nth_${step}"="${!var_nth}" \
@@ -982,7 +988,8 @@ case ${step} in
     export memory_atmensanlletkf="96GB"
     export is_exclusive=True
 
-    var_npe_node="npe_node_atmensanlletkf_${RUN}"; var_nth="nth_atmensanlletkf_${RUN}"
+    var_npe_node="npe_node_atmensanlletkf_${RUN}"
+    var_nth="nth_atmensanlletkf_${RUN}"
     var_npe="npe_atmensanlletkf_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
@@ -1006,7 +1013,8 @@ case ${step} in
     export memory_atmensanlfv3inc="96GB"
     export is_exclusive=True
 
-    var_npe_node="npe_node_atmensanlletkf_${RUN}"; var_nth="nth_atmensanlletkf_${RUN}"
+    var_npe_node="npe_node_atmensanlletkf_${RUN}"
+    var_nth="nth_atmensanlletkf_${RUN}"
     var_npe="npe_atmensanlletkf_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
@@ -1156,7 +1164,8 @@ case ${step} in
     export memory_gempak_gdas="4GB"
     export memory_gempak_gfs="2GB"
 
-    var_npe_node="npe_node_gempak_${RUN}"; var_nth="nth_gempak_${RUN}"
+    var_npe_node="npe_node_gempak_${RUN}"
+    var_nth="nth_gempak_${RUN}"
     var_npe="npe_gempak_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
