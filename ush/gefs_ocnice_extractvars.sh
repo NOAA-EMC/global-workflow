@@ -42,8 +42,23 @@ while [[ ${nh} -le ${FHMAX} ]];do
       ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile1}">/dev/null 
     fi
     if [[ "${dataformat}" == "netcdf" ]];then
-      ocnice_vars=$(paste -sd, "${varlist}")
-      ncks -v "${ocnice_vars}" "${infile}" "${oufile1}"
+      varsrequested=$(paste -s "${varlist}")
+      varsinfile=$(cdo -showname "${infile}")
+      varsavailable=""
+      for i in ${varsrequested}; do
+        #check if variable from parm file is available in netcdf file. If variable is not in netcdf file, do not try to extract that variable. 
+        if [[ $varsinfile == *"${i}"* ]]; then
+          varsavailable+="${i},"
+        else
+          echo "WARNING: ${i} is not available in ${infile}."
+        fi
+      done
+      if [[ -z "${varsavailable}" ]];then
+        echo "WARNING: No variables from parm file ${varlist} are available in netcdf file ${infile}"
+      else
+        ocnice_vars=${varsavailable::-1}
+        ncks -v "${ocnice_vars}" "${infile}" "${oufile1}"
+      fi
     fi  
     if [[ ${datacompress} -eq 1 ]];then
       bzip2 "${oufile1}" 
