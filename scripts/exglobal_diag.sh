@@ -236,7 +236,6 @@ EOFdiag
          if [[ -s "${rfile}" ]]; then
             ${CHGRP_CMD} "${rfile}"
          fi
-	 ${STRICT_ON:-set -e}
       done
    done
 
