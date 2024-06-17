@@ -26,7 +26,3 @@
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
-[submodule "sorc/jcb"]
-  path = sorc/jcb
-  url = https://github.com/noaa-emc/jcb
-  fetchRecurseSubmodules = false

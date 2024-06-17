@@ -408,8 +408,11 @@ class GEFSTasks(Tasks):
     def wavepostbndpntbll(self):
         deps = []
         atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'MEMDIR': 'mem#member#'})
-        # Is there any reason this is 180?
-        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
+
+        # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
+        last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
+
+        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
 
