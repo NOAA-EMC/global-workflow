@@ -40,6 +40,10 @@ gfsa:
         {% if AERO_ANL_CDUMP == "gfs" or AERO_ANL_CDUMP == "both" %}
         - "{{ COM_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
         {% endif %}
+        {% if DO_PREP_OBS_AERO %}
+        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
+        - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"
+        {% endif %}
 
         # BUFR inputs
         - "{{ COM_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
