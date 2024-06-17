@@ -1,8 +1,0 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMD = current_cycle | to_YMD %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-ice:
-    mkdir:
-        - "{{ COM_ICE_RESTART_PREV }}"
-    copy:
-        - ["{{ ICSDIR }}/{{ COM_ICE_RESTART_PREV | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.cice_model.res.nc", "{{ COM_ICE_RESTART_PREV }}"]
