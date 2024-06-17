@@ -7,9 +7,9 @@ import tarfile
 from logging import getLogger
 from typing import Any, Dict, List
 
-from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, cast_strdict_as_dtypedict,
+from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
-                    to_YMD, to_YMDH, Template, TemplateConstants)
+                    to_YMDH)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -412,7 +412,7 @@ class Archive(Task):
             with open(filename_in) as old_file:
                 lines = old_file.readlines()
 
-            out_lines = [line.replace(search, replace) for line in lines]
+            out_lines = [line.replace(search_str, replace_str) for line in lines]
 
             with open("/tmp/track_file", "w") as new_file:
                 new_file.writelines(out_lines)
