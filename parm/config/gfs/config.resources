@@ -35,16 +35,44 @@ step=$1
 echo "BEGIN: config.resources"
 
 case ${machine} in
-  "WCOSS2")   npe_node_max=128;;
-  "HERA")     npe_node_max=40;;
-  "GAEA")     npe_node_max=128;;
-  "ORION")    npe_node_max=40;;
-  "HERCULES") npe_node_max=80;;
+  "WCOSS2")
+              npe_node_max=128
+              mem_node_max="512GB"
+    ;;
+  "HERA")
+              npe_node_max=40
+              mem_node_max="96GB"
+    ;;
+  "GAEA")
+              npe_node_max=128
+              mem_node_max="251GB"
+    ;;
+  "ORION")
+              npe_node_max=40
+              mem_node_max="192GB"
+    ;;
+  "HERCULES")
+              npe_node_max=80
+              mem_node_max="512GB"
+    ;;
   "JET")
     case ${PARTITION_BATCH} in
-      "xjet")          npe_node_max=24;;
-      "vjet" | "sjet") npe_node_max=16;;
-      "kjet")          npe_node_max=40;;
+      "xjet")
+              npe_node_max=24
+              mem_node_max="61GB"
+        ;;
+      "vjet")
+              npe_node_max=16
+              mem_node_max="61GB"
+        ;;
+      "sjet")
+              npe_node_max=16
+              mem_node_max="29GB"
+        ;;
+      "kjet")
+              npe_node_max=40
+              mem_node_max="93GB"
+        ;;
       *)
         echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
         exit 3
@@ -52,8 +80,13 @@ case ${machine} in
     ;;
   "S4")
     case ${PARTITION_BATCH} in
-      "s4")  npe_node_max=32;;
-      "ivy") npe_node_max=20;;
+      "s4")   npe_node_max=32
+              mem_node_max="168GB"
+        ;;
+      "ivy")
+              npe_node_max=20
+              mem_node_max="128GB"
+        ;;
       *)
         echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
         exit 3
@@ -62,9 +95,13 @@ case ${machine} in
   "AWSPW")
     export PARTITION_BATCH="compute"
     npe_node_max=40
+    # TODO Supply a max mem/node value for AWS
+    mem_node_max=""
     ;;
   "CONTAINER")
     npe_node_max=1
+    # TODO Supply a max mem/node value for a container
+    mem_node_max=""
     ;;
   *)
     echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
