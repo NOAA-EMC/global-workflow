@@ -20,8 +20,8 @@ def main():
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'CASE', 'CASE_ENS', 'OCNRES', 'ICERES', 'waveGRD',
             'EXP_WARM_START', 'current_cycle', 'CDUMP', 'rCDUMP',
-            'ROTDIR', 'PARMgfs', 'ICSDIR',
-            'ntiles', 'MEMDIR', 'USE_OCN_PERTURB_FILES',
+            'ROTDIR', 'PARMgfs', 'ICSDIR', 'DTG_PREFIX',
+            'ntiles', 'MEMDIR', 'REPLAY_ICS',
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', # TODO: Add DO_MED
             'CPL_ATMIC', 'CPL_ICEIC', 'CPL_OCNIC', 'CPL_WAVIC']
 
@@ -37,12 +37,8 @@ def main():
     # Add the os.path.exists function to the dict for yaml parsing
     stage_dict['path_exists'] = os.path.exists
 
-    # Determine which ICs to stage
-    stage_sets = stage.determine_stage(stage_dict)
-
     # Stage ICs
-    stage.execute_stage(stage_dict, stage_sets)
-
+    stage.execute_stage(stage_dict)
 
 if __name__ == '__main__':
     main()
