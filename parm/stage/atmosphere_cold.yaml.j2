@@ -1,11 +1,10 @@
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-fv3_cold:
+atmosphere_cold:
     mkdir:
         - "{{ COM_ATMOS_INPUT }}"
     copy:
-        - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/gfs_ctrl.nc", "{{ COM_ATMOS_INPUT }}"]
+        - ["{{ ICSDIR }}/{{ COM_ATMOS_INPUT | relpath(ROTDIR) }}/gfs_ctrl.nc", "{{ COM_ATMOS_INPUT }}"]
         {% for ftype in ["gfs_data", "sfc_data"] %}
             {% for ntile in range(1, ntiles + 1) %}
-        - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/{{ ftype }}.tile{{ ntile }}.nc", "{{ COM_ATMOS_INPUT }}"]
+        - ["{{ ICSDIR }}/{{ COM_ATMOS_INPUT | relpath(ROTDIR) }}/{{ ftype }}.tile{{ ntile }}.nc", "{{ COM_ATMOS_INPUT }}"]
             {% endfor %} # ntile
         {% endfor %} # ftype

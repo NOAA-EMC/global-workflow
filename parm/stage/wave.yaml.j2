@@ -3,6 +3,6 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 wave:
     mkdir:
-        - "{{ COM_WAVE_RESTART }}"
+        - "{{ COM_WAVE_RESTART_PREV }}"
     copy:
-        - ["{{ BASE_CPLIC }}/{{ CPL_WAVIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/wave/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ waveGRD }}", "{{ COM_WAVE_RESTART }}"]
+        - ["{{ ICSDIR }}/{{ COM_WAVE_RESTART_PREV | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.restart.{{ waveGRD }}", "{{ COM_WAVE_RESTART_PREV }}"]

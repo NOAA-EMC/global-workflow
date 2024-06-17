@@ -5,4 +5,4 @@ ice:
     mkdir:
         - "{{ COM_ICE_RESTART_PREV }}"
     copy:
-        - ["{{ BASE_CPLIC }}/{{ CPL_ICEIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/ice/{{ cycle_YMD }}.{{ cycle_HH }}0000.cice_model.res.nc", "{{ COM_ICE_RESTART_PREV }}"]
+        - ["{{ ICSDIR }}/{{ COM_ICE_RESTART_PREV | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.cice_model.res.nc", "{{ COM_ICE_RESTART_PREV }}"]

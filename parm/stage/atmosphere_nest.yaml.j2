@@ -2,13 +2,13 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set ntile = 7 %}
-fv3_nest:
+atmosphere_nest:
     mkdir:
         - "{{ COM_ATMOS_RESTART_PREV }}"
     copy:
         {% if EXP_WARM_START == True %}
             {% for ftype in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data %}
-        - ["{{ BASE_CPLIC }}/{{ CPL_ATMIC }}/{{ cycle_YMDH }}/{{ MEMDIR }}/atmos/{{ cycle_YMD }}.{{ cycle_HH }}0000.{{ ftype }}.tile{{ ntile }}.nc", "{{ COM_ATMOS_RESTART_PREV }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.{{ ftype }}.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
+        - ["{{ ICSDIR }}/{{ COM_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.{{ ftype }}.tile{{ ntile }}.nc", "{{ COM_ATMOS_RESTART_PREV }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.{{ ftype }}.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
             {% endfor %} # ftype
         {% else %}
             {% for ftype in gfs_data sfc_data %}
