@@ -1,0 +1,9 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+analysis:
+    mkdir:
+        - "{{ COM_ATMOS_ANALYSIS }}"
+    copy:
+        # TODO: Add abias_int?
+        {% for ftype in ["abias", "abias_air", "abias_pc", "radstat"] %}
+        - ["{{ ICSDIR }}/{{ COM_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.{{ ftype }}", "{{ COM_ATMOS_ANALYSIS }}"]
+        {% endfor %}
