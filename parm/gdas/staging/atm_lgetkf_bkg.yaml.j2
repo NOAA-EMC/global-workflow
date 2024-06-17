@@ -25,7 +25,7 @@ copy:
 - ['{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ time | to_fv3time }}.coupler.res', '{{ DATA }}/bkg/{{ memchar }}/']
       {% for ftype in ftype_list %}
          {% for itile in range(1,7) %}
-- ['{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ time | to_fv3time }}.{{ ftype }}.tile{ itile }}.nc', '{{ DATA }}/bkg/{{ memchar }}/']
+- ['{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ time | to_fv3time }}.{{ ftype }}.tile{{ itile }}.nc', '{{ DATA }}/bkg/{{ memchar }}/']
          {% endfor %}
       {% endfor %}
    {% endfor %}
