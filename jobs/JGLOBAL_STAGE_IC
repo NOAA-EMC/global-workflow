@@ -15,6 +15,9 @@ GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 gPDY="${GDATE:0:8}"
 gcyc="${GDATE:8:2}"
 
+RDATE=$(date --utc -d "${PDY} ${cyc} + ${OFFSET_START_HOUR} hours" +%Y%m%d%H)
+export DTG_PREFIX="${RDATE:0:8}.${RDATE:8:2}0000"
+
 # Define MEMDIR_ARRAY
 MEMDIR_ARRAY=()
 if [[ "${RUN:-}" = "enkfgdas" || "${RUN:-}" = "gefs" ]]; then
@@ -41,10 +44,8 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   export MEMDIR
 
   # Declare COMs
-  if [[ "${MODE}" = "cycled" && "${RUN:-}" = "gdas" ]]; then
-    YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
-    export COM_ATMOS_ANALYSIS
-  fi
+  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
+  export COM_ATMOS_ANALYSIS
 
   if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
     RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL

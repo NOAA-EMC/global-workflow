@@ -445,10 +445,6 @@ export INCVARS_EFOLD="5"
 export netcdf_diag=".true."
 export binary_diag=".false."
 
-# Initialize ocean ensemble members with perturbations
-#   if true, only occurs for members greater than zero
-export USE_OCN_PERTURB_FILES=".false."
-
 # Verification options
 export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
 export DO_FIT2OBS="YES"      # Run fit to observations package
