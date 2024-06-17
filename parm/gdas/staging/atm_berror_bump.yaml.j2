@@ -1,23 +1,15 @@
-{% set src_dir = BERROR_DATA_DIR %}
-{% set dest_dir = DATA ~ '/berror' %}
 {% set ftype_list = ['cor_rh', 'cor_rv', 'stddev'] %}
 {% set nprocs = ntiles * layout_x * layout_y %}
 
 mkdir:
-- '{{ dest_dir }}'
-
+- ''{{ DATA }}/berror''
 copy:
 {% for ftype in ftype_list %}
-   {% set prefix = BERROR_DATE | to_fv3time ~ '.' ~ ftype %}
-   {% set fname = prefix ~ '.coupler.res' %}
-- ['{{ src_dir }}/{{ fname }}', '{{ dest_dir }}/{{ fname }}']
+- ['{{ BERROR_DATA_DIR }}/{{ BERROR_DATE | to_fv3time }}.coupler.res', '{{ DATA }}/berror']
    {% for itile in range(1,7) %}
-      {% set fname = prefix ~ '.fv_tracer.res.tile' ~  itile ~ '.nc' %}
-- ['{{ src_dir }}/{{ fname }}', '{{ dest_dir }}/{{ fname }}']
+- ['{{ BERROR_DATA_DIR }}/{{ BERROR_DATE | to_fv3time }}.fv_tracer.res.tile{{ itile }}.nc', '{{ DATA }}/berror']
    {% endfor %}
 {% endfor %}
-
 {% for nn in range(1,nprocs+1) %}
-   {% set fname = 'nicas_aero_nicas_local_%06d-%06d.nc' | format(nprocs, nn) %}
-- ['{{ src_dir }}/{{ fname }}', '{{ dest_dir }}/{{ fname }}']
+- ['{{ BERROR_DATA_DIR }}/{{ 'nicas_aero_nicas_local_%06d-%06d.nc' | format(nprocs, nn) }}', '{{ DATA }}/berror']
 {% endfor %}
