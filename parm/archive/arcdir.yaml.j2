@@ -6,8 +6,9 @@
 # Select data to store in the ARCDIR and VFYARC from deterministic runs
 mkdir:
     - "{{ ARCDIR }}"
-    {% if DO_FIT2OBS %}
-        {% set VFYARC = ROTDIR + "/vrfyarch" %}
+
+    {% if DO_FIT2OBS == True %}
+        {% set VFYARC = ROTDIR ~ "/vrfyarch" %}
     - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
     {% endif %}
 
@@ -57,6 +58,13 @@ mkdir:
     {% if AERO_ANL_CDUMP == RUN or AERO_ANL_CDUMP == "both" %}
         {% do det_anl_files.append([COM_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat",
                                     ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
+    {% endif %}
+
+    {% if DO_PREP_OBS_AERO %}
+        {% do det_anl_files.append([COM_OBS ~ "/" ~ head ~ "aeroobs",
+                                   ARCDIR ~ "/aeroobs." ~ RUN ~ "." ~ cycle_YMDH]
+        {% do det_anl_files.append([COM_OBS ~ "/" ~ head ~ "aeroawobs",
+                                   ARCDIR ~ "/aeroawobs." ~ RUN ~ "." ~ cycle_YMDH]
     {% endif %}
 
     # GFS-specific files
