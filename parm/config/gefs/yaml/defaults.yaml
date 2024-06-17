@@ -9,5 +9,5 @@ base:
   DO_AWIPS: "NO"
   KEEPDATA: "NO" 
   FHMAX_GFS: 120
-  USE_OCN_PERTURB_FILES: "false"
+  REPLAY_ICS: "NO"
 

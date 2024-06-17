@@ -44,6 +44,7 @@ pdsext=no
 g2tbls=g2varswmo2.tbl
 NAGRIB=nagrib2
 
+sleep_interval=20
 maxtries=15
 fhcnt=${fstart}
 while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
@@ -72,28 +73,11 @@ while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
     esac
     GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
     GRIBIN_chk=${GRIBIN}.idx
-
-    icnt=1
-    while [ ${icnt} -lt 1000 ]; do
-      if [ -r ${GRIBIN_chk} ] ; then
-        break
-      else
-        let "icnt=icnt+1"
-        sleep 20
-      fi
-      if [ ${icnt} -ge ${maxtries} ]; then
-        msg="ABORTING after 5 minutes of waiting for ${GRIBIN}."
-        echo ' '
-        echo '**************************** '
-        echo '*** ERROR : NO GRIB FILE *** '
-        echo '**************************** '
-        echo ' '
-        echo ${msg}
-        set_trace
-        echo "${RUNwave} ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB file missing." >> ${wavelog}
-        err=1;export err;${errchk} || exit ${err}
-      fi
-    done
+    if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${maxtries}"; then
+      echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
+      echo "${RUNwave} ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB file missing." >> "${wavelog}"
+      err=1;export err;"${errchk}" || exit "${err}"
+    fi
 
     #if [ "$grdIDin" = "global.0p25" && "$grid" = "glo_30m" ]; then
     if [ "${grdIDin}" = "global.0p25" ]; then
