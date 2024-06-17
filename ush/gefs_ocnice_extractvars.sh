@@ -54,7 +54,7 @@ while [[ ${nh} -le ${FHMAX} ]];do
         fi
       done
       if [[ -z "${varsavailable}" ]];then
-        echo "WARNING: No variables from parm file ${varlist} are available in netcdf file ${infile}"
+        echo "WARNING: No variables from parm file ${varlist} are available in netcdf file ${infile}."
       else
         ocnice_vars=${varsavailable::-1}
         ncks -v "${ocnice_vars}" "${infile}" "${oufile1}"
