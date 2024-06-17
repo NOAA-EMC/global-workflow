@@ -331,6 +331,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@OCNRES@": f"{int(100.*inputs.resdetocean):03d}",
         "@EXPDIR@": inputs.expdir,
         "@COMROOT@": inputs.comroot,
+        "@BASE_CPLIC@": inputs.base_cplic,
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
@@ -564,6 +565,10 @@ def get_ocean_resolution(resdetatmos):
 def main(*argv):
 
     user_inputs = input_args(*argv)
+
+    user_inputs.base_cplic = os.getenv('BASE_CPLIC', '/scratch2/NAGAPE/epic/Wei.Huang/data')
+    print('user_inputs =', user_inputs)
+
     host = Host()
 
     validate_user_request(host, user_inputs)

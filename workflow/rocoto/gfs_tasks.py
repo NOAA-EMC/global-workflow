@@ -42,6 +42,7 @@ class GFSTasks(Tasks):
             use_ufs_utils_format = os.environ.get('USE_UFS_UTILS_FORMAT', False)
             if ( pw_csp in ['aws', 'azure', 'google'] or use_ufs_utils_format):
                 icdir = f"{base_cplic}/{cpl_atmic}"
+
                 if('IC_PREFIX' in cpl_ic.keys()):
                     cpl_ic_prefix = f"{icdir}/{cpl_ic['IC_PREFIX']}"
                 else:
