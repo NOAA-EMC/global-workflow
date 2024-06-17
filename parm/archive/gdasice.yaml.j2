@@ -4,7 +4,7 @@ gdasice:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice.tar"
     required:
         - "{{ COMIN_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}ic.nc"
-        {% for fhr in range(FHOUT_OCNICE, FHMAX+1, FHOUT_OCNICE) %}
+        {% for fhr in range(FHOUT_ICE, FHMAX+1, FHOUT_ICE) %}
         - "{{ COMIN_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.ice_in'
