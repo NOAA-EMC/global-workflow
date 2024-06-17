@@ -176,6 +176,8 @@ ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
 ush/gen_bufr2ioda_json.py
 ush/gen_bufr2ioda_yaml.py
+ush/bufr2ioda_insitu_profile*.py
+ush/bufr2ioda_insitu_surface*.py
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
