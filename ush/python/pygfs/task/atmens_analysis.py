@@ -31,7 +31,7 @@ class AtmEnsAnalysis(Analysis):
 
         _res = int(self.task_config.CASE_ENS[1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-        _jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmens.yaml")
+        _jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -42,8 +42,8 @@ class AtmEnsAnalysis(Analysis):
                 'npz': self.task_config.LEVS - 1,
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
-                'OPREFIX': f"{self.task_config.EUPD_CYC}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
-                'APREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
+                'OPREFIX': f"{self.task_config.EUPD_CYC}.t{self.task_config.cyc:02d}z.",
+                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'jedi_yaml': _jedi_yaml,
                 'atm_obsdatain_path': f"./obs/",
@@ -209,8 +209,8 @@ class AtmEnsAnalysis(Analysis):
 
         # copy full YAML from executable to ROTDIR
         logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
-        src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmens.yaml")
-        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmens.yaml")
+        src = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
+        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
         logger.debug(f"Copying {src} to {dest}")
         yaml_copy = {
             'mkdir': [self.task_config.COM_ATMOS_ANALYSIS_ENS],
@@ -239,7 +239,7 @@ class AtmEnsAnalysis(Analysis):
             tmpl_inc_dict['MEMDIR'] = memchar
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
             src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.nc4")
-            dest = os.path.join(incdir, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc")
+            dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc")
 
             # copy increment
             logger.debug(f"Copying {src} to {dest}")
