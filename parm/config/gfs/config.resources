@@ -37,40 +37,49 @@ echo "BEGIN: config.resources"
 case ${machine} in
   "WCOSS2")
               npe_node_max=128
+              # shellcheck disable=SC2034
               mem_node_max="512GB"
     ;;
   "HERA")
               npe_node_max=40
+              # shellcheck disable=SC2034
               mem_node_max="96GB"
     ;;
   "GAEA")
               npe_node_max=128
+              # shellcheck disable=SC2034
               mem_node_max="251GB"
     ;;
   "ORION")
               npe_node_max=40
+              # shellcheck disable=SC2034
               mem_node_max="192GB"
     ;;
   "HERCULES")
               npe_node_max=80
+              # shellcheck disable=SC2034
               mem_node_max="512GB"
     ;;
   "JET")
     case ${PARTITION_BATCH} in
       "xjet")
               npe_node_max=24
+              # shellcheck disable=SC2034
               mem_node_max="61GB"
         ;;
       "vjet")
               npe_node_max=16
+              # shellcheck disable=SC2034
               mem_node_max="61GB"
         ;;
       "sjet")
               npe_node_max=16
+              # shellcheck disable=SC2034
               mem_node_max="29GB"
         ;;
       "kjet")
               npe_node_max=40
+              # shellcheck disable=SC2034
               mem_node_max="93GB"
         ;;
       *)
@@ -81,10 +90,12 @@ case ${machine} in
   "S4")
     case ${PARTITION_BATCH} in
       "s4")   npe_node_max=32
+              # shellcheck disable=SC2034
               mem_node_max="168GB"
         ;;
       "ivy")
               npe_node_max=20
+              # shellcheck disable=SC2034
               mem_node_max="128GB"
         ;;
       *)
@@ -96,11 +107,13 @@ case ${machine} in
     export PARTITION_BATCH="compute"
     npe_node_max=40
     # TODO Supply a max mem/node value for AWS
+    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "CONTAINER")
     npe_node_max=1
     # TODO Supply a max mem/node value for a container
+    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   *)
