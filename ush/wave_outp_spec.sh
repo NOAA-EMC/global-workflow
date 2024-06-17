@@ -31,6 +31,7 @@ source "${USHgfs}/preamble.sh"
   workdir=$4
 
   YMDHE=$($NDATE $FHMAX_WAV_PNT $CDATE)
+  model_start_date=$(${NDATE} ${OFFSET_START_HOUR} "${PDY}${cyc}")
 
   cd $workdir
 
@@ -187,7 +188,7 @@ source "${USHgfs}/preamble.sh"
 
   if [ -f $outfile ]
   then
-   if [ "${ymdh}" = "${CDATE}" ]
+   if [ "${ymdh}" = "${model_start_date}" ]
    then
      if [ "$specdir" = "bull" ]
      then
@@ -228,6 +229,6 @@ source "${USHgfs}/preamble.sh"
 # 3.b Clean up the rest
 
 cd ..
-rm -rf ${specdir}_${bloc}
+rm -rf "${specdir}_${bloc}"
 
 # End of ww3_outp_spec.sh ---------------------------------------------------- #
