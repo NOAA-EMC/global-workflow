@@ -1200,9 +1200,13 @@ class GFSTasks(Tasks):
         return task
 
     def wavepostbndpntbll(self):
+
+        # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
+        last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
+
         deps = []
         atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
-        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
+        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
