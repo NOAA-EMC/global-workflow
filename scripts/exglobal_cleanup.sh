@@ -2,6 +2,13 @@
 
 source "${USHgfs}/preamble.sh"
 
+# Remove DATAoutput from the forecast model run
+# TODO: Handle this better
+DATAfcst="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
+#DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
+rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
+
 ###############################################################
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
@@ -59,10 +66,11 @@ for (( current_date=first_date; current_date <= last_date; \
         # TODO: This needs to be revamped to not look at the rocoto log.
         # shellcheck disable=SC2312
         if [[ $(tail -n 1 "${rocotolog}") =~ "This cycle is complete: Success" ]]; then
-            YMD="${current_PDY}" HH="${current_cyc}" declare_from_tmpl COM_TOP
-            if [[ -d "${COM_TOP}" ]]; then
+            YMD="${current_PDY}" HH="${current_cyc}" declare_from_tmpl \
+		        COMOUT_TOP:COM_TOP_TMPL
+            if [[ -d "${COMOUT_TOP}" ]]; then
                 IFS=", " read -r -a exclude_list <<< "${exclude_string:-}"
-                remove_files "${COM_TOP}" "${exclude_list[@]:-}"
+                remove_files "${COMOUT_TOP}" "${exclude_list[@]:-}"
             fi
             if [[ -d "${rtofs_dir}" ]] && (( current_date < last_rtofs )); then rm -rf "${rtofs_dir}" ; fi
         fi

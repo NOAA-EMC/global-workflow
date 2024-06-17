@@ -51,26 +51,20 @@ cat << EOF > gfsparm
 /
 EOF
 
+sleep_interval=10
+max_tries=1000
 for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
    hh2=$(printf %02i "${hr}")
    hh3=$(printf %03i "${hr}")
 
    #---------------------------------------------------------
    # Make sure all files are available:
-   ic=0
-   while (( ic < 1000 )); do
-      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}" ]]; then
-          sleep 10
-          ic=$((ic + 1))
-      else
-          break
-      fi
-
-      if (( ic >= 360 )); then
-         echo "FATAL: COULD NOT LOCATE logf${hh3} file AFTER 1 HOUR"
-         exit 2
-      fi
-   done
+   filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}"
+   if ! wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
+     echo "FATAL ERROR: COULD NOT LOCATE logf${hh3} file"
+     exit 2
+   fi
+   
    #------------------------------------------------------------------
    ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}"
    ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
@@ -96,11 +90,11 @@ esac
 ${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
 export err=$?
 
-if [ $err -ne 0 ]; then
+if [[ "${err}" -ne 0 ]]; then
    echo "GFS postsnd job error, Please check files "
    echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh2}.${atmfm}"
    echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh2}.${atmfm}"
    err_chk
 fi
 
-exit ${err}
+exit "${err}"

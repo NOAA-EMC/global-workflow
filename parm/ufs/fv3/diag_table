@@ -1,7 +1,6 @@
 "fv3_history",    0,  "hours",  1,  "hours",  "time"
 "fv3_history2d",  0,  "hours",  1,  "hours",  "time"
-"@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr", @[FHOUT_OCNICE],  "hours",  1,  "hours",  "time",  @[FHOUT_OCNICE],  "hours",  "@[SYEAR] @[SMONTH] @[SDAY] @[CHOUR] 0 0"
-"@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  1,  "days",   1,  "days",   "time",  1,  "days",   "@[SYEAR] @[SMONTH] @[SDAY] @[CHOUR] 0 0"
+"@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr", @[FHOUT_OCN],  "hours",  1,  "hours",  "time",  @[FHOUT_OCN],  "hours",  "@[SYEAR] @[SMONTH] @[SDAY] @[CHOUR] 0 0"
 
 ##############
 # Ocean fields
@@ -56,25 +55,6 @@
 "ocean_model", "fprec",     "fprec",         "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 "ocean_model", "LwLatSens", "LwLatSens",     "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 "ocean_model", "Heat_PmE",  "Heat_PmE",      "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
-
-# Daily fields
-"ocean_model", "geolon",     "geolon",     "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .false.,  "none",  2
-"ocean_model", "geolat",     "geolat",     "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .false.,  "none",  2
-"ocean_model", "geolon_c",   "geolon_c",   "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .false.,  "none",  2
-"ocean_model", "geolat_c",   "geolat_c",   "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .false.,  "none",  2
-"ocean_model", "geolon_u",   "geolon_u",   "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .false.,  "none",  2
-"ocean_model", "geolat_u",   "geolat_u",   "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .false.,  "none",  2
-"ocean_model", "geolon_v",   "geolon_v",   "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .false.,  "none",  2
-"ocean_model", "geolat_v",   "geolat_v",   "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .false.,  "none",  2
-"ocean_model", "SST",        "sst",        "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
-"ocean_model", "latent",     "latent",     "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
-"ocean_model", "sensible",   "sensible",   "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
-"ocean_model", "SW",         "SW",         "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
-"ocean_model", "LW",         "LW",         "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
-"ocean_model", "evap",       "evap",       "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
-"ocean_model", "lprec",      "lprec",      "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
-"ocean_model", "taux",       "taux",       "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
-"ocean_model", "tauy",       "tauy",       "@[MOM6_OUTPUT_DIR]/ocn_daily%4yr%2mo%2dy",  "all",  .true.,   "none",  2
 
 ###################
 # Atmosphere fields

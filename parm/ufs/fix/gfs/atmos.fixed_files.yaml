@@ -1,31 +1,31 @@
 copy:
   # Atmosphere mosaic file linked as the grid_spec file (atm only)
-  - [$(FIXgfs)/orog/$(CASE)/$(CASE)_mosaic.nc, $(DATA)/INPUT/grid_spec.nc]
+  - [$(FIXorog)/$(CASE)/$(CASE)_mosaic.nc, $(DATA)/INPUT/grid_spec.nc]
 
   # Atmosphere grid tile files
-  - [$(FIXgfs)/orog/$(CASE)/$(CASE)_grid.tile1.nc, $(DATA)/INPUT/]
-  - [$(FIXgfs)/orog/$(CASE)/$(CASE)_grid.tile2.nc, $(DATA)/INPUT/]
-  - [$(FIXgfs)/orog/$(CASE)/$(CASE)_grid.tile3.nc, $(DATA)/INPUT/]
-  - [$(FIXgfs)/orog/$(CASE)/$(CASE)_grid.tile4.nc, $(DATA)/INPUT/]
-  - [$(FIXgfs)/orog/$(CASE)/$(CASE)_grid.tile5.nc, $(DATA)/INPUT/]
-  - [$(FIXgfs)/orog/$(CASE)/$(CASE)_grid.tile6.nc, $(DATA)/INPUT/]
+  - [$(FIXorog)/$(CASE)/$(CASE)_grid.tile1.nc, $(DATA)/INPUT/]
+  - [$(FIXorog)/$(CASE)/$(CASE)_grid.tile2.nc, $(DATA)/INPUT/]
+  - [$(FIXorog)/$(CASE)/$(CASE)_grid.tile3.nc, $(DATA)/INPUT/]
+  - [$(FIXorog)/$(CASE)/$(CASE)_grid.tile4.nc, $(DATA)/INPUT/]
+  - [$(FIXorog)/$(CASE)/$(CASE)_grid.tile5.nc, $(DATA)/INPUT/]
+  - [$(FIXorog)/$(CASE)/$(CASE)_grid.tile6.nc, $(DATA)/INPUT/]
 
-  # oro_data_ls and oro_data_ss files from FIXgfs/ugwd
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ls.tile1.nc, $(DATA)/INPUT/oro_data_ls.tile1.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ls.tile2.nc, $(DATA)/INPUT/oro_data_ls.tile2.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ls.tile3.nc, $(DATA)/INPUT/oro_data_ls.tile3.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ls.tile4.nc, $(DATA)/INPUT/oro_data_ls.tile4.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ls.tile5.nc, $(DATA)/INPUT/oro_data_ls.tile5.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ls.tile6.nc, $(DATA)/INPUT/oro_data_ls.tile6.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ss.tile1.nc, $(DATA)/INPUT/oro_data_ss.tile1.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ss.tile2.nc, $(DATA)/INPUT/oro_data_ss.tile2.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ss.tile3.nc, $(DATA)/INPUT/oro_data_ss.tile3.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ss.tile4.nc, $(DATA)/INPUT/oro_data_ss.tile4.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ss.tile5.nc, $(DATA)/INPUT/oro_data_ss.tile5.nc]
-  - [$(FIXgfs)/ugwd/$(CASE)/$(CASE)_oro_data_ss.tile6.nc, $(DATA)/INPUT/oro_data_ss.tile6.nc]
+  # oro_data_ls and oro_data_ss files from FIXugwd
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ls.tile1.nc, $(DATA)/INPUT/oro_data_ls.tile1.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ls.tile2.nc, $(DATA)/INPUT/oro_data_ls.tile2.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ls.tile3.nc, $(DATA)/INPUT/oro_data_ls.tile3.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ls.tile4.nc, $(DATA)/INPUT/oro_data_ls.tile4.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ls.tile5.nc, $(DATA)/INPUT/oro_data_ls.tile5.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ls.tile6.nc, $(DATA)/INPUT/oro_data_ls.tile6.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ss.tile1.nc, $(DATA)/INPUT/oro_data_ss.tile1.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ss.tile2.nc, $(DATA)/INPUT/oro_data_ss.tile2.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ss.tile3.nc, $(DATA)/INPUT/oro_data_ss.tile3.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ss.tile4.nc, $(DATA)/INPUT/oro_data_ss.tile4.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ss.tile5.nc, $(DATA)/INPUT/oro_data_ss.tile5.nc]
+  - [$(FIXugwd)/$(CASE)/$(CASE)_oro_data_ss.tile6.nc, $(DATA)/INPUT/oro_data_ss.tile6.nc]
 
   # GWD??
-  - [$(FIXgfs)/ugwd/ugwp_limb_tau.nc, $(DATA)/ugwp_limb_tau.nc]
+  - [$(FIXugwd)/ugwp_limb_tau.nc, $(DATA)/ugwp_limb_tau.nc]
 
   # CO2 climatology
   - [$(FIXgfs)/am/co2monthlycyc.txt,                              $(DATA)/co2monthlycyc.txt]
