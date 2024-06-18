@@ -309,7 +309,7 @@ class Archive(Task):
         rel_path_dict : Dict
             Dictionary of paths relative to root_path.  Members will be named
             based on the dict names in self.config.  For COM paths, the names will
-            follow COM_<NAME> --> <name>_dir.  For all other directories, the
+            follow COMIN_<NAME> --> <name>_dir.  For all other directories, the
             names will follow <NAME> --> <name>_dir.
         """
 
@@ -318,7 +318,7 @@ class Archive(Task):
             if isinstance(value, str):
                 if root_path in value:
                     rel_path = value.replace(root_path, "")
-                    rel_key = (key[4:] if key.startswith("COM_") else key).lower() + "_dir"
+                    rel_key = (key[4:] if key.startswith("COMIN_") else key).lower() + "_dir"
                     rel_path_dict[rel_key] = rel_path
 
         return rel_path_dict
@@ -374,27 +374,28 @@ class Archive(Task):
         if len(arch_dict.PSLOT) > 4:
             pslot4 = arch_dict.PSLOT[0:4].upper()
 
-        track_dir = arch_dict.COM_ATMOS_TRACK
+        track_dir_in = arch_dict.COMIN_ATMOS_TRACK
+        track_dir_out = arch_dict.COMOUT_ATMOS_TRACK
         run = arch_dict.RUN
         cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
         if run == "gfs":
-            in_track_file = (track_dir + "/avno.t" +
+            in_track_file = (track_dir_in + "/avno.t" +
                              cycle_HH + "z.cycle.trackatcfunix")
-            in_track_p_file = (track_dir + "/avnop.t" +
+            in_track_p_file = (track_dir_in + "/avnop.t" +
                                cycle_HH + "z.cycle.trackatcfunixp")
         elif run == "gdas":
-            in_track_file = (track_dir + "/gdas.t" +
+            in_track_file = (track_dir_in + "/gdas.t" +
                              cycle_HH + "z.cycle.trackatcfunix")
-            in_track_p_file = (track_dir + "/gdasp.t" +
+            in_track_p_file = (track_dir_in + "/gdasp.t" +
                                cycle_HH + "z.cycle.trackatcfunixp")
 
         if not os.path.isfile(in_track_file):
             # Do not attempt to archive the outputs
             return
 
-        out_track_file = track_dir + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
-        out_track_p_file = track_dir + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
+        out_track_file = track_dir_out + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
+        out_track_p_file = track_dir_out + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
 
         def replace_string_from_to_file(filename_in, filename_out, search_str, replace_str):
 
