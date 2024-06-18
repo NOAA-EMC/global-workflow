@@ -37,7 +37,7 @@
         {% do det_anl_files.append([COM_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.anl",
                                     ARCDIR ~ "/pgbanl." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
 
-    {% if DO_JEDIATMVAR %}
+    {% if DO_JEDIATMVAR == True %}
         {% do det_anl_files.append([COM_ATMOS_ANALYSIS ~ "/" ~ head ~ "atmstat",
                                     ARCDIR ~ "/atmstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
@@ -45,7 +45,7 @@
                                     ARCDIR ~ "/gsistat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% endif %}
 
-    {% if DO_JEDISNOWDA %}
+    {% if DO_JEDISNOWDA == True %}
         {% do det_anl_files.append([COM_SNOW_ANALYSIS ~ "/" ~ head ~ "snowstat.tgz",
                                     ARCDIR ~ "/snowstat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
     {% endif %}
@@ -55,7 +55,7 @@
                                     ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% endif %}
 
-    {% if DO_PREP_OBS_AERO %}
+    {% if DO_PREP_OBS_AERO == True %}
         {% do det_anl_files.append([COM_OBS ~ "/" ~ head ~ "aeroobs",
                                    ARCDIR ~ "/aeroobs." ~ RUN ~ "." ~ cycle_YMDH]
         {% do det_anl_files.append([COM_OBS ~ "/" ~ head ~ "aeroawobs",
@@ -124,7 +124,7 @@
 
     # Ensemble analysis files
     {% set enkf_files = [] %}
-    {% if DO_JEDIATMENS %}
+    {% if DO_JEDIATMENS == True %}
         {% do enkf_files.append([COM_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmensstat",
                                  ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
         {% do enkf_files.append([COM_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atminc.ensmean.nc",
@@ -147,7 +147,6 @@ mkdir:
     - "{{ ARCDIR }}"
 
     {% if DO_FIT2OBS == True %}
-        {% set VFYARC = ROTDIR ~ "/vrfyarch" %}
     - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
     {% endif %}
 
