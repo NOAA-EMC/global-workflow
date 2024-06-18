@@ -16,17 +16,17 @@
     {% set det_files = [] %}
     # Cyclone forecasts, produced for both gdas and gfs cycles
     ## Only created if tracking is on and there were systems to track
-    {% if path_exists(COM_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH) %}
-        {% do det_files.append([COM_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH,
+    {% if path_exists(COMIN_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH) %}
+        {% do det_files.append([COMIN_ATMOS_TRACK ~ "/atcfunix." ~ RUN ~ "." ~ cycle_YMDH,
                                 ARCDIR ~"/atcfunix." ~ RUN ~ "." ~ cycle_YMDH ]) %}
-        {% do det_files.append([COM_ATMOS_TRACK ~ "/atcfunixp." ~ RUN ~ "." ~ cycle_YMDH,
+        {% do det_files.append([COMIN_ATMOS_TRACK ~ "/atcfunixp." ~ RUN ~ "." ~ cycle_YMDH,
                                 ARCDIR ~ "/atcfunixp." ~ RUN ~ "." ~ cycle_YMDH]) %}
     {% endif %}
 
     # Cyclone tracking data
     {% for basin in ["epac", "natl"] %}
-        {% if path_exists(COM_ATMOS_TRACK + "/" + basin) %}
-            {% do det_files.append([COM_ATMOS_TRACK ~ "/" ~ basin,
+        {% if path_exists(COMIN_ATMOS_TRACK + "/" + basin) %}
+            {% do det_files.append([COMIN_ATMOS_TRACK ~ "/" ~ basin,
                                     ARCDIR ~ "/" ~ basin ]) %}
         {% endif %}
     {% endfor %}
@@ -34,53 +34,53 @@
     # Deterministic analysis files (generated for cycled experiments)
     {% set det_anl_files = [] %}
     # Analysis data (if we are running in cycled mode)
-        {% do det_anl_files.append([COM_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.anl",
+        {% do det_anl_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.anl",
                                     ARCDIR ~ "/pgbanl." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
 
     {% if DO_JEDIATMVAR == True %}
-        {% do det_anl_files.append([COM_ATMOS_ANALYSIS ~ "/" ~ head ~ "atmstat",
+        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "atmstat",
                                     ARCDIR ~ "/atmstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
-        {% do det_anl_files.append([COM_ATMOS_ANALYSIS ~ "/" ~ head ~ "gsistat",
+        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "gsistat",
                                     ARCDIR ~ "/gsistat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% endif %}
 
     {% if DO_JEDISNOWDA == True %}
-        {% do det_anl_files.append([COM_SNOW_ANALYSIS ~ "/" ~ head ~ "snowstat.tgz",
+        {% do det_anl_files.append([COMIN_SNOW_ANALYSIS ~ "/" ~ head ~ "snowstat.tgz",
                                     ARCDIR ~ "/snowstat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
     {% endif %}
 
     {% if AERO_ANL_CDUMP == RUN or AERO_ANL_CDUMP == "both" %}
-        {% do det_anl_files.append([COM_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat",
+        {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat",
                                     ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% endif %}
 
     {% if DO_PREP_OBS_AERO == True %}
-        {% do det_anl_files.append([COM_OBS ~ "/" ~ head ~ "aeroobs",
+        {% do det_anl_files.append([COMIN_OBS ~ "/" ~ head ~ "aeroobs",
                                    ARCDIR ~ "/aeroobs." ~ RUN ~ "." ~ cycle_YMDH]
-        {% do det_anl_files.append([COM_OBS ~ "/" ~ head ~ "aeroawobs",
+        {% do det_anl_files.append([COMIN_OBS ~ "/" ~ head ~ "aeroawobs",
                                    ARCDIR ~ "/aeroawobs." ~ RUN ~ "." ~ cycle_YMDH]
     {% endif %}
 
     # GFS-specific files
     {% set gfs_files = [] %}
     {% for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS) %}
-        {% do gfs_files.append([COM_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.f" ~ '%03d'|format(fhr),
+        {% do gfs_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.f" ~ '%03d'|format(fhr),
                                 ARCDIR ~ "/pgbf" ~ '%02d'|format(fhr) ~ "." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
     {% endfor %}
 
     # Cyclone genesis data (only present if there are storms)
-    {% if path_exists(COM_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH) %}
-        {% do gfs_files.append([COM_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH,
+    {% if path_exists(COMIN_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH) %}
+        {% do gfs_files.append([COMIN_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH,
                                 ARCDIR ~ "/storms.gfso.atcf_gen." ~ cycle_YMDH ]) %}
-        {% do gfs_files.append([COM_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen.altg." ~ cycle_YMDH,
+        {% do gfs_files.append([COMIN_ATMOS_GENESIS ~ "/storms.gfso.atcf_gen.altg." ~ cycle_YMDH,
                                 ARCDIR ~ "/storms.gfso.atcf_gen.altg." ~ cycle_YMDH ]) %}
     {% endif %}
 
-    {% if path_exists(COM_ATMOS_GENESIS ~ "/trak.gfso.atcfunix." ~ cycle_YMDH) %}
-        {% do gfs_files.append([COM_ATMOS_GENESIS ~ "/trak.gfso.atcfunix." ~ cycle_YMDH,
+    {% if path_exists(COMIN_ATMOS_GENESIS ~ "/trak.gfso.atcfunix." ~ cycle_YMDH) %}
+        {% do gfs_files.append([COMIN_ATMOS_GENESIS ~ "/trak.gfso.atcfunix." ~ cycle_YMDH,
                                 ARCDIR ~ "/trak.gfso.atcfunix." ~ cycle_YMDH ]) %}
-        {% do gfs_files.append([COM_ATMOS_GENESIS ~ "/trak.gfso.atcfunix.altg." ~ cycle_YMDH,
+        {% do gfs_files.append([COMIN_ATMOS_GENESIS ~ "/trak.gfso.atcfunix.altg." ~ cycle_YMDH,
                                 ARCDIR ~ "/trak.gfso.atcfunix.altg." ~ cycle_YMDH ]) %}
     {% endif %}
 
@@ -89,16 +89,16 @@
     {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
         {% set sfcfile = "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
         {% set sigfile = "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
-        {% do fit2obs_files.append([COM_ATMOS_HISTORY ~ "/" ~ sfcfile,
+        {% do fit2obs_files.append([COMIN_ATMOS_HISTORY ~ "/" ~ sfcfile,
                                     VFYARC ~ "/" ~ RUN ~ "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/" ~ sfcfile ]) %}
-        {% do fit2obs_files.append([COM_ATMOS_HISTORY ~ "/" ~ sigfile,
+        {% do fit2obs_files.append([COMIN_ATMOS_HISTORY ~ "/" ~ sigfile,
                                     VFYARC ~ "/" ~ RUN ~ "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/" ~ sigfile ]) %}
     {% endfor %}
 
     # GDAS-specific files
     {% set gdas_files = [] %}
     {% for fhr in range(0, FHMAX + 1, FHOUT) %}
-        {% do gdas_files.append([COM_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.f" ~ '%03d'|format(fhr),
+        {% do gdas_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.f" ~ '%03d'|format(fhr),
                                  ARCDIR ~ "/pgbf" ~ '%02d'|format(fhr) ~ "." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
     {% endfor %}
 
@@ -125,14 +125,14 @@
     # Ensemble analysis files
     {% set enkf_files = [] %}
     {% if DO_JEDIATMENS == True %}
-        {% do enkf_files.append([COM_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmensstat",
+        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmensstat",
                                  ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
-        {% do enkf_files.append([COM_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atminc.ensmean.nc",
+        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atminc.ensmean.nc",
                                  ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ~ ".ensmean.nc"]) %}
     {% else %}
-        {% do enkf_files.append([COM_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat",
+        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat",
                                  ARCDIR ~ "/enkfstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
-        {% do enkf_files.append([COM_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "gsistat.ensmean",
+        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "gsistat.ensmean",
                                  ARCDIR ~ "/gsistat." ~ RUN ~ "." ~ cycle_YMDH ~ ".ensmean"]) %}
     {% endif %}
 
