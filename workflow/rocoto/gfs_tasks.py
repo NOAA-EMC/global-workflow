@@ -3,6 +3,7 @@ from rocoto.tasks import Tasks
 from wxflow import timedelta_to_HMS
 import rocoto.rocoto as rocoto
 import numpy as np
+import os
 
 
 class GFSTasks(Tasks):
@@ -24,7 +25,32 @@ class GFSTasks(Tasks):
 
         # Atm ICs
         if self.app_config.do_atm:
-            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
+            pslot = self._base['PSLOT']
+            if ( 'BASE_CPLIC' in cpl_ic.keys() ):
+                base_cplic = f"{cpl_ic['BASE_CPLIC']}"
+            else:
+                base_cplic = os.environ.get('BASE_CPLIC')
+            if ( 'CPL_ATMIC' in cpl_ic.keys() ):
+                cpl_atmic = f"{cpl_ic['CPL_ATMIC']}"
+            else:
+                cpl_atmic = os.environ.get('CPL_ATMIC')
+
+            prefix = f"{base_cplic}/{cpl_atmic}/@Y@m@d@H/atmos"
+
+            pw_csp = os.environ.get('PW_CSP')
+            use_ufs_utils_format = os.environ.get('USE_UFS_UTILS_FORMAT', False)
+            if ( pw_csp in ['aws', 'azure', 'google'] or use_ufs_utils_format):
+                icdir = f"{base_cplic}/{cpl_atmic}"
+
+                if('IC_PREFIX' in cpl_ic.keys()):
+                    cpl_ic_prefix = f"{icdir}/{cpl_ic['IC_PREFIX']}"
+                else:
+                    cpl_ic_prefix = 'gfs'
+                if('IC_TYPE'  in cpl_ic.keys()):
+                    cpl_ic_type = f"{cpl_ic['IC_TYPE']}"
+                else:
+                    cpl_ic_type = 'input'
+                prefix = f"{icdir}/{cpl_ic_prefix}.@Y@m@d/@H/model_data/atmos/{cpl_ic_type}"
             for file in ['gfs_ctrl.nc'] + \
                         [f'{datatype}_data.tile{tile}.nc'
                          for datatype in ['gfs', 'sfc']
@@ -483,35 +509,10 @@ class GFSTasks(Tasks):
 
         return task
 
-    def prepobsaero(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('prepobsaero')
-        task_name = f'{self.cdump}prepobsaero'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/prepobsaero.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
     def aeroanlinit(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
-        if self.app_config.do_prep_obs_aero:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}prepobsaero'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1200,13 +1201,9 @@ class GFSTasks(Tasks):
         return task
 
     def wavepostbndpntbll(self):
-
-        # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
-        last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
-
         deps = []
         atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
-        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
+        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)

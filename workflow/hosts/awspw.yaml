@@ -3,11 +3,11 @@ DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump' # TODO: This does not yet exist.
 PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara' #TODO: This does not yet exist.
 COMINsyn: '/scratch1/NCEPDEV/global/glopara/com/gfs/prod/syndat' #TODO: This does not yet exist.
 HOMEDIR: '/contrib/${USER}'
-STMP: '/lustre/${USER}/stmp2/'
-PTMP: '/lustre/${USER}/stmp4/'
+STMP: '/lustre/${USER}/stmp/'
+PTMP: '/lustre/${USER}/ptmp/'
 NOSCRUB: ${HOMEDIR}
-ACCOUNT: hwufscpldcld
-ACCOUNT_SERVICE: hwufscpldcld
+ACCOUNT: ${USER}
+ACCOUNT_SERVICE: ${USER}
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
@@ -16,7 +16,7 @@ PARTITION_SERVICE: compute
 RESERVATION: ''
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
-HPSSARCH: 'YES'
+HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 LOCALARCH: 'NO'
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}' # TODO: This will not yet work from AWS.
