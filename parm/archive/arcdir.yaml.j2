@@ -4,16 +4,11 @@
 {% set head = RUN + ".t" + cycle_HH + "z." %}
 
 # Select data to store in the ARCDIR and VFYARC from deterministic runs
-mkdir:
-    - "{{ ARCDIR }}"
-
-    {% if DO_FIT2OBS == True %}
-        {% set VFYARC = ROTDIR ~ "/vrfyarch" %}
-    - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
-    {% endif %}
-
 # This file set will contain all source-destination pairs to send to the FileHandler for copying
 {% set file_set = [] %}
+
+# Declare the VFYARC where Fit2Obs data will be sent
+{% set VFYARC = ROTDIR ~ "/vrfyarch" %}
 
 # Deterministic files
 {% if "enkf" not in RUN %}
@@ -148,6 +143,14 @@ mkdir:
 
 
 # Actually write the yaml
+mkdir:
+    - "{{ ARCDIR }}"
+
+    {% if DO_FIT2OBS == True %}
+        {% set VFYARC = ROTDIR ~ "/vrfyarch" %}
+    - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
+    {% endif %}
+
 copy:
    {% for source_dest_pair in file_set %}
    - {{ source_dest_pair }}
