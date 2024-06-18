@@ -659,8 +659,7 @@ case ${step} in
     ;;
 
   "analcalc")
-    export wtime_analcalc="00:10:00"
-    [[ ${CASE} == "C384" || ${CASE} == "C768" ]] && export wtime_analcalc="00:15:00"
+    export wtime_analcalc="00:15:00"
     export npe_analcalc=127
     export ntasks="${npe_analcalc}"
     export nth_analcalc=1
