@@ -4,10 +4,10 @@ gen_parmlist() {
   infileg=$1
   requestedvar_in_file1=$2
   varlist=$3
-  rm -vf ${requestedvar_in_file1}
+  rm -vf "${requestedvar_in_file1}"
   while read -r vari; do
     varinfile=$(${WGRIB2} "${infileg}" | grep "${vari}") || true
-    if [[ ! -z "${varinfile}" ]];then # if varinfile is not empty
+    if [[ -n "${varinfile}" ]];then # if varinfile is not empty
       echo "${vari}" >> "${requestedvar_in_file1}"
     fi
   done <"${varlist}"
@@ -21,8 +21,8 @@ check_atmos() {
   cat "${requestedvar_in_file1}" "${requestedvar_in_file2}" >> "${requestedvar_in_allgrb2file}"
   mapfile -t requestedvar_in_allgrb2file_arr < "${requestedvar_in_allgrb2file}"
   while read -r vari; do
-    if [[ ! ${requestedvar_in_allgrb2file_arr[*]} =~ "$vari" ]] ;then
-      echo "WARNING: PARM VARIABLE ($vari) is not available in pgrb and pgrb2b."
+    if [[ ! ${requestedvar_in_allgrb2file_arr[*]} =~ ${vari} ]] ;then
+      echo "WARNING: PARM VARIABLE (${vari}) is not available in pgrb and pgrb2b."
     fi
   done <"${varlist}"
 }
