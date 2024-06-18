@@ -113,7 +113,11 @@ case ${step} in
     export nth_waveinit=1
     export npe_node_waveinit=$(( npe_node_max / nth_waveinit ))
     export NTASKS=${npe_waveinit}
-    export memory_waveinit="2GB"
+    if [[ "${machine}" == "GAEA" ]]; then
+      export memory_waveinit=""
+    else
+      export memory_waveinit="2GB"
+    fi
     ;;
 
   "waveprep")
@@ -137,8 +141,13 @@ case ${step} in
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
     export NTASKS=${npe_wavepostsbs}
-    export memory_wavepostsbs="10GB"
-    export memory_wavepostsbs_gfs="10GB"
+    if [[ "${machine}" == "GAEA" ]]; then
+      export memory_wavepostsbs=""
+      export memory_wavepostsbs_gfs=""
+    else
+      export memory_wavepostsbs="10GB"
+      export memory_wavepostsbs_gfs="10GB"
+    fi
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
@@ -777,7 +786,11 @@ case ${step} in
     export npe_oceanice_products=1
     export npe_node_oceanice_products=1
     export nth_oceanice_products=1
-    export memory_oceanice_products="96GB"
+    if [[ "${machine}" == "GAEA" ]]; then
+      export memory_oceanice_products=""
+    elif
+      export memory_oceanice_products="96GB"
+    fi
     ;;
 
   "upp")
@@ -935,6 +948,8 @@ case ${step} in
     declare -x "memory_${step}"="4096M"
     if [[ "${machine}" == "WCOSS2" ]]; then
       declare -x "memory_${step}"="50GB"
+    elif [[ "${machine}" == "GAEA" ]]; then
+      declare -x "memory_${step}"=""
     fi
     ;;
 
@@ -943,7 +958,11 @@ case ${step} in
     export npe_cleanup=1
     export npe_node_cleanup=1
     export nth_cleanup=1
-    export memory_cleanup="4096M"
+    if [[ "${machine}" == "GAEA" ]]; then
+      export memory_cleanup=""
+    elif
+      export memory_cleanup="4096M"
+    fi
     ;;
 
   "stage_ic")
