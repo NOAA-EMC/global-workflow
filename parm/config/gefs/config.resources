@@ -255,7 +255,7 @@ case ${step} in
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    export wtime_wavepostbndpnt="01:00:00"
+    export wtime_wavepostbndpnt="03:00:00"
     export npe_wavepostbndpnt=240
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(( npe_node_max / nth_wavepostbndpnt ))
