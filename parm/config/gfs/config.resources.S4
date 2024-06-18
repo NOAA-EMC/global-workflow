@@ -49,6 +49,10 @@ case ${step} in
     export npe_node_eupd=$(( npe_node_max / nth_eupd ))
     ;;
 
+  "ediag")
+     export memory_ediag="${mem_node_max}"
+  ;;
+
   *)
     ;;
 esac
