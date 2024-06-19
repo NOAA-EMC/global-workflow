@@ -37,12 +37,12 @@ datasets:
 
 # Archive individual member data
 # First, construct individual member directories from templates
-#    COM_ATMOS_ANALYSIS_MEM, COM_ATMOS_HISTORY_MEM, and COM_ATMOS_RESTART_MEM
+#    COMIN_ATMOS_ANALYSIS_MEM, COMIN_ATMOS_HISTORY_MEM, and COMIN_ATMOS_RESTART_MEM
 
 # Declare to-be-filled lists of member COM directories
-{% set COM_ATMOS_ANALYSIS_MEM_list = [] %}
-{% set COM_ATMOS_RESTART_MEM_list = [] %}
-{% set COM_ATMOS_HISTORY_MEM_list = [] %}
+{% set COMIN_ATMOS_ANALYSIS_MEM_list = [] %}
+{% set COMIN_ATMOS_RESTART_MEM_list = [] %}
+{% set COMIN_ATMOS_HISTORY_MEM_list = [] %}
 
 # Determine which ensemble members belong to this group
 {% set first_group_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
@@ -62,22 +62,22 @@ datasets:
 # This must be done in a namespace to overcome jinja scoping
 #  Variables set inside of a for loop are lost at the end of the loop
 #  unless they are part of a namespace
-{% set com_ns = namespace(COM_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL,
-                          COM_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL,
-                          COM_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL) %}
+{% set com_ns = namespace(COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL,
+                          COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL,
+                          COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL) %}
 
 {% for key in tmpl_dict.keys() %}
 {% set search_term = '${' + key + '}' %}
 {% set replace_term = tmpl_dict[key] %}
-{% set com_ns.COM_ATMOS_ANALYSIS_MEM = com_ns.COM_ATMOS_ANALYSIS_MEM.replace(search_term, replace_term) %}
-{% set com_ns.COM_ATMOS_HISTORY_MEM = com_ns.COM_ATMOS_HISTORY_MEM.replace(search_term, replace_term) %}
-{% set com_ns.COM_ATMOS_RESTART_MEM = com_ns.COM_ATMOS_RESTART_MEM.replace(search_term, replace_term) %}
+{% set com_ns.COMIN_ATMOS_ANALYSIS_MEM = com_ns.COMIN_ATMOS_ANALYSIS_MEM.replace(search_term, replace_term) %}
+{% set com_ns.COMIN_ATMOS_HISTORY_MEM = com_ns.COMIN_ATMOS_HISTORY_MEM.replace(search_term, replace_term) %}
+{% set com_ns.COMIN_ATMOS_RESTART_MEM = com_ns.COMIN_ATMOS_RESTART_MEM.replace(search_term, replace_term) %}
 {% endfor %}
 
 # Append the member COM directories
-{% do COM_ATMOS_ANALYSIS_MEM_list.append(com_ns.COM_ATMOS_ANALYSIS_MEM)%}
-{% do COM_ATMOS_HISTORY_MEM_list.append(com_ns.COM_ATMOS_HISTORY_MEM)%}
-{% do COM_ATMOS_RESTART_MEM_list.append(com_ns.COM_ATMOS_RESTART_MEM)%}
+{% do COMIN_ATMOS_ANALYSIS_MEM_list.append(com_ns.COMIN_ATMOS_ANALYSIS_MEM)%}
+{% do COMIN_ATMOS_HISTORY_MEM_list.append(com_ns.COMIN_ATMOS_HISTORY_MEM)%}
+{% do COMIN_ATMOS_RESTART_MEM_list.append(com_ns.COMIN_ATMOS_RESTART_MEM)%}
 
 {% endfor %}
 
