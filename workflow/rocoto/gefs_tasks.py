@@ -2,7 +2,7 @@ from applications.applications import AppConfig
 from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
 from datetime import datetime, timedelta
-
+import os
 
 class GEFSTasks(Tasks):
 
@@ -11,6 +11,8 @@ class GEFSTasks(Tasks):
 
     def stage_ic(self):
         cpl_ic = self._configs['stage_ic']
+        if ('BASE_CPLIC' not in cpl_ic.keys()):
+            cpl_ic['BASE_CPLIC'] = os.environ.get('BASE_CPLIC', '/contrib/Wei.Huang/data/ICDIRS/prototype_ICs')
         deps = []
         dtg_prefix = "@Y@m@d.@H0000"
         offset = str(self._configs['base']['OFFSET_START_HOUR']).zfill(2) + ":00:00"

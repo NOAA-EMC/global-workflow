@@ -7,4 +7,5 @@ export gempak_ver=7.4.2
 source "${HOMEgfs:-}/versions/run.spack.ver"
 export spack_mod_path="/contrib/spack-stack/spack-stack-${spack_stack_ver}/envs/gsi-addon-env/install/modulefiles/Core"
 
+export ncl_ver=6.6.2
 export cdo_ver=2.2.0

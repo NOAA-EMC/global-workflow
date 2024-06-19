@@ -59,7 +59,7 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    npe_node_max=24
+    npe_node_max=36
     ;;
   "CONTAINER")
     npe_node_max=1
