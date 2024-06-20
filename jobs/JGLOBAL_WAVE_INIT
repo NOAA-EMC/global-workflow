@@ -13,7 +13,7 @@ export MP_PULSE=0
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL
 
-if [[ ! -d "${COMOUT_WAVE_PREP}" ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
+if [[ ! -d "${COMOUT_WAVE_PREP}" ]]; then mkdir -m 775 -p "${COMOUT_WAVE_PREP}"; fi
 
 # Set mpi serial command
 export wavempexec=${wavempexec:-"mpirun -n"}

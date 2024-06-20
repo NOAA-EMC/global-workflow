@@ -16,7 +16,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
 
 for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
-    if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
+    if [[ ! -d "${out_dir}" ]]; then mkdir -m 775 -p "${out_dir}"; fi
 done
 
 
