@@ -1444,12 +1444,17 @@ class GFSTasks(Tasks):
     def gempak(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmos_prod_f#fhr#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        gempak_vars = self.envars.copy()
+        gempak_dict = {'FHR3': '#fhr#'}
+        for key, value in gempak_dict.items():
+            gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('gempak')
-        task_name = f'{self.cdump}gempak'
+        task_name = f'{self.cdump}gempak_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1461,13 +1466,20 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        fhrs = self._get_forecast_hours(self.cdump, self._configs['gempak'])
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
+        fhr_metatask_dict = {'task_name': f'{self.cdump}gempak',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+        task = rocoto.create_task(fhr_metatask_dict)
 
         return task
 
     def gempakmeta(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}gempak'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1490,7 +1502,7 @@ class GFSTasks(Tasks):
 
     def gempakmetancdc(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}gempak'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1513,7 +1525,7 @@ class GFSTasks(Tasks):
 
     def gempakncdcupapgif(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}gempak'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
