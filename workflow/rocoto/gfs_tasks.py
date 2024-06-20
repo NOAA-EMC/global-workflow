@@ -1552,8 +1552,13 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        gempak_vars = self.envars.copy()
+        gempak_dict = {'FHR3': '#fhr#'}
+        for key, value in gempak_dict.items():
+            gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('gempak')
-        task_name = f'{self.cdump}gempakgrb2spec'
+        task_name = f'{self.cdump}gempakgrb2spec_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1565,7 +1570,23 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        # Override forecast lengths locally to be that of gempak goes job
+        local_config = self._configs['gempak']
+        goes_times = {
+            'FHMAX_HF_GFS': 0,
+            'FHMAX_GFS': local_config['FHMAX_GOES'],
+            'FHOUT_GFS': local_config['FHOUT_GOES'],
+        }
+        local_config.update(goes_times)
+
+        fhrs = self._get_forecast_hours(self.cdump, local_config)
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
+        fhr_metatask_dict = {'task_name': f'{self.cdump}gempakgrb2spec',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+        task = rocoto.create_task(fhr_metatask_dict)
 
         return task
 
@@ -2248,7 +2269,7 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}gempakncdcupapgif'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_goes:
-                    dep_dict = {'type': 'task', 'name': f'{self.cdump}gempakgrb2spec'}
+                    dep_dict = {'type': 'metatask', 'name': f'{self.cdump}gempakgrb2spec'}
                     deps.append(rocoto.add_dependency(dep_dict))
                     dep_dict = {'type': 'task', 'name': f'{self.cdump}npoess_pgrb2_0p5deg'}
                     deps.append(rocoto.add_dependency(dep_dict))
