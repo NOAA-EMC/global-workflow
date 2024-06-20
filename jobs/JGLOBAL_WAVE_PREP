@@ -21,7 +21,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
 	COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
 	COMIN_RTOFS:COM_RTOFS_TMPL
-if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -m 775 -p "${COMOUT_WAVE_PREP}"; fi
+if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 
 # Execute the Script
 ${SCRgfs}/exgfs_wave_prep.sh
