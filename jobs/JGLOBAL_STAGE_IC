@@ -44,28 +44,32 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   export MEMDIR
 
   # Declare COMs
-  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
-  export COM_ATMOS_ANALYSIS
+  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+  export COMOUT_ATMOS_ANALYSIS
 
   if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
-    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
-    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_MED_RESTART_PREV:COM_MED_RESTART_TMPL
-    export COM_ATMOS_RESTART_PREV COM_MED_RESTART_PREV
+    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COMOUT_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COMOUT_MED_RESTART_PREV:COM_MED_RESTART_TMPL
+    export COMOUT_ATMOS_RESTART_PREV COMOUT_MED_RESTART_PREV
   else
-    YMD=${PDY} HH=${cyc} declare_from_tmpl COM_ATMOS_INPUT
-    export COM_ATMOS_INPUT
+    YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL
+    export COMOUT_ATMOS_INPUT
   fi
   if [[ "${DO_OCN:-}" = "YES" ]]; then
-    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
-    export COM_OCEAN_RESTART_PREV
+    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COMOUT_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+    export COMOUT_OCEAN_RESTART_PREV
+  fi
+  if [[ "${REPLAY_ICS:-NO}" = "YES" ]]; then
+    YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL
+    export COMOUT_OCEAN_ANALYSIS
   fi
   if [[ "${DO_ICE:-}" = "YES" ]]; then
-    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
-    export COM_ICE_RESTART_PREV
+    RUN=${rCDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl COMOUT_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+    export COMOUT_ICE_RESTART_PREV
   fi
   if [[ "${DO_WAVE:-}" = "YES" ]]; then
-    YMD=${gPDY} HH=${gcyc} declare_from_tmpl COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
-    export COM_WAVE_RESTART_PREV
+    YMD=${gPDY} HH=${gcyc} declare_from_tmpl COMOUT_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+    export COMOUT_WAVE_RESTART_PREV
   fi
 
   # Execute staging

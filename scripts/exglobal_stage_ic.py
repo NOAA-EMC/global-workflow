@@ -22,7 +22,7 @@ def main():
             'EXP_WARM_START', 'current_cycle', 'CDUMP', 'rCDUMP',
             'ROTDIR', 'PARMgfs', 'ICSDIR', 'DTG_PREFIX',
             'ntiles', 'MEMDIR', 'REPLAY_ICS',
-            'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', # TODO: Add DO_MED
+            'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST',
             'CPL_ATMIC', 'CPL_ICEIC', 'CPL_OCNIC', 'CPL_WAVIC']
 
     stage_dict = AttrDict()
