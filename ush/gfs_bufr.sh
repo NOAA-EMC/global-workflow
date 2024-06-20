@@ -18,6 +18,7 @@
 # 2018-05-30  Guang Ping Lou: Make sure all files are available.
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
 # 2024-03-03 Bo Cui: Add options to use different bufr table for different resolution NetCDF files
+# 2024_05_15 Bo Cui: Add restart capability
 # echo "History: February 2003 - First implementation of this utility script"
 #
 source "${USHgfs}/preamble.sh"
@@ -64,7 +65,6 @@ for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
      echo "FATAL ERROR: COULD NOT LOCATE logf${hh3} file"
      exit 2
    fi
-   
    #------------------------------------------------------------------
    ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}"
    ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
@@ -82,19 +82,88 @@ case "${CASE}" in
         ${NLN} "${PARMgfs}/product/bufr_ij9km.txt"  fort.7
         ;;
     *)
-        echo "WARNING: No bufr table for this resolution, using the one for C768"
-        ${NLN} "${PARMgfs}/product/bufr_ij13km.txt" fort.7
+        echo "FATAL ERROR: Unrecognized bufr_ij*km.txt For CASE ${CASE}, ABORT!"
+        exit 1
         ;;
 esac
 
-${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
-export err=$?
+
+if [[ ${RESTART_postsnd} == "YES" ]]; then
+
+  if [ -f "${DATA_ATMOS_RESTART}/${RUN}.${cycle}.bufr.logf${FEND}.${logfm}" ]; then
+
+    echo "Copy job postsnd files from restart directory"
+
+    cp -p "${DATA_ATMOS_RESTART}/${RUN}.${cycle}.bufr.logf${FEND}.${logfm}" .
+    while IFS= read -r fortname; do
+      cp -p "${DATA_ATMOS_RESTART}/${RUN}.${cycle}.bufr_${fortname}" "${fortname}"
+    done < "${RUN}.${cycle}.bufr.logf${FEND}.${logfm}"
+    err=0
+
+    if [[ ${FEND} -eq ${ENDHOUR} ]]; then
+      ${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
+      export err=$?
+    fi
+
+  else
+
+    echo "No more job postsnd restart file found in '${DATA_ATMOS_RESTART}'"
+    export RESTART_postsnd="NO"
+    echo "set RESTART_postsnd='${RESTART_postsnd}'"
+    ${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
+    export err=$?
+  fi
+
+else
+
+  ${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
+  export err=$?
+fi
 
 if [[ "${err}" -ne 0 ]]; then
    echo "GFS postsnd job error, Please check files "
    echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh2}.${atmfm}"
    echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh2}.${atmfm}"
    err_chk
+
+else
+
+  # Count the number of restart files
+  nrestarts=0
+  nrestarts=$(find ./ -maxdepth 1 -type f -name 'fort.*' | wc -l || true)
+  echo "Number of restart fort.* files found: ${nrestarts}"
+
+  # Check if there are restart files
+  if [[ "${nrestarts}" -gt 0 ]]; then
+    echo "Copying GFS postsnd files to restart directory..."
+
+    # Exclude specific files and save the rest to a log file
+    #ls fort.* | grep -v -e 'fort\.1' -e 'fort\.7' -e 'fort\.8' > "${RUN}.${cycle}.bufr.logf${FEND}.${logfm}"
+    
+    # Initialize an empty array to store fort file names
+    files=()
+
+    # Loop through files in the directory
+    for file in fort.*; do
+      # Check if the file is not fort.1 or fort.7 or fort.8
+      if [[ "${file}" != "fort.1" && "${file}" != "fort.7" && "${file}" != "fort.8" ]]; then
+        files+=("${file}")
+      fi
+    done
+
+    # Write the list of fort files to the log file
+    printf "%s\n" "${files[@]}" > "${RUN}.${cycle}.bufr.logf${FEND}.${logfm}"
+
+    # Copy each restart file to the restart directory
+    while IFS= read -r fortname; do
+    # echo "Copying restart file: $fortname"
+      cp -p "${fortname}" "${DATA_ATMOS_RESTART}/${RUN}.${cycle}.bufr_${fortname}"
+    done < "${RUN}.${cycle}.bufr.logf${FEND}.${logfm}"
+  fi
+
+    # Copy the log file to the restart directory
+    cp -p "${RUN}.${cycle}.bufr.logf${FEND}.${logfm}" "${DATA_ATMOS_RESTART}/"
+
 fi
 
 exit "${err}"
