@@ -232,9 +232,11 @@ EOFdiag
    # Restrict diagnostic files containing rstprod data
    rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
    for rtype in $rlist; do
-      set +e
-      ${CHGRP_CMD} *${rtype}*
-      ${STRICT_ON:-set -e}
+      for rfile in *"${rtype}"*; do 
+         if [[ -s "${rfile}" ]]; then
+            ${CHGRP_CMD} "${rfile}"
+         fi
+      done
    done
 
    # If requested, create diagnostic file tarballs
