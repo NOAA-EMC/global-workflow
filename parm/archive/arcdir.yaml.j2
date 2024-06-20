@@ -57,9 +57,9 @@
 
     {% if DO_PREP_OBS_AERO == True %}
         {% do det_anl_files.append([COMIN_OBS ~ "/" ~ head ~ "aeroobs",
-                                   ARCDIR ~ "/aeroobs." ~ RUN ~ "." ~ cycle_YMDH]
+                                    ARCDIR ~ "/aeroobs." ~ RUN ~ "." ~ cycle_YMDH]) %}
         {% do det_anl_files.append([COMIN_OBS ~ "/" ~ head ~ "aeroawobs",
-                                   ARCDIR ~ "/aeroawobs." ~ RUN ~ "." ~ cycle_YMDH]
+                                    ARCDIR ~ "/aeroawobs." ~ RUN ~ "." ~ cycle_YMDH]) %}
     {% endif %}
 
     # GFS-specific files
