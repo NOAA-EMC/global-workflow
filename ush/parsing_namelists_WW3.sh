@@ -18,7 +18,7 @@ WW3_namelists(){
   fi
   # Set time stamps for model start and output
   # For special case when IAU is on but this is an initial half cycle 
-  if [ $IAU_OFFSET = 0 ]; then
+  if [ ${IAU_OFFSET:-0} = 0 ]; then
     ymdh_beg=$YMDH
   else
     ymdh_beg=$($NDATE -$WAVHINDH $YMDH)
