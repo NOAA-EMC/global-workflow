@@ -40,7 +40,7 @@ class Host:
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
         elif os.path.exists('/work/noaa'):
-            machine = socket.gethostname().split("-",1)[0].upper()
+            machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/lfs4/HFIP'):
             machine = 'JET'
         elif os.path.exists('/lfs/f1'):
