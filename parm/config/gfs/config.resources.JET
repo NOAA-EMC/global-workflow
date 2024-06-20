@@ -1,16 +1,6 @@
-#!/usr/bin/bash
+#! /usr/bin/env bash
 
 # Jet-specific job resources
-
-case ${PARTITION_BATCH} in
-  "xjet") node_mem="61GB";;
-  "vjet") node_mem="61GB";;
-  "sjet") node_mem="29GB";;
-  "kjet") node_mem="93GB";;
-  *)
-    echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for Jet"
-    exit 3
-esac
 
 case ${step} in
   "anal")
@@ -50,11 +40,11 @@ case ${step} in
     ;;
 
   "upp")
-    export memory_upp="${node_mem}"
+    export memory_upp="${mem_node_max}"
     ;;
 
   "esfc")
-    export memory_esfc="${node_mem}"
+    export memory_esfc="${mem_node_max}"
     ;;
 
   *)
