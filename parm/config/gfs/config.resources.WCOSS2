@@ -9,8 +9,13 @@ case ${step} in
     ;;
 
   "anal")
-    export nth_anal=8
-    export npe_node_anal=$(( npe_node_max / nth_anal ))
+    if [[ "${CASE}" == "C768" ]]; then
+        export nth_anal=8
+        # Make npe a multiple of 16
+        export npe_anal_gdas=784
+        export npe_anal_gfs=832
+        export npe_node_anal=$(( npe_node_max / nth_anal ))
+    fi
     ;;
 
   "upp")
