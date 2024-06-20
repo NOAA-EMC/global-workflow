@@ -11,12 +11,12 @@ copy:
       {% set memchar = 'mem%03d' | format(imem) %}
       {% set tmpl_dict = ({ '${ROTDIR}': ROTDIR,
                             '${RUN}': 'enkfgdas',
-			    '${YMD}': previous_cycle | to_YMD,
-			    '${HH}': previous_cycle | strftime('%H'),
-			    '${MEMDIR}': memchar }) %}
+                            '${YMD}': previous_cycle | to_YMD,
+                            '${HH}': previous_cycle | strftime('%H'),
+                            '${MEMDIR}': memchar }) %}
 - ['{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ time | to_fv3time }}.coupler.res', '{{ DATA }}/ens/{{ memchar }}/']
       {% for ftype in ftype_list %}
-         {% for itile in range(1,7) %}
+         {% for itile in range(1,ntiles+1) %}
 - ['{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ time | to_fv3time }}.{{ ftype }}.tile{{ itile }}.nc', '{{ DATA }}/ens/{{ memchar }}/']
          {% endfor %}
       {% endfor %}

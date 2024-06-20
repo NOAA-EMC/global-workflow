@@ -4,5 +4,5 @@ mkdir:
 - '{{ DATA }}/berror'
 copy:
 {% for fname in fname_list %}
-- ['{{ HOMEgfs }}'/fix/gdas/gsibec/{{ CASE_ANL }}/{{ fname }}', '{{ DATA }}/berror']
+- ['{{ HOMEgfs }}/fix/gdas/gsibec/{{ CASE_ANL }}/{{ fname }}', '{{ DATA }}/berror']
 {% endfor %}
