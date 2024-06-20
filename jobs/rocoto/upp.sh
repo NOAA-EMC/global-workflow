@@ -44,16 +44,11 @@ export PYTHONPATH
 export job="upp"
 export jobid="${job}.$$"
 
+export FORECAST_HOUR=$(( 10#${FHR3} ))
+
 ###############################################################
-# shellcheck disable=SC2153,SC2001
-IFS='_' read -ra fhrs <<< "${FHRLST//f}" # strip off the 'f's convert to array
-
 # Execute the JJOB
-for fhr in "${fhrs[@]}"; do
-    export FORECAST_HOUR=$(( 10#${fhr} ))
-    "${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP"
-    status=$?
-    if (( status != 0 )); then exit "${status}"; fi
-done
+###############################################################
+"${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP"
 
-exit 0
+exit $?
