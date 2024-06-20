@@ -10,6 +10,7 @@ case ${step} in
 
   "anal")
     export nth_anal=8
+    export npe_node_anal=$(( npe_node_max / nth_anal ))
     ;;
 
   "upp")

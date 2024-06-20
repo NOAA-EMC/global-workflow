@@ -32,6 +32,7 @@ case ${step} in
       *)
         ;;
     esac
+    export npe_node_anal=$(( npe_node_max / nth_anal ))
     ;;
 
   "eobs")

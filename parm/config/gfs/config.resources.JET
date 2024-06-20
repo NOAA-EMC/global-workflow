@@ -8,6 +8,7 @@ case ${step} in
       export npe_anal_gdas=270
       export npe_anal_gfs=270
       export nth_anal=8
+      export npe_node_anal=$(( npe_node_max / nth_anal ))
     fi
     ;;
 
