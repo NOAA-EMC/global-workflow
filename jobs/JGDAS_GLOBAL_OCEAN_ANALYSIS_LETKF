@@ -16,10 +16,10 @@ export GDUMP=${GDUMP:-"gdas"}
 export GDUMP_ENS="enkf${GDUMP}"
 
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-   COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-   COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS 
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL 
 
 ##############################################
 # Begin JOB SPECIFIC work

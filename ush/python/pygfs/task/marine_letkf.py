@@ -89,16 +89,16 @@ class MarineLETKF(Analysis):
 
         obs_files_to_copy = []
         obs_to_use = []
-        # copy obs from COM_OBS to DATA/obs
+        # copy obs from COMIN_OBS to DATA/obs
         for obs_file, ob in obs_files:
-            obs_src = path.join(self.task_config.COM_OBS, obs_file)
+            obs_src = path.join(self.task_config.COMIN_OBS, obs_file)
             obs_dst = path.join(self.task_config.DATA, self.task_config.obs_dir, obs_file)
             if path.exists(obs_src):
                 logger.info(f"will try to stage {obs_file}")
                 obs_files_to_copy.append([obs_src, obs_dst])
                 obs_to_use.append(ob)
             else:
-                logger.info(f"{obs_file} is not available in {self.task_config.COM_OBS}")
+                logger.info(f"{obs_file} is not available in {self.task_config.COMIN_OBS}")
 
         # stage the desired obs files
         FileHandler({'copy': obs_files_to_copy}).sync()
