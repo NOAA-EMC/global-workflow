@@ -269,7 +269,7 @@ FV3_out() {
   fi
 
   ### Check that there are restart files to copy
-  if [[ ${#restart_dates} -gt 0 ]]; then
+  if [[ ${#restart_dates[@]} -gt 0 ]]; then
     # Get list of FV3 restart files
     local file_list fv3_file
     file_list=$(FV3_restarts)
