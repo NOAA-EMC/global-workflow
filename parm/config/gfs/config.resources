@@ -121,6 +121,7 @@ case ${machine} in
     exit 2
     ;;
 esac
+
 export npe_node_max
 
 case ${step} in
@@ -669,7 +670,7 @@ case ${step} in
     export is_exclusive=True
     export memory_analcalc="48GB"
     if [[ "${CASE}" == "C384" || "${CASE}" == "C768" ]]; then
-       memory_analcalc="80GB"
+       export memory_analcalc="${mem_node_max}"
     fi
 
     var_nth="nth_echgres_${RUN}"
@@ -841,7 +842,7 @@ case ${step} in
         ;;
       "C768" | "C1152")
         # Not valid resolutions for ensembles
-        declare -x "wtime_${step}_gdas"="00:30:00"
+        declare -x "wtime_${step}_gdas"="00:40:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
@@ -876,13 +877,9 @@ case ${step} in
       "C48" | "C96")
         export npe_upp=${CASE:1}
       ;;
-      "C192" | "C384")
+      "C192" | "C384" | "C768" )
         export npe_upp=120
-        export memory_upp="96GB"
-      ;;
-      "C768")
-        export npe_upp=120
-        export memory_upp="96GB"
+        export memory_upp="${mem_node_max}"
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"

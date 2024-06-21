@@ -18,12 +18,6 @@ case ${step} in
     fi
     ;;
 
-  "upp")
-    if [[ "${CASE}" == "C768" || "${CASE}" == "C384" ]]; then
-        export memory_upp="480GB"
-    fi
-    ;;
-
   "fit2obs")
     export npe_node_fit2obs=3
     ;;
