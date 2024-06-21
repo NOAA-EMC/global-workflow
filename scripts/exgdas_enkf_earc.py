@@ -34,7 +34,7 @@ def main():
     for key in keys:
         archive_dict[key] = archive.task_config[key]
 
-    # Also import all COM* directory and template variables
+    # Also import all COMIN* directory and template variables
     for key in archive.task_config.keys():
         if key.startswith("COM"):
             archive_dict[key] = archive.task_config[key]
