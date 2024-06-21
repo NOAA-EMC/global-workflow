@@ -36,18 +36,18 @@ ocean:
   subset: ['SSH', 'SST', 'SSS', 'speed', 'MLD_003', 'latent', 'sensible', 'SW', 'LW', 'LwLatSens', 'Heat_PmE', 'SSU', 'SSV', 'taux', 'tauy', 'temp', 'so', 'uo', 'vo']
   data_in:
     copy:
-      - ["{{ COM_OCEAN_HISTORY }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
+      - ["{{ COMOUT_OCEAN_HISTORY }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
   data_out:
     mkdir:
-      - "{{ COM_OCEAN_NETCDF }}"
+      - "{{ COMOUT_OCEAN_NETCDF }}"
       {% for grid in product_grids %}
-      - "{{ COM_OCEAN_GRIB }}/{{ grid }}"
+      - "{{ COMOUT_OCEAN_GRIB }}/{{ grid }}"
       {% endfor %}
     copy:
-      - ["{{ DATA }}/ocean_subset.nc", "{{ COM_OCEAN_NETCDF }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ocean_subset.nc", "{{ COMOUT_OCEAN_NETCDF }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
-      - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
-      - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ COMOUT_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ COMOUT_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}
 
 ice:
@@ -60,16 +60,16 @@ ice:
   subset: ['hi_h', 'hs_h', 'aice_h', 'Tsfc_h', 'uvel_h', 'vvel_h', 'frzmlt_h', 'albsni_h', 'mlt_onset_h', 'frz_onset_h']
   data_in:
     copy:
-      - ["{{ COM_ICE_HISTORY }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
+      - ["{{ COMOUT_ICE_HISTORY }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.6hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
   data_out:
     mkdir:
-      - "{{ COM_ICE_NETCDF }}"
+      - "{{ COMOUT_ICE_NETCDF }}"
       {% for grid in product_grids %}
-      - "{{ COM_ICE_GRIB }}/{{ grid }}"
+      - "{{ COMOUT_ICE_GRIB }}/{{ grid }}"
       {% endfor %}
     copy:
-      - ["{{ DATA }}/ice_subset.nc", "{{ COM_ICE_NETCDF }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ice_subset.nc", "{{ COMOUT_ICE_NETCDF }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
-      - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
-      - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COMOUT_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ COMOUT_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}
