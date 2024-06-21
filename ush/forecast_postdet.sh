@@ -437,7 +437,7 @@ MOM6_postdet() {
     # Looping over MOM6 output hours
     local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
     for fhr in ${MOM6_OUTPUT_FH}; do
-      fhr3=$(printf %03i "${fhr}")
+      fhr3=$(printf %03i "$(( fhr - OFFSET_START_HOUR ))")
 
       if [[ -z ${last_fhr:-} ]]; then
         last_fhr=${fhr}
