@@ -1,0 +1,8 @@
+{% set fname_list = ['gfs_gsi_global.nml', 'gsi-coeffs-gfs-global.nc4'] %}
+
+mkdir:
+- '{{ DATA }}/berror'
+copy:
+{% for fname in fname_list %}
+- ['{{ HOMEgfs }}/fix/gdas/gsibec/{{ CASE_ANL }}/{{ fname }}', '{{ DATA }}/berror']
+{% endfor %}
