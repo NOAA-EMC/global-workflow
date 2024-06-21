@@ -7,9 +7,9 @@ import tarfile
 from logging import getLogger
 from typing import Any, Dict, List
 
-from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, cast_strdict_as_dtypedict,
+from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
-                    to_YMD, to_YMDH, Template, TemplateConstants)
+                    to_YMDH)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -348,19 +348,11 @@ class Archive(Task):
             files need to be copied to the ARCDIR and the Fit2Obs directory.
         """
 
-        # Parse the input jinja yaml template
-        arcdir_yaml = parse_j2yaml(arcdir_j2yaml,
-                                   arch_dict,
-                                   allow_missing=True)
-
-        # Collect the needed FileHandler dicts and construct arcdir_set
-        arcdir_set = {}
-        for key, handler in arcdir_yaml[arch_dict.RUN].items():
-            # Different RUNs can have different filesets that need to be copied.
-            # Each fileset is stored as a dictionary.  Collect the contents of
-            # each (which should be 'mkdir' and/or 'copy') to produce singular
-            # mkdir and copy lists.
-            arcdir_set.update(handler)
+        # Get the FileHandler dictionary for creating directories and copying
+        # to the ARCDIR and VFYARC directories.
+        arcdir_set = parse_j2yaml(arcdir_j2yaml,
+                                  arch_dict,
+                                  allow_missing=True)
 
         return arcdir_set
 
@@ -421,7 +413,7 @@ class Archive(Task):
             with open(filename_in) as old_file:
                 lines = old_file.readlines()
 
-            out_lines = [line.replace(search, replace) for line in lines]
+            out_lines = [line.replace(search_str, replace_str) for line in lines]
 
             with open("/tmp/track_file", "w") as new_file:
                 new_file.writelines(out_lines)
