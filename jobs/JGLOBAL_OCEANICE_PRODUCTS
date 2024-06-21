@@ -13,8 +13,10 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
 	"COMOUT_${COMPONENT^^}_HISTORY":"COM_${COMPONENT^^}_HISTORY_TMPL"
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
 	"COMOUT_${COMPONENT^^}_GRIB":"COM_${COMPONENT^^}_GRIB_TMPL"
-#YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-#	"COMOUT_${COMPONENT^^}_NETCDF":"COM_${COMPONENT^^}_NETCDF_TMPL"
+
+# TODO: This may not be needed; reviewers, please confirm.
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+	"COMOUT_${COMPONENT^^}_NETCDF":"COM_${COMPONENT^^}_NETCDF_TMPL"
 
 ###############################################################
 # Run exglobal script
