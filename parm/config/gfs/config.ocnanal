@@ -18,8 +18,6 @@ export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution depend
 export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin
 export SOCA_FIX_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/letkf/soca_fix_stage.yaml.j2"
 
-export COMIN_OBS=@COMIN_OBS@
-
 # NICAS
 export NICAS_RESOL=@NICAS_RESOL@
 export NICAS_GRID_SIZE=@NICAS_GRID_SIZE@

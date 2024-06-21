@@ -8,11 +8,9 @@ from pygfs.task.analysis import Analysis
 from typing import Dict
 from wxflow import (AttrDict,
                     datetime_to_YMDH,
-                    Executable,
                     FileHandler,
                     logit,
                     parse_j2yaml,
-                    WorkflowException,
                     YAMLFile)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -40,7 +38,7 @@ class MarineLETKF(Analysis):
 
         _half_assim_freq = timedelta(hours=int(self.config.assim_freq) / 2)
         _letkf_yaml_file = 'letkf.yaml'
-        _letkf_exec_args = [self.config.MARINE_LETKF_EXEC,
+        _letkf_exec_args = [self.config.OCEAN_LETKF_EXEC,
                             'fv3jedi',
                             'localensembleda',
                             _letkf_yaml_file]
@@ -73,7 +71,7 @@ class MarineLETKF(Analysis):
         logger.info("initialize")
 
         # make directories and stage ensemble background files
-        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, self.task_config)
+        letkf_stage_list = parse_j2yaml(self.task_config.OCEAN_LETKF_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_list).sync()
         letkf_stage_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_fix_list).sync()
@@ -106,7 +104,7 @@ class MarineLETKF(Analysis):
         FileHandler({'copy': obs_files_to_copy}).sync()
 
         # make the letkf.yaml
-        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, self.task_config)
+        letkf_yaml = parse_j2yaml(self.task_config.OCEAN_LETKF_YAML_TMPL, self.task_config)
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.task_config.letkf_yaml_file)
 
