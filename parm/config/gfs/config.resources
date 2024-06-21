@@ -812,7 +812,7 @@ case ${step} in
     ;;
 
   "atmos_products")
-    export wtime_atmos_products="00:15:00"
+    export wtime_atmos_products="00:45:00"
     export npe_atmos_products=24
     export nth_atmos_products=1
     export npe_node_atmos_products="${npe_atmos_products}"

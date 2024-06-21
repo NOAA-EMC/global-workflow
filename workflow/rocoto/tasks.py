@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
@@ -214,7 +215,11 @@ class Tasks:
             else:
                 native += ':shared'
         elif scheduler in ['slurm']:
-            native = '--export=NONE'
+            pw_csp = os.environ.get('PW_CSP', 'unknown')
+            if ( pw_csp in ['aws', 'azure', 'google'] ):
+                native = '--export=ALL --exclusive'
+            else:
+                native = '--export=NONE'
             if task_config['RESERVATION'] != "":
                 native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
 
