@@ -51,6 +51,10 @@ esac
 module list
 pip list
 
+# Add wxflow to PYTHONPATH
+wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
 unset ulimit_s
