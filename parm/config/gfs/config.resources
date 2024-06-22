@@ -13,7 +13,7 @@ if (( $# != 1 )); then
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlletkf atmensanlfv3inc atmensanlfinal"
     echo "snowanl"
-    echo "aeroanlinit aeroanlrun aeroanlfinal"
+    echo "prepobsaero aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -144,7 +144,7 @@ case ${step} in
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    export wtime_wavepostbndpnt="01:00:00"
+    export wtime_wavepostbndpnt="03:00:00"
     export npe_wavepostbndpnt=240
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(( npe_node_max / nth_wavepostbndpnt ))
@@ -287,6 +287,14 @@ case ${step} in
     export npe_snowanl=$(( layout_x * layout_y * 6 ))
     export nth_snowanl=1
     export npe_node_snowanl=$(( npe_node_max / nth_snowanl ))
+    ;;
+
+  "prepobsaero")
+    export wtime_prepobsaero="00:30:00"
+    export npe_prepobsaero=1
+    export nth_prepobsaero=1
+    export npe_node_prepobsaero=1
+    export memory_prepobsaero="96GB"
     ;;
 
   "aeroanlinit")

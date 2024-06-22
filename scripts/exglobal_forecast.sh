@@ -38,9 +38,9 @@
 ##	Restart files:
 ##
 ##	Fix files:
-##		1. computing grid, ${FIXgfs}/orog/$CASE/${CASE}_grid.tile${n}.nc
-##		2. orography data, ${FIXgfs}/orog/$CASE/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc
-##		3. mosaic data, ${FIXgfs}/orog/$CASE/${CASE}_mosaic.nc
+##		1. computing grid, ${FIXorog}/$CASE/${CASE}_grid.tile${n}.nc
+##		2. orography data, ${FIXorog}/$CASE/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc
+##		3. mosaic data, ${FIXorog}/$CASE/${CASE}_mosaic.nc
 ##		4. Global O3 data, ${FIXgfs}/am/${O3FORC}
 ##		5. Global H2O data, ${FIXgfs}/am/${H2OFORC}
 ##		6. Global solar constant data, ${FIXgfs}/am/global_solarconstant_noaa_an.txt

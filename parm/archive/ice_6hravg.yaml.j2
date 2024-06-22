@@ -3,7 +3,7 @@ ice_6hravg:
     name: "ICE_6HRAVG"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ice_6hravg.tar"
     required:
-        - "{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}ic.nc"
+        - "{{ COMIN_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}ic.nc"
         {% for fhr in range(6, FHMAX_GFS + 6, 6) %}
-        - "{{ COM_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}6hr_avg.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}6hr_avg.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
