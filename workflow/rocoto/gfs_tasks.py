@@ -24,6 +24,8 @@ class GFSTasks(Tasks):
 
         # Atm ICs
         if self.app_config.do_atm:
+           #The if block below is added for AWS.
+           #If we have a proper way to define 'BASE_CPLIC', this if block can be removed.
             if ('BASE_CPLIC' not in cpl_ic.keys()):
                 cpl_ic['BASE_CPLIC'] = os.environ.get('BASE_CPLIC', '/contrib/Wei.Huang/data/ICDIRS/prototype_ICs')
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
