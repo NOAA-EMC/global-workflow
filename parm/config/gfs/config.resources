@@ -1074,15 +1074,15 @@ case ${step} in
     export memory_atmensanlfv3inc="96GB"
     export is_exclusive=True
 
-    var_npe_node="npe_node_atmensanlletkf_${RUN}"
-    var_nth="nth_atmensanlletkf_${RUN}"
-    var_npe="npe_atmensanlletkf_${RUN}"
+    var_npe_node="npe_node_atmensanlfv3inc_${RUN}"
+    var_nth="nth_atmensanlfv3inc_${RUN}"
+    var_npe="npe_atmensanlfv3inc_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
     if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_atmensanlletkf"="${!var_npe_node}" \
-                 "nth_atmensanlletkf"="${!var_nth}" \
-                 "npe_atmensanlletkf"="${!var_npe}"
+      declare -x "npe_node_atmensanlfv3inc"="${!var_npe_node}" \
+                 "nth_atmensanlfv3inc"="${!var_nth}" \
+                 "npe_atmensanlfv3inc"="${!var_npe}"
     fi
     ;;
 
