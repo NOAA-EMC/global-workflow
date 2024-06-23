@@ -52,8 +52,9 @@ module list
 pip list
 
 # Add wxflow to PYTHONPATH
-wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
+wxflowPATH="${HOMEgfs}/ush/python"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+export PYTHONPATH
 
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
