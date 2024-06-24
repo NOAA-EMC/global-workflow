@@ -399,6 +399,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
   export cplflx=".true."
   model_list="${model_list}.ocean"
   nthreads_mom6=1
+  MOM6_DIAG_MISVAL="-1e34"
   case "${mom6_res}" in
     "500")
       ntasks_mom6=8
@@ -413,7 +414,6 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="4.0e-1"
       MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
-      MOM6_DIAG_MISVAL="0.0"
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
       ;;
@@ -430,12 +430,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="2.5e-1"
       TOPOEDITS="ufs.topo_edits_011818.nc"
-      if [[ ${RUN} == "enkfgfs" || "${RUN}" == "gdas" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      else
+      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
         MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
       fi
       MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
@@ -451,12 +449,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='True'
       eps_imesh="1.0e-1"
-      if [[ ${RUN} == "enkfgfs" || "${RUN}" == "gdas" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      else
+      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
         MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
       fi
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
@@ -473,12 +469,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
-      if [[ ${RUN} == "enkfgfs" || "${RUN}" == "gdas" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      else
+      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
         MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
       fi
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
