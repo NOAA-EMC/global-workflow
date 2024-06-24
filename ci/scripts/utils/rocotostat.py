@@ -218,7 +218,7 @@ if __name__ == '__main__':
         error_return = rocoto_status['UNKNOWN']
         rocoto_state = 'UNKNOWN'
     elif is_stalled(rocoto_status):
-        rocoto_status = attempt_multiple_times(lambda:rocoto_statcount(rocotostat), 2, 120, ProcessError)
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
         if is_stalled(rocoto_status):
             error_return = 3
             rocoto_state = 'STALLED'
