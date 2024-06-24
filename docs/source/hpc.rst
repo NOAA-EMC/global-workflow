@@ -4,6 +4,39 @@ HPC Settings and Help
 
 Running the GFS configurations (or almost any global workflow configuration except the coarsest) is a resource intensive exercise. This page discusses recommended HPC environmental settings and contact information in case you need assistance from a particular HPC helpdesk. While most of the documentation is based on supported NOAA platforms, the learnings here can hopefully apply to other platforms. 
 
+====================================
+Minimum system software requirements
+====================================
+
+The following system software requirements are the minimum for any new or existing system and reflect the development and testing environment on which the global workflow is maintained.  Any system that does not meet these requirements will not be supported.
+
++--------------+-------------+---------------------------------------+
+| Software     | Minimum     | Notes                                 |
+|              | supported   |                                       |
+|              | version(s)  |                                       |
++--------------+-------------+---------------------------------------+
+| Bash         | v4.4.20     |                                       |
++--------------+-------------+---------------------------------------+
+| Python       | v3.8.6      | * 3.10.x is not supported             |
+|              | v3.11.6     | * 3.11.6 is packaged with spack-stack |
++--------------+-------------+---------------------------------------+
+| Spack-Stack  | 1.6.0       | * Available everywhere but WCOSS2     |
++--------------+-------------+---------------------------------------+
+| lmod         | 8.3.1       |                                       |
++--------------+-------------+---------------------------------------+
+| Slurm/PBSpro | 22/2022.1.1 | * One or the other is required        |
+|              |             | * Other schedulers may be supportable |
++--------------+-------------+---------------------------------------+
+| Git          | 2.18        |                                       |
++--------------+-------------+---------------------------------------+
+| Rocoto       | 1.3.5       | * 1.3.7 is required for newer         |
+|              |             |   versions of Ruby (3.2+)             |
++--------------+-------------+---------------------------------------+
+| Intel        | 2021.5.1    | * GNU compilers are not supported     |
+| Compilers    |             | * Intel LLVM compilers are not yet    |
+|              |             |   supported                           |
++--------------+-------------+---------------------------------------+
+
 ================================
 Experiment troubleshooting help
 ================================
