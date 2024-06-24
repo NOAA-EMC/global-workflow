@@ -36,6 +36,38 @@ nhour(){
   echo "${hours}"
 }
 
+FV3_coldstarts(){
+  # Function to return an comma-separated string of cold-start input files for FV3
+  # Create an array of chgres-ed FV3 files
+  local fv3_input_files tile_files
+  fv3_input_files=(gfs_ctrl.nc)
+  tile_files=(gfs_data sfc_data)
+  local nn tt
+  for (( nn = 1; nn <= ntiles; nn++ )); do
+    for tt in "${tile_files[@]}"; do
+      fv3_input_files+=("${tt}.tile${nn}.nc")
+    done
+  done
+  # Create a comma separated string from array using IFS
+  IFS=, echo "${fv3_input_files[*]}"
+}
+
+FV3_restarts(){
+  # Function to return an comma-separated string of warm-start input files for FV3
+  # Create an array of FV3 restart files
+  local fv3_restart_files tile_files
+  fv3_restart_files=(coupler.res fv_core.res.nc)
+  tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
+  local nn tt
+  for (( nn = 1; nn <= ntiles; nn++ )); do
+    for tt in "${tile_files[@]}"; do
+      fv3_restart_files+=("${tt}.tile${nn}.nc")
+    done
+  done
+  # Create a comma separated string from array using IFS
+  IFS=, echo "${fv3_restart_files[*]}"
+}
+
 # shellcheck disable=SC2034
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through model components"
@@ -54,15 +86,20 @@ common_predet(){
   current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
   current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
   next_cycle_begin=$(date --utc -d "${next_cycle:0:8} ${next_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
-  #Define model start date for current_cycle and next_cycle as the time the forecast will start
-  if [[ "${DOIAU:-}" == "YES" ]]; then
+  forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+
+  # Define model start date for current_cycle and next_cycle as the time the forecast will start
+  if [[ "${DOIAU:-NO}" == "YES" ]]; then
     model_start_date_current_cycle="${current_cycle_begin}"
     model_start_date_next_cycle="${next_cycle_begin}"
   else
-    model_start_date_current_cycle=${current_cycle} 
+    if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+      model_start_date_current_cycle=${current_cycle_end}
+    else
+      model_start_date_current_cycle=${current_cycle}
+    fi
     model_start_date_next_cycle=${next_cycle}
-  fi 
-  forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+  fi
 
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
@@ -346,18 +383,18 @@ FV3_predet(){
   FNSNOC=${FNSNOC:-"${FIXgfs}/am/global_snoclim.1.875.grb"}
   FNZORC=${FNZORC:-"igbp"}
   FNAISC=${FNAISC:-"${FIXgfs}/am/IMS-NIC.blended.ice.monthly.clim.grb"}
-  FNALBC2=${FNALBC2:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tileX.nc"}
-  FNTG3C=${FNTG3C:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc"}
-  FNVEGC=${FNVEGC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNALBC2=${FNALBC2:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tileX.nc"}
+  FNTG3C=${FNTG3C:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc"}
+  FNVEGC=${FNVEGC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
   FNMSKH=${FNMSKH:-"${FIXgfs}/am/global_slmask.t1534.3072.1536.grb"}
-  FNVMNC=${FNVMNC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
-  FNVMXC=${FNVMXC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
-  FNSLPC=${FNSLPC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tileX.nc"}
-  FNALBC=${FNALBC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tileX.nc"}
-  FNVETC=${FNVETC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tileX.nc"}
-  FNSOTC=${FNSOTC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tileX.nc"}
-  FNSOCC=${FNSOCC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_color.tileX.nc"}
-  FNABSC=${FNABSC:-"${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tileX.nc"}
+  FNVMNC=${FNVMNC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNVMXC=${FNVMXC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+  FNSLPC=${FNSLPC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tileX.nc"}
+  FNALBC=${FNALBC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tileX.nc"}
+  FNVETC=${FNVETC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tileX.nc"}
+  FNSOTC=${FNSOTC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tileX.nc"}
+  FNSOCC=${FNSOCC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_color.tileX.nc"}
+  FNABSC=${FNABSC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tileX.nc"}
   FNSMCC=${FNSMCC:-"${FIXgfs}/am/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
   # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
@@ -365,21 +402,21 @@ FV3_predet(){
 
   # Grid and orography data
   if [[ "${cplflx}" == ".false." ]] ; then
-    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+    ${NCP} "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
   else
-    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+    ${NCP} "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
   fi
 
   # Files for GWD
-  ${NCP} "${FIXgfs}/ugwd/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
+  ${NCP} "${FIXugwd}/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
 
   # Files for orography, GWD tiles
   local tt
   for (( tt = 1; tt <= ntiles; tt++ )); do
-    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${tt}.nc" "${DATA}/INPUT/oro_data.tile${tt}.nc"
-    ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${tt}.nc"                 "${DATA}/INPUT/${CASE}_grid.tile${tt}.nc"
-    ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
-    ${NCP} "${FIXgfs}/ugwd/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
+    ${NCP} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${tt}.nc" "${DATA}/INPUT/oro_data.tile${tt}.nc"
+    ${NCP} "${FIXorog}/${CASE}/${CASE}_grid.tile${tt}.nc"                 "${DATA}/INPUT/${CASE}_grid.tile${tt}.nc"
+    ${NCP} "${FIXugwd}/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
+    ${NCP} "${FIXugwd}/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
   done
   if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
     ${NLN} "${DATA}/INPUT/oro_data.tile7.nc" "${DATA}/INPUT/oro_data.nest02.tile7.nc"
