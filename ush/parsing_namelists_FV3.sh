@@ -47,8 +47,10 @@ local CHOUR=${current_cycle:8:2}
 local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
 
 if (( OFFSET_START_HOUR > 0 )); then
-  local current_cycle_p1=$(${NDATE} "${FHOUT_OCN}" "${current_cycle}")
-  local current_cycle_offset=$(${NDATE} "${OFFSET_START_HOUR}" "${current_cycle}")
+  local current_cycle_p1 
+  current_cycle_p1=$(${NDATE} "${FHOUT_OCN}" "${current_cycle}")
+  local current_cycle_offset
+  current_cycle_offset=$(${NDATE} "${OFFSET_START_HOUR}" "${current_cycle}")
   local SYEAR1=${current_cycle_p1:0:4}
   local SMONTH1=${current_cycle_p1:4:2}
   local SDAY1=${current_cycle_p1:6:2}
