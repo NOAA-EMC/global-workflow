@@ -14,7 +14,7 @@ The following system software requirements are the minimum for any new or existi
 | Software     | Minimum     | Notes                                 |
 |              | supported   |                                       |
 |              | version(s)  |                                       |
-+--------------+-------------+---------------------------------------+
++==============+=============+=======================================+
 | Bash         | 4.4.20      |                                       |
 +--------------+-------------+---------------------------------------+
 | Python       | * 3.8.6     | * 3.10.x is not supported by METplus  |
