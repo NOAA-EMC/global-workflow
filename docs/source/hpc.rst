@@ -17,8 +17,10 @@ The following system software requirements are the minimum for any new or existi
 +--------------+-------------+---------------------------------------+
 | Bash         | v4.4.20     |                                       |
 +--------------+-------------+---------------------------------------+
-| Python       | v3.8.6      | * 3.10.x is not supported             |
-|              | v3.11.6     | * 3.11.6 is packaged with spack-stack |
+| Python       | * v3.8.6    | * 3.10.x is not supported by METplus  |
+|              |             |   verification software               |
+|              | * v3.10.13+ | * 3.11.6 is packaged with spack-stack |
+|              | * v3.11.6+  | * 3.9.x is untested                   |
 +--------------+-------------+---------------------------------------+
 | Spack-Stack  | 1.6.0       | * Available everywhere but WCOSS2     |
 +--------------+-------------+---------------------------------------+
@@ -28,7 +30,7 @@ The following system software requirements are the minimum for any new or existi
 +--------------+-------------+---------------------------------------+
 | PBSpro       | 2022.1.1    | * Other schedulers may be supportable |
 +--------------+-------------+---------------------------------------+
-| Git          | 2.18        |                                       |
+| Git          | 2.29.0      |                                       |
 +--------------+-------------+---------------------------------------+
 | Rocoto       | 1.3.5       | * 1.3.7 is required for newer         |
 |              |             |   versions of Ruby (3.2+)             |
@@ -109,15 +111,17 @@ It is advised to use Git v2+ when available. At the time of writing this documen
 +----------+----------+---------------------------------------+
 | Machine  | Default  | Recommended                           |
 +----------+----------+---------------------------------------+
-| Hera     | v2.18.0  | default                               |
+| Hera     | v2.39.3  | default                               |
 +----------+----------+---------------------------------------+
 | Hercules | v2.31.1  | default                               |
 +----------+----------+---------------------------------------+
-| Orion    | v1.8.3.1 | **module load git/2.28.0**            |
+| Orion    | v2.31.1  | default                               |
 +----------+----------+---------------------------------------+
-| Jet      | v2.18.0  | default                               |
+| Jet      | v2.39.3  | default                               |
 +----------+----------+---------------------------------------+
-| WCOSS2   | v2.35.3  | default                               |
+| WCOSS2   | v2.29.0  | default                               |
++----------+----------+---------------------------------------+
+| Gaea     | v2.35.3  | default                               |
 +----------+----------+---------------------------------------+
 | S4       | v1.8.3.1 | **module load git/2.30.0**            |
 +----------+----------+---------------------------------------+
