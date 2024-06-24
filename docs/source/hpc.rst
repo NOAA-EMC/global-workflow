@@ -30,7 +30,9 @@ The following system software requirements are the minimum for any new or existi
 +--------------+-------------+---------------------------------------+
 | PBSpro       | 2022.1.1    | * Other schedulers may be supportable |
 +--------------+-------------+---------------------------------------+
-| Git          | 2.29.0      |                                       | * Some components e.g. GDASApp may need Git-LFS for downloading test data
+| Git          | 2.29.0      | * Some components e.g. GDASApp may    |
+|              |             |   need Git-LFS for downloading test   |
+|              |             |   data                                |
 +--------------+-------------+---------------------------------------+
 | Rocoto       | 1.3.5       | * 1.3.7 is required for newer         |
 |              |             |   versions of Ruby (3.2+)             |
