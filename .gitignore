@@ -166,6 +166,14 @@ scripts/exemcsfc_global_sfc_prep.sh
 scripts/exgdas_global_marine_analysis_ecen.py
 scripts/exglobal_prep_ocean_obs.py
 # ush symlinks
+ush/bufr2ioda_insitu_profile_argo.py
+ush/bufr2ioda_insitu_profile_bathy.py
+ush/bufr2ioda_insitu_profile_glider.py
+ush/bufr2ioda_insitu_profile_marinemammal.py
+ush/bufr2ioda_insitu_profile_tesac.py
+ush/bufr2ioda_insitu_profile_xbtctd.py
+ush/bufr2ioda_insitu_surface_altkob.py
+ush/bufr2ioda_insitu_surface_trkob.py
 ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
@@ -176,6 +184,8 @@ ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
 ush/gen_bufr2ioda_json.py
 ush/gen_bufr2ioda_yaml.py
+ush/bufr2ioda_insitu_profile*.py
+ush/bufr2ioda_insitu_surface*.py
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
