@@ -15,12 +15,12 @@ The following system software requirements are the minimum for any new or existi
 |              | supported   |                                       |
 |              | version(s)  |                                       |
 +--------------+-------------+---------------------------------------+
-| Bash         | v4.4.20     |                                       |
+| Bash         | 4.4.20      |                                       |
 +--------------+-------------+---------------------------------------+
-| Python       | * v3.8.6    | * 3.10.x is not supported by METplus  |
-|              |             |   verification software               |
-|              | * v3.10.13+ | * 3.11.6 is packaged with spack-stack |
-|              | * v3.11.6+  | * 3.9.x is untested                   |
+| Python       | * 3.8.6     | * 3.10.x is not supported by METplus  |
+|              | * 3.10.13+  |   verification software               |
+|              | * 3.11.6+   | * 3.11.6 is packaged with spack-stack |
+|              |             | * 3.9.x is untested                   |
 +--------------+-------------+---------------------------------------+
 | Spack-Stack  | 1.6.0       | * Available everywhere but WCOSS2     |
 +--------------+-------------+---------------------------------------+
