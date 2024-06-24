@@ -10,7 +10,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_
 
 # Construct COM variables from templates
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-	"COMOUT_${COMPONENT^^}_HISTORY":"COM_${COMPONENT^^}_HISTORY_TMPL"
+	"COMIN_${COMPONENT^^}_HISTORY":"COM_${COMPONENT^^}_HISTORY_TMPL"
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
 	"COMOUT_${COMPONENT^^}_GRIB":"COM_${COMPONENT^^}_GRIB_TMPL"
 

@@ -12,7 +12,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products" -c "base atmos_produc
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
        	COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-       	COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
+       	COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
 
 for grid in '0p25' '0p50' '1p00'; do
   prod_dir="COMOUT_ATMOS_GRIB_${grid}"

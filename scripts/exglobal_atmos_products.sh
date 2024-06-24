@@ -42,7 +42,7 @@ fi
 # Section creating pressure grib2 interpolated products
 
 # Files needed by ${INTERP_ATMOS_MASTERSH}
-MASTER_FILE="${COMOUT_ATMOS_MASTER}/${PREFIX}master.grb2${fhr3}"
+MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.grb2${fhr3}"
 
 # Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
 # Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
@@ -172,7 +172,7 @@ done  # for (( nset=1 ; nset <= downset ; nset++ ))
 #---------------------------------------------------------------
 
 # Create the index file for the sflux master, if it exists.
-FLUX_FILE="${COMOUT_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
+FLUX_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
 if [[ -s "${FLUX_FILE}" ]]; then
   ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.idx"
 fi
