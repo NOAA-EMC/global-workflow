@@ -113,11 +113,7 @@ case ${step} in
     export nth_waveinit=1
     export npe_node_waveinit=$(( npe_node_max / nth_waveinit ))
     export NTASKS=${npe_waveinit}
-    if [[ "${machine}" == "GAEA" ]]; then
-      export memory_waveinit=""
-    else
-      export memory_waveinit="2GB"
-    fi
+    export memory_waveinit="2GB"
     ;;
 
   "waveprep")
@@ -141,13 +137,8 @@ case ${step} in
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
     export NTASKS=${npe_wavepostsbs}
-    if [[ "${machine}" == "GAEA" ]]; then
-      export memory_wavepostsbs=""
-      export memory_wavepostsbs_gfs=""
-    else
-      export memory_wavepostsbs="10GB"
-      export memory_wavepostsbs_gfs="10GB"
-    fi
+    export memory_wavepostsbs="10GB"
+    export memory_wavepostsbs_gfs="10GB"
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
@@ -786,11 +777,7 @@ case ${step} in
     export npe_oceanice_products=1
     export npe_node_oceanice_products=1
     export nth_oceanice_products=1
-    if [[ "${machine}" == "GAEA" ]]; then
-      export memory_oceanice_products=""
-    else
-      export memory_oceanice_products="96GB"
-    fi
+    export memory_oceanice_products="96GB"
     ;;
 
   "upp")
@@ -948,8 +935,6 @@ case ${step} in
     declare -x "memory_${step}"="4096M"
     if [[ "${machine}" == "WCOSS2" ]]; then
       declare -x "memory_${step}"="50GB"
-    elif [[ "${machine}" == "GAEA" ]]; then
-      declare -x "memory_${step}"=""
     fi
     ;;
 
@@ -958,11 +943,7 @@ case ${step} in
     export npe_cleanup=1
     export npe_node_cleanup=1
     export nth_cleanup=1
-    if [[ "${machine}" == "GAEA" ]]; then
-      export memory_cleanup=""
-    else
-      export memory_cleanup="4096M"
-    fi
+    export memory_cleanup="4096M"
     ;;
 
   "stage_ic")
@@ -1325,5 +1306,11 @@ case ${step} in
     ;;
 
 esac
+
+if [[ "${machine}" == "GAEA" ]]; then
+  for mem_var in $(env | grep '^memory_' | cut -d= -f1); do
+    unset "${mem_var}"
+  done
+fi
 
 echo "END: config.resources"
