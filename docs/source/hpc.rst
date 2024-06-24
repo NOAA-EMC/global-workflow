@@ -38,6 +38,8 @@ The following system software requirements are the minimum for any new or existi
 | Intel        | 2021.5.1    | * GNU compilers are not supported     |
 | Compilers    |             | * Intel LLVM compilers are not yet    |
 |              |             |   supported                           |
+|              |             | * Intel 19.x is only supported on     |
+|              |             |   WCOSS2                              |
 +--------------+-------------+---------------------------------------+
 
 ================================
