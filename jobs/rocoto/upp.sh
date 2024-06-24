@@ -35,12 +35,6 @@ else
   if (( status != 0 )); then exit "${status}"; fi
 fi
 
-###############################################################
-# setup python path for workflow utilities and tasks
-wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
-export PYTHONPATH
-
 export job="upp"
 export jobid="${job}.$$"
 
