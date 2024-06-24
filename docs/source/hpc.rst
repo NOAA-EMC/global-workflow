@@ -86,63 +86,6 @@ Optimizing the global workflow on S4
 
 The S4 cluster is relatively small and so optimizations are recommended to improve cycled runtimes. Please contact Innocent Souopgui (innocent.souopgui@noaa.gov) if you are planning on running a cycled experiment on this system to obtain optimized configuration files.
 
-============
-Git settings
-============
-
-^^^^^^
-Merges
-^^^^^^
-
-Use the following command to have merge commits include the one-line description of all the commits being merged (up to 200). You only need to do this once on each machine; it will be saved to your git settings::
-
-   git config --global merge.log 200
-
-Use the ``--no-ff`` option to make sure there is always a merge commit when a fast-forward only is available. Exception: If the merge contains only a single commit, it can be applied as a fast-forward.
-
-For any merge with multiple commits, a short synopsis of the merge should appear between the title and the list of commit titles added by merge.log.
-
-^^^^^^^
-Version
-^^^^^^^
-
-It is advised to use Git v2+ when available. At the time of writing this documentation the default Git clients on the different machines were as noted in the table below. It is recommended that you check the default modules before loading recommended ones:
-
-+----------+----------+---------------------------------------+
-| Machine  | Default  | Recommended                           |
-+----------+----------+---------------------------------------+
-| Hera     | v2.39.3  | default                               |
-+----------+----------+---------------------------------------+
-| Hercules | v2.31.1  | default                               |
-+----------+----------+---------------------------------------+
-| Orion    | v2.31.1  | default                               |
-+----------+----------+---------------------------------------+
-| Jet      | v2.39.3  | default                               |
-+----------+----------+---------------------------------------+
-| WCOSS2   | v2.29.0  | default                               |
-+----------+----------+---------------------------------------+
-| Gaea     | v2.35.3  | default                               |
-+----------+----------+---------------------------------------+
-| S4       | v1.8.3.1 | **module load git/2.30.0**            |
-+----------+----------+---------------------------------------+
-| AWS PW   | v1.8.3.1 | default                               |
-+----------+----------+---------------------------------------+
-
-^^^^^^^^^^^^^
-Output format
-^^^^^^^^^^^^^
-
-For proper display of Git command output (e.g. git branch and git diff) type the following once per machine:
-
-::
-
-   git config --global core.pager 'less -FRX'
-
-For the manage_externals utility functioning::
-
-   Error: fatal: ssh variant 'simple' does not support setting port
-   Fix: git config --global ssh.variant ssh
-
 ========================================
 Stacksize on R&Ds (Hera, Orion, Hercules, Jet, S4)
 ========================================
