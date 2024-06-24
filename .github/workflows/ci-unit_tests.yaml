@@ -24,7 +24,6 @@ jobs:
           sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
           python -m pip install --upgrade pip
           pip install pytest
-          pip install git+https://github.com/TerrenceMcGuinness-NOAA/wxflow.git@config_env_xor
 
       - name: Cache Rocoto Install
         uses: actions/cache@v4
@@ -47,7 +46,6 @@ jobs:
           sudo mkdir -p /work/noaa
           cd $GITHUB_WORKSPACE/sorc/wxflow
           git submodule update --init
-          git checkout config_env_xor
           cd $GITHUB_WORKSPACE/sorc
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests

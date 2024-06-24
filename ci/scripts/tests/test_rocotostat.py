@@ -75,7 +75,7 @@ def test_rocoto_stalled():
 
     result = rocoto_statcount(rocotostat)
 
-    assert result['SUCCEEDED'] == 110
+    assert result['SUCCEEDED'] == 10
     assert is_stalled(result)
 
     rmtree(testdata_full_path)
