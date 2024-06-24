@@ -24,8 +24,9 @@ The following system software requirements are the minimum for any new or existi
 +--------------+-------------+---------------------------------------+
 | lmod         | 8.3.1       |                                       |
 +--------------+-------------+---------------------------------------+
-| Slurm/PBSpro | 22/2022.1.1 | * One or the other is required        |
-|              |             | * Other schedulers may be supportable |
+| Slurm        | 23.02.7     | * Other schedulers may be supportable |
++--------------+-------------+---------------------------------------+
+| PBSpro       | 2022.1.1    | * Other schedulers may be supportable |
 +--------------+-------------+---------------------------------------+
 | Git          | 2.18        |                                       |
 +--------------+-------------+---------------------------------------+
