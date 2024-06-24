@@ -19,12 +19,12 @@ def main():
 
     # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
-            'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_AERO', 'PARMgfs',
-            'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'PSLOT', 'HPSSARCH', 'DO_MOS',
+            'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_AERO', 'DO_PREP_OBS_AERO',
+            'PARMgfs', 'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'PSLOT', 'HPSSARCH', 'DO_MOS',
             'DO_JEDISNOWDA', 'LOCALARCH', 'REALTIME', 'ROTDIR', 'ARCH_WARMICFREQ',
             'ARCH_FCSTICFREQ', 'ARCH_CYC', 'assim_freq', 'ARCDIR', 'SDATE',
             'FHMIN_GFS', 'FHMAX_GFS', 'FHOUT_GFS', 'ARCH_GAUSSIAN', 'MODE',
-            'FHOUT_OCNICE', 'FHOUT_OCNICE_GFS', 'DO_BUFRSND', 'DOHYBVAR',
+            'FHOUT_OCN', 'FHOUT_ICE', 'FHOUT_OCN_GFS', 'FHOUT_ICE_GFS', 'DO_BUFRSND', 'DOHYBVAR',
             'ARCH_GAUSSIAN_FHMAX', 'ARCH_GAUSSIAN_FHINC', 'ARCH_GAUSSIAN_FHINC',
             'DOIAU', 'OCNRES', 'ICERES', 'NUM_SND_COLLECTIVES', 'FHOUT_WAV',
             'FHOUT_HF_WAV', 'FHMAX_WAV', 'FHMAX_HF_WAV', 'FHMAX_WAV_GFS',
@@ -37,9 +37,9 @@ def main():
     for key in keys:
         archive_dict[key] = archive.task_config[key]
 
-    # Also import all COM* directory and template variables
+    # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
-        if key.startswith("COM"):
+        if key.startswith("COMIN_") or key.startswith("COMOUT_"):
             archive_dict[key] = archive.task_config[key]
 
     cwd = os.getcwd()
