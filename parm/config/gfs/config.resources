@@ -1227,13 +1227,11 @@ case ${step} in
     export memory_gempak_gfs="2GB"
 
     var_npe_node="npe_node_gempak_${RUN}"
-    var_nth="nth_gempak_${RUN}"
     var_npe="npe_gempak_${RUN}"
     # RUN is set to a single value at setup time, so these won't be found
     # TODO rework setup_xml.py to initialize RUN to the applicable option
     if [[ -n "${!var_npe_node+0}" ]]; then
       declare -x "npe_node_gempak"="${!var_npe_node}" \
-                 "nth_gempak"="${!var_nth}" \
                  "npe_gempak"="${!var_npe}"
     fi
     ;;
