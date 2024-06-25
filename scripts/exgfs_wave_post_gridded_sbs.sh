@@ -21,9 +21,6 @@
 # 2020-07-31  Jessica Meixner: Removing points, now gridded data only
 #
 # COM inputs:
-#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}
-#  - ${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
-#  - ${COMIN_WAVE_GRID}/${gribchk}
 #
 # $Id$
 #
@@ -409,7 +406,7 @@ source "${USHgfs}/preamble.sh"
       ENSTAG=""
       if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
       gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-      if [ ! -s ${COMIN_WAVE_GRID}/${gribchk} ]; then
+      if [ ! -s ${COMOUT_WAVE_GRID}/${gribchk} ]; then
         set +x
         echo ' '
         echo '********************************************'
