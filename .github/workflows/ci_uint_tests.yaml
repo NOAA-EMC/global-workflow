@@ -54,6 +54,8 @@ jobs:
           echo "EXPDIR: ${EXPDIR}"
           unset EXPDIR
           #pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
+          pytest -v -k test_rocoto_done
+          pytest -v -k test_rocoto_stalled
           pytest -v -k test_setup_exp
           ls -l $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/C48_ATM
           grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/C48_ATM/config.base
