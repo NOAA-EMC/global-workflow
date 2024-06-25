@@ -5,30 +5,30 @@
 case ${step} in
   "anal")
     if [[ "${CASE}" == "C384" ]]; then
-      export npe_anal_gdas=270
-      export npe_anal_gfs=270
+      export npe_gdas=270
+      export npe_gfs=270
       export nth_anal=8
-      export npe_node_anal=$(( npe_node_max / nth_anal ))
+      export npe_node=$(( npe_node_max / nth ))
     fi
     ;;
 
   "eupd")
     case ${CASE} in
       "C384")
-        export npe_eupd=80
+        export npe=80
         ;;
       "C192" | "C96" | "C48")
-        export nth_eupd=4
+        export nth=4
         ;;
       *)
         ;;
     esac
-    export npe_node_eupd=$(( npe_node_max / nth_eupd ))
+    export npe_node=$(( npe_node_max / nth ))
     ;;
 
   "ecen")
-    if [[ "${CASE}" == "C768" ]]; then export nth_ecen=6; fi
-    export npe_node_ecen=$(( npe_node_max / nth_ecen ))
+    if [[ "${CASE}" == "C768" ]]; then export nth=6; fi
+    export npe_node=$(( npe_node_max / nth ))
     ;;
 
   *)
