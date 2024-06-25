@@ -13,7 +13,7 @@ if (( $# != 1 )); then
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlletkf atmensanlfv3inc atmensanlfinal"
     echo "snowanl"
-    echo "aeroanlinit aeroanlvar aeroanlfinal"
+    echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -287,6 +287,14 @@ case ${step} in
     export npe_snowanl=$(( layout_x * layout_y * 6 ))
     export nth_snowanl=1
     export npe_node_snowanl=$(( npe_node_max / nth_snowanl ))
+    ;;
+
+  "prepobsaero")
+    export wtime_prepobsaero="00:30:00"
+    export npe_prepobsaero=1
+    export nth_prepobsaero=1
+    export npe_node_prepobsaero=1
+    export memory_prepobsaero="96GB"
     ;;
 
   "aeroanlinit")
@@ -1086,9 +1094,11 @@ case ${step} in
         if [[ "${machine}" == "WCOSS2" ]]; then
           export npe_eupd=315
           export nth_eupd=14
-        elif [[ ${machine} == "S4" ]]; then
+        elif [[ "${machine}" == "S4" ]]; then
            export npe_eupd=160
            export nth_eupd=2
+        elif [[ "${machine}" == "HERA" ]]; then
+          export npe_eupd=80
         fi
         ;;
       "C192" | "C96" | "C48")

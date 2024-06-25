@@ -130,10 +130,17 @@ class Tasks:
 
         # Ocean/Ice components do not have a HF output option like the atmosphere
         if component in ['ocean', 'ice']:
-            local_config['FHMAX_HF_GFS'] = config['FHMAX_GFS']
-            local_config['FHOUT_HF_GFS'] = config['FHOUT_OCNICE_GFS']
-            local_config['FHOUT_GFS'] = config['FHOUT_OCNICE_GFS']
-            local_config['FHOUT'] = config['FHOUT_OCNICE']
+            local_config['FHMAX_HF_GFS'] = 0
+
+        if component in ['ocean']:
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_OCN_GFS']
+            local_config['FHOUT_GFS'] = config['FHOUT_OCN_GFS']
+            local_config['FHOUT'] = config['FHOUT_OCN']
+
+        if component in ['ice']:
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_ICE_GFS']
+            local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
+            local_config['FHOUT'] = config['FHOUT_ICE']
 
         fhmin = local_config['FHMIN']
 
@@ -152,7 +159,7 @@ class Tasks:
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
         # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice']:
+        if component in ['ocean', 'ice'] and 0 in fhrs:
             fhrs.remove(0)
 
         return fhrs
