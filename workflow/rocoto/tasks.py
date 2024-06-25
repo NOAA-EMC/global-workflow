@@ -178,33 +178,16 @@ class Tasks:
 
         account = task_config['ACCOUNT_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['ACCOUNT']
 
-        if f'wtime_{task_name}_{self.cdump}' in task_config:
-            walltime = task_config[f'wtime_{task_name}_{self.cdump}']
-        else:
-            walltime = task_config[f'wtime_{task_name}']
-
-        if f'npe_{task_name}_{self.cdump}' in task_config:
-            cores = task_config[f'npe_{task_name}_{self.cdump}']
-        else:
-            cores = task_config[f'npe_{task_name}']
-
-        if f'npe_node_{task_name}_{self.cdump}' in task_config:
-            ppn = task_config[f'npe_node_{task_name}_{self.cdump}']
-        else:
-            ppn = task_config[f'npe_node_{task_name}']
+        walltime = task_config[f'wtime']
+        cores = task_config[f'npe']
+        ppn = task_config[f'npe_node']
 
         nodes = int(np.ceil(float(cores) / float(ppn)))
 
-        if f'nth_{task_name}_{self.cdump}' in task_config:
-            threads = task_config[f'nth_{task_name}_{self.cdump}']
-        else:
-            threads = task_config[f'nth_{task_name}']
+        threads = task_config[f'nth']
 
-        if f'memory_{task_name}_{self.cdump}' in task_config:
-            memory = task_config[f'memory_{task_name}_{self.cdump}']
-        else:
-            # Memory is not required
-            memory = task_config.get(f'memory_{task_name}', None)
+        # Memory is not required
+        memory = task_config.get(f'memory', None)
 
         if scheduler in ['pbspro']:
             if task_config.get('prepost', False):
