@@ -58,7 +58,7 @@ def main(*argv):
                          'verbosity': user_inputs.verbosity}
 
     current_env = os.environ.copy()
-    print( f'EXPDIR: {current_env['EXPDIR']}')
+    print( f'EXPDIR: {current_env["EXPDIR"]}')
 
     cfg = Configuration(user_inputs.expdir)
 
