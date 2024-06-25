@@ -4,6 +4,46 @@ HPC Settings and Help
 
 Running the GFS configurations (or almost any global workflow configuration except the coarsest) is a resource intensive exercise. This page discusses recommended HPC environmental settings and contact information in case you need assistance from a particular HPC helpdesk. While most of the documentation is based on supported NOAA platforms, the learnings here can hopefully apply to other platforms. 
 
+====================================
+Minimum system software requirements
+====================================
+
+The following system software requirements are the minimum for any new or existing system and reflect the development and testing environment on which the global workflow is maintained.  Any system that does not meet these requirements will not be supported.
+
++--------------+-------------+---------------------------------------+
+| Software     | Minimum     | Notes                                 |
+|              | supported   |                                       |
+|              | version(s)  |                                       |
++==============+=============+=======================================+
+| Bash         | 4.4.20      |                                       |
++--------------+-------------+---------------------------------------+
+| Python       | * 3.8.6     | * 3.10.x is not supported by METplus  |
+|              | * 3.10.13+  |   verification software               |
+|              | * 3.11.6+   | * 3.11.6 is packaged with spack-stack |
+|              |             | * 3.9.x is untested                   |
++--------------+-------------+---------------------------------------+
+| Spack-Stack  | 1.6.0       | * Available everywhere but WCOSS2     |
++--------------+-------------+---------------------------------------+
+| lmod         | 8.3.1       |                                       |
++--------------+-------------+---------------------------------------+
+| Slurm        | 23.02.7     | * Other schedulers may be supportable |
++--------------+-------------+---------------------------------------+
+| PBSpro       | 2022.1.1    | * Other schedulers may be supportable |
++--------------+-------------+---------------------------------------+
+| Git          | 2.29.0      | * Some components e.g. GDASApp may    |
+|              |             |   need Git-LFS for downloading test   |
+|              |             |   data                                |
++--------------+-------------+---------------------------------------+
+| Rocoto       | 1.3.5       | * 1.3.7 is required for newer         |
+|              |             |   versions of Ruby (3.2+)             |
++--------------+-------------+---------------------------------------+
+| Intel        | 2021.5.1    | * GNU compilers are not supported     |
+| Compilers    |             | * Intel LLVM compilers are not yet    |
+|              |             |   supported                           |
+|              |             | * Intel 19.x is only supported on     |
+|              |             |   WCOSS2                              |
++--------------+-------------+---------------------------------------+
+
 ================================
 Experiment troubleshooting help
 ================================
@@ -49,61 +89,6 @@ Optimizing the global workflow on S4
 ====================================
 
 The S4 cluster is relatively small and so optimizations are recommended to improve cycled runtimes. Please contact Innocent Souopgui (innocent.souopgui@noaa.gov) if you are planning on running a cycled experiment on this system to obtain optimized configuration files.
-
-============
-Git settings
-============
-
-^^^^^^
-Merges
-^^^^^^
-
-Use the following command to have merge commits include the one-line description of all the commits being merged (up to 200). You only need to do this once on each machine; it will be saved to your git settings::
-
-   git config --global merge.log 200
-
-Use the ``--no-ff`` option to make sure there is always a merge commit when a fast-forward only is available. Exception: If the merge contains only a single commit, it can be applied as a fast-forward.
-
-For any merge with multiple commits, a short synopsis of the merge should appear between the title and the list of commit titles added by merge.log.
-
-^^^^^^^
-Version
-^^^^^^^
-
-It is advised to use Git v2+ when available. At the time of writing this documentation the default Git clients on the different machines were as noted in the table below. It is recommended that you check the default modules before loading recommended ones:
-
-+----------+----------+---------------------------------------+
-| Machine  | Default  | Recommended                           |
-+----------+----------+---------------------------------------+
-| Hera     | v2.18.0  | default                               |
-+----------+----------+---------------------------------------+
-| Hercules | v2.31.1  | default                               |
-+----------+----------+---------------------------------------+
-| Orion    | v1.8.3.1 | **module load git/2.28.0**            |
-+----------+----------+---------------------------------------+
-| Jet      | v2.18.0  | default                               |
-+----------+----------+---------------------------------------+
-| WCOSS2   | v2.35.3  | default                               |
-+----------+----------+---------------------------------------+
-| S4       | v1.8.3.1 | **module load git/2.30.0**            |
-+----------+----------+---------------------------------------+
-| AWS PW   | v1.8.3.1 | default                               |
-+----------+----------+---------------------------------------+
-
-^^^^^^^^^^^^^
-Output format
-^^^^^^^^^^^^^
-
-For proper display of Git command output (e.g. git branch and git diff) type the following once per machine:
-
-::
-
-   git config --global core.pager 'less -FRX'
-
-For the manage_externals utility functioning::
-
-   Error: fatal: ssh variant 'simple' does not support setting port
-   Fix: git config --global ssh.variant ssh
 
 ========================================
 Stacksize on R&Ds (Hera, Orion, Hercules, Jet, S4)

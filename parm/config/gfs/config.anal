@@ -19,12 +19,8 @@ if [[ "${CDUMP}" = "gfs" ]] ; then
   export DIAG_TARBALL="YES"
 fi
 
-export npe_gsi=${npe_anal}
-
-if [[ "${CDUMP}" == "gfs" ]] ; then
-  export npe_gsi=${npe_anal_gfs}
-  export nth_anal=${nth_anal_gfs}
-fi
+npe_var="npe_anal_${RUN/enkf}"
+export npe_gsi="${!npe_var}"
 
 # Set parameters specific to L127
 if [[ ${LEVS} = "128" ]]; then
