@@ -159,7 +159,7 @@ class AerosolBMatrix(BMatrix):
         diff_vt = 'diffusion_vt.nc'
         src_hz = os.path.join(self.task_config.DATA, 'diffusion', diff_hz)
         dest_hz = os.path.join(self.task_config.COM_CHEM_ANALYSIS, diff_hz)
-        src_vt = os.path.join(self.task_config.DATA, 'diffusion',diff_vt)
+        src_vt = os.path.join(self.task_config.DATA, 'diffusion', diff_vt)
         dest_vt = os.path.join(self.task_config.COM_CHEM_ANALYSIS, diff_vt)
         difflist = [[src_hz, dest_hz], [src_vt, dest_vt]]
         FileHandler({'copy': difflist}).sync()
