@@ -16,6 +16,7 @@ testdata_full_path = os.path.join(script_dir, testdata_path)
 
 
 if not os.path.isfile(os.path.join(testdata_full_path, 'database.db')):
+    os.makedirs(testdata_full_path, exist_ok=True)
     workflow_url = test_data_url + str(testdata_path) + '/workflow.xml'
     workflow_destination = os.path.join(testdata_full_path, 'workflow.xml')
     wget.download(workflow_url, workflow_destination)
@@ -68,6 +69,7 @@ def test_rocoto_stalled():
     db = os.path.join(testdata_full_path, 'stalled.db')
 
     if not os.path.isfile(os.path.join(testdata_full_path, 'stalled.db')):
+        os.makedirs(testdata_full_path, exist_ok=True)
         workflow_url = test_data_url + str(testdata_path) + '/stalled.xml'
         database_url = test_data_url + str(testdata_path) + '/stalled.db'
 
@@ -82,7 +84,7 @@ def test_rocoto_stalled():
 
     result = rocoto_statcount(rocotostat)
 
-    assert result['SUCCEEDED'] == 10
+    assert result['SUCCEEDED'] == 11
     assert is_stalled(result)
 
     rmtree(testdata_full_path)
