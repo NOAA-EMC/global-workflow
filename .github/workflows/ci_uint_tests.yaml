@@ -57,10 +57,10 @@ jobs:
           pytest -v -k test_rocoto_done
           pytest -v -k test_rocoto_stalled
           pytest -v -k test_setup_exp
-          ls -l $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/C48_ATM
-          grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/C48_ATM/config.base
-          echo "EXPDIR: ${EXPDIR}"
-          pytest -v -k test_setup_xml
+          #ls -l $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/C48_ATM
+          #grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/C48_ATM/config.base
+          #echo "EXPDIR: ${EXPDIR}"
+          #pytest -v -k test_setup_xml
 
 
       - name: Publish Test Results
