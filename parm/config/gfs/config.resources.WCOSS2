@@ -1,0 +1,59 @@
+#! /usr/bin/env bash
+
+# WCOSS2-specific job resources
+
+case ${step} in
+  "prep")
+    export is_exclusive=True
+    export memory_prep="480GB"
+    ;;
+
+  "anal")
+    if [[ "${CASE}" == "C768" ]]; then
+        export nth_anal=8
+        # Make npe a multiple of 16
+        export npe_anal_gdas=784
+        export npe_anal_gfs=832
+        export npe_node_anal=$(( npe_node_max / nth_anal ))
+    fi
+    ;;
+
+  "fit2obs")
+    export npe_node_fit2obs=3
+    ;;
+
+  "echgres")
+    export memory_echgres="200GB"
+    ;;
+
+  "arch" | "earc" | "getic")
+    declare -x "memory_${step}"="50GB"
+    ;;
+
+  "eupd")
+    case ${CASE} in
+      "C768" | "C384")
+        export npe_eupd=315
+        export nth_eupd=14
+        ;;
+      *)
+      ;;
+    esac
+    export npe_node_eupd=$(( npe_node_max / nth_eupd ))
+    ;;
+
+  "eobs")
+    case ${CASE} in
+      "C768" | "C384")
+        export npe_node_eobs=50
+        ;;
+      *)
+        export npe_node_eobs=40
+        ;;
+    esac
+    ;;
+
+  *)
+  ;;
+
+esac
