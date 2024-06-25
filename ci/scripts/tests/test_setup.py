@@ -28,7 +28,7 @@ def test_setup_xml():
 
     script_content = '''#!/usr/bin/env bash
 # TODO - reintroduce this when wxflow update
-# for user space varible clashing is addressed
+# for user space variable clashing is addressed
 #export ACCOUNT=fv3-cpu
 #export HOMEgfs=foobar
 ../../../workflow/setup_xml.py "${1}"
