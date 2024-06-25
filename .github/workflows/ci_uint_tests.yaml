@@ -24,7 +24,7 @@ jobs:
           sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
           python -m pip install --upgrade pip
           pip install pytest
-          pip install wxflow
+          pip install git+https://github.com/TerrenceMcGuinness-NOAA/wxflow.git@config_env_xor
           pip install wget
 
       - name: Cache Rocoto Install
@@ -57,9 +57,6 @@ jobs:
           pytest -v -k test_rocoto_done
           pytest -v -k test_rocoto_stalled
           pytest -v -k test_setup_exp
-          #ls -l $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/C48_ATM
-          #grep EXPDIR $GITHUB_WORKSPACE/ci/scripts/tests/testdata/RUNDIR/C48_ATM/config.base
-          #echo "EXPDIR: ${EXPDIR}"
           pytest -v -k test_setup_xml
 
 
