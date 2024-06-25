@@ -1,6 +1,7 @@
 import sys
 import os
 from shutil import rmtree
+import wget
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(os.path.dirname(script_dir), 'utils'))
@@ -13,12 +14,15 @@ test_data_url = 'https://noaa-nws-global-pds.s3.amazonaws.com/data/CI/'
 testdata_path = 'testdata/rocotostat'
 testdata_full_path = os.path.join(script_dir, testdata_path)
 
-wget = which('wget')
+
 if not os.path.isfile(os.path.join(testdata_full_path, 'database.db')):
-    wget.add_default_arg([
-        '-P', testdata_full_path, test_data_url + str(testdata_path) + '/workflow.xml',
-        test_data_url + str(testdata_path) + '/database.db'])
-    wget()
+    workflow_url = test_data_url + str(testdata_path) + '/workflow.xml'
+    workflow_destination = os.path.join(testdata_full_path, 'workflow.xml')
+    wget.download(workflow_url, workflow_destination)
+
+    database_url = test_data_url + str(testdata_path) + '/database.db'
+    database_destination = os.path.join(testdata_full_path, 'database.db')
+    wget.download(database_url, database_destination)
 
 try:
     rocotostat = which('rocotostat')
@@ -63,12 +67,15 @@ def test_rocoto_stalled():
     xml = os.path.join(testdata_full_path, 'stalled.xml')
     db = os.path.join(testdata_full_path, 'stalled.db')
 
-    wget = which('wget')
     if not os.path.isfile(os.path.join(testdata_full_path, 'stalled.db')):
-        wget.add_default_arg([
-            '-P', testdata_full_path, test_data_url + str(testdata_path) + '/stalled.xml',
-            test_data_url + str(testdata_path) + '/stalled.db'])
-        wget()
+        workflow_url = test_data_url + str(testdata_path) + '/stalled.xml'
+        database_url = test_data_url + str(testdata_path) + '/stalled.db'
+
+        workflow_destination = os.path.join(testdata_full_path, 'stalled.xml')
+        wget.download(workflow_url, workflow_destination)
+
+        database_destination = os.path.join(testdata_full_path, 'stalled.db')
+        wget.download(database_url, database_destination)
 
     rocotostat = which('rocotostat')
     rocotostat.add_default_arg(['-w', xml, '-d', db])
