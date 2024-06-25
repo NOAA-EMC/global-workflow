@@ -237,7 +237,7 @@ export FHMIN_GFS=0
 export FHMIN=${FHMIN_GFS}
 export FHMAX_GFS=@FHMAX_GFS@
 export FHOUT_GFS=6
-export FHMAX_HF_GFS=0
+export FHMAX_HF_GFS=@FHMAX_HF_GFS@
 export FHOUT_HF_GFS=1
 export FHOUT_OCN_GFS=6
 export FHOUT_ICE_GFS=6
@@ -256,6 +256,8 @@ export ILPOST=1           # gempak output frequency up to F120
 export FHMIN_ENKF=${FHMIN_GFS}
 export FHMAX_ENKF=${FHMAX_GFS}
 export FHOUT_ENKF=${FHOUT_GFS}
+export FHOUT_OCN=${FHOUT_OCN_GFS}
+export FHOUT_ICE=${FHOUT_ICE_GFS}
 
 # GFS restart interval in hours
 export restart_interval_gfs=12
