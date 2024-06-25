@@ -40,39 +40,47 @@ export compress_ice=${compress_ice:-1} #1: compress extracted ice product, 0: do
 export FHOUT_WAV_NOSCRUB=${FHOUT_WAV_NOSCRUB:-6} #Frequency of wave output to be saved on disk
 
 #Extract variables for atmosphere
-if [[ ! -d "${DATA}/mem${ENSMEM}_atmos" ]]; then 
-  mkdir -p "${DATA}/mem${ENSMEM}_atmos" 
+if [[ "${DO_ATM}" == "YES" ]];then
+  if [[ ! -d "${DATA}/mem${ENSMEM}_atmos" ]]; then 
+    mkdir -p "${DATA}/mem${ENSMEM}_atmos" 
+  fi
+  ${EXTRCTVARA} "${DATA}/mem${ENSMEM}_atmos"
+  cp -pr "${DATA}/mem${ENSMEM}_atmos/f2d" "${COM_RFCST_PROD_ATMOS}"
+  cp -pr "${DATA}/mem${ENSMEM}_atmos/f3d" "${COM_RFCST_PROD_ATMOS}"
 fi
-${EXTRCTVARA} "${DATA}/mem${ENSMEM}_atmos"
-cp -pr "${DATA}/mem${ENSMEM}_atmos/f2d" "${COM_RFCST_PROD_ATMOS}"
-cp -pr "${DATA}/mem${ENSMEM}_atmos/f3d" "${COM_RFCST_PROD_ATMOS}"
 
 #Extract variables for ocean
-export component_name="ocn"
-if [[ ! -d "${DATA}/mem${ENSMEM}_ocn" ]]; then 
-  mkdir -p "${DATA}/mem${ENSMEM}_ocn" 
+if [[ "${DO_OCN}" == "YES" ]];then
+  export component_name="ocn"
+  if [[ ! -d "${DATA}/mem${ENSMEM}_ocn" ]]; then 
+    mkdir -p "${DATA}/mem${ENSMEM}_ocn" 
+  fi
+  if [[ "${ocn_dataformat}" == "netcdf" ]]; then varlist_ocn=${varlist_ocn_netcdf}; fi
+  if [[ "${ocn_dataformat}" == "grib2" ]]; then varlist_ocn=${varlist_ocn_grib2}; fi  
+  ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}"
+  cp -pr "${DATA}/mem${ENSMEM}_ocn/." "${COM_RFCST_PROD_OCN}"
 fi
-if [[ "${ocn_dataformat}" == "netcdf" ]]; then varlist_ocn=${varlist_ocn_netcdf}; fi
-if [[ "${ocn_dataformat}" == "grib2" ]]; then varlist_ocn=${varlist_ocn_grib2}; fi  
-${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}"
-cp -pr "${DATA}/mem${ENSMEM}_ocn/." "${COM_RFCST_PROD_OCN}"
 
 #Extract variables for ice
-export component_name="ice"
-if [[ ! -d "${DATA}/mem${ENSMEM}_ice" ]]; then 
-  mkdir -p "${DATA}/mem${ENSMEM}_ice" 
-fi    
-if [[ "${ice_dataformat}" == "netcdf" ]]; then varlist_ice=${varlist_ice_netcdf}; fi
-if [[ "${ice_dataformat}" == "grib2" ]]; then varlist_ice=${varlist_ice_grib2}; fi  
-${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" 
-cp -pr "${DATA}/mem${ENSMEM}_ice/." "${COM_RFCST_PROD_ICE}"
+if [[ "${DO_ICE}" == "YES" ]];then
+  export component_name="ice"
+  if [[ ! -d "${DATA}/mem${ENSMEM}_ice" ]]; then 
+    mkdir -p "${DATA}/mem${ENSMEM}_ice" 
+  fi    
+  if [[ "${ice_dataformat}" == "netcdf" ]]; then varlist_ice=${varlist_ice_netcdf}; fi
+  if [[ "${ice_dataformat}" == "grib2" ]]; then varlist_ice=${varlist_ice_grib2}; fi  
+  ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" 
+  cp -pr "${DATA}/mem${ENSMEM}_ice/." "${COM_RFCST_PROD_ICE}"
+fi
 
 #Extract variables for wave
-export component_name="wav"
-if [[ ! -d "${DATA}/mem${ENSMEM}_wav" ]]; then 
-  mkdir -p "${DATA}/mem${ENSMEM}_wav" 
+if [[ "${DO_WAVE}" == "YES" ]];then
+  export component_name="wav"
+  if [[ ! -d "${DATA}/mem${ENSMEM}_wav" ]]; then 
+    mkdir -p "${DATA}/mem${ENSMEM}_wav" 
+  fi
+  ${EXTRCTVARW} "${DATA}/mem${ENSMEM}_wav"
+  cp -pr "${DATA}/mem${ENSMEM}_wav/." "${COM_RFCST_PROD_WAV}"
 fi
-${EXTRCTVARW} "${DATA}/mem${ENSMEM}_wav"
-cp -pr "${DATA}/mem${ENSMEM}_wav/." "${COM_RFCST_PROD_WAV}"
 
 exit 0
