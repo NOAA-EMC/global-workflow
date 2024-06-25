@@ -51,6 +51,8 @@ jobs:
           cd $GITHUB_WORKSPACE/sorc
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
+          echo "EXPDIR: ${EXPDIR}"
+          unset EXPDIR
           pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
 
       - name: Publish Test Results
