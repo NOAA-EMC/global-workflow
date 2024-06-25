@@ -57,6 +57,9 @@ def main(*argv):
                          'taskthrottle': user_inputs.taskthrottle,
                          'verbosity': user_inputs.verbosity}
 
+    current_env = os.environ.copy()
+    print( f'EXPDIR: {current_env['EXPDIR']}')
+
     cfg = Configuration(user_inputs.expdir)
 
     base = cfg.parse_config('config.base')
