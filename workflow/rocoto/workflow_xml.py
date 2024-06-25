@@ -8,7 +8,6 @@ from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
 import rocoto.rocoto as rocoto
-import numpy as np
 from abc import ABC, abstractmethod
 
 
@@ -163,12 +162,12 @@ class RocotoXML(ABC):
        #AWS need 'SHELL', and 'BASH_ENV' defined, or, the crontab job won't start.
         pw_csp = os.environ.get('PW_CSP')
         if ( pw_csp in ['aws', 'azure', 'google'] ):
-             strings = np.append(strings,
+             strings.extend(
                        [
                        f'SHELL="/bin/bash"',
                        f'BASH_ENV="/etc/bashrc"'
                        ])
-        strings = np.append(strings,
+        strings.extend(
                   [
                   f'{cronintstr} {rocotorunstr}',
                   '#################################################################',

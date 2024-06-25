@@ -255,22 +255,24 @@ FV3_out() {
   # Determine the dates for restart files to be copied to COM
   local restart_date restart_dates
   restart_dates=()
+  number_of_restart_dates=0
   # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     restart_date="${model_start_date_next_cycle}"
     while (( restart_date <= forecast_end_cycle )); do
       restart_dates+=("${restart_date:0:8}.${restart_date:8:2}0000")
+      number_of_restart_dates=$((number_of_restart_dates + 1))
       restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
     done
   elif [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then # Copy restarts at the end of the forecast segment for RUN=gfs|gefs
     if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
       restart_dates+=("${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000")
+      number_of_restart_dates=$((number_of_restart_dates + 1))
     fi
   fi
 
   ### Check that there are restart files to copy
- #if [[ ${#restart_dates} -gt 0 ]]; then
-  if [[ -n ${restart_dates} ]]; then
+  if [[ ${number_of_restart_dates} -gt 0 ]]; then
     # Get list of FV3 restart files
     local file_list fv3_file
     file_list=$(FV3_restarts)

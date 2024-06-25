@@ -197,10 +197,16 @@ class Tasks:
         if self.cdump in ['gfs'] and f'nth_{task_name}_gfs' in task_config.keys():
             threads = task_config[f'nth_{task_name}_gfs']
 
-        memory = task_config.get(f'memory_{task_name}', None)
-        if scheduler in ['pbspro']:
-            if task_config.get('prepost', False):
-                memory += ':prepost=true'
+       #The PW_CSP is a AWS (CSPs parameter), if it is on CSPs, cannot define 'memory' here,
+       #Or the arch and cleanup will hang.
+        pw_csp = os.environ.get('PW_CSP', 'unknown')
+        if ( pw_csp in ['aws', 'azure', 'google'] ):
+            memory = None
+        else:
+            memory = task_config.get(f'memory_{task_name}', None)
+            if scheduler in ['pbspro']:
+                if task_config.get('prepost', False):
+                    memory += ':prepost=true'
 
         native = None
         if scheduler in ['pbspro']:
