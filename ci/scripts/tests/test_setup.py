@@ -29,6 +29,7 @@ def test_setup_xml():
     setup_xml_script = Executable(os.path.join(HOMEgfs, "workflow", "setup_xml.py"))
     setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
     setup_xml_script()
+
     assert (setup_xml_script.returncode == 0)
 
     cfg = Configuration(f"{RUNDIR}/{pslot}")
@@ -42,5 +43,4 @@ def test_setup_xml():
         contents = file.read()
     assert contents.count(account) > 5
 
-    os.remove('run_setup_xml.sh')
     rmtree(RUNDIR)
