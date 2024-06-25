@@ -3,7 +3,7 @@ Load environment to run GFS workflow ci scripts on Hercules
 ]])
 
 load(pathJoin("contrib","0.1"))
-load(pathJoin("rocoto","1.3.5"))
+load(pathJoin("rocoto","1.3.7"))
 
 prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-1.6.0/envs/gsi-addon-env/install/modulefiles/Core")
 
