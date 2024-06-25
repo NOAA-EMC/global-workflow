@@ -23,7 +23,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
           python -m pip install --upgrade pip
-          pip install pytest 7.2.1
+          pip install pytest 8.2.2
           pip install wxflow 0.2.0
           pip install wget
 
