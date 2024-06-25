@@ -689,7 +689,7 @@ case ${step} in
 
   "sfcanl")
     export wtime="00:20:00"
-    export npe=6
+    export npe=${ntiles:-6}
     export nth=1
     export npe_node=$(( npe_node_max / nth ))
     export is_exclusive=True
