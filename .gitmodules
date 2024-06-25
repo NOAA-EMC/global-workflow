@@ -4,7 +4,8 @@
   ignore = dirty
 [submodule "sorc/wxflow"]
   path = sorc/wxflow
-  url = https://github.com/NOAA-EMC/wxflow
+  url = https://github.com/TerrenceMcGuinness-NOAA/wxflow.git
+  branch = config_env_xor
 [submodule "sorc/gfs_utils.fd"]
   path = sorc/gfs_utils.fd
   url = https://github.com/NOAA-EMC/gfs-utils
