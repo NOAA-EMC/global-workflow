@@ -24,7 +24,7 @@ jobs:
           sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
           python -m pip install --upgrade pip
           pip install pytest
-          pip install wxflow 0.2.0
+          pip install wxflow
           pip install wget
 
       - name: Cache Rocoto Install
