@@ -36,26 +36,20 @@ class MarineLETKF(Analysis):
         logger.info("init")
         super().__init__(config)
 
-        _half_assim_freq = timedelta(hours=int(self.config.assim_freq) / 2)
+        _half_assim_freq = timedelta(hours=int(self.task_config.assim_freq) / 2)
         _letkf_yaml_file = 'letkf.yaml'
-        _letkf_exec_args = [self.config.OCEAN_LETKF_EXEC,
+        _letkf_exec_args = [self.task_config.OCEAN_LETKF_EXEC,
                             'fv3jedi',
                             'localensembleda',
                             _letkf_yaml_file]
 
-        local_dict = AttrDict(
-            {
-                'WINDOW_BEGIN': self.runtime_config.current_cycle - _half_assim_freq,
-                'WINDOW_MIDDLE': self.runtime_config.current_cycle,
-                'letkf_exec_args': _letkf_exec_args,
-                'letkf_yaml_file': _letkf_yaml_file,
-                'mom_input_nml_tmpl': path.join(self.runtime_config.DATA, 'mom_input.nml.tmpl'),
-                'mom_input_nml': path.join(self.runtime_config.DATA, 'mom_input.nml'),
-                'obs_dir': path.join(self.runtime_config.DATA, 'obs')
-            }
-        )
-
-        self.task_config = AttrDict(dict(**self.config, **self.runtime_config, **local_dict))
+        self.task_config.WINDOW_MIDDLE = self.task_config.current_cycle
+        self.task_config.WINDOW_BEGIN = self.task_config.current_cycle - _half_assim_freq
+        self.task_config.letkf_exec_args = _letkf_exec_args
+        self.task_config.letkf_yaml_file = _letkf_yaml_file
+        self.task_config.mom_input_nml_tmpl = path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
+        self.task_config.mom_input_nml = path.join(self.task_config.DATA, 'mom_input.nml')
+        self.task_config.obs_dir = path.join(self.task_config.DATA, 'obs')
 
     @logit(logger)
     def initialize(self):
@@ -80,7 +74,7 @@ class MarineLETKF(Analysis):
         obs_list = YAMLFile(self.task_config.OBS_YAML)
 
         # get the list of observations
-        CDATE = datetime_to_YMDH(self.runtime_config.current_cycle)
+        CDATE = datetime_to_YMDH(self. task_config.current_cycle)
         obs_files = []
         for ob in obs_list['observers']:
             obs_name = ob['obs space']['name'].lower()
