@@ -486,14 +486,18 @@ class GEFSTasks(Tasks):
 
     def extractvars(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'wave_post_grid_mem#member#'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'ocean_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'ice_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'atmos_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_wave:
+            dep_dict = {'type': 'task', 'name': f'wave_post_grid_mem#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ocean:
+            dep_dict = {'type': 'metatask', 'name': f'ocean_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ice:
+            dep_dict = {'type': 'metatask', 'name': f'ice_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_atm:
+            dep_dict = {'type': 'metatask', 'name': f'atmos_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         extractvars_envars = self.envars.copy()
         extractvars_dict = {'ENSMEM': '#member#',
