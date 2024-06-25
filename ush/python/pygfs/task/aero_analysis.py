@@ -86,6 +86,8 @@ class AerosolAnalysis(Analysis):
         # copy BUMP files, otherwise it will assume ID matrix
         if self.task_config.get('STATICB_TYPE', 'identity') in ['bump']:
             FileHandler(self.get_berror_dict(self.task_config)).sync()
+        if self.task_config.get('STATICB_TYPE', 'identity') in ['diffusion']:
+            FileHandler(self.get_berror_dict(self.task_config)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
