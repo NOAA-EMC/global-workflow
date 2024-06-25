@@ -1298,12 +1298,12 @@ if [[ -f "${EXPDIR}/config.resources.${machine}" ]]; then
 fi
 
 # Check for RUN-specific variables and export them
-for var_name in nth npe npe_node NTASKS memory wtime; do
-   run_var_name="${var_name}_${RUN}"
-   if [[ -n "${!run_var_name+0}" ]]; then
-      declare -x "${var_name}"="${!run_var_name}"
-   elif [[ -n "${!var_name+0}" ]]; then
-      export "${var_name}"
+for resource_var in nth npe npe_node NTASKS memory wtime; do
+   run_resource_var="${resource_var}_${RUN}"
+   if [[ -n "${!run_resource_var+0}" ]]; then
+      declare -x "${resource_var}"="${!run_resource_var}"
+   elif [[ -n "${!resource_var+0}" ]]; then
+      export "${resource_var}"
    fi
 done
 
