@@ -202,7 +202,7 @@ case ${step} in
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
