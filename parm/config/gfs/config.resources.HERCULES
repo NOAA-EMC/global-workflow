@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+# Hercules-specific job resources
+
+case ${step} in
+  "eobs" | "eomg")
+    # The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+    # For Hercules, this is only an issue at C384; use 20 tasks/node
+    if [[ ${CASE} = "C384" ]]; then
+      export npe_node_eobs=20
+    fi
+    export npe_node_eomg=${npe_node_eobs}
+    ;;
+  *)
+    ;;
+esac
