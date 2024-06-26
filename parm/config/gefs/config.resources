@@ -80,11 +80,11 @@ case ${step} in
   "fcst" | "efcs")
     export is_exclusive=True
 
-    _CDUMP_LIST=${CDUMP:-"gdas gfs"}
+    _RUN_LIST=${RUN:-"gdas gfs"}
 
-    # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
-    for _CDUMP in ${_CDUMP_LIST}; do
-      if [[ "${_CDUMP}" =~ "gfs" ]]; then
+    # During workflow creation, we need resources for all RUNs and RUN is undefined
+    for _RUN in ${_RUN_LIST}; do
+      if [[ "${_RUN}" =~ "gfs" ]]; then
         export layout_x=${layout_x_gfs}
         export layout_y=${layout_y_gfs}
         export WRITE_GROUP=${WRITE_GROUP_GFS}
@@ -178,9 +178,9 @@ case ${step} in
       fi
       export ICEPETS ICETHREADS
 
-      echo "Total PETS for ${_CDUMP} = ${NTASKS_TOT}"
+      echo "Total PETS for ${_RUN} = ${NTASKS_TOT}"
 
-      if [[ "${_CDUMP}" =~ "gfs" ]]; then
+      if [[ "${_RUN}" =~ "gfs" ]]; then
         declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
         declare -x "nth_${step}_gfs"="${UFS_THREADS}"
         declare -x "npe_node_${step}_gfs"="${npe_node_max}"
@@ -207,7 +207,7 @@ case ${step} in
         ;;
     esac
 
-    unset _CDUMP _CDUMP_LIST
+    unset _RUN _RUN_LIST
     unset NTASKS_TOT
     ;;
 

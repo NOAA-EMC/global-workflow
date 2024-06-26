@@ -26,7 +26,7 @@ pwd=$(pwd)
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
-CDUMP=${CDUMP:-"gdas"}
+RUN=${RUN:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
@@ -990,7 +990,7 @@ cd ${pwd}
 if [ ${SENDECF} = "YES" -a "${RUN}" != "enkf" ]; then
    ecflow_client --event release_fcst
 fi
-echo "${CDUMP} ${CDATE} atminc done at $(date)" > ${COM_ATMOS_ANALYSIS}/${APREFIX}loginc.txt
+echo "${RUN} ${CDATE} atminc done at $(date)" > ${COM_ATMOS_ANALYSIS}/${APREFIX}loginc.txt
 
 ################################################################################
 

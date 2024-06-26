@@ -32,7 +32,7 @@ class AerosolAnalysis(Analysis):
         _res = int(self.config['CASE'][1:])
         _res_anl = int(self.config['CASE_ANL'][1:])
         _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
-        _jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
+        _jedi_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.RUN}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -47,8 +47,8 @@ class AerosolAnalysis(Analysis):
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
                 'aero_bkg_fhr': map(int, str(self.config['aero_bkg_times']).split(',')),
-                'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
-                'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
+                'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
+                'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
                 'jedi_yaml': _jedi_yaml,
             }
@@ -157,8 +157,8 @@ class AerosolAnalysis(Analysis):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
-        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
+        src = os.path.join(self.task_config['DATA'], f"{self.task_config['RUN']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
+        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['RUN']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
         yaml_copy = {
             'mkdir': [self.task_config.COM_CHEM_ANALYSIS],
             'copy': [[src, dest]]

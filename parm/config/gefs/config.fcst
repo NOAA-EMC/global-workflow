@@ -9,13 +9,13 @@ export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or tradi
 export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
 # Turn off waves if not used for this RUN
-case ${WAVE_CDUMP} in
+case ${WAVE_RUN} in
   both | "${RUN/enkf}" ) ;; # Don't change
   *) DO_WAVE="NO" ;; # Turn waves off
 esac
 
 # Turn off aerosols if not used for this RUN
-case ${AERO_FCST_CDUMP} in
+case ${AERO_FCST_RUN} in
   both | "${RUN/enkf}" ) ;; # Don't change
   *) DO_AERO="NO" ;; # Turn waves off
 esac

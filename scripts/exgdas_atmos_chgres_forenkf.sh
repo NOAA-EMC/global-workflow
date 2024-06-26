@@ -24,7 +24,6 @@ pwd=$(pwd)
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
-CDUMP=${CDUMP:-"enkfgdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables

@@ -36,10 +36,13 @@ class Tasks:
                    'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
                    'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-    def __init__(self, app_config: AppConfig, cdump: str) -> None:
+    def __init__(self, app_config: AppConfig, run: str) -> None:
 
         self.app_config = app_config
-        self.cdump = cdump
+        self.run = run
+        # Re-source the configs with RUN specified
+        print(f"Source configs with RUN={run}")
+        self.app_config.source_configs(run=run, log=False)
 
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._configs = self.app_config.configs
@@ -47,7 +50,7 @@ class Tasks:
         self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
-        if self.cdump == "enkfgfs":
+        if self.run == "enkfgfs":
             self.nmem = int(self._base['NMEM_ENS_GFS'])
         else:
             self.nmem = int(self._base['NMEM_ENS'])
@@ -59,8 +62,7 @@ class Tasks:
                       'HOMEgfs': self.HOMEgfs,
                       'EXPDIR': self._base.get('EXPDIR'),
                       'NET': self._base.get('NET'),
-                      'CDUMP': self.cdump,
-                      'RUN': self.cdump,
+                      'RUN': self.run,
                       'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
                       'PDY': '<cyclestr>@Y@m@d</cyclestr>',
                       'cyc': '<cyclestr>@H</cyclestr>',
@@ -87,8 +89,8 @@ class Tasks:
 
           Variables substitued by default:
             ${ROTDIR} -> '&ROTDIR;'
-            ${RUN}    -> self.cdump
-            ${DUMP}   -> self.cdump
+            ${RUN}    -> self.run
+            ${DUMP}   -> self.run
             ${MEMDIR} -> ''
             ${YMD}    -> '@Y@m@d'
             ${HH}     -> '@H'
@@ -110,8 +112,8 @@ class Tasks:
         # Defaults
         rocoto_conversion_dict = {
             'ROTDIR': '&ROTDIR;',
-            'RUN': self.cdump,
-            'DUMP': self.cdump,
+            'RUN': self.run,
+            'DUMP': self.run,
             'MEMDIR': '',
             'YMD': '@Y@m@d',
             'HH': '@H'
@@ -124,7 +126,7 @@ class Tasks:
                                              rocoto_conversion_dict.get)
 
     @staticmethod
-    def _get_forecast_hours(cdump, config, component='atmos') -> List[str]:
+    def _get_forecast_hours(run, config, component='atmos') -> List[str]:
         # Make a local copy of the config to avoid modifying the original
         local_config = config.copy()
 
@@ -146,11 +148,11 @@ class Tasks:
 
         # Get a list of all forecast hours
         fhrs = []
-        if cdump in ['gdas']:
+        if run in ['gdas']:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
-        elif cdump in ['gfs', 'gefs']:
+        elif run in ['gfs', 'gefs']:
             fhmax = local_config['FHMAX_GFS']
             fhout = local_config['FHOUT_GFS']
             fhmax_hf = local_config['FHMAX_HF_GFS']

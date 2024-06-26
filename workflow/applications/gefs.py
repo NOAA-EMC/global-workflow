@@ -37,7 +37,7 @@ class GEFSAppConfig(AppConfig):
 
         base_out = base_in.copy()
         base_out['INTERVAL_GFS'] = AppConfig.get_gfs_interval(base_in['gfs_cyc'])
-        base_out['CDUMP'] = 'gefs'
+        base_out['RUN'] = 'gefs'
 
         return base_out
 
@@ -73,4 +73,4 @@ class GEFSAppConfig(AppConfig):
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
 
-        return {f"{self._base['CDUMP']}": tasks}
+        return {f"{self._base['RUN']}": tasks}

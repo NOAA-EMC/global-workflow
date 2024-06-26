@@ -26,7 +26,6 @@ pwd=$(pwd)
 
 # Base variables
 CDATE="${PDY}${cyc}"
-CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Utilities

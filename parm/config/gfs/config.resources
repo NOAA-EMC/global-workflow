@@ -644,14 +644,14 @@ case ${step} in
     export is_exclusive=True
 
     if [[ "${step}" == "fcst" ]]; then
-      _CDUMP_LIST=${CDUMP:-"gdas gfs"}
+      _RUN_LIST=${RUN:-"gdas gfs"}
     elif [[ "${step}" == "efcs" ]]; then
-      _CDUMP_LIST=${CDUMP:-"enkfgdas enkfgfs"}
+      _RUN_LIST=${RUN:-"enkfgdas enkfgfs"}
     fi
 
-    # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
-    for _CDUMP in ${_CDUMP_LIST}; do
-      if [[ "${_CDUMP}" =~ "gfs" ]]; then
+    # During workflow creation, we need resources for all RUNs and RUN is undefined
+    for _RUN in ${_RUN_LIST}; do
+      if [[ "${_RUN}" =~ "gfs" ]]; then
         export layout_x=${layout_x_gfs}
         export layout_y=${layout_y_gfs}
         export WRITE_GROUP=${WRITE_GROUP_GFS}
@@ -662,7 +662,7 @@ case ${step} in
         nthreads_ufs=${nthreads_ufs_gfs}
         # Will not be set if we are skipping the mediator
         nthreads_mediator=${nthreads_mediator_gfs:-}
-      elif [[ "${_CDUMP}" =~ "gdas" ]]; then
+      elif [[ "${_RUN}" =~ "gdas" ]]; then
         export layout_x=${layout_x_gdas}
         export layout_y=${layout_y_gdas}
         export WRITE_GROUP=${WRITE_GROUP_GDAS}
@@ -764,11 +764,11 @@ case ${step} in
       fi
       export ICEPETS ICETHREADS
 
-      echo "Total PETS for ${_CDUMP} = ${NTASKS_TOT}"
+      echo "Total PETS for ${_RUN} = ${NTASKS_TOT}"
 
-      declare -x "npe_${_CDUMP}"="${NTASKS_TOT}"
-      declare -x "nth_${_CDUMP}"="${UFS_THREADS}"
-      declare -x "npe_node_${_CDUMP}"="${npe_node_max}"
+      declare -x "npe_${_RUN}"="${NTASKS_TOT}"
+      declare -x "nth_${_RUN}"="${UFS_THREADS}"
+      declare -x "npe_node_${_RUN}"="${npe_node_max}"
 
     done
 
@@ -796,7 +796,7 @@ case ${step} in
         ;;
     esac
 
-    unset _CDUMP _CDUMP_LIST
+    unset _RUN _RUN_LIST
     unset NTASKS_TOT
     ;;
 
