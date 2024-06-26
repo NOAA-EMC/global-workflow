@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from datetime import timedelta
 import f90nml
 from logging import getLogger
 from os import path
@@ -11,6 +10,7 @@ from wxflow import (AttrDict,
                     FileHandler,
                     logit,
                     parse_j2yaml,
+                    to_timedelta,
                     YAMLFile)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -36,7 +36,7 @@ class MarineLETKF(Analysis):
         logger.info("init")
         super().__init__(config)
 
-        _half_assim_freq = timedelta(hours=int(self.task_config.assim_freq) / 2)
+        _half_assim_freq = to_timedelta(f"{self.task_config.assim_freq}H") / 2
         _letkf_yaml_file = 'letkf.yaml'
         _letkf_exec_args = [self.task_config.MARINE_LETKF_EXEC,
                             'soca',
