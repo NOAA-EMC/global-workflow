@@ -55,8 +55,8 @@ source "${USHgfs}/preamble.sh"
   echo "Making ice fields."
 
   if [[ -z "${YMDH}" ]] || [[ -z "${cycle}" ]] || \
-     [[ -z "${COM_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECgfs}" ]] || \
-     [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${WAVEICE_FID}" ]] || [[ -z "${COM_OBS}" ]]; then
+     [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECgfs}" ]] || \
+     [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${WAVEICE_FID}" ]] || [[ -z "${COMIN_OBS}" ]]; then
   
     set +x
     echo ' '
@@ -77,7 +77,7 @@ source "${USHgfs}/preamble.sh"
 # 1.  Get the necessary files
 # 1.a Copy the ice data file
 
-  file=${COM_OBS}/${WAVICEFILE}
+  file=${COMIN_OBS}/${WAVICEFILE}
 
   if [ -f $file ]
   then
@@ -178,9 +178,9 @@ source "${USHgfs}/preamble.sh"
   fi
  
   set +x
-  echo "   Saving ice.ww3 as ${COM_WAVE_PREP}/${icefile}"
+  echo "   Saving ice.ww3 as ${COMOUT_WAVE_PREP}/${icefile}"
   set_trace
-  cp ice.ww3 "${COM_WAVE_PREP}/${icefile}"
+  cp ice.ww3 "${COMOUT_WAVE_PREP}/${icefile}"
   rm -f ice.ww3
 
 # --------------------------------------------------------------------------- #

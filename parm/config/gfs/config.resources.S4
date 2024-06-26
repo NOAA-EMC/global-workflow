@@ -1,0 +1,59 @@
+#! /usr/bin/env bash
+
+# S4-specific job resources
+
+case ${step} in
+  "anal")
+    case ${CASE} in
+      "C384")
+        #Some of the intermediate data can be lost if the number of tasks
+        #per node does not match the number of reserved cores/node.
+        #On the S4-s4 partition, this is accomplished by increasing the task
+        #count to a multiple of 32
+        if [[ ${PARTITION_BATCH} = "s4" ]]; then
+          export npe_anal_gdas=416
+          export npe_anal_gfs=416
+        fi
+        #S4 is small, so run this task with just 1 thread
+        export nth_anal=1
+        export wtime_anal_gdas="02:00:00"
+        export wtime_anal_gfs="02:00:00"
+        ;;
+      "C192" | "C96" | "C48")
+        export nth_anal=4
+        if [[ ${PARTITION_BATCH} == "s4" ]]; then
+          export npe_anal_gdas=88
+          export npe_anal_gfs=88
+        elif [[ ${PARTITION_BATCH} == "ivy" ]]; then
+          export npe_anal_gdas=90
+          export npe_anal_gfs=90
+        fi
+        ;;
+      *)
+        ;;
+    esac
+    export npe_node_anal=$(( npe_node_max / nth_anal ))
+    ;;
+
+  "eobs")
+    # The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+    # For S4, this is accomplished by running 10 tasks/node
+    export npe_node_eobs=10
+    ;;
+
+  "eupd")
+    if [[ "${CASE}" == "C384" ]]; then
+      export npe_eupd=160
+      export nth_eupd=2
+    fi
+    export npe_node_eupd=$(( npe_node_max / nth_eupd ))
+    ;;
+
+  "ediag")
+     export memory_ediag="${mem_node_max}"
+  ;;
+
+  *)
+    ;;
+esac
