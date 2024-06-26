@@ -39,7 +39,7 @@ class MarineLETKF(Analysis):
         _half_assim_freq = timedelta(hours=int(self.task_config.assim_freq) / 2)
         _letkf_yaml_file = 'letkf.yaml'
         _letkf_exec_args = [self.task_config.MARINE_LETKF_EXEC,
-                            'fv3jedi',
+                            'soca',
                             'localensembleda',
                             _letkf_yaml_file]
 

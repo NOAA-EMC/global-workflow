@@ -12,7 +12,7 @@ GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 
-export GDUMP=${GDUMP:-"gdas"}
+export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
