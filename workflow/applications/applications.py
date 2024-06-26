@@ -134,7 +134,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         '''
         pass
 
-    def source_configs(self, run: str = "gfs", log:bool = True) -> Dict[str, Any]:
+    def source_configs(self, run: str = "gfs", log: bool = True) -> Dict[str, Any]:
         """
         Given the configuration object used to initialize,
         source the configurations for each config and return a dictionary
