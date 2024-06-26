@@ -18,6 +18,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_LETKF"
+"${HOMEgfs}/jobs/JGDAS_GLOBAL_MARINE_ANALYSIS_LETKF"
 status=$?
 exit "${status}"
