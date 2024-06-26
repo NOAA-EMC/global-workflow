@@ -13,9 +13,12 @@ export CDATE=${PDY}${cyc}
 export MP_PULSE=0
 
 # Set COM Paths and GETGES environment
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_PREP COM_WAVE_HISTORY COM_WAVE_STATION
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+   COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
+   COMOUT_WAVE_STATION:COM_WAVE_STATION_TMPL
 
-if [[ ! -d ${COM_WAVE_STATION} ]]; then mkdir -p "${COM_WAVE_STATION}"; fi
+if [[ ! -d "${COMOUT_WAVE_STATION}" ]]; then mkdir -p "${COMOUT_WAVE_STATION}"; fi
 
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
