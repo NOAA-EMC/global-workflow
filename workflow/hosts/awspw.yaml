@@ -18,8 +18,8 @@ CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
-#BASE_CPLIC: '/contrib/global-workflow-shared-data/ICDIRS/prototype_ICs'
-BASE_CPLIC: '/s3bucket/global-workflow-shared-data/ICDIRS/prototype_ICs'
+#BASE_CPLIC: '/contrib/global-workflow-shared-data/ICSDIR/prototype_ICs'
+BASE_CPLIC: '/bucket/global-workflow-shared-data/ICSDIR/prototype_ICs'
 LOCALARCH: 'NO'
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}' # TODO: This will not yet work from AWS.
 MAKE_NSSTBUFR: 'NO'
