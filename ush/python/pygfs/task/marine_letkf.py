@@ -2,16 +2,14 @@
 
 import f90nml
 from logging import getLogger
-from os import path
+import os
 from pygfs.task.analysis import Analysis
 from typing import Dict
-from wxflow import (AttrDict,
-                    datetime_to_YMDH,
-                    FileHandler,
+from wxflow import (FileHandler,
                     logit,
                     parse_j2yaml,
                     to_timedelta,
-                    YAMLFile)
+                    to_YMDH)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -47,9 +45,9 @@ class MarineLETKF(Analysis):
         self.task_config.WINDOW_BEGIN = self.task_config.current_cycle - _half_assim_freq
         self.task_config.letkf_exec_args = _letkf_exec_args
         self.task_config.letkf_yaml_file = _letkf_yaml_file
-        self.task_config.mom_input_nml_tmpl = path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
-        self.task_config.mom_input_nml = path.join(self.task_config.DATA, 'mom_input.nml')
-        self.task_config.obs_dir = path.join(self.task_config.DATA, 'obs')
+        self.task_config.mom_input_nml_tmpl =  os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
+        self.task_config.mom_input_nml =  os.path.join(self.task_config.DATA, 'mom_input.nml')
+        self.task_config.obs_dir =  os.path.join(self.task_config.DATA, 'obs')
 
     @logit(logger)
     def initialize(self):
@@ -70,24 +68,22 @@ class MarineLETKF(Analysis):
         letkf_stage_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_fix_list).sync()
 
-        # TODO(AFE): probably needs to be jinjafied
-        obs_list = YAMLFile(self.task_config.OBS_YAML)
+        obs_list = parse_j2yaml(self.task_config.OBS_YAML, self.task_config)
 
         # get the list of observations
-        CDATE = datetime_to_YMDH(self. task_config.current_cycle)
         obs_files = []
         for ob in obs_list['observers']:
             obs_name = ob['obs space']['name'].lower()
-            obs_filename = f"{self.task_config.RUN}.t{self.task_config.cyc}z.{obs_name}.{CDATE}.nc4"
+            obs_filename = f"{self.task_config.RUN}.t{self.task_config.cyc}z.{obs_name}.{to_YMDH(self.task_config.current_cycle)}.nc4"
             obs_files.append((obs_filename, ob))
 
         obs_files_to_copy = []
         obs_to_use = []
         # copy obs from COMIN_OBS to DATA/obs
         for obs_file, ob in obs_files:
-            obs_src = path.join(self.task_config.COMIN_OBS, obs_file)
-            obs_dst = path.join(self.task_config.DATA, self.task_config.obs_dir, obs_file)
-            if path.exists(obs_src):
+            obs_src =  os.path.join(self.task_config.COMIN_OBS, obs_file)
+            obs_dst =  os.path.join(self.task_config.DATA, self.task_config.obs_dir, obs_file)
+            if os.path.exists(obs_src):
                 logger.info(f"will try to stage {obs_file}")
                 obs_files_to_copy.append([obs_src, obs_dst])
                 obs_to_use.append(ob)
