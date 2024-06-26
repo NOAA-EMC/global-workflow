@@ -45,9 +45,9 @@ class MarineLETKF(Analysis):
         self.task_config.WINDOW_BEGIN = self.task_config.current_cycle - _half_assim_freq
         self.task_config.letkf_exec_args = _letkf_exec_args
         self.task_config.letkf_yaml_file = _letkf_yaml_file
-        self.task_config.mom_input_nml_tmpl =  os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
-        self.task_config.mom_input_nml =  os.path.join(self.task_config.DATA, 'mom_input.nml')
-        self.task_config.obs_dir =  os.path.join(self.task_config.DATA, 'obs')
+        self.task_config.mom_input_nml_tmpl = os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
+        self.task_config.mom_input_nml = os.path.join(self.task_config.DATA, 'mom_input.nml')
+        self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs')
 
     @logit(logger)
     def initialize(self):
@@ -81,8 +81,8 @@ class MarineLETKF(Analysis):
         obs_to_use = []
         # copy obs from COMIN_OBS to DATA/obs
         for obs_file, ob in obs_files:
-            obs_src =  os.path.join(self.task_config.COMIN_OBS, obs_file)
-            obs_dst =  os.path.join(self.task_config.DATA, self.task_config.obs_dir, obs_file)
+            obs_src = os.path.join(self.task_config.COMIN_OBS, obs_file)
+            obs_dst = os.path.join(self.task_config.DATA, self.task_config.obs_dir, obs_file)
             if os.path.exists(obs_src):
                 logger.info(f"will try to stage {obs_file}")
                 obs_files_to_copy.append([obs_src, obs_dst])
