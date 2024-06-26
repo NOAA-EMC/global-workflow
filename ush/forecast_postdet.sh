@@ -268,20 +268,23 @@ FV3_out() {
     fi
   fi
 
-  # Get list of FV3 restart files
-  local file_list fv3_file
-  file_list=$(FV3_restarts)
+  ### Check that there are restart files to copy
+  if [[ ${#restart_dates[@]} -gt 0 ]]; then
+    # Get list of FV3 restart files
+    local file_list fv3_file
+    file_list=$(FV3_restarts)
 
-  # Copy restarts for the dates collected above to COM
-  for restart_date in "${restart_dates[@]}"; do
-    echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
-    for fv3_file in ${file_list}; do
-      ${NCP} "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
-             "${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}"
+    # Copy restarts for the dates collected above to COM
+    for restart_date in "${restart_dates[@]}"; do
+      echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
+      for fv3_file in ${file_list}; do
+        ${NCP} "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
+               "${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}"
+      done
     done
-  done
 
-  echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
+    echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
+  fi
 }
 
 # Disable variable not used warnings
