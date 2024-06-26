@@ -9,9 +9,15 @@ export errchk=${errchk:-err_chk}
 export MP_PULSE=0
 
 # Set COM Paths and GETGES environment
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_PREP COM_WAVE_HISTORY COM_WAVE_GRID
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
+    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
 
-mkdir -p "${COM_WAVE_GRID}"
+for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
+    if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
+done
 
 
 # Set wave model ID tag to include member number

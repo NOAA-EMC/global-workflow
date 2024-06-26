@@ -128,7 +128,6 @@ if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; the
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
 fi
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
-export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
 
@@ -291,11 +290,11 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 export FHMAX_GFS=@FHMAX_GFS@
-export FHOUT_GFS=3 # Must be 6 for S2S until #1629 is addressed; 3 for ops
-export FHMAX_HF_GFS=0
+export FHOUT_GFS=3 # 3 for ops
+export FHMAX_HF_GFS=@FHMAX_HF_GFS@
 export FHOUT_HF_GFS=1
 export FHOUT_OCN_GFS=6
-export FHOUT_ICE_GFS=6   
+export FHOUT_ICE_GFS=6
 export FHMIN_WAV=0
 export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
@@ -445,7 +444,7 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="NO"          # Run METPLUS jobs - set METPLUS settings in config.metp; not supported with spack-stack
+export DO_METP="@DO_METP@"   # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
 export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
