@@ -76,7 +76,7 @@ case "${machine}" in
   "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
   "s4")       FIX_DIR="/data/prod/glopara/fix" ;;
   "gaea")     FIX_DIR="/gpfs/f5/epic/proj-shared/global/glopara/data/fix" ;;
-  "noaacloud") FIX_DIR="/contrib/Wei.Huang/data/hack-orion/fix" ;;
+  "noaacloud") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
   *)
     echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
     exit 1
