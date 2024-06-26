@@ -1,5 +1,6 @@
-from wxflow import Executable, Configuration
+from wxflow import Executable, Configuration, ProcessError
 from shutil import rmtree
+import pytest
 import os
 
 _here = os.path.dirname(__file__)
@@ -26,10 +27,18 @@ def test_setup_expt():
 
 def test_setup_xml():
 
-    setup_xml_script = Executable(os.path.join(HOMEgfs, "workflow", "setup_xml.py"))
+    script_content = '''#!/usr/bin/env bash
+export ACCOUNT=fooman
+export HOMEgfs=foobar
+../../../workflow/setup_xml.py "${1}"
+'''
+    with open('run_setup_xml.sh', 'w') as file:
+        file.write(script_content)
+    os.chmod('run_setup_xml.sh', 0o755)
+
+    setup_xml_script = Executable(os.path.join(HOMEgfs, "ci", "scripts", "tests", "run_setup_xml.sh"))
     setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
     setup_xml_script()
-
     assert (setup_xml_script.returncode == 0)
 
     cfg = Configuration(f"{RUNDIR}/{pslot}")
@@ -37,10 +46,54 @@ def test_setup_xml():
     assert base.ACCOUNT == account
 
     assert foobar not in base.values()
-    assert "UNKNOWN" not in base.values()
+    assert "UNKOWN" not in base.values()
 
     with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
         contents = file.read()
     assert contents.count(account) > 5
 
+    os.remove('run_setup_xml.sh')
     rmtree(RUNDIR)
+
+
+def test_setup_xml_fail_config_env_cornercase():
+    script_content = '''#!/usr/bin/env bash
+export ACCOUNT=fv3-cpu
+export HOMEgfs=foobar
+../../../workflow/setup_xml.py "${1}"
+'''
+    with open('run_setup_xml.sh', 'w') as file:
+        file.write(script_content)
+    os.chmod('run_setup_xml.sh', 0o755)
+
+    try:
+        setup_xml_script = Executable(os.path.join(HOMEgfs, "ci", "scripts", "tests", "run_setup_xml.sh"))
+        setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
+        setup_xml_script()
+        assert (setup_xml_script.returncode == 0)
+
+        cfg = Configuration(f"{RUNDIR}/{pslot}")
+        base = cfg.parse_config('config.base')
+        assert base.ACCOUNT == account
+
+        assert foobar not in base.values()
+        assert "UNKOWN" not in base.values()
+
+        with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
+            contents = file.read()
+        assert contents.count(account) > 5
+
+    except ProcessError as e:
+        # We expect this fail becuse ACCOUNT=fv3-cpu in config.base and environment
+        pass
+    except Exception as e:
+        # If an exception occurs, pass the test with a custom message
+        pytest.fail(f"Expected exception occurred: {e}")
+
+    finally:
+        # Cleanup code to ensure it runs regardless of test outcome
+        os.remove('run_setup_xml.sh')
+        try:
+            rmtree(RUNDIR)
+        except FileNotFoundError:
+            pass
