@@ -61,20 +61,26 @@ class AerosolBMatrix(BMatrix):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # generate diagb YAML file
-        logger.debug(f"Generate bmat YAML file: {self.task_config.bmat_yaml}")
+        logger.info(f"Generate bmat YAML file: {self.task_config.bmat_yaml}")
         save_as_yaml(self.task_config.bmat_config, self.task_config.bmat_yaml)
         logger.info(f"Wrote bmat YAML to: {self.task_config.bmat_yaml}")
 
         # generate diffusion parameters YAML file
-        logger.debug(f"Generate diffusion YAML file: {self.task_config.diffusion_yaml}")
+        logger.info(f"Generate diffusion YAML file: {self.task_config.diffusion_yaml}")
         save_as_yaml(self.task_config.diffusion_config, self.task_config.diffusion_yaml)
         logger.info(f"Wrote diffusion YAML to: {self.task_config.diffusion_yaml}")
 
         # create output directory
         FileHandler({'mkdir': [os.path.join(self.task_config['DATA'], 'stddev')]}).sync()
 
+        # create diffusion output directory
+        FileHandler({'mkdir': [os.path.join(self.task_config['DATA'], 'diffusion')]}).sync()
+
         # link executable to run directory
+        logger.info(f'before link_bmatexe')
         self.link_bmatexe()
+        logger.info(f'before link_diffusion_exe')
+        self.link_diffusion_exe()
 
     @logit(logger)
     def computeVariance(self) -> None:
@@ -97,6 +103,26 @@ class AerosolBMatrix(BMatrix):
         pass
 
     @logit(logger)
+    def computeDiffusion(self) -> None:
+
+        chdir(self.task_config.DATA)
+
+        exec_cmd_diffusion = Executable(self.task_config.APRUN_AEROGENB)
+        exec_name_diffusion = os.path.join(self.task_config.DATA, 'gdas_fv3jedi_error_covariance_toolbox.x')
+        exec_cmd_diffusion.add_default_arg(exec_name_diffusion)
+        exec_cmd_diffusion.add_default_arg(self.task_config.diffusion_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd_diffusion}")
+            exec_cmd_diffusion()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd_diffusion}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd_diffusion}")
+
+        pass
+
+    @logit(logger)
     def finalize(self) -> None:
         super().finalize()
         # copy full YAML from executable to ROTDIR
@@ -106,8 +132,7 @@ class AerosolBMatrix(BMatrix):
         dest_diffusion = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diffusion.yaml")
         yaml_copy = {
             'mkdir': [self.task_config.COM_CHEM_ANALYSIS],
-            'copy': [[src, dest]],
-            'copy': [[src_diffusion, dest_diffusion]]
+            'copy': [[src, dest], [src_diffusion, dest_diffusion]]
         }
         FileHandler(yaml_copy).sync()
 
@@ -128,6 +153,16 @@ class AerosolBMatrix(BMatrix):
         stddevlist.append([src, dest])
 
         FileHandler({'copy': stddevlist}).sync()
+
+        # Diffusion files
+        diff_hz = 'diffusion_hz.nc'
+        diff_vt = 'diffusion_vt.nc'
+        src_hz = os.path.join(self.task_config.DATA, 'diffusion', diff_hz)
+        dest_hz = os.path.join(self.task_config.COM_CHEM_ANALYSIS, diff_hz)
+        src_vt = os.path.join(self.task_config.DATA, 'diffusion', diff_vt)
+        dest_vt = os.path.join(self.task_config.COM_CHEM_ANALYSIS, diff_vt)
+        difflist = [[src_hz, dest_hz], [src_vt, dest_vt]]
+        FileHandler({'copy': difflist}).sync()
 
     @logit(logger)
     def link_bmatexe(self) -> None:
@@ -152,6 +187,34 @@ class AerosolBMatrix(BMatrix):
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
+
+        return
+
+    @logit(logger)
+    def link_diffusion_exe(self) -> None:
+        """
+
+        This method links a JEDI (fv3jedi_error_covariance_toolbox.x)
+        executable to the run directory
+
+        Parameters
+        ----------
+        Task: GDAS task
+
+        Returns
+        ----------
+        None
+        """
+
+        exe_src_diffusion = self.task_config.DIFFUSIONEXE
+
+        # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
+        logger.info(f"Link executable {exe_src_diffusion} to DATA/")
+        logger.warn("Linking is not permitted per EE2.")
+        exe_dest_diffusion = os.path.join(self.task_config.DATA, os.path.basename(exe_src_diffusion))
+        if os.path.exists(exe_dest_diffusion):
+            rm_p(exe_dest_diffusion)
+        os.symlink(exe_src_diffusion, exe_dest_diffusion)
 
         return
 

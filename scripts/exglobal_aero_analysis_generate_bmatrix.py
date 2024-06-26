@@ -18,8 +18,9 @@ if __name__ == '__main__':
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the aerosol variance tasks
+    # Instantiate the aerosol variance and diffusion correlation tasks
     AeroB = AerosolBMatrix(config)
     AeroB.initialize()
     AeroB.computeVariance()
+    AeroB.computeDiffusion()
     AeroB.finalize()

@@ -86,6 +86,8 @@ class AerosolAnalysis(Analysis):
         # copy BUMP files, otherwise it will assume ID matrix
         if self.task_config.get('STATICB_TYPE', 'identity') in ['bump']:
             FileHandler(self.get_berror_dict(self.task_config)).sync()
+        if self.task_config.get('STATICB_TYPE', 'identity') in ['diffusion']:
+            FileHandler(self.get_berror_dict(self.task_config)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
@@ -286,7 +288,6 @@ class AerosolAnalysis(Analysis):
             a dictionary containing the list of background error files to copy for FileHandler
         """
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
-        b_dir = config.BERROR_DATA_DIR
         b_datestr = to_fv3time(config.BERROR_DATE)
         analysis_dir = config.COM_CHEM_ANALYSIS
         cycle_datestr = to_fv3time(config.current_cycle)
@@ -305,17 +306,16 @@ class AerosolAnalysis(Analysis):
                     os.path.join(analysis_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
                 ])
 
-        # the remaining B matrix files are fixed and come from a fix directory
-        radius = 'cor_aero_universe_radius'
+        # the diffusion correlation files are computed every cycle and are available in COM
+        diff_hz = 'diffusion_hz.nc'
+        diff_vt = 'diffusion_vt.nc'
         berror_list.append([
-            os.path.join(b_dir, radius), os.path.join(config.DATA, 'berror', radius)
+            os.path.join(config.COM_CHEM_ANALYSIS, diff_hz), os.path.join(config.DATA, 'berror', diff_hz)
         ])
-        nproc = config.ntiles * config.layout_x * config.layout_y
-        for nn in range(1, nproc + 1):
-            berror_list.append([
-                os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc'),
-                os.path.join(config.DATA, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{nn:06}.nc')
-            ])
+        berror_list.append([
+            os.path.join(config.COM_CHEM_ANALYSIS, diff_vt), os.path.join(config.DATA, 'berror', diff_vt)
+        ])
+
         berror_dict = {
             'mkdir': [os.path.join(config.DATA, 'berror')],
             'copy': berror_list,
