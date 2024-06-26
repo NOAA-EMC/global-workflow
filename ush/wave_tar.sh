@@ -76,7 +76,7 @@ source "${USHgfs}/preamble.sh"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [[ -z "${cycle}" ]] || [[ -z "${COM_WAVE_STATION}" ]] || [[ -z "${WAV_MOD_TAG}" ]] ||  \
+  if [[ -z "${cycle}" ]] || [[ -z "${COMOUT_WAVE_STATION}" ]] || [[ -z "${WAV_MOD_TAG}" ]] ||  \
      [[ -z "${SENDDBN}" ]] || [[ -z "${STA_DIR}" ]]; then
     set +x
     echo ' '
@@ -179,10 +179,10 @@ source "${USHgfs}/preamble.sh"
 
   set +x
   echo ' '
-  echo "   Moving tar file ${file_name} to ${COM_WAVE_STATION} ..."
+  echo "   Moving tar file ${file_name} to ${COMOUT_WAVE_STATION} ..."
   set_trace
 
-  cp "${file_name}" "${COM_WAVE_STATION}/."
+  cp "${file_name}" "${COMOUT_WAVE_STATION}/."
 
   exit=$?
 
@@ -202,11 +202,11 @@ source "${USHgfs}/preamble.sh"
   then
     set +x
     echo ' '
-    echo "   Alerting TAR file as ${COM_WAVE_STATION}/${file_name}"
+    echo "   Alerting TAR file as ${COMOUT_WAVE_STATION}/${file_name}"
     echo ' '
     set_trace
     "${DBNROOT}/bin/dbn_alert MODEL" "${alertName}_WAVE_TAR" "${job}" \
-      "${COM_WAVE_STATION}/${file_name}"
+      "${COMOUT_WAVE_STATION}/${file_name}"
   fi
 
 # --------------------------------------------------------------------------- #
