@@ -12,7 +12,6 @@ set -eux
 # development branch for the global-workflow repo.  It then stages tests directories per
 # PR number and calls clone-build_ci.sh to perform a clone and full build from the PR.
 # It then is ready to run a suite of regression tests with various configurations
-# no-op for ci self test
 #######################################################################################
 
 export REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
