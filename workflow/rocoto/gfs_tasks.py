@@ -659,7 +659,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prepoceanobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'task', 'name': 'gdasfcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
