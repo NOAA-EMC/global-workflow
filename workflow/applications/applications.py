@@ -3,6 +3,7 @@
 from typing import Dict, List, Any
 from datetime import timedelta
 from hosts import Host
+from pathlib import Path
 from wxflow import Configuration, to_timedelta
 from abc import ABC, ABCMeta, abstractmethod
 
@@ -134,12 +135,22 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         '''
         pass
 
-    def source_configs(self, run: str = "gfs", log: bool = True) -> Dict[str, Any]:
+    def source_configs(self, run: str = None, log: bool = True) -> Dict[str, Any]:
         """
-        Given the configuration object used to initialize,
+        Given the configuration object used to initialize and the RUN,
         source the configurations for each config and return a dictionary
         Every config depends on "config.base"
         """
+
+        if run:
+            # Write a temporary config file with RUN in it
+            config_run_file = Path(self.conf.config_dir, "config.run")
+            with open(config_run_file, "w") as config_run:
+                config_run.write(f"#!/usr/bin/env bash\n")
+                config_run.write(f"export RUN='{run}'\n")
+
+            # Update the list of config files
+            self.conf.config_files = self.conf._get_configs
 
         configs = dict()
 
@@ -149,8 +160,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         # Source the list of all config_files involved in the application
         for config in self.configs_names:
 
-            # All must source config.base first
-            files = ['config.base']
+            # All must source config.run (if present) and config.base first
+            files = ['config.run', 'config.base'] if run else ['config.base']
 
             if config in ['eobs', 'eomg']:
                 files += ['config.anal', 'config.eobs']
@@ -168,7 +179,10 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += [f'config.{config}']
 
             print(f'sourcing config.{config}') if log else 0
-            configs[config] = self.conf.parse_config(files, RUN=run)
+            configs[config] = self.conf.parse_config(files)
+
+        # Delete config.run
+        Path.unlink(config_run_file) if run else 0
 
         return configs
 
