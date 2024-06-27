@@ -100,7 +100,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.configs = self.source_configs()
 
         # Update the base config dictionary base on application
-        self.configs['base'] = self._update_base(self.configs['base'])
+        self.configs['base'] = self.update_base(self.configs['base'])
 
         # Save base in the internal state since it is often needed
         self._base = self.configs['base']
@@ -117,7 +117,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
     @staticmethod
     @abstractmethod
-    def _update_base(base_in: Dict[str, Any]) -> Dict[str, Any]:
+    def update_base(base_in: Dict[str, Any]) -> Dict[str, Any]:
         '''
         Make final updates to base and return an updated copy
 

@@ -42,11 +42,13 @@ class Tasks:
         self.run = run
         # Re-source the configs with RUN specified
         print(f"Source configs with RUN={run}")
-        self.app_config.source_configs(run=run, log=False)
+        self._configs = self.app_config.source_configs(run=run, log=False)
 
+        # Update the base config for the application
+        self._configs['base'] = self.app_config.update_base(self._configs['base'])
         # Save dict_configs and base in the internal state (never know where it may be needed)
-        self._configs = self.app_config.configs
         self._base = self._configs['base']
+
         self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
