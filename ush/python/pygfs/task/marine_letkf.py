@@ -5,7 +5,8 @@ from logging import getLogger
 import os
 from pygfs.task.analysis import Analysis
 from typing import Dict
-from wxflow import (FileHandler,
+from wxflow import (AttrDict,
+                    FileHandler,
                     logit,
                     parse_j2yaml,
                     to_timedelta,
@@ -63,7 +64,13 @@ class MarineLETKF(Analysis):
         logger.info("initialize")
 
         # make directories and stage ensemble background files
-        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, self.task_config)
+        ensbkgconf = AttrDict()
+        keys = ['previous_cycle', 'current_cycle', 'DATA', 'NMEM_ENS',
+                'PARMgfs', 'ROTDIR', 'COM_OCEAN_HISTORY_TMPL', 'COM_ICE_HISTORY_TMPL']
+        for key in keys:
+            ensbkgconf[key] = self.task_config[key]
+        ensbkgconf.RUN = 'enkfgdas'
+        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, ensbkgconf)
         FileHandler(letkf_stage_list).sync()
         letkf_stage_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_fix_list).sync()
@@ -93,7 +100,12 @@ class MarineLETKF(Analysis):
         FileHandler({'copy': obs_files_to_copy}).sync()
 
         # make the letkf.yaml
-        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, self.task_config)
+        letkfconf = AttrDict()
+        keys = ['WINDOW_BEGIN', 'WINDOW_MIDDLE', 'RUN', 'gcyc', 'NMEM_ENS']
+        for key in keys:
+            letkfconf[key] = self.task_config[key]
+        letkfconf.RUN = 'enkfgdas'
+        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, letkfconf)
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.task_config.letkf_yaml_file)
 
