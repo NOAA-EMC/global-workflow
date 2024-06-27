@@ -15,7 +15,6 @@ fhr3="${FHR3}"
 fhr=$(( 10#${fhr3} ))
 if (( fhr > FHMAX_GFS )); then
   echo "Nothing to process for FHR = ${fhr3}, cycle"
-  continue
 fi
 
 export fcsthrs="${fhr3}"
