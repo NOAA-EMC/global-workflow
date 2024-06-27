@@ -1304,7 +1304,7 @@ for resource_var in nth npe npe_node NTASKS memory wtime; do
    if [[ -n "${!run_resource_var+0}" ]]; then
       declare -x "${resource_var}"="${!run_resource_var}"
    elif [[ -n "${!resource_var+0}" ]]; then
-      export "${resource_var}"
+      export "${resource_var?}"
    fi
 done
 
