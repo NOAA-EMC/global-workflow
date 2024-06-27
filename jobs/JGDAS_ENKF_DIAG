@@ -35,36 +35,38 @@ RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_OBS_PREV:COM_OBS_TMPL \
-    COM_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
+    COMIN_OBS_PREV:COM_OBS_TMPL \
+    COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL \
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
 
-export ATMGES_ENSMEAN="${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
+export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
 if [ ! -f ${ATMGES_ENSMEAN} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
     exit 1
 fi
 
 # Link observational data
-export PREPQC="${COM_OBS}/${OPREFIX}prepbufr"
+export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
 if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
-export TCVITL="${COM_OBS}/${OPREFIX}syndata.tcvitals.tm00"
+export TCVITL="${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
-   export NSSTBF="${COM_OBS}/${OPREFIX}nsstbufr"
+   export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 fi
-export PREPQCPF="${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
+export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Guess Bias correction coefficients related to control
-export GBIAS=${COM_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias
-export GBIASPC=${COM_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc
-export GBIASAIR=${COM_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air
-export GRADSTAT=${COM_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat
+export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias
+export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc
+export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air
+export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat
 
+# TODO: HRW; stopped here.
 # Bias correction coefficients related to ensemble mean
 export ABIAS="${COM_ATMOS_ANALYSIS}/${APREFIX}abias.ensmean"
 export ABIASPC="${COM_ATMOS_ANALYSIS}/${APREFIX}abias_pc.ensmean"

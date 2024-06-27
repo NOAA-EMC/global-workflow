@@ -36,7 +36,7 @@ def main():
 
     # Also import all COMIN* directory and template variables
     for key in archive.task_config.keys():
-        if key.startswith("COM"):
+        if key.startswith("COMIN"):
             archive_dict[key] = archive.task_config[key]
 
     cwd = os.getcwd()
