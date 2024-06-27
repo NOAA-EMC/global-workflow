@@ -39,6 +39,8 @@ if [[ "${cpl}" = ".true." ]]; then
   local coupling_interval_slow_sec="${CPL_SLOW}"
 fi
 
+local WRITE_ENDOFRUN_RESTART=.false.
+
 if [[ "${cplflx}" = ".true." ]]; then
 
   local use_coldstart=${use_coldstart:-".false."}
