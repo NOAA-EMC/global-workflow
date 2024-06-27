@@ -17,6 +17,13 @@
 # Remarks :                                                                   #
 # - For non-fatal errors output is witten to the wave.log file.               #
 #                                                                             #
+# COM inputs:                                                                 #
+#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}                           #
+#  - ${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc        #
+#                                                                             #
+# COM outputs:                                                                #
+#  - ${COMOUT_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.$cycle.cur                 #
+#                                                                             #
 #  Update record :                                                            #
 #                                                                             #
 # - Origination:                                               01-Mar-2007    #
@@ -162,12 +169,12 @@ source "${USHgfs}/preamble.sh"
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]
+    if [ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]
     then
       set +x
-      echo " Mod def file for $grdID found in ${COM_WAVE_PREP}. copying ...."
+      echo " Mod def file for $grdID found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
-      cp ${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID} mod_def.$grdID
+      cp ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       set +x
@@ -322,19 +329,19 @@ source "${USHgfs}/preamble.sh"
       ymdh_rtofs=$ymdh_beg
 
       if [  "$FHMAX_WAV_CUR" -le 72 ]; then 
-        rtofsfile1="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
-        rtofsfile2="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f048_prog.nc"
-        rtofsfile3="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
+        rtofsfile1="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
+        rtofsfile2="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f048_prog.nc"
+        rtofsfile3="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
         if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ]; then 
            #Needed current files are not available, so use RTOFS from previous day 
            export RPDY=$($NDATE -24 ${RPDY}00 | cut -c1-8)
         fi 
       else
-        rtofsfile1="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f096_prog.nc"
-        rtofsfile2="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f120_prog.nc"
-        rtofsfile3="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f144_prog.nc"
-        rtofsfile4="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f168_prog.nc"
-        rtofsfile5="${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f192_prog.nc"
+        rtofsfile1="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f096_prog.nc"
+        rtofsfile2="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f120_prog.nc"
+        rtofsfile3="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f144_prog.nc"
+        rtofsfile4="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f168_prog.nc"
+        rtofsfile5="${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f192_prog.nc"
         if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ] ||
             [ ! -f $rtofsfile4 ] || [ ! -f $rtofsfile5 ]; then
             #Needed current files are not available, so use RTOFS from previous day 
@@ -360,8 +367,8 @@ source "${USHgfs}/preamble.sh"
         fhr_rtofs=$(${NHOUR} ${ymdh_rtofs} ${RPDY}00)
         fh3_rtofs=$(printf "%03d" "${fhr_rtofs#0}")
 
-        curfile1h=${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
-        curfile3h=${COM_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
+        curfile1h=${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
+        curfile3h=${COMIN_RTOFS}/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
 
         if [ -s ${curfile1h} ]  && [ "${FLGHF}" = "T" ] ; then
           curfile=${curfile1h}
@@ -465,7 +472,7 @@ source "${USHgfs}/preamble.sh"
         cat $file >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COM_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.$cycle.cur 
+      cp -f cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.$cycle.cur 
 
     else
       echo ' '
