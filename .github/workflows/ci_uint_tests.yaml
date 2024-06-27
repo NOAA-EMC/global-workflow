@@ -48,6 +48,7 @@ jobs:
           sudo mkdir -p /scratch1/NCEPDEV
           cd $GITHUB_WORKSPACE/sorc
           git submodule update --init wxflow
+          git submodule update --init gfs_utils.fd
           cd $GITHUB_WORKSPACE/sorc
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
