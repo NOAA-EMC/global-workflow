@@ -17,9 +17,12 @@ export MP_PULSE=0
 export CDO=${CDO_ROOT}/bin/cdo
 
 # Set COM Paths and GETGES environment
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_WAVE_PREP
-declare_from_tmpl -rx COM_RTOFS
-[[ ! -d ${COM_WAVE_PREP} ]] && mkdir -m 775 -p "${COM_WAVE_PREP}"
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+	COMIN_OBS:COM_OBS_TMPL \
+	COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+	COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
+	COMIN_RTOFS:COM_RTOFS_TMPL
+if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 
 # Execute the Script
 ${SCRgfs}/exgfs_wave_prep.sh
