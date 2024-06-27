@@ -1,5 +1,5 @@
 name: CI Unit Tests
-on: [pull_request, workflow_dispatch]
+on: [pull_request, push, workflow_dispatch]
 
 jobs:
 
@@ -24,7 +24,7 @@ jobs:
           sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
           python -m pip install --upgrade pip
           pip install pytest
-          pip install git+https://github.com/TerrenceMcGuinness-NOAA/wxflow.git@config_env_xor
+          pip install wxflow
           pip install wget
 
       - name: Cache Rocoto Install
@@ -48,12 +48,10 @@ jobs:
           sudo mkdir -p /scratch1/NCEPDEV
           cd $GITHUB_WORKSPACE/sorc/wxflow
           git submodule update --init
-          git checkout config_env_xor
           cd $GITHUB_WORKSPACE/sorc
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           echo "EXPDIR: ${EXPDIR}"
-          unset EXPDIR
           #pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
           pytest -v -k test_rocoto_done
           pytest -v -k test_rocoto_stalled
