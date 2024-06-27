@@ -33,18 +33,14 @@ done
 ########################################################
 # Execute the script for one degree grib
 ########################################################
-fhmin=0
-fhmax=9
-if (( fcsthrs >= fhmin && fcsthrs <= fhmax )); then
-  if ((fcsthrs % 3 == 0)); then
-    "${SCRgfs}/exgdas_atmos_nawips.sh" "1p00" "${fcsthrs}" "GDAS_GEMPAK" "${COM_ATMOS_GEMPAK_1p00}"
+
+"${SCRgfs}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COM_ATMOS_GEMPAK_1p00}"
 
 ########################################################
 # Execute the script for quater-degree grib
 ########################################################
-    "${SCRgfs}/exgdas_atmos_nawips.sh" "0p25" "${fcsthrs}" "GDAS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}"
-  fi
-fi
+
+"${SCRgfs}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}"
 
 export err=$?; err_chk
 

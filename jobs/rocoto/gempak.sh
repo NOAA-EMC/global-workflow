@@ -10,15 +10,6 @@ export jobid="${job}.$$"
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
-# shellcheck disable=SC2153
-fhr3="${FHR3}"
-fhr=$(( 10#${fhr3} ))
-if (( fhr > FHMAX_GFS )); then
-  echo "Nothing to process for FHR = ${fhr3}, cycle"
-fi
-
-export fcsthrs="${fhr3}"
-
 # Execute the JJOB
 "${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
 
