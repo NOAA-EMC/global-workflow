@@ -28,8 +28,8 @@ def test_setup_expt():
 def test_setup_xml():
 
     script_content = '''#!/usr/bin/env bash
-export ACCOUNT=fooman
-export HOMEgfs=foobar
+#export ACCOUNT=fooman
+#export HOMEgfs=foobar
 ../../../workflow/setup_xml.py "${1}"
 '''
     with open('run_setup_xml.sh', 'w') as file:
@@ -58,7 +58,6 @@ export HOMEgfs=foobar
 
 def test_setup_xml_fail_config_env_cornercase():
     script_content = '''#!/usr/bin/env bash
-export ACCOUNT=fv3-cpu
 export HOMEgfs=foobar
 ../../../workflow/setup_xml.py "${1}"
 '''
