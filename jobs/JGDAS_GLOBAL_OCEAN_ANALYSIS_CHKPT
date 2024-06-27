@@ -9,6 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalchkpt" -c "base ocnanal ocnana
 # Set variables used in the script
 ##############################################
 # Ignore possible spelling error (nothing is misspelled)
+
 # shellcheck disable=SC2153
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
