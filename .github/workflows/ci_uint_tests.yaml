@@ -50,12 +50,7 @@ jobs:
           git submodule update --init --recursive
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
-          echo "EXPDIR: ${EXPDIR}"
-          #pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
-          pytest -v -k test_rocoto_done
-          pytest -v -k test_rocoto_stalled
-          pytest -v -k test_setup_exp
-          pytest -v -k test_setup_xml
+          pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
 
 
       - name: Publish Test Results
