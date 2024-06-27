@@ -47,11 +47,8 @@ jobs:
         run: |
           sudo mkdir -p /scratch1/NCEPDEV
           cd $GITHUB_WORKSPACE/sorc
-          git submodule update --init wxflow
           git submodule update --init gfs_utils.fd
-          cd $GITHUB_WORKSPACE/sorc/wxflow
-          git checkout config_env_bash
-          cd $GITHUB_WORKSPACE/sorc
+          git clone --single-branch -branch config_env_xor https://github.com/TerrenceMcGuinness-NOAA/wxflow.git
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           echo "EXPDIR: ${EXPDIR}"
