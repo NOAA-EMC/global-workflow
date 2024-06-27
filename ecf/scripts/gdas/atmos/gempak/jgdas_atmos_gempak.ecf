@@ -37,7 +37,7 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 export USE_CFP=YES
-export FHR3=%FHR3% fcsthrs=%FHR3%
+export FHR3=%FHR3%
 
 ############################################################
 # CALL executable job script here
