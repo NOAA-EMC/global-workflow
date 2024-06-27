@@ -1380,10 +1380,10 @@ class GFSTasks(Tasks):
             fhout = config['FHOUT_GFS']
             fhmax_hf = config['FHMAX_HF_GFS']
             fhout_hf = config['FHOUT_HF_GFS']
-#            if fhmax > 240:
-#                fhmax = 240
-#            if fhmax_hf > 240:
-#                fhmax_hf = 240
+            if fhmax > 240:
+                fhmax = 240
+            if fhmax_hf > 240:
+                fhmax_hf = 240
             fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
             fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
@@ -1420,7 +1420,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('awips')
 
-        task_name = f'{self.cdump}awips_20km_1p0deg_#{varname3}#'
+        task_name = f'{self.cdump}awips_20km_1p0deg#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1444,23 +1444,17 @@ class GFSTasks(Tasks):
     def gempak(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}atmos_prod'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmos_prod_f#fhr#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         gempak_vars = self.envars.copy()
-        gempak_dict = {'FHRGRP': '#grp#',
-                       'FHRLST': '#lst#',
-                       'ROTDIR': self.rotdir}
+        gempak_dict = {'FHR3': '#fhr#'}
         for key, value in gempak_dict.items():
             gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_awipsgroups(self.cdump, self._configs['gempak'])
-        var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
-
         resources = self.get_resource('gempak')
-        task_name = f'{self.cdump}gempak_#{varname3}#'
+        task_name = f'{self.cdump}gempak_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1472,11 +1466,14 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.cdump}gempak',
-                         'task_dict': task_dict,
-                         'var_dict': var_dict}
+        fhrs = self._get_forecast_hours(self.cdump, self._configs['gempak'])
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
-        task = rocoto.create_task(metatask_dict)
+        fhr_metatask_dict = {'task_name': f'{self.cdump}gempak',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+        task = rocoto.create_task(fhr_metatask_dict)
 
         return task
 
@@ -1556,18 +1553,12 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         gempak_vars = self.envars.copy()
-        gempak_dict = {'FHRGRP': '#grp#',
-                       'FHRLST': '#lst#',
-                       'ROTDIR': self.rotdir}
+        gempak_dict = {'FHR3': '#fhr#'}
         for key, value in gempak_dict.items():
             gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_awipsgroups(self.cdump, self._configs['gempak'])
-        var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
-
         resources = self.get_resource('gempak')
-        task_name = f'{self.cdump}gempakgrb2spec_#{varname3}#'
+        task_name = f'{self.cdump}gempakgrb2spec_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1588,14 +1579,14 @@ class GFSTasks(Tasks):
         }
         local_config.update(goes_times)
 
-#        fhrs = self._get_forecast_hours(self.cdump, local_config)
-#        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+        fhrs = self._get_forecast_hours(self.cdump, local_config)
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
-        metatask_dict = {'task_name': f'{self.cdump}gempakgrb2spec',
-                         'task_dict': task_dict,
-                         'var_dict': var_dict}
+        fhr_metatask_dict = {'task_name': f'{self.cdump}gempakgrb2spec',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
 
-        task = rocoto.create_task(metatask_dict)
+        task = rocoto.create_task(fhr_metatask_dict)
 
         return task
 

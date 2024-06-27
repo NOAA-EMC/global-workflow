@@ -6,9 +6,6 @@
 echo "BEGIN: config.gempak"
 
 # Get task specific resources
-. "$EXPDIR/config.resources" gempak
-
-# No. of concurrent gempak jobs
-export NAWIPSGRP=42
+. $EXPDIR/config.resources gempak
 
 echo "END: config.gempak"

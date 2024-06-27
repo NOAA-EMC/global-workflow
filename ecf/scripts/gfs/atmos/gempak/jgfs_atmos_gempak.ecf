@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_atmos_gempak_%FCSTHR%_%CYC%
+#PBS -N %RUN%_atmos_gempak_%FHR3%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -37,7 +37,7 @@ module list
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
-export FHRGRP=%FHRGRP% FHRLST=%FHRLST% FCSTHR=%FCSTHR% TRDRUN=%TRDRUN% fcsthrs=%FCSTHR%
+export FHR3=%FHR3% fcsthrs=%FHR3%
 
 ############################################################
 # CALL executable job script here
