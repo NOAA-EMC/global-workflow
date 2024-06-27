@@ -20,6 +20,8 @@
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 # 2020-07-31  Jessica Meixner: Removing points, now gridded data only
 #
+# COM inputs:
+#
 # $Id$
 #
 # Attributes:
@@ -103,12 +105,12 @@ source "${USHgfs}/preamble.sh"
 
 # 1.a.1 Copy model definition files
   for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
-    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
+      echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
     fi
   done
 
@@ -257,9 +259,8 @@ source "${USHgfs}/preamble.sh"
     
     if [ $fhr = $fhrg ]
     then
-
       for wavGRD in ${waveGRD}; do
-        gfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
+        gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
         if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"
           echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
@@ -405,7 +406,7 @@ source "${USHgfs}/preamble.sh"
       ENSTAG=""
       if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
       gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-      if [ ! -s ${COM_WAVE_GRID}/${gribchk} ]; then
+      if [ ! -s ${COMOUT_WAVE_GRID}/${gribchk} ]; then
         set +x
         echo ' '
         echo '********************************************'
