@@ -134,7 +134,7 @@ export ATARDIR="@ATARDIR@"
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
 export NET="gfs"  # NET is defined in the job-card (ecf)
-export RUN=${RUN:-${RUN:-"gfs"}}  # RUN is defined in the job-card (ecf)
+export RUN=${RUN:-"gfs"}  # RUN is defined in the job-card (ecf)
 # TODO: determine where is RUN actually used in the workflow other than here
 # TODO: is it possible to replace all instances of ${RUN} to ${RUN} to be
 #       consistent w/ EE2?
