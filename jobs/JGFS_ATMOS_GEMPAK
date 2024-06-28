@@ -107,7 +107,7 @@ fhmin=252
 fhmax=384
 if (( FHR3 >= fhmin && FHR3 <= fhmax )); then
   if ((FHR3 % 12 == 0)); then
-    time "${SCRgfs}/exgfs_atmos_nawips.sh" "0p25" "${FHR3}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}"
+    "${SCRgfs}/exgfs_atmos_nawips.sh" "0p25" "${FHR3}" "GFS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}"
   fi
 fi
 
