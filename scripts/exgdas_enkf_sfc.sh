@@ -229,8 +229,6 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 
-            COM_SNOW_ANALYSIS_TMPL
-
             RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
 
