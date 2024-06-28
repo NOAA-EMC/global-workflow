@@ -53,7 +53,7 @@ GRIBIN_chk="${GRIBIN}"
 if [[ ! -r "${GRIBIN_chk}" ]]; then
   echo "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
   export err=7 ; err_chk
-  exit "${err}
+  exit "${err}"
 fi
 
 cp "${GRIBIN}" "grib${fhr3}"
