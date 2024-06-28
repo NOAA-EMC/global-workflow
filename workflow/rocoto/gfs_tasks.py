@@ -563,7 +563,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {
             'type': 'task', 'name': f'{self.cdump}aeroanlgenb', 
-            'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])",
+            'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}",
         }
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {
