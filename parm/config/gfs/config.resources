@@ -445,17 +445,17 @@ case ${step} in
     export npe_aeroanlvar_gfs=$(( layout_x * layout_y * 6 ))
     export nth_aeroanlvar_gdas=1
     export nth_aeroanlvar_gfs=1
-    export npe_node_aeroanlvar_gdas=$(( npe_node_max / nth_aeroanlrun_gdas ))
-    export npe_node_aeroanlrun_gfs=$(( npe_node_max / nth_aeroanlvar_gfs ))
+    export npe_node_aeroanlvar_gdas=$(( npe_node_max / nth_aeroanlvar_gdas ))
+    export npe_node_aeroanlvar_gfs=$(( npe_node_max / nth_aeroanlvar_gfs ))
     export is_exclusive=True
 
-    var_npe_node="npe_node_aeroanlrun_${RUN}"
-    var_nth="nth_aeroanlrun_${RUN}"
-    var_npe="npe_aeroanlrun_${RUN}"
+    var_npe_node="npe_node_aeroanlvar_${RUN}"
+    var_nth="nth_aeroanlvar_${RUN}"
+    var_npe="npe_aeroanlvar_${RUN}"
     if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_aeroanlrun"="${!var_npe_node}" \
-                 "nth_aeroanlrun"="${!var_nth}" \
-                 "npe_aeroanlrun"="${!var_npe}"
+      declare -x "npe_node_aeroanlvar"="${!var_npe_node}" \
+                 "nth_aeroanlvar"="${!var_nth}" \
+                 "npe_aeroanlvar"="${!var_npe}"
     fi
     ;;
 
