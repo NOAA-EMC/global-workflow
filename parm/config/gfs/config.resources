@@ -1010,8 +1010,12 @@ case ${step} in
     ;;
 
   "eobs" | "eomg")
-    wtime="00:15:00"
-    wtime="00:30:00"
+    if [[ "${step}" == "eobs" ]]; then
+      wtime="00:15:00"
+    else
+      wtime="00:30:00"
+    fi
+
     case ${CASE} in
       "C768")                 npe=200;;
       "C384")                 npe=100;;
