@@ -80,7 +80,7 @@ case ${step} in
   "fcst" | "efcs")
     export is_exclusive=True
 
-    _RUN_LIST=${RUN:-"gdas gfs"}
+    _RUN_LIST=${RUN:-"gefs gfs"}
 
     # During workflow creation, we need resources for all RUNs and RUN is undefined
     for _RUN in ${_RUN_LIST}; do
@@ -180,26 +180,20 @@ case ${step} in
 
       echo "Total PETS for ${_RUN} = ${NTASKS_TOT}"
 
-      if [[ "${_RUN}" =~ "gfs" ]]; then
-        declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
-        declare -x "nth_${step}_gfs"="${UFS_THREADS}"
-        declare -x "npe_node_${step}_gfs"="${npe_node_max}"
-      else
-        declare -x "npe_${step}"="${NTASKS_TOT}"
-        declare -x "nth_${step}"="${UFS_THREADS}"
-        declare -x "npe_node_${step}"="${npe_node_max}"
-      fi
+      declare -x "npe_${_RUN}"="${NTASKS_TOT}"
+      declare -x "nth_${_RUN}"="${UFS_THREADS}"
+      declare -x "npe_node_${_RUN}"="${npe_node_max}"
 
     done
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}"="03:00:00"
-        declare -x "wtime_${step}_gfs"="03:00:00"
+        declare -x "wtime_gefs"="03:00:00"
+        declare -x "wtime_gfs"="03:00:00"
         ;;
       "C384" | "C768" | "C1152")
-        declare -x "wtime_${step}"="06:00:00"
-        declare -x "wtime_${step}_gfs"="06:00:00"
+        declare -x "wtime_gefs"="06:00:00"
+        declare -x "wtime_gfs"="06:00:00"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
@@ -212,85 +206,77 @@ case ${step} in
     ;;
 
   "atmos_products")
-    export wtime_atmos_products="00:15:00"
-    export npe_atmos_products=24
-    export nth_atmos_products=1
-    export npe_node_atmos_products="${npe_atmos_products}"
-    export wtime_atmos_products_gfs="${wtime_atmos_products}"
-    export npe_atmos_products_gfs="${npe_atmos_products}"
-    export nth_atmos_products_gfs="${nth_atmos_products}"
-    export npe_node_atmos_products_gfs="${npe_node_atmos_products}"
+    export wtime="00:15:00"
+    export npe=24
+    export nth=1
+    export npe_node="${npe}"
     export is_exclusive=True
     ;;
 
   "atmos_ensstat")
-    export wtime_atmos_ensstat="00:30:00"
-    export npe_atmos_ensstat=6
-    export nth_atmos_ensstat=1
-    export npe_node_atmos_ensstat="${npe_atmos_ensstat}"
-    export wtime_atmos_ensstat_gfs="${wtime_atmos_ensstat}"
-    export npe_atmos_ensstat_gfs="${npe_atmos_ensstat}"
-    export nth_atmos_ensstat_gfs="${nth_atmos_ensstat}"
-    export npe_node_atmos_ensstat_gfs="${npe_node_atmos_ensstat}"
+    export wtime="00:30:00"
+    export npe=6
+    export nth=1
+    export npe_node="${npe}"
     export is_exclusive=True
     ;;
 
   "oceanice_products")
-    export wtime_oceanice_products="00:15:00"
-    export npe_oceanice_products=1
-    export npe_node_oceanice_products=1
-    export nth_oceanice_products=1
-    export memory_oceanice_products="96GB"
+    export wtime="00:15:00"
+    export npe=1
+    export npe_node=1
+    export nth=1
+    export memory="96GB"
     ;;
 
   "wavepostsbs")
-    export wtime_wavepostsbs="03:00:00"
-    export npe_wavepostsbs=1
-    export nth_wavepostsbs=1
-    export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
-    export NTASKS=${npe_wavepostsbs}
-    export memory_wavepostsbs="10GB"
+    export wtime="03:00:00"
+    export npe=1
+    export nth=1
+    export npe_node=$(( npe_node_max / nth ))
+    export NTASKS=${npe}
+    export memory="10GB"
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    export wtime_wavepostbndpnt="03:00:00"
-    export npe_wavepostbndpnt=240
-    export nth_wavepostbndpnt=1
-    export npe_node_wavepostbndpnt=$(( npe_node_max / nth_wavepostbndpnt ))
+    export wtime="03:00:00"
+    export npe=240
+    export nth=1
+    export npe_node=$(( npe_node_max / nth ))
     export is_exclusive=True
-    if [[ ${npe_node_wavepostbndpnt} -gt 40 ]]; then
-        export npe_node_wavepostbndpnt=40
+    if [[ ${npe_node} -gt 40 ]]; then
+        export npe_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe_wavepostbndpnt}
+    export NTASKS=${npe}
     ;;
 
   "wavepostbndpntbll")
-    export wtime_wavepostbndpntbll="01:00:00"
-    export npe_wavepostbndpntbll=448
-    export nth_wavepostbndpntbll=1
-    export npe_node_wavepostbndpntbll=$(( npe_node_max / nth_wavepostbndpntbll ))
+    export wtime="01:00:00"
+    export npe=448
+    export nth=1
+    export npe_node=$(( npe_node_max / nth ))
     export is_exclusive=True
-    if [[ ${npe_node_wavepostbndpntbll} -gt 40 ]]; then
-        export npe_node_wavepostbndpntbll=40
+    if [[ ${npe_node} -gt 40 ]]; then
+        export npe_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe_wavepostbndpntbll}
+    export NTASKS=${npe}
     ;;
 
   "wavepostpnt")
-    export wtime_wavepostpnt="04:00:00"
-    export npe_wavepostpnt=200
-    export nth_wavepostpnt=1
-    export npe_node_wavepostpnt=$(( npe_node_max / nth_wavepostpnt ))
+    export wtime="04:00:00"
+    export npe=200
+    export nth=1
+    export npe_node=$(( npe_node_max / nth ))
     export is_exclusive=True
-    if [[ ${npe_node_wavepostpnt} -gt 40 ]]; then
-        export npe_node_wavepostpnt=40
+    if [[ ${npe_node} -gt 40 ]]; then
+        export npe_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe_wavepostpnt}
+    export NTASKS=${npe}
     ;;
 
   *)
