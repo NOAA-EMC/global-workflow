@@ -27,16 +27,8 @@ def test_setup_expt():
 
 def test_setup_xml():
 
-    script_content = '''#!/usr/bin/env bash
-#export ACCOUNT=fooman
-#export HOMEgfs=foobar
-../../../workflow/setup_xml.py "${1}"
-'''
-    with open('run_setup_xml.sh', 'w') as file:
-        file.write(script_content)
-    os.chmod('run_setup_xml.sh', 0o755)
 
-    setup_xml_script = Executable(os.path.join(HOMEgfs, "ci", "scripts", "tests", "run_setup_xml.sh"))
+    setup_xml_script = Executable(os.path.join(HOMEgfs, "workflow/setup_xml.py"))
     setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
     setup_xml_script()
     assert (setup_xml_script.returncode == 0)
@@ -45,14 +37,12 @@ def test_setup_xml():
     base = cfg.parse_config('config.base')
     assert base.ACCOUNT == account
 
-    assert foobar not in base.values()
     assert "UNKOWN" not in base.values()
 
     with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
         contents = file.read()
     assert contents.count(account) > 5
 
-    os.remove('run_setup_xml.sh')
     rmtree(RUNDIR)
 
 

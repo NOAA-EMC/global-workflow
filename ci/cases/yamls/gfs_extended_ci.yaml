@@ -2,7 +2,7 @@ defaults:
   !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
 
 base:
-  ACCOUNT: {{ 'ACCOUNT' | getenv }}
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_GOES: "YES"
   DO_BUFRSND: "YES"
   DO_GEMPAK: "YES"
