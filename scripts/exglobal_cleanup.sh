@@ -14,7 +14,7 @@ rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 
 # Search and delete files/directories from DATAROOT/ older than ${purge_every_days} days
 # purge_every_days should be a positive integer
-purge_every_days=3
+#purge_every_days=3
 
 # Find and delete files older than ${purge_every_days} days
 #find "${DATAROOT}/"* -type f -mtime "+${purge_every_days}" -exec rm -f {} \;
