@@ -27,7 +27,6 @@ def test_setup_expt():
 
 def test_setup_xml():
 
-
     setup_xml_script = Executable(os.path.join(HOMEgfs, "workflow/setup_xml.py"))
     setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
     setup_xml_script()
