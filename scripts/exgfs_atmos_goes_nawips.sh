@@ -45,7 +45,6 @@ fi
 pdsext=no
 
 
-fhr3=$(printf "%03d" "${fhr}")
 
 GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
 GRIBIN="${COM_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
