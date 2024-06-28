@@ -9,22 +9,26 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDUMP="gdas"
-GDUMP_ENS="enkf${GDUMP}"
+GDUMP_ENS="enkfgdas"
 export GDUMP
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS COMOUT_ATMOS_ANALYSIS COMOUT_CONF
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_SNOW_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBS:COM_OBS_TMPL \
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+    COMOUT_CONF:COM_CONF_TMPL 
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl \ 
+    COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
 
-mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
+mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 for imem in $(seq 1 "${NMEM_ENS}"); do
     memchar="mem$(printf %03i "${imem}")"
     MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_SNOW_ANALYSIS
-    mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}"
+    mkdir -p "${COMOUT_SNOW_ANALYSIS}"
 done
 
 ###############################################################
@@ -33,7 +37,7 @@ done
 EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_ensemble_analysis.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+(( status != 0 )) && exit "${status}"
 
 ##############################################
 # End JOB SPECIFIC work
@@ -50,6 +54,6 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit 1
-[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0

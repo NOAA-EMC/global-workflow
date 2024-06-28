@@ -1,8 +1,3 @@
-######################################
-# set some variables
-######################################
-{% set PDY = current_cycle | to_YMD %}
-{% set cyc = current_cycle | strftime("%H") %}
 copy:
 ######################################
 # copy analyses to directories
@@ -12,8 +7,8 @@ copy:
     # Declare a dict of search and replace terms to run on each template
     {% set tmpl_dict = {'ROTDIR':ROTDIR,
                         'RUN':RUN,
-                        'YMD':PDY,
-                        'HH':cyc,
+                        'YMD':current_cycle | to_YMD ,
+                        'HH':current_cycle | strftime("%H"),
                         'MEMDIR':"mem" + '%03d' % mem} %}
 
     # Replace template variables with tmpl_dict, one key at a time
@@ -27,12 +22,12 @@ copy:
         {% set replace_term = tmpl_dict[key] %}
         {% set com_ns.COMOUT_SNOW_ANALYSIS_MEM = com_ns.COMOUT_SNOW_ANALYSIS_MEM.replace(search_term, replace_term) %}
     {% endfor %}
-    {% for tile in range(1, 7) %}
+    {% for tile in range(1, ntiles+1) %}
 - ["{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COMOUT_SNOW_ANALYSIS_MEM }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
     {% endfor %}
     {% if DOIAU == True %}
         # if using IAU, also need analyses copied at the beginning of the window
-        {% for tile in range(1, 7) %}
+        {% for tile in range(1, ntiles+1) %}
 - ["{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COMOUT_SNOW_ANALYSIS_MEM }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
         {% endfor %}
     {% endif %}
@@ -44,8 +39,8 @@ copy:
 # Declare a dict of search and replace terms to run on each template
 {% set tmpl_dict = {'ROTDIR':ROTDIR,
                     'RUN':RUN,
-                    'YMD':PDY,
-                    'HH':cyc,
+                    'YMD':current_cycle | to_YMD ,
+                    'HH':current_cycle | strftime("%H"),
                     'MEMDIR':"ensstat"} %}
 
 # Replace template variables with tmpl_dict, one key at a time
@@ -59,12 +54,12 @@ copy:
     {% set replace_term = tmpl_dict[key] %}
     {% set com_ns.COMOUT_SNOW_ANALYSIS_MEM = com_ns.COMOUT_SNOW_ANALYSIS_MEM.replace(search_term, replace_term) %}
 {% endfor %}
-{% for tile in range(1, 7) %}
+{% for tile in range(1, ntiles+1) %}
 - ["{{ DATA }}/inc/ensmean/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COMOUT_SNOW_ANALYSIS_MEM }}/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
 {% endfor %}
 {% if DOIAU == True %}
     # if using IAU, also need increment copied at the beginning of the window
-    {% for tile in range(1, 7) %}
+    {% for tile in range(1, ntiles+1) %}
 - ["{{ DATA }}/inc/ensmean/snowinc.{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ com_ns.COMOUT_SNOW_ANALYSIS_MEM }}/snowinc.{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
     {% endfor %}
 {% endif %}
