@@ -8,7 +8,6 @@ if (( status != 0 )); then exit "${status}"; fi
 export job="gempak"
 export jobid="${job}.$$"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
 # Execute the JJOB
 "${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
