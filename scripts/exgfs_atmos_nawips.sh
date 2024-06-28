@@ -39,7 +39,6 @@ pdsext=no
 sleep_interval=10
 max_tries=360
 
-fhr3=$(printf "%03d" "${fhr}")
 
 mkdir -p "lock.${fhr3}"
 cd "lock.${fhr3}" || exit 1
