@@ -17,10 +17,10 @@ rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 purge_every_days=3
 
 # Find and delete files older than ${purge_every_days} days
-find "${DATAROOT}/"* -type f -mtime "+${purge_every_days}" -exec rm -f {} \;
+#find "${DATAROOT}/"* -type f -mtime "+${purge_every_days}" -exec rm -f {} \;
 
 # Find and delete directories older than ${purge_every_days} days
-find "${DATAROOT}/"* -type d -mtime "+${purge_every_days}" -exec rm -rf {} \;
+#find "${DATAROOT}/"* -type d -mtime "+${purge_every_days}" -exec rm -rf {} \;
 
 echo "Cleanup ${DATAROOT} completed!"
 ###############################################################
