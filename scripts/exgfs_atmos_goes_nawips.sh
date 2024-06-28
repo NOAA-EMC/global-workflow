@@ -44,8 +44,6 @@ else
 fi  
 pdsext=no
 
-sleep_interval=20
-max_tries=180
 
 fhr3=$(printf "%03d" "${fhr}")
 
