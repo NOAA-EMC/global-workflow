@@ -416,7 +416,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
         MOM6_DIAG_MISVAL="-1e34"
       else
-        MOM6_DIAG_MISVAL="0"
+        MOM6_DIAG_MISVAL="0.0"
       fi
       eps_imesh="4.0e-1"
       MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
