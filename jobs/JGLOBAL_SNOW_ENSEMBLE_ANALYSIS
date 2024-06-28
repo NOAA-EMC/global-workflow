@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA=${DATA:-${DATAROOT}/${RUN}esnowanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
 
 ##############################################
