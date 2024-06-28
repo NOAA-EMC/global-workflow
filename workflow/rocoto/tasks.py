@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
@@ -38,7 +39,7 @@ class Tasks:
 
     def __init__(self, app_config: AppConfig, run: str) -> None:
 
-        self.app_config = app_config
+        self.app_config = copy.deepcopy(app_config)
         self.run = run
         # Re-source the configs with RUN specified
         print(f"Source configs with RUN={run}")
