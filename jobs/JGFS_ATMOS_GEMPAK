@@ -118,7 +118,7 @@ fhmin=0
 fhmax="${ocean_domain_max}"
 if (( FHR3 >= fhmin && FHR3 <= fhmax )); then
   if ((FHR3 % 3 == 0)); then
-    time "${SCRgfs}/exgfs_atmos_nawips.sh" "35km_pac" "${FHR3}" "GFS_GEMPAK_WWB" "${COM_ATMOS_GEMPAK_35km_pac}"
+    "${SCRgfs}/exgfs_atmos_nawips.sh" "35km_pac" "${FHR3}" "GFS_GEMPAK_WWB" "${COM_ATMOS_GEMPAK_35km_pac}"
   fi
 fi
 
