@@ -53,10 +53,10 @@ GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
 GRIBIN="${COM_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
 GRIBIN_chk="${GRIBIN}"
 
-if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
-  echo "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr3} to end."
+if [[ ! -r "${GRIBIN_chk}" ]]; then
+  echo "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
   export err=7 ; err_chk
-  exit "${err}"
+  exit "${err}
 fi
 
 cp "${GRIBIN}" "grib${fhr3}"
