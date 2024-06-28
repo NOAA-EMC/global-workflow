@@ -39,7 +39,6 @@ pdsext=no
 sleep_interval=10
 max_tries=180
 
-fhr3=$(printf "%03d" "${fhr}")
 
 GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
 source_dirvar="COM_ATMOS_GRIB_${grid}"
