@@ -401,7 +401,6 @@ if [[ "${skip_mom6}" == "false" ]]; then
   export cplflx=".true."
   model_list="${model_list}.ocean"
   nthreads_mom6=1
-  MOM6_DIAG_MISVAL="-1e34"
   case "${mom6_res}" in
     "500")
       ntasks_mom6=8
@@ -414,6 +413,11 @@ if [[ "${skip_mom6}" == "false" ]]; then
       CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
+      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
+        MOM6_DIAG_MISVAL="-1e34"
+      else
+        MOM6_DIAG_MISVAL="0"
+      fi
       eps_imesh="4.0e-1"
       MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
       MOM6_ALLOW_LANDMASK_CHANGES='False'
@@ -434,8 +438,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
       TOPOEDITS="ufs.topo_edits_011818.nc"
       if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
         MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
       else
         MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+	MOM6_DIAG_MISVAL="0"
       fi
       MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
@@ -453,8 +459,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
       eps_imesh="1.0e-1"
       if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
         MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
       else
         MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0"
       fi
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
@@ -473,8 +481,10 @@ if [[ "${skip_mom6}" == "false" ]]; then
       eps_imesh="1.0e-1"
       if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
         MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
       else
         MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0"
       fi
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
