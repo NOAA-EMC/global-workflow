@@ -19,7 +19,7 @@ if [[ "${RUN}" = "gfs" ]] ; then
   export DIAG_TARBALL="YES"
 fi
 
-npe_var="npe_anal_${RUN/enkf}"
+npe_var="npe_${RUN/enkf}"
 export npe_gsi="${!npe_var}"
 
 # Set parameters specific to L127

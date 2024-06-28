@@ -11,7 +11,7 @@ echo "BEGIN: config.eobs"
 # Number of enkf members per innovation job
 export NMEM_EOMGGRP=8  
 export RERUN_EOMGGRP="YES"
-export npe_gsi=$npe_eobs
+export npe_gsi=${npe}
 
 # GSI namelist options related to observer for EnKF
 export OBSINPUT_INVOBS="dmesh(1)=225.0,dmesh(2)=225.0,dmesh(3)=225.0,dmesh(4)=100.0"
