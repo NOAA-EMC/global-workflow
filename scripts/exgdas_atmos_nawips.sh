@@ -8,7 +8,7 @@ source "${USHgfs}/preamble.sh" "${2}"
 
 cd "${DATA}" || exit 1
 grid=$1
-fhr=$2
+fhr3=$2
 DBN_ALERT_TYPE=$3
 destination=$4
 
