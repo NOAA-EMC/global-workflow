@@ -45,8 +45,8 @@ source_dirvar="COM_ATMOS_GRIB_${grid}"
 export GRIBIN="${!source_dirvar}/${model}.${cycle}.pgrb2.${grid}.f${fhr3}"
 GRIBIN_chk="${GRIBIN}.idx"
 
-if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
-  echo "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr3} to end."
+if [[ ! -r "${GRIBIN_chk}" ]]; then
+  echo "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
   export err=7 ; err_chk
   exit "${err}"
 fi
