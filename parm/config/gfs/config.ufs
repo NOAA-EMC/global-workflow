@@ -441,7 +441,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
         MOM6_DIAG_MISVAL="-1e34"
       else
         MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-	MOM6_DIAG_MISVAL="0"
+	MOM6_DIAG_MISVAL="0.0"
       fi
       MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
