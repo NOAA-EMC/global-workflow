@@ -66,7 +66,7 @@ source "${USHgfs}/preamble.sh"
   set_trace
 
   if [[ -z "${PDY}" ]] || [[ -z "${cyc}" ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${COM_WAVE_PREP}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] || \
+	 [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] || \
 	 [ -z "${waveGRD}" ]
   then
     set +x
@@ -75,7 +75,7 @@ source "${USHgfs}/preamble.sh"
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${COM_WAVE_PREP} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
+    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${COMOUT_WAVE_PREP} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
     set_trace
     exit 1
   fi
@@ -171,9 +171,9 @@ source "${USHgfs}/preamble.sh"
 # 1.c Save in /com
 
   set +x
-  echo "   Saving GRID file as ${COM_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
+  echo "   Saving GRID file as ${COMOUT_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
   set_trace
-  cp "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "${COM_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
+  cp "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "${COMOUT_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then
