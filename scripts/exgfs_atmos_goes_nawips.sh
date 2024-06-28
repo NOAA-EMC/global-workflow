@@ -7,7 +7,7 @@
 source "${USHgfs}/preamble.sh"
 
 cd "${DATA}" || exit 1
-fhr=$1
+fhr3=$1
 
 # "Import" functions used in this script
 source "${USHgfs}/product_functions.sh"
