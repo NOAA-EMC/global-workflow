@@ -519,7 +519,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.cdump.replace('enkf', ''),
+                     'cycledef': 'gdas_half,gdas',
                      'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlgenb.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
