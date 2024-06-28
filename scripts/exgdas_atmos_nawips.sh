@@ -36,8 +36,6 @@ proj=
 output=T
 pdsext=no
 
-sleep_interval=10
-max_tries=180
 
 
 GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
