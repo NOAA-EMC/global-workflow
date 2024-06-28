@@ -50,6 +50,8 @@ jobs:
           git submodule update --init --recursive
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
+          ln -s ../wxflow
+
           pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
 
 
