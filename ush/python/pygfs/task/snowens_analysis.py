@@ -281,7 +281,7 @@ class SnowEnsAnalysis(Analysis):
         config: Dict
             Dictionary of key-value pairs needed in this method
             Should contain the following keys:
-            COM_ATMOS_RESTART_PREV
+            COMIN_ATMOS_RESTART_PREV
             DATA
             current_cycle
             ntiles

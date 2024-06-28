@@ -17,15 +17,15 @@ export GDUMP
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_ATMOS_ANALYSIS COM_CONF
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl COM_SNOW_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS COMOUT_ATMOS_ANALYSIS COMOUT_CONF
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_SNOW_ANALYSIS
 
-mkdir -m 775 -p "${COM_SNOW_ANALYSIS}" "${COM_CONF}"
+mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 for imem in $(seq 1 "${NMEM_ENS}"); do
     memchar="mem$(printf %03i "${imem}")"
-    MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl COM_SNOW_ANALYSIS
-    mkdir -m 775 -p "${COM_SNOW_ANALYSIS}"
+    MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_SNOW_ANALYSIS
+    mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}"
 done
 
 ###############################################################
