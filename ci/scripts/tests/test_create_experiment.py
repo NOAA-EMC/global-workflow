@@ -14,9 +14,9 @@ def test_create_experiment():
     env['pslot'] = case
     env['RUNTESTS'] = RUNDIR
 
-    create_experment_script = Executable('../../../workflow/create_experiment.py')
-    create_experment_script.add_default_arg(['-y', f'../../cases/pr/{case}.yaml', '--overwrite'])
-    create_experment_script(env=env)
-    assert (create_experment_script.returncode == 0)
+    create_experiment_script = Executable('../../../workflow/create_experiment.py')
+    create_experiment_script.add_default_arg(['-y', f'../../cases/pr/{case}.yaml', '--overwrite'])
+    create_experiment_script(env=env)
+    assert (create_experiment_script.returncode == 0)
 
     rmtree(RUNDIR)
