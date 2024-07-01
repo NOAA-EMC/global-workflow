@@ -13,5 +13,5 @@ case ${step} in
     export wtime_anal_gfs="02:00:00"
   ;;
   *)
-    ;;
+  ;;
 esac
