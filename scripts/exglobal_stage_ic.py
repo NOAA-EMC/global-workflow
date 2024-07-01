@@ -19,8 +19,8 @@ def main():
 
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'CASE', 'CASE_ENS', 'OCNRES', 'ICERES', 'waveGRD',
-            'EXP_WARM_START', 'current_cycle', 'CDUMP', 'rCDUMP',
-            'ROTDIR', 'PARMgfs', 'ICSDIR', 'DTG_PREFIX',
+            'EXP_WARM_START', 'current_cycle', 'RDATE',
+            'ROTDIR', 'PARMgfs', 'ICSDIR', 'CDUMP', 'rCDUMP',
             'ntiles', 'MEMDIR', 'REPLAY_ICS',
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST',
             'CPL_ATMIC', 'CPL_ICEIC', 'CPL_OCNIC', 'CPL_WAVIC']

@@ -18,7 +18,7 @@ class Stage(Task):
     @logit(logger, name="Stage")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the Stage task
-        The constructor is responsible for collecting necessary yamls based on
+        The constructor is responsible for collecting necessary settings based on
         the runtime options and RUN.
 
         Parameters

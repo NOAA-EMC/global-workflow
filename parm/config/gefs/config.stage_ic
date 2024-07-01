@@ -23,11 +23,11 @@ case "${CASE}" in
     export CPL_MEDIC=""
     ;;
   "C48")
-    export CPL_ATMIC="gefs_test"
-    export CPL_ICEIC="gefs_test"
-    export CPL_OCNIC="gefs_test"
-    export CPL_WAVIC="gefs_test"
-    export CPL_MEDIC="gefs_test"
+    export CPL_ATMIC=""
+    export CPL_ICEIC=""
+    export CPL_OCNIC=""
+    export CPL_WAVIC=""
+    export CPL_MEDIC=""
     ;;
   *)
     echo "FATAL ERROR Unrecognized resolution: ${CASE}"
@@ -35,10 +35,21 @@ case "${CASE}" in
     ;;
 esac
 
+# Set ICSDIR
+
 if [[ -z "${ICSDIR}" ]] ; then
 
-  export ICSDIR="${BASE_IC}/${CPL_ATMIC}"
+  IC_VER="20240610"
+
+  if [[ "${CASE_ENS}" != "@CASEENS@" ]] ; then
+    ENSIC="${CASE_ENS}"
+  fi
+
+  if [[ "${DO_OCN:-NO}" == "YES" ]] ; then
+    OCNIC="mx${OCNRES}"
+  fi
+
+  export ICSDIR="${BASE_IC}/${CASE}${ENSIC:-}${OCNIC:-}/${IC_VER}"
 
 fi
-
 echo "END: config.stage_ic"
