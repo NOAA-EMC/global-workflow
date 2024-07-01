@@ -65,7 +65,7 @@ export HOMEgfs=foobar
         assert base.ACCOUNT == account
 
         assert foobar not in base.values()
-        assert "UNKOWN" not in base.values()
+        assert "UNKNOWN" not in base.values()
 
         with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
             contents = file.read()
