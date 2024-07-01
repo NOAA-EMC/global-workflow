@@ -46,10 +46,9 @@ def test_setup_xml():
 
 
 def test_setup_xml_fail_config_env_cornercase():
-    script_content = '''#!/usr/bin/env bash
-export HOMEgfs=foobar
-../../../workflow/setup_xml.py "${1}"
-'''
+    script_content = (`#!/usr/bin/env bash\n`
+                      `export HOMEgfs=foobar\n`
+                      `../../../workflow/setup_xml.py "${1}"\n`)
     with open('run_setup_xml.sh', 'w') as file:
         file.write(script_content)
     os.chmod('run_setup_xml.sh', 0o755)
