@@ -78,7 +78,7 @@ case "${machine}" in
   "gaea")     FIX_DIR="/gpfs/f5/epic/proj-shared/global/glopara/data/fix" ;;
   *)
     echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
-    exit 1
+    #exit 0
     ;;
 esac
 
@@ -368,6 +368,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "gdas_soca_gridgen.x" \
                        "gdas_soca_error_covariance_toolbox.x" \
                        "gdas_soca_setcorscales.x" \
+                       "gdas_soca_diagb.x" \
                        "fv3jedi_plot_field.x" \
                        "fv3jedi_fv3inc.x" \
                        "gdas_ens_handler.x" \

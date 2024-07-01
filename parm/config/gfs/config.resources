@@ -483,7 +483,7 @@ case ${step} in
     export memory_prepoceanobs="48GB"
     ;;
 
-  "ocnanalbmat")
+  "ocnanalbmat" | "marinebmat")
     npes=16
     case ${OCNRES} in
       "025") npes=480;;

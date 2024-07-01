@@ -5,6 +5,7 @@
 
 echo "BEGIN: config.ocnanal"
 
+export SOCA_FIX_YAML_TMPL="${PARMgfs}/gdas/soca/letkf/soca_fix_stage.yaml.j2"
 export OBS_YAML_DIR="${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config"
 export OBS_LIST=@SOCA_OBS_LIST@
 export OBS_YAML="${OBS_LIST}"
