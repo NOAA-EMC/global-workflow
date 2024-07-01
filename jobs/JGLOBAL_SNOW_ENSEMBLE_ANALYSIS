@@ -27,7 +27,8 @@ mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 for imem in $(seq 1 "${NMEM_ENS}"); do
     memchar="mem$(printf %03i "${imem}")"
-    MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+    MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+        COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
     mkdir -p "${COMOUT_SNOW_ANALYSIS}"
 done
 
