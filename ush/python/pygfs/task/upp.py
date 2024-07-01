@@ -46,26 +46,27 @@ class UPP(Task):
         """
         super().__init__(config)
 
-        if self.config.UPP_RUN not in self.VALID_UPP_RUN:
-            raise NotImplementedError(f'{self.config.UPP_RUN} is not a valid UPP run type.\n' +
+        if self.task_config.UPP_RUN not in self.VALID_UPP_RUN:
+            raise NotImplementedError(f'{self.task_config.UPP_RUN} is not a valid UPP run type.\n' +
                                       'Valid UPP_RUN values are:\n' +
                                       f'{", ".join(self.VALID_UPP_RUN)}')
 
-        valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
+        valid_datetime = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.FORECAST_HOUR}H"))
 
+        # Extend task_config with localdict
         localdict = AttrDict(
-            {'upp_run': self.config.UPP_RUN,
-             'forecast_hour': self.config.FORECAST_HOUR,
+            {'upp_run': self.task_config.UPP_RUN,
+             'forecast_hour': self.task_config.FORECAST_HOUR,
              'valid_datetime': valid_datetime,
              'atmos_filename': f"atm_{valid_datetime.strftime('%Y%m%d%H%M%S')}.nc",
              'flux_filename': f"sfc_{valid_datetime.strftime('%Y%m%d%H%M%S')}.nc"
              }
         )
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **localdict)
+        self.task_config = AttrDict(**self.task_config, **localdict)
 
         # Read the upp.yaml file for common configuration
-        logger.info(f"Read the UPP configuration yaml file {self.config.UPP_CONFIG}")
-        self.task_config.upp_yaml = parse_j2yaml(self.config.UPP_CONFIG, self.task_config)
+        logger.info(f"Read the UPP configuration yaml file {self.task_config.UPP_CONFIG}")
+        self.task_config.upp_yaml = parse_j2yaml(self.task_config.UPP_CONFIG, self.task_config)
         logger.debug(f"upp_yaml:\n{pformat(self.task_config.upp_yaml)}")
 
     @staticmethod
