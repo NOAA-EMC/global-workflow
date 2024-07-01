@@ -57,14 +57,12 @@ class MarineBMat(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
-
     @logit(logger)
     def _run(self, exec_cmd):
         """Run the executable command
            TODO: Move this method somewhere else
         """
         logger.info(f"Executing {exec_cmd}")
-
         try:
             logger.debug(f"Executing {exec_cmd}")
             exec_cmd()
@@ -74,7 +72,6 @@ class MarineBMat(Task):
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
         pass
-
 
     @logit(logger)
     def _link_executable(self, exe_name: str) -> None:
@@ -88,7 +85,6 @@ class MarineBMat(Task):
         if os.path.exists(exe_dest):
             os.remove(exe_dest)
         os.symlink(exe_src, exe_dest)
-
 
     @logit(logger)
     def _prep_input_nml(self) -> None:
@@ -108,7 +104,6 @@ class MarineBMat(Task):
             nml['ocean_solo_nml']['date_init'] = ymdhms
             nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
             nml.write('mom_input.nml')
-
 
     @logit(logger)
     def _cice_hist2fms(self, input_filename, output_filename) -> None:
@@ -132,7 +127,6 @@ class MarineBMat(Task):
         # Save the new netCDF file
         ds.to_netcdf(output_filename, mode='w')
 
-
     @logit(logger)
     def initialize(self: Task) -> None:
         """Initialize a global B-matrix
@@ -150,7 +144,7 @@ class MarineBMat(Task):
 
         # stage fix files
         logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        newdirs = [ os.path.join(self.task_config.DATA, 'INPUT') ]
+        newdirs = [os.path.join(self.task_config.DATA, 'INPUT')]
         FileHandler({'mkdir': newdirs}).sync()
         soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
@@ -205,9 +199,8 @@ class MarineBMat(Task):
                                      data=self.task_config)
         diffvz_config.save(os.path.join(self.task_config.DATA, 'soca_parameters_diffusion_vt.yaml'))
 
-
         # generate the horizontal diffusion YAML files
-        if True: #task_config.COMPUTE_HORIZ_DIFF:
+        if True:  # TODO(G): Missing logic to skip this section
             # stage the correlation scale configuration
             logger.debug("Generate correlation scale YAML file")
             FileHandler({'copy': [[os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_setcorscales.yaml'),
@@ -220,7 +213,9 @@ class MarineBMat(Task):
             diffhz_config.save(os.path.join(self.task_config.DATA, 'soca_parameters_diffusion_hz.yaml'))
 
         # hybrid EnVAR case
-        if True:  #self.task_config.DOHYBVAR:
+        if True:
+            # TODO(G): copy logic/steps from old script in the block below
+            #          ensemble DA is temporarily off, check self.task_config.DOHYBVAR.
             # stage ensemble membersfiles for use in hybrid background error
             logger.debug("Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
 
@@ -238,10 +233,8 @@ class MarineBMat(Task):
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
-
     @logit(logger)
     def gridgen(self: Task) -> None:
-
         # link gdas_soca_gridgen.x
         self._link_executable('gdas_soca_gridgen.x')
         exec_cmd = Executable(self.task_config.APRUN_MARINEBMAT)
@@ -253,7 +246,6 @@ class MarineBMat(Task):
 
     @logit(logger)
     def variance_partitioning(self: Task) -> None:
-
         # link the variance partitioning executable, gdas_soca_diagb.x
         self._link_executable('gdas_soca_diagb.x')
         exec_cmd = Executable(self.task_config.APRUN_MARINEBMAT)
@@ -306,7 +298,6 @@ class MarineBMat(Task):
 
         # compute the coefficients of the diffusion operator
         self._run(exec_cmd)
-
 
     @logit(logger)
     def ensemble_perturbations(self: Task) -> None:
