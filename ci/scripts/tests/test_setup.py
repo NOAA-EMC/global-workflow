@@ -36,7 +36,7 @@ def test_setup_xml():
     base = cfg.parse_config('config.base')
     assert base.ACCOUNT == account
 
-    assert "UNKOWN" not in base.values()
+    assert "UNKNOWN" not in base.values()
 
     with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
         contents = file.read()
