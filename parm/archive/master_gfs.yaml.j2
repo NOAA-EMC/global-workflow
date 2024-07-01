@@ -19,21 +19,21 @@
 datasets:
 # Always archive atmosphere forecast/analysis data
 {% filter indent(width=4) %}
-    {%- include "gfsa.yaml.j2" %}
-    {%- include "gfsb.yaml.j2" %}
+{% include "gfsa.yaml.j2" %}
+{% include "gfsb.yaml.j2" %}
 {% endfilter %}
 
 {% if ARCH_GAUSSIAN %}
     # Archive Gaussian data
     {% filter indent(width=4) %}
-        {%- include "gfs_flux.yaml.j2" %}
-        {%- include "gfs_netcdfb.yaml.j2" %}
-        {%- include "gfs_pgrb2b.yaml.j2" %}
+{% include "gfs_flux.yaml.j2" %}
+{% include "gfs_netcdfb.yaml.j2" %}
+{% include "gfs_pgrb2b.yaml.j2" %}
     {% endfilter %}
     {% if MODE == "cycled" %}
         # Archive Gaussian analysis data
         {% filter indent(width=4) %}
-            {%- include "gfs_netcdfa.yaml.j2" %}
+{% include "gfs_netcdfa.yaml.j2" %}
         {% endfilter %}
     {% endif %}
 {% endif %}
@@ -41,38 +41,38 @@ datasets:
 {% if DO_WAVE %}
     # Wave forecasts
     {% filter indent(width=4) %}
-        {%- include "gfswave.yaml.j2" %}
+{% include "gfswave.yaml.j2" %}
     {% endfilter %}
 {% endif %}
 
 {% if AERO_FCST_CDUMP == "gfs" or AERO_FCST_CDUMP == "both" %}
     # Aerosol forecasts
     {% filter indent(width=4) %}
-        {%- include "chem.yaml.j2" %}
+{% include "chem.yaml.j2" %}
     {% endfilter %}
 {% endif %}
 
 {% if DO_OCN %}
     # Ocean forecasts
     {% filter indent(width=4) %}
-        {%- include "ocean_6hravg.yaml.j2" %}
-        {%- include "ocean_grib2.yaml.j2" %}
-        {%- include "gfs_flux_1p00.yaml.j2" %}
+{% include "ocean_6hravg.yaml.j2" %}
+{% include "ocean_grib2.yaml.j2" %}
+{% include "gfs_flux_1p00.yaml.j2" %}
     {% endfilter %}
 {% endif %}
 
 {% if DO_ICE %}
     # Ice forecasts
     {% filter indent(width=4) %}
-        {%- include "ice_6hravg.yaml.j2" %}
-        {%- include "ice_grib2.yaml.j2" %}
+{% include "ice_6hravg.yaml.j2" %}
+{% include "ice_grib2.yaml.j2" %}
     {% endfilter %}
 {% endif %}
 
 {% if DO_BUFRSND %}
     # Downstream BUFR soundings
     {% filter indent(width=4) %}
-        {%- include "gfs_downstream.yaml.j2" %}
+{% include "gfs_downstream.yaml.j2" %}
     {% endfilter %}
 {% endif %}
 
@@ -81,7 +81,7 @@ datasets:
 
     {% if not REALTIME %}
         {% filter indent(width=4) %}
-            {%- include "gfsmos.yaml.j2" %}
+{% include "gfsmos.yaml.j2" %}
         {% endfilter %}
 
     {% else %}
@@ -90,7 +90,7 @@ datasets:
         {% set td_one_day = "+1D" | to_timedelta %}
         {% if td_from_sdate > td_one_day %}
             {% filter indent(width=4) %}
-                {%- include "gfsmos.yaml.j2" %}
+{% include "gfsmos.yaml.j2" %}
             {% endfilter %}
         {% endif %}
 
@@ -102,11 +102,11 @@ datasets:
     # Save the forecast-only cycle ICs every ARCH_WARMICFREQ or ARCH_FCSTICFREQ days
     {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
         {% filter indent(width=4) %}
-            {%- include "gfs_restarta.yaml.j2" %}
+{% include "gfs_restarta.yaml.j2" %}
         {% endfilter %}
     {% elif (current_cycle - SDATE).days % ARCH_FCSTICFREQ == 0 %}
         {% filter indent(width=4) %}
-            {%- include "gfs_restarta.yaml.j2" %}
+{% include "gfs_restarta.yaml.j2" %}
         {% endfilter %}
     {% endif %}
 {% endif %}
