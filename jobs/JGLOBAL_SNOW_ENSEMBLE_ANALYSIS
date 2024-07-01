@@ -19,15 +19,15 @@ export GDUMP
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL \
     COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL 
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl \ 
+    COMOUT_CONF:COM_CONF_TMPL
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl \
     COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
 
 mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 for imem in $(seq 1 "${NMEM_ENS}"); do
     memchar="mem$(printf %03i "${imem}")"
-    MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_SNOW_ANALYSIS
+    MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
     mkdir -p "${COMOUT_SNOW_ANALYSIS}"
 done
 
