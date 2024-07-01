@@ -87,7 +87,7 @@ export WAVEWND_FID=
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 export WAVHINDH=0
 export FHMAX_WAV_IBP=180
-if (( FHMAX_WAV < FHMAX_WAV_IBP )); then export FHMAX_WAV_IBP=${FHMAX_GFS} ; fi
+if (( FHMAX_WAV < FHMAX_WAV_IBP )); then export FHMAX_WAV_IBP=${FHMAX_WAV} ; fi
 
 # gridded and point output rate
 export DTFLD_WAV=$(( FHOUT_HF_WAV * 3600 ))

@@ -22,6 +22,10 @@
 # 2020-07-30  Jessica Meixner: Points only - no gridded data
 # 2020-09-29  Jessica Meixner: optimized by changing loop structures
 #
+# COM inputs:
+#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}
+#  - ${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}
+#
 # $Id$
 #
 # Attributes:
@@ -117,12 +121,12 @@ source "${USHgfs}/preamble.sh"
 # Copy model definition files
   iloop=0
   for grdID in ${waveuoutpGRD}; do
-    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
+      echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
       iloop=$((iloop + 1))
     fi
   done
@@ -247,11 +251,10 @@ source "${USHgfs}/preamble.sh"
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
-    ${NLN} mod_def.${waveuoutpGRD} mod_def.ww3
-    HH=$(date --utc -d "${PDY:0:8} ${cyc} + ${FHMIN_WAV} hours" +%H)
-    HMS="${HH}0000"
-    if [[ -f "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
-      ${NLN} "${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
+    ${NLN} mod_def.$waveuoutpGRD mod_def.ww3
+    HMS="${cyc}0000"
+    if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
+      ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
         "./out_pnt.${waveuoutpGRD}"
     else
       echo '*************************************************** '
@@ -290,14 +293,14 @@ source "${USHgfs}/preamble.sh"
     fi
 
 # Create new buoy_log.ww3
-    cat buoy.loc | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
+    awk '{print $3}' buoy.loc | sed 's/'\''//g' > ibp_tags
     grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
     rm -f buoy_log.dat
     mv buoy_log.tmp buoy_log.dat
 
     grep -F -f ibp_tags buoy_lst.loc > buoy_tmp1.loc
     #sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
-    buoys=$(awk '{ print $1 }' buoy_tmp1.loc)
+    awk '{ print $1 }' buoy_tmp1.loc > buoy_lst.txt
     Nb=$(wc buoy_tmp1.loc | awk '{ print $1 }')
     rm -f buoy_tmp1.loc
 
@@ -350,6 +353,8 @@ source "${USHgfs}/preamble.sh"
 
 # 1.a.2 Loop over forecast time to generate post files
   fhr=$FHMIN_WAV
+  # Generated sed-searchable paths
+  escaped_USHgfs="${USHgfs//\//\\\/}"
   while [ $fhr -le $FHMAX_WAV_PNT ]; do
 
     echo "   Creating the wave point scripts at : $(date)"
@@ -366,10 +371,11 @@ source "${USHgfs}/preamble.sh"
 
 # Create instances of directories for spec and gridded output
     export SPECDATA=${DATA}/output_$YMDHMS
+    escaped_SPECDATA="${SPECDATA//\//\\\/}"
     export BULLDATA=${DATA}/output_$YMDHMS
     cp $DATA/mod_def.${waveuoutpGRD} mod_def.${waveuoutpGRD}
 
-    pfile="${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
+    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
     if [ -f  ${pfile} ]
     then
       ${NLN} ${pfile} ./out_pnt.${waveuoutpGRD}
@@ -386,19 +392,15 @@ source "${USHgfs}/preamble.sh"
     if [ "$DOSPC_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      for buoy in $buoys
-      do
-        echo "${USHgfs}/wave_outp_spec.sh $buoy $ymdh spec $SPECDATA > $SPECDATA/spec_$buoy.out 2>&1" >> tmpcmdfile.$FH3
-      done
+      # Construct the wave_outp_spec (spec) command to run on each buoy in buoy_lst.txt
+      sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_spec.sh \1 ${ymdh} spec ${escaped_SPECDATA} > ${escaped_SPECDATA}\/spec_\1.out 2>\&1/" buoy_lst.txt >> "tmpcmdfile.${FH3}"
     fi
 
     if [ "$DOBLL_WAV" = 'YES' ]
     then
       export dtspec=3600.
-      for buoy in $buoys
-      do
-        echo "${USHgfs}/wave_outp_spec.sh $buoy $ymdh bull $SPECDATA > $SPECDATA/bull_$buoy.out 2>&1" >> tmpcmdfile.$FH3
-      done
+      # Construct the wave_outp_spec (bull) command to run on each buoy in buoy_lst.txt
+      sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_spec.sh \1 ${ymdh} bull ${escaped_SPECDATA} > ${escaped_SPECDATA}\/bull_\1.out 2>\&1/" buoy_lst.txt >> "tmpcmdfile.${FH3}"
     fi
 
     split -n l/1/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.01
@@ -504,27 +506,24 @@ source "${USHgfs}/preamble.sh"
 
   cd $DATA
 
-  echo "Before create cmdfile for cat bouy : $(date)"
-  rm -f cmdfile.bouy
-  touch cmdfile.bouy
-  chmod 744 cmdfile.bouy
+  echo "Before create cmdfile for cat buoy : $(date)"
+  rm -f cmdfile.buoy
+  touch cmdfile.buoy
+  chmod 744 cmdfile.buoy
   CATOUTDIR=${DATA}/pnt_cat_out
+  escaped_CATOUTDIR="${CATOUTDIR//\//\\\/}"
   mkdir -p ${CATOUTDIR}
 
   if [ "$DOSPC_WAV" = 'YES' ]
   then
-    for buoy in $buoys
-    do
-      echo "${USHgfs}/wave_outp_cat.sh $buoy $FHMAX_WAV_PNT spec > ${CATOUTDIR}/spec_cat_$buoy.out 2>&1" >> cmdfile.bouy
-    done
+    # Construct wave_outp_cat (spec) call for each buoy in buoy_lst.txt
+    sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} spec > ${escaped_CATOUTDIR}\/spec_cat_\1.out 2>\&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
   if [ "$DOBLL_WAV" = 'YES' ]
   then
-    for buoy in $buoys
-    do
-      echo "${USHgfs}/wave_outp_cat.sh $buoy $FHMAX_WAV_PNT bull > ${CATOUTDIR}/bull_cat_$buoy.out 2>&1" >> cmdfile.bouy
-    done
+    # Construct wave_outp_cat (bull) call for each buoy in buoy_lst.txt
+    sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} bull > ${escaped_CATOUTDIR}\/bull_cat_\1.out 2>\&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
@@ -532,18 +531,18 @@ source "${USHgfs}/preamble.sh"
     ifile=0
     iline=1
     ifirst='yes'
-    nlines=$( wc -l cmdfile.bouy | awk '{print $1}' )
+    nlines=$( wc -l < cmdfile.buoy)
     while [ $iline -le $nlines ]; do
-      line=$( sed -n ''$iline'p' cmdfile.bouy )
+      line=$( sed -n ''$iline'p' cmdfile.buoy )
       if [ -z "$line" ]; then
         break
       else
         if [ "$ifirst" = 'yes' ]; then
-          echo "#!/bin/sh" > cmdfile.bouy.$nfile
-          echo "$nfile cmdfile.bouy.$nfile" >> cmdmprogbouy
-          chmod 744 cmdfile.bouy.$nfile
+          echo "#!/bin/sh" > cmdfile.buoy.$nfile
+          echo "$nfile cmdfile.buoy.$nfile" >> cmdmprogbuoy
+          chmod 744 cmdfile.buoy.$nfile
         fi
-        echo $line >> cmdfile.bouy.$nfile
+        echo $line >> cmdfile.buoy.$nfile
         nfile=$(( nfile + 1 ))
         if [ $nfile -eq $NTASKS ]; then
           nfile=0
@@ -554,7 +553,7 @@ source "${USHgfs}/preamble.sh"
     done
   fi
 
-  wavenproc=$(wc -l cmdfile.bouy | awk '{print $1}')
+  wavenproc=$(wc -l < cmdfile.buoy)
   wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
   set +x
@@ -567,9 +566,11 @@ source "${USHgfs}/preamble.sh"
   if [ "$wavenproc" -gt '1' ]
   then
     if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprogbouy
+      # shellcheck disable=SC2086
+      ${wavempexec} -n "${wavenproc}" ${wave_mpmd} cmdmprogbuoy
     else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile.bouy
+      # shellcheck disable=SC2086
+      ${wavempexec} "${wavenproc}" ${wave_mpmd} cmdfile.buoy
     fi
     exit=$?
   else
@@ -698,6 +699,6 @@ source "${USHgfs}/preamble.sh"
 # 4.  Ending output
 
 
-exit $exit_code
+exit "${exit_code}"
 
 # End of MWW3 point prostprocessor script ---------------------------------------- #

@@ -83,15 +83,15 @@ source "${USHgfs}/preamble.sh"
   grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
   for grdID in ${grdALL}; do
-    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
+      echo " Mod def file for ${grdID} found in ${COMOUT_WAVE_PREP}. copying ...."
       set_trace
-      cp "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
 
     else
       set +x
-      echo " Mod def file for ${grdID} not found in ${COM_WAVE_PREP}. Setting up to generate ..."
+      echo " Mod def file for ${grdID} not found in ${COMOUT_WAVE_PREP}. Setting up to generate ..."
       echo ' '
       set_trace
       if [ -f ${FIXgfs}/wave/ww3_grid.inp.$grdID ]
@@ -125,7 +125,6 @@ source "${USHgfs}/preamble.sh"
       fi
       #TO DO: how do we say "it's unstructured, and therefore need to have error check here" 
 
-      [[ ! -d "${COM_WAVE_PREP}" ]] && mkdir -m 775 -p "${COM_WAVE_PREP}"
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
         echo "$nmoddef ${USHgfs}/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
       else
@@ -190,7 +189,7 @@ source "${USHgfs}/preamble.sh"
 # 1.a.3 File check
 
   for grdID in ${grdALL}; do
-    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
       echo ' '
       echo " mod_def.$grdID succesfully created/copied "
@@ -213,10 +212,10 @@ source "${USHgfs}/preamble.sh"
 # Copy to other members if needed
 if (( NMEM_ENS > 0 )); then
   for mem in $(seq -f "%03g" 1 "${NMEM_ENS}"); do
-    MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} declare_from_tmpl COM_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
-    mkdir -p "${COM_WAVE_PREP_MEM}"
+    MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
+    mkdir -p "${COMOUT_WAVE_PREP_MEM}"
     for grdID in ${grdALL}; do
-      ${NLN} "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "${COM_WAVE_PREP_MEM}/${RUN}wave.mod_def.${grdID}"
+      ${NLN} "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "${COMOUT_WAVE_PREP_MEM}/${RUN}wave.mod_def.${grdID}"
     done
   done
 fi

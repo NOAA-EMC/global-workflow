@@ -2,12 +2,28 @@
 
 source "${USHgfs}/preamble.sh"
 
+###############################################################
+echo "Begin Cleanup ${DATAROOT}!"
+
 # Remove DATAoutput from the forecast model run
 # TODO: Handle this better
 DATAfcst="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
 #DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
+
+# Search and delete files/directories from DATAROOT/ older than ${purge_every_days} days
+# purge_every_days should be a positive integer
+#purge_every_days=3
+
+# Find and delete files older than ${purge_every_days} days
+#find "${DATAROOT}/"* -type f -mtime "+${purge_every_days}" -exec rm -f {} \;
+
+# Find and delete directories older than ${purge_every_days} days
+#find "${DATAROOT}/"* -type d -mtime "+${purge_every_days}" -exec rm -rf {} \;
+
+echo "Cleanup ${DATAROOT} completed!"
+###############################################################
 
 ###############################################################
 # Clean up previous cycles; various depths
@@ -67,7 +83,7 @@ for (( current_date=first_date; current_date <= last_date; \
         # shellcheck disable=SC2312
         if [[ $(tail -n 1 "${rocotolog}") =~ "This cycle is complete: Success" ]]; then
             YMD="${current_PDY}" HH="${current_cyc}" declare_from_tmpl \
-		        COMOUT_TOP:COM_TOP_TMPL
+                COMOUT_TOP:COM_TOP_TMPL
             if [[ -d "${COMOUT_TOP}" ]]; then
                 IFS=", " read -r -a exclude_list <<< "${exclude_string:-}"
                 remove_files "${COMOUT_TOP}" "${exclude_list[@]:-}"

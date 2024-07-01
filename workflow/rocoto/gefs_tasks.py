@@ -195,7 +195,7 @@ class GEFSTasks(Tasks):
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
-                          'FHRLST': '#fhr#',
+                          'FHR3': '#fhr#',
                           'COMPONENT': component}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
@@ -212,11 +212,6 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'}
 
         fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
-
-        # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice'] and 0 in fhrs:
-            fhrs.remove(0)
-
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'{component}_prod_#member#',
@@ -245,7 +240,7 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#fhr#'}
+        postenvar_dict = {'FHR3': '#fhr#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -350,8 +345,11 @@ class GEFSTasks(Tasks):
     def wavepostbndpntbll(self):
         deps = []
         atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'MEMDIR': 'mem#member#'})
-        # Is there any reason this is 180?
-        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
+
+        # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
+        last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
+
+        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
 

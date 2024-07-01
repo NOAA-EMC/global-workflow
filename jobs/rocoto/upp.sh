@@ -29,31 +29,26 @@ if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
   module load python/3.8.6
   module load crtm/2.4.0  # TODO: This is only needed when UPP_RUN=goes.  Is there a better way to handle this?
   set_trace
+
+  # Add wxflow to PYTHONPATH
+  wxflowPATH="${HOMEgfs}/ush/python"
+  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+  export PYTHONPATH
+
 else
   . "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
   status=$?
   if (( status != 0 )); then exit "${status}"; fi
 fi
 
-###############################################################
-# setup python path for workflow utilities and tasks
-wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
-export PYTHONPATH
-
 export job="upp"
 export jobid="${job}.$$"
 
+export FORECAST_HOUR=$(( 10#${FHR3} ))
+
 ###############################################################
-# shellcheck disable=SC2153,SC2001
-IFS='_' read -ra fhrs <<< "${FHRLST//f}" # strip off the 'f's convert to array
-
 # Execute the JJOB
-for fhr in "${fhrs[@]}"; do
-    export FORECAST_HOUR=$(( 10#${fhr} ))
-    "${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP"
-    status=$?
-    if (( status != 0 )); then exit "${status}"; fi
-done
+###############################################################
+"${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP"
 
-exit 0
+exit $?

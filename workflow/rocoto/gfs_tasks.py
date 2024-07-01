@@ -890,7 +890,7 @@ class GFSTasks(Tasks):
 
     def atmanlupp(self):
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': 'f000',
+        postenvar_dict = {'FHR3': '000',
                           'UPP_RUN': 'analysis'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
@@ -926,7 +926,7 @@ class GFSTasks(Tasks):
 
     def atmanlprod(self):
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '-f001'}
+        postenvar_dict = {'FHR3': '-001'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -953,24 +953,6 @@ class GFSTasks(Tasks):
 
         return task
 
-    @staticmethod
-    def _get_ufs_postproc_grps(cdump, config, component='atmos'):
-
-        fhrs = Tasks._get_forecast_hours(cdump, config, component=component)
-
-        nfhrs_per_grp = config.get('NFHRS_PER_GROUP', 1)
-        ngrps = len(fhrs) // nfhrs_per_grp if len(fhrs) % nfhrs_per_grp == 0 else len(fhrs) // nfhrs_per_grp + 1
-
-        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-        fhrs = np.array_split(fhrs, ngrps)
-        fhrs = [fhr.tolist() for fhr in fhrs]
-
-        grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
-        dep = ' '.join([fhr[-1] for fhr in fhrs])
-        lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
-
-        return grp, dep, lst
-
     def atmupp(self):
         return self._upptask(upp_run='forecast', task_id='atmupp')
 
@@ -983,32 +965,28 @@ class GFSTasks(Tasks):
         if upp_run not in VALID_UPP_RUN:
             raise KeyError(f"{upp_run} is invalid; UPP_RUN options are: {('|').join(VALID_UPP_RUN)}")
 
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs['upp'])
-        var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
-
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#lst#',
+        postenvar_dict = {'FHR3': '#fhr#',
                           'UPP_RUN': upp_run}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
         deps = []
-        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm#dep#.nc'
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atmf#fhr#.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_hist_path}/{self.cdump}.t@Hz.sfc#dep#.nc'
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.sfcf#fhr#.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm.log#dep#.txt'
+        data = f'{atm_hist_path}/{self.cdump}.t@Hz.atm.logf#fhr#.txt'
         dep_dict = {'type': 'data', 'data': data, 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('upp')
 
-        task_name = f'{self.cdump}{task_id}#{varname1}#'
+        task_name = f'{self.cdump}{task_id}_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1020,9 +998,12 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
+        fhrs = self._get_forecast_hours(self.cdump, self._configs['upp'])
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
         metatask_dict = {'task_name': f'{self.cdump}{task_id}',
                          'task_dict': task_dict,
-                         'var_dict': var_dict
+                         'var_dict': fhr_var_dict
                          }
 
         task = rocoto.create_task(metatask_dict)
@@ -1042,25 +1023,21 @@ class GFSTasks(Tasks):
 
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2#dep#'},
+                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.6hr_avg.#dep#.nc'},
+                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.6hr_avg.f#fhr#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.6hr_avg.#dep#.nc'}}
+                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.6hr_avg.f#fhr#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
         history_path_tmpl = component_dict['history_path_tmpl']
         history_file_tmpl = component_dict['history_file_tmpl']
 
-        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-        varval1, varval2, varval3 = self._get_ufs_postproc_grps(self.cdump, self._configs[config], component=component)
-        var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
-
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#lst#', 'COMPONENT': component}
+        postenvar_dict = {'FHR3': '#fhr#', 'COMPONENT': component}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -1080,7 +1057,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource(component_dict['config'])
 
-        task_name = f'{self.cdump}{component}_prod#{varname1}#'
+        task_name = f'{self.cdump}{component}_prod_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1092,9 +1069,11 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
+        fhrs = self._get_forecast_hours(self.cdump, self._configs[config], component)
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
         metatask_dict = {'task_name': f'{self.cdump}{component}_prod',
                          'task_dict': task_dict,
-                         'var_dict': var_dict
+                         'var_dict': fhr_var_dict
                          }
 
         task = rocoto.create_task(metatask_dict)
@@ -1151,9 +1130,13 @@ class GFSTasks(Tasks):
         return task
 
     def wavepostbndpntbll(self):
+
+        # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
+        last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
+
         deps = []
         atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
-        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf180.txt'
+        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)

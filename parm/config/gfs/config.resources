@@ -3,6 +3,8 @@
 ########## config.resources ##########
 # Set resource information for job tasks
 # e.g. walltime, node, cores per node, memory etc.
+# Note: machine-specific resources should be placed into the appropriate config file:
+#       config.resources.${machine}
 
 if (( $# != 1 )); then
 
@@ -33,16 +35,53 @@ step=$1
 echo "BEGIN: config.resources"
 
 case ${machine} in
-  "WCOSS2")   npe_node_max=128;;
-  "HERA")     npe_node_max=40;;
-  "GAEA")     npe_node_max=128;;
-  "ORION")    npe_node_max=40;;
-  "HERCULES") npe_node_max=80;;
+  "WCOSS2")
+              npe_node_max=128
+              # shellcheck disable=SC2034
+              mem_node_max="500GB"
+    ;;
+  "HERA")
+              npe_node_max=40
+              # shellcheck disable=SC2034
+              mem_node_max="96GB"
+    ;;
+  "GAEA")
+              npe_node_max=128
+              # shellcheck disable=SC2034
+              mem_node_max="251GB"
+    ;;
+  "ORION")
+              npe_node_max=40
+              # shellcheck disable=SC2034
+              mem_node_max="192GB"
+    ;;
+  "HERCULES")
+              npe_node_max=80
+              # shellcheck disable=SC2034
+              mem_node_max="512GB"
+    ;;
   "JET")
     case ${PARTITION_BATCH} in
-      "xjet")          npe_node_max=24;;
-      "vjet" | "sjet") npe_node_max=16;;
-      "kjet")          npe_node_max=40;;
+      "xjet")
+              npe_node_max=24
+              # shellcheck disable=SC2034
+              mem_node_max="61GB"
+        ;;
+      "vjet")
+              npe_node_max=16
+              # shellcheck disable=SC2034
+              mem_node_max="61GB"
+        ;;
+      "sjet")
+              npe_node_max=16
+              # shellcheck disable=SC2034
+              mem_node_max="29GB"
+        ;;
+      "kjet")
+              npe_node_max=40
+              # shellcheck disable=SC2034
+              mem_node_max="88GB"
+        ;;
       *)
         echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
         exit 3
@@ -50,8 +89,15 @@ case ${machine} in
     ;;
   "S4")
     case ${PARTITION_BATCH} in
-      "s4")  npe_node_max=32;;
-      "ivy") npe_node_max=20;;
+      "s4")   npe_node_max=32
+              # shellcheck disable=SC2034
+              mem_node_max="168GB"
+        ;;
+      "ivy")
+              npe_node_max=20
+              # shellcheck disable=SC2034
+              mem_node_max="128GB"
+        ;;
       *)
         echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
         exit 3
@@ -60,15 +106,22 @@ case ${machine} in
   "AWSPW")
     export PARTITION_BATCH="compute"
     npe_node_max=40
+    # TODO Supply a max mem/node value for AWS
+    # shellcheck disable=SC2034
+    mem_node_max=""
     ;;
   "CONTAINER")
     npe_node_max=1
+    # TODO Supply a max mem/node value for a container
+    # shellcheck disable=SC2034
+    mem_node_max=""
     ;;
   *)
     echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
     exit 2
     ;;
 esac
+
 export npe_node_max
 
 case ${step} in
@@ -77,11 +130,7 @@ case ${step} in
     export npe_prep=4
     export npe_node_prep=2
     export nth_prep=1
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      export is_exclusive=True
-    else
-      export memory_prep="40GB"
-    fi
+    export memory_prep="40GB"
     ;;
 
   "prepsnowobs")
@@ -118,33 +167,46 @@ case ${step} in
 
   "waveprep")
     export wtime_waveprep="00:10:00"
-    export npe_waveprep=5
+    export npe_waveprep_gdas=5
     export npe_waveprep_gfs=65
-    export nth_waveprep=1
+    export nth_waveprep_gdas=1
     export nth_waveprep_gfs=1
-    export npe_node_waveprep=$(( npe_node_max / nth_waveprep ))
+    export npe_node_waveprep_gdas=$(( npe_node_max / nth_waveprep_gdas ))
     export npe_node_waveprep_gfs=$(( npe_node_max / nth_waveprep_gfs ))
-    export NTASKS=${npe_waveprep}
+    export NTASKS_gdas=${npe_waveprep_gdas}
     export NTASKS_gfs=${npe_waveprep_gfs}
-    export memory_waveprep="100GB"
+    export memory_waveprep_gdas="100GB"
     export memory_waveprep_gfs="150GB"
+
+    var_npe_node="npe_node_waveprep_${RUN}"
+    var_nth="nth_waveprep_${RUN}"
+    var_npe="npe_waveprep_${RUN}"
+    var_NTASKS="ntasks_${RUN}"
+    # RUN is set to a single value at setup time, so these won't be found
+    # TODO rework setup_xml.py to initialize RUN to the applicable option
+    if [[ -n "${!var_npe_node+0}" ]]; then
+      declare -x "npe_node_waveprep"="${!var_npe_node}" \
+                 "nth_waveprep"="${!var_nth}" \
+                 "npe_waveprep"="${!var_npe}" \
+                 "NTASKS"="${!var_NTASKS}"
+    fi
     ;;
 
   "wavepostsbs")
-    export wtime_wavepostsbs="00:20:00"
+    export wtime_wavepostsbs_gdas="00:20:00"
     export wtime_wavepostsbs_gfs="03:00:00"
     export npe_wavepostsbs=8
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
     export NTASKS=${npe_wavepostsbs}
-    export memory_wavepostsbs="10GB"
+    export memory_wavepostsbs_gdas="10GB"
     export memory_wavepostsbs_gfs="10GB"
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    export wtime_wavepostbndpnt="01:00:00"
+    export wtime_wavepostbndpnt="03:00:00"
     export npe_wavepostbndpnt=240
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(( npe_node_max / nth_wavepostbndpnt ))
@@ -229,13 +291,23 @@ case ${step} in
     export layout_y=${layout_y_atmanl}
 
     export wtime_atmanlvar="00:30:00"
-    export npe_atmanlvar=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlvar_gdas=$(( layout_x * layout_y * 6 ))
     export npe_atmanlvar_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlvar=1
-    export nth_atmanlvar_gfs=${nth_atmanlvar}
-    export npe_node_atmanlvar=$(( npe_node_max / nth_atmanlvar ))
+    export nth_atmanlvar_gdas=1
+    export nth_atmanlvar_gfs=${nth_atmanlvar_gdas}
+    export npe_node_atmanlvar_gdas=$(( npe_node_max / nth_atmanlvar_gdas ))
+    export npe_node_atmanlvar_gfs=$(( npe_node_max / nth_atmanlvar_gfs ))
     export memory_atmanlvar="96GB"
     export is_exclusive=True
+
+    var_npe_node="npe_node_atmanlvar_${RUN}"
+    var_nth="nth_atmanlvar_${RUN}"
+    var_npe="npe_atmanlvar_${RUN}"
+    if [[ -n "${!var_npe_node+0}" ]]; then
+      declare -x "npe_node_atmanlvar"="${!var_npe_node}" \
+                 "nth_atmanlvar"="${!var_nth}" \
+                 "npe_atmanlvar"="${!var_npe}"
+    fi
     ;;
 
   "atmanlfv3inc")
@@ -243,13 +315,23 @@ case ${step} in
     export layout_y=${layout_y_atmanl}
 
     export wtime_atmanlfv3inc="00:30:00"
-    export npe_atmanlfv3inc=$(( layout_x * layout_y * 6 ))
+    export npe_atmanlfv3inc_gdas=$(( layout_x * layout_y * 6 ))
     export npe_atmanlfv3inc_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlfv3inc=1
-    export nth_atmanlfv3inc_gfs=${nth_atmanlfv3inc}
-    export npe_node_atmanlfv3inc=$(( npe_node_max / nth_atmanlfv3inc ))
+    export nth_atmanlfv3inc_gdas=1
+    export nth_atmanlfv3inc_gfs=${nth_atmanlfv3inc_gdas}
+    export npe_node_atmanlfv3inc_gdas=$(( npe_node_max / nth_atmanlfv3inc_gdas ))
+    export npe_node_atmanlfv3inc_gfs=$(( npe_node_max / nth_atmanlfv3inc_gfs ))
     export memory_atmanlfv3inc="96GB"
     export is_exclusive=True
+
+    var_npe_node="npe_node_atmanlfv3inc_${RUN}"
+    var_nth="nth_atmanlfv3inc_${RUN}"
+    var_npe="npe_atmanlfv3inc_${RUN}"
+    if [[ -n "${!var_npe_node+0}" ]]; then
+      declare -x "npe_node_atmanlfv3inc"="${!var_npe_node}" \
+                 "nth_atmanlfv3inc"="${!var_nth}" \
+                 "npe_atmanlfv3inc"="${!var_npe}"
+    fi
     ;;
 
   "atmanlfinal")
@@ -276,7 +358,7 @@ case ${step} in
         layout_y=1
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
     esac
 
@@ -318,7 +400,7 @@ case ${step} in
         layout_y=1
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
     esac
 
@@ -351,7 +433,7 @@ case ${step} in
         layout_y=1
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
     esac
 
@@ -359,12 +441,22 @@ case ${step} in
     export layout_y
 
     export wtime_aeroanlrun="00:30:00"
-    export npe_aeroanlrun=$(( layout_x * layout_y * 6 ))
+    export npe_aeroanlrun_gdas=$(( layout_x * layout_y * 6 ))
     export npe_aeroanlrun_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_aeroanlrun=1
+    export nth_aeroanlrun_gdas=1
     export nth_aeroanlrun_gfs=1
-    export npe_node_aeroanlrun=$(( npe_node_max / nth_aeroanlrun ))
+    export npe_node_aeroanlrun_gdas=$(( npe_node_max / nth_aeroanlrun_gdas ))
+    export npe_node_aeroanlrun_gfs=$(( npe_node_max / nth_aeroanlrun_gfs ))
     export is_exclusive=True
+
+    var_npe_node="npe_node_aeroanlrun_${RUN}"
+    var_nth="nth_aeroanlrun_${RUN}"
+    var_npe="npe_aeroanlrun_${RUN}"
+    if [[ -n "${!var_npe_node+0}" ]]; then
+      declare -x "npe_node_aeroanlrun"="${!var_npe_node}" \
+                 "nth_aeroanlrun"="${!var_nth}" \
+                 "npe_aeroanlrun"="${!var_npe}"
+    fi
     ;;
 
   "aeroanlfinal")
@@ -398,7 +490,7 @@ case ${step} in
       "050")  npes=16;;
       "500")  npes=16;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -425,7 +517,7 @@ case ${step} in
         memory_ocnanalrun="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -453,7 +545,7 @@ case ${step} in
         memory_ocnanalecen="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -481,7 +573,7 @@ case ${step} in
         memory_ocnanalletkf="24GB"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
@@ -510,7 +602,7 @@ case ${step} in
         memory_ocnanalchkpt="32GB"
         npes=8;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${OCNRES}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
     export npe_ocnanalchkpt=${npes}
@@ -533,59 +625,26 @@ case ${step} in
     ;;
 
   "anal")
-    export wtime_anal="01:20:00"
+    export wtime_anal_gdas="01:20:00"
     export wtime_anal_gfs="01:00:00"
-    export npe_anal=780
-    export nth_anal=5
-    export npe_anal_gfs=825
-    export nth_anal_gfs=5
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      export nth_anal=8
-      export nth_anal_gfs=8
-    fi
     case ${CASE} in
+      "C768")
+        export npe_anal_gdas=780
+        export npe_anal_gfs=825
+        export nth_anal=5
+        ;;
       "C384")
-        export npe_anal=160
+        export npe_anal_gdas=160
         export npe_anal_gfs=160
         export nth_anal=10
-        export nth_anal_gfs=10
-        if [[ ${machine} = "HERA" ]]; then
-          export npe_anal=270
-          export npe_anal_gfs=270
-          export nth_anal=8
-          export nth_anal_gfs=8
-        fi	  
-        if [[ ${machine} = "S4" ]]; then
-          #On the S4-s4 partition, this is accomplished by increasing the task
-          #count to a multiple of 32
-          if [[ ${PARTITION_BATCH} = "s4" ]]; then
-            export npe_anal=416
-            export npe_anal_gfs=416
-          fi
-          #S4 is small, so run this task with just 1 thread
-          export nth_anal=1
-          export nth_anal_gfs=1
-          export wtime_anal="02:00:00"
-        fi
         ;;
       "C192" | "C96" | "C48")
-        export npe_anal=84
+        export npe_anal_gdas=84
         export npe_anal_gfs=84
-        if [[ ${machine} == "S4" ]]; then
-          export nth_anal=4
-          export nth_anal_gfs=4
-          #Adjust job count for S4
-          if [[ ${PARTITION_BATCH} == "s4" ]]; then
-            export npe_anal=88
-            export npe_anal_gfs=88
-          elif [[ ${PARTITION_BATCH} == "ivy" ]]; then
-            export npe_anal=90
-            export npe_anal_gfs=90
-          fi
-        fi
+        export nth_anal=5
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
@@ -593,18 +652,31 @@ case ${step} in
     export nth_cycle=${nth_anal}
     export npe_node_cycle=$(( npe_node_max / nth_cycle ))
     export is_exclusive=True
+
+    var_npe="npe_anal_${RUN}"
+    if [[ -n "${!var_npe+0}" ]]; then
+      declare -x "npe_anal"="${!var_npe}"
+    fi
     ;;
 
   "analcalc")
-    export wtime_analcalc="00:10:00"
+    export wtime_analcalc="00:15:00"
     export npe_analcalc=127
     export ntasks="${npe_analcalc}"
     export nth_analcalc=1
-    export nth_echgres=4
-    export nth_echgres_gfs=12
     export npe_node_analcalc=$(( npe_node_max / nth_analcalc ))
+    export nth_echgres_gdas=4
+    export nth_echgres_gfs=12
     export is_exclusive=True
     export memory_analcalc="48GB"
+    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" ]]; then
+       export memory_analcalc="${mem_node_max}"
+    fi
+
+    var_nth="nth_echgres_${RUN}"
+    if [[ -n "${!var_nth+0}" ]]; then
+      declare -x "nth_echgres"="${!var_nth}"
+    fi
     ;;
 
   "analdiag")
@@ -643,6 +715,18 @@ case ${step} in
         ntasks_quilt=${ntasks_quilt_gfs}
         nthreads_fv3=${nthreads_fv3_gfs}
         nthreads_ufs=${nthreads_ufs_gfs}
+        # Will not be set if we are skipping the mediator
+        nthreads_mediator=${nthreads_mediator_gfs:-}
+      elif [[ "${_CDUMP}" =~ "gdas" ]]; then
+        export layout_x=${layout_x_gdas}
+        export layout_y=${layout_y_gdas}
+        export WRITE_GROUP=${WRITE_GROUP_GDAS}
+        export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GDAS}
+        ntasks_fv3=${ntasks_fv3_gdas}
+        ntasks_quilt=${ntasks_quilt_gdas}
+        nthreads_fv3=${nthreads_fv3_gdas}
+        nthreads_ufs=${nthreads_ufs_gdas}
+        nthreads_mediator=${nthreads_mediator_gdas:-}
       fi
 
       # Determine if using ESMF-managed threading or traditional threading
@@ -737,36 +821,44 @@ case ${step} in
 
       echo "Total PETS for ${_CDUMP} = ${NTASKS_TOT}"
 
-      if [[ "${_CDUMP}" =~ "gfs" ]]; then
-        declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
-        declare -x "nth_${step}_gfs"="${UFS_THREADS}"
-        declare -x "npe_node_${step}_gfs"="${npe_node_max}"
-      else
-        declare -x "npe_${step}"="${NTASKS_TOT}"
-        declare -x "nth_${step}"="${UFS_THREADS}"
-        declare -x "npe_node_${step}"="${npe_node_max}"
-      fi
+      declare -x "npe_${step}_${_CDUMP}"="${NTASKS_TOT}"
+      declare -x "nth_${step}_${_CDUMP}"="${UFS_THREADS}"
+      declare -x "npe_node_${step}_${_CDUMP}"="${npe_node_max}"
 
     done
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}"="00:20:00"
+        declare -x "wtime_${step}_gdas"="00:20:00"
+        declare -x "wtime_${step}_enkfgdas"="00:20:00"
         declare -x "wtime_${step}_gfs"="03:00:00"
+        declare -x "wtime_${step}_enkfgfs"="00:20:00"
         ;;
       "C384")
-        declare -x "wtime_${step}"="00:30:00"
+        declare -x "wtime_${step}_gdas"="00:30:00"
+        declare -x "wtime_${step}_enkfgdas"="00:30:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
+        declare -x "wtime_${step}_enkfgfs"="00:30:00"
         ;;
       "C768" | "C1152")
-        declare -x "wtime_${step}"="00:30:00"
+        # Not valid resolutions for ensembles
+        declare -x "wtime_${step}_gdas"="00:40:00"
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
+
+    var_npe_node="npe_node_${step}_${RUN}"
+    var_nth="nth_${step}_${RUN}"
+    var_npe="npe_${step}_${RUN}"
+    if [[ -n "${!var_npe_node+0}" ]]; then
+      declare -x "npe_node_${step}"="${!var_npe_node}" \
+                 "nth_${step}"="${!var_nth}" \
+                 "npe_${step}"="${!var_npe}"
+    fi
 
     unset _CDUMP _CDUMP_LIST
     unset NTASKS_TOT
@@ -785,21 +877,15 @@ case ${step} in
       "C48" | "C96")
         export npe_upp=${CASE:1}
       ;;
-      "C192" | "C384")
+      "C192" | "C384" | "C768" )
         export npe_upp=120
-        export memory_upp="96GB"
-      ;;
-      "C768")
-        export npe_upp=120
-        export memory_upp="96GB"
-        if [[ ${machine} == "WCOSS2" ]]; then export memory_upp="480GB" ; fi
+        export memory_upp="${mem_node_max}"
       ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
       ;;
     esac
-    if [[ ${machine} == "JET" ]]; then unset memory_upp ; fi
     export npe_node_upp=${npe_upp}
 
     export nth_upp=1
@@ -816,10 +902,6 @@ case ${step} in
     export npe_atmos_products=24
     export nth_atmos_products=1
     export npe_node_atmos_products="${npe_atmos_products}"
-    export wtime_atmos_products_gfs="${wtime_atmos_products}"
-    export npe_atmos_products_gfs="${npe_atmos_products}"
-    export nth_atmos_products_gfs="${nth_atmos_products}"
-    export npe_node_atmos_products_gfs="${npe_node_atmos_products}"
     export is_exclusive=True
     ;;
 
@@ -844,10 +926,6 @@ case ${step} in
     export npe_vminmon=1
     export nth_vminmon=1
     export npe_node_vminmon=1
-    export wtime_vminmon_gfs="00:05:00"
-    export npe_vminmon_gfs=1
-    export nth_vminmon_gfs=1
-    export npe_node_vminmon_gfs=1
     export memory_vminmon="1G"
     ;;
 
@@ -881,17 +959,14 @@ case ${step} in
     export nth_fit2obs=1
     export npe_node_fit2obs=1
     export memory_fit2obs="20G"
-    if [[ ${machine} == "WCOSS2" ]]; then export npe_node_fit2obs=3 ; fi
     ;;
 
   "metp")
     export nth_metp=1
-    export wtime_metp="03:00:00"
+    export wtime_metp_gdas="03:00:00"
+    export wtime_metp_gfs="06:00:00"
     export npe_metp=4
     export npe_node_metp=4
-    export wtime_metp_gfs="06:00:00"
-    export npe_metp_gfs=4
-    export npe_node_metp_gfs=4
     export is_exclusive=True
     ;;
 
@@ -900,9 +975,6 @@ case ${step} in
     export npe_echgres=3
     export nth_echgres=${npe_node_max}
     export npe_node_echgres=1
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      export memory_echgres="200GB"
-    fi
     ;;
 
   "init")
@@ -933,9 +1005,6 @@ case ${step} in
     declare -x "npe_node_${step}"="1"
     declare -x "nth_${step}"="1"
     declare -x "memory_${step}"="4096M"
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      declare -x "memory_${step}"="50GB"
-    fi
     ;;
 
   "cleanup")
@@ -970,13 +1039,25 @@ case ${step} in
     export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlletkf="00:30:00"
-    export npe_atmensanlletkf=$(( layout_x * layout_y * 6 ))
-    export npe_atmensanlletkf_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmensanlletkf=1
-    export nth_atmensanlletkf_gfs=${nth_atmensanlletkf}
-    export npe_node_atmensanlletkf=$(( npe_node_max / nth_atmensanlletkf ))
+    export npe_atmensanlletkf_enkfgdas=$(( layout_x * layout_y * 6 ))
+    export npe_atmensanlletkf_enkfgfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmensanlletkf_enkfgdas=1
+    export nth_atmensanlletkf_enkfgfs=${nth_atmensanlletkf_enkfgdas}
+    export npe_node_atmensanlletkf_enkfgdas=$(( npe_node_max / nth_atmensanlletkf_enkfgdas ))
+    export npe_node_atmensanlletkf_enkfgfs=$(( npe_node_max / nth_atmensanlletkf_enkfgfs ))
     export memory_atmensanlletkf="96GB"
     export is_exclusive=True
+
+    var_npe_node="npe_node_atmensanlletkf_${RUN}"
+    var_nth="nth_atmensanlletkf_${RUN}"
+    var_npe="npe_atmensanlletkf_${RUN}"
+    # RUN is set to a single value at setup time, so these won't be found
+    # TODO rework setup_xml.py to initialize RUN to the applicable option
+    if [[ -n "${!var_npe_node+0}" ]]; then
+      declare -x "npe_node_atmensanlletkf"="${!var_npe_node}" \
+                 "nth_atmensanlletkf"="${!var_nth}" \
+                 "npe_atmensanlletkf"="${!var_npe}"
+    fi
     ;;
 
   "atmensanlfv3inc")
@@ -984,13 +1065,25 @@ case ${step} in
     export layout_y=${layout_y_atmensanl}
 
     export wtime_atmensanlfv3inc="00:30:00"
-    export npe_atmensanlfv3inc=$(( layout_x * layout_y * 6 ))
-    export npe_atmensanlfv3inc_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmensanlfv3inc=1
-    export nth_atmensanlfv3inc_gfs=${nth_atmensanlfv3inc}
-    export npe_node_atmensanlfv3inc=$(( npe_node_max / nth_atmensanlfv3inc ))
+    export npe_atmensanlfv3inc_enkfgdas=$(( layout_x * layout_y * 6 ))
+    export npe_atmensanlfv3inc_enkfgfs=$(( layout_x * layout_y * 6 ))
+    export nth_atmensanlfv3inc_enkfgdas=1
+    export nth_atmensanlfv3inc_enkfgfs=${nth_atmensanlfv3inc_enkfgdas}
+    export npe_node_atmensanlfv3inc_enkfgdas=$(( npe_node_max / nth_atmensanlfv3inc_enkfgdas ))
+    export npe_node_atmensanlfv3inc_enkfgfs=$(( npe_node_max / nth_atmensanlfv3inc_enkfgfs ))
     export memory_atmensanlfv3inc="96GB"
     export is_exclusive=True
+
+    var_npe_node="npe_node_atmensanlfv3inc_${RUN}"
+    var_nth="nth_atmensanlfv3inc_${RUN}"
+    var_npe="npe_atmensanlfv3inc_${RUN}"
+    # RUN is set to a single value at setup time, so these won't be found
+    # TODO rework setup_xml.py to initialize RUN to the applicable option
+    if [[ -n "${!var_npe_node+0}" ]]; then
+      declare -x "npe_node_atmensanlfv3inc"="${!var_npe_node}" \
+                 "nth_atmensanlfv3inc"="${!var_nth}" \
+                 "npe_atmensanlfv3inc"="${!var_npe}"
+    fi
     ;;
 
   "atmensanlfinal")
@@ -1009,27 +1102,25 @@ case ${step} in
       "C384")                 export npe_eobs=100;;
       "C192" | "C96" | "C48") export npe_eobs=40;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
     export npe_eomg=${npe_eobs}
     export nth_eobs=2
     export nth_eomg=${nth_eobs}
+    # NOTE The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     export npe_node_eobs=$(( npe_node_max / nth_eobs ))
     export is_exclusive=True
-    # The number of tasks and cores used must be the same for eobs
-    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
-    # For S4, this is accomplished by running 10 tasks/node
-    if [[ ${machine} = "S4" ]]; then
-      export npe_node_eobs=10
-    elif [[ ${machine} = "HERCULES" ]]; then
-      # For Hercules, this is only an issue at C384; use 20 tasks/node
-      if [[ ${CASE} = "C384" ]]; then
-        export npe_node_eobs=20
-      fi
-    fi
     export npe_node_eomg=${npe_node_eobs}
+    # Unset npe_node_eobs if it is not a multiple of npe_node_max
+    # to prevent dropping data on the floor.  This should be set int
+    # config.resources.{machine} instead.  This will result in an error at
+    # experiment setup time if not set in config.resources.{machine}.
+    if [[ $(( npe_node_max % npe_node_eobs )) != 0 ]]; then
+      unset npe_node_max
+    fi
     ;;
 
   "ediag")
@@ -1046,33 +1137,17 @@ case ${step} in
       "C768")
         export npe_eupd=480
         export nth_eupd=6
-        if [[ "${machine}" == "WCOSS2" ]]; then
-          export npe_eupd=315
-          export nth_eupd=14
-        fi
         ;;
       "C384")
         export npe_eupd=270
         export nth_eupd=8
-        if [[ "${machine}" == "WCOSS2" ]]; then
-          export npe_eupd=315
-          export nth_eupd=14
-        elif [[ "${machine}" == "S4" ]]; then
-           export npe_eupd=160
-           export nth_eupd=2
-        elif [[ "${machine}" == "HERA" ]]; then
-          export npe_eupd=80
-        fi
         ;;
       "C192" | "C96" | "C48")
         export npe_eupd=42
         export nth_eupd=2
-        if [[ "${machine}" == "HERA" || "${machine}" == "JET" ]]; then
-          export nth_eupd=4
-        fi
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
@@ -1084,7 +1159,6 @@ case ${step} in
     export wtime_ecen="00:10:00"
     export npe_ecen=80
     export nth_ecen=4
-    if [[ "${machine}" == "HERA" ]]; then export nth_ecen=6; fi
     if [[ ${CASE} == "C384" || ${CASE} == "C192" || ${CASE} == "C96" || ${CASE} == "C48" ]]; then
       export nth_ecen=2
     fi
@@ -1101,11 +1175,11 @@ case ${step} in
     export npe_node_esfc=$(( npe_node_max / nth_esfc ))
     export nth_cycle=${nth_esfc}
     export npe_node_cycle=$(( npe_node_max / nth_cycle ))
-    if [[ ${machine} != "JET" ]]; then export memory_esfc="80G" ; fi
     ;;
 
   "epos")
     export wtime_epos="00:15:00"
+    [[ ${CASE} == "C768" ]] && export wtime_epos="00:25:00"
     export npe_epos=80
     export nth_epos=1
     export npe_node_epos=$(( npe_node_max / nth_epos ))
@@ -1144,13 +1218,22 @@ case ${step} in
 
   "gempak")
     export wtime_gempak="03:00:00"
-    export npe_gempak=2
+    export npe_gempak_gdas=2
     export npe_gempak_gfs=28
-    export npe_node_gempak=2
+    export npe_node_gempak_gdas=2
     export npe_node_gempak_gfs=28
     export nth_gempak=1
-    export memory_gempak="4GB"
+    export memory_gempak_gdas="4GB"
     export memory_gempak_gfs="2GB"
+
+    var_npe_node="npe_node_gempak_${RUN}"
+    var_npe="npe_gempak_${RUN}"
+    # RUN is set to a single value at setup time, so these won't be found
+    # TODO rework setup_xml.py to initialize RUN to the applicable option
+    if [[ -n "${!var_npe_node+0}" ]]; then
+      declare -x "npe_node_gempak"="${!var_npe_node}" \
+                 "npe_gempak"="${!var_npe}"
+    fi
     ;;
 
   "mos_stn_prep")
@@ -1306,5 +1389,16 @@ case ${step} in
     ;;
 
 esac
+
+# Unset dynamic variable names
+unset var_NTASKS \
+      var_npe \
+      var_npe_node \
+      var_nth
+
+# Get machine-specific resources, overriding/extending the above assignments
+if [[ -f "${EXPDIR}/config.resources.${machine}" ]]; then
+   source "${EXPDIR}/config.resources.${machine}"
+fi
 
 echo "END: config.resources"

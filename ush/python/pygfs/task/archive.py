@@ -7,9 +7,9 @@ import tarfile
 from logging import getLogger
 from typing import Any, Dict, List
 
-from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, cast_strdict_as_dtypedict,
+from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
-                    to_YMD, to_YMDH, Template, TemplateConstants)
+                    to_YMDH)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -35,12 +35,13 @@ class Archive(Task):
         """
         super().__init__(config)
 
-        rotdir = self.config.ROTDIR + os.sep
+        rotdir = self.task_config.ROTDIR + os.sep
 
         # Find all absolute paths in the environment and get their relative paths from ${ROTDIR}
         path_dict = self._gen_relative_paths(rotdir)
 
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **path_dict)
+        # Extend task_config with path_dict
+        self.task_config = AttrDict(**self.task_config, **path_dict)
 
     @logit(logger)
     def configure(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
@@ -297,7 +298,7 @@ class Archive(Task):
 
     @logit(logger)
     def _gen_relative_paths(self, root_path: str) -> Dict:
-        """Generate a dict of paths in self.config relative to root_path
+        """Generate a dict of paths in self.task_config relative to root_path
 
         Parameters
         ----------
@@ -309,16 +310,16 @@ class Archive(Task):
         rel_path_dict : Dict
             Dictionary of paths relative to root_path.  Members will be named
             based on the dict names in self.config.  For COM paths, the names will
-            follow COM_<NAME> --> <name>_dir.  For all other directories, the
+            follow COMIN_<NAME> --> <name>_dir.  For all other directories, the
             names will follow <NAME> --> <name>_dir.
         """
 
         rel_path_dict = {}
-        for key, value in self.config.items():
+        for key, value in self.task_config.items():
             if isinstance(value, str):
                 if root_path in value:
                     rel_path = value.replace(root_path, "")
-                    rel_key = (key[4:] if key.startswith("COM_") else key).lower() + "_dir"
+                    rel_key = (key[4:] if key.startswith("COMIN_") else key).lower() + "_dir"
                     rel_path_dict[rel_key] = rel_path
 
         return rel_path_dict
@@ -348,19 +349,11 @@ class Archive(Task):
             files need to be copied to the ARCDIR and the Fit2Obs directory.
         """
 
-        # Parse the input jinja yaml template
-        arcdir_yaml = parse_j2yaml(arcdir_j2yaml,
-                                   arch_dict,
-                                   allow_missing=True)
-
-        # Collect the needed FileHandler dicts and construct arcdir_set
-        arcdir_set = {}
-        for key, handler in arcdir_yaml[arch_dict.RUN].items():
-            # Different RUNs can have different filesets that need to be copied.
-            # Each fileset is stored as a dictionary.  Collect the contents of
-            # each (which should be 'mkdir' and/or 'copy') to produce singular
-            # mkdir and copy lists.
-            arcdir_set.update(handler)
+        # Get the FileHandler dictionary for creating directories and copying
+        # to the ARCDIR and VFYARC directories.
+        arcdir_set = parse_j2yaml(arcdir_j2yaml,
+                                  arch_dict,
+                                  allow_missing=True)
 
         return arcdir_set
 
@@ -374,27 +367,28 @@ class Archive(Task):
         if len(arch_dict.PSLOT) > 4:
             pslot4 = arch_dict.PSLOT[0:4].upper()
 
-        track_dir = arch_dict.COM_ATMOS_TRACK
+        track_dir_in = arch_dict.COMIN_ATMOS_TRACK
+        track_dir_out = arch_dict.COMOUT_ATMOS_TRACK
         run = arch_dict.RUN
         cycle_HH = strftime(arch_dict.current_cycle, "%H")
 
         if run == "gfs":
-            in_track_file = (track_dir + "/avno.t" +
+            in_track_file = (track_dir_in + "/avno.t" +
                              cycle_HH + "z.cycle.trackatcfunix")
-            in_track_p_file = (track_dir + "/avnop.t" +
+            in_track_p_file = (track_dir_in + "/avnop.t" +
                                cycle_HH + "z.cycle.trackatcfunixp")
         elif run == "gdas":
-            in_track_file = (track_dir + "/gdas.t" +
+            in_track_file = (track_dir_in + "/gdas.t" +
                              cycle_HH + "z.cycle.trackatcfunix")
-            in_track_p_file = (track_dir + "/gdasp.t" +
+            in_track_p_file = (track_dir_in + "/gdasp.t" +
                                cycle_HH + "z.cycle.trackatcfunixp")
 
         if not os.path.isfile(in_track_file):
             # Do not attempt to archive the outputs
             return
 
-        out_track_file = track_dir + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
-        out_track_p_file = track_dir + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
+        out_track_file = track_dir_out + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
+        out_track_p_file = track_dir_out + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
 
         def replace_string_from_to_file(filename_in, filename_out, search_str, replace_str):
 
@@ -420,7 +414,7 @@ class Archive(Task):
             with open(filename_in) as old_file:
                 lines = old_file.readlines()
 
-            out_lines = [line.replace(search, replace) for line in lines]
+            out_lines = [line.replace(search_str, replace_str) for line in lines]
 
             with open("/tmp/track_file", "w") as new_file:
                 new_file.writelines(out_lines)
