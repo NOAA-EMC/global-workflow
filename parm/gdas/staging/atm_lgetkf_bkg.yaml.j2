@@ -1,0 +1,32 @@
+{% set ftype_list = ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data'] %}
+{% set time_list = [current_cycle] %}
+
+mkdir:
+{% for imem in range(1,NMEM_ENS+1) %}
+   {% set memchar = 'mem%03d' | format(imem) %}
+   {% set tmpl_dict = ({ '${ROTDIR}': ROTDIR,
+                         '${RUN}': RUN, 
+                         '${YMD}': current_cycle | to_YMD,	
+                         '${HH}': current_cycle | strftime('%H'),
+                         '${MEMDIR}': memchar }) %}
+- '{{ DATA }}/bkg/{{ memchar }}'
+- '{{ DATA }}/anl/{{ memchar }}'
+- '{{ COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) }}'
+{% endfor %}
+copy:
+{% for time in time_list %}
+   {% for imem in range(1,NMEM_ENS+1) %}
+      {% set memchar = 'mem%03d' | format(imem) %}
+      {% set tmpl_dict = ({ '${ROTDIR}': ROTDIR,
+      	      	      	    '${RUN}': 'enkfgdas',
+                            '${YMD}': previous_cycle | to_YMD,	
+                            '${HH}': previous_cycle | strftime('%H'),
+                            '${MEMDIR}': memchar }) %}
+- ['{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ time | to_fv3time }}.coupler.res', '{{ DATA }}/bkg/{{ memchar }}/']
+      {% for ftype in ftype_list %}
+         {% for itile in range(1,7) %}
+- ['{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ time | to_fv3time }}.{{ ftype }}.tile{{ itile }}.nc', '{{ DATA }}/bkg/{{ memchar }}/']
+         {% endfor %}
+      {% endfor %}
+   {% endfor %}
+{% endfor %}
