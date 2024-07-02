@@ -24,23 +24,23 @@ class AerosolObsPrep(Task):
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
 
-        _window_begin = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H") / 2)
-        _window_end = add_to_datetime(self.runtime_config.current_cycle, +to_timedelta(f"{self.config['assim_freq']}H") / 2)
+        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
+        _window_end = add_to_datetime(self.task_config.current_cycle, +to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
 
         local_dict = AttrDict(
             {
                 'window_begin': _window_begin,
                 'window_end': _window_end,
-                'sensors': str(self.config['SENSORS']).split(','),
-                'data_dir': self.config['VIIRS_DATA_DIR'],
+                'sensors': str(self.task_config['SENSORS']).split(','),
+                'data_dir': self.task_config['VIIRS_DATA_DIR'],
                 'input_files': '',
-                'OPREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z.",
-                'APREFIX': f"{self.runtime_config.RUN}.t{self.runtime_config.cyc:02d}z."
+                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
             }
         )
 
         # task_config is everything that this task should need
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
+        self.task_config = AttrDict(**self.task_config, **local_dict)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -64,8 +64,8 @@ class AerosolObsPrep(Task):
             self.task_config.prepaero_config = self.get_obsproc_config(sensor)
 
             # generate converter YAML file
-            template = f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.prepaero_viirs_{sensor}.yaml"
-            _prepaero_yaml = os.path.join(self.runtime_config.DATA, template)
+            template = f"{self.task_config.RUN}.t{self.task_config['cyc']:02d}z.prepaero_viirs_{sensor}.yaml"
+            _prepaero_yaml = os.path.join(self.task_config.DATA, template)
             self.task_config.prepaero_yaml.append(_prepaero_yaml)
             logger.debug(f"Generate PrepAeroObs YAML file: {_prepaero_yaml}")
             save_as_yaml(self.task_config.prepaero_config, _prepaero_yaml)
