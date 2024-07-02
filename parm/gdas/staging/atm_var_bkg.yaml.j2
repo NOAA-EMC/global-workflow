@@ -1,0 +1,14 @@
+{% set ftype_list = ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'phy_data', 'sfc_data'] %}
+{% set time_list = [current_cycle] %}
+
+mkdir:
+- '{{ DATA }}/bkg'
+copy:
+{% for time in time_list %}
+- ['{{ COM_ATMOS_RESTART_PREV }}/{{ time | to_fv3time }}.coupler.res', '{{ DATA }}/bkg/']
+   {% for ftype in ftype_list %}
+      {% for itile in range(1,ntiles+1) %}
+- ['{{ COM_ATMOS_RESTART_PREV }}/{{ time | to_fv3time }}.{{ ftype }}.tile{{ itile }}.nc', '{{ DATA }}/bkg/']
+      {% endfor %}
+   {% endfor %}
+{% endfor %}

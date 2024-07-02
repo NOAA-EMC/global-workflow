@@ -75,8 +75,8 @@ elif [[ -d /scratch1 ]]; then
   MACHINE_ID=hera
 elif [[ -d /work ]]; then
   # We are on MSU Orion or Hercules
-  if [[ -d /apps/other ]]; then
-    # We are on Hercules
+  mount=$(findmnt -n -o SOURCE /home)   
+  if [[ ${mount} =~ "hercules" ]]; then
     MACHINE_ID=hercules
   else
     MACHINE_ID=orion
