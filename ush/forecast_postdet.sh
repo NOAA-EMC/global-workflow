@@ -252,9 +252,17 @@ FV3_out() {
   ${NCP} "${DATA}/diag_table" "${COMOUT_CONF}/ufs.diag_table"
  
 
-  # Determine the dates for restart files to be copied to COM
-  local restart_date restart_dates
-  restart_dates=()
+  # Create an array of fv3 restart files
+  local fv3_restart_files tile_files fv3_restart_file restart_file
+  fv3_restart_files=(coupler.res fv_core.res.nc)
+  tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
+  local nn tt
+  for (( nn = 1; nn <= ntiles; nn++ )); do
+    for tt in "${tile_files[@]}"; do
+      fv3_restart_files+=("${tt}.tile${nn}.nc")
+    done
+  done
+
   # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     restart_date="${model_start_date_next_cycle}"
