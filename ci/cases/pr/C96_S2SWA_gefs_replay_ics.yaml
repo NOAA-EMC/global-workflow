@@ -4,7 +4,7 @@ experiment:
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: S2S
+  app: S2SWA
   resdetatmos: 96
   resdetocean: 1.0
   resensatmos: 96
@@ -15,5 +15,5 @@ arguments:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2023012300
   edate: 2023012300
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_ci_defaults.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_ci_replay.yaml
 
