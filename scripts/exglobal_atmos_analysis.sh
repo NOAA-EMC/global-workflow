@@ -581,7 +581,7 @@ if [ ${GENDIAG} = "YES" ] ; then
       if [ -d ${DIAG_DIR} ]; then
          rm -rf ${DIAG_DIR}
       fi
-      npe_m1="$((${npe_gsi}-1))"
+      npe_m1="$((npe-1))"
       for pe in $(seq 0 ${npe_m1}); do
         pedir="dir."$(printf %04i ${pe})
         mkdir -p ${DIAG_DIR}/${pedir}

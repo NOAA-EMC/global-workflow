@@ -19,9 +19,6 @@ if [[ "${RUN}" = "gfs" ]] ; then
   export DIAG_TARBALL="YES"
 fi
 
-npe_var="npe_${RUN/enkf}"
-export npe_gsi="${!npe_var}"
-
 # Set parameters specific to L127
 if [[ ${LEVS} = "128" ]]; then
   export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
