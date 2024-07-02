@@ -135,12 +135,6 @@ export ATARDIR="@ATARDIR@"
 export envir=${envir:-"prod"}
 export NET="gfs"  # NET is defined in the job-card (ecf)
 export RUN=${RUN:-"gfs"}  # RUN is defined in the job-card (ecf)
-# TODO: determine where is CDUMP actually used in the workflow other than here
-# TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
-#       consistent w/ EE2?
-# wxflow tasks need CDUMP defined but we no longer use it
-# TODO Remove this kludge when wxflow is updated
-export CDUMP=${CDUMP:-''}
 
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
