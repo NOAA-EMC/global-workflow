@@ -170,7 +170,6 @@ case ${step} in
     wtime="00:10:00"
     npe_gdas=5
     npe_gfs=65
-    nth_gdas=1
     nth_gfs=1
     npe_node_gdas=$(( npe_node_max / nth_gdas ))
     npe_node_gfs=$(( npe_node_max / nth_gfs ))
@@ -976,12 +975,9 @@ case ${step} in
     export layout_y=${layout_y_atmensanl}
 
     wtime="00:30:00"
-    npe_enkfgdas=$(( layout_x * layout_y * 6 ))
-    npe_enkfgfs=$(( layout_x * layout_y * 6 ))
-    nth_enkfgdas=1
-    nth_enkfgfs=${nth_enkfgdas}
-    npe_node_enkfgdas=$(( npe_node_max / nth_enkfgdas ))
-    npe_node_enkfgfs=$(( npe_node_max / nth_enkfgfs ))
+    npe=$(( layout_x * layout_y * 6 ))
+    nth=1
+    npe_node=$(( npe_node_max / nth ))
     memory="96GB"
     export is_exclusive=True
     ;;
@@ -991,12 +987,9 @@ case ${step} in
     export layout_y=${layout_y_atmensanl}
 
     wtime="00:30:00"
-    npe_enkfgdas=$(( layout_x * layout_y * 6 ))
-    npe_enkfgfs=$(( layout_x * layout_y * 6 ))
-    nth_enkfgdas=1
-    nth_enkfgfs=${nth_enkfgdas}
-    npe_node_enkfgdas=$(( npe_node_max / nth_enkfgdas ))
-    npe_node_enkfgfs=$(( npe_node_max / nth_enkfgfs ))
+    npe=$(( layout_x * layout_y * 6 ))
+    nth=1
+    npe_node=$(( npe_node_max / nth ))
     memory="96GB"
     export is_exclusive=True
     ;;
