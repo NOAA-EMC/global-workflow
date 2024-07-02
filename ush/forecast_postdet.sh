@@ -204,8 +204,8 @@ EOF
   if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
     local FH2 FH3
     for fhr in ${FV3_OUTPUT_FH}; do
-      FH3=$(printf %03i "${fhr}")
-      FH2=$(printf %02i "${fhr}")
+      FH3=$(printf %03i "$(printf %.0f $(echo "${fhr}" | bc -l))")
+      FH2=$(printf %02i "$(printf %.0f $(echo "${fhr}" | bc -l))")
       ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
       ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
       ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}"
