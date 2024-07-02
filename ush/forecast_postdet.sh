@@ -575,7 +575,7 @@ CICE_postdet() {
     vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
     if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-      source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
+      source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE_6h}")h.${vdatestr}.nc"
       dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
     elif [[ "${RUN}" =~ "gdas" ]]; then
       source_file="iceh_inst.${vdatestr}.nc"
@@ -626,6 +626,12 @@ CICE_out() {
   fi
 
 }
+
+CICE_avg() {
+  echo "SUB ${FUNCNAME[0]}: Averaging output data for CICE"
+
+}
+
 
 GOCART_rc() {
   echo "SUB ${FUNCNAME[0]}: Linking input data and copying config files for GOCART"
