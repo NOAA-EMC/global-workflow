@@ -14,8 +14,8 @@ export jobid="${job}.$$"
 ###############################################################
 # setup python path for workflow utilities and tasks
 wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-socaToolsPATH="${HOMEgfs}/sorc/gdas.cd/sorc/soca/tools"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
+socaToolsPATH="${HOMEgfs}/sorc/gdas.cd/ush/soca/tools"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}:${socaToolsPATH}"
 export PYTHONPATH
 
 ###############################################################
