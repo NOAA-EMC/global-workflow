@@ -25,7 +25,7 @@ source "${USHgfs}/preamble.sh"
 pwd=$(pwd)
 
 # Base variables
-RUN=${RUN:-"gdas"}
+CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Utilities
@@ -181,7 +181,7 @@ if [ $DOGAUSFCANL = "YES" ]; then
     export err=$?; err_chk
 fi
 
-echo "${RUN} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COM_ATMOS_ANALYSIS}/${APREFIX}loganl.txt"
+echo "${CDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COM_ATMOS_ANALYSIS}/${APREFIX}loganl.txt"
 
 ################################################################################
 # Postprocessing
