@@ -42,15 +42,12 @@ setenv("WGRIB2","wgrib2")
 setenv("WGRIB","wgrib")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
---prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 --prepend_path("MODULEPATH", "/work/noaa/global/glopara/git/prepobs/feature-GFSv17_com_reorg_log_update/modulefiles")
---load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 prepend_path("MODULEPATH", "/work/noaa/global/kfriedma/git/prepobs/feature-orion_rocky9/modulefiles")
-load(pathJoin("prepobs", "1.0.2"))
+load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 --prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
---load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 prepend_path("MODULEPATH", "/work/noaa/global/kfriedma/git/fit2obs/feature-orion_rocky9/modulefiles")
-load(pathJoin("fit2obs", "1.1.2"))
+load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 whatis("Description: GFS run environment")
