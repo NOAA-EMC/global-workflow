@@ -13,9 +13,11 @@ export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_STATION COM_WAVE_WMO
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \
+    COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
 
-if [[ ! -d ${COM_WAVE_WMO} ]]; then mkdir -p "${COM_WAVE_WMO}"; fi
+if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 
 ###################################
 # Execute the Script

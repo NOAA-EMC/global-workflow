@@ -10,9 +10,10 @@ export errchk=${errchk:-err_chk}
 export MP_PULSE=0
 
 # Set COM Paths
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_PREP
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL
 
-mkdir -m 775 -p ${COM_WAVE_PREP}
+if [[ ! -d "${COMOUT_WAVE_PREP}" ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 
 # Set mpi serial command
 export wavempexec=${wavempexec:-"mpirun -n"}
