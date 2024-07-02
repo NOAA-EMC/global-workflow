@@ -48,7 +48,7 @@ prepend_path("MODULEPATH", pathJoin("/work/noaa/global/kfriedma/glopara/git/prep
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 --prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
-prepend_path("MODULEPATH", "/work/noaa/global/kfriedma/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles")
+prepend_path("MODULEPATH", pathJoin("/work/noaa/global/kfriedma/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 whatis("Description: GFS run environment")
