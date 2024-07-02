@@ -129,7 +129,6 @@ if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; the
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
 fi
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
-export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
 
@@ -296,7 +295,7 @@ export FHOUT_GFS=3 # 3 for ops
 export FHMAX_HF_GFS=@FHMAX_HF_GFS@
 export FHOUT_HF_GFS=1
 export FHOUT_OCN_GFS=6
-export FHOUT_ICE_GFS=6   
+export FHOUT_ICE_GFS=6
 export FHMIN_WAV=0
 export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
