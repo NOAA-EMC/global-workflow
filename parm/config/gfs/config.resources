@@ -170,9 +170,9 @@ case ${step} in
     wtime="00:10:00"
     npe_gdas=5
     npe_gfs=65
-    nth_gfs=1
-    npe_node_gdas=$(( npe_node_max / nth_gdas ))
-    npe_node_gfs=$(( npe_node_max / nth_gfs ))
+    nth=1
+
+    npe_node=$(( npe_node_max / nth ))
     NTASKS_gdas=${npe_gdas}
     NTASKS_gfs=${npe_gfs}
     memory_gdas="100GB"
