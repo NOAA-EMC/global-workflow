@@ -1,9 +1,9 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_atmos_gempak_%CYC%
+#PBS -N %RUN%_atmos_gempak_%FHR3%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=03:00:00
+#PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=28:mpiprocs=28:mem=2GB
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
@@ -37,6 +37,7 @@ module list
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
+export FHR3=%FHR3%
 
 ############################################################
 # CALL executable job script here
