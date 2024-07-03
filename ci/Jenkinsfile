@@ -122,7 +122,7 @@ pipeline {
                                             if (env.CHANGE_ID) {
                                                 sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Checkout **Failed** on ${Machine}: ${e.getMessage()}" """)
                                             }
-                                            echo "Failed to checkout: ${e.getMessage()}"
+                                            error("Failed to checkout: ${e.getMessage()}")
                                             STATUS = 'Failed'
                                         }
                                         def gist_url = ""
