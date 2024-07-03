@@ -11,11 +11,6 @@ status=$?
 export job="esnowanl"
 export jobid="${job}.$$"
 
-###############################################################
-# setup python path for workflow utilities and tasks
-wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
-export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
