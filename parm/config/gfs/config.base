@@ -310,6 +310,13 @@ if (( FHMAX_HF_GFS < 120 )); then
     export ILPOST=${FHOUT_GFS}
 fi
 
+# Limit bounds of goes processing
+export FHMAX_GOES=180
+export FHOUT_GOES=3
+if (( FHMAX_GOES > FHMAX_GFS )); then
+    export FHMAX_GOES=${FHMAX_GFS}
+fi
+
 # GFS restart interval in hours
 export restart_interval_gfs=12
 # NOTE: Do not set this to zero.  Instead set it to $FHMAX_GFS

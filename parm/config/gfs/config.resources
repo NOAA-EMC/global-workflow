@@ -1126,7 +1126,7 @@ case ${step} in
     ;;
 
   "gempak")
-    wtime="03:00:00"
+    wtime="00:30:00"
     npe_gdas=2
     npe_gfs=28
     npe_node_gdas=2
