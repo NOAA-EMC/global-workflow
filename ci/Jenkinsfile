@@ -88,9 +88,7 @@ pipeline {
         }
 
         stage('3. Build System') {
-            options {
-                parallelsAlwaysFailFast()
-            }
+            failFast true
             matrix {
                 agent { label NodeName[machine].toLowerCase() }
                 //options {
