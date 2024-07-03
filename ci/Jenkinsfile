@@ -88,6 +88,7 @@ pipeline {
         }
 
         stage('3. Build System') {
+            failFast true
             matrix {
                 agent { label NodeName[machine].toLowerCase() }
                 //options {
@@ -156,6 +157,7 @@ pipeline {
                                                     } catch (Exception error_comment) {
                                                         echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                     }
+                                                    STATUS = 'Failed'
                                                     error("Failed to build system on ${Machine}")
                                                 }
                                             }
