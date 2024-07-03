@@ -7,6 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
 ##############################################
 # Set variables used in the script
 ##############################################
+CDUMP=${RUN/enkf}
 
 # Ignore spelling warning; nothing is misspelled
 # shellcheck disable=SC2153
