@@ -1,0 +1,14 @@
+#!/bin/bash
+
+########## config.wdqms ##########
+# WDQMS steps specific
+
+echo "BEGIN: config.wdqms"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" wdqms
+
+# WDQMS utility script
+export WDQMSPY="${HOMEgfs}/ush/wdqms.py"
+
+echo "END: config.wdqms"
