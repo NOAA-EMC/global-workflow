@@ -14,6 +14,7 @@ QUEUE_SERVICE: batch
 PARTITION_BATCH: compute
 PARTITION_SERVICE: compute
 RESERVATION: ''
+CLUSTERS: ''
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 HPSSARCH: 'YES'
