@@ -409,12 +409,9 @@ case ${step} in
     export layout_y
 
     wtime="00:30:00"
-    npe_gdas=$(( layout_x * layout_y * 6 ))
-    npe_gfs=$(( layout_x * layout_y * 6 ))
-    nth_gdas=1
-    nth_gfs=1
-    npe_node_gdas=$(( npe_node_max / nth_gdas ))
-    npe_node_gfs=$(( npe_node_max / nth_gfs ))
+    npe=$(( layout_x * layout_y * 6 ))
+    nth=1
+    npe_node=$(( npe_node_max / nth ))
     export is_exclusive=True
     ;;
 
