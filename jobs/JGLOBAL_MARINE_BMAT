@@ -10,10 +10,11 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmat" -c "base ocnanal marinebm
 # Set variables used in the script
 ##############################################
 # shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-gPDY=${GDATE:0:8}
-gcyc=${GDATE:8:2}
-GDUMP="gdas"
+export GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
 
 
 ##############################################
@@ -21,11 +22,13 @@ GDUMP="gdas"
 ##############################################
 
 # Generate COM variables from templates
-# TODO: This is temporary, the plan is to prepare the bmatrix at the end of the
-#       cycle, so the backgrounds should be from the current cycle, not the previous
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+
+RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+    COMIN_OCEAN_HISTORY_ENS_PREV:COM_OCEAN_HISTORY_TMPL \
+    COMIN_ICE_HISTORY_ENS_PREV:COM_ICE_HISTORY_TMPL
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
