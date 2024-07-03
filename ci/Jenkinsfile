@@ -101,6 +101,7 @@ pipeline {
                 }
                 stages {
                     stage('build system') {
+                        failFast false
                         steps {
                             script {
                                 def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}" // local HOMEgfs is used to build the system on per system basis under the custome workspace for each buile system
@@ -181,6 +182,9 @@ pipeline {
         }
 
         stage('4. Run Tests') {
+            when {
+                expression { STATUS != 'Failed' }
+            }
             failFast false 
             matrix {
                 agent { label NodeName[machine].toLowerCase() }
