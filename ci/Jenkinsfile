@@ -88,7 +88,9 @@ pipeline {
         }
 
         stage('3. Build System') {
-            failFast true
+            options {
+                parallelsAlwaysFailFast()
+            }
             matrix {
                 agent { label NodeName[machine].toLowerCase() }
                 //options {
@@ -122,8 +124,8 @@ pipeline {
                                             if (env.CHANGE_ID) {
                                                 sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Checkout **Failed** on ${Machine}: ${e.getMessage()}" """)
                                             }
-                                            error("Failed to checkout: ${e.getMessage()}")
                                             STATUS = 'Failed'
+                                            error("Failed to checkout: ${e.getMessage()}")
                                         }
                                         def gist_url = ""
                                         def error_logs = ""
