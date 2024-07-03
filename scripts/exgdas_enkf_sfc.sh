@@ -155,10 +155,10 @@ if [ $DOIAU = "YES" ]; then
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
-            
+
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
-            
+
             # determine where the input snow restart files come from
             if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
                 sfcdata_dir="${COMIN_SNOW_ANALYSIS_MEM}"
@@ -205,7 +205,7 @@ if [ $DOIAU = "YES" ]; then
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
                 FHR=6
-                ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                    "${DATA}/lnd_incr.${cmem}"
             fi
         done # ensembles
@@ -245,8 +245,8 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             ${NCP} "${sfcdata_dir}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
             ${NCP} "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
-            ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
-            ${NLN} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+            ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
+            ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
         done
 
