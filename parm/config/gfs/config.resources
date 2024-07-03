@@ -1097,8 +1097,8 @@ case ${step} in
     npe=40
     nth=8
     npe_node=10
-    npe_postsndcfp=9
-    npe_node_postsndcfp=1
+    export npe_postsndcfp=9
+    export npe_node_postsndcfp=1
     postsnd_req_cores=$(( npe_node * nth ))
     if (( postsnd_req_cores > npe_node_max )); then
         npe_node=$(( npe_node_max / nth ))
