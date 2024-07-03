@@ -101,8 +101,8 @@ pipeline {
                 }
                 stages {
                     stage('build system') {
-                        failFast false
                         steps {
+                           catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             script {
                                 def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}" // local HOMEgfs is used to build the system on per system basis under the custome workspace for each buile system
                                 sh(script: "mkdir -p ${HOMEgfs}")
@@ -175,6 +175,7 @@ pipeline {
                                     }
                                }
                            }
+                          }
                         }
                     }
                 }
