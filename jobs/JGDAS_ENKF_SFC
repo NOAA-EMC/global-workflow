@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esfc" -c "base esfc"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP="${RUN/enkf}"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -21,6 +20,7 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
+CDUMP="${RUN/enkf}"
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."

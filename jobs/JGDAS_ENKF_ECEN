@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP="${RUN/enkf}"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -23,6 +22,7 @@ export GDUMP_ENS="enkf${GDUMP}"
 
 export CASE=${CASE_ENS}
 
+CDUMP="${RUN/enkf}"
 export OPREFIX="${CDUMP}.t${cyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."

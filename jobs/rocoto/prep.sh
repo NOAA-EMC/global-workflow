@@ -13,7 +13,7 @@ export job="prep"
 export jobid="${job}.$$"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
 
-export CDUMP="${RUN/enkf}"
+CDUMP="${RUN/enkf}"
 
 ###############################################################
 # Set script and dependency variables

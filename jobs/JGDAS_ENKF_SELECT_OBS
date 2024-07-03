@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP=${RUN/enkf}
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
 export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 
@@ -24,6 +23,7 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
+CDUMP=${RUN/enkf}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
