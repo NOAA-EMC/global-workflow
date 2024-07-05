@@ -604,7 +604,7 @@ case ${step} in
   "analcalc")
     walltime="00:15:00"
     ntasks=127
-    export ntasks="${ntasks}"
+    export ntasks_calcanl="${ntasks}"
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export threads_per_task_echgres_gdas=4

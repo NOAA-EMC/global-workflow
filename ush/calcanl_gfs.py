@@ -166,7 +166,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         [hosts.append(x) for x in hosts_tmp if x not in hosts]
         nhosts = len(hosts)
         ExecCMDMPI_host = 'mpiexec -l -n ' + str(nFH)
-        tasks = int(os.getenv('ntasks', 1))
+        tasks = int(os.getenv('ntasks_calcanl', 1))
         print('nhosts,tasks=', nhosts, tasks)
         if levs > tasks:
             ExecCMDMPILevs_host = 'mpiexec -l -n ' + str(tasks)
