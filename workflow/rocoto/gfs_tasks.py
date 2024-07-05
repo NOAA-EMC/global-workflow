@@ -27,7 +27,9 @@ class GFSTasks(Tasks):
            #The if block below is added for AWS.
            #If we have a proper way to define 'BASE_CPLIC', this if block can be removed.
             if ('BASE_CPLIC' not in cpl_ic.keys()):
-                cpl_ic['BASE_CPLIC'] = os.environ.get('BASE_CPLIC', '/contrib/Wei.Huang/data/ICDIRS/prototype_ICs')
+                cpl_ic['BASE_CPLIC'] = os.environ.get('BASE_CPLIC', '/bucket/global-workflow-shared-data/ICSDIR/prototype_ICs')
+            if ('CPL_ATMIC' not in cpl_ic.keys()):
+                cpl_ic['CPL_ATMIC'] = os.environ.get('CPL_ATMIC', 'workflow_C48_refactored')
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/atmos"
             for file in ['gfs_ctrl.nc'] + \
                         [f'{datatype}_data.tile{tile}.nc'
