@@ -31,19 +31,8 @@ copy:
                     'HH':previous_cycle | strftime("%H"),
                     'MEMDIR':""} %}
 
-# Replace template variables with tmpl_dict, one key at a time
-# This must be done in a namespace to overcome jinja scoping
-#  Variables set inside of a for loop are lost at the end of the loop
-#  unless they are part of a namespace
-{% set com_prev_ns = namespace(COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL) %}
-
-{% for key in tmpl_dict.keys() %}
-    {% set search_term = '${' + key + '}' %}
-    {% set replace_term = tmpl_dict[key] %}
-    {% set com_prev_ns.COMIN_ATMOS_RESTART_MEM = com_prev_ns.COMIN_ATMOS_RESTART_MEM.replace(search_term, replace_term) %}
-{% endfor %}
 {% for tile in range(1, ntiles+1) %}
-- ["{{ com_prev_ns.COMIN_ATMOS_RESTART_MEM }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/det/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/det/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
 {% endfor %}
 ######################################
 # copy deterministic increment files
@@ -56,19 +45,8 @@ copy:
                     'HH':current_cycle | strftime("%H"),
                     'MEMDIR':""} %}
 
-# Replace template variables with tmpl_dict, one key at a time
-# This must be done in a namespace to overcome jinja scoping
-#  Variables set inside of a for loop are lost at the end of the loop
-#  unless they are part of a namespace
-{% set com_ns = namespace(COMIN_SNOW_ANALYSIS_MEM = COM_SNOW_ANALYSIS_TMPL) %}
-
-{% for key in tmpl_dict.keys() %}
-    {% set search_term = '${' + key + '}' %}
-    {% set replace_term = tmpl_dict[key] %}
-    {% set com_ns.COMIN_SNOW_ANALYSIS_MEM = com_ns.COMIN_SNOW_ANALYSIS_MEM.replace(search_term, replace_term) %}
-{% endfor %}
 {% for tile in range(1, ntiles+1) %}
-- ["{{ com_ns.COMIN_SNOW_ANALYSIS_MEM }}/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/inc/det/snowinc.{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ COM_SNOW_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) }}/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/inc/det/snowinc.{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
 {% endfor %}
 ######################################
 # copy ensemble background files
@@ -82,28 +60,17 @@ copy:
                         'HH':previous_cycle | strftime("%H"),
                         'MEMDIR':"mem" + '%03d' % mem} %}
 
-    # Replace template variables with tmpl_dict, one key at a time
-    # This must be done in a namespace to overcome jinja scoping
-    #  Variables set inside of a for loop are lost at the end of the loop
-    #  unless they are part of a namespace
-    {% set com_prev_ns = namespace(COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL) %}
-
-    {% for key in tmpl_dict.keys() %}
-        {% set search_term = '${' + key + '}' %}
-        {% set replace_term = tmpl_dict[key] %}
-        {% set com_prev_ns.COMIN_ATMOS_RESTART_MEM = com_prev_ns.COMIN_ATMOS_RESTART_MEM.replace(search_term, replace_term) %}
-    {% endfor %}
     # we need to copy them to two places, one serves as the basis for the analysis
     {% for tile in range(1, ntiles+1) %}
-- ["{{ com_prev_ns.COMIN_ATMOS_RESTART_MEM }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
-- ["{{ com_prev_ns.COMIN_ATMOS_RESTART_MEM }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
     {% endfor %}
     {% if DOIAU == True %}
         # if using IAU, also need backgrounds copied at the beginning of the window
         # we need to copy them to two places, one serves as the basis for the analysis
         {% for tile in range(1, ntiles+1) %}
-- ["{{ com_prev_ns.COMIN_ATMOS_RESTART_MEM }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
-- ["{{ com_prev_ns.COMIN_ATMOS_RESTART_MEM }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
+- ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/anl/mem{{ '%03d' % mem }}/{{ SNOW_WINDOW_BEGIN | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]
         {% endfor %}
     {% endif %}
 {% endfor %}
