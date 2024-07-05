@@ -14,11 +14,10 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 # Begin JOB SPECIFIC work
 ##############################################
 
-CDUMP=${RUN/enkf}
-export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${RUN/enkf}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
 
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY
+RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY
 MEMDIR="mem001" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY_MEM:COM_ATMOS_HISTORY_TMPL
 
 ###############################################################
