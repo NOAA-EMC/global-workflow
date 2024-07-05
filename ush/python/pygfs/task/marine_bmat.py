@@ -33,6 +33,8 @@ class MarineBMat(Task):
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmvar.yaml")
+        # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
+        _enspert_relpath = os.path.relpath(self.task_config.DATAenspert, self.task_config.DATA)
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -46,7 +48,7 @@ class MarineBMat(Task):
                 'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
                 'GRID_GEN_YAML': os.path.join(_home_gdas, 'parm', 'soca', 'gridgen', 'gridgen.yaml'),
                 'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca','ensda', 'stage_ens_mem.yaml.j2'),
-                'ens_dir': os.path.join(self.task_config.DATA, 'ens')
+                'ENSPERT_RELPATH': _enspert_relpath
             }
         )
 
@@ -144,11 +146,11 @@ class MarineBMat(Task):
             logger.debug(f"Stage ensemble members for the hybrid background error")
             mdau.stage_ens_mem(self.task_config)
 
-            # generate ensemble recentering YAML file
+            # generate ensemble recentering/rebalancing YAML file
             logger.debug("Generate ensemble recentering YAML file")
-            ensrecenter_config = parse_j2yaml(path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_ensrecenter.yaml.j2'),
+            ensrecenter_config = parse_j2yaml(path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_ensb.yaml.j2'),
                                               data=self.task_config)
-            ensrecenter_config.save(os.path.join(self.task_config.DATA, 'soca_ensrecenter.yaml'))
+            ensrecenter_config.save(os.path.join(self.task_config.DATA, 'soca_ensb.yaml'))
 
             # generate ensemble weights YAML file
             logger.debug("Generate ensemble recentering YAML file: {self.task_config.abcd_yaml}")
@@ -243,9 +245,9 @@ class MarineBMat(Task):
         exec_cmd = Executable(self.task_config.APRUN_MARINEBMAT)
         exec_name = os.path.join(self.task_config.DATA, 'gdas_ens_handler.x')
         exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg('soca_ensrecenter.yaml')
+        exec_cmd.add_default_arg('soca_ensb.yaml')
 
-        # compute the coefficients of the diffusion operator
+        # generate the ensemble perturbations
         mdau.run(exec_cmd)
 
     @logit(logger)
@@ -260,7 +262,10 @@ class MarineBMat(Task):
         exec_cmd = Executable(self.task_config.APRUN_MARINEBMAT)
         exec_name = os.path.join(self.task_config.DATA, 'gdas_socahybridweights.x')
         exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg('soca_hybridweights.yaml')
+        exec_cmd.add_default_arg('soca_ensweights.yaml')
+
+        # compute the ensemble weights
+        mdau.run(exec_cmd)
 
 
     @logit(logger)
@@ -274,8 +279,10 @@ class MarineBMat(Task):
         self.variance_partitioning()
         self.horizontal_diffusion()    # TODO: Make this optional once we've converged on an acceptable set of scales
         self.vertical_diffusion()
-        self.ensemble_perturbations()  # TODO: refactor this from the old scripts
-        self.hybrid_weight()           # TODO: refactor this from the old scripts
+        # hybrid EnVAR case
+        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 3:
+            self.ensemble_perturbations()  # TODO: refactor this from the old scripts
+            self.hybrid_weight()           # TODO: refactor this from the old scripts
 
     @logit(logger)
     def finalize(self: Task) -> None:
@@ -285,7 +292,7 @@ class MarineBMat(Task):
         This includes:
         - copy the generated static, but cycle dependent background error files to the ROTDIR
         - copy the generated YAML file from initialize to the ROTDIR
-        - keep the re-balanced ensemble perturbation files in the DATA/??? directory
+        - keep the re-balanced ensemble perturbation files in DATAenspert
         - ...
 
         """
@@ -330,6 +337,22 @@ class MarineBMat(Task):
         diagb_list.append([src, dst])
 
         FileHandler({'copy': diagb_list}).sync()
+
+        # Copy the ensemble perturbation diagnostics to the ROTDIR
+        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 3:
+            window_middle_iso = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
+            weight_list = []
+            src = os.path.join(self.task_config.DATA, f"ocn.ens_weights.incr.{window_middle_iso}.nc")
+            dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
+                               f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.ocean.ens_weights.nc")
+            weight_list.append([src, dst])
+
+            src = os.path.join(self.task_config.DATA, f"ice.ens_weights.incr.{window_middle_iso}.nc")
+            dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
+                               f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.ice.ens_weights.nc")
+            weight_list.append([src, dst])
+
+            FileHandler({'copy': weight_list}).sync()
 
         # Copy the YAML files to the OCEAN ROTDIR
         yamls = glob.glob(os.path.join(self.task_config.DATA, '*.yaml'))

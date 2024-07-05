@@ -37,7 +37,7 @@ def link_executable(task_config, exe_name: str) -> None:
 @logit(logger)
 def prep_input_nml(task_config) -> None:
     """Prepare the input.nml file
-       TODO: Use jinja2 to template the input.nml file
+       TODO: Use jinja2 instead of f90nml
     """
     # stage input.nml
     mom_input_nml_tmpl_src = os.path.join(task_config.HOMEgdas, 'parm', 'soca', 'fms', 'input.nml')

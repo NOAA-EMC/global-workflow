@@ -1,10 +1,20 @@
 #!/bin/bash
+
 source "${HOMEgfs}/ush/preamble.sh"
+
 export DATA="${DATAROOT}/${RUN}marinebmat_${cyc}"
 export DATA=${DATA:-${DATAROOT}/${RUN}marinebmat_${cyc}}
 # source config.base, config.ocnanal and config.ocnanalbmat
 # and pass marinebmat to ${machine}.env
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmat" -c "base ocnanal marinebmat"
+
+# If ensemble perturbations are used, save them in a DATAenspert directory that will
+# exist throughout the DA cycle
+if (( 10#${NMEM_ENS:-0} > 0 )); then
+  export DATAjob="${DATAROOT}/${RUN}marinebmat.${PDY:-}${cyc}"
+  export DATAenspert="${DATAjob}/enspert"
+  if [[ ! -d "${DATAenspert}" ]]; then mkdir -p "${DATAenspert}"; fi
+fi
 
 ##############################################
 # Set variables used in the script
@@ -15,7 +25,6 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
-
 
 ##############################################
 # Begin JOB SPECIFIC work
