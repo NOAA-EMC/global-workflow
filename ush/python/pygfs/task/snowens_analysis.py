@@ -14,7 +14,7 @@ from wxflow import (AttrDict,
                     logit,
                     Executable,
                     WorkflowException)
-from pygfs.analysis import Analysis
+from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
 
