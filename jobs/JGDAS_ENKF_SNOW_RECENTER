@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowrecen" -c "base esnowrecen"
 
 ##############################################
 # Set variables used in the script
@@ -34,7 +34,7 @@ done
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_ensemble_analysis.py}
+EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exgdas_enkf_snow_recenter.py}
 ${EXSCRIPT}
 status=$?
 (( status != 0 )) && exit "${status}"

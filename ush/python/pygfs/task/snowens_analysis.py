@@ -3,20 +3,18 @@
 import os
 from logging import getLogger
 from typing import Dict, List, Any
-from pprint import pformat
 import numpy as np
-from netCDF4 import Dataset
 
 from wxflow import (AttrDict,
                     FileHandler,
-                    to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
+                    to_fv3time, to_YMD, to_timedelta, add_to_datetime,
                     rm_p, chdir,
                     parse_j2yaml, save_as_yaml,
                     Jinja,
                     logit,
                     Executable,
                     WorkflowException)
-from pygfs.task.analysis import Analysis
+from pygfs.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -185,7 +183,7 @@ class SnowEnsAnalysis(Analysis):
            Instance of the SnowEnsAnalysis object
         """
         logger.info("Running recentering code")
-        exec_cmd = Executable(self.task_config.APRUN_ESNOWANL)
+        exec_cmd = Executable(self.task_config.APRUN_ESNOWRECEN)
         exec_name = os.path.join(self.task_config.DATA, 'gdasapp_land_ensrecenter.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
@@ -259,7 +257,7 @@ class SnowEnsAnalysis(Analysis):
                         'current_cycle': bkg_time,
                         'CASE_ENS': self.task_config.CASE_ENS,
                         'OCNRES': self.task_config.OCNRES,
-                        'ntiles': 6,
+                        'ntiles': self.task_config.ntiles,
                         'ENS_APPLY_INCR_NML_TMPL': self.task_config.ENS_APPLY_INCR_NML_TMPL,
                         'APPLY_INCR_EXE': self.task_config.APPLY_INCR_EXE,
                         'APRUN_APPLY_INCR': self.task_config.APRUN_APPLY_INCR,
@@ -345,7 +343,6 @@ class SnowEnsAnalysis(Analysis):
         os.symlink(exe_src, exe_dest)
 
         # execute APPLY_INCR_EXE to create analysis files
-        print(os.getcwd())
         exe = Executable(config.APRUN_APPLY_INCR)
         exe.add_default_arg(os.path.join(config.DATA, os.path.basename(exe_src)))
         logger.info(f"Executing {exe}")

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-# exglobal_snow_ensemble_analysis.py
+# exgdas_enkf_snow_recenter.py
 # This script creates an SnowEnsAnalysis class
-# and runs the initialize, execute and finalize methods
-# for a global Snow Depth ensemble analysis
+# and will recenter the ensemble mean to the
+# deterministic analysis and provide increments
+# to create an ensemble of snow analyses
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
-from pygfs.task.snowens_analysis import SnowEnsAnalysis
+from pygfs.snowens_analysis import SnowEnsAnalysis
 
 # Initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)

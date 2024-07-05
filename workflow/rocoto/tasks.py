@@ -20,7 +20,7 @@ class Tasks:
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'prepsnowobs', 'snowanl', 'esnowanl',
+                   'prepsnowobs', 'snowanl', 'esnowrecen',
                    'fcst',
                    'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmosprod', 'oceanprod', 'iceprod',

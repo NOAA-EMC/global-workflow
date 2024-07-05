@@ -627,7 +627,7 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
         return task
 
-    def esnowanl(self):
+    def esnowrecen(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}prepsnowobs'}
@@ -638,14 +638,14 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('esnowanl')
-        task_name = f'{self.cdump}esnowanl'
+        resources = self.get_resource('esnowrecen')
+        task_name = f'{self.cdump}esnowrecen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/esnowanl.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/esnowrecen.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2580,7 +2580,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jedisnowda:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}esnowanl'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}esnowrecen'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

@@ -8,17 +8,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="esnowanl"
+export job="esnowrecen"
 export jobid="${job}.$$"
 
 ###############################################################
-# setup python path for workflow utilities and tasks
-wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
-export PYTHONPATH
-
-###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_SNOW_ENSEMBLE_ANALYSIS"
+"${HOMEgfs}/jobs/JGDAS_ENKF_SNOW_RECENTER"
 status=$?
 exit "${status}"
