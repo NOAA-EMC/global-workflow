@@ -174,7 +174,7 @@ class Tasks:
         Given a task name (task_name) and its configuration (task_names),
         return a dictionary of resources (task_resource) used by the task.
         Task resource dictionary includes:
-        account, walltime, cores, nodes, ppn, threads, memory, queue, partition, native
+        account, walltime, ntasks, nodes, ppn, threads, memory, queue, partition, native
         """
 
         scheduler = self.app_config.scheduler
@@ -183,13 +183,13 @@ class Tasks:
 
         account = task_config['ACCOUNT_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['ACCOUNT']
 
-        walltime = task_config[f'wtime']
-        cores = task_config[f'npe']
-        ppn = task_config[f'npe_node']
+        walltime = task_config[f'walltime']
+        ntasks = task_config[f'ntasks']
+        ppn = task_config[f'tasks_per_node']
 
-        nodes = int(np.ceil(float(cores) / float(ppn)))
+        nodes = int(np.ceil(float(ntasks) / float(ppn)))
 
-        threads = task_config[f'nth']
+        threads = task_config[f'threads_per_task']
 
         # Memory is not required
         memory = task_config.get(f'memory', None)
@@ -227,7 +227,7 @@ class Tasks:
         task_resource = {'account': account,
                          'walltime': walltime,
                          'nodes': nodes,
-                         'cores': cores,
+                         'ntasks': ntasks,
                          'ppn': ppn,
                          'threads': threads,
                          'memory': memory,

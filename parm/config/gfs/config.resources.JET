@@ -5,10 +5,10 @@
 case ${step} in
   "anal")
     if [[ "${CASE}" == "C384" ]]; then
-      export npe_gdas=270
-      export npe_gfs=270
-      export nth=8
-      export npe_node=$(( npe_node_max / nth ))
+      export ntasks_gdas=270
+      export ntasks_gfs=270
+      export threads_per_task=8
+      export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
 
@@ -17,27 +17,27 @@ case ${step} in
       # The number of tasks and cores used must be the same for eobs
       # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
       # This would also be an issues for vjet and sjet if anyone runs on those nodes.
-      export npe_node=10
+      export tasks_per_node=10
     fi
     ;;
 
   "eupd")
     case ${CASE} in
       "C384")
-        export npe=80
+        export ntasks=80
         ;;
       "C192" | "C96" | "C48")
-        export nth=4
+        export threads_per_task=4
         ;;
       *)
         ;;
     esac
-    export npe_node=$(( npe_node_max / nth ))
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "ecen")
-    if [[ "${CASE}" == "C768" ]]; then export nth=6; fi
-    export npe_node=$(( npe_node_max / nth ))
+    if [[ "${CASE}" == "C768" ]]; then export threads_per_task=6; fi
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "upp")

@@ -581,8 +581,8 @@ if [ ${GENDIAG} = "YES" ] ; then
       if [ -d ${DIAG_DIR} ]; then
          rm -rf ${DIAG_DIR}
       fi
-      npe_m1="$((npe-1))"
-      for pe in $(seq 0 ${npe_m1}); do
+      ntasks_m1="$((ntasks-1))"
+      for pe in $(seq 0 ${ntasks_m1}); do
         pedir="dir."$(printf %04i ${pe})
         mkdir -p ${DIAG_DIR}/${pedir}
         ${NLN} ${DIAG_DIR}/${pedir} ${pedir}
@@ -675,7 +675,7 @@ EOFunzip
       chmod 755 ${DATA}/mp_unzip.sh
       ncmd=$(cat ${DATA}/mp_unzip.sh | wc -l)
       if [ ${ncmd} -gt 0 ]; then
-         ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
+         ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
          APRUNCFP_UNZIP=$(eval echo ${APRUNCFP})
          ${APRUNCFP_UNZIP} ${DATA}/mp_unzip.sh
          export err=$?; err_chk

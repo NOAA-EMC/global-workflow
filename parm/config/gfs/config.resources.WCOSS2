@@ -10,16 +10,16 @@ case ${step} in
 
   "anal")
     if [[ "${CASE}" == "C768" ]]; then
-        export nth=8
-        # Make npe a multiple of 16
-        export npe_gdas=784
-        export npe_gfs=832
-        export npe_node=$(( npe_node_max / nth ))
+        export threads_per_task=8
+        # Make ntasks a multiple of 16
+        export ntasks_gdas=784
+        export ntasks_gfs=832
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
 
   "fit2obs")
-    export npe_node=3
+    export tasks_per_node=3
     ;;
 
   "echgres")
@@ -33,22 +33,22 @@ case ${step} in
   "eupd")
     case ${CASE} in
       "C768" | "C384")
-        export npe=315
-        export nth=14
+        export ntasks=315
+        export threads_per_task=14
         ;;
       *)
       ;;
     esac
-    export npe_node=$(( npe_node_max / nth ))
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "eobs")
     case ${CASE} in
       "C768" | "C384")
-        export npe_node=50
+        export tasks_per_node=50
         ;;
       *)
-        export npe_node=40
+        export tasks_per_node=40
         ;;
     esac
     ;;

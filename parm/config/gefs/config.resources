@@ -16,15 +16,15 @@ step=$1
 echo "BEGIN: config.resources"
 
 case ${machine} in
-  "WCOSS2")   npe_node_max=128;;
-  "HERA")     npe_node_max=40;;
-  "ORION")    npe_node_max=40;;
-  "HERCULES") npe_node_max=80;;
+  "WCOSS2")   max_tasks_per_node=128;;
+  "HERA")     max_tasks_per_node=40;;
+  "ORION")    max_tasks_per_node=40;;
+  "HERCULES") max_tasks_per_node=80;;
   "JET")
     case ${PARTITION_BATCH} in
-      "xjet")          npe_node_max=24;;
-      "vjet" | "sjet") npe_node_max=16;;
-      "kjet")          npe_node_max=40;;
+      "xjet")          max_tasks_per_node=24;;
+      "vjet" | "sjet") max_tasks_per_node=16;;
+      "kjet")          max_tasks_per_node=40;;
       *)
         echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
         exit 3
@@ -32,8 +32,8 @@ case ${machine} in
     ;;
   "S4")
     case ${PARTITION_BATCH} in
-      "s4")  npe_node_max=32;;
-      "ivy") npe_node_max=20;;
+      "s4")  max_tasks_per_node=32;;
+      "ivy") max_tasks_per_node=20;;
       *)
         echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
         exit 3
@@ -41,39 +41,39 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    npe_node_max=40
+    max_tasks_per_node=40
     ;;
   *)
     echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
     exit 2
     ;;
 esac
-export npe_node_max
+export max_tasks_per_node
 
 case ${step} in
 
   "stage_ic")
-    export wtime="00:15:00"
-    export npe=1
-    export npe_node=1
-    export nth=1
+    export walltime="00:15:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads=1
     export is_exclusive=True
     ;;
 
   "waveinit")
-    export wtime="00:10:00"
-    export npe=12
-    export nth=1
-    export npe_node=$(( npe_node_max / nth ))
-    export NTASKS=${npe}
+    export walltime="00:10:00"
+    export ntasks=12
+    export threads=1
+    export tasks_per_node=$(( max_tasks_per_node / threads ))
+    export NTASKS=${ntasks}
     export memory="2GB"
     ;;
 
   "prep_emissions")
-    export wtime="00:10:00"
-    export npe=1
-    export nth=1
-    export npe_node=$(( npe_node_max / nth ))
+    export walltime="00:10:00"
+    export ntasks=1
+    export threads=1
+    export tasks_per_node=$(( max_tasks_per_node / threads ))
     export memory="1GB"
     ;;
 
@@ -180,20 +180,20 @@ case ${step} in
 
       echo "Total PETS for ${_RUN} = ${NTASKS_TOT}"
 
-      declare -x "npe_${_RUN}"="${NTASKS_TOT}"
-      declare -x "nth_${_RUN}"="${UFS_THREADS}"
-      declare -x "npe_node_${_RUN}"="${npe_node_max}"
+      declare -x "ntasks_${_RUN}"="${NTASKS_TOT}"
+      declare -x "threads_per_task_${_RUN}"="${UFS_THREADS}"
+      declare -x "tasks_per_node_${_RUN}"="${max_tasks_per_node}"
 
     done
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_gefs"="03:00:00"
-        declare -x "wtime_gfs"="03:00:00"
+        declare -x "walltime_gefs"="03:00:00"
+        declare -x "walltime_gfs"="03:00:00"
         ;;
       "C384" | "C768" | "C1152")
-        declare -x "wtime_gefs"="06:00:00"
-        declare -x "wtime_gfs"="06:00:00"
+        declare -x "walltime_gefs"="06:00:00"
+        declare -x "walltime_gfs"="06:00:00"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
@@ -206,77 +206,77 @@ case ${step} in
     ;;
 
   "atmos_products")
-    export wtime="00:15:00"
-    export npe=24
-    export nth=1
-    export npe_node="${npe}"
+    export walltime="00:15:00"
+    export ntasks=24
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
     export is_exclusive=True
     ;;
 
   "atmos_ensstat")
-    export wtime="00:30:00"
-    export npe=6
-    export nth=1
-    export npe_node="${npe}"
+    export walltime="00:30:00"
+    export ntasks=6
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
     export is_exclusive=True
     ;;
 
   "oceanice_products")
-    export wtime="00:15:00"
-    export npe=1
-    export npe_node=1
-    export nth=1
+    export walltime="00:15:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
     export memory="96GB"
     ;;
 
   "wavepostsbs")
-    export wtime="03:00:00"
-    export npe=1
-    export nth=1
-    export npe_node=$(( npe_node_max / nth ))
-    export NTASKS=${npe}
+    export walltime="03:00:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export NTASKS=${ntasks}
     export memory="10GB"
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    export wtime="03:00:00"
-    export npe=240
-    export nth=1
-    export npe_node=$(( npe_node_max / nth ))
+    export walltime="03:00:00"
+    export ntasks=240
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-    if [[ ${npe_node} -gt 40 ]]; then
-        export npe_node=40
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        export tasks_per_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe}
+    export NTASKS=${ntasks}
     ;;
 
   "wavepostbndpntbll")
-    export wtime="01:00:00"
-    export npe=448
-    export nth=1
-    export npe_node=$(( npe_node_max / nth ))
+    export walltime="01:00:00"
+    export ntasks=448
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-    if [[ ${npe_node} -gt 40 ]]; then
-        export npe_node=40
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        export tasks_per_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe}
+    export NTASKS=${ntasks}
     ;;
 
   "wavepostpnt")
-    export wtime="04:00:00"
-    export npe=200
-    export nth=1
-    export npe_node=$(( npe_node_max / nth ))
+    export walltime="04:00:00"
+    export ntasks=200
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-    if [[ ${npe_node} -gt 40 ]]; then
-        export npe_node=40
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        export tasks_per_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe}
+    export NTASKS=${ntasks}
     ;;
 
   *)
@@ -292,7 +292,7 @@ if [[ -f "${EXPDIR}/config.resources.${machine}" ]]; then
 fi
 
 # Check for RUN-specific variables and export them
-for resource_var in nth npe npe_node NTASKS memory wtime; do
+for resource_var in threads_per_task ntasks tasks_per_node NTASKS memory walltime; do
    run_resource_var="${resource_var}_${RUN}"
    if [[ -n "${!run_resource_var+0}" ]]; then
       declare -x "${resource_var}"="${!run_resource_var}"
