@@ -51,20 +51,19 @@ datasets:
     {% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}
 
     {% if ARCH_CYC == cycle_HH | int%}
-        # Save the warm and forecast-only cycle ICs every ARCH_WARMICFREQ days
+        # Save the forecast-only cycle ICs every ARCH_WARMICFREQ or ARCH_FCSTICFREQ days
         {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
             {% set save_warm_start_forecast = True %}
-            # Save the forecast-only restarts every ARCH_FCSTICFREQ days
         {% elif (current_cycle - SDATE).days % ARCH_FCSTICFREQ == 0 %}
             {% set save_warm_start_forecast = True %}
         {% endif %}
+    {% endif %}
 
-        # The GDAS ICs (group b) are restarts and always lag increments by assim_freq
+    # The GDAS ICs (group b) are restarts and always lag increments by assim_freq
+    {% if (ARCH_CYC - assim_freq) % 24 == cycle_HH | int %}
         {% set ics_offset = (assim_freq | string + "H") | to_timedelta %}
         {% if (current_cycle | add_to_datetime(ics_offset) - SDATE).days % ARCH_WARMICFREQ == 0 %}
-            {% if (ARCH_CYC - assim_freq) % 24 == cycle_HH | int %}
-                {% set save_warm_start_cycled = True %}
-            {% endif %}
+            {% set save_warm_start_cycled = True %}
         {% endif %}
     {% endif %}
 
