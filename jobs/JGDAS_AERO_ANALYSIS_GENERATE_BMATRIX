@@ -21,7 +21,7 @@ mkdir -p "${COMOUT_CHEM_BMAT}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROBMATPY:-${SCRgfs}/exglobal_aero_analysis_generate_bmatrix.py}
+EXSCRIPT=${GDASAEROBMATPY:-${SCRgfs}/exgdas_aero_analysis_generate_bmatrix.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

@@ -24,8 +24,8 @@ class AerosolBMatrix(BMatrix):
         _res = int(self.config['CASE'][1:])
         _res_anl = int(self.config['CASE_ANL'][1:])
 
-        _bmat_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
-        _diffusion_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.chem_diffusion.yaml")
+        _bmat_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diagb.yaml")
+        _diffusion_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diffusion.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -38,16 +38,17 @@ class AerosolBMatrix(BMatrix):
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.config['LEVS'] - 1,
                 'aero_bkg_fhr': map(int, str(self.config['aero_bkg_times']).split(',')),
-                'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
-                'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
-                'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
+                'OPREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
+                'APREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
+                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'bmat_yaml': _bmat_yaml,
                 'diffusion_yaml': _diffusion_yaml,
             }
         )
 
         # task_config is everything that this task should need
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
+        self.task_config = AttrDict(.
+        **self.task_config, **local_dict)
 
     @logit(logger)
     def initialize(self: BMatrix) -> None:
@@ -58,7 +59,9 @@ class AerosolBMatrix(BMatrix):
         FileHandler(jedi_fix_list).sync()
 
         # stage backgrounds
-        FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
+        logger.info(f"Staging backgrounds prescribed from {self.task_config.AERO_BMATRIX_STAGE_TMPL}")
+        aero_bmat_stage_list = parse_j2yaml(self.task_config.AERO_BMATRIX_STAGE_TMPL, self.task_config)
+        FileHandler(aero_bmat_stage_list).sync()
 
         # generate diagb YAML file
         logger.info(f"Generate bmat YAML file: {self.task_config.bmat_yaml}")
@@ -126,10 +129,10 @@ class AerosolBMatrix(BMatrix):
     def finalize(self) -> None:
         super().finalize()
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
-        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
-        src_diffusion = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diffusion.yaml")
-        dest_diffusion = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diffusion.yaml")
+        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.task_config['cyc']:02d}z.chem_diagb.yaml")
+        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.task_config['cyc']:02d}z.chem_diagb.yaml")
+        src_diffusion = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.task_config['cyc']:02d}z.chem_diffusion.yaml")
+        dest_diffusion = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.task_config['cyc']:02d}z.chem_diffusion.yaml")
         yaml_copy = {
             'mkdir': [self.task_config.COM_CHEM_ANALYSIS],
             'copy': [[src, dest], [src_diffusion, dest_diffusion]]

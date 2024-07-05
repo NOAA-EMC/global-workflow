@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_aero_analysis_generate_bmatrix.py
+# exgdas_aero_analysis_generate_bmatrix.py
 # This script creates an AerosolBMatrix object
 # and runs the methods needed
 # to stage files, compute the variance, and write to com
