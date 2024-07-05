@@ -1,0 +1,19 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set HEAD = RUN + ".t" + cycle_HH + "z." %}
+{% set offset_td = "+6H" | to_timedelta %}
+{% set background_time = current_cycle | add_to_datetime(offset_td) %}
+copy:
+### copy YAMLs used
+{% set yaml_list = ['chem_diagb.yaml', 'chem_diffusion.yaml'] %}
+{% for fname in yaml_list %}
+- ["{{ DATA }}/{{ HEAD }}{{ fname }}", "{{ COMOUT_CHEM_BMAT }}/{{ HEAD }}{{ fname }}"]
+{% endfor %}
+### copy stddev files to ROTDIR
+{% for tile in range(1, ntiles+1) %}
+- ["{{ DATA }}/stddev/{{ background_time | to_fv3time }}.stddev.fv_tracer.res.tile{{ tile }}.nc", "{{ COMOUT_CHEM_BMAT }}/{{ background_time | to_fv3time }}.stddev.fv_tracer.res.tile{{ tile }}.nc"]
+{% endfor %}
+### copy coupler file
+- ["{{ DATA }}/stddev/{{ background_time | to_fv3time }}.stddev.coupler.res", "{{ COMOUT_CHEM_BMAT }}/{{ background_time | to_fv3time }}.stddev.coupler.res"]
+### copy diffusion files
+- ["{{ DATA }}/diffusion/diffusion_hz.nc", "{{ COMOUT_CHEM_BMAT }}/{{ HEAD }}aero_diffusion_hz.nc"]
+- ["{{ DATA }}/diffusion/diffusion_vt.nc", "{{ COMOUT_CHEM_BMAT }}/{{ HEAD }}aero_diffusion_vt.nc"]
