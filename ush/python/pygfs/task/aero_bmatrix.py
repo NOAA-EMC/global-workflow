@@ -21,8 +21,8 @@ class AerosolBMatrix(BMatrix):
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
 
-        _res = int(self.config['CASE'][1:])
-        _res_anl = int(self.config['CASE_ANL'][1:])
+        _res = int(self.task_config['CASE'][1:])
+        _res_anl = int(self.task_config['CASE_ANL'][1:])
 
         _bmat_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diagb.yaml")
         _diffusion_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diffusion.yaml")
@@ -32,12 +32,12 @@ class AerosolBMatrix(BMatrix):
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
-                'npz_ges': self.config.LEVS - 1,
-                'npz': self.config.LEVS - 1,
+                'npz_ges': self.task_config.LEVS - 1,
+                'npz': self.task_config.LEVS - 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
-                'npz_anl': self.config['LEVS'] - 1,
-                'aero_bkg_fhr': map(int, str(self.config['aero_bkg_times']).split(',')),
+                'npz_anl': self.task_config['LEVS'] - 1,
+                'aero_bkg_fhr': map(int, str(self.task_config['aero_bkg_times']).split(',')),
                 'OPREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'APREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
@@ -47,8 +47,7 @@ class AerosolBMatrix(BMatrix):
         )
 
         # task_config is everything that this task should need
-        self.task_config = AttrDict(.
-        **self.task_config, **local_dict)
+        self.task_config = AttrDict(**self.task_config, **local_dict)
 
     @logit(logger)
     def initialize(self: BMatrix) -> None:
