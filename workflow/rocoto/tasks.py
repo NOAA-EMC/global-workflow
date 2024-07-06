@@ -248,7 +248,7 @@ class Tasks:
                 native = '--export=NONE'
             if task_config['RESERVATION'] != "":
                 native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
-            if task_config['CLUSTERS'] not in ["", '@CLUSTERS@']:
+            if task_config.get('CLUSTERS', "") not in ["", '@CLUSTERS@']:
                 native += ' --clusters=' + task_config['CLUSTERS']
 
         queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
