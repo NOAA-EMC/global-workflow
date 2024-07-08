@@ -28,8 +28,8 @@ if [[ "${DO_ATM}" == "YES" ]];then
     mkdir -p "${DATA}/mem${ENSMEM}_atmos" 
   fi
   ${EXTRCTVARA} "${DATA}/mem${ENSMEM}_atmos"
-  cp -pr "${DATA}/mem${ENSMEM}_atmos/f2d" "${COM_RFCST_PROD_ATMOS}"
-  cp -pr "${DATA}/mem${ENSMEM}_atmos/f3d" "${COM_RFCST_PROD_ATMOS}"
+  cp -pr "${DATA}/mem${ENSMEM}_atmos/f2d" "${COMOUT_RFCST_PROD_ATMOS}"
+  cp -pr "${DATA}/mem${ENSMEM}_atmos/f3d" "${COMOUT_RFCST_PROD_ATMOS}"
 fi
 
 #Extract variables for ocean
@@ -41,7 +41,7 @@ if [[ "${DO_OCN}" == "YES" ]];then
   if [[ "${ocn_dataformat}" == "netcdf" ]]; then varlist_ocn=${varlist_ocn_netcdf}; fi
   if [[ "${ocn_dataformat}" == "grib2" ]]; then varlist_ocn=${varlist_ocn_grib2}; fi  
   ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}"
-  cp -pr "${DATA}/mem${ENSMEM}_ocn/." "${COM_RFCST_PROD_OCN}"
+  cp -pr "${DATA}/mem${ENSMEM}_ocn/." "${COMOUT_RFCST_PROD_OCN}"
 fi
 
 #Extract variables for ice
@@ -53,7 +53,7 @@ if [[ "${DO_ICE}" == "YES" ]];then
   if [[ "${ice_dataformat}" == "netcdf" ]]; then varlist_ice=${varlist_ice_netcdf}; fi
   if [[ "${ice_dataformat}" == "grib2" ]]; then varlist_ice=${varlist_ice_grib2}; fi  
   ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" 
-  cp -pr "${DATA}/mem${ENSMEM}_ice/." "${COM_RFCST_PROD_ICE}"
+  cp -pr "${DATA}/mem${ENSMEM}_ice/." "${COMOUT_RFCST_PROD_ICE}"
 fi
 
 #Extract variables for wave
@@ -63,7 +63,7 @@ if [[ "${DO_WAVE}" == "YES" ]];then
     mkdir -p "${DATA}/mem${ENSMEM}_wav" 
   fi
   ${EXTRCTVARW} "${DATA}/mem${ENSMEM}_wav"
-  cp -pr "${DATA}/mem${ENSMEM}_wav/." "${COM_RFCST_PROD_WAV}"
+  cp -pr "${DATA}/mem${ENSMEM}_wav/." "${COMOUT_RFCST_PROD_WAV}"
 fi
 
 exit 0

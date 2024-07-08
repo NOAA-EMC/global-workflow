@@ -5,29 +5,29 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "extractvars" -c "base extractvars"
 
 # Set COM Paths
 for grid in '0p25' '0p50' '1p00'; do
-  prod_dir="COM_ATMOS_GRIB_${grid}"
+  prod_dir="COMIN_ATMOS_GRIB_${grid}"
   GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
 done
 
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_OCEAN_HISTORY"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_OCEAN_GRIB"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_OCEAN_NETCDF"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_ICE_HISTORY"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_ICE_GRIB"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_ICE_NETCDF"  
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_ICE_HISTORY:COM_ICE_HISTORY_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_ICE_GRIB:COM_ICE_GRIB_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_ICE_NETCDF:COM_ICE_NETCDF_TMPL"
 
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COM_WAVE_GRID"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL"
 
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COM_RFCST_PROD_ATMOS"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COM_RFCST_PROD_OCN"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COM_RFCST_PROD_ICE"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COM_RFCST_PROD_WAV"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_ATMOS:COM_RFCST_PROD_ATMOS_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_OCN:COM_RFCST_PROD_OCN_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_ICE:COM_RFCST_PROD_ICE_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_WAV:COM_RFCST_PROD_WAV_TMPL"
 
-if [[ ! -d "${COM_RFCST_PROD_ATMOS}" ]]; then mkdir -m 775 -p "${COM_RFCST_PROD_ATMOS}"; fi
-if [[ ! -d "${COM_RFCST_PROD_OCN}" ]]; then mkdir -m 775 -p "${COM_RFCST_PROD_OCN}"; fi
-if [[ ! -d "${COM_RFCST_PROD_WAV}" ]]; then mkdir -m 775 -p "${COM_RFCST_PROD_WAV}"; fi
-if [[ ! -d "${COM_RFCST_PROD_ICE}" ]]; then mkdir -m 775 -p "${COM_RFCST_PROD_ICE}"; fi
+if [[ ! -d "${COMOUT_RFCST_PROD_ATMOS}" ]]; then mkdir -m 775 -p "${COMOUT_RFCST_PROD_ATMOS}"; fi
+if [[ ! -d "${COMOUT_RFCST_PROD_OCN}" ]]; then mkdir -m 775 -p "${COMOUT_RFCST_PROD_OCN}"; fi
+if [[ ! -d "${COMOUT_RFCST_PROD_WAV}" ]]; then mkdir -m 775 -p "${COMOUT_RFCST_PROD_WAV}"; fi
+if [[ ! -d "${COMOUT_RFCST_PROD_ICE}" ]]; then mkdir -m 775 -p "${COMOUT_RFCST_PROD_ICE}"; fi
 
 # Execute the Script
 "${SCRgfs}/exglobal_extractvars.sh"

@@ -11,7 +11,7 @@ nh=6
 while [[ ${nh} -le ${FHMAX_WAV} ]];do
   fnh=$(printf "%3.3d" "${nh}")
 
-  infile=${COM_WAVE_GRID}/gefswave.${cycle}.global.${wavres}.f${fnh}.grib2
+  infile=${COMIN_WAVE_GRID}/gefswave.${cycle}.global.${wavres}.f${fnh}.grib2
   oufile1=${DATA}/gefswave.${cycle}.global.${wavres}.f${fnh}.grib2
   rm -f "${oufile1}" #remove outfile if it already exists before extraction
             

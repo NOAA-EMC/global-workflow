@@ -18,20 +18,20 @@ while [[ ${nh} -le ${FHMAX} ]];do
 
   if [[ "${dataformat}" == "grib2" ]];then
     if [[ ${component_name} == "ocn" ]];then
-      infile=${COM_OCEAN_GRIB}/${datares}/gefs.ocean.${cycle}.${datares}.f${fnh}.grib2
+      infile=${COMIN_OCEAN_GRIB}/${datares}/gefs.ocean.${cycle}.${datares}.f${fnh}.grib2
     fi
     if [[ ${component_name} == "ice" ]];then
-      infile=${COM_ICE_GRIB}/${datares}/gefs.ice.${cycle}.${datares}.f${fnh}.grib2
+      infile=${COMIN_ICE_GRIB}/${datares}/gefs.ice.${cycle}.${datares}.f${fnh}.grib2
     fi                                                                                                                                                                                                                                   
     oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.grib2
   fi
 
   if [[ "${dataformat}" == "netcdf" ]];then
     if [[ ${component_name} == "ocn" ]];then
-      infile=${COM_OCEAN_NETCDF}/gefs.ocean.${cycle}.${datares}.f${fnh}.nc
+      infile=${COMIN_OCEAN_NETCDF}/gefs.ocean.${cycle}.${datares}.f${fnh}.nc
     fi
     if [[ ${component_name} == "ice" ]];then
-      infile=${COM_ICE_NETCDF}/gefs.ice.${cycle}.${datares}.f${fnh}.nc
+      infile=${COMIN_ICE_NETCDF}/gefs.ice.${cycle}.${datares}.f${fnh}.nc
     fi   
     oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.nc
   fi
