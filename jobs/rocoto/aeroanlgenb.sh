@@ -19,6 +19,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_GENERATE_BMATRIX"
+"${HOMEgfs}/jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX"
 status=$?
 exit "${status}"

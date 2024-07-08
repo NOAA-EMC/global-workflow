@@ -21,33 +21,33 @@ class AerosolBMatrix(BMatrix):
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
 
-        _res = int(self.config['CASE'][1:])
-        _res_anl = int(self.config['CASE_ANL'][1:])
+        _res = int(self.task_config['CASE'][1:])
+        _res_anl = int(self.task_config['CASE_ANL'][1:])
 
-        _bmat_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
-        _diffusion_yaml = os.path.join(self.runtime_config.DATA, f"{self.runtime_config.CDUMP}.t{self.runtime_config['cyc']:02d}z.chem_diffusion.yaml")
+        _bmat_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diagb.yaml")
+        _diffusion_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diffusion.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
-                'npz_ges': self.config.LEVS - 1,
-                'npz': self.config.LEVS - 1,
+                'npz_ges': self.task_config.LEVS - 1,
+                'npz': self.task_config.LEVS - 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
-                'npz_anl': self.config['LEVS'] - 1,
-                'aero_bkg_fhr': map(int, str(self.config['aero_bkg_times']).split(',')),
-                'OPREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
-                'APREFIX': f"{self.runtime_config.CDUMP}.t{self.runtime_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
-                'GPREFIX': f"gdas.t{self.runtime_config.previous_cycle.hour:02d}z.",
+                'npz_anl': self.task_config['LEVS'] - 1,
+                'aero_bkg_fhr': map(int, str(self.task_config['aero_bkg_times']).split(',')),
+                'OPREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
+                'APREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
+                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'bmat_yaml': _bmat_yaml,
                 'diffusion_yaml': _diffusion_yaml,
             }
         )
 
         # task_config is everything that this task should need
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
+        self.task_config = AttrDict(**self.task_config, **local_dict)
 
     @logit(logger)
     def initialize(self: BMatrix) -> None:
@@ -58,7 +58,9 @@ class AerosolBMatrix(BMatrix):
         FileHandler(jedi_fix_list).sync()
 
         # stage backgrounds
-        FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
+        logger.info(f"Staging backgrounds prescribed from {self.task_config.AERO_BMATRIX_STAGE_TMPL}")
+        aero_bmat_stage_list = parse_j2yaml(self.task_config.AERO_BMATRIX_STAGE_TMPL, self.task_config)
+        FileHandler(aero_bmat_stage_list).sync()
 
         # generate diagb YAML file
         logger.info(f"Generate bmat YAML file: {self.task_config.bmat_yaml}")
@@ -69,12 +71,6 @@ class AerosolBMatrix(BMatrix):
         logger.info(f"Generate diffusion YAML file: {self.task_config.diffusion_yaml}")
         save_as_yaml(self.task_config.diffusion_config, self.task_config.diffusion_yaml)
         logger.info(f"Wrote diffusion YAML to: {self.task_config.diffusion_yaml}")
-
-        # create output directory
-        FileHandler({'mkdir': [os.path.join(self.task_config['DATA'], 'stddev')]}).sync()
-
-        # create diffusion output directory
-        FileHandler({'mkdir': [os.path.join(self.task_config['DATA'], 'diffusion')]}).sync()
 
         # link executable to run directory
         logger.info(f'before link_bmatexe')
@@ -125,44 +121,10 @@ class AerosolBMatrix(BMatrix):
     @logit(logger)
     def finalize(self) -> None:
         super().finalize()
-        # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
-        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diagb.yaml")
-        src_diffusion = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diffusion.yaml")
-        dest_diffusion = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.chem_diffusion.yaml")
-        yaml_copy = {
-            'mkdir': [self.task_config.COM_CHEM_ANALYSIS],
-            'copy': [[src, dest], [src_diffusion, dest_diffusion]]
-        }
-        FileHandler(yaml_copy).sync()
-
-        # copy stddev files to ROTDIR
-        logger.info('Copying std. dev. files to ROTDIR')
-        template = f'{to_fv3time(self.task_config.current_cycle)}.stddev.fv_tracer.res.tile{{tilenum}}.nc'
-        stddevlist = []
-        # actual std dev tracer files
-        for itile in range(1, self.task_config.ntiles + 1):
-            tracer = template.format(tilenum=itile)
-            src = os.path.join(self.task_config.DATA, 'stddev', tracer)
-            dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, tracer)
-            stddevlist.append([src, dest])
-        # coupler file
-        coupler = f'{to_fv3time(self.task_config.current_cycle)}.stddev.coupler.res'
-        src = os.path.join(self.task_config.DATA, 'stddev', coupler)
-        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, coupler)
-        stddevlist.append([src, dest])
-
-        FileHandler({'copy': stddevlist}).sync()
-
-        # Diffusion files
-        diff_hz = 'diffusion_hz.nc'
-        diff_vt = 'diffusion_vt.nc'
-        src_hz = os.path.join(self.task_config.DATA, 'diffusion', diff_hz)
-        dest_hz = os.path.join(self.task_config.COM_CHEM_ANALYSIS, diff_hz)
-        src_vt = os.path.join(self.task_config.DATA, 'diffusion', diff_vt)
-        dest_vt = os.path.join(self.task_config.COM_CHEM_ANALYSIS, diff_vt)
-        difflist = [[src_hz, dest_hz], [src_vt, dest_vt]]
-        FileHandler({'copy': difflist}).sync()
+        # save files to COMOUT
+        logger.info(f"Saving files to COMOUT based on {self.task_config.AERO_BMATRIX_FINALIZE_TMPL}")
+        aero_bmat_finalize_list = parse_j2yaml(self.task_config.AERO_BMATRIX_FINALIZE_TMPL, self.task_config)
+        FileHandler(aero_bmat_finalize_list).sync()
 
     @logit(logger)
     def link_bmatexe(self) -> None:

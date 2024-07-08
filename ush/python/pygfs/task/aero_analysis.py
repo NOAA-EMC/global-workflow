@@ -82,28 +82,15 @@ class AerosolAnalysis(Analysis):
         jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
-        # stage berror files
-        # copy BUMP files, otherwise it will assume ID matrix
-        if self.task_config.get('STATICB_TYPE', 'identity') in ['bump']:
-            FileHandler(self.get_berror_dict(self.task_config)).sync()
-        if self.task_config.get('STATICB_TYPE', 'identity') in ['diffusion']:
-            FileHandler(self.get_berror_dict(self.task_config)).sync()
-
-        # stage backgrounds
-        FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
+        # stage files from COM and create working directories
+        logger.info(f"Staging files prescribed from {self.task_config.AERO_STAGE_VARIATIONAL_TMPL}")
+        aero_var_stage_list = parse_j2yaml(self.task_config.AERO_STAGE_VARIATIONAL_TMPL, self.task_config)
+        FileHandler(aero_var_stage_list).sync()
 
         # generate variational YAML file
         logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
-
-        # need output dir for diags and anl
-        logger.debug("Create empty output [anl, diags] directories to receive output from executable")
-        newdirs = [
-            os.path.join(self.task_config['DATA'], 'anl'),
-            os.path.join(self.task_config['DATA'], 'diags'),
-        ]
-        FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
     def variational(self: Analysis) -> None:
@@ -142,13 +129,15 @@ class AerosolAnalysis(Analysis):
         """
         # ---- tar up diags
         # path of output tar statfile
-        aerostat = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['APREFIX']}aerostat")
+        logger.info('Preparing observation space diagnostics for archiving')
+        aerostat = os.path.join(self.task_config.COMOUT_CHEM_ANALYSIS, f"{self.task_config['APREFIX']}aerostat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
 
         # gzip the files first
         for diagfile in diags:
+            logger.info(f'Adding {diagfile} to tar file')
             with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
                 f_out.writelines(f_in)
 
@@ -157,44 +146,16 @@ class AerosolAnalysis(Analysis):
             for diagfile in diags:
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
-
-        # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['RUN']}.t{self.task_config['cyc']:02d}z.aerovar.yaml")
-        dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['RUN']}.t{self.task_config['cyc']:02d}z.aerovar.yaml")
-        yaml_copy = {
-            'mkdir': [self.task_config.COM_CHEM_ANALYSIS],
-            'copy': [[src, dest]]
-        }
-        FileHandler(yaml_copy).sync()
-
-        # ---- copy RESTART fv_tracer files for future reference
-        if self.task_config.DOIAU:
-            bkgtime = self.task_config.AERO_WINDOW_BEGIN
-        else:
-            bkgtime = self.task_config.current_cycle
-        template = '{}.fv_tracer.res.tile{}.nc'.format(to_fv3time(bkgtime), '{tilenum}')
-        bkglist = []
-        for itile in range(1, self.task_config.ntiles + 1):
-            tracer = template.format(tilenum=itile)
-            src = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, tracer)
-            dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f'aeroges.{tracer}')
-            bkglist.append([src, dest])
-        FileHandler({'copy': bkglist}).sync()
+        logger.info(f'Saved diags to {aerostat}')
 
         # ---- add increments to RESTART files
         logger.info('Adding increments to RESTART files')
         self._add_fms_cube_sphere_increments()
 
-        # ---- move increments to ROTDIR
-        logger.info('Moving increments to ROTDIR')
-        template = f'aeroinc.{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
-        inclist = []
-        for itile in range(1, self.task_config.ntiles + 1):
-            tracer = template.format(tilenum=itile)
-            src = os.path.join(self.task_config.DATA, 'anl', tracer)
-            dest = os.path.join(self.task_config.COM_CHEM_ANALYSIS, tracer)
-            inclist.append([src, dest])
-        FileHandler({'copy': inclist}).sync()
+        # copy files back to COM
+        logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL}")
+        aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL, self.task_config)
+        FileHandler(aero_var_final_list).sync()
 
     def clean(self):
         super().clean()
@@ -211,7 +172,7 @@ class AerosolAnalysis(Analysis):
         restart_template = f'{to_fv3time(bkgtime)}.fv_tracer.res.tile{{tilenum}}.nc'
         increment_template = f'{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + increment_template)
-        bkg_template = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, restart_template)
+        bkg_template = os.path.join(self.task_config.DATA, 'anl', restart_template)
         # get list of increment vars
         incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aeroanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
@@ -237,7 +198,7 @@ class AerosolAnalysis(Analysis):
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
 
         # get FV3 RESTART files, this will be a lot simpler when using history files
-        rst_dir = task_config.COM_ATMOS_RESTART_PREV
+        rst_dir = task_config.COMIN_ATMOS_RESTART_PREV
         run_dir = os.path.join(task_config['DATA'], 'bkg')
 
         # Start accumulating list of background files to copy
@@ -289,7 +250,7 @@ class AerosolAnalysis(Analysis):
         """
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_datestr = to_fv3time(config.BERROR_DATE)
-        analysis_dir = config.COM_CHEM_ANALYSIS
+        analysis_dir = config.COMIN_CHEM_BMATRIX
         cycle_datestr = to_fv3time(config.current_cycle)
         berror_list = []
 
@@ -310,10 +271,10 @@ class AerosolAnalysis(Analysis):
         diff_hz = 'diffusion_hz.nc'
         diff_vt = 'diffusion_vt.nc'
         berror_list.append([
-            os.path.join(config.COM_CHEM_ANALYSIS, diff_hz), os.path.join(config.DATA, 'berror', diff_hz)
+            os.path.join(config.COMIN_CHEM_BMATRIX, diff_hz), os.path.join(config.DATA, 'berror', diff_hz)
         ])
         berror_list.append([
-            os.path.join(config.COM_CHEM_ANALYSIS, diff_vt), os.path.join(config.DATA, 'berror', diff_vt)
+            os.path.join(config.COMIN_CHEM_BMATRIX, diff_vt), os.path.join(config.DATA, 'berror', diff_vt)
         ])
 
         berror_dict = {
