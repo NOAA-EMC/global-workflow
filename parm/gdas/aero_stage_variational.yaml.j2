@@ -29,6 +29,7 @@ copy:
   {% for fvfile in fvfiles %}
     {% for tile in range(1,ntiles+1) %}
 - ["{{ COMIN_ATMOS_RESTART_PREV }}/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc", "{{ DATA }}/bkg/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc"]
+- ["{{ COMIN_ATMOS_RESTART_PREV }}/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc", "{{ DATA }}/anl/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc"]
     {% endfor %}
   {% endfor %}
 {% endfor %}
