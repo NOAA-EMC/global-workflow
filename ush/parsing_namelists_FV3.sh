@@ -17,6 +17,10 @@ if (( gwd_opt == 2 )) && [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
   cdmbgwd=${cdmbgwd_gsl}
 fi
 
+if (( OFFSET_START_HOUR != 0 )); then
+  DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_replay"
+fi
+
 # ensure non-prognostic tracers are set
 dnats=${dnats:-0}
 
@@ -41,6 +45,18 @@ local SMONTH=${current_cycle:4:2}
 local SDAY=${current_cycle:6:2}
 local CHOUR=${current_cycle:8:2}
 local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
+
+if (( OFFSET_START_HOUR > 0 )); then
+  local current_cycle_p1 
+  current_cycle_p1=$(${NDATE} "${FHOUT_OCN}" "${current_cycle}")
+  local current_cycle_offset
+  current_cycle_offset=$(${NDATE} "${OFFSET_START_HOUR}" "${current_cycle}")
+  local SYEAR1=${current_cycle_p1:0:4}
+  local SMONTH1=${current_cycle_p1:4:2}
+  local SDAY1=${current_cycle_p1:6:2}
+  local CHOUR1=${current_cycle_p1:8:2}
+  local CHOUR_offset=${current_cycle_offset:8:2}
+fi
 
 atparse < "${template}" >> "diag_table"
 

@@ -145,13 +145,25 @@ FV3_predet(){
   fi
 
   # Convert output settings into an explicit list for FV3
-  FV3_OUTPUT_FH=""
-  local fhr=${FHMIN}
-  if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
-    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
-    fhr=${FHMAX_HF}
+  if (( OFFSET_START_HOUR > 0 ));then
+    FV3_OUTPUT_FH="$(echo "scale=5; ${OFFSET_START_HOUR}+(${DELTIM}/3600)" | bc -l)"
+    local FHMIN_REPLAY=$(( FHMIN + FHOUT ))
+    local fhr=${FHMIN_REPLAY}
+    if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
+      FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN_REPLAY}" "${FHOUT_HF}" "${FHMAX_HF}")"
+      fhr=${FHMAX_HF}
+    fi
+    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
+  else
+    FV3_OUTPUT_FH=""
+    local fhr=${FHMIN}
+    if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
+      FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
+      fhr=${FHMAX_HF}
+    fi
+    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
   fi
-  FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
+
 
   # Other options
   MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
