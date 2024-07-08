@@ -12,15 +12,11 @@ if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
 #DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 
-# Search and delete files/directories from DATAROOT/ older than ${purge_every_days} days
-# purge_every_days should be a positive integer
-#purge_every_days=3
-
-# Find and delete files older than ${purge_every_days} days
-#find "${DATAROOT}/"* -type f -mtime "+${purge_every_days}" -exec rm -f {} \;
-
-# Find and delete directories older than ${purge_every_days} days
-#find "${DATAROOT}/"* -type d -mtime "+${purge_every_days}" -exec rm -rf {} \;
+# In config.base, DATAROOT is defined as:
+#DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"
+# cleanup is only executed after the entire cycle is successfully completed.
+# removing DATAROOT should be possible if that is the case.
+rm -rf "${DATAROOT}"
 
 echo "Cleanup ${DATAROOT} completed!"
 ###############################################################
