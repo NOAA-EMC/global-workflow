@@ -87,7 +87,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         tasks = ['stage_ic']
 
         if self.do_aero:
-            aero_fcst_cdump = _base.get('AERO_FCST_CDUMP', 'BOTH').lower()
+            aero_fcst_cdump = self._base.get('AERO_FCST_CDUMP', 'BOTH').lower()
             if self._base['CDUMP'] in aero_fcst_cdump or aero_fcst_cdump == "both":
                 tasks += ['aerosol_init']
 
