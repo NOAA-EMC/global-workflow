@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_atmos_gempak_%CYC%
+#PBS -N %RUN%_atmos_gempak_%FHR3%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -31,9 +31,13 @@ module load gempak/${gempak_ver}
 
 module list
 
+#############################################################
+# environment settings
+#############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
 export USE_CFP=YES
+export FHR3=%FHR3%
 
 ############################################################
 # CALL executable job script here
