@@ -1,5 +1,5 @@
-export stack_intel_ver=2022.0.2
-export stack_impi_ver=2021.5.1
-export spack_env=gsi-addon-env
+export stack_intel_ver=2021.9.0
+export stack_impi_ver=2021.9.0
+export spack_env=gsi-addon-env-rocky9
 source "${HOMEgfs:-}/versions/build.spack.ver"
 export spack_mod_path="/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
