@@ -39,6 +39,8 @@ if [[ "${cpl}" = ".true." ]]; then
   local coupling_interval_slow_sec="${CPL_SLOW}"
 fi
 
+local WRITE_ENDOFRUN_RESTART=.false.
+
 if [[ "${cplflx}" = ".true." ]]; then
 
   local use_coldstart=${use_coldstart:-".false."}
@@ -56,6 +58,7 @@ if [[ "${cplflx}" = ".true." ]]; then
   local ATMTILESIZE="${CASE:1}"
   local ocean_albedo_limit=0.06
   local pio_rearranger=${pio_rearranger:-"box"}
+  local MED_history_n=1000000 
 fi
 
 if [[ "${cplice}" = ".true." ]]; then
