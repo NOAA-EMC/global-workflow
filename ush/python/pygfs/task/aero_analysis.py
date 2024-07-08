@@ -172,7 +172,7 @@ class AerosolAnalysis(Analysis):
         restart_template = f'{to_fv3time(bkgtime)}.fv_tracer.res.tile{{tilenum}}.nc'
         increment_template = f'{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + increment_template)
-        bkg_template = os.path.join(self.task_config.DATA, 'anl',  restart_template)
+        bkg_template = os.path.join(self.task_config.DATA, 'anl', restart_template)
         # get list of increment vars
         incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aeroanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
