@@ -195,38 +195,7 @@ class AerosolAnalysis(Analysis):
         bkg_dict: Dict
             a dictionary containing the list of model background files to copy for FileHandler
         """
-        # NOTE for now this is FV3 RESTART files and just assumed to be fh006
-
-        # get FV3 RESTART files, this will be a lot simpler when using history files
-        rst_dir = task_config.COMIN_ATMOS_RESTART_PREV
-        run_dir = os.path.join(task_config['DATA'], 'bkg')
-
-        # Start accumulating list of background files to copy
-        bkglist = []
-
-        # if using IAU, we can use FGAT
-        bkgtimes = []
-        begintime = task_config.previous_cycle
-        for fcsthr in task_config.aero_bkg_fhr:
-            bkgtimes.append(add_to_datetime(begintime, to_timedelta(f"{fcsthr}H")))
-
-        # now loop over background times
-        for bkgtime in bkgtimes:
-            # aerosol DA needs coupler
-            basename = f'{to_fv3time(bkgtime)}.coupler.res'
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-            # aerosol DA only needs core/tracer
-            for ftype in ['core', 'tracer']:
-                template = f'{to_fv3time(bkgtime)}.fv_{ftype}.res.tile{{tilenum}}.nc'
-                for itile in range(1, task_config.ntiles + 1):
-                    basename = template.format(tilenum=itile)
-                    bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        bkg_dict = {
-            'mkdir': [run_dir],
-            'copy': bkglist,
-        }
+        bkg_dict = {}
         return bkg_dict
 
     @logit(logger)
@@ -248,37 +217,5 @@ class AerosolAnalysis(Analysis):
         berror_dict: Dict
             a dictionary containing the list of background error files to copy for FileHandler
         """
-        # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
-        b_datestr = to_fv3time(config.BERROR_DATE)
-        analysis_dir = config.COMIN_CHEM_BMATRIX
-        cycle_datestr = to_fv3time(config.current_cycle)
-        berror_list = []
-
-        # the stddev is computed every cycle and is available in COM
-        for ftype in ['stddev']:
-            coupler = f'{cycle_datestr}.{ftype}.coupler.res'
-            berror_list.append([
-                os.path.join(analysis_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
-            ])
-            template = f'{cycle_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
-            for itile in range(1, config.ntiles + 1):
-                tracer = template.format(tilenum=itile)
-                berror_list.append([
-                    os.path.join(analysis_dir, tracer), os.path.join(config.DATA, 'berror', tracer)
-                ])
-
-        # the diffusion correlation files are computed every cycle and are available in COM
-        diff_hz = 'diffusion_hz.nc'
-        diff_vt = 'diffusion_vt.nc'
-        berror_list.append([
-            os.path.join(config.COMIN_CHEM_BMATRIX, diff_hz), os.path.join(config.DATA, 'berror', diff_hz)
-        ])
-        berror_list.append([
-            os.path.join(config.COMIN_CHEM_BMATRIX, diff_vt), os.path.join(config.DATA, 'berror', diff_vt)
-        ])
-
-        berror_dict = {
-            'mkdir': [os.path.join(config.DATA, 'berror')],
-            'copy': berror_list,
-        }
+        berror_dict = {}
         return berror_dict
