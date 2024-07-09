@@ -47,7 +47,8 @@ class MarineBMat(Task):
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
                 'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
                 'GRID_GEN_YAML': os.path.join(_home_gdas, 'parm', 'soca', 'gridgen', 'gridgen.yaml'),
-                'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca','ensda', 'stage_ens_mem.yaml.j2'),
+                'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
+                'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
                 'ENSPERT_RELPATH': _enspert_relpath
             }
         )
@@ -72,38 +73,18 @@ class MarineBMat(Task):
 
         # stage fix files
         logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        newdirs = [os.path.join(self.task_config.DATA, 'INPUT')]
-        FileHandler({'mkdir': newdirs}).sync()
         soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
         # prepare the MOM6 input.nml
         mdau.prep_input_nml(self.task_config)
 
-        # stage a single background
-        # TODO: check if we only need 1 deterministic background
-        # TODO: when we decide to move this task to the end of the previous cycle,
-        #       the bkg will have to come from HISTORY not HISTORY_PREV
-        ocn_bkg_dir = self.task_config.COMIN_OCEAN_HISTORY_PREV
-        ice_bkg_dir = self.task_config.COMIN_ICE_HISTORY_PREV
-        logger.info("Staging background files from {ocn_bkg_dir} and {ice_bkg_dir}")
-        bkg_list = []
-        bkg_list.append([os.path.join(ocn_bkg_dir, f"gdas.ocean.t{self.task_config.gcyc_str}z.inst.f009.nc"),
-                         os.path.join(self.task_config.DATA, "ocn.bkg.nc")])
-        bkg_list.append([os.path.join(ice_bkg_dir, f"gdas.ice.t{self.task_config.gcyc_str}z.inst.f009.nc"),
-                         os.path.join(self.task_config.DATA, "ice.bkg.nc")])
-        FileHandler({'copy': bkg_list}).sync()
-        mdau.cice_hist2fms("ice.bkg.nc", "ice.bkg.nc")
-
-        # Copy MOM6 restart
-        # TODO: check if we can combine this with the step above
-        logger.info(f"Linking MOM6 restart to ocn.bkg.nc")
-        rst_list = []
-        rst_list.append([os.path.join(self.task_config.DATA, "ocn.bkg.nc"),
-                         os.path.join(self.task_config.DATA, "INPUT", "MOM.res.nc")])
-        rst_list.append([os.path.join(self.task_config.DATA, "ice.bkg.nc"),
-                         os.path.join(self.task_config.DATA, "INPUT", "cice.res.nc")])
-        FileHandler({'copy': rst_list}).sync()
+        # stage backgrounds
+        # TODO(G): Check ocean backgrounds dates for consistency
+        bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
+        FileHandler(bkg_list).sync()
+        for cice_fname in ['./INPUT/cice.res.nc', './bkg/ice.bkg.f006.nc', './bkg/ice.bkg.f009.nc']:
+            mdau.cice_hist2fms(cice_fname, cice_fname)
 
         # stage the grid generation yaml
         FileHandler({'copy': [[self.task_config.GRID_GEN_YAML,
@@ -141,7 +122,7 @@ class MarineBMat(Task):
             diffhz_config.save(os.path.join(self.task_config.DATA, 'soca_parameters_diffusion_hz.yaml'))
 
         # hybrid EnVAR case
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 3:
+        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
             # stage ensemble membersfiles for use in hybrid background error
             logger.debug(f"Stage ensemble members for the hybrid background error")
             mdau.stage_ens_mem(self.task_config)
@@ -159,9 +140,8 @@ class MarineBMat(Task):
             hybridweights_config.save(os.path.join(self.task_config.DATA, 'soca_ensweights.yaml'))
 
         # need output dir for ensemble perturbations and static B-matrix
-        logger.debug("Create empty output [ensb, diagb] directories to receive output from executables")
-        newdirs = [os.path.join(self.task_config.DATA, 'diagb')]
-        FileHandler({'mkdir': newdirs}).sync()
+        logger.debug("Create empty diagb directories to receive output from executables")
+        FileHandler({'mkdir': [os.path.join(self.task_config.DATA, 'diagb')]}).sync()
 
     @logit(logger)
     def gridgen(self: Task) -> None:
@@ -267,7 +247,6 @@ class MarineBMat(Task):
         # compute the ensemble weights
         mdau.run(exec_cmd)
 
-
     @logit(logger)
     def execute(self: Task) -> None:
         """Generate the full B-matrix
@@ -280,7 +259,7 @@ class MarineBMat(Task):
         self.horizontal_diffusion()    # TODO: Make this optional once we've converged on an acceptable set of scales
         self.vertical_diffusion()
         # hybrid EnVAR case
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 3:
+        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
             self.ensemble_perturbations()  # TODO: refactor this from the old scripts
             self.hybrid_weight()           # TODO: refactor this from the old scripts
 

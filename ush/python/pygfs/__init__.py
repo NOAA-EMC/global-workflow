@@ -11,7 +11,7 @@ from .task.snow_analysis import SnowAnalysis
 from .task.upp import UPP
 from .task.oceanice_products import OceanIceProducts
 from .task.gfs_forecast import GFSForecast
-from  .utils import marine_da_utils
+from .utils import marine_da_utils
 
 __docformat__ = "restructuredtext"
 __version__ = "0.1.0"

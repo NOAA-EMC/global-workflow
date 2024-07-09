@@ -7,6 +7,7 @@ from wxflow import FileHandler, logit, WorkflowException, AttrDict, parse_j2yaml
 
 logger = getLogger(__name__.split('.')[-1])
 
+
 @logit(logger)
 def run(exec_cmd):
     """Run the executable command
@@ -22,6 +23,7 @@ def run(exec_cmd):
 
     pass
 
+
 @logit(logger)
 def link_executable(task_config, exe_name: str) -> None:
     """Link the executable to the DATA directory
@@ -33,6 +35,7 @@ def link_executable(task_config, exe_name: str) -> None:
     if os.path.exists(exe_dest):
         os.remove(exe_dest)
     os.symlink(exe_src, exe_dest)
+
 
 @logit(logger)
 def prep_input_nml(task_config) -> None:
@@ -52,6 +55,7 @@ def prep_input_nml(task_config) -> None:
         nml['ocean_solo_nml']['date_init'] = ymdhms
         nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
         nml.write('mom_input.nml')
+
 
 @logit(logger)
 def cice_hist2fms(input_filename, output_filename) -> None:
@@ -74,6 +78,7 @@ def cice_hist2fms(input_filename, output_filename) -> None:
 
     # Save the new netCDF file
     ds.to_netcdf(output_filename, mode='w')
+
 
 @logit(logger)
 def stage_ens_mem(task_config) -> None:

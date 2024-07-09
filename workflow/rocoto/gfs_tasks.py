@@ -678,21 +678,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def ocnanalbmat(self):
+    def marinebmat(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalprep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('ocnanalbmat')
-        task_name = f'{self.cdump}ocnanalbmat'
+        resources = self.get_resource('marinebmat')
+        task_name = f'{self.cdump}marinebmat'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.cdump.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalbmat.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/marinebmat.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -705,7 +705,7 @@ class GFSTasks(Tasks):
     def ocnanalrun(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalbmat'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}marinebmat'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
