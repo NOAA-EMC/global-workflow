@@ -61,7 +61,7 @@ while [[ ${nh} -le ${FHMAX} ]];do
       fi
     fi  
     if [[ ${datacompress} -eq 1 ]];then
-      bzip2 "${oufile1}" 
+      ${COMPRSCMD} "${oufile1}"
     fi 
   else
     echo "WARNING: ${infile} does not exist."
