@@ -21,7 +21,6 @@ export ice_dataformat="netcdf"
 
 export ocnres="5p00" #Resolution of ocean products
 export iceres="5p00" #Resolution of ice products
-export ocnres="5p00" #Resolution of ocean products
 export wavres="5p00" #Resolution of wave products
 
 export FHOUT_WAV_NOSCRUB=6 #Frequency of wave output to be saved on disk
