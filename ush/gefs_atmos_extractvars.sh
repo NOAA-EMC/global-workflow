@@ -14,9 +14,11 @@ for outtype in "f2d" "f3d"; do
 
   if [[ "${outtype}" == "f2d" ]];then
     varlist=${varlist_2d}
+    COMOUT_RFCST_PROD_ATMOS="${COMOUT_RFCST_PROD_ATMOS_F2D}"
   elif [[ "${outtype}" == "f3d" ]];then 
     varlist=${varlist_3d}
     varlist_d=${varlist_3d_d}
+    COMOUT_RFCST_PROD_ATMOS="${COMOUT_RFCST_PROD_ATMOS_F3D}"
   fi
 
   outdirpre="${subdata}/${outtype}"
