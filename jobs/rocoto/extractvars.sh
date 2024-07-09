@@ -16,7 +16,7 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN EXTRACTVARS ==============="
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGEFS_EXTRACTVARS"
+"${HOMEgfs}/jobs/JGLOBAL_EXTRACTVARS"
 status=$?
 [[ "${status}" -ne 0 ]] && exit "${status}"
 
