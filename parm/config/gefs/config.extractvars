@@ -21,4 +21,14 @@ export wavres="5p00" #Resolution of wave products
 
 export FHOUT_WAV_NOSCRUB=6 #Frequency of wave output to be saved on disk
 
+#Paramater Tables used
+export varlist_2d=${varlist_2d:-"${PARMgfs}/product/gefs_shortparmlist_2d.parm"} #Parameter table for surface variables
+export varlist_3d=${varlist_3d:-"${PARMgfs}/product/gefs_shortparmlist_3d_h.parm"} #Parameter table for upper air instantaneous variables
+export varlist_3d_d=${varlist_3d_d:-"${PARMgfs}/product/gefs_shortparmlist_3d_d.parm"} #Parameter table for upper air daily-averaged variables
+export varlist_wav=${varlist_wav:-"${PARMgfs}/product/gefs_wav_shortparmlist.parm"} #Parameter table for wave variables
+export varlist_ocn_netcdf=${varlist_ocn_netcdf:-"${PARMgfs}/product/gefs_ocn_shortparmlist.parm"} #Parameter table for ocean netcdf variables
+export varlist_ice_netcdf=${varlist_ice_netcdf:-"${PARMgfs}/product/gefs_ice_shortparmlist.parm"} #Parameter table for ice netcdf variables
+export varlist_ocn_grib2=${varlist_ocn_grib2:-"${PARMgfs}/product/gefs_ocn_shortparmlist_grib2.parm"} #Parameter table ocn grib2 variables
+export varlist_ice_grib2=${varlist_ice_grib2:-"${PARMgfs}/product/gefs_ice_shortparmlist_grib2.parm"} #Parameter table ice grib2 variables
+
 echo "END: config.extractvars"
