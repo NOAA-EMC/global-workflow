@@ -12,10 +12,6 @@ export COMPRSCMD=${COMPRSCMD:-bzip2}
 export compress_ocn=0 #1: compress extracted ocean product, 0: do not compress extracted ocean product
 export compress_ice=0 #1: compress extracted ice product, 0: do not compress extracted ice product
 
-export FHMAXHF=60 #The forecast length of the high output frequency (in hours) for atmos
-export FHOUTHF=6 #The high output frequency (in hours) for atmos
-export FHOUTLF=12 #The low output frequency (in hours) for atmos
-
 export ocn_dataformat="netcdf"
 export ice_dataformat="netcdf"
 

@@ -27,7 +27,7 @@ for outtype in "f2d" "f3d"; do
     fnh=$(printf "%3.3d" "${nh}")
 
     if [[ "${outtype}" == "f2d" ]];then
-      if [[ ${nh} -le ${FHMAXHF} ]];then
+      if [[ ${nh} -le ${FHMAX_HF_GFS} ]];then
         outres="0p25"
       else
         outres="0p50"
@@ -36,10 +36,10 @@ for outtype in "f2d" "f3d"; do
       outres="1p00"
     fi
 
-    if [[ ${nh} -lt ${FHMAXHF} ]];then
-      outfreq=${FHOUTHF}
+    if [[ ${nh} -lt ${FHMAX_HF_GFS} ]];then
+      outfreq=${FHOUT_HF_GFS}
     else
-      outfreq=${FHOUTLF}
+      outfreq=${FHOUT_GFS}
     fi                                      
 
     com_var="COMIN_ATMOS_GRIB_${outres}"
