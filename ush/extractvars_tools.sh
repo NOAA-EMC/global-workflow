@@ -42,3 +42,13 @@ daily_avg_atmos() {
     vcnt=$(( vcnt + 1 ))
   done <"${varlist_d}" #variable
 }
+
+copy_to_comout() {
+  rundir_outfile=$1 #output data file generated in RUNDIR
+  comout_dir=$2 #destination directory to which to copy the data file
+  if [[ -f ${rundir_outfile} ]];then
+    cp -pr ${rundir_outfile} ${comout_dir}
+  else
+   echo "WARNING: Output variable (${rundir_outfile}) does not exist."
+  fi
+}

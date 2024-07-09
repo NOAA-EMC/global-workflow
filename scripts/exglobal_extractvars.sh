@@ -24,8 +24,6 @@ if [[ "${DO_ATM}" == "YES" ]];then
     mkdir -p "${DATA}/mem${ENSMEM}_atmos" 
   fi
   ${EXTRCTVARA} "${DATA}/mem${ENSMEM}_atmos"
-  cp -pr "${DATA}/mem${ENSMEM}_atmos/f2d" "${COMOUT_RFCST_PROD_ATMOS}"
-  cp -pr "${DATA}/mem${ENSMEM}_atmos/f3d" "${COMOUT_RFCST_PROD_ATMOS}"
 fi
 
 #Extract variables for ocean

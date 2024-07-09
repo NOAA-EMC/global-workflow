@@ -70,6 +70,7 @@ for outtype in "f2d" "f3d"; do
     if [[ ! -f "${requestedvars1}" ]]; then touch "${requestedvars1}"; fi
     if [[ ! -f "${requestedvars2}" ]]; then touch "${requestedvars2}"; fi
     check_atmos "${requestedvars1}" "${requestedvars2}" "${varlist}"
+    copy_to_comout "${outfile}" "${COMOUT_RFCST_PROD_ATMOS}"
 
     #Compute daily average for a subset of variables
     if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]];then
@@ -80,6 +81,7 @@ for outtype in "f2d" "f3d"; do
       ${WGRIB2} "${infile2}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile2}" -append -grib "${outfile}"
       if [[ ${fcnt} -eq 4 ]];then
         daily_avg_atmos
+        copy_to_comout "${davg_file}" "${COMOUT_RFCST_PROD_ATMOS}"
         fcnt=1
         dcnt=$(( dcnt + 1 ))
       else
