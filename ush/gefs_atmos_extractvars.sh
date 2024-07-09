@@ -69,7 +69,7 @@ for outtype in "f2d" "f3d"; do
 
     if [[ ! -f "${requestedvars1}" ]]; then touch "${requestedvars1}"; fi
     if [[ ! -f "${requestedvars2}" ]]; then touch "${requestedvars2}"; fi
-    check_atmos "${requestedvars1}" "${requestedvars2}"
+    check_atmos "${requestedvars1}" "${requestedvars2}" "${varlist}"
 
     #Compute daily average for a subset of variables
     if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]];then
