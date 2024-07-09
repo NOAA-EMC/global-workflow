@@ -40,8 +40,7 @@ if [[ "${DO_OCN}" == "YES" ]];then
     echo "FATAL ERROR: Invalid ocean data format provided (${ocn_dataformat})"
     export err=1; err_chk
   fi
-  ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}"
-  cp -pr "${DATA}/mem${ENSMEM}_ocn/." "${COMOUT_RFCST_PROD_OCN}"
+  ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}" "${COMOUT_RFCST_PROD_OCN}"
 fi
 
 #Extract variables for ice
@@ -58,8 +57,7 @@ if [[ "${DO_ICE}" == "YES" ]];then
     echo "FATAL ERROR: Invalid ice data format provided (${ice_dataformat})"
     export err=1; err_chk
   fi
-  ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" 
-  cp -pr "${DATA}/mem${ENSMEM}_ice/." "${COMOUT_RFCST_PROD_ICE}"
+  ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" "${COMOUT_RFCST_PROD_ICE}"
 fi
 
 #Extract variables for wave
@@ -69,7 +67,6 @@ if [[ "${DO_WAVE}" == "YES" ]];then
     mkdir -p "${DATA}/mem${ENSMEM}_wav" 
   fi
   ${EXTRCTVARW} "${DATA}/mem${ENSMEM}_wav"
-  cp -pr "${DATA}/mem${ENSMEM}_wav/." "${COMOUT_RFCST_PROD_WAV}"
 fi
 
 exit 0

@@ -3,6 +3,7 @@
 #   Script:    
 #
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/extractvars_tools.sh"
 
 outdirpre=${1}
 varlist=${2}
@@ -10,6 +11,7 @@ dataformat=${3}
 datares=${4}
 datacompress=${5}
 fhout_ocnice=${6}
+comout_rfcst_prod_ocnice=${7}
 cd "${outdirpre}" || true
 
 nh=${FHMIN_GFS}
@@ -62,11 +64,13 @@ while [[ ${nh} -le ${FHMAX_GFS} ]];do
     fi  
     if [[ ${datacompress} -eq 1 ]];then
       ${COMPRSCMD} "${outfile}"
+      copy_to_comout "${outfile}.bz2" "${comout_rfcst_prod_ocnice}"
+    else
+      copy_to_comout "${outfile}" "${comout_rfcst_prod_ocnice}"
     fi 
   else
     echo "WARNING: ${infile} does not exist."
   fi
-
   nh=$(( nh + fhout_ocnice ))
 done
 

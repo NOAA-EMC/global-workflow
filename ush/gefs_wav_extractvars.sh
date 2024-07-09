@@ -3,6 +3,7 @@
 #   Script:    
 #
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/extractvars_tools.sh"
 
 DATA=${1}
 cd "${DATA}" || true
@@ -21,7 +22,7 @@ while [[ ${nh} -le ${FHMAX_WAV} ]];do
   else
     echo "WARNING: ${infile} does not exist."
   fi 
-
+    copy_to_comout "${outfile}" "${COMOUT_RFCST_PROD_WAV}"
     nh=$(( nh + FHOUT_WAV_NOSCRUB ))
 
 done #fhr
