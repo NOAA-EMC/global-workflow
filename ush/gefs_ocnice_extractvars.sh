@@ -23,7 +23,7 @@ while [[ ${nh} -le ${FHMAX} ]];do
     if [[ ${component_name} == "ice" ]];then
       infile=${COMIN_ICE_GRIB}/${datares}/gefs.ice.${cycle}.${datares}.f${fnh}.grib2
     fi                                                                                                                                                                                                                                   
-    oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.grib2
+    outfile=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.grib2
   fi
 
   if [[ "${dataformat}" == "netcdf" ]];then
@@ -33,13 +33,13 @@ while [[ ${nh} -le ${FHMAX} ]];do
     if [[ ${component_name} == "ice" ]];then
       infile=${COMIN_ICE_NETCDF}/gefs.ice.${cycle}.${datares}.f${fnh}.nc
     fi   
-    oufile1=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.nc
+    outfile=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.nc
   fi
 
   if [[ -f "${infile}" ]]; then #check if input file exists before extraction
     if [[ "${dataformat}" == "grib2" ]];then
       # shellcheck disable=SC2312
-      ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile1}">/dev/null 
+      ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}">/dev/null
     fi
     if [[ "${dataformat}" == "netcdf" ]];then
       varsrequested=$(paste -s "${varlist}")
@@ -57,11 +57,11 @@ while [[ ${nh} -le ${FHMAX} ]];do
         echo "WARNING: No variables from parm file ${varlist} are available in netcdf file ${infile}."
       else
         ocnice_vars=${varsavailable::-1}
-        ncks -v "${ocnice_vars}" "${infile}" "${oufile1}"
+        ncks -v "${ocnice_vars}" "${infile}" "${outfile}"
       fi
     fi  
     if [[ ${datacompress} -eq 1 ]];then
-      ${COMPRSCMD} "${oufile1}"
+      ${COMPRSCMD} "${outfile}"
     fi 
   else
     echo "WARNING: ${infile} does not exist."
