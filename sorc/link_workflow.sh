@@ -78,7 +78,7 @@ case "${machine}" in
   "gaea")     FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
   *)
     echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
-    #exit 0
+    exit 1
     ;;
 esac
 

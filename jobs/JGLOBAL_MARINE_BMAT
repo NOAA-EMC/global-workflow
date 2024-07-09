@@ -3,7 +3,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 export DATA=${DATA:-${DATAROOT}/${RUN}marinebmat_${cyc}}
-# source config.base, config.ocnanal and config.ocnanalbmat
+# source config.base, config.ocnanal and config.marinebmat
 # and pass marinebmat to ${machine}.env
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmat" -c "base ocnanal marinebmat"
 
