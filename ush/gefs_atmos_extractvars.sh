@@ -42,16 +42,9 @@ for outtype in "f2d" "f3d"; do
       outfreq=${FHOUTLF}
     fi                                      
 
-    if [[ "${outres}" == "0p25" ]];then
-      infile1=${COMIN_ATMOS_GRIB_0p25}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
-      infile2=${COMIN_ATMOS_GRIB_0p25}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}
-    elif [[ "${outres}" == "0p50" ]];then
-      infile1=${COMIN_ATMOS_GRIB_0p50}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
-      infile2=${COMIN_ATMOS_GRIB_0p50}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}
-    elif [[ "${outres}" == "1p00" ]];then
-      infile1=${COMIN_ATMOS_GRIB_1p00}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
-      infile2=${COMIN_ATMOS_GRIB_1p00}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}
-    fi
+    com_var="COMIN_ATMOS_GRIB_${outres}"
+    infile1="${!com_var}/gefs.${cycle}.pgrb2.${outres}.f${fnh}"
+    infile2="${!com_var}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}"
     oufile=${outdirpre}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
     rm -f "${oufile}" #remove outfile if it already exists before extraction
     requestedvars1="partial_parm1.txt"
