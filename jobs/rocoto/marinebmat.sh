@@ -21,6 +21,5 @@ export PYTHONPATH
 ###############################################################
 # Execute the JJOB
 "${HOMEgfs}"/jobs/JGLOBAL_MARINE_BMAT
-echo "BMAT gets run here"
 status=$?
 exit "${status}"
