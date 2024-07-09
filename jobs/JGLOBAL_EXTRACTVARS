@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "extractvars" -c "base extractvars"
 for grid in '0p25' '0p50' '1p00'; do
   prod_dir="COMIN_ATMOS_GRIB_${grid}"
   GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
-  if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
+  if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
 done
 
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL"
@@ -24,10 +24,10 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_OCN:COM_RFCST
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_ICE:COM_RFCST_PROD_ICE_TMPL"
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_WAV:COM_RFCST_PROD_WAV_TMPL"
 
-if [[ ! -d "${COMOUT_RFCST_PROD_ATMOS}" ]]; then mkdir -m 775 -p "${COMOUT_RFCST_PROD_ATMOS}"; fi
-if [[ ! -d "${COMOUT_RFCST_PROD_OCN}" ]]; then mkdir -m 775 -p "${COMOUT_RFCST_PROD_OCN}"; fi
-if [[ ! -d "${COMOUT_RFCST_PROD_WAV}" ]]; then mkdir -m 775 -p "${COMOUT_RFCST_PROD_WAV}"; fi
-if [[ ! -d "${COMOUT_RFCST_PROD_ICE}" ]]; then mkdir -m 775 -p "${COMOUT_RFCST_PROD_ICE}"; fi
+if [[ ! -d "${COMOUT_RFCST_PROD_ATMOS}" ]]; then mkdir -p "${COMOUT_RFCST_PROD_ATMOS}"; fi
+if [[ ! -d "${COMOUT_RFCST_PROD_OCN}" ]]; then mkdir -p "${COMOUT_RFCST_PROD_OCN}"; fi
+if [[ ! -d "${COMOUT_RFCST_PROD_WAV}" ]]; then mkdir -p "${COMOUT_RFCST_PROD_WAV}"; fi
+if [[ ! -d "${COMOUT_RFCST_PROD_ICE}" ]]; then mkdir -p "${COMOUT_RFCST_PROD_ICE}"; fi
 
 # Execute the Script
 "${SCRgfs}/exglobal_extractvars.sh"
