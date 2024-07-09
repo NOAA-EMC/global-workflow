@@ -20,22 +20,22 @@ while [[ ${nh} -le ${FHMAX_GFS} ]];do
 
   if [[ "${dataformat}" == "grib2" ]];then
     if [[ ${component_name} == "ocn" ]];then
-      infile=${COMIN_OCEAN_GRIB}/${datares}/gefs.ocean.${cycle}.${datares}.f${fnh}.grib2
+      infile=${COMIN_OCEAN_GRIB}/${datares}/${RUN}.ocean.${cycle}.${datares}.f${fnh}.grib2
     fi
     if [[ ${component_name} == "ice" ]];then
-      infile=${COMIN_ICE_GRIB}/${datares}/gefs.ice.${cycle}.${datares}.f${fnh}.grib2
+      infile=${COMIN_ICE_GRIB}/${datares}/${RUN}.ice.${cycle}.${datares}.f${fnh}.grib2
     fi                                                                                                                                                                                                                                   
-    outfile=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.grib2
+    outfile=${outdirpre}/${RUN}.${component_name}.${cycle}.${datares}.f${fnh}.grib2
   fi
 
   if [[ "${dataformat}" == "netcdf" ]];then
     if [[ ${component_name} == "ocn" ]];then
-      infile=${COMIN_OCEAN_NETCDF}/gefs.ocean.${cycle}.${datares}.f${fnh}.nc
+      infile=${COMIN_OCEAN_NETCDF}/${RUN}.ocean.${cycle}.${datares}.f${fnh}.nc
     fi
     if [[ ${component_name} == "ice" ]];then
-      infile=${COMIN_ICE_NETCDF}/gefs.ice.${cycle}.${datares}.f${fnh}.nc
+      infile=${COMIN_ICE_NETCDF}/${RUN}.ice.${cycle}.${datares}.f${fnh}.nc
     fi   
-    outfile=${outdirpre}/gefs.${component_name}.${cycle}.${datares}.f${fnh}.nc
+    outfile=${outdirpre}/${RUN}.${component_name}.${cycle}.${datares}.f${fnh}.nc
   fi
 
   if [[ -f "${infile}" ]]; then #check if input file exists before extraction

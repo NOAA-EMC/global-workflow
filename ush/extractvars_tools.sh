@@ -30,10 +30,10 @@ check_atmos() {
 
 daily_avg_atmos() {
   fnd=$(printf "%2.2d" "${dcnt}")
-  davg_file=${outdirpre}/gefs.${cycle}.pgrb2.${outres}.24hr_avg.ldy${fnd}
+  davg_file=${outdirpre}/${RUN}.${cycle}.pgrb2.${outres}.24hr_avg.ldy${fnd}
   vcnt=1
   while read -r vari; do
-    davgtmp=${subdata}/gefs.${cycle}.tmp.pgrb2.${outres}.ldy${fnd}.${vcnt}
+    davgtmp=${subdata}/${RUN}.${cycle}.tmp.pgrb2.${outres}.ldy${fnd}.${vcnt}
     # shellcheck disable=SC2312
     ${WGRIB2} "${outfile}" | grep "${vari}" | ${WGRIB2} -i "${outfile}" -fcst_ave 6hr "${davgtmp}"
     # shellcheck disable=SC2312
