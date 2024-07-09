@@ -22,6 +22,12 @@ export varlist_ice_netcdf=${varlist_ice_netcdf:-"${PARMgfs}/product/gefs_ice_sho
 export varlist_ocn_grib2=${varlist_ocn_grib2:-"${PARMgfs}/product/gefs_ocn_shortparmlist_grib2.parm"} #Parameter table for wave variables
 export varlist_ice_grib2=${varlist_ice_grib2:-"${PARMgfs}/product/gefs_ice_shortparmlist_grib2.parm"} #Parameter table for wave variables  
 
+#Check to make sure FHMAX_HF_GFS is less than FHMAX_GFS
+if [[ "${FHMAX_GFS}" -lt "${FHMAX_HF_GFS}" ]];then
+  echo "FATAL ERROR: FHMAX_GFS (${FHMAX_GFS}) is less than FHMAX_HF_GFS (${FHMAX_HF_GFS}). FHMAX_GFS must be greater than FHMAX_HF_GFS."
+  export err=1; err_chk
+fi
+
 #Extract variables for atmosphere
 if [[ "${DO_ATM}" == "YES" ]];then
   if [[ ! -d "${DATA}/mem${ENSMEM}_atmos" ]]; then 
