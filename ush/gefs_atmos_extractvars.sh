@@ -45,8 +45,8 @@ for outtype in "f2d" "f3d"; do
     com_var="COMIN_ATMOS_GRIB_${outres}"
     infile1="${!com_var}/gefs.${cycle}.pgrb2.${outres}.f${fnh}"
     infile2="${!com_var}/gefs.${cycle}.pgrb2b.${outres}.f${fnh}"
-    oufile=${outdirpre}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
-    rm -f "${oufile}" #remove outfile if it already exists before extraction
+    outfile=${outdirpre}/gefs.${cycle}.pgrb2.${outres}.f${fnh}
+    rm -f "${outfile}" #remove outfile if it already exists before extraction
     requestedvars1="partial_parm1.txt"
     requestedvars2="partial_parm2.txt"
     rm -f "${requestedvars1}"
@@ -54,7 +54,7 @@ for outtype in "f2d" "f3d"; do
     if [[ -f "${infile1}" ]]; then #check if input file exists before extraction
       gen_parmlist "${infile1}" "${requestedvars1}" "${varlist}"
       # shellcheck disable=SC2312
-      ${WGRIB2} "${infile1}" | grep -F -f "${requestedvars1}" | ${WGRIB2} -i "${infile1}" -append -grib "${oufile}">/dev/null
+      ${WGRIB2} "${infile1}" | grep -F -f "${requestedvars1}" | ${WGRIB2} -i "${infile1}" -append -grib "${outfile}">/dev/null
     else
       echo "WARNING: ${infile1} does not exist."
     fi 
@@ -62,7 +62,7 @@ for outtype in "f2d" "f3d"; do
     if [[ -f "${infile2}" ]]; then #check if input file exists before extraction
       gen_parmlist "${infile2}" "${requestedvars2}" "${varlist}"
       # shellcheck disable=SC2312
-      ${WGRIB2} "${infile2}" | grep -F -f "${requestedvars2}" | ${WGRIB2} -i "${infile2}" -append -grib "${oufile}">/dev/null
+      ${WGRIB2} "${infile2}" | grep -F -f "${requestedvars2}" | ${WGRIB2} -i "${infile2}" -append -grib "${outfile}">/dev/null
     else
       echo "WARNING: ${infile2} does not exist."
     fi
