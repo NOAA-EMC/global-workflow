@@ -23,7 +23,7 @@ for outtype in "f2d" "f3d"; do
   if [[ ! -d "${outdirpre}" ]]; then mkdir -p "${outdirpre}"; fi 
 
   nh=${FHMIN}
-  while [[ ${nh} -le ${FHMAX} ]];do
+  while [[ ${nh} -le ${FHMAX_GFS} ]];do
     fnh=$(printf "%3.3d" "${nh}")
 
     if [[ "${outtype}" == "f2d" ]];then

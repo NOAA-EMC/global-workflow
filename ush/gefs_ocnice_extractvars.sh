@@ -13,7 +13,7 @@ fhout_ocnice=${6}
 cd "${outdirpre}" || true
 
 nh=${FHMIN_GFS}
-while [[ ${nh} -le ${FHMAX} ]];do
+while [[ ${nh} -le ${FHMAX_GFS} ]];do
   fnh=$(printf "%3.3d" "${nh}")
 
   if [[ "${dataformat}" == "grib2" ]];then
