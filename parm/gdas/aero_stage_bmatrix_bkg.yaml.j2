@@ -10,7 +10,7 @@
 mkdir:
 - "{{ DATA }}/bkg"
 - "{{ DATA }}/stddev"
-- "{{ DATA }/clm_stddev"}
+- "{{ DATA }}/clm_stddev"
 - "{{ DATA }}/diffusion"
 copy:
 ######################################
@@ -33,7 +33,7 @@ copy:
 # copy climatological stddev files
 ######################################
 # uncomment out below once files are staged
-#{% for tile in range(1, ntiles+1) %}
-#- ["{{ BERROR_DATA_DIR }}/stddev.fv_tracer.res.tile{{ tile }}.nc", "{{ DATA }}/clm_stddev/stddev.fv_tracer.res.tile{{ tile }}.nc"]
-#{% endfor %}
-#
+{% for tile in range(1, ntiles+1) %}
+- ["{{ BERROR_DATA_DIR }}/stddev.fv_tracer.res.tile{{ tile }}.nc", "{{ DATA }}/clm_stddev/stddev.fv_tracer.res.tile{{ tile }}.nc"]
+{% endfor %}
+
