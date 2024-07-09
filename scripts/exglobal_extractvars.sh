@@ -38,8 +38,14 @@ if [[ "${DO_OCN}" == "YES" ]];then
   if [[ ! -d "${DATA}/mem${ENSMEM}_ocn" ]]; then 
     mkdir -p "${DATA}/mem${ENSMEM}_ocn" 
   fi
-  if [[ "${ocn_dataformat}" == "netcdf" ]]; then varlist_ocn=${varlist_ocn_netcdf}; fi
-  if [[ "${ocn_dataformat}" == "grib2" ]]; then varlist_ocn=${varlist_ocn_grib2}; fi  
+  if [[ "${ocn_dataformat}" == "netcdf" ]]; then
+    varlist_ocn=${varlist_ocn_netcdf}
+  elif [[ "${ocn_dataformat}" == "grib2" ]]; then
+    varlist_ocn=${varlist_ocn_grib2}
+  else
+    echo "FATAL ERROR: Invalid ocean data format provided (${ocn_dataformat})"
+    export err=1; err_chk
+  fi
   ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ocn" "${varlist_ocn}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}"
   cp -pr "${DATA}/mem${ENSMEM}_ocn/." "${COMOUT_RFCST_PROD_OCN}"
 fi
@@ -49,9 +55,15 @@ if [[ "${DO_ICE}" == "YES" ]];then
   export component_name="ice"
   if [[ ! -d "${DATA}/mem${ENSMEM}_ice" ]]; then 
     mkdir -p "${DATA}/mem${ENSMEM}_ice" 
-  fi    
-  if [[ "${ice_dataformat}" == "netcdf" ]]; then varlist_ice=${varlist_ice_netcdf}; fi
-  if [[ "${ice_dataformat}" == "grib2" ]]; then varlist_ice=${varlist_ice_grib2}; fi  
+  fi
+  if [[ "${ice_dataformat}" == "netcdf" ]]; then
+    varlist_ice=${varlist_ice_netcdf}
+  elif [[ "${ice_dataformat}" == "grib2" ]]; then
+    varlist_ice=${varlist_ice_grib2}
+  else
+    echo "FATAL ERROR: Invalid ice data format provided (${ice_dataformat})"
+    export err=1; err_chk
+  fi
   ${EXTRCTVARO} "${DATA}/mem${ENSMEM}_ice" "${varlist_ice}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" 
   cp -pr "${DATA}/mem${ENSMEM}_ice/." "${COMOUT_RFCST_PROD_ICE}"
 fi
