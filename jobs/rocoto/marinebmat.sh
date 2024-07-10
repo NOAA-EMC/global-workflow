@@ -13,9 +13,10 @@ export jobid="${job}.$$"
 
 ###############################################################
 # setup python path for workflow utilities and tasks
-wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
-socaToolsPATH="${HOMEgfs}/sorc/gdas.cd/ush/soca/tools"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}:${socaToolsPATH}"
+# TODO(G): ad to the linking script instead?
+#          Temporary, should be using JCSDA module when ready
+socaToolsPATH="${HOMEgfs}/sorc/gdas.cd/ush/soca"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${socaToolsPATH}"
 export PYTHONPATH
 
 ###############################################################

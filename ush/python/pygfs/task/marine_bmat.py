@@ -34,7 +34,10 @@ class MarineBMat(Task):
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
-        _enspert_relpath = os.path.relpath(self.task_config.DATAenspert, self.task_config.DATA)
+        if self.task_config.NMEM_ENS > 0:
+            _enspert_relpath = os.path.relpath(self.task_config.DATAenspert, self.task_config.DATA)
+        else:
+            _enspert_relpath = None
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -330,6 +333,8 @@ class MarineBMat(Task):
             dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
                                f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.ice.ens_weights.nc")
             weight_list.append([src, dst])
+
+            # TODO(G): missing ssh_steric_stddev, ssh_unbal_stddev, ssh_total_stddev and steric_explained_variance
 
             FileHandler({'copy': weight_list}).sync()
 
