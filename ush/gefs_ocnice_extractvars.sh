@@ -20,8 +20,7 @@ for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   if [[ "${dataformat}" == "grib2" ]];then
     if [[ ${component_name} == "ocn" ]];then
       infile=${COMIN_OCEAN_GRIB}/${datares}/${RUN}.ocean.${cycle}.${datares}.f${fnh}.grib2
-    fi
-    if [[ ${component_name} == "ice" ]];then
+    elif [[ ${component_name} == "ice" ]];then
       infile=${COMIN_ICE_GRIB}/${datares}/${RUN}.ice.${cycle}.${datares}.f${fnh}.grib2
     fi                                                                                                                                                                                                                                   
     outfile=${outdirpre}/${RUN}.${component_name}.${cycle}.${datares}.f${fnh}.grib2
@@ -30,8 +29,7 @@ for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   if [[ "${dataformat}" == "netcdf" ]];then
     if [[ ${component_name} == "ocn" ]];then
       infile=${COMIN_OCEAN_NETCDF}/${RUN}.ocean.${cycle}.${datares}.f${fnh}.nc
-    fi
-    if [[ ${component_name} == "ice" ]];then
+    elif [[ ${component_name} == "ice" ]];then
       infile=${COMIN_ICE_NETCDF}/${RUN}.ice.${cycle}.${datares}.f${fnh}.nc
     fi   
     outfile=${outdirpre}/${RUN}.${component_name}.${cycle}.${datares}.f${fnh}.nc
