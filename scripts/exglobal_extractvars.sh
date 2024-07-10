@@ -13,7 +13,7 @@ EXTRCTVARO=${EXTRCTVARO:-"${USHgfs}/gefs_ocnice_extractvars.sh"}
 EXTRCTVARW=${EXTRCTVARW:-"${USHgfs}/gefs_wav_extractvars.sh"}
 
 #Check to make sure FHMAX_HF_GFS is less than FHMAX_GFS
-if [[ "${FHMAX_GFS}" -lt "${FHMAX_HF_GFS}" ]];then
+if (( FHMAX_GFS < FHMAX_HF_GFS )); then
   echo "FATAL ERROR: FHMAX_GFS (${FHMAX_GFS}) is less than FHMAX_HF_GFS (${FHMAX_HF_GFS}). FHMAX_GFS must be greater than FHMAX_HF_GFS."
   export err=1; err_chk
 fi

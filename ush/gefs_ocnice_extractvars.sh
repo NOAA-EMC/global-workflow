@@ -15,7 +15,7 @@ comout_rfcst_prod_ocnice=${7}
 cd "${outdirpre}" || true
 
 nh=${FHMIN_GFS}
-while [[ ${nh} -le ${FHMAX_GFS} ]];do
+while (( nh <= FHMAX_GFS )); do
   fnh=$(printf "%3.3d" "${nh}")
 
   if [[ "${dataformat}" == "grib2" ]];then

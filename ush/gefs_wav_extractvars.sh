@@ -9,7 +9,7 @@ DATA=${1}
 cd "${DATA}" || true
 
 nh=6
-while [[ ${nh} -le ${FHMAX_WAV} ]];do
+while (( nh <= FHMAX_WAV )); do
   fnh=$(printf "%3.3d" "${nh}")
 
   infile=${COMIN_WAVE_GRID}/${RUN}wave.${cycle}.global.${wavres}.f${fnh}.grib2

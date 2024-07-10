@@ -25,7 +25,7 @@ for outtype in "f2d" "f3d"; do
   if [[ ! -d "${outdirpre}" ]]; then mkdir -p "${outdirpre}"; fi 
 
   nh=${FHMIN}
-  while [[ ${nh} -le ${FHMAX_GFS} ]];do
+  while (( nh <= FHMAX_GFS )); do
     fnh=$(printf "%3.3d" "${nh}")
 
     if [[ "${outtype}" == "f2d" ]];then
@@ -38,7 +38,7 @@ for outtype in "f2d" "f3d"; do
       outres="1p00"
     fi
 
-    if [[ ${nh} -lt ${FHMAX_HF_GFS} ]];then
+    if (( nh < FHMAX_HF_GFS )); then
       outfreq=${FHOUT_HF_GFS}
     else
       outfreq=${FHOUT_GFS}
