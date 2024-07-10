@@ -215,7 +215,7 @@ pipeline {
                                     env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
                                     try {
                                         error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStdout: true).trim()
-                                    } catch {
+                                    } catch (Exception error_create) {
                                         sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
                                         error("Case ${Case} failed to create experment directory")
                                     }
