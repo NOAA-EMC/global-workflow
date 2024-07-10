@@ -88,12 +88,11 @@ pipeline {
         }
 
         stage('3. Build System') {
-            failFast true
             matrix {
                 agent { label NodeName[machine].toLowerCase() }
-                //options {
-                //    throttle(['global_matrix_build'])
-                //}
+                options {
+                    failFast true
+                }
                 axes {
                     axis {
                         name 'system'
@@ -188,8 +187,10 @@ pipeline {
             when {
                 expression { STATUS != 'Failed' }
             }
-            failFast false 
             matrix {
+                options {
+                    failFast True
+                }
                 agent { label NodeName[machine].toLowerCase() }
                 axes {
                     axis {
@@ -205,14 +206,21 @@ pipeline {
                             expression { return caseList.contains(Case) }
                         }
                         steps {
+                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                 script {
                                     sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp")
                                     def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp"
                                     system = yaml_case.experiment.system
                                     def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
                                     env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
-                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml")
+                                    try {
+                                        error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStdout: true).trim()
+                                    } catch {
+                                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                        error("Case ${Case} failed to create experment directory")
+                                    }
                                 }
+                            }
                         }
                     }
 
@@ -220,7 +228,6 @@ pipeline {
                         when {
                             expression { return caseList.contains(Case) }
                         }
-                        failFast false
                         steps {
                             script {
                                 HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
@@ -266,7 +273,7 @@ pipeline {
                                         } catch (Exception e) {
                                             echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                         }
-                                        error("Failed to run experiments ${Case} on ${Machine}")
+                                        echo "Failed to run experiments ${Case} on ${Machine}"
                                     }
                                 }
                             }
@@ -275,6 +282,7 @@ pipeline {
                 }
             }
         }
+
         stage( '5. FINALIZE' ) {
             agent { label NodeName[machine].toLowerCase() }
             steps {
