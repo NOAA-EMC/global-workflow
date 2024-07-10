@@ -440,7 +440,7 @@ case ${step} in
     export layout_x
     export layout_y
 
-    export wtime_aeroanlvar="00:30:00"
+    export wtime_aeroanlvar="00:45:00"
     export npe_aeroanlvar_gdas=$(( layout_x * layout_y * 6 ))
     export npe_aeroanlvar_gfs=$(( layout_x * layout_y * 6 ))
     export nth_aeroanlvar_gdas=1
