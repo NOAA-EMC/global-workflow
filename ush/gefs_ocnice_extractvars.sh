@@ -14,8 +14,7 @@ fhout_ocnice=${6}
 comout_rfcst_prod_ocnice=${7}
 cd "${outdirpre}" || true
 
-nh=${FHMIN_GFS}
-while (( nh <= FHMAX_GFS )); do
+for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   fnh=$(printf "%3.3d" "${nh}")
 
   if [[ "${dataformat}" == "grib2" ]];then
@@ -71,7 +70,6 @@ while (( nh <= FHMAX_GFS )); do
   else
     echo "WARNING: ${infile} does not exist."
   fi
-  nh=$(( nh + fhout_ocnice ))
 done
 
 exit 0                                                                                                                                                                                        
