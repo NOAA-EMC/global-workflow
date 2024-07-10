@@ -8,9 +8,9 @@ source "${USHgfs}/preamble.sh"
 export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 
 # Scripts used
-EXTRCTVARA=${EXTRCTVARA:-"${USHgfs}/gefs_atmos_extractvars.sh"}
-EXTRCTVARO=${EXTRCTVARO:-"${USHgfs}/gefs_ocnice_extractvars.sh"}
-EXTRCTVARW=${EXTRCTVARW:-"${USHgfs}/gefs_wav_extractvars.sh"}
+EXTRCTVARA=${EXTRCTVARA:-"${USHgfs}/atmos_extractvars.sh"}
+EXTRCTVARO=${EXTRCTVARO:-"${USHgfs}/ocnice_extractvars.sh"}
+EXTRCTVARW=${EXTRCTVARW:-"${USHgfs}/wav_extractvars.sh"}
 
 #Check to make sure FHMAX_HF_GFS is less than FHMAX_GFS
 if (( FHMAX_GFS < FHMAX_HF_GFS )); then
