@@ -16,8 +16,8 @@ export SOCA_NINNER=@SOCA_NINNER@
 export CASE_ANL=@CASE_ANL@
 export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
 export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin
-
-export COMIN_OBS=@COMIN_OBS@
+export SOCA_FIX_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage.yaml.j2"
+export SOCA_ENS_BKG_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_ens_bkg_stage.yaml.j2"
 
 # NICAS
 export NICAS_RESOL=@NICAS_RESOL@
