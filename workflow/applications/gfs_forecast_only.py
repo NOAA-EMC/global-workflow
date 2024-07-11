@@ -25,7 +25,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
             configs += ['atmos_products']
 
             if self.do_aero:
-                if self._base['EXP_WARM_START'] in ['.false.']:
+                if not self._base['EXP_WARM_START']:
                     configs += ['aerosol_init']
 
             if self.do_tracker:
@@ -90,7 +90,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if self.do_aero:
             aero_fcst_cdump = self._base.get('AERO_FCST_CDUMP', 'BOTH').lower()
             if self._base['CDUMP'] in aero_fcst_cdump or aero_fcst_cdump == "both":
-                if self._base['EXP_WARM_START'] in ['.false.']:
+                if not self._base['EXP_WARM_START']:
                     tasks += ['aerosol_init']
 
         if self.do_wave:
