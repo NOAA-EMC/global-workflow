@@ -53,6 +53,8 @@ for outtype in "f2d" "f3d"; do
     requestedvars2="${subdata}/partial_parm2.txt"
     rm -f "${requestedvars1}"
     rm -f "${requestedvars2}"
+    if [[ ! -f "${requestedvars1}" ]]; then touch "${requestedvars1}"; fi
+    if [[ ! -f "${requestedvars2}" ]]; then touch "${requestedvars2}"; fi
     if [[ -f "${infile1}" ]]; then #check if input file exists before extraction
       gen_parmlist "${infile1}" "${requestedvars1}" "${varlist}"
       # shellcheck disable=SC2312
@@ -69,8 +71,6 @@ for outtype in "f2d" "f3d"; do
       echo "WARNING: ${infile2} does not exist."
     fi
 
-    if [[ ! -f "${requestedvars1}" ]]; then touch "${requestedvars1}"; fi
-    if [[ ! -f "${requestedvars2}" ]]; then touch "${requestedvars2}"; fi
     check_atmos "${requestedvars1}" "${requestedvars2}" "${varlist}"
     copy_to_comout "${outfile}" "${COMOUT_RFCST_PROD_ATMOS}"
 
@@ -82,7 +82,7 @@ for outtype in "f2d" "f3d"; do
       # shellcheck disable=SC2312
       ${WGRIB2} "${infile2}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile2}" -append -grib "${outfile}"
       if [[ ${fcnt} -eq 4 ]];then
-        daily_avg_atmos
+        daily_avg_atmos ${outfile}
         copy_to_comout "${davg_file}" "${COMOUT_RFCST_PROD_ATMOS}"
         fcnt=1
         dcnt=$(( dcnt + 1 ))

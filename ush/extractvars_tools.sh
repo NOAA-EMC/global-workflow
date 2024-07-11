@@ -4,10 +4,9 @@ gen_parmlist() {
   infileg=$1
   requestedvar_in_file1=$2
   varlist=$3
-  rm -vf "${requestedvar_in_file1}"
   file_vars=$(${WGRIB2} "${infileg}")
   while read -r vari; do
-    if [[ "${file_vars}" =~ "${vari}" && -n "${vari}" ]]; then
+    if [[ "${file_vars}" =~ ${vari} && -n "${vari}" ]]; then
       echo "${vari}" >> "${requestedvar_in_file1}"
     fi
   done <"${varlist}"
@@ -29,13 +28,14 @@ check_atmos() {
 }
 
 daily_avg_atmos() {
+  outfile_p=$1
   fnd=$(printf "%2.2d" "${dcnt}")
   davg_file=${outdirpre}/${RUN}.${cycle}.pgrb2.${outres}.24hr_avg.ldy${fnd}
   vcnt=1
   while read -r vari; do
     davgtmp=${subdata}/${RUN}.${cycle}.tmp.pgrb2.${outres}.ldy${fnd}.${vcnt}
     # shellcheck disable=SC2312
-    ${WGRIB2} "${outfile}" | grep "${vari}" | ${WGRIB2} -i "${outfile}" -fcst_ave 6hr "${davgtmp}"
+    ${WGRIB2} "${outfile_p}" | grep "${vari}" | ${WGRIB2} -i "${outfile_p}" -fcst_ave 6hr "${davgtmp}"
     # shellcheck disable=SC2312
     ${WGRIB2} "${davgtmp}" | ${WGRIB2} -i "${davgtmp}" -append -grib "${davg_file}"
     rm -f "${davgtmp}"
