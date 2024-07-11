@@ -12,7 +12,8 @@ datares=${4}
 datacompress=${5}
 fhout_ocnice=${6}
 comout_rfcst_prod_ocnice=${7}
-cd "${outdirpre}" || true
+
+[[ -d "${outdirpre}" ]] || mkdir -p "${outdirpre}"
 
 for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   fnh=$(printf "%3.3d" "${nh}")

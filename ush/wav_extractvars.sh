@@ -6,7 +6,8 @@ source "${USHgfs}/preamble.sh"
 source "${USHgfs}/extractvars_tools.sh"
 
 DATA=${1}
-cd "${DATA}" || true
+
+[[ -d "${DATA}" ]] || mkdir -p "${DATA}"
 
 for (( nh = FHOUT_WAV_NOSCRUB; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_NOSCRUB )); do
   fnh=$(printf "%3.3d" "${nh}")

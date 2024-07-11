@@ -8,7 +8,7 @@ fcnt=1
 dcnt=1 
 subdata=${1}
 
-cd "${subdata}" || true
+[[ -d "${subdata}" ]] || mkdir -p "${subdata}"
 
 for outtype in "f2d" "f3d"; do
 
@@ -22,7 +22,7 @@ for outtype in "f2d" "f3d"; do
   fi
 
   outdirpre="${subdata}/${outtype}"
-  if [[ ! -d "${outdirpre}" ]]; then mkdir -p "${outdirpre}"; fi 
+  [[ -d "${outdirpre}" ]] || mkdir -p "${outdirpre}"
 
   nh=${FHMIN}
   while (( nh <= FHMAX_GFS )); do
