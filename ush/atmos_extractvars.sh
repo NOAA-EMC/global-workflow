@@ -71,7 +71,7 @@ for outtype in "f2d" "f3d"; do
       echo "WARNING: ${infile2} does not exist."
     fi
 
-    check_atmos "${requestedvars1}" "${requestedvars2}" "${varlist}"
+    check_atmos "${requestedvars1}" "${requestedvars2}" "${varlist}" "${fnh}"
     copy_to_comout "${outfile}" "${COMOUT_RFCST_PROD_ATMOS}"
 
     #Compute daily average for a subset of variables

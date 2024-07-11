@@ -16,13 +16,14 @@ check_atmos() {
   requestedvar_in_file1=$1
   requestedvar_in_file2=$2
   varlistl=$3
+  fnhl=$4
   requestedvar_in_allgrb2file="${subdata}/requestedvar_in_allgrb2file.txt"
   rm -rvf "${requestedvar_in_allgrb2file}"
   cat "${requestedvar_in_file1}" "${requestedvar_in_file2}" >> "${requestedvar_in_allgrb2file}"
   mapfile -t requestedvar_in_allgrb2file_arr < "${requestedvar_in_allgrb2file}"
   while read -r vari; do
     if [[ ! ${requestedvar_in_allgrb2file_arr[*]} =~ ${vari} ]] ;then
-      echo "WARNING: PARM VARIABLE (${vari}) is not available in pgrb and pgrb2b."
+      echo "WARNING: PARM VARIABLE (${vari}) is not available in pgrb and pgrb2b for f${fnhl}."
     fi
   done <"${varlistl}"
 }
