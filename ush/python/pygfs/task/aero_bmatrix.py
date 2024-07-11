@@ -67,8 +67,8 @@ class AerosolBMatrix(BMatrix):
         # generate convert state YAML file
         logger.info(f"Generate convert state YAML file: {self.task_config.convertstate_yaml}")
         self.task_config.convertstate_config = parse_j2yaml(self.task_config.INTERPYAML,
-                                                         self.task_config,
-                                                         searchpath=self.gdasapp_j2tmpl_dir)
+                                                            self.task_config,
+                                                            searchpath=self.gdasapp_j2tmpl_dir)
         save_as_yaml(self.task_config.convertstate_config, self.task_config.convertstate_yaml)
         logger.info(f"Wrote convert state YAML to: {self.task_config.convertstate_yaml}")
 
