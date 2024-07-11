@@ -29,10 +29,15 @@ copy:
   {% for fvfile in fvfiles %}
     {% for tile in range(1,ntiles+1) %}
 - ["{{ COMIN_ATMOS_RESTART_PREV }}/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc", "{{ DATA }}/bkg/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc"]
-- ["{{ COMIN_ATMOS_RESTART_PREV }}/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc", "{{ DATA }}/anl/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc"]
     {% endfor %}
   {% endfor %}
 {% endfor %}
+######################################
+## copy backgrounds again for fv_tracer to create analysis files later
+{% for tile in range(1,ntiles+1) %}
+- ["{{ COMIN_ATMOS_RESTART_PREV }}/{{ bkg_times[0] | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc", "{{ DATA }}/anl/{{ bkg_times[0] | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc"]
+{% endfor %}
+
 ######################################
 ## copy berror files from COMIN_CHEM_BMAT_PREV
 ## stddev files
