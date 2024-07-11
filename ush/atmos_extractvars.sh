@@ -49,8 +49,8 @@ for outtype in "f2d" "f3d"; do
     infile2="${!com_var}/${RUN}.${cycle}.pgrb2b.${outres}.f${fnh}"
     outfile="${outdirpre}/${RUN}.${cycle}.pgrb2.${outres}.f${fnh}"
     rm -f "${outfile}" #remove outfile if it already exists before extraction
-    requestedvars1="partial_parm1.txt"
-    requestedvars2="partial_parm2.txt"
+    requestedvars1="${subdata}/partial_parm1.txt"
+    requestedvars2="${subdata}/partial_parm2.txt"
     rm -f "${requestedvars1}"
     rm -f "${requestedvars2}"
     if [[ -f "${infile1}" ]]; then #check if input file exists before extraction

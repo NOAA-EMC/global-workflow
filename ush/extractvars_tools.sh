@@ -17,7 +17,7 @@ check_atmos() {
   requestedvar_in_file1=$1
   requestedvar_in_file2=$2
   varlist=$3
-  requestedvar_in_allgrb2file=requestedvar_in_allgrb2file.txt
+  requestedvar_in_allgrb2file="${subdata}/requestedvar_in_allgrb2file.txt"
   rm -rvf "${requestedvar_in_allgrb2file}"
   cat "${requestedvar_in_file1}" "${requestedvar_in_file2}" >> "${requestedvar_in_allgrb2file}"
   mapfile -t requestedvar_in_allgrb2file_arr < "${requestedvar_in_allgrb2file}"
