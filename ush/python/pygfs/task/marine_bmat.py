@@ -3,7 +3,6 @@
 import os
 import glob
 from logging import getLogger
-import calc_scales
 import pygfs.utils.marine_da_utils as mdau
 
 from wxflow import (AttrDict,
@@ -30,6 +29,7 @@ class MarineBMat(Task):
         _gcyc_str = str(self.task_config.gcyc).zfill(2)
         _cyc_str = str(self.task_config.cyc).zfill(2)
         _home_gdas = os.path.join(self.task_config.HOMEgfs, 'sorc', 'gdas.cd')
+        _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmvar.yaml")
@@ -52,7 +52,8 @@ class MarineBMat(Task):
                 'GRID_GEN_YAML': os.path.join(_home_gdas, 'parm', 'soca', 'gridgen', 'gridgen.yaml'),
                 'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
                 'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
-                'ENSPERT_RELPATH': _enspert_relpath
+                'ENSPERT_RELPATH': _enspert_relpath,
+                'CALC_SCALE_EXEC':_calc_scale_exec
             }
         )
 
@@ -199,7 +200,13 @@ class MarineBMat(Task):
         """Generate the vertical diffusion coefficients
         """
         # compute the vertical correlation scales based on the MLD
-        calc_scales.run('soca_vtscales.yaml')
+        FileHandler({'copy': [[os.path.join(self.task_config.CALC_SCALE_EXEC),
+                               os.path.join(self.task_config.DATA, 'calc_scales.x')]]}).sync()
+        exec_cmd = Executable("python")
+        exec_name = os.path.join(self.task_config.DATA, 'calc_scales.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('soca_vtscales.yaml')
+        mdau.run(exec_cmd)
 
         # link the executable that computes the correlation scales, gdas_soca_error_covariance_toolbox.x,
         # and prepare the command to run it
