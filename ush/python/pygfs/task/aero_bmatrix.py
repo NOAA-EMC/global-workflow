@@ -26,6 +26,7 @@ class AerosolBMatrix(BMatrix):
 
         _bmat_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diagb.yaml")
         _diffusion_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diffusion.yaml")
+        _convertstate_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_convertstate.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -43,6 +44,7 @@ class AerosolBMatrix(BMatrix):
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'bmat_yaml': _bmat_yaml,
                 'diffusion_yaml': _diffusion_yaml,
+                'convertstate_yaml': _convertstate_yaml,
             }
         )
 
@@ -62,21 +64,55 @@ class AerosolBMatrix(BMatrix):
         aero_bmat_stage_list = parse_j2yaml(self.task_config.AERO_BMATRIX_STAGE_TMPL, self.task_config)
         FileHandler(aero_bmat_stage_list).sync()
 
+        # generate convert state YAML file
+        logger.info(f"Generate convert state YAML file: {self.task_config.convertstate_yaml}")
+        self.task_config.convertstate_config = parse_j2yaml(self.task_config.INTERPYAML,
+                                                         self.task_config,
+                                                         searchpath=self.gdasapp_j2tmpl_dir)
+        save_as_yaml(self.task_config.convertstate_config, self.task_config.convertstate_yaml)
+        logger.info(f"Wrote convert state YAML to: {self.task_config.convertstate_yaml}")
+
         # generate diagb YAML file
         logger.info(f"Generate bmat YAML file: {self.task_config.bmat_yaml}")
+        self.task_config.bmat_config = parse_j2yaml(self.task_config.BMATYAML,
+                                                    self.task_config,
+                                                    searchpath=self.gdasapp_j2tmpl_dir)
         save_as_yaml(self.task_config.bmat_config, self.task_config.bmat_yaml)
         logger.info(f"Wrote bmat YAML to: {self.task_config.bmat_yaml}")
 
         # generate diffusion parameters YAML file
         logger.info(f"Generate diffusion YAML file: {self.task_config.diffusion_yaml}")
+        self.task_config.diffusion_config = parse_j2yaml(self.task_config.DIFFUSIONYAML,
+                                                         self.task_config,
+                                                         searchpath=self.gdasapp_j2tmpl_dir)
         save_as_yaml(self.task_config.diffusion_config, self.task_config.diffusion_yaml)
         logger.info(f"Wrote diffusion YAML to: {self.task_config.diffusion_yaml}")
 
         # link executable to run directory
-        logger.info(f'before link_bmatexe')
         self.link_bmatexe()
-        logger.info(f'before link_diffusion_exe')
         self.link_diffusion_exe()
+        self.link_jediexe()
+
+    @logit(logger)
+    def interpBackground(self) -> None:
+        chdir(self.task_config.DATA)
+
+        exec_cmd = Executable(self.task_config.APRUN_AEROGENB)
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('convertstate')
+        exec_cmd.add_default_arg(self.task_config.convertstate_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
 
     @logit(logger)
     def computeVariance(self) -> None:
@@ -125,6 +161,32 @@ class AerosolBMatrix(BMatrix):
         logger.info(f"Saving files to COMOUT based on {self.task_config.AERO_BMATRIX_FINALIZE_TMPL}")
         aero_bmat_finalize_list = parse_j2yaml(self.task_config.AERO_BMATRIX_FINALIZE_TMPL, self.task_config)
         FileHandler(aero_bmat_finalize_list).sync()
+
+    @logit(logger)
+    def link_jediexe(self) -> None:
+        """
+
+        This method links a JEDI executable to the run directory
+
+        Parameters
+        ----------
+        Task: GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        exe_src = self.task_config.JEDIEXE
+
+        # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
+        logger.info(f"Link executable {exe_src} to DATA/")
+        logger.warn("Linking is not permitted per EE2.")
+        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        return exe_dest
 
     @logit(logger)
     def link_bmatexe(self) -> None:

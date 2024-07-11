@@ -21,6 +21,7 @@ if __name__ == '__main__':
     # Instantiate the aerosol variance and diffusion correlation tasks
     AeroB = AerosolBMatrix(config)
     AeroB.initialize()
+    AeroB.interpBackground()
     AeroB.computeVariance()
     AeroB.computeDiffusion()
     AeroB.finalize()
