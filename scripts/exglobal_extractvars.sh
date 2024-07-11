@@ -12,10 +12,11 @@ EXTRCTVARA=${EXTRCTVARA:-"${USHgfs}/atmos_extractvars.sh"}
 EXTRCTVARO=${EXTRCTVARO:-"${USHgfs}/ocnice_extractvars.sh"}
 EXTRCTVARW=${EXTRCTVARW:-"${USHgfs}/wav_extractvars.sh"}
 
-#Check to make sure FHMAX_HF_GFS is less than FHMAX_GFS
+#Define a job-specific variable for FHMAX_HF_GFS
 if (( FHMAX_GFS < FHMAX_HF_GFS )); then
-  echo "FATAL ERROR: FHMAX_GFS (${FHMAX_GFS}) is less than FHMAX_HF_GFS (${FHMAX_HF_GFS}). FHMAX_GFS must be greater than FHMAX_HF_GFS."
-  export err=1; err_chk
+  export FHMAX_HF_EV=FHMAX_GFS
+else
+  export FHMAX_HF_EV=FHMAX_HF_GFS
 fi
 
 #Extract variables for atmosphere
