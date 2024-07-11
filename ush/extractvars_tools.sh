@@ -5,9 +5,9 @@ gen_parmlist() {
   requestedvar_in_file1=$2
   varlist=$3
   rm -vf "${requestedvar_in_file1}"
+  file_vars=$(${WGRIB2} "${infileg}")
   while read -r vari; do
-    varinfile=$(${WGRIB2} "${infileg}" | grep "${vari}") || true
-    if [[ -n "${varinfile}" ]];then # if varinfile is not empty
+    if [[ "${file_vars}" =~ "${vari}" && -n "${vari}" ]]; then
       echo "${vari}" >> "${requestedvar_in_file1}"
     fi
   done <"${varlist}"
