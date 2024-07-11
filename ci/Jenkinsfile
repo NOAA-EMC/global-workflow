@@ -14,7 +14,7 @@ pipeline {
 
     options {
         skipDefaultCheckout()
-        //parallelsAlwaysFailFast()
+        parallelsAlwaysFailFast()
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -90,9 +90,6 @@ pipeline {
         stage('3. Build System') {
             matrix {
                 agent { label NodeName[machine].toLowerCase() }
-                options {
-                    failFast true
-                }
                 axes {
                     axis {
                         name 'system'
@@ -188,9 +185,6 @@ pipeline {
                 expression { STATUS != 'Failed' }
             }
             matrix {
-                options {
-                    failFast True
-                }
                 agent { label NodeName[machine].toLowerCase() }
                 axes {
                     axis {
