@@ -16,7 +16,7 @@ gen_parmlist() {
 check_atmos() {
   requestedvar_in_file1=$1
   requestedvar_in_file2=$2
-  varlist=$3
+  varlistl=$3
   requestedvar_in_allgrb2file="${subdata}/requestedvar_in_allgrb2file.txt"
   rm -rvf "${requestedvar_in_allgrb2file}"
   cat "${requestedvar_in_file1}" "${requestedvar_in_file2}" >> "${requestedvar_in_allgrb2file}"
@@ -25,7 +25,7 @@ check_atmos() {
     if [[ ! ${requestedvar_in_allgrb2file_arr[*]} =~ ${vari} ]] ;then
       echo "WARNING: PARM VARIABLE (${vari}) is not available in pgrb and pgrb2b."
     fi
-  done <"${varlist}"
+  done <"${varlistl}"
 }
 
 daily_avg_atmos() {
