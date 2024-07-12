@@ -1,5 +1,5 @@
 defaults:
   !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
 base:
-  HPC_ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_JEDIOCNVAR: "YES"
