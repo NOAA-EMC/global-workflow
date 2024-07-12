@@ -9,7 +9,6 @@ load(pathJoin("stack-intel", (os.getenv("stack_intel_ver") or "None")))
 load(pathJoin("stack-intel-oneapi-mpi", (os.getenv("stack_impi_ver") or "None")))
 load(pathJoin("python", (os.getenv("python_ver") or "None")))
 
-load(pathJoin("gempak", (os.getenv("gempak_ver") or "None")))
 load(pathJoin("jasper", (os.getenv("jasper_ver") or "None")))
 load(pathJoin("libpng", (os.getenv("libpng_ver") or "None")))
 load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))

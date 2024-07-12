@@ -241,6 +241,7 @@ class Tasks:
            #as below. Or, it won't run, but with an error:
            #"ufs_model.x: error while loading shared libraries: libiomp5.so: cannot open shared object file: No such file or directory"
            #Even the library path is clearly in LD_LIBRARY_PATH, or load exactly the modules when build ufs_model.x
+           #TODO: find a mechanism to provide native scheduler information.
             pw_csp = os.environ.get('PW_CSP', 'unknown')
             if ( pw_csp in ['aws', 'azure', 'google'] ):
                 native = '--export=ALL --exclusive'
