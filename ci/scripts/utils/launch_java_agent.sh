@@ -115,18 +115,16 @@ check_node_online() {
     ./parse.py curl_response
 }
 
-set +e
-offline=$(check_node_online)
 set -e
+offline=$(check_node_online)
 
 if [[ "${offline}" != "False" ]]; then
   if [[ "${1}" != "now" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
   fi
-  set +e
-  offline=$(check_node_online)
   set -e
+  offline=$(check_node_online)
   if [[ "${offline}" != "False" ]]; then
       echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
       command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
