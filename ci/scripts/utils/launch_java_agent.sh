@@ -110,7 +110,7 @@ print(data[\"offline\"])
 chmod u+x parse.py
 
 check_node_online() {
-    rm -p curl_response
+    rm -f curl_response
     curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true") || true
     echo -n "${curl_response}" > curl_response
     ./parse.py curl_response
