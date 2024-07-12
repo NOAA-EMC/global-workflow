@@ -25,7 +25,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen ocnanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -555,32 +555,32 @@ case ${step} in
     export memory_ocnanalecen
     ;;
 
-  "ocnanalletkf")
+  "marineanalletkf")
     npes=16
     case ${OCNRES} in
       "025")
         npes=480
-        memory_ocnanalletkf="96GB"
+        memory_marineanalletkf="96GB"
         ;;
       "050")
         npes=16
-        memory_ocnanalletkf="96GB"
+        memory_marineanalletkf="96GB"
         ;;
       "500")
         npes=16
-        memory_ocnanalletkf="24GB"
+        memory_marineanalletkf="24GB"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
-    export wtime_ocnanalletkf="00:10:00"
-    export npe_ocnanalletkf=${npes}
-    export nth_ocnanalletkf=1
+    export wtime_marineanalletkf="00:10:00"
+    export npe_marineanalletkf=${npes}
+    export nth_marineanalletkf=1
     export is_exclusive=True
-    export npe_node_ocnanalletkf=$(( npe_node_max / nth_ocnanalletkf ))
-    export memory_ocnanalletkf
+    export npe_node_marineanalletkf=$(( npe_node_max / nth_marineanalletkf ))
+    export memory_marineanalletkf
     ;;
 
 
