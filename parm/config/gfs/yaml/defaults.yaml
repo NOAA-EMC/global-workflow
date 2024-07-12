@@ -22,8 +22,8 @@ base:
   FHMAX_ENKF_GFS: 12
 
 atmanl:
-  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2" 
-  STATICB_TYPE: "gsibec"  
+  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
+  STATICB_TYPE: "gsibec"
   LAYOUT_X_ATMANL: 8
   LAYOUT_Y_ATMANL: 8
   IO_LAYOUT_X: 1
@@ -45,13 +45,9 @@ snowanl:
   IO_LAYOUT_Y: 1
 
 ocnanal:
-  SOCA_INPUT_FIX_DIR: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca"  # TODO: These need to go to glopara fix space.
-  CASE_ANL: "C48"  # TODO: Check in gdasapp if used anywhere for SOCA
+  SOCA_INPUT_FIX_DIR: "/scratch1/NCEPDEV/global/glopara/fix/gdas/soca/20240624/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
   SOCA_NINNER: 100
-  SABER_BLOCKS_YAML: ""
-  NICAS_RESOL: 1
-  NICAS_GRID_SIZE: 15000
 
 prepoceanobs:
   SOCA_INPUT_FIX_DIR: "/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca"  # TODO: These need to go to glopara fix space.

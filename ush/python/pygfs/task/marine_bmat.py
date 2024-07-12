@@ -25,14 +25,11 @@ class MarineBMat(Task):
     @logit(logger, name="MarineBMat")
     def __init__(self, config):
         super().__init__(config)
-        _gPDY = self.task_config.gPDY
-        _gcyc_str = str(self.task_config.gcyc).zfill(2)
-        _cyc_str = str(self.task_config.cyc).zfill(2)
         _home_gdas = os.path.join(self.task_config.HOMEgfs, 'sorc', 'gdas.cd')
         _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-        _jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmvar.yaml")
+
         # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
         if self.task_config.NMEM_ENS > 0:
             _enspert_relpath = os.path.relpath(self.task_config.DATAenspert, self.task_config.DATA)
@@ -42,8 +39,6 @@ class MarineBMat(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'gcyc_str': _gcyc_str,
-                'cyc_str': _cyc_str,
                 'HOMEgdas': _home_gdas,
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_END': _window_end,
@@ -53,7 +48,8 @@ class MarineBMat(Task):
                 'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
                 'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
                 'ENSPERT_RELPATH': _enspert_relpath,
-                'CALC_SCALE_EXEC':_calc_scale_exec
+                'CALC_SCALE_EXEC': _calc_scale_exec,
+                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
             }
         )
 
@@ -113,7 +109,7 @@ class MarineBMat(Task):
         diffvz_config.save(os.path.join(self.task_config.DATA, 'soca_parameters_diffusion_vt.yaml'))
 
         # generate the horizontal diffusion YAML files
-        if True:  # TODO(G): Missing logic to skip this section
+        if True:  # TODO(G): skip this section once we have optimized the scales
             # stage the correlation scale configuration
             logger.debug("Generate correlation scale YAML file")
             FileHandler({'copy': [[os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_setcorscales.yaml'),
@@ -298,12 +294,12 @@ class MarineBMat(Task):
         for diff_type in ['hz', 'vt']:
             src = os.path.join(self.task_config.DATA, f"{diff_type}_ocean.nc")
             dest = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                                f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{diff_type}_ocean.nc")
+                                f"{self.task_config.APREFIX}{diff_type}_ocean.nc")
             diffusion_coeff_list.append([src, dest])
 
         src = os.path.join(self.task_config.DATA, f"hz_ice.nc")
         dest = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
-                            f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.hz_ice.nc")
+                            f"{self.task_config.APREFIX}hz_ice.nc")
         diffusion_coeff_list.append([src, dest])
 
         FileHandler({'copy': diffusion_coeff_list}).sync()
@@ -316,13 +312,13 @@ class MarineBMat(Task):
         # ocean diag B
         src = os.path.join(self.task_config.DATA, 'diagb', f"ocn.bkgerr_stddev.incr.{window_end_iso}.nc")
         dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                           f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.ocean.bkgerr_stddev.nc")
+                           f"{self.task_config.APREFIX}ocean.bkgerr_stddev.nc")
         diagb_list.append([src, dst])
 
         # ice diag B
         src = os.path.join(self.task_config.DATA, 'diagb', f"ice.bkgerr_stddev.incr.{window_end_iso}.nc")
         dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
-                           f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.ice.bkgerr_stddev.nc")
+                           f"{self.task_config.APREFIX}ice.bkgerr_stddev.nc")
         diagb_list.append([src, dst])
 
         FileHandler({'copy': diagb_list}).sync()
@@ -333,12 +329,12 @@ class MarineBMat(Task):
             weight_list = []
             src = os.path.join(self.task_config.DATA, f"ocn.ens_weights.incr.{window_middle_iso}.nc")
             dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                               f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.ocean.ens_weights.nc")
+                               f"{self.task_config.APREFIX}ocean.ens_weights.nc")
             weight_list.append([src, dst])
 
             src = os.path.join(self.task_config.DATA, f"ice.ens_weights.incr.{window_middle_iso}.nc")
             dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
-                               f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.ice.ens_weights.nc")
+                               f"{self.task_config.APREFIX}ice.ens_weights.nc")
             weight_list.append([src, dst])
 
             # TODO(G): missing ssh_steric_stddev, ssh_unbal_stddev, ssh_total_stddev and steric_explained_variance
@@ -350,6 +346,6 @@ class MarineBMat(Task):
         yaml_list = []
         for yaml_file in yamls:
             dest = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                                f"{self.task_config.RUN}.t{self.task_config.cyc:02d}.{os.path.basename(yaml_file)}")
+                                f"{self.task_config.APREFIX}{os.path.basename(yaml_file)}")
             yaml_list.append([yaml_file, dest])
         FileHandler({'copy': yaml_list}).sync()

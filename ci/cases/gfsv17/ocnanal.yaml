@@ -14,9 +14,10 @@ base:
   DO_VERFRAD: "YES"
   DO_VRFY_OCEANDA: "NO"
   FHMAX_GFS: 240
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
 
 ocnanal:
-  SOCA_INPUT_FIX_DIR: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/1440x1080x75/soca
+  SOCA_INPUT_FIX_DIR: /scratch1/NCEPDEV/global/glopara/fix/gdas/soca/20240624/1440x1080x75/soca
   CASE_ANL: 'C24'
   SOCA_OBS_LIST: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
   SOCA_NINNER: 100
@@ -25,6 +26,6 @@ ocnanal:
   NICAS_GRID_SIZE: 15000
 
 prepoceanobs:
-  SOCA_OBS_LIST: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml 
+  SOCA_OBS_LIST: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
   OBSPREP_YAML: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obsprep/obsprep_config.yaml
   DMPDIR: /scratch1/NCEPDEV/da/common/
