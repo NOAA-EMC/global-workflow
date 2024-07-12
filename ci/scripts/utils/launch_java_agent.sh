@@ -1,4 +1,30 @@
-#!/bin/env bash
+#!/bin/bash
+
+# ==============================================================================
+# Script Name: launch_java_agent.sh
+#
+# Description: This script automates the process of launching a Jenkins agent
+#              on a specified machine. It ensures that the necessary
+#              prerequisites are met, such as the availability of JAVA_HOME,
+#              the Jenkins agent launch directory, and proper authentication
+#              with GitHub.
+#
+#              It then proceeds to check if the Jenkins node is online and
+#              decides whether to launch the Jenkins agent based on the node's
+#              status. The agent is launched in the background,
+#              and its PID is logged for reference.
+#
+# Prerequisites: JAVA_HOME must be set to a valid JDK installation.
+#                GitHub CLI (gh) must be installed and authenticated.
+#                Jenkins agent launch directory must exist and be specified.
+#                Jenkins controller URL and authentication token must be provided.
+#
+# Usage: ./launch_java_agent.sh [now]
+#        The optional 'now' argument forces the script to launch the Jenkins
+#        agent immediately without waiting, even if the node is detected as offline.
+#
+# ==============================================================================
+
 set -e
 
 controller_url="https://jenkins.epic.oarcloud.noaa.gov"
@@ -88,6 +114,78 @@ check_node_online() {
     curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true") || true
     echo -n "${curl_response}" > curl_response
     ./parse.py curl_response
+}
+
+offline=$(check_node_online)
+
+if [[ "${offline}" != "False" ]]; then
+  if [[ "${1}" != "now" ]]; then
+      echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
+      sleep 300
+  fi
+  offline=$(check_node_online)
+  if [[ "${offline}" != "False" ]]; then
+      echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
+      command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
+      echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
+      ${command} >> "${LOG}" 2>&1 &
+      nohup_PID=$!
+      echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
+      echo "Java agent running on PID: ${nohup_PID}"
+  else
+    echo "Jenkins Agent is online (nothing done)"
+  fi
+else
+  echo "Jenkins Agent is online (nothing done)"
+fi  ./parse.py curl_response
+}
+
+offline=$(check_node_online)
+
+if [[ "${offline}" != "False" ]]; then
+  if [[ "${1}" != "now" ]]; then
+      echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
+      sleep 300
+  fi
+  offline=$(check_node_online)
+  if [[ "${offline}" != "False" ]]; then
+      echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
+      command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
+      echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
+      ${command} >> "${LOG}" 2>&1 &
+      nohup_PID=$!
+      echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
+      echo "Java agent running on PID: ${nohup_PID}"
+  else
+    echo "Jenkins Agent is online (nothing done)"
+  fi
+else
+  echo "Jenkins Agent is online (nothing done)"
+fi  ./parse.py curl_response
+}
+
+offline=$(check_node_online)
+
+if [[ "${offline}" != "False" ]]; then
+  if [[ "${1}" != "now" ]]; then
+      echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
+      sleep 300
+  fi
+  offline=$(check_node_online)
+  if [[ "${offline}" != "False" ]]; then
+      echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
+      command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
+      echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
+      ${command} >> "${LOG}" 2>&1 &
+      nohup_PID=$!
+      echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
+      echo "Java agent running on PID: ${nohup_PID}"
+  else
+    echo "Jenkins Agent is online (nothing done)"
+  fi
+else
+  echo "Jenkins Agent is online (nothing done)"
+fi  ./parse.py curl_response
 }
 
 offline=$(check_node_online)
