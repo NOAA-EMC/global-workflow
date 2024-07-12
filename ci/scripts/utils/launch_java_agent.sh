@@ -83,25 +83,32 @@ print(data[\"offline\"])
 " > parse.py
 chmod u+x parse.py
 
-parse_json_response() {
+check_node_online() {
+    rm -p curl_response
     curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true") || true
     echo -n "${curl_response}" > curl_response
-    $(./parse.py curl_response)
+    ./parse.py curl_response
 }
 
-offline=parse_json_response
-echo "Jenkins Agent is offline: ${offline}"
-exit
+offline=$(check_node_online)
 
 if [[ "${offline}" != "False" ]]; then
-  echo "Jenkins Agent is offline. Waiting 5 more minutes to try again"
-  echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
-  command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
-  echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
-  ${command} >> "${LOG}" 2>&1 &
-  nohup_PID=$!
-  echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
-  echo "Java agent running on PID: ${nohup_PID}"
+  if [[ "${1}" != "now" ]]; then
+      echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
+      sleep 300
+  fi
+  offline=$(check_node_online)
+  if [[ "${offline}" != "False" ]]; then
+      echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
+      command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
+      echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
+      ${command} >> "${LOG}" 2>&1 &
+      nohup_PID=$!
+      echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
+      echo "Java agent running on PID: ${nohup_PID}"
+  else
+    echo "Jenkins Agent is online (nothing done)"
+  fi
 else
   echo "Jenkins Agent is online (nothing done)"
 fi
