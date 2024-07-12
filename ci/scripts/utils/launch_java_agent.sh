@@ -26,6 +26,7 @@
 # ==============================================================================
 
 set -e
+shopt -s inherit_errexit
 
 controller_url="https://jenkins.epic.oarcloud.noaa.gov"
 controller_user="terry.mcguinness"
@@ -115,7 +116,6 @@ check_node_online() {
     ./parse.py curl_response
 }
 
-set -e
 offline=$(check_node_online)
 
 if [[ "${offline}" != "False" ]]; then
@@ -123,7 +123,6 @@ if [[ "${offline}" != "False" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
   fi
-  set -e
   offline=$(check_node_online)
   if [[ "${offline}" != "False" ]]; then
       echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
