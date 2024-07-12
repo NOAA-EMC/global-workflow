@@ -74,13 +74,12 @@ export GH="${HOME}/bin/gh"
 command -v "${GH}"
 ${GH} --version
 
-check_mark=$(gh auth status -t 2>&1 | grep "Token:" | awk '{print $1}')
+check_mark=$(gh auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
 if [[ "${check_mark}" != "✓" ]]; then
   echo "gh not authenticating with emcbot token"
   exit 1
 fi
 echo "gh authenticating with emcbot TOKEN ok"
-
 
 if [[ -d "${JENKINS_AGENT_LANUCH_DIR}" ]]; then
   echo "Jenkins Agent Lanuch Directory: ${JENKINS_AGENT_LANUCH_DIR}"
@@ -116,86 +115,18 @@ check_node_online() {
     ./parse.py curl_response
 }
 
+set +e
 offline=$(check_node_online)
+set -e
 
 if [[ "${offline}" != "False" ]]; then
   if [[ "${1}" != "now" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
   fi
+  set +e
   offline=$(check_node_online)
-  if [[ "${offline}" != "False" ]]; then
-      echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
-      command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
-      echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
-      ${command} >> "${LOG}" 2>&1 &
-      nohup_PID=$!
-      echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
-      echo "Java agent running on PID: ${nohup_PID}"
-  else
-    echo "Jenkins Agent is online (nothing done)"
-  fi
-else
-  echo "Jenkins Agent is online (nothing done)"
-fi  ./parse.py curl_response
-}
-
-offline=$(check_node_online)
-
-if [[ "${offline}" != "False" ]]; then
-  if [[ "${1}" != "now" ]]; then
-      echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
-      sleep 300
-  fi
-  offline=$(check_node_online)
-  if [[ "${offline}" != "False" ]]; then
-      echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
-      command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
-      echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
-      ${command} >> "${LOG}" 2>&1 &
-      nohup_PID=$!
-      echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
-      echo "Java agent running on PID: ${nohup_PID}"
-  else
-    echo "Jenkins Agent is online (nothing done)"
-  fi
-else
-  echo "Jenkins Agent is online (nothing done)"
-fi  ./parse.py curl_response
-}
-
-offline=$(check_node_online)
-
-if [[ "${offline}" != "False" ]]; then
-  if [[ "${1}" != "now" ]]; then
-      echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
-      sleep 300
-  fi
-  offline=$(check_node_online)
-  if [[ "${offline}" != "False" ]]; then
-      echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
-      command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
-      echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
-      ${command} >> "${LOG}" 2>&1 &
-      nohup_PID=$!
-      echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
-      echo "Java agent running on PID: ${nohup_PID}"
-  else
-    echo "Jenkins Agent is online (nothing done)"
-  fi
-else
-  echo "Jenkins Agent is online (nothing done)"
-fi  ./parse.py curl_response
-}
-
-offline=$(check_node_online)
-
-if [[ "${offline}" != "False" ]]; then
-  if [[ "${1}" != "now" ]]; then
-      echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
-      sleep 300
-  fi
-  offline=$(check_node_online)
+  set -e
   if [[ "${offline}" != "False" ]]; then
       echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
       command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
