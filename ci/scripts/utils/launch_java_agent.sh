@@ -75,9 +75,6 @@ if [[ ! -f "${controller_user_auth_token}" ]]; then
 fi
 
 JENKINS_TOKEN=$(cat "${controller_user_auth_token}")
-curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true") || true
-rm -f curl_response
-echo -n "${curl_response}" > curl_response
 echo -e "#!/usr/bin/env python
 import json,sys
 with open(sys.argv[1], 'r') as file:
@@ -85,8 +82,16 @@ with open(sys.argv[1], 'r') as file:
 print(data[\"offline\"])
 " > parse.py
 chmod u+x parse.py
-offline=$(./parse.py curl_response)
-echo "Jenkins Agent offline setting: ${offline}"
+
+parse_json_response() {
+    curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true") || true
+    echo -n "${curl_response}" > curl_response
+    $(./parse.py curl_response)
+}
+
+offline=parse_json_response
+echo "Jenkins Agent is offline: ${offline}"
+exit
 
 if [[ "${offline}" != "False" ]]; then
   echo "Jenkins Agent is offline. Waiting 5 more minutes to try again"
