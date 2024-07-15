@@ -107,7 +107,7 @@ echo -e "#!/usr/bin/env python
 import json,sys
 with open(sys.argv[1], 'r') as file:
     data = json.load(file)
-print(data[\"offline\"])
+print(data.get('offline','True'))
 " > parse.py
 chmod u+x parse.py
 
