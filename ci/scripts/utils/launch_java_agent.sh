@@ -21,7 +21,7 @@
 #         GitHub CLI (gh) must be installed and authenticated for messeging
 #           from the Jenkins controller to GitHub PR via shell commands.
 #           Jenkins agent launch directory must exist and be specified.
-#           TODO: Must use GitHub CLI v2.2.5 (newer versoins have issues)
+#           TODO: Must use GitHub CLI v2.25.1 (newer versoins have issues)
 #         Jenkins controller URL and authentication token must be provided.
 #         jenkins-secret-file:
 #           Must be present in the Jenkins agent launch directory.
@@ -35,9 +35,9 @@
 #         controller_user:
 #           Must be set to the Jenkins controller username corresponing to the jenkins_token.
 #
-# Usage: ./launch_java_agent.sh [now]
-#        The optional 'now' argument forces the script to launch the Jenkins
-#        agent immediately without waiting, even if the node is detected as offline.
+# Usage: ./launch_java_agent.sh [-f]
+#        The optional '-f' argument forces the script to launch the Jenkins
+#        agent without waiting and trying again.
 #
 # ==============================================================================
 
@@ -132,10 +132,10 @@ check_node_online() {
     ./parse.py curl_response
 }
 
-offline=$(check_node_online)
+offline=$(set -e; check_node_online)
 
 if [[ "${offline}" != "False" ]]; then
-  if [[ "${1:-}" != "now" ]]; then
+  if [[ "${1:-}" != "-f" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
   fi
