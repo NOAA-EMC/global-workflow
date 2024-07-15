@@ -304,7 +304,7 @@ case ${step} in
 
   "atmanlfinal")
     walltime="00:30:00"
-    ntasks=${tasks_per_node_max}
+    ntasks=${max_tasks_per_node}
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
