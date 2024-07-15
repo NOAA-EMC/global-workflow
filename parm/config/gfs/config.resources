@@ -26,7 +26,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen ocnanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -508,7 +508,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "ocnanalletkf")
+  "marineanalletkf")
     ntasks=16
     case ${OCNRES} in
       "025")
