@@ -56,15 +56,15 @@ case ${step} in
     export walltime="00:15:00"
     export ntasks=1
     export tasks_per_node=1
-    export threads=1
+    export threads_per_task=1
     export is_exclusive=True
     ;;
 
   "waveinit")
     export walltime="00:10:00"
     export ntasks=12
-    export threads=1
-    export tasks_per_node=$(( max_tasks_per_node / threads ))
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export NTASKS=${ntasks}
     export memory="2GB"
     ;;
@@ -72,8 +72,8 @@ case ${step} in
   "prep_emissions")
     export walltime="00:10:00"
     export ntasks=1
-    export threads=1
-    export tasks_per_node=$(( max_tasks_per_node / threads ))
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export memory="1GB"
     ;;
 
