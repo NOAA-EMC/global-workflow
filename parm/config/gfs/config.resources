@@ -387,12 +387,12 @@ case ${step} in
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
@@ -420,12 +420,12 @@ case ${step} in
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
@@ -466,12 +466,12 @@ case ${step} in
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
