@@ -121,7 +121,7 @@ check_node_online() {
 offline=$(check_node_online)
 
 if [[ "${offline}" != "False" ]]; then
-  if [[ "${1}" != "now" ]]; then
+  if [[ "${1:-}" != "now" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
   fi
