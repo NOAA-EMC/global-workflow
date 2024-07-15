@@ -127,7 +127,7 @@ if [[ "${offline}" != "False" ]]; then
   fi
   offline=$(check_node_online)
   if [[ "${offline}" != "False" ]]; then
-      echo "Jenkins Agent is offline. Lanuching Jenkins Agent on ${host}"
+      echo "Jenkins Agent is offline. Launching Jenkins Agent on ${host}"
       command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
       echo -e "Lanuching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
       ${command} >> "${LOG}" 2>&1 &
