@@ -1,7 +1,5 @@
 #!/bin/env bash
 
-#shellcheck enable=check-set-e-suppressed
-
 # ==============================================================================
 # Script Name: launch_java_agent.sh
 #
