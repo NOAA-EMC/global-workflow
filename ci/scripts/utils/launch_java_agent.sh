@@ -35,9 +35,10 @@
 #         controller_user:
 #           Must be set to the Jenkins controller username corresponing to the jenkins_token.
 #
-# Usage: ./launch_java_agent.sh [-f]
-#        The optional '-f' argument forces the script to launch the Jenkins
-#        agent without waiting and trying again.
+# Usage: ./launch_java_agent.sh [now] [-f]
+#        The optional 'now' argument forces the script to launch the Jenkins
+#        agent without waiting before trying again.
+#        The optional '-f' argument forces the script to launch the Jenkins regarless of the node status.
 #
 # ==============================================================================
 
@@ -135,12 +136,12 @@ check_node_online() {
 offline=$(set -e; check_node_online)
 
 if [[ "${offline}" != "False" ]]; then
-  if [[ "${1:-}" != "-f" ]]; then
+  if [[ "${1:-}" != "now" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
   fi
   offline=$(check_node_online)
-  if [[ "${offline}" != "False" ]]; then
+  if [[ "${offline}" != "False" ]] || [[ "${1:-}" == "-f" ]]; then
       echo "Jenkins Agent is offline. Launching Jenkins Agent on ${host}"
       command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
       echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
