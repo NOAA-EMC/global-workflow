@@ -51,6 +51,7 @@ jobs:
           ./link_workflow.sh
           cd $GITHUB_WORKSPACE/ci/scripts/tests
           ln -s ../wxflow
+          unset EXPDIR
 
           pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
 
