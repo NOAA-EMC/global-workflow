@@ -463,11 +463,10 @@ MOM6_postdet() {
       # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
       if (( OFFSET_START_HOUR > 0 )) &&  (( fhr == FHOUT_OCN ));then
         source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-        dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
       else
         source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-        dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
       fi
+      dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
       ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATA}/MOM6_OUTPUT/${source_file}"
 
       last_fhr=${fhr}
