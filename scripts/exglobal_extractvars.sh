@@ -5,9 +5,6 @@
 source "${USHgfs}/preamble.sh"
 source "${USHgfs}/extractvars_tools.sh"
 
-# Programs used
-export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-
 # Scripts used
 EXTRCTVARA=${EXTRCTVARA:-"${USHgfs}/atmos_extractvars.sh"}
 EXTRCTVARO=${EXTRCTVARO:-"${USHgfs}/ocnice_extractvars.sh"}
