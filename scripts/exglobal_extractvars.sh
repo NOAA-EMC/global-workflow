@@ -6,9 +6,9 @@ source "${USHgfs}/preamble.sh"
 source "${USHgfs}/extractvars_tools.sh"
 
 # Scripts used
-EXTRCTVARA=${EXTRCTVARA:-"${USHgfs}/atmos_extractvars.sh"}
-EXTRCTVARO=${EXTRCTVARO:-"${USHgfs}/ocnice_extractvars.sh"}
-EXTRCTVARW=${EXTRCTVARW:-"${USHgfs}/wave_extractvars.sh"}
+EXTRCTVARA="${USHgfs}/atmos_extractvars.sh"
+EXTRCTVARO="${USHgfs}/ocnice_extractvars.sh"
+EXTRCTVARW="${USHgfs}/wave_extractvars.sh"
 
 # Define a job-specific variable for FHMAX_HF_GFS
 if (( FHMAX_GFS < FHMAX_HF_GFS )); then
