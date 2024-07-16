@@ -82,7 +82,7 @@ for outtype in "f2d" "f3d"; do
       # shellcheck disable=SC2312
       ${WGRIB2} "${infile2}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile2}" -append -grib "${outfile}"
       if [[ ${fcnt} -eq 4 ]];then
-        daily_avg_atmos "${outfile}" "${dcnt}"
+        daily_avg_atmos "${outfile}" "${dcnt}" "${outres}"
         copy_to_comout "${davg_file}" "${COMOUT_RFCST_PROD_ATMOS}"
         fcnt=1
         dcnt=$(( dcnt + 1 ))
