@@ -4,7 +4,7 @@
 #
 source "${USHgfs}/preamble.sh"
 
-outdirpre=${1}
+subdata=${1}
 varlist=${2}
 dataformat=${3}
 datares=${4}
@@ -12,7 +12,7 @@ datacompress=${5}
 fhout_ocnice=${6}
 comout_rfcst_prod_ocnice=${7}
 
-[[ -d "${outdirpre}" ]] || mkdir -p "${outdirpre}"
+[[ -d "${subdata}" ]] || mkdir -p "${subdata}"
 
 for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   fnh=$(printf "%3.3d" "${nh}")
@@ -23,7 +23,7 @@ for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
     elif [[ ${component_name} == "ice" ]];then
       infile=${COMIN_ICE_GRIB}/${datares}/${RUN}.ice.t${cyc}z.${datares}.f${fnh}.grib2
     fi                                                                                                                                                                                                                                   
-    outfile=${outdirpre}/${RUN}.${component_name}.t${cyc}z.${datares}.f${fnh}.grib2
+    outfile=${subdata}/${RUN}.${component_name}.t${cyc}z.${datares}.f${fnh}.grib2
   fi
 
   if [[ "${dataformat}" == "netcdf" ]];then
@@ -32,7 +32,7 @@ for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
     elif [[ ${component_name} == "ice" ]];then
       infile=${COMIN_ICE_NETCDF}/${RUN}.ice.t${cyc}z.${datares}.f${fnh}.nc
     fi   
-    outfile=${outdirpre}/${RUN}.${component_name}.t${cyc}z.${datares}.f${fnh}.nc
+    outfile=${subdata}/${RUN}.${component_name}.t${cyc}z.${datares}.f${fnh}.nc
   fi
 
   if [[ -f "${infile}" ]]; then #check if input file exists before extraction
