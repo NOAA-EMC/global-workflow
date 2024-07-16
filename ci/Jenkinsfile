@@ -33,6 +33,7 @@ pipeline {
                         cause instanceof hudson.model.Cause.UpstreamCause
                     }
 
+                    def causes = currentBuild.rawBuild.getCauses()
                     dif isSpawnedFromParameteriedBuild = causes.any { cause ->
                         cause instanceof hudson.model.Cause.ParameterizedCause
                     }
