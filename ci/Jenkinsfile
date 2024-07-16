@@ -35,7 +35,7 @@ pipeline {
 
                     def causes2 = currentBuild.rawBuild.getCauses()
                     dif isSpawnedFromParameteriedBuild = causes2.any { cause ->
-                        cause instanceof hudson.model.Cause.ParameterizedCause
+                        cause instanceof hudson.model.Cause.ParameterizedBuildTriggerCause
                     }
 
                     def run_nodes = []
