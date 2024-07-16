@@ -48,7 +48,7 @@ copy_to_comout() {
   rundir_outfile=$1 #output data file generated in RUNDIR
   comout_dir=$2 #destination directory to which to copy the data file
   if [[ -f "${rundir_outfile}" ]];then
-    ${NCP} "${rundir_outfile}" "${comout_dir}"
+    cpfs "${rundir_outfile}" "${comout_dir}"
   else
     echo "WARNING: Output variable (${rundir_outfile}) does not exist."
   fi
