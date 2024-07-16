@@ -174,7 +174,7 @@ if [[ "${offline}" != "False" ]]; then
    if [[ "${skip_wait}" != "True" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
-      offline=$(check_node_online)
+      offline=$(set -e; check_node_online)
    fi
    if [[ "${offline}" != "False" ]]; then
       lauch_agent
