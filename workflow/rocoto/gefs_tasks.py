@@ -484,7 +484,7 @@ class GEFSTasks(Tasks):
 
         return task
     
-def arch(self):
+    def arch(self):
         deps = []
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'stage_ic'}
