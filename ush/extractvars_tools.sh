@@ -50,7 +50,7 @@ copy_to_comout() {
   if [[ -f "${rundir_outfile}" ]];then
     cp -pr "${rundir_outfile}" "${comout_dir}"
   else
-   echo "WARNING: Output variable (${rundir_outfile}) does not exist."
+    echo "WARNING: Output variable (${rundir_outfile}) does not exist."
   fi
 }
 
