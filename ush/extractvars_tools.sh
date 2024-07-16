@@ -36,7 +36,7 @@ daily_avg_atmos() {
   davg_file=${outdirpre}/${RUN}.t${cyc}z.pgrb2.${outres_p}.24hr_avg.ldy${fnd}
   vcnt=1 #count variables in varlist_d
   while read -r vari; do
-    davgtmp=${subdata}/${RUN}.t${cyc}z.tmp.pgrb2.${outres_p}.ldy${fnd}.${vcnt}
+    davgtmp=${subdata}/atmos_tmp.ldy${fnd}.${vcnt}
     # shellcheck disable=SC2312
     ${WGRIB2} "${outfile_p}" | grep "${vari}" | ${WGRIB2} -i "${outfile_p}" -fcst_ave 6hr "${davgtmp}"
     # shellcheck disable=SC2312
