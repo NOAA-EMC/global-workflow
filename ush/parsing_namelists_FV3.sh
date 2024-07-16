@@ -17,10 +17,6 @@ if (( gwd_opt == 2 )) && [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
   cdmbgwd=${cdmbgwd_gsl}
 fi
 
-if (( OFFSET_START_HOUR != 0 )); then
-  DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_replay"
-fi
-
 # ensure non-prognostic tracers are set
 dnats=${dnats:-0}
 
