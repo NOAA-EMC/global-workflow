@@ -11,7 +11,7 @@ export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 # Scripts used
 EXTRCTVARA=${EXTRCTVARA:-"${USHgfs}/atmos_extractvars.sh"}
 EXTRCTVARO=${EXTRCTVARO:-"${USHgfs}/ocnice_extractvars.sh"}
-EXTRCTVARW=${EXTRCTVARW:-"${USHgfs}/wav_extractvars.sh"}
+EXTRCTVARW=${EXTRCTVARW:-"${USHgfs}/wave_extractvars.sh"}
 
 #Define a job-specific variable for FHMAX_HF_GFS
 if (( FHMAX_GFS < FHMAX_HF_GFS )); then
