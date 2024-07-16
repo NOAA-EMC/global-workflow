@@ -19,7 +19,7 @@ export ocnres="5p00" #Resolution of ocean products
 export iceres="5p00" #Resolution of ice products
 export wavres="5p00" #Resolution of wave products
 
-export FHOUT_WAV_NOSCRUB=6 #Frequency of wave output to be saved on disk
+export FHOUT_WAV_EXTRACT=6 #Frequency of wave output to be saved on disk
 
 #Paramater Tables used
 export varlist_2d=${varlist_2d:-"${PARMgfs}/product/gefs_shortparmlist_2d.parm"} #Parameter table for surface variables

@@ -8,7 +8,7 @@ DATA=${1}
 
 [[ -d "${DATA}" ]] || mkdir -p "${DATA}"
 
-for (( nh = FHOUT_WAV_NOSCRUB; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_NOSCRUB )); do
+for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); do
   fnh=$(printf "%3.3d" "${nh}")
 
   infile=${COMIN_WAVE_GRID}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
