@@ -10,20 +10,19 @@ for grid in '0p25' '0p50' '1p00'; do
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
 done
 
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_ICE_HISTORY:COM_ICE_HISTORY_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_ICE_GRIB:COM_ICE_GRIB_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_ICE_NETCDF:COM_ICE_NETCDF_TMPL"
-
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL"
-
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_ATMOS_F2D:COM_RFCST_PROD_ATMOS_F2D_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_ATMOS_F3D:COM_RFCST_PROD_ATMOS_F3D_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_OCN:COM_RFCST_PROD_OCN_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_ICE:COM_RFCST_PROD_ICE_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx  "COMOUT_RFCST_PROD_WAV:COM_RFCST_PROD_WAV_TMPL"
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    "COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL" \
+    "COMIN_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL" \
+    "COMIN_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL" \
+    "COMIN_ICE_HISTORY:COM_ICE_HISTORY_TMPL" \
+    "COMIN_ICE_GRIB:COM_ICE_GRIB_TMPL" \
+    "COMIN_ICE_NETCDF:COM_ICE_NETCDF_TMPL" \
+    "COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL" \
+    "COMOUT_RFCST_PROD_ATMOS_F2D:COM_RFCST_PROD_ATMOS_F2D_TMPL" \
+    "COMOUT_RFCST_PROD_ATMOS_F3D:COM_RFCST_PROD_ATMOS_F3D_TMPL" \
+    "COMOUT_RFCST_PROD_OCN:COM_RFCST_PROD_OCN_TMPL" \
+    "COMOUT_RFCST_PROD_ICE:COM_RFCST_PROD_ICE_TMPL" \
+    "COMOUT_RFCST_PROD_WAV:COM_RFCST_PROD_WAV_TMPL"
 
 if [[ ! -d "${COMOUT_RFCST_PROD_ATMOS_F2D}" ]]; then mkdir -p "${COMOUT_RFCST_PROD_ATMOS_F2D}"; fi
 if [[ ! -d "${COMOUT_RFCST_PROD_ATMOS_F3D}" ]]; then mkdir -p "${COMOUT_RFCST_PROD_ATMOS_F3D}"; fi
