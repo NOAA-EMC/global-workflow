@@ -30,9 +30,10 @@ check_atmos() {
 
 daily_avg_atmos() {
   outfile_p=$1
-  fnd=$(printf "%2.2d" "${dcnt}")
+  dcnt_p=$2
+  fnd=$(printf "%2.2d" "${dcnt_p}")
   davg_file=${outdirpre}/${RUN}.${cycle}.pgrb2.${outres}.24hr_avg.ldy${fnd}
-  vcnt=1
+  vcnt=1 #count variables in varlist_d
   while read -r vari; do
     davgtmp=${subdata}/${RUN}.${cycle}.tmp.pgrb2.${outres}.ldy${fnd}.${vcnt}
     # shellcheck disable=SC2312
