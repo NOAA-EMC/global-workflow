@@ -293,6 +293,17 @@ case ${step} in
     export NTASKS=${npe_wavepostpnt}
     ;;
 
+  "arch")
+    declare -x "wtime_${step}"="06:00:00"
+    declare -x "npe_${step}"="1"
+    declare -x "npe_node_${step}"="1"
+    declare -x "nth_${step}"="1"
+    declare -x "memory_${step}"="4096M"
+    if [[ "${machine}" == "WCOSS2" ]]; then
+      declare -x "memory_${step}"="50GB"
+    fi
+    ;;
+    
   *)
     echo "FATAL ERROR: Invalid job ${step} passed to ${BASH_SOURCE[0]}"
     exit 1
