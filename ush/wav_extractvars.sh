@@ -3,7 +3,6 @@
 #   Script:    
 #
 source "${USHgfs}/preamble.sh"
-source "${USHgfs}/extractvars_tools.sh"
 
 DATA=${1}
 
