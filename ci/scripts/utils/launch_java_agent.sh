@@ -133,15 +133,7 @@ if [[ ! -f "${controller_user_auth_token}" ]]; then
    echo "User Jenkins authetication TOKEN to the controller for using the Remote API does not exist"
    exit 1
 fi
-
 JENKINS_TOKEN=$(cat "${controller_user_auth_token}")
-curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/pluginManager/api/json?pretty=true") || true
-if [[ "${curl_response}" == "" ]]; then
-  echo "ERROR: Jenkins controller not reachable. Exiting with error."
-  exit 1
-else
-  echo "${curl_response}"
-fi
 
 echo -e "#!/usr/bin/env python
 import json,sys
@@ -154,6 +146,10 @@ chmod u+x parse.py
 check_node_online() {
     rm -f curl_response
     curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true") || true
+    if [[ "${curl_response}" == "" ]]; then
+       echo "ERROR: Jenkins controller not reachable. Exiting with error."
+       exit 1
+    fi
     echo -n "${curl_response}" > curl_response
     ./parse.py curl_response
 }
@@ -167,25 +163,24 @@ lauch_agent () {
     echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
 }
 
-  if [[ "${force_launch}" == "true" ]]; then
-    lauch_agent
-    exit
-  fi
+if [[ "${force_launch}" == "true" ]]; then
+  lauch_agent
+  exit
+fi
 
 offline=$(set -e; check_node_online)
 
-  if [[ "${offline}" != "False" ]]; then
-    if [[ "${skip_wait}" != "True" ]]; then
+if [[ "${offline}" != "False" ]]; then
+   if [[ "${skip_wait}" != "True" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
       offline=$(check_node_online)
-    fi
-    if [[ "${offline}" != "False" ]]; then
+   fi
+   if [[ "${offline}" != "False" ]]; then
       lauch_agent
     else
       echo "Jenkins Agent is online (nothing done)"
     fi
-  fi
 else
   echo "Jenkins Agent is online (nothing done)"
 fi
