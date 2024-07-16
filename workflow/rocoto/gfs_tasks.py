@@ -535,6 +535,8 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlgenb', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_prep_obs_aero:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}prepobsaero'}
