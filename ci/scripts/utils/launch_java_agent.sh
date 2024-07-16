@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+set -e
+
 # ==============================================================================
 # Script Name: launch_java_agent.sh
 #
@@ -38,12 +40,27 @@
 # Usage: ./launch_java_agent.sh [now] [-f]
 #        The optional 'now' argument forces the script to launch the Jenkins
 #        agent without waiting before trying again.
-#        The optional '-f' argument forces the script to launch the Jenkins regarless of the node status.
+#        The optional 'force' argument forces the script to launch the Jenkins regarless of the node status.
 #
 # ==============================================================================
 
-set -e
-shopt -s inherit_errexit
+if [[ $# -gt 1 || "${1}" == "-h" ]]; then
+    echo "Usage: ./launch_java_agent.sh [now] [force]
+Two mutually exclusive optional arguments:
+   (now) causes the script to launch the Jenkins agent without waiting before trying again.
+   (force) forces the script to launch the Jenkins regarless of its connection status."
+    exit 1
+elif [[ $# -eq 1 ]]; then
+    if [[ "$1" == "now" ]]; then
+        skip_wait=true
+    elif [[ "$1" == "force" ]]; then
+        force_launch=true
+    else
+        echo "Usage: ./launch_java_agent.sh [now] [-f]"
+        echo "Invalid argument. Use 'now' or '-f'."
+        exit 1
+    fi
+fi
 
 controller_url="https://jenkins.epic.oarcloud.noaa.gov"
 controller_user="terry.mcguinness"
@@ -118,6 +135,14 @@ if [[ ! -f "${controller_user_auth_token}" ]]; then
 fi
 
 JENKINS_TOKEN=$(cat "${controller_user_auth_token}")
+curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/pluginManager/api/json?pretty=true") || true
+if [[ "${curl_response}" == "" ]]; then
+  echo "ERROR: Jenkins controller not reachable. Exiting with error."
+  exit 1
+else
+  echo "${curl_response}"
+fi
+
 echo -e "#!/usr/bin/env python
 import json,sys
 with open(sys.argv[1], 'r') as file:
@@ -133,24 +158,33 @@ check_node_online() {
     ./parse.py curl_response
 }
 
+lauch_agent () {
+    echo "Launching Jenkins Agent on ${host}"
+    command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
+    echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
+    ${command} >> "${LOG}" 2>&1 &
+    nohup_PID=$!
+    echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
+}
+
+  if [[ "${force_launch}" == "true" ]]; then
+    lauch_agent
+    exit
+  fi
+
 offline=$(set -e; check_node_online)
 
-if [[ "${offline}" != "False" ]]; then
-  if [[ "${1:-}" != "now" ]]; then
+  if [[ "${offline}" != "False" ]]; then
+    if [[ "${skip_wait}" != "True" ]]; then
       echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
       sleep 300
-  fi
-  offline=$(check_node_online)
-  if [[ "${offline}" != "False" ]] || [[ "${1:-}" == "-f" ]]; then
-      echo "Jenkins Agent is offline. Launching Jenkins Agent on ${host}"
-      command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
-      echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
-      ${command} >> "${LOG}" 2>&1 &
-      nohup_PID=$!
-      echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
-      echo "Java agent running on PID: ${nohup_PID}"
-  else
-    echo "Jenkins Agent is online (nothing done)"
+      offline=$(check_node_online)
+    fi
+    if [[ "${offline}" != "False" ]]; then
+      lauch_agent
+    else
+      echo "Jenkins Agent is online (nothing done)"
+    fi
   fi
 else
   echo "Jenkins Agent is online (nothing done)"
