@@ -3,7 +3,7 @@
 #   Script:    
 #
 source "${USHgfs}/preamble.sh"
-source "${USHgfs}/extractvars_tools.sh"
+
 fcnt=1
 dcnt=1 
 subdata=${1}

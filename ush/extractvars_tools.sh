@@ -53,3 +53,8 @@ copy_to_comout() {
    echo "WARNING: Output variable (${rundir_outfile}) does not exist."
   fi
 }
+
+declare -xf gen_parmlist
+declare -xf check_atmos
+declare -xf daily_avg_atmos
+declare -xf copy_to_comout
