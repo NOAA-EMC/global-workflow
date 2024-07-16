@@ -33,8 +33,12 @@ pipeline {
                         cause instanceof hudson.model.Cause.UpstreamCause
                     }
 
+                    dif isSpawnedFromParameteriedBuild = causes.any { cause ->
+                        cause instanceof hudson.model.Cause.ParameterizedCause
+                    }
+
                     def run_nodes = []
-                    if (isSpawnedFromAnotherJob) {
+                    if (isSpawnedFromAnotherJob || isSpawnedFromParameteriedBuild) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
                         machine = params.machine
