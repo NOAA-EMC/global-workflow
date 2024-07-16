@@ -483,3 +483,26 @@ class GEFSTasks(Tasks):
         task = rocoto.create_task(member_metatask_dict)
 
         return task
+    
+def arch(self):
+        deps = []
+        dependencies = []
+        dep_dict = {'type': 'task', 'name': f'stage_ic'}
+        dependencies.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('arch')
+        task_name = f'arch'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': None,
+                     'cycledef': 'gefs',
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_test.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+        task = rocoto.create_task(task_dict)
+
+        return task
