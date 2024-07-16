@@ -38,7 +38,7 @@ pipeline {
                     }
 
                     def run_nodes = []
-                    if (isSpawnedFromAnotherJob || isSpawnedFromParameteriedBuild) {
+                    if (isSpawnedFromAnotherJob || isSpawnedFromRemoteCause) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
                         machine = params.machine
