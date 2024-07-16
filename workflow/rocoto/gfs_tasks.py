@@ -856,7 +856,9 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero and self.run in self.app_config.aero_fcst_runs:
+        if self.app_config.do_aero and \
+           self.run in self.app_config.aero_fcst_runs and \
+           not self._base['EXP_WARM_START']:
             # Calculate offset based on RUN = gfs | gdas
             interval = None
             if self.run in ['gfs']:

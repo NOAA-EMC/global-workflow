@@ -84,12 +84,18 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 self.wave_runs = [wave_run]
 
         self.aero_anl_runs = None
+        self.aero_fcst_runs = None
         if self.do_aero:
             aero_anl_run = _base.get('AERO_ANL_RUN', 'BOTH').lower()
             if aero_anl_run in ['both']:
                 self.aero_anl_runs = ['gfs', 'gdas']
             elif aero_anl_run in ['gfs', 'gdas']:
                 self.aero_anl_runs = [aero_anl_run]
+            aero_fcst_run = _base.get('AERO_FCST_RUN', None).lower()
+            if aero_fcst_run in ['both']:
+                self.aero_fcst_runs = ['gfs', 'gdas']
+            elif aero_fcst_run in ['gfs', 'gdas']:
+                self.aero_fcst_runs = [aero_fcst_run]
 
     def _init_finalize(self, *args):
         print("Finalizing initialize")

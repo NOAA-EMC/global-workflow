@@ -25,7 +25,8 @@ class GFSForecastOnlyAppConfig(AppConfig):
             configs += ['atmos_products']
 
             if self.do_aero:
-                configs += ['aerosol_init']
+                if not self._base['EXP_WARM_START']:
+                    configs += ['aerosol_init']
 
             if self.do_tracker:
                 configs += ['tracker']
@@ -87,9 +88,10 @@ class GFSForecastOnlyAppConfig(AppConfig):
         tasks = ['stage_ic']
 
         if self.do_aero:
-            aero_fcst_run = _base.get('AERO_FCST_RUN', 'BOTH').lower()
+            aero_fcst_run = self._base.get('AERO_FCST_RUN', 'BOTH').lower()
             if self._base['RUN'] in aero_fcst_run or aero_fcst_run == "both":
-                tasks += ['aerosol_init']
+                if not self._base['EXP_WARM_START']:
+                    tasks += ['aerosol_init']
 
         if self.do_wave:
             tasks += ['waveinit']
