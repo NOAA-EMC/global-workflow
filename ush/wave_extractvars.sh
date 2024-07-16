@@ -11,8 +11,8 @@ DATA=${1}
 for (( nh = FHOUT_WAV_NOSCRUB; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_NOSCRUB )); do
   fnh=$(printf "%3.3d" "${nh}")
 
-  infile=${COMIN_WAVE_GRID}/${RUN}wave.${cycle}.global.${wavres}.f${fnh}.grib2
-  outfile=${DATA}/${RUN}wave.${cycle}.global.${wavres}.f${fnh}.grib2
+  infile=${COMIN_WAVE_GRID}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
+  outfile=${DATA}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
   rm -f "${outfile}" #remove outfile if it already exists before extraction
 
   if [[ -f "${infile}" ]]; then #check if input file exists before extraction
