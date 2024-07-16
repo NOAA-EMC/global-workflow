@@ -34,7 +34,7 @@ pipeline {
                     }
 
                     def isSpawnedFromParameteriedBuild = causes.any { cause ->
-                        cause instanceof hudson.model.Cause.ParameterizedBuildTriggerCause
+                        cause instanceof hudson.model.Cause$ParameterizedBuildTriggerCause
                     }
 
                     def run_nodes = []
