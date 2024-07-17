@@ -177,7 +177,7 @@ if [[ "${offline}" != "False" ]]; then
       offline=$(set -e; check_node_online)
    fi
    if [[ "${offline}" != "False" ]]; then
-      lauch_agent
+     lauch_agent
     else
       echo "Jenkins Agent is online (nothing done)"
     fi
