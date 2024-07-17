@@ -65,10 +65,10 @@ for outtype in "f2d" "f3d"; do
     #Compute daily average for a subset of variables
     if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]];then
       outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
-      # shellcheck disable=SC2312
-      ${WGRIB2} "${infile1}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile1}" -append -grib "${outfile}"
-      # shellcheck disable=SC2312
-      ${WGRIB2} "${infile2}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile2}" -append -grib "${outfile}"
+      for infile in "${infile1}" "${infile2}"; do
+        # shellcheck disable=SC2312
+        ${WGRIB2} "${infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}"
+      done
       if [[ ${fcnt} -eq 4 ]];then
         daily_avg_atmos "${outfile}" "${dcnt}" "${outres}"
         copy_to_comout "${davg_file}" "${COMOUT_RFCST_PROD_ATMOS}"
