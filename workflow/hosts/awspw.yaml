@@ -1,7 +1,7 @@
-BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git' #TODO: This does not yet exist.
-DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump' # TODO: This does not yet exist.
-PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara' #TODO: This does not yet exist.
-COMINsyn: '/scratch1/NCEPDEV/global/glopara/com/gfs/prod/syndat' #TODO: This does not yet exist.
+BASE_GIT: '' #TODO: This does not yet exist.
+DMPDIR: '' # TODO: This does not yet exist.
+PACKAGEROOT: '' #TODO: This does not yet exist.
+COMINsyn: '' #TODO: This does not yet exist.
 HOMEDIR: '/contrib/${USER}'
 STMP: '/lustre/${USER}/stmp/'
 PTMP: '/lustre/${USER}/ptmp/'
@@ -21,7 +21,7 @@ HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 BASE_CPLIC: '/bucket/global-workflow-shared-data/ICSDIR/prototype_ICs'
 LOCALARCH: 'NO'
-ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}' # TODO: This will not yet work from AWS.
+ATARDIR: '' # TODO: This will not yet work from AWS.
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
 SUPPORTED_RESOLUTIONS: ['C48', 'C96'] # TODO: Test and support all cubed-sphere resolutions.
