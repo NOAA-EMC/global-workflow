@@ -44,23 +44,20 @@ set -e
 #
 # ==============================================================================
 
-if [[ $# -gt 1 || "${1}" == "-h" ]]; then
-    echo "Usage: ./launch_java_agent.sh [now] [force]
+force_launch='False'
+skip_wait='False'
+while getopts 'f' flag; do
+  case "${flag}" in
+    force) force_launch='True' ;;
+    now) skip_wait='True' ;;
+    h) echo "Usage: ./launch_java_agent.sh [now] [force]
 Two mutually exclusive optional arguments:
    (now) causes the script to launch the Jenkins agent without waiting before trying again.
    (force) forces the script to launch the Jenkins regarless of its connection status."
-    exit 1
-elif [[ $# -eq 1 ]]; then
-    if [[ "$1" == "now" ]]; then
-        skip_wait=true
-    elif [[ "$1" == "force" ]]; then
-        force_launch=true
-    else
-        echo "Usage: ./launch_java_agent.sh [now] [-f]"
-        echo "Invalid argument. Use 'now' or '-f'."
-        exit 1
-    fi
-fi
+    *) echo "Unknown flag: ${flag}"
+       exit 1 ;;
+  esac
+done
 
 controller_url="https://jenkins.epic.oarcloud.noaa.gov"
 controller_user="terry.mcguinness"
