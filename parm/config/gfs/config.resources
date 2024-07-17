@@ -887,6 +887,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=1
     memory="20G"
+    [[ ${CASE} == "C768" ]] && memory="80GB"
     ;;
 
   "metp")
