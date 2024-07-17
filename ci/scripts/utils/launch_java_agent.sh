@@ -133,12 +133,13 @@ if [[ ! -f "${controller_user_auth_token}" ]]; then
 fi
 JENKINS_TOKEN=$(cat "${controller_user_auth_token}")
 
-echo -e "#!/usr/bin/env python
+cat << EOF > parse.py
+#!/usr/bin/env python3
 import json,sys
 with open(sys.argv[1], 'r') as file:
     data = json.load(file)
 print(data.get('offline','True'))
-" > parse.py
+EOF
 chmod u+x parse.py
 
 check_node_online() {
