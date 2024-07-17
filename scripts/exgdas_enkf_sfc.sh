@@ -268,7 +268,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
 
             [[ ! -d "${COM_ATMOS_RESTART_MEM}" ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
 
-            ${NCP} "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+            cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
 
         done
 

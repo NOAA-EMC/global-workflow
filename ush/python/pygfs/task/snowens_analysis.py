@@ -131,8 +131,6 @@ class SnowEnsAnalysis(Analysis):
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
-        pass
-
     @logit(logger)
     def regridDetInc(self) -> None:
         """Run fregrid to regrid the deterministic snow increment
@@ -168,8 +166,6 @@ class SnowEnsAnalysis(Analysis):
             raise OSError(f"Failed to execute {exec_cmd}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        pass
 
     @logit(logger)
     def recenterEns(self) -> None:
