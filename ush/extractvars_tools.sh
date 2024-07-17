@@ -9,8 +9,9 @@ check_atmos() {
   rm -f "${requestedvar_in_allgrb2file}"
   touch "${requestedvar_in_allgrb2file}"
   for infilep in "${infile1p}" "${infile2p}"; do
+    # It is permitted for an empty string to return if no parmlist vars are in infilep, therefore do not return exit 1 error
     # shellcheck disable=SC2312
-    ${WGRIB2} "${infilep}" | grep -F -f "${varlist}" >> ${requestedvar_in_allgrb2file} || true
+    ${WGRIB2} "${infilep}" | grep -F -f "${varlist}" >> "${requestedvar_in_allgrb2file}" || true
   done
   mapfile -t requestedvar_in_allgrb2file_arr < "${requestedvar_in_allgrb2file}"
   while read -r vari; do
