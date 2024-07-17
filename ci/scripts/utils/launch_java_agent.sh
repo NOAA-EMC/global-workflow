@@ -44,18 +44,19 @@ set -e
 #
 # ==============================================================================
 
-force_launch='False'
-skip_wait='False'
-while getopts 'f' flag; do
+force_launch="False"
+skip_wait="False"
+while getopts ":fnh" flag; do
   case "${flag}" in
-    force) force_launch='True' ;;
-    now) skip_wait='True' ;;
+    f) force_launch="True";;
+    n) skip_wait="True";;
     h) echo "Usage: ./launch_java_agent.sh [now] [force]
 Two mutually exclusive optional arguments:
-   (now) causes the script to launch the Jenkins agent without waiting before trying again.
-   (force) forces the script to launch the Jenkins regarless of its connection status."
+    -n (now) causes the script to launch the Jenkins agent without waiting before trying again.
+    -f (force) forces the script to launch the Jenkins regarless of its connection status."
+       exit 0 ;;
     *) echo "Unknown flag: ${flag}"
-       exit 1 ;;
+       exit 1;;
   esac
 done
 
@@ -160,7 +161,7 @@ lauch_agent () {
     echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
 }
 
-if [[ "${force_launch}" == "true" ]]; then
+if [[ "${force_launch}" == "True" ]]; then
   lauch_agent
   exit
 fi
