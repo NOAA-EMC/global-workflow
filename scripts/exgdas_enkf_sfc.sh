@@ -200,7 +200,7 @@ if [ $DOIAU = "YES" ]; then
                 COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
-            ${NCP} "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+            cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
 
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
@@ -266,7 +266,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+            [[ ! -d "${COM_ATMOS_RESTART_MEM}" ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
 
             ${NCP} "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
 
@@ -280,7 +280,6 @@ fi
 ################################################################################
 # Postprocessing
 cd "${pwd}" || exit 1
-[[ ${mkdata} = "YES" ]] && rm -rf "${DATA}"
 
 
 exit ${err}

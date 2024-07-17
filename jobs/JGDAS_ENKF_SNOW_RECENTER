@@ -9,7 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowrecen" -c "base esnowrecen"
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDUMP="gdas"
-GDUMP_ENS="enkfgdas"
 export GDUMP
 
 ##############################################
@@ -27,7 +26,7 @@ mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 for imem in $(seq 1 "${NMEM_ENS}"); do
     memchar="mem$(printf %03i "${imem}")"
-    MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
         COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
     mkdir -p "${COMOUT_SNOW_ANALYSIS}"
 done
