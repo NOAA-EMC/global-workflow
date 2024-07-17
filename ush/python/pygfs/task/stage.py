@@ -32,9 +32,9 @@ class Stage(Task):
         """
         super().__init__(config)
 
-        rotdir = self.config.ROTDIR + os.sep
+        rotdir = self.task_config.ROTDIR + os.sep
 
-        self.task_config = AttrDict(**self.config, **self.runtime_config)
+        self.task_config = AttrDict(**self.task_config)
 
     @logit(logger)
     def execute_stage(self, stage_dict: Dict[str, Any]) -> None:
