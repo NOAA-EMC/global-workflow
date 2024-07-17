@@ -1,25 +1,17 @@
 #! /usr/bin/env bash
 
-gen_parmlist() {
-  infileg=$1
-  requestedvar_in_file1=$2
-  varlist=$3
-  file_vars=$(${WGRIB2} "${infileg}")
-  while read -r vari; do
-    if [[ "${file_vars}" =~ ${vari} && -n "${vari}" ]]; then
-      echo "${vari}" >> "${requestedvar_in_file1}"
-    fi
-  done <"${varlist}"
-}
-
 check_atmos() {
-  requestedvar_in_file1=$1
-  requestedvar_in_file2=$2
+  infile1p=$1
+  infile2p=$2
   varlistl=$3
   fnhl=$4
-  requestedvar_in_allgrb2file="${subdata}/requestedvar_in_allgrb2file.txt"
-  rm -rvf "${requestedvar_in_allgrb2file}"
-  cat "${requestedvar_in_file1}" "${requestedvar_in_file2}" >> "${requestedvar_in_allgrb2file}"
+  requestedvar_in_allgrb2file="${subdata}/parmvarsingribfil.txt"
+  rm -f "${requestedvar_in_allgrb2file}"
+  touch "${requestedvar_in_allgrb2file}"
+  for infilep in "${infile1p}" "${infile2p}"; do
+    # shellcheck disable=SC2312
+    ${WGRIB2} "${infilep}" | grep -F -f "${varlist}" >> ${requestedvar_in_allgrb2file} || true
+  done
   mapfile -t requestedvar_in_allgrb2file_arr < "${requestedvar_in_allgrb2file}"
   while read -r vari; do
     if [[ ! ${requestedvar_in_allgrb2file_arr[*]} =~ ${vari} ]] ;then
@@ -56,7 +48,6 @@ copy_to_comout() {
   fi
 }
 
-declare -xf gen_parmlist
 declare -xf check_atmos
 declare -xf daily_avg_atmos
 declare -xf copy_to_comout

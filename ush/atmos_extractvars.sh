@@ -49,29 +49,17 @@ for outtype in "f2d" "f3d"; do
     infile2="${!com_var}/${RUN}.t${cyc}z.pgrb2b.${outres}.f${fnh}"
     outfile="${outdirpre}/${RUN}.t${cyc}z.pgrb2.${outres}.f${fnh}"
     rm -f "${outfile}" #remove outfile if it already exists before extraction
-    requestedvars1="${subdata}/partial_parm1.txt"
-    requestedvars2="${subdata}/partial_parm2.txt"
-    rm -f "${requestedvars1}"
-    rm -f "${requestedvars2}"
-    if [[ ! -f "${requestedvars1}" ]]; then touch "${requestedvars1}"; fi
-    if [[ ! -f "${requestedvars2}" ]]; then touch "${requestedvars2}"; fi
-    if [[ -f "${infile1}" ]]; then #check if input file exists before extraction
-      gen_parmlist "${infile1}" "${requestedvars1}" "${varlist}"
-      # shellcheck disable=SC2312
-      ${WGRIB2} "${infile1}" | grep -F -f "${requestedvars1}" | ${WGRIB2} -i "${infile1}" -append -grib "${outfile}">/dev/null
-    else
-      echo "WARNING: ${infile1} does not exist."
-    fi 
 
-    if [[ -f "${infile2}" ]]; then #check if input file exists before extraction
-      gen_parmlist "${infile2}" "${requestedvars2}" "${varlist}"
-      # shellcheck disable=SC2312
-      ${WGRIB2} "${infile2}" | grep -F -f "${requestedvars2}" | ${WGRIB2} -i "${infile2}" -append -grib "${outfile}">/dev/null
-    else
-      echo "WARNING: ${infile2} does not exist."
-    fi
+    for infile in "${infile1}" "${infile2}"; do
+      if [[ -f "${infile}" ]]; then # check if input file exists before extraction
+        # shellcheck disable=SC2312
+        ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}" > /dev/null
+      else
+        echo "WARNING: ${infile} does not exist."
+      fi
+    done
 
-    check_atmos "${requestedvars1}" "${requestedvars2}" "${varlist}" "${fnh}"
+    check_atmos "${infile1}" "${infile2}" "${varlist}" "${fnh}"
     copy_to_comout "${outfile}" "${COMOUT_RFCST_PROD_ATMOS}"
 
     #Compute daily average for a subset of variables
