@@ -22,15 +22,18 @@ for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
       infile=${COMIN_OCEAN_GRIB}/${datares}/${RUN}.ocean.t${cyc}z.${datares}.f${fnh}.grib2
     elif [[ ${component_name} == "ice" ]];then
       infile=${COMIN_ICE_GRIB}/${datares}/${RUN}.ice.t${cyc}z.${datares}.f${fnh}.grib2
-    fi                                                                                                                                                                                                                                   
+    fi  
     outfile=${subdata}/${RUN}.${component_name}.t${cyc}z.${datares}.f${fnh}.grib2
   fi
 
   if [[ "${dataformat}" == "netcdf" ]];then
     if [[ ${component_name} == "ocn" ]];then
       infile=${COMIN_OCEAN_NETCDF}/${RUN}.ocean.t${cyc}z.${datares}.f${fnh}.nc
+      # For ocean products, add an argument to extract a subset of levels
+      otherargs="-d ${depthvar_name},${zmin},${zmax}"
     elif [[ ${component_name} == "ice" ]];then
       infile=${COMIN_ICE_NETCDF}/${RUN}.ice.t${cyc}z.${datares}.f${fnh}.nc
+      otherargs=""
     fi   
     outfile=${subdata}/${RUN}.${component_name}.t${cyc}z.${datares}.f${fnh}.nc
   fi
@@ -56,7 +59,7 @@ for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
         echo "WARNING: No variables from parm file ${varlist} are available in netcdf file ${infile}."
       else
         ocnice_vars=${varsavailable::-1}
-        ncks -v "${ocnice_vars}" "${infile}" "${outfile}"
+        ncks -v "${ocnice_vars}" ${otherargs} "${infile}" "${outfile}"
       fi
     fi  
     if [[ ${datacompress} -eq 1 ]];then

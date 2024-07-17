@@ -19,6 +19,10 @@ export ocnres="5p00" #Resolution of ocean products
 export iceres="5p00" #Resolution of ice products
 export wavres="5p00" #Resolution of wave products
 
+export depthvar_name="z_l" #name of depth variable in NetCDF ocean products
+export zmin="0." #Minimum depth to extract from NetCDF ocean products
+export zmax="300." #Maximum depth to extract from NetCDF ocean products
+
 export FHOUT_WAV_EXTRACT=6 #Frequency of wave output to be saved on disk
 
 #Paramater Tables used
