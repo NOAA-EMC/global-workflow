@@ -299,9 +299,6 @@ case ${step} in
     declare -x "npe_node_${step}"="1"
     declare -x "nth_${step}"="1"
     declare -x "memory_${step}"="4096M"
-    if [[ "${machine}" == "WCOSS2" ]]; then
-      declare -x "memory_${step}"="50GB"
-    fi
     ;;
     
   *)

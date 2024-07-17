@@ -486,10 +486,10 @@ class GEFSTasks(Tasks):
     
     def arch(self):
         deps = []
-        dependencies = []
-        dep_dict = {'type': 'task', 'name': f'stage_ic'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dep_dict = {'type': 'task', 'name': f'wave_post_pnt_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        
         resources = self.get_resource('arch')
         task_name = f'arch'
         task_dict = {'task_name': task_name,
