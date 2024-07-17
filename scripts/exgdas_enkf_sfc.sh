@@ -69,16 +69,6 @@ APRUN_ESFC=${APRUN_ESFC:-${APRUN:-""}}
 NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
 
 ################################################################################
-# Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
-cd $DATA || exit 99
-
-
-################################################################################
 # Update surface fields in the FV3 restart's using global_cycle.
 
 # Ignore possible spelling error (nothing is misspelled)
