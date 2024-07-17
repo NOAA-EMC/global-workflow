@@ -30,29 +30,13 @@ fi
 # Extract variables for ocean
 if [[ "${DO_OCN}" == "YES" ]];then
   export component_name="ocn"
-  if [[ "${ocn_dataformat}" == "netcdf" ]]; then
-    varlist_ocn=${varlist_ocn_netcdf}
-  elif [[ "${ocn_dataformat}" == "grib2" ]]; then
-    varlist_ocn=${varlist_ocn_grib2}
-  else
-    echo "FATAL ERROR: Invalid ocean data format provided (${ocn_dataformat})"
-    export err=1; err_chk
-  fi
-  ${EXTRCTVARO} "${DATA}/ocn" "${varlist_ocn}" "${ocn_dataformat}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}" "${COMOUT_RFCST_PROD_OCN}"
+  ${EXTRCTVARO} "${DATA}/ocn" "${varlist_ocn_netcdf}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}" "${COMOUT_RFCST_PROD_OCN}"
 fi
 
 # Extract variables for ice
 if [[ "${DO_ICE}" == "YES" ]];then
   export component_name="ice"
-  if [[ "${ice_dataformat}" == "netcdf" ]]; then
-    varlist_ice=${varlist_ice_netcdf}
-  elif [[ "${ice_dataformat}" == "grib2" ]]; then
-    varlist_ice=${varlist_ice_grib2}
-  else
-    echo "FATAL ERROR: Invalid ice data format provided (${ice_dataformat})"
-    export err=1; err_chk
-  fi
-  ${EXTRCTVARO} "${DATA}/ice" "${varlist_ice}" "${ice_dataformat}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" "${COMOUT_RFCST_PROD_ICE}"
+  ${EXTRCTVARO} "${DATA}/ice" "${varlist_ice_netcdf}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" "${COMOUT_RFCST_PROD_ICE}"
 fi
 
 # Extract variables for wave

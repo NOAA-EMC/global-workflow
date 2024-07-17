@@ -12,9 +12,6 @@ export COMPRSCMD=${COMPRSCMD:-bzip2}
 export compress_ocn=0 #1: compress extracted ocean product, 0: do not compress extracted ocean product
 export compress_ice=0 #1: compress extracted ice product, 0: do not compress extracted ice product
 
-export ocn_dataformat="netcdf"
-export ice_dataformat="netcdf"
-
 export ocnres="5p00" #Resolution of ocean products
 export iceres="5p00" #Resolution of ice products
 export wavres="5p00" #Resolution of wave products
@@ -32,7 +29,5 @@ export varlist_3d_d="${PARMgfs}/product/gefs_shortparmlist_3d_d.parm" #Parameter
 export varlist_wav="${PARMgfs}/product/gefs_wav_shortparmlist.parm" #Parameter table for wave variables
 export varlist_ocn_netcdf="${PARMgfs}/product/gefs_ocn_shortparmlist.parm" #Parameter table for ocean netcdf variables
 export varlist_ice_netcdf="${PARMgfs}/product/gefs_ice_shortparmlist.parm" #Parameter table for ice netcdf variables
-export varlist_ocn_grib2="${PARMgfs}/product/gefs_ocn_shortparmlist_grib2.parm" #Parameter table ocn grib2 variables
-export varlist_ice_grib2="${PARMgfs}/product/gefs_ice_shortparmlist_grib2.parm" #Parameter table ice grib2 variables
 
 echo "END: config.extractvars"
