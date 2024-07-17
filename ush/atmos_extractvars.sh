@@ -66,8 +66,12 @@ for outtype in "f2d" "f3d"; do
     if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]];then
       outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
       for infile in "${infile1}" "${infile2}"; do
-        # shellcheck disable=SC2312
-        ${WGRIB2} "${infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}"
+        if [[ -f "${infile}" ]]; then # check if input file exists before extraction
+          # shellcheck disable=SC2312
+          ${WGRIB2} "${infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}"
+        else
+          echo "WARNING: ${infile} does not exist."
+        fi
       done
       if [[ ${fcnt} -eq 4 ]];then
         daily_avg_atmos "${outfile}" "${dcnt}" "${outres}"
