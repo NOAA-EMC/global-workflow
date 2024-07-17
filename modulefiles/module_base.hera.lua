@@ -47,8 +47,7 @@ setenv("WGRIB2","wgrib2")
 setenv("WGRIB","wgrib")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
---prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
-prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/dev-gfsv17/modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
