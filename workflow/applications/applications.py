@@ -79,12 +79,18 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 self.wave_cdumps = [wave_cdump]
 
         self.aero_anl_cdumps = None
+        self.aero_fcst_cdumps = None
         if self.do_aero:
             aero_anl_cdump = _base.get('AERO_ANL_CDUMP', 'BOTH').lower()
             if aero_anl_cdump in ['both']:
                 self.aero_anl_cdumps = ['gfs', 'gdas']
             elif aero_anl_cdump in ['gfs', 'gdas']:
                 self.aero_anl_cdumps = [aero_anl_cdump]
+            aero_fcst_cdump = _base.get('AERO_FCST_CDUMP', None).lower()
+            if aero_fcst_cdump in ['both']:
+                self.aero_fcst_cdumps = ['gfs', 'gdas']
+            elif aero_fcst_cdump in ['gfs', 'gdas']:
+                self.aero_fcst_cdumps = [aero_fcst_cdump]
 
     def _init_finalize(self, conf: Configuration):
         print("Finalizing initialize")

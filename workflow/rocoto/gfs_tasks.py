@@ -659,7 +659,9 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prepoceanobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': 'gdasfcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalprep')
         task_name = f'{self.cdump}ocnanalprep'
@@ -854,7 +856,9 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero and self.cdump in self.app_config.aero_fcst_cdumps:
+        if self.app_config.do_aero and \
+           self.cdump in self.app_config.aero_fcst_cdumps and \
+           not self._base['EXP_WARM_START']:
             # Calculate offset based on CDUMP = gfs | gdas
             interval = None
             if self.cdump in ['gfs']:

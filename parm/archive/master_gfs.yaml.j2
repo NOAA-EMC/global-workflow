@@ -5,14 +5,14 @@
 
 # Split IAUFHRS into a list; typically either "3,6,9" or 6 (integer)
 {% if IAUFHRS is string %}
-# "3,6,9"
-{% set iaufhrs = [] %}
-{% for iaufhr in IAUFHRS.split(",") %}
-{% do iaufhrs.append(iaufhr | int) %}
-{% endfor %}
+    # "3,6,9"
+    {% set iaufhrs = [] %}
+    {% for iaufhr in IAUFHRS.split(",") %}
+        {% do iaufhrs.append(iaufhr | int) %}
+    {% endfor %}
 {% else %}
-# 6 (integer)
-{% set iaufhrs = [IAUFHRS] %}
+    # 6 (integer)
+    {% set iaufhrs = [IAUFHRS] %}
 {% endif %}
 
 # Determine which data to archive
@@ -24,89 +24,89 @@ datasets:
 {% endfilter %}
 
 {% if ARCH_GAUSSIAN %}
-# Archive Gaussian data
-{% filter indent(width=4) %}
+    # Archive Gaussian data
+    {% filter indent(width=4) %}
 {% include "gfs_flux.yaml.j2" %}
 {% include "gfs_netcdfb.yaml.j2" %}
 {% include "gfs_pgrb2b.yaml.j2" %}
-{% endfilter %}
-{% if MODE == "cycled" %}
-# Archive Gaussian analysis data
-{% filter indent(width=4) %}
+    {% endfilter %}
+    {% if MODE == "cycled" %}
+        # Archive Gaussian analysis data
+        {% filter indent(width=4) %}
 {% include "gfs_netcdfa.yaml.j2" %}
-{% endfilter %}
-{% endif %}
+        {% endfilter %}
+    {% endif %}
 {% endif %}
 
 {% if DO_WAVE %}
-# Wave forecasts
-{% filter indent(width=4) %}
+    # Wave forecasts
+    {% filter indent(width=4) %}
 {% include "gfswave.yaml.j2" %}
-{% endfilter %}
+    {% endfilter %}
 {% endif %}
 
 {% if AERO_FCST_CDUMP == "gfs" or AERO_FCST_CDUMP == "both" %}
-# Aerosol forecasts
-{% filter indent(width=4) %}
+    # Aerosol forecasts
+    {% filter indent(width=4) %}
 {% include "chem.yaml.j2" %}
-{% endfilter %}
+    {% endfilter %}
 {% endif %}
 
 {% if DO_OCN %}
-# Ocean forecasts
-{% filter indent(width=4) %}
+    # Ocean forecasts
+    {% filter indent(width=4) %}
 {% include "ocean_6hravg.yaml.j2" %}
 {% include "ocean_grib2.yaml.j2" %}
 {% include "gfs_flux_1p00.yaml.j2" %}
-{% endfilter %}
+    {% endfilter %}
 {% endif %}
 
 {% if DO_ICE %}
-# Ice forecasts
-{% filter indent(width=4) %}
+    # Ice forecasts
+    {% filter indent(width=4) %}
 {% include "ice_6hravg.yaml.j2" %}
 {% include "ice_grib2.yaml.j2" %}
-{% endfilter %}
+    {% endfilter %}
 {% endif %}
 
 {% if DO_BUFRSND %}
-# Downstream BUFR soundings
-{% filter indent(width=4) %}
+    # Downstream BUFR soundings
+    {% filter indent(width=4) %}
 {% include "gfs_downstream.yaml.j2" %}
-{% endfilter %}
+    {% endfilter %}
 {% endif %}
 
 # Determine whether to save the MOS tarball
 {% if DO_MOS and cycle_HH == "18" %}
 
-{% if not REALTIME %}
-{% filter indent(width=4) %}
+    {% if not REALTIME %}
+        {% filter indent(width=4) %}
 {% include "gfsmos.yaml.j2" %}
-{% endfilter %}
+        {% endfilter %}
 
-{% else %}
+    {% else %}
 
-{% set td_from_sdate = current_cycle - SDATE %}
-{% set td_one_day = "+1D" | to_timedelta %}
-{% if td_from_sdate > td_one_day %}
-{% filter indent(width=4) %}
+        {% set td_from_sdate = current_cycle - SDATE %}
+        {% set td_one_day = "+1D" | to_timedelta %}
+        {% if td_from_sdate > td_one_day %}
+            {% filter indent(width=4) %}
 {% include "gfsmos.yaml.j2" %}
-{% endfilter %}
-{% endif %}
+            {% endfilter %}
+        {% endif %}
 
-{% endif %}
+    {% endif %}
 {% endif %}
 
 # Determine if we will save restart ICs or not
 {% if ARCH_CYC == cycle_HH | int %}
-# Save the forecast-only cycle ICs every ARCH_WARMICFREQ or ARCH_FCSTICFREQ days
-{% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
-{% filter indent(width=4) %}
+    # Save the forecast-only cycle ICs every ARCH_WARMICFREQ or ARCH_FCSTICFREQ days
+    {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
+        {% filter indent(width=4) %}
 {% include "gfs_restarta.yaml.j2" %}
-{% endfilter %}
-{% elif (current_cycle - SDATE).days % ARCH_FCSTICFREQ == 0 %}
-{% filter indent(width=4) %}
+        {% endfilter %}
+    {% elif (current_cycle - SDATE).days % ARCH_FCSTICFREQ == 0 %}
+        {% filter indent(width=4) %}
 {% include "gfs_restarta.yaml.j2" %}
-{% endfilter %}
-{% endif %}
+        {% endfilter %}
+    {% endif %}
 {% endif %}

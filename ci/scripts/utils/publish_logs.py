@@ -46,7 +46,8 @@ def add_logs_to_gist(args, emcbot_gh):
 
     gist_files = {}
     for file in args.file:
-        file_content = file.read()
+        with open(file.name, 'r', encoding='latin-1') as file:
+            file_content = file.read()
         gist_files[os.path.basename(file.name)] = emcbot_gh.InputFileContent(file_content)
 
     gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description=f"error log file from CI run {args.gist[0]}")
@@ -85,7 +86,8 @@ def upload_logs_to_repo(args, emcbot_gh, emcbot_ci_url):
             break
 
     for file in args.file:
-        file_content = file.read()
+        with open(file.name, 'r', encoding='latin-1') as file:
+            file_content = file.read()
         file_path_in_repo = f"{repo_path}/{path_header}/" + str(os.path.basename(file.name))
         emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
 

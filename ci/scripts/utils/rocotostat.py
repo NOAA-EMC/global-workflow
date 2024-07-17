@@ -14,6 +14,35 @@ logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=Fals
 
 
 def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception_class=Exception):
+    """
+    Retries a function multiple times.
+
+    Try to execute the function expression up to max_attempts times ignoring any exceptions
+    of the type exception_class, It waits for sleep_duration seconds between attempts.
+
+    Parameters
+    ----------
+    expression : callable
+        The function to be executed.
+    max_attempts : int
+        The maximum number of attempts to execute the function.
+    sleep_duration : int, optional
+        The number of seconds to wait between attempts. Default is 0.
+    exception_class : Exception, optional
+        The type of exception to catch. Default is the base Exception class, catching all exceptions.
+
+    Returns
+    -------
+    The return value of the function expression.
+
+    Raises
+    ------
+    exception_class
+        If the function expression raises an exception of type exception_class
+        in all max_attempts attempts.
+
+    """
+
     attempt = 0
     last_exception = None
     while attempt < max_attempts:
@@ -189,7 +218,7 @@ if __name__ == '__main__':
         error_return = rocoto_status['UNKNOWN']
         rocoto_state = 'UNKNOWN'
     elif is_stalled(rocoto_status):
-        rocoto_status = attempt_multiple_times(rocoto_statcount(rocotostat), 2, 120, ProcessError)
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
         if is_stalled(rocoto_status):
             error_return = 3
             rocoto_state = 'STALLED'

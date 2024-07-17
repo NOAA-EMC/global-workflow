@@ -14,7 +14,7 @@ pipeline {
 
     options {
         skipDefaultCheckout()
-        //parallelsAlwaysFailFast()
+        parallelsAlwaysFailFast()
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -90,9 +90,6 @@ pipeline {
         stage('3. Build System') {
             matrix {
                 agent { label NodeName[machine].toLowerCase() }
-                //options {
-                //    throttle(['global_matrix_build'])
-                //}
                 axes {
                     axis {
                         name 'system'
@@ -102,6 +99,7 @@ pipeline {
                 stages {
                     stage('build system') {
                         steps {
+                           catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             script {
                                 def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}" // local HOMEgfs is used to build the system on per system basis under the custome workspace for each buile system
                                 sh(script: "mkdir -p ${HOMEgfs}")
@@ -120,8 +118,8 @@ pipeline {
                                             if (env.CHANGE_ID) {
                                                 sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Checkout **Failed** on ${Machine}: ${e.getMessage()}" """)
                                             }
-                                            echo "Failed to checkout: ${e.getMessage()}"
                                             STATUS = 'Failed'
+                                            error("Failed to checkout: ${e.getMessage()}")
                                         }
                                         def gist_url = ""
                                         def error_logs = ""
@@ -155,6 +153,7 @@ pipeline {
                                                     } catch (Exception error_comment) {
                                                         echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                     }
+                                                    STATUS = 'Failed'
                                                     error("Failed to build system on ${Machine}")
                                                 }
                                             }
@@ -174,6 +173,7 @@ pipeline {
                                     }
                                }
                            }
+                          }
                         }
                     }
                 }
@@ -181,7 +181,9 @@ pipeline {
         }
 
         stage('4. Run Tests') {
-            failFast false 
+            when {
+                expression { STATUS != 'Failed' }
+            }
             matrix {
                 agent { label NodeName[machine].toLowerCase() }
                 axes {
@@ -198,14 +200,21 @@ pipeline {
                             expression { return caseList.contains(Case) }
                         }
                         steps {
+                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                 script {
                                     sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp")
                                     def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp"
                                     system = yaml_case.experiment.system
                                     def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
                                     env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
-                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml")
+                                    try {
+                                        error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStdout: true).trim()
+                                    } catch (Exception error_create) {
+                                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                        error("Case ${Case} failed to create experment directory")
+                                    }
                                 }
+                            }
                         }
                     }
 
@@ -213,7 +222,6 @@ pipeline {
                         when {
                             expression { return caseList.contains(Case) }
                         }
-                        failFast false
                         steps {
                             script {
                                 HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
@@ -255,11 +263,11 @@ pipeline {
                                         STATUS = 'Failed'
                                         try {
                                             sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
-                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}\\`" """)
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}\\`" """)
                                         } catch (Exception e) {
                                             echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                         }
-                                        error("Failed to run experiments ${Case} on ${Machine}")
+                                        echo "Failed to run experiments ${Case} on ${Machine}"
                                     }
                                 }
                             }
@@ -268,6 +276,7 @@ pipeline {
                 }
             }
         }
+
         stage( '5. FINALIZE' ) {
             agent { label NodeName[machine].toLowerCase() }
             steps {
