@@ -21,5 +21,6 @@ if __name__ == '__main__':
     # Instantiate the snow prepare task
     SnowAnl = SnowAnalysis(config)
     SnowAnl.prepare_GTS()
-    if f"{ SnowAnl.task_config.cyc }" == '18':
+    SnowAnl.task_config.cyc = f'{SnowAnl.task_config.cyc:02d}'
+    if f"{ SnowAnl.task_config.cyc }" == '00':
         SnowAnl.prepare_IMS()
