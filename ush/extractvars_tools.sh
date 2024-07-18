@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
 check_atmos() {
+  # Function to check if there are any missing parm variables in any of the input product grib2 files
+  # A warning will be displayed if there is a parm variable that cannot be found in any of the given input product grib2 files
   infile1p=$1
   infile2p=$2
   varlistl=$3
@@ -22,6 +24,9 @@ check_atmos() {
 }
 
 daily_avg_atmos() {
+  # Function to calculate the 24-hr average of a grib2 file with atmospheric fields
+  # The input grib2 file must contain all the time records to be averaged (e.g. 6hr, 12hr, 18hr and 24hr record in one grib2 file)
+  # The interval of the time records in the input grib2 file must be 6 hours
   outfile_p=$1
   dcnt_p=$2
   outres_p=$3
@@ -40,6 +45,7 @@ daily_avg_atmos() {
 }
 
 copy_to_comout() {
+  # Function to copy the output file with the extracted product variables to a user-defined destination directory
   rundir_outfile=$1 #output data file generated in RUNDIR
   comout_dir=$2 #destination directory to which to copy the data file
   if [[ -f "${rundir_outfile}" ]];then

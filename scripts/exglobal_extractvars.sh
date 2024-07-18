@@ -1,7 +1,14 @@
 #! /usr/bin/env bash                                                                                                                                                                    
+
 ################################################################################
-#   Script:    
-#
+## UNIX Script Documentation Block
+## Script name:         exglobal_extractvars.sh
+## Script description:  Extracts variables from atmosphere, ocean, ice and wave
+##                      products and saves these variables in arcdir
+#######################
+# Main body starts here
+#######################
+
 source "${USHgfs}/preamble.sh"
 source "${USHgfs}/extractvars_tools.sh"
 

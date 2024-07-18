@@ -1,7 +1,14 @@
 #! /usr/bin/env bash
+
 ################################################################################
-#   Script:    
-#
+## UNIX Script Documentation Block
+## Script name:         atmos_extractvars.sh
+## Script description:  Extracts and calculates 24-hr averages of variables
+##                      from atmosphere products and saves these variables in arcdir
+#######################
+# Main body starts here
+#######################
+
 source "${USHgfs}/preamble.sh"
 
 fcnt=1 # 1 is 1st quarter, 2 is 2nd quarter and 3 is 3rd quarter of the day

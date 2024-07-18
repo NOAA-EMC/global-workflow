@@ -1,7 +1,14 @@
 #! /usr/bin/env bash                                                                                                                                                                          
+
 ################################################################################
-#   Script:    
-#
+## UNIX Script Documentation Block
+## Script name:         wave_extractvars.sh
+## Script description:  Extracts variables from wave products
+##                      and saves these variables in arcdir
+#######################
+# Main body starts here
+#######################
+
 source "${USHgfs}/preamble.sh"
 
 subdata=${1}

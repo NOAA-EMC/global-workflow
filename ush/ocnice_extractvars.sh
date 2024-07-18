@@ -1,7 +1,15 @@
 #! /usr/bin/env bash
+
 ################################################################################
-#   Script:    
-#
+## UNIX Script Documentation Block
+## Script name:         ocnice_extractvars.sh
+## Script description:  Extracts and optionally compresses variables
+##                      from ocean and ice products
+##                      and saves these variables in arcdir
+#######################
+# Main body starts here
+#######################
+
 source "${USHgfs}/preamble.sh"
 
 subdata=${1}
