@@ -47,7 +47,7 @@ mkdir -p "${COMOUT_ICE_BMATRIX}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marine_bmat_run.py}
+EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marinebmat.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
