@@ -1,0 +1,64 @@
+name: CI Unit Tests
+on: [pull_request, push, workflow_dispatch]
+
+jobs:
+
+  ci_pytest:
+      runs-on: ubuntu-latest
+      name: Run unit tests on CI system      
+      permissions:
+        checks: write
+
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11.8
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install wxflow
+          pip install wget
+
+      - name: Cache Rocoto Install
+        uses: actions/cache@v4
+        with:
+          path: ~/rocoto
+          key: ${{ runner.os }}-rocoto-${{ hashFiles('**/ci-unit_tests.yaml') }}
+
+      - name: Install Rocoto
+        run: |
+          if [ ! -d "$HOME/rocoto/bin" ]; then
+            git clone https://github.com/christopherwharrop/rocoto.git $HOME/rocoto
+            cd $HOME/rocoto
+            ./INSTALL
+          fi
+          echo "$HOME/rocoto/bin" >> $GITHUB_PATH
+
+      - name: Run tests
+        shell: bash
+        run: |
+          sudo mkdir -p /scratch1/NCEPDEV
+          cd $GITHUB_WORKSPACE/sorc
+          git submodule update --init --recursive
+          ./link_workflow.sh
+          cd $GITHUB_WORKSPACE/ci/scripts/tests
+          ln -s ../wxflow
+
+          pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
+
+
+      - name: Publish Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: ci/scripts/tests/test-results.xml
+          job_summary: true
+          comment_mode: off
