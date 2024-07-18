@@ -61,7 +61,7 @@ Two mutually exclusive optional arguments:
 done
 
 controller_url="https://jenkins.epic.oarcloud.noaa.gov"
-controller_user="terry.mcguinness"
+controller_user=${controller_user:-"terry.mcguinness"}
 controller_user_auth_token="jenkins_token"
 
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
