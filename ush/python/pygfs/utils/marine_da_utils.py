@@ -21,8 +21,6 @@ def run(exec_cmd):
     except Exception:
         raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
-    pass
-
 
 @logit(logger)
 def link_executable(task_config, exe_name: str) -> None:
