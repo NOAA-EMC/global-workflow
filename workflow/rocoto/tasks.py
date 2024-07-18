@@ -142,7 +142,10 @@ class Tasks:
             local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
             local_config['FHOUT'] = config['FHOUT_ICE']
 
-        fhmin = local_config['FHMIN']
+        if component in ['atmos']:
+            fhmin = local_config['FHMIN_GFS']
+        else:
+            fhmin = local_config['FHMIN']
 
         # Get a list of all forecast hours
         fhrs = []
