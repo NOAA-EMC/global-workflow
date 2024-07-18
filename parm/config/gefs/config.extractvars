@@ -38,10 +38,4 @@ export ARC_RFCST_PROD_OCN="${ARC_RFCST_PROD}/ocn"
 export ARC_RFCST_PROD_ICE="${ARC_RFCST_PROD}/ice"
 export ARC_RFCST_PROD_WAV="${ARC_RFCST_PROD}/wav"
 
-if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F2D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"; fi
-if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F3D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F3D}"; fi
-if [[ ! -d "${ARC_RFCST_PROD_OCN}" ]]; then mkdir -p "${ARC_RFCST_PROD_OCN}"; fi
-if [[ ! -d "${ARC_RFCST_PROD_WAV}" ]]; then mkdir -p "${ARC_RFCST_PROD_WAV}"; fi
-if [[ ! -d "${ARC_RFCST_PROD_ICE}" ]]; then mkdir -p "${ARC_RFCST_PROD_ICE}"; fi
-
 echo "END: config.extractvars"

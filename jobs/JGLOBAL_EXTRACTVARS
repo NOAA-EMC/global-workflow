@@ -19,6 +19,20 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
     "COMIN_ICE_NETCDF:COM_ICE_NETCDF_TMPL" \
     "COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL"
 
+if [[ "${DO_ATM}" == "YES" ]];then
+  if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F2D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"; fi
+  if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F3D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F3D}"; fi
+fi
+if [[ "${DO_OCN}" == "YES" ]];then
+  if [[ ! -d "${ARC_RFCST_PROD_OCN}" ]]; then mkdir -p "${ARC_RFCST_PROD_OCN}"; fi
+fi
+if [[ "${DO_ICE}" == "YES" ]];then
+  if [[ ! -d "${ARC_RFCST_PROD_ICE}" ]]; then mkdir -p "${ARC_RFCST_PROD_ICE}"; fi
+fi
+if [[ "${DO_WAVE}" == "YES" ]];then
+  if [[ ! -d "${ARC_RFCST_PROD_WAV}" ]]; then mkdir -p "${ARC_RFCST_PROD_WAV}"; fi
+fi
+
 # Execute the Script
 "${SCRgfs}/exglobal_extractvars.sh"
 status=$?
