@@ -27,7 +27,7 @@ def link_executable(task_config: AttrDict, exe_name: str) -> None:
     """Link the executable to the DATA directory
     """
     logger.info(f"Link executable {exe_name}")
-    logger.warn("Linking is not permitted per EE2.")
+    logger.warn("WARNING: Linking is not permitted per EE2.")
     exe_src = os.path.join(task_config.EXECgfs, exe_name)
     exe_dest = os.path.join(task_config.DATA, exe_name)
     if os.path.exists(exe_dest):
