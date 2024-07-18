@@ -486,10 +486,30 @@ class GEFSTasks(Tasks):
     
     def arch(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'wave_post_pnt_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': f'atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-        
+        dep_dict = {'type': 'metatask', 'name': f'atmos_ensstat'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ice:
+            dep_dict = {'type': 'metatask', 'name': f'ice_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ocean:
+            dep_dict = {'type': 'metatask', 'name': f'ocean_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))  
+        if self.app_config.do_wave:
+            dep_dict = {'type': 'task', 'name': f'wavepostsbs'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.app_config.do_wave_bnd:
+                dep_dict = {'type': 'task', 'name': f'wavepostbndpnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'wavepostbndpntbll'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'wavepostpnt'}
+            deps.append(rocoto.add_dependency(dep_dict))    
+        dep_dict = {'type': 'metatask', 'name': f'wave_post_grid'}
+        deps.append(rocoto.add_dependency(dep_dict))        
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
         resources = self.get_resource('arch')
         task_name = f'arch'
         task_dict = {'task_name': task_name,
@@ -502,6 +522,8 @@ class GEFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
+        
         task = rocoto.create_task(task_dict)
 
         return task
+    
