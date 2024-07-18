@@ -10,11 +10,11 @@ EXTRCTVARA="${USHgfs}/atmos_extractvars.sh"
 EXTRCTVARO="${USHgfs}/ocnice_extractvars.sh"
 EXTRCTVARW="${USHgfs}/wave_extractvars.sh"
 
-# Define a job-specific variable for FHMAX_HF_GFS
+# Set FHMAX_HF_GFS equal to FHMAX_GFS if FHMAX_HF_GFS is greater than FHMAX_GFS
 if (( FHMAX_GFS < FHMAX_HF_GFS )); then
-  export FHMAX_HF_EV=FHMAX_GFS
+  export FHMAX_HF_GFS=FHMAX_GFS
 else
-  export FHMAX_HF_EV=FHMAX_HF_GFS
+  export FHMAX_HF_GFS=FHMAX_HF_GFS
 fi
 
 # Set FHOUT_WAV_EXTRACT equal to FHOUT_WAV if FHOUT_WAV is not a factor of FHOUT_WAV_EXTRACT
