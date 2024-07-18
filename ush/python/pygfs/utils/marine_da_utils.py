@@ -9,7 +9,7 @@ logger = getLogger(__name__.split('.')[-1])
 
 
 @logit(logger)
-def run(exec_cmd):
+def run(exec_cmd: Executable) -> None:
     """Run the executable command
     """
     logger.info(f"Executing {exec_cmd}")
@@ -23,7 +23,7 @@ def run(exec_cmd):
 
 
 @logit(logger)
-def link_executable(task_config, exe_name: str) -> None:
+def link_executable(task_config: AttrDict, exe_name: str) -> None:
     """Link the executable to the DATA directory
     """
     logger.info(f"Link executable {exe_name}")
@@ -36,7 +36,7 @@ def link_executable(task_config, exe_name: str) -> None:
 
 
 @logit(logger)
-def prep_input_nml(task_config) -> None:
+def prep_input_nml(task_config: AttrDict) -> None:
     """Prepare the input.nml file
        TODO: Use jinja2 instead of f90nml
     """
@@ -56,7 +56,7 @@ def prep_input_nml(task_config) -> None:
 
 
 @logit(logger)
-def cice_hist2fms(input_filename, output_filename) -> None:
+def cice_hist2fms(input_filename: str, output_filename: str) -> None:
     """ Reformat the CICE history file so it can be read by SOCA/FMS
     Simple reformatting utility to allow soca/fms to read the CICE history files
     """
@@ -79,7 +79,7 @@ def cice_hist2fms(input_filename, output_filename) -> None:
 
 
 @logit(logger)
-def stage_ens_mem(task_config) -> None:
+def stage_ens_mem(task_config: AttrDict) -> None:
     """ Copy the ensemble members to the DATA directory
     Copy the ensemble members to the DATA directory and reformat the CICE history files
     """
