@@ -14,11 +14,11 @@ for outtype in "f2d" "f3d"; do
 
   if [[ "${outtype}" == "f2d" ]];then
     varlist=${varlist_2d}
-    COMOUT_RFCST_PROD_ATMOS="${COMOUT_RFCST_PROD_ATMOS_F2D}"
+    ARC_RFCST_PROD_ATMOS="${ARC_RFCST_PROD_ATMOS_F2D}"
   elif [[ "${outtype}" == "f3d" ]];then 
     varlist=${varlist_3d}
     varlist_d=${varlist_3d_d}
-    COMOUT_RFCST_PROD_ATMOS="${COMOUT_RFCST_PROD_ATMOS_F3D}"
+    ARC_RFCST_PROD_ATMOS="${ARC_RFCST_PROD_ATMOS_F3D}"
   fi
 
   outdirpre="${subdata}/${outtype}"
@@ -60,7 +60,7 @@ for outtype in "f2d" "f3d"; do
     done
 
     check_atmos "${infile1}" "${infile2}" "${varlist}" "${fnh}"
-    copy_to_comout "${outfile}" "${COMOUT_RFCST_PROD_ATMOS}"
+    copy_to_comout "${outfile}" "${ARC_RFCST_PROD_ATMOS}"
 
     #Compute daily average for a subset of variables
     if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]];then
@@ -75,7 +75,7 @@ for outtype in "f2d" "f3d"; do
       done
       if [[ ${fcnt} -eq 4 ]];then
         daily_avg_atmos "${outfile}" "${dcnt}" "${outres}"
-        copy_to_comout "${davg_file}" "${COMOUT_RFCST_PROD_ATMOS}"
+        copy_to_comout "${davg_file}" "${ARC_RFCST_PROD_ATMOS}"
         fcnt=1
         dcnt=$(( dcnt + 1 ))
       else

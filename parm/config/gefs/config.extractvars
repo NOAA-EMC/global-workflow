@@ -30,4 +30,18 @@ export varlist_wav="${PARMgfs}/product/gefs_wav_shortparmlist.parm" #Parameter t
 export varlist_ocn_netcdf="${PARMgfs}/product/gefs_ocn_shortparmlist.parm" #Parameter table for ocean netcdf variables
 export varlist_ice_netcdf="${PARMgfs}/product/gefs_ice_shortparmlist.parm" #Parameter table for ice netcdf variables
 
+#Directory to save extracted variables
+export ARC_RFCST_PROD="${ARCDIR}/rfcst/${PDY:0:4}/${PDY:0:6}/${PDY:0:8}/mem${ENSMEM}"
+export ARC_RFCST_PROD_ATMOS_F2D="${ARC_RFCST_PROD}/atmos/f2d"
+export ARC_RFCST_PROD_ATMOS_F3D="${ARC_RFCST_PROD}/atmos/f3d"
+export ARC_RFCST_PROD_OCN="${ARC_RFCST_PROD}/ocn"
+export ARC_RFCST_PROD_ICE="${ARC_RFCST_PROD}/ice"
+export ARC_RFCST_PROD_WAV="${ARC_RFCST_PROD}/wav"
+
+if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F2D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"; fi
+if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F3D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F3D}"; fi
+if [[ ! -d "${ARC_RFCST_PROD_OCN}" ]]; then mkdir -p "${ARC_RFCST_PROD_OCN}"; fi
+if [[ ! -d "${ARC_RFCST_PROD_WAV}" ]]; then mkdir -p "${ARC_RFCST_PROD_WAV}"; fi
+if [[ ! -d "${ARC_RFCST_PROD_ICE}" ]]; then mkdir -p "${ARC_RFCST_PROD_ICE}"; fi
+
 echo "END: config.extractvars"

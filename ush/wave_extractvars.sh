@@ -21,7 +21,7 @@ for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); 
   else
     echo "WARNING: ${infile} does not exist."
   fi 
-  copy_to_comout "${outfile}" "${COMOUT_RFCST_PROD_WAV}"
+  copy_to_comout "${outfile}" "${ARC_RFCST_PROD_WAV}"
 done #fhr
 
 exit 0                                                                                                                                                                                        

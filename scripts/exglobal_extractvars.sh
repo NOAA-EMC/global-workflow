@@ -30,13 +30,13 @@ fi
 # Extract variables for ocean
 if [[ "${DO_OCN}" == "YES" ]];then
   export component_name="ocn"
-  ${EXTRCTVARO} "${DATA}/ocn" "${varlist_ocn_netcdf}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}" "${COMOUT_RFCST_PROD_OCN}"
+  ${EXTRCTVARO} "${DATA}/ocn" "${varlist_ocn_netcdf}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}" "${ARC_RFCST_PROD_OCN}"
 fi
 
 # Extract variables for ice
 if [[ "${DO_ICE}" == "YES" ]];then
   export component_name="ice"
-  ${EXTRCTVARO} "${DATA}/ice" "${varlist_ice_netcdf}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" "${COMOUT_RFCST_PROD_ICE}"
+  ${EXTRCTVARO} "${DATA}/ice" "${varlist_ice_netcdf}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" "${ARC_RFCST_PROD_ICE}"
 fi
 
 # Extract variables for wave
