@@ -25,6 +25,7 @@ check_atmos() {
 
 daily_avg_atmos() {
   # Function to calculate the 24-hr average of a grib2 file with atmospheric fields
+  # The input grib2 file must contain all the time records to be averaged (e.g. 6hr, 12hr, 18hr and 24hr record in one grib2 file)
   # The interval of the time records in the input grib2 file must be 6 hours
   outfile_p=$1
   dcnt_p=$2
