@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # exglobal_atm_analysis_variational.py
 # This script creates an AtmAnalysis object
-# and runs the execute method
-# which executes the global atm variational analysis
+# and runs the execute method which executes
+# the global atm variational analysis
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
