@@ -177,13 +177,6 @@ class Tasks:
 
         task_config = self._configs[task_name]
 
-       #The PW_CSP is a AWS (CSPs parameter), if it is on CSPs,
-       #use "$USER" as account.
-        pw_csp = os.environ.get('PW_CSP', None)
-        if ( pw_csp in ['aws', 'azure', 'google'] ):
-            task_config['ACCOUNT'] = os.environ.get('USER')
-            task_config['ACCOUNT_SERVICE'] = os.environ.get('USER')
-
         account = task_config['ACCOUNT_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['ACCOUNT']
 
         if f'wtime_{task_name}_{self.cdump}' in task_config:
@@ -212,13 +205,6 @@ class Tasks:
             memory = task_config[f'memory_{task_name}_{self.cdump}']
         else:
             # Memory is not required
-            memory = task_config.get(f'memory_{task_name}', None)
-
-       #The PW_CSP is a AWS (CSPs parameter), if it is on CSPs, cannot define 'memory' here,
-       #Or the arch and cleanup will hang.
-        if ( pw_csp in ['aws', 'azure', 'google'] ):
-            memory = None
-        else:
             memory = task_config.get(f'memory_{task_name}', None)
             if scheduler in ['pbspro']:
                 if task_config.get('prepost', False):
