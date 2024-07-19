@@ -44,6 +44,7 @@ if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
 
+export GIT_LFS_SKIP_SMUDGE=1
 git clone "${REPO_URL}"
 cd global-workflow || exit 1
 

@@ -8,7 +8,6 @@ STMP: '/scratch1/NCEPDEV/stmp2/${USER}'
 PTMP: '/scratch1/NCEPDEV/stmp4/${USER}'
 NOSCRUB: $HOMEDIR
 ACCOUNT: fv3-cpu
-ACCOUNT_SERVICE: fv3-cpu
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
