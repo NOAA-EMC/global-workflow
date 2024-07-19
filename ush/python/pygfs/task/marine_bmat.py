@@ -12,7 +12,6 @@ from wxflow import (AttrDict,
                     parse_j2yaml,
                     logit,
                     Executable,
-                    jinja,
                     Task)
 
 logger = getLogger(__name__.split('.')[-1])

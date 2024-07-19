@@ -3,7 +3,13 @@ import os
 from logging import getLogger
 import xarray as xr
 
-from wxflow import FileHandler, logit, WorkflowException, AttrDict, parse_j2yaml, jinja
+from wxflow import (FileHandler,
+                    logit,
+                    WorkflowException,
+                    AttrDict,
+                    parse_j2yaml,
+                    Executable,
+                    jinja)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -84,17 +90,7 @@ def stage_ens_mem(task_config: AttrDict) -> None:
     Copy the ensemble members to the DATA directory and reformat the CICE history files
     """
     # Copy the ensemble members to the DATA directory
-#    ensbkgconf = AttrDict()
-#    keys = ['previous_cycle', 'current_cycle', 'DATA', 'NMEM_ENS',
-#            'PARMgfs', 'ROTDIR', 'COM_OCEAN_HISTORY_TMPL', 'COM_ICE_HISTORY_TMPL']
-#    for key in keys:
-#        ensbkgconf[key] = task_config[key]
-#    ensbkgconf.RUN = 'enkfgdas'
-#    letkf_stage_list = parse_j2yaml(task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, ensbkgconf)
-#    FileHandler(letkf_stage_list).sync()
-
     logger.info("---------------- Stage ensemble members")
-    # make directories and stage ensemble background files
     ensbkgconf = AttrDict(task_config)
     ensbkgconf.RUN = task_config.GDUMP_ENS
     logger.debug(f"{jinja.Jinja(task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, ensbkgconf).render}")
