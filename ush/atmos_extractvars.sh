@@ -60,7 +60,7 @@ for outtype in "f2d" "f3d"; do
     for infile in "${infile1}" "${infile2}"; do
       if [[ -f "${infile}" ]]; then # check if input file exists before extraction
         # shellcheck disable=SC2312
-        ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}" > /dev/null
+        ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}"
       else
         echo "WARNING: ${infile} does not exist."
       fi
