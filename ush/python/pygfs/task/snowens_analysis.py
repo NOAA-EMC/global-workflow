@@ -3,6 +3,7 @@
 import os
 from logging import getLogger
 from typing import Dict, List, Any
+import netCDF4 as nc
 import numpy as np
 
 from wxflow import (AttrDict,
@@ -96,6 +97,42 @@ class SnowEnsAnalysis(Analysis):
         FileHandler(fregrid_copy).sync()
 
     @logit(logger)
+    def genWeights(self) -> None:
+        """Create a modified land_frac file for use by fregrid
+        to interpolate the snow background from det to ensres
+
+        Parameters
+        ----------
+        self : Analysis
+           Instance of the SnowEnsAnalysis object
+        """
+
+        chdir(self.task_config.DATA)
+
+        # loop through tiles
+        for tile in range(1, self.task_config.ntiles + 1):
+            # open the sfc restart and get the soil moisture
+            rst = nc.Dataset(f"./bkg/det/{to_fv3time(self.task_config.bkg_time)}.sfc_data.tile{tile}.nc")
+            smc = rst.variables['smc'][:]
+            rst.close()
+            # open the oro data and get the land fraction
+            oro = nc.Dataset(f"./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data.tile{tile}.nc")
+            land_frac = oro.variables['land_frac'][:]
+            oro.close()
+            # create an output file
+            ncfile = nc.Dataset(f"./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight.tile{tile}.nc", mode='w', format='NETCDF4')
+            case_int = int(self.task_config.CASE[1:])
+            lon = ncfile.createDimension('lon', case_int)
+            lat = ncfile.createDimension('lat', case_int)
+            land_frac_out = ncfile.createVariable('land_frac', np.float32, ('lon', 'lat'))
+            # mask the land fraction where soil moisture is less than 1
+            land_frac[np.where(smc[0,0,...] == 1)] = 0
+            land_frac_out[:] = land_frac
+            # write out and close the file
+            ncfile.close()
+
+
+    @logit(logger)
     def regridDetBkg(self) -> None:
         """Run fregrid to regrid the deterministic snow background
         to the ensemble resolution
@@ -112,13 +149,14 @@ class SnowEnsAnalysis(Analysis):
             f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc",
             f"--input_dir ./bkg/det/",
             f"--input_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
-            f"--scalar_field snodl,slmsk",
+            f"--scalar_field snodl,slmsk,vtype",
             f"--output_dir ./bkg/det_ensres/",
             f"--output_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
             f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
             f"--interp_method conserve_order1",
-            f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data",
+            f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight",
             f"--weight_field land_frac",
+            f"--remap_file ./remap",
         ]
         fregrid = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
         exec_cmd = Executable(fregrid)
@@ -153,8 +191,9 @@ class SnowEnsAnalysis(Analysis):
             f"--output_file snowinc.{to_fv3time(self.task_config.bkg_time)}.sfc_data",
             f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
             f"--interp_method conserve_order1",
-            f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data",
+            f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight",
             f"--weight_field land_frac",
+            f"--remap_file ./remap",
         ]
         fregrid = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
         exec_cmd = Executable(fregrid)
