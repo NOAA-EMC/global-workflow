@@ -5,33 +5,28 @@ import glob
 import gzip
 import tarfile
 from logging import getLogger
-from typing import Dict, List, Any
 
 from wxflow import (AttrDict,
                     FileHandler,
-                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
-                    chdir,
-                    parse_j2yaml, save_as_yaml,
-                    logit,
-                    Executable,
-                    WorkflowException)
-from pygfs.task.analysis import Analysis
+                    add_to_datetime, to_timedelta, to_YMDH,
+                    parse_j2yaml,
+                    logit)
+from pygfs.task.jedi import JEDI
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmAnalysis(Analysis):
+class AtmAnalysis(JEDI):
     """
     Class for global atm analysis tasks
     """
     @logit(logger, name="AtmAnalysis")
-    def __init__(self, config):
+    def __init__(self: AtmAnalysis, config):
         super().__init__(config)
 
         _res = int(self.task_config.CASE[1:])
         _res_anl = int(self.task_config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-        _jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmvar.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -48,10 +43,10 @@ class AtmAnalysis(Analysis):
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'jedi_yaml': _jedi_yaml,
                 'atm_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'atm_obsdataout_path': f"{self.task_config.DATA}/diags/",
                 'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
+                'jedi_args': ['fv3jedi', 'variational']
             }
         )
 
@@ -59,7 +54,7 @@ class AtmAnalysis(Analysis):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
     @logit(logger)
-    def initialize(self: Analysis) -> None:
+    def initialize(self: AtmAnalysis) -> None:
         """Initialize a global atm analysis
 
         This method will initialize a global atm analysis using JEDI.
@@ -68,7 +63,6 @@ class AtmAnalysis(Analysis):
         - staging FV3-JEDI fix files
         - staging B error files
         - staging model backgrounds
-        - generating a YAML file for the JEDI executable
         - creating output directories
         """
         super().initialize()
@@ -102,11 +96,6 @@ class AtmAnalysis(Analysis):
         bkg_staging_dict = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
         FileHandler(bkg_staging_dict).sync()
 
-        # generate variational YAML file
-        logger.debug(f"Generate variational YAML file: {self.task_config.jedi_yaml}")
-        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
-        logger.info(f"Wrote variational YAML to: {self.task_config.jedi_yaml}")
-
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
@@ -116,54 +105,11 @@ class AtmAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def variational(self: Analysis) -> None:
-
-        chdir(self.task_config.DATA)
-
-        exec_cmd = Executable(self.task_config.APRUN_ATMANLVAR)
-        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg('fv3jedi')
-        exec_cmd.add_default_arg('variational')
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        pass
-
+    def execute(self: AtmAnalysis, aprun_cmd: str) -> None:
+        super().execute(aprun_cmd)
+        
     @logit(logger)
-    def init_fv3_increment(self: Analysis) -> None:
-        # Setup JEDI YAML file
-        self.task_config.jedi_yaml = os.path.join(self.task_config.DATA,
-                                                  f"{self.task_config.JCB_ALGO}.yaml")
-        save_as_yaml(self.get_jedi_config(self.task_config.JCB_ALGO), self.task_config.jedi_yaml)
-
-        # Link JEDI executable to run directory
-        self.task_config.jedi_exe = self.link_jediexe()
-
-    @logit(logger)
-    def fv3_increment(self: Analysis) -> None:
-        # Run executable
-        exec_cmd = Executable(self.task_config.APRUN_ATMANLFV3INC)
-        exec_cmd.add_default_arg(self.task_config.jedi_exe)
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-    @logit(logger)
-    def finalize(self: Analysis) -> None:
+    def finalize(self: AtmAnalysis) -> None:
         """Finalize a global atm analysis
 
         This method will finalize a global atm analysis using JEDI.
@@ -171,9 +117,9 @@ class AtmAnalysis(Analysis):
         - tar output diag files and place in ROTDIR
         - copy the generated YAML file from initialize to the ROTDIR
         - copy the updated bias correction files to ROTDIR
-        - write UFS model readable atm incrment file
-
         """
+        super().finalize()
+        
         # ---- tar up diags
         # path of output tar statfile
         atmstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmstat")
@@ -239,17 +185,5 @@ class AtmAnalysis(Analysis):
         }
         FileHandler(bias_copy).sync()
 
-        # Copy FV3 atm increment to comrot directory
-        logger.info("Copy UFS model readable atm increment file")
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
-        src = os.path.join(self.task_config.DATA, 'anl', f"atminc.{cdate_inc}z.nc4")
-        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f'{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc')
-        logger.debug(f"Copying {src} to {dest}")
-        inc_copy = {
-            'copy': [[src, dest]]
-        }
-        FileHandler(inc_copy).sync()
-
-    def clean(self):
+    def clean(self: AtmAnalysis):
         super().clean()
