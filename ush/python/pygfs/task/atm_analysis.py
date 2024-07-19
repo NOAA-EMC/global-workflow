@@ -31,6 +31,7 @@ class AtmAnalysis(JEDI):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
+                'jedi_args': ['fv3jedi', 'variational']
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
@@ -46,7 +47,6 @@ class AtmAnalysis(JEDI):
                 'atm_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'atm_obsdataout_path': f"{self.task_config.DATA}/diags/",
                 'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
-                'jedi_args': ['fv3jedi', 'variational']
             }
         )
 

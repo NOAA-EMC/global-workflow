@@ -35,6 +35,7 @@ class AtmEnsAnalysis(JEDI):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
+                'jedi_args': ['fv3jedi', 'localensembleda']
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
@@ -44,11 +45,9 @@ class AtmEnsAnalysis(JEDI):
                 'OPREFIX': f"{self.task_config.EUPD_CYC}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'jedi_yaml': _jedi_yaml,
                 'atm_obsdatain_path': f"./obs/",
                 'atm_obsdataout_path': f"./diags/",
                 'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
-                'jedi_args': ['fv3jedi', 'localensembleda']
             }
         )
 
