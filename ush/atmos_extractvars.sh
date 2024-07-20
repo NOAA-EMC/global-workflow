@@ -45,7 +45,7 @@ for outtype in "f2d" "f3d"; do
       outres="1p00"
     fi
 
-    if (( nh < FHMAX_HF_GFS )); then
+    if (( nh <= FHMAX_HF_GFS )); then
       outfreq=${FHOUT_HF_GFS}
     else
       outfreq=${FHOUT_GFS}
