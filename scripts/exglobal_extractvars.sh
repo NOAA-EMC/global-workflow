@@ -28,24 +28,24 @@ if (( FHOUT_WAV_EXTRACT % FHOUT_WAV != 0 )); then
 fi
 
 # Extract variables for atmosphere
-if [[ "${DO_ATM}" == "YES" ]];then
+if [[ "${DO_ATM}" == "YES" ]]; then
   ${EXTRCTVARA} "${DATA}/atmos"
 fi
 
 # Extract variables for ocean
-if [[ "${DO_OCN}" == "YES" ]];then
+if [[ "${DO_OCN}" == "YES" ]]; then
   export component_name="ocn"
   ${EXTRCTVARO} "${DATA}/ocn" "${varlist_ocn_netcdf}" "${ocnres}" "${compress_ocn}" "${FHOUT_OCN_GFS}" "${ARC_RFCST_PROD_OCN}"
 fi
 
 # Extract variables for ice
-if [[ "${DO_ICE}" == "YES" ]];then
+if [[ "${DO_ICE}" == "YES" ]]; then
   export component_name="ice"
   ${EXTRCTVARO} "${DATA}/ice" "${varlist_ice_netcdf}" "${iceres}" "${compress_ice}" "${FHOUT_ICE_GFS}" "${ARC_RFCST_PROD_ICE}"
 fi
 
 # Extract variables for wave
-if [[ "${DO_WAVE}" == "YES" ]];then
+if [[ "${DO_WAVE}" == "YES" ]]; then
   export component_name="wav"
   ${EXTRCTVARW} "${DATA}/wav"
 fi

@@ -69,7 +69,7 @@ for outtype in "f2d" "f3d"; do
     check_atmos "${infile1}" "${infile2}" "${varlist}" "${fnh}"
     copy_to_comout "${outfile}" "${ARC_RFCST_PROD_ATMOS}"
 
-    #Compute daily average for a subset of variables
+    # Compute daily average for a subset of variables
     if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]]; then
       outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
       for infile in "${infile1}" "${infile2}"; do
@@ -87,12 +87,12 @@ for outtype in "f2d" "f3d"; do
         dcnt=$(( dcnt + 1 ))
       else
         fcnt=$(( fcnt + 1 ))
-      fi #If at final lead hour of a given day
-    fi #if lead hour is divisible by 6 and outtype is f3d
+      fi # If at final lead hour of a given day
+    fi # if lead hour is divisible by 6 and outtype is f3d
 
     nh=$(( nh + outfreq ))
-  done #fhr
+  done # nh
 
-done #f2d,f3d
+done # f2d,f3d
 
 exit 0

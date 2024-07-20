@@ -24,11 +24,11 @@ comout_rfcst_prod_ocnice=${6}
 for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   fnh=$(printf "%3.3d" "${nh}")
 
-  if [[ ${component_name} == "ocn" ]];then
+  if [[ ${component_name} == "ocn" ]]; then
     infile=${COMIN_OCEAN_NETCDF}/${RUN}.ocean.t${cyc}z.${datares}.f${fnh}.nc
     # For ocean products, add an argument to extract a subset of levels
     otherargs=(-d "${depthvar_name},""${zmin},""${zmax}")
-  elif [[ ${component_name} == "ice" ]];then
+  elif [[ ${component_name} == "ice" ]]; then
     infile=${COMIN_ICE_NETCDF}/${RUN}.ice.t${cyc}z.${datares}.f${fnh}.nc
     otherargs=()
   fi
@@ -39,20 +39,20 @@ for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
     varsinfile=$(cdo -showname "${infile}")
     varsavailable=""
     for i in ${varsrequested}; do
-      #check if variable from parm file is available in netcdf file. If variable is not in netcdf file, do not try to extract that variable. 
+      # Check if variable from parm file is available in netcdf file. If variable is not in netcdf file, do not try to extract that variable.
       if [[ ${varsinfile} == *"${i}"* ]]; then
         varsavailable+="${i},"
       else
         echo "WARNING: ${i} is not available in ${infile}."
       fi
     done
-    if [[ -z "${varsavailable}" ]];then
+    if [[ -z "${varsavailable}" ]]; then
       echo "WARNING: No variables from parm file ${varlist} are available in netcdf file ${infile}."
     else
       ocnice_vars=${varsavailable::-1}
       ncks -v "${ocnice_vars}" "${otherargs[@]}" "${infile}" "${outfile}"
     fi
-    if [[ ${datacompress} -eq 1 ]];then
+    if [[ ${datacompress} -eq 1 ]]; then
       ${COMPRSCMD} "${outfile}"
       copy_to_comout "${outfile}.bz2" "${comout_rfcst_prod_ocnice}"
     else
@@ -61,6 +61,6 @@ for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   else
     echo "WARNING: ${infile} does not exist."
   fi
-done
+done # nh
 
 exit 0                                                                                                                                                                                        

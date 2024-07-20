@@ -40,14 +40,14 @@ daily_avg_atmos() {
     ${WGRIB2} "${davgtmp}" | ${WGRIB2} -i "${davgtmp}" -append -grib "${davg_file}"
     rm -f "${davgtmp}"
     vcnt=$(( vcnt + 1 ))
-  done <"${varlist_d}" #variable
+  done <"${varlist_d}" # variable
 }
 
 copy_to_comout() {
   # Function to copy the output file with the extracted product variables to a user-defined destination directory
-  rundir_outfile=$1 #output data file generated in RUNDIR
-  comout_dir=$2 #destination directory to which to copy the data file
-  if [[ -f "${rundir_outfile}" ]];then
+  rundir_outfile=$1 # output data file generated in RUNDIR
+  comout_dir=$2 # destination directory to which to copy the data file
+  if [[ -f "${rundir_outfile}" ]]; then
     cpfs "${rundir_outfile}" "${comout_dir}"
   else
     echo "FATAL ERROR: Output file (${rundir_outfile}) does not exist."
