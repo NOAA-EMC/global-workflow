@@ -19,10 +19,10 @@ subdata=${1}
 
 for outtype in "f2d" "f3d"; do
 
-  if [[ "${outtype}" == "f2d" ]];then
+  if [[ "${outtype}" == "f2d" ]]; then
     varlist=${varlist_2d}
     ARC_RFCST_PROD_ATMOS="${ARC_RFCST_PROD_ATMOS_F2D}"
-  elif [[ "${outtype}" == "f3d" ]];then 
+  elif [[ "${outtype}" == "f3d" ]]; then
     varlist=${varlist_3d}
     varlist_d=${varlist_3d_d}
     ARC_RFCST_PROD_ATMOS="${ARC_RFCST_PROD_ATMOS_F3D}"
@@ -35,13 +35,13 @@ for outtype in "f2d" "f3d"; do
   while (( nh <= FHMAX_GFS )); do
     fnh=$(printf "%3.3d" "${nh}")
 
-    if [[ "${outtype}" == "f2d" ]];then
-      if [[ ${nh} -le ${FHMAX_HF_GFS} ]];then
+    if [[ "${outtype}" == "f2d" ]]; then
+      if (( nh < FHMAX_HF_GFS )); then
         outres="0p25"
       else
         outres="0p50"
       fi
-    elif [[ "${outtype}" == "f3d" ]];then
+    elif [[ "${outtype}" == "f3d" ]]; then
       outres="1p00"
     fi
 
@@ -70,7 +70,7 @@ for outtype in "f2d" "f3d"; do
     copy_to_comout "${outfile}" "${ARC_RFCST_PROD_ATMOS}"
 
     #Compute daily average for a subset of variables
-    if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]];then
+    if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]]; then
       outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
       for infile in "${infile1}" "${infile2}"; do
         if [[ -f "${infile}" ]]; then # check if input file exists before extraction
@@ -80,7 +80,7 @@ for outtype in "f2d" "f3d"; do
           echo "WARNING: ${infile} does not exist."
         fi
       done
-      if [[ ${fcnt} -eq 4 ]];then
+      if [[ ${fcnt} -eq 4 ]]; then
         daily_avg_atmos "${outfile}" "${dcnt}" "${outres}"
         copy_to_comout "${davg_file}" "${ARC_RFCST_PROD_ATMOS}"
         fcnt=1
