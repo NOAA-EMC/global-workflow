@@ -486,27 +486,27 @@ class GEFSTasks(Tasks):
 
     def arch(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': 'atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'atmos_ensstat'}
+        dep_dict = {'type': 'metatask', 'name': 'atmos_ensstat'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ice:
-            dep_dict = {'type': 'metatask', 'name': f'ice_prod'}
+            dep_dict = {'type': 'metatask', 'name': 'ice_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
-            dep_dict = {'type': 'metatask', 'name': f'ocean_prod'}
+            dep_dict = {'type': 'metatask', 'name': 'ocean_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
-            dep_dict = {'type': 'task', 'name': f'wavepostsbs'}
+            dep_dict = {'type': 'task', 'name': 'wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.app_config.do_wave_bnd:
-                dep_dict = {'type': 'task', 'name': f'wavepostbndpnt'}
+                dep_dict = {'type': 'task', 'name': 'wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                dep_dict = {'type': 'task', 'name': f'wavepostbndpntbll'}
+                dep_dict = {'type': 'task', 'name': 'wavepostbndpntbll'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'wavepostpnt'}
+            dep_dict = {'type': 'task', 'name': 'wavepostpnt'}
             deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'wave_post_grid'}
+        dep_dict = {'type': 'metatask', 'name': 'wave_post_grid'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
