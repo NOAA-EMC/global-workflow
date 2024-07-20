@@ -514,7 +514,7 @@ class GEFSTasks(Tasks):
         task_name = f'arch'
         task_dict = {'task_name': task_name,
                      'resources': resources,
-                     'envars': None,
+                     'envars': self.envars,
                      'cycledef': 'gefs',
                      'dependency': dependencies,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/arch_test.sh',
