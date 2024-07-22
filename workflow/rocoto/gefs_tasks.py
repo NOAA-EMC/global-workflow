@@ -218,7 +218,7 @@ class GEFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr#.nc'},
+                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr_next#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
                                  'history_file_tmpl': f'{self.cdump}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
@@ -236,10 +236,9 @@ class GEFSTasks(Tasks):
         if component in ['ocean']:
             dep_dict = {'type': 'data', 'data': data, 'age': 120}
             deps.append(rocoto.add_dependency(dep_dict))
-            command = f"{self.HOMEgfs}/ush/check_netcdf.sh {history_path}/{history_file_tmpl}"
-            dep_dict = {'type': 'sh', 'command': command}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+            dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
         elif component in ['ice']:
             command = f"{self.HOMEgfs}/ush/check_ice_netcdf.sh @Y @m @d @H #fhr# &ROTDIR; #member# {fhout_ice_gfs}"
             dep_dict = {'type': 'sh', 'command': command}
@@ -271,6 +270,9 @@ class GEFSTasks(Tasks):
 
         fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+        if component in ['ocean']:
+            fhrs_next = fhrs[1:] + [fhrs[-1] + (fhrs[-1] - fhrs[-2])]
+            fhr_var_dict['fhr_next'] = ' '.join([f"{fhr:03d}" for fhr in fhrs_next])
 
         fhr_metatask_dict = {'task_name': f'{component}_prod_#member#',
                              'task_dict': task_dict,
