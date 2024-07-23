@@ -8,6 +8,8 @@ echo "BEGIN: config.metp"
 # Get task specific resources
 . "${EXPDIR}/config.resources" metp
 
+export nproc=${npe_metp:-1}
+
 export RUN_GRID2GRID_STEP1="YES" # Run grid-to-grid verification using METplus
 export RUN_GRID2OBS_STEP1="YES"  # Run grid-to-obs verification using METplus
 export RUN_PRECIP_STEP1="YES"    # Run precip verification using METplus
