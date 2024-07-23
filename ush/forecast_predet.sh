@@ -146,9 +146,9 @@ FV3_predet(){
 
   # Convert output settings into an explicit list for FV3
   FV3_OUTPUT_FH=""
-  local fhr=${FHMIN_GFS}
+  local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
-    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN_GFS}" "${FHOUT_HF}" "${FHMAX_HF}")"
+    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
     fhr=${FHMAX_HF}
   fi
   FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
