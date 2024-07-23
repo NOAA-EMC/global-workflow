@@ -115,18 +115,20 @@ class JEDI(Task):
                 jcb_config = {**jcb_config, **jcb_algo_config}
 
             # Step 3: generate the JEDI Yaml using JCB driving YAML
-            jedi_config = render(jcb_config)
+            self.task_config.jedi_config = render(jcb_config)
         elif 'JEDIYAML' in self.task_config.keys():
             # Generate JEDI YAML file (without using JCB)
-            jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
+            self.task_config.jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
                                        searchpath=self.gdasapp_j2tmpl_dir)
         else:
             raise KeyError(f"Task config must contain JCB_ALGO, JCB_BASE_YAML, or JEDIYAML")
 
-        logger.debug(f"JEDI config:\n{pformat(jedi_config)}")
+        logger.debug(f"JEDI config:\n{pformat(self.task_config.jedi_config)}")
 
         # Save JEDI config to YAML file
-        self.task_config.jedi_config = self.get_jedi_config()
+        logger.debug(f"Generate YAML file: {self.task_config.jedi_yaml}")
+        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
+        logger.info(f"Wrote YAML to: {self.task_config.jedi_yaml}")
 
     def link_jedi_exe(self) -> None:
         """Link JEDI executable to run directory
