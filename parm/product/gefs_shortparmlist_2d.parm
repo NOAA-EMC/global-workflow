@@ -1,0 +1,38 @@
+:PRES:surface:
+:WEASD:surface:
+:TMP:2 m above ground:
+:TMP:surface:
+:RH:2 m above ground:
+:TMAX:2 m above ground:
+:TMIN:2 m above ground:
+:UGRD:10 m above ground:
+:VGRD:10 m above ground:
+:APCP:surface:
+:CSNOW:surface:
+:CICEP:surface:
+:CFRZR:surface:
+:CRAIN:surface:
+:PWAT:entire atmosphere (considered as a single layer):
+:TCDC:entire atmosphere (considered as a single layer):
+:DSWRF:surface:
+:DLWRF:surface:
+:ULWRF:top of atmosphere:
+:HLCY:3000-0 m above ground:
+:CAPE:180-0 mb above ground:
+:CIN:180-0 mb above ground:
+:PRMSL:mean sea level:
+:USWRF:surface:
+:ULWRF:surface:
+:TSOIL:0-0.1 m below ground:
+:TSOIL:0.1-0.4 m below ground:
+:SOILW:0-0.1 m below ground:
+:SOILW:0.1-0.4 m below ground:
+:SOILW:0.4-1 m below ground:
+:SOILW:1-2 m below ground:
+:PEVPR:surface:
+:LHTFL:surface:
+:SHTFL:surface:
+:WATR:surface:
+:TSNOWP:surface:
+:FDNSSTMP:surface:
+:HGT:highest tropospheric freezing level:
