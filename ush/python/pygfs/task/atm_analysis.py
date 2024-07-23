@@ -66,6 +66,14 @@ class AtmAnalysis(JEDI):
         """
         super().initialize()
 
+        # stage observations
+        obs_dict = self.get_obs_dict()
+        FileHandler(obs_dict).sync()
+
+        # stage bias corrections
+        bias_dict = self.get_bias_dict()
+        FileHandler(bias_dict).sync()
+        
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
         crtm_fix_list = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
@@ -143,7 +151,7 @@ class AtmAnalysis(JEDI):
 
         # copy full YAML from executable to ROTDIR
         logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
-        src = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmvar.yaml")
+        src = self.task_config.jedi_yaml
         dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         logger.debug(f"Copying {src} to {dest}")
         yaml_copy = {
