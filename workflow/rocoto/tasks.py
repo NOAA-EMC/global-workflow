@@ -178,7 +178,7 @@ class Tasks:
 
         task_config = self._configs[task_name]
 
-        account = task_config['ACCOUNT_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['ACCOUNT']
+        account = task_config['ACCOUNT']
 
         if f'wtime_{task_name}_{self.cdump}' in task_config:
             walltime = task_config[f'wtime_{task_name}_{self.cdump}']
