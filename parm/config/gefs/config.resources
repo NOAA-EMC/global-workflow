@@ -279,6 +279,18 @@ case ${step} in
     export NTASKS=${ntasks}
     ;;
 
+  "extractvars")
+    export walltime_gefs="00:30:00"
+    export ntasks_gefs=1
+    export threads_per_task_gefs=1
+    export tasks_per_node_gefs="${ntasks}"
+    export walltime_gfs="${walltime_gefs}"
+    export ntasks_gfs="${ntasks_gefs}"
+    export threads_per_tasks_gfs="${threads_per_task_gefs}"
+    export tasks_per_node_gfs="${tasks_per_node_gefs}"
+    export is_exclusive=False
+    ;;
+
   *)
     echo "FATAL ERROR: Invalid job ${step} passed to ${BASH_SOURCE[0]}"
     exit 1

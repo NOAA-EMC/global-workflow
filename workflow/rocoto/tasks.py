@@ -181,7 +181,7 @@ class Tasks:
 
         task_config = self._configs[task_name]
 
-        account = task_config['ACCOUNT_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['ACCOUNT']
+        account = task_config['ACCOUNT']
 
         walltime = task_config[f'walltime']
         ntasks = task_config[f'ntasks']
