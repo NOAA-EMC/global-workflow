@@ -12,7 +12,7 @@ if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
 #DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 
-# In config.base, DATAROOT is defined as:
+# In XML, DATAROOT is defined as:
 #DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"
 # cleanup is only executed after the entire cycle is successfully completed.
 # removing DATAROOT should be possible if that is the case.
