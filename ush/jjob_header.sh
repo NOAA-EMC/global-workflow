@@ -39,7 +39,6 @@
 #                     [default: "YES"]
 #   - $pid          : Override the default process id
 #                     [default: $$]
-#
 
 OPTIND=1
 while getopts "c:e:" option; do
@@ -61,30 +60,6 @@ shift $((OPTIND-1))
 if [[ -z ${env_job} ]]; then
     echo "FATAL [${BASH_SOURCE[0]}]: Must specify a job name with -e"
     exit 1
-fi
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
-for config in "${configs[@]:-''}"; do
-    source "${EXPDIR}/config.${config}"
-    status=$?
-    if (( status != 0 )); then
-        echo "FATAL [${BASH_SOURCE[0]}]: Unable to load config config.${config}"
-        exit "${status}"
-    fi
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-source "${HOMEgfs}/env/${machine}.env" "${env_job}"
-status=$?
-if (( status != 0 )); then
-    echo "FATAL [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
-    exit "${status}"
 fi
 
 ##############################################
@@ -112,3 +87,28 @@ source ./PDY
 export pid="${pid:-$$}"
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
+for config in "${configs[@]:-''}"; do
+    source "${EXPDIR}/config.${config}"
+    status=$?
+    if (( status != 0 )); then
+        echo "FATAL [${BASH_SOURCE[0]}]: Unable to load config config.${config}"
+        exit "${status}"
+    fi
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+source "${HOMEgfs}/env/${machine}.env" "${env_job}"
+status=$?
+if (( status != 0 )); then
+    echo "FATAL [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
+    exit "${status}"
+fi

@@ -98,7 +98,6 @@ export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/${PSLOT}"
 export ROTDIR="@COMROOT@/${PSLOT}"
 
-export DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"  # TODO: set via prod_envir in Ops
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
 
