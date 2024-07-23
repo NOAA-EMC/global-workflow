@@ -144,8 +144,7 @@ class Tasks:
 
         replay_ics = local_config['REPLAY_ICS']
         if replay_ics is True and component in ['atmos']:
-            offset_start_hour = local_config['OFFSET_START_HOUR']
-            fhmin = offset_start_hour
+            fhmin = local_config['OFFSET_START_HOUR']
         else:
             fhmin = local_config['FHMIN']
 
