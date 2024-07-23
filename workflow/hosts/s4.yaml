@@ -8,7 +8,6 @@ STMP: '/scratch/users/${USER}'
 PTMP: '/scratch/users/${USER}'
 NOSCRUB: ${HOMEDIR}
 ACCOUNT: star
-ACCOUNT_SERVICE: star
 SCHEDULER: slurm
 QUEUE: s4
 QUEUE_SERVICE: serial

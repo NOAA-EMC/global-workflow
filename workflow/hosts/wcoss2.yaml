@@ -8,7 +8,6 @@ STMP: '/lfs/h2/emc/stmp/${USER}'
 PTMP: '/lfs/h2/emc/ptmp/${USER}'
 NOSCRUB: $HOMEDIR
 ACCOUNT: 'GFS-DEV'
-ACCOUNT_SERVICE: 'GFS-DEV'
 SCHEDULER: pbspro
 QUEUE: 'dev'
 QUEUE_SERVICE: 'dev_transfer'
