@@ -142,8 +142,10 @@ class Tasks:
             local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
             local_config['FHOUT'] = config['FHOUT_ICE']
 
-        if component in ['atmos']:
-            fhmin = local_config['FHMIN_GFS']
+        replay_ics = local_config['REPLAY_ICS']
+        if replay_ics is True and component in ['atmos']:
+            offset_start_hour = local_config['OFFSET_START_HOUR']
+            fhmin = offset_start_hour
         else:
             fhmin = local_config['FHMIN']
 
