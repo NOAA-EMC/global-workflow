@@ -6,7 +6,7 @@
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
-from pygfs.task.atmens_analysis_fv3inc import AtmEnsAnalysisFV3Inc
+from pygfs.task.atmens_analysis_fv3inc import AtmEnsAnalysis
 
 # Initialize root logger
 logger = Logger(level='DEBUG', colored_log=True)
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis task
-    AtmEnsAnlFV3Inc = AtmEnsAnalysisFV3Inc(config)
+    AtmEnsAnlFV3Inc = AtmEnsAnalysis(config)
     AtmEnsAnlFV3Inc.initialize()
     AtmEnsAnlFV3Inc.execute(config.APRUN_ATMENSANLFV3INC)
     AtmEnsAnlFV3Inc.finalize()

@@ -21,7 +21,7 @@ class AtmAnalysis(JEDI):
     Class for global atm analysis tasks
     """
     @logit(logger, name="AtmAnalysis")
-    def __init__(self: AtmAnalysis, config):
+    def __init__(self, config):
         super().__init__(config)
 
         _res = int(self.task_config.CASE[1:])
@@ -31,7 +31,6 @@ class AtmAnalysis(JEDI):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'jedi_args': ['fv3jedi', 'variational']
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
@@ -54,7 +53,7 @@ class AtmAnalysis(JEDI):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
     @logit(logger)
-    def initialize(self: AtmAnalysis) -> None:
+    def initialize(self) -> None:
         """Initialize a global atm analysis
 
         This method will initialize a global atm analysis using JEDI.
@@ -105,11 +104,11 @@ class AtmAnalysis(JEDI):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self: AtmAnalysis, aprun_cmd: str) -> None:
-        super().execute(aprun_cmd)
+    def execute(self, aprun_cmd: str) -> None:
+        super().execute(aprun_cmd, ['fv3jedi', 'variational'])
         
     @logit(logger)
-    def finalize(self: AtmAnalysis) -> None:
+    def finalize(self) -> None:
         """Finalize a global atm analysis
 
         This method will finalize a global atm analysis using JEDI.
@@ -185,5 +184,17 @@ class AtmAnalysis(JEDI):
         }
         FileHandler(bias_copy).sync()
 
-    def clean(self: AtmAnalysis):
+        # Copy FV3 atm increment to comrot directory
+        logger.info("Copy UFS model readable atm increment file")
+        cdate = to_fv3time(self.task_config.current_cycle)
+        cdate_inc = cdate.replace('.', '_')
+        src = os.path.join(self.task_config.DATA, 'anl', f"atminc.{cdate_inc}z.nc4")
+        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f'{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc')
+        logger.debug(f"Copying {src} to {dest}")
+        inc_copy = {
+            'copy': [[src, dest]]
+        }
+        FileHandler(inc_copy).sync()
+        
+    def clean(self):
         super().clean()

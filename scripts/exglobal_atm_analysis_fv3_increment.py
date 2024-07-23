@@ -19,7 +19,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atm analysis fv3inc task
-    AtmAnlFV3Inc = AtmAnalysisFV3inc(config)
+    AtmAnlFV3Inc = AtmAnalysisFV3Inc(config)
     AtmAnlFV3Inc.initialize()
     AtmAnlFV3Inc.execute(config.APRUN_ATMANLFV3INC)
     AtmAnlFV3Inc.finalize()

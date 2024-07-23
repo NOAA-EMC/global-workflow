@@ -2,48 +2,36 @@
 
 import os
 from logging import getLogger
-from wxflow import FileHandler, to_fv3time
+from wxflow import logit
 
 from pygfs.task.jedi import JEDI
+from pygfs.task.atm_analysis import AtmAnalysis
 
 logger = getLogger(__name__.split('.')[-1])
 
-class AtmAnalysisFV3Inc(JEDI):
+class AtmAnalysisFV3Inc(AtmAnalysis):
     """
     Class for FV3 increment conversion task in global atm analysis
+
+    This class inherits the task_config of AtmAnalysis, its parent
+    class, but it inherits its methods from the JEDI class, the parent
+    of AtmAnalysis.
     """
     @logit(logger, name="AtmAnalysisFV3Inc")
     def __init__(self, config):
         super().__init__(config)
 
     @logit(logger)
-    def initialize(self: AtmAnalysisFV3Inc) -> None:
-        super().initialize()
+    def initialize(self) -> None:
+        JEDI.initialize(self)
 
     @logit(logger)
-    def execute(self: AtmAnalysisFV3Inc, aprun_cmd: str) -> None:
-        super().execute(aprun_cmd)
+    def execute(self, aprun_cmd: str) -> None:
+        JEDI.execute(self, aprun_cmd)
         
     @logit(logger)
-    def finalize(self: AtmAnalysisFV3Inc) -> None:
-        """Finalize FV3 increment conversion
+    def finalize(self) -> None:
+        JEDI.finalize(self)
 
-        This method write the UFS model readable atm increment file
-
-        """
-        super().finalize()
-        
-        # Copy FV3 atm increment to comrot directory
-        logger.info("Copy UFS model readable atm increment file")
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
-        src = os.path.join(self.task_config.DATA, 'anl', f"atminc.{cdate_inc}z.nc4")
-        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f'{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc')
-        logger.debug(f"Copying {src} to {dest}")
-        inc_copy = {
-            'copy': [[src, dest]]
-        }
-        FileHandler(inc_copy).sync()
-
-    def clean(self: AtmAnalysisFV3Inc):
-        super().clean()
+    def clean(self):
+        JEDI.clean(self)
