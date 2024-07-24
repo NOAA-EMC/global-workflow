@@ -293,6 +293,18 @@ case ${step} in
     export NTASKS=${npe_wavepostpnt}
     ;;
 
+  "extractvars")
+    export wtime_extractvars="00:30:00"
+    export npe_extractvars=1
+    export nth_extractvars=1
+    export npe_node_extractvars="${npe_extractvars}"
+    export wtime_extractvars_gfs="${wtime_extractvars}"
+    export npe_extractvars_gfs="${npe_extractvars}"
+    export nth_extractvars_gfs="${nth_extractvars}"
+    export npe_node_extractvars_gfs="${npe_node_extractvars}"
+    export is_exclusive=False
+    ;;
+
   *)
     echo "FATAL ERROR: Invalid job ${step} passed to ${BASH_SOURCE[0]}"
     exit 1
