@@ -241,7 +241,7 @@ source "${USHgfs}/preamble.sh"
 
   if [ "$DOSPC_WAV" = 'YES' ] || [ "$DOBLL_WAV" = 'YES' ]
   then
-    ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${OFFSET_START_HOUR}")
+    ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
     tstart="${ymdh:0:8} ${ymdh:8:2}0000"
     dtspec=3600.            # default time step (not used here)
     sed -e "s/TIME/${tstart}/g" \
@@ -252,8 +252,8 @@ source "${USHgfs}/preamble.sh"
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
     ${NLN} mod_def.$waveuoutpGRD mod_def.ww3
-    sec=$(( ${cyc} + ${OFFSET_START_HOUR} ))
-    sec=$( printf "%02d" ${sec} )
+    #export OFFSET_START_HOUR=$( printf "%02d" ${half_assim} )
+    sec=$( printf "%02d" $(( cyc + OFFSET_START_HOUR )) )
     HMS="${sec}0000"
     if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
       ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
@@ -362,15 +362,12 @@ source "${USHgfs}/preamble.sh"
     echo "   Creating the wave point scripts at : $(date)"
     ymdh=$($NDATE "${fhr}" "${PDY}${cyc}")
     YMD=${ymdh:0:8}
-    sec=$(( ${cyc} + ${OFFSET_START_HOUR} ))
-    sec=$( printf "%02d" ${sec} )
-    HMS="${sec}0000"
+    HMS="${ymdh:8:2}0000"
     YMDHMS=${YMD}${HMS}
     FH3=$(printf %03i ${fhr})
 
     rm -f tmpcmdfile.${FH3}
     touch tmpcmdfile.${FH3}
-    rm -fr output_$YMDHMS
     mkdir output_$YMDHMS
     cd output_$YMDHMS
 
