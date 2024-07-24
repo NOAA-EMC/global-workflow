@@ -307,7 +307,7 @@ export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IA
 # Check if cycle is cold starting
 if [[ "${EXP_WARM_START}" = ".false." ]]; then
     half_assim=$(( assim_freq / 2 ))
-    export OFFSET_START_HOUR=$( printf "%02d" ${half_assim} )
+    export OFFSET_START_HOUR=$( printf "%02d" "${half_assim}" )
 else
   if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
