@@ -497,18 +497,16 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'metatask', 'name': 'ocean_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
-            dep_dict = {'type': 'task', 'name': 'wavepostsbs'}
+            dep_dict = {'type': 'metatask', 'name': 'wave_post_grid'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': 'wave_post_pnt'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.app_config.do_wave_bnd:
-                dep_dict = {'type': 'task', 'name': 'wavepostbndpnt'}
+                dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                dep_dict = {'type': 'task', 'name': 'wavepostbndpntbll'}
+                dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': 'wavepostpnt'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'wave_post_grid'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        dependencies = rocoto.create_dependency(dep=deps,  dep_condition='and')
 
         resources = self.get_resource('arch')
         task_name = 'arch'
