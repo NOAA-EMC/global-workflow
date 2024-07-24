@@ -227,72 +227,72 @@ class JEDI(Task):
         }
         return bias_dict
 
-    @logit(logger)
-    def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
-        """
-        Recursively search through a nested dictionary and return the value for the target key.
-        This returns the first target key it finds.  So if a key exists in a subsequent
-        nested dictionary, it will not be found.
+@logit(logger)
+def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
+    """
+    Recursively search through a nested dictionary and return the value for the target key.
+    This returns the first target key it finds.  So if a key exists in a subsequent
+    nested dictionary, it will not be found.
 
-        Parameters
-        ----------
-        nested_dict : Dict
-            Dictionary to search
-        target_key : str
-            Key to search for
+    Parameters
+    ----------
+    nested_dict : Dict
+        Dictionary to search
+    target_key : str
+        Key to search for
 
-        Returns
-        -------
-        Any
-            Value of the target key
+    Returns
+    -------
+    Any
+        Value of the target key
 
-        Raises
-        ------
-        KeyError
-            If key is not found in dictionary
+    Raises
+    ------
+    KeyError
+        If key is not found in dictionary
 
-        TODO: if this gives issues due to landing on an incorrect key in the nested
-        dictionary, we will have to implement a more concrete method to search for a key
-        given a more complete address.  See resolved conversations in PR 2387
+    TODO: if this gives issues due to landing on an incorrect key in the nested
+    dictionary, we will have to implement a more concrete method to search for a key
+    given a more complete address.  See resolved conversations in PR 2387
 
-        # Example usage:
-        nested_dict = {
-            'a': {
-                'b': {
-                    'c': 1,
-                    'd': {
-                        'e': 2,
-                        'f': 3
-                    }
-                },
-                'g': 4
+    # Example usage:
+    nested_dict = {
+        'a': {
+            'b': {
+                'c': 1,
+                'd': {
+                    'e': 2,
+                    'f': 3
+                }
             },
-            'h': {
-                'i': 5
-            },
-            'j': {
-                'k': 6
-            }
+            'g': 4
+        },
+        'h': {
+            'i': 5
+        },
+        'j': {
+            'k': 6
         }
+    }
 
-        user_key = input("Enter the key to search for: ")
-        result = find_value_in_nested_dict(nested_dict, user_key)
-        """
+    user_key = input("Enter the key to search for: ")
+    result = find_value_in_nested_dict(nested_dict, user_key)
+    """
 
-        if not isinstance(nested_dict, dict):
-            raise TypeError(f"Input is not of type(dict)")
+    if not isinstance(nested_dict, dict):
+        raise TypeError(f"Input is not of type(dict)")
 
-        result = nested_dict.get(target_key)
-        if result is not None:
-            return result
+    result = nested_dict.get(target_key)
+    if result is not None:
+        return result
 
-        for value in nested_dict.values():
-            if isinstance(value, dict):
-                try:
-                    result = find_value_in_nested_dict(value, target_key)
-                    if result is not None:
-                        return result
-                except KeyError:
-                    pass
+    for value in nested_dict.values():
+        if isinstance(value, dict):
+            try:
+                result = find_value_in_nested_dict(value, target_key)
+                if result is not None:
+                    return result
+            except KeyError:
+                pass
 
-        raise KeyError(f"Key '{target_key}' not found in the nested dictionary")
+    raise KeyError(f"Key '{target_key}' not found in the nested dictionary")

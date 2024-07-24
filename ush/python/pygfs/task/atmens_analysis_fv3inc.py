@@ -2,8 +2,9 @@
 
 import os
 from logging import getLogger
-from wxflow import FileHandler, to_fv3time, Template, TemplateConstants
+from wxflow import logit
 
+from pygfs.task.jedi import JEDI
 from pygfs.task.atmens_analysis import AtmEnsAnalysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -18,6 +19,7 @@ class AtmEnsAnalysisFV3Inc(AtmEnsAnalysis):
     """
     @logit(logger, name="AtmEnsAnalysisFV3Inc")
     def __init__(self, config):
+        # Inherit task_config from AtmEnsAnalysis class
         super().__init__(config)
 
     @logit(logger)
@@ -26,11 +28,11 @@ class AtmEnsAnalysisFV3Inc(AtmEnsAnalysis):
 
     @logit(logger)
     def execute(self, aprun_cmd: str) -> None:
-        JEDI.execute(aprun_cmd)
+        JEDI.execute(self, aprun_cmd)
         
     @logit(logger)
     def finalize(self) -> None:
-        JEDI.finalize()
+        JEDI.finalize(self)
 
     def clean(self):
-        JEDI.clean()
+        JEDI.clean(self)

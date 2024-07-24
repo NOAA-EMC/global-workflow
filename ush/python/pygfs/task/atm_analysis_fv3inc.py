@@ -19,6 +19,7 @@ class AtmAnalysisFV3Inc(AtmAnalysis):
     """
     @logit(logger, name="AtmAnalysisFV3Inc")
     def __init__(self, config):
+        # Inherit task_config from AtmAnalysis class
         super().__init__(config)
 
     @logit(logger)

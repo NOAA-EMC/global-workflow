@@ -8,7 +8,7 @@ from logging import getLogger
 
 from wxflow import (AttrDict,
                     FileHandler,
-                    add_to_datetime, to_timedelta, to_YMDH,
+                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
                     parse_j2yaml,
                     logit)
 from pygfs.task.jedi import JEDI
