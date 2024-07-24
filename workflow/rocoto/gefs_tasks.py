@@ -272,8 +272,7 @@ class GEFSTasks(Tasks):
         fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
 
         # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
-        local_config = self._configs[config].deepcopy()
-        is_replay = local_config['REPLAY_ICS']
+        is_replay = self._configs[config]['REPLAY_ICS']
         if is_replay and component in ['atmos'] and 0 in fhrs:
             fhrs.remove(0)
 
@@ -327,8 +326,7 @@ class GEFSTasks(Tasks):
         fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
 
         # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
-        local_config = self._configs['atmos_ensstat'].deepcopy()
-        is_replay = local_config['REPLAY_ICS']
+        is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
         if is_replay and 0 in fhrs:
             fhrs.remove(0)
 
