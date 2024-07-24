@@ -81,7 +81,7 @@ class AtmEnsAnalysis(JEDI):
         # stage bias corrections
         bias_dict = self.get_bias_dict()
         FileHandler(bias_dict).sync()
-        
+
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
         crtm_fix_list = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
@@ -127,7 +127,7 @@ class AtmEnsAnalysis(JEDI):
         None
         """
         super().finalize()
-        
+
         # ---- tar up diags
         # path of output tar statfile
         atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX}atmensstat")
@@ -191,6 +191,6 @@ class AtmEnsAnalysis(JEDI):
                 'copy': [[src, dest]]
             }
             FileHandler(inc_copy).sync()
-        
+
     def clean(self):
         super().clean()

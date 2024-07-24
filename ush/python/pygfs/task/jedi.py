@@ -6,7 +6,7 @@ from pprint import pformat
 from typing import List, Dict, Any, Optional
 from jcb import render
 from wxflow import (AttrDict,
-                    chdir, rm_p, 
+                    chdir, rm_p,
                     parse_j2yaml, save_as_yaml,
                     logit,
                     Task,
@@ -26,30 +26,30 @@ class JEDI(Task):
 
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
-        
+
         _exe_name = os.path.basename(self.task_config.JEDIEXE)
-        
+
         local_dict = AttrDict(
             {
                 'jedi_exe': os.path.join(self.task_config.DATA, _exe_name),
                 'jedi_yaml': os.path.join(self.task_config.DATA, os.path.splitext(_exe_name)[0] + '.yaml'),
-                'gdasapp_j2tmpl_dir': os.path.join(self.task_config.PARMgfs, 'gdas') 
+                'gdasapp_j2tmpl_dir': os.path.join(self.task_config.PARMgfs, 'gdas')
             }
         )
 
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
-                                  
+
     @logit(logger)
     def initialize(self) -> None:
         super().initialize()
 
         # Generate and write JEDI input YAML file
         self.get_jedi_config()
-        
+
         # link JEDI executable to run directory
         self.link_jedi_exe()
-        
+
     @logit(logger)
     def execute(self, aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
 
@@ -119,7 +119,7 @@ class JEDI(Task):
         elif 'JEDIYAML' in self.task_config.keys():
             # Generate JEDI YAML file (without using JCB)
             self.task_config.jedi_config = parse_j2yaml(self.task_config.JEDIYAML, self.task_config,
-                                       searchpath=self.gdasapp_j2tmpl_dir)
+                                                        searchpath=self.gdasapp_j2tmpl_dir)
         else:
             raise KeyError(f"Task config must contain JCB_ALGO, JCB_BASE_YAML, or JEDIYAML")
 
@@ -145,7 +145,7 @@ class JEDI(Task):
         """
 
         exe_src = self.task_config.JEDIEXE
-        
+
         # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
         logger.info(f"Link executable {exe_src} to DATA/")
         logger.warn("Linking is not permitted per EE2.")
@@ -153,7 +153,7 @@ class JEDI(Task):
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
-        
+
     @logit(logger)
     def get_obs_dict(self) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
@@ -227,6 +227,7 @@ class JEDI(Task):
         }
         return bias_dict
 
+    
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
