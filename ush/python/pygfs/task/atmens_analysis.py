@@ -23,7 +23,7 @@ logger = getLogger(__name__.split('.')[-1])
 
 class AtmEnsAnalysis(JEDI):
     """
-    Class for global atmens analysis tasks
+    Class for JEDI-based global atmens analysis tasks
     """
     @logit(logger, name="AtmEnsAnalysis")
     def __init__(self, config):
@@ -59,6 +59,8 @@ class AtmEnsAnalysis(JEDI):
 
         This method will initialize a global atmens analysis using JEDI.
         This includes:
+        - staging observation files
+        - staging bias correction files
         - staging CRTM fix files
         - staging FV3-JEDI fix files
         - staging model backgrounds

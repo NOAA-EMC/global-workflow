@@ -18,7 +18,7 @@ logger = getLogger(__name__.split('.')[-1])
 
 class AtmAnalysis(JEDI):
     """
-    Class for global atm analysis tasks
+    Class for JEDI-based global atm analysis tasks
     """
     @logit(logger, name="AtmAnalysis")
     def __init__(self, config):
@@ -58,6 +58,8 @@ class AtmAnalysis(JEDI):
 
         This method will initialize a global atm analysis using JEDI.
         This includes:
+        - staging observation files
+        - staging bias correction files
         - staging CRTM fix files
         - staging FV3-JEDI fix files
         - staging B error files

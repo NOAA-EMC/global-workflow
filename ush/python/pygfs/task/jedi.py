@@ -47,7 +47,7 @@ class JEDI(Task):
         # Generate and write JEDI input YAML file
         self.get_jedi_config()
 
-        # link JEDI executable to run directory
+        # Link JEDI executable to run directory
         self.link_jedi_exe()
 
     @logit(logger)
@@ -82,7 +82,7 @@ class JEDI(Task):
 
     @logit(logger)
     def get_jedi_config(self, algorithm: Optional[str] = None) -> Dict[str, Any]:
-        """Compile a dictionary of JEDI configuration from JEDIYAML template file
+        """Compile a dictionary of JEDI configuration from template file
 
         Parameters
         ----------
@@ -96,16 +96,15 @@ class JEDI(Task):
             a dictionary containing the fully rendered JEDI yaml configuration
         """
 
-        # generate JEDI YAML file
+        # Generate JEDI YAML file
         logger.info(f"Generate JEDI YAML config: {self.task_config.jedi_yaml}")
 
         if 'JCB_BASE_YAML' in self.task_config.keys():
-            # Step 1: fill templates of the jcb base YAML file
+            # Step 1: Fill templates of the jcb base YAML file
             jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
 
             # Step 2: If algorithm is present override the algorithm in the JEDI config,
-            # or if algorithm yamls is present, fill templates of algorithm override
-            # YAML and merge.
+            # or, if algorithm YAML is present, fill its templates and merge.
             if algorithm:
                 jcb_config['algorithm'] = algorithm
             elif 'JCB_ALGO' in self.task_config.keys():
@@ -114,7 +113,7 @@ class JEDI(Task):
                 jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
                 jcb_config = {**jcb_config, **jcb_algo_config}
 
-            # Step 3: generate the JEDI Yaml using JCB driving YAML
+            # Step 3: Generate the JEDI Yaml using JCB driving YAML
             self.task_config.jedi_config = render(jcb_config)
         elif 'JEDIYAML' in self.task_config.keys():
             # Generate JEDI YAML file (without using JCB)
@@ -137,7 +136,7 @@ class JEDI(Task):
 
         Parameters
         ----------
-        Task: GDAS task
+        None
 
         Returns
         ----------
@@ -164,6 +163,7 @@ class JEDI(Task):
 
         Parameters
         ----------
+        None
 
         Returns
         ----------
@@ -198,6 +198,7 @@ class JEDI(Task):
 
         Parameters
         ----------
+        None
 
         Returns
         ----------
@@ -227,7 +228,7 @@ class JEDI(Task):
         }
         return bias_dict
 
-    
+
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
