@@ -271,6 +271,12 @@ class GEFSTasks(Tasks):
 
         fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
 
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        local_config = self._configs[config].deepcopy()
+        is_replay = local_config['REPLAY_ICS']
+        if is_replay and component in ['atmos'] and 0 in fhrs:
+            fhrs.remove(0)
+
         # ocean/ice components do not have fhr 0 as they are averaged output
         if component in ['ocean', 'ice'] and 0 in fhrs:
             fhrs.remove(0)
@@ -319,6 +325,7 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'}
 
         fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
+
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'atmos_ensstat',

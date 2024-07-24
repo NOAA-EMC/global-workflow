@@ -142,11 +142,7 @@ class Tasks:
             local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
             local_config['FHOUT'] = config['FHOUT_ICE']
 
-        replay_ics = local_config['REPLAY_ICS']
-        if replay_ics is True and component in ['atmos']:
-            fhmin = local_config['OFFSET_START_HOUR']
-        else:
-            fhmin = local_config['FHMIN']
+        fhmin = local_config['FHMIN']
 
         # Get a list of all forecast hours
         fhrs = []
