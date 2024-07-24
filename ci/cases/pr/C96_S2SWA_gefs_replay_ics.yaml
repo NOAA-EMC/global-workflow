@@ -13,7 +13,7 @@ arguments:
   start: warm
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2023012300
-  edate: 2023012300
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_ci_replay.yaml
+  idate: 2020110100
+  edate: 2020110100
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_replay_ci.yaml
 

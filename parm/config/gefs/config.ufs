@@ -328,7 +328,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="2.5e-1"
-      TOPOEDITS="ufs.topo_edits_011818.nc"
+      TOPOEDITS="topo_edits_011818.nc"
       if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
         MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
         MOM6_DIAG_MISVAL="-1e34"
