@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
@@ -206,9 +205,10 @@ class Tasks:
         else:
             # Memory is not required
             memory = task_config.get(f'memory_{task_name}', None)
-            if scheduler in ['pbspro']:
-                if task_config.get('prepost', False):
-                    memory += ':prepost=true'
+
+        if scheduler in ['pbspro']:
+            if task_config.get('prepost', False):
+                memory += ':prepost=true'
 
         native = None
         if scheduler in ['pbspro']:
@@ -224,9 +224,9 @@ class Tasks:
                 native += ':shared'
         elif scheduler in ['slurm']:
             if task_config.get('is_exclusive', False):
-                native = '--exclusive'
-            else:
-                native = '--export=NONE'
+-                native = '--exclusive'
+-            else:
+-                native = '--export=NONE'
             if task_config['RESERVATION'] != "":
                 native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
             if task_config.get('CLUSTERS', "") not in ["", '@CLUSTERS@']:
