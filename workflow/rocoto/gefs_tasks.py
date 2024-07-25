@@ -2,7 +2,6 @@ from applications.applications import AppConfig
 from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
 from datetime import datetime, timedelta
-import os
 
 class GEFSTasks(Tasks):
 
