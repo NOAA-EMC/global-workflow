@@ -886,8 +886,7 @@ class GFSTasks(Tasks):
             num_fcst_segments = 1
 
         fcst_vars = self.envars.copy()
-        fcst_envars_dict = {'FCST_SEGMENT': '#seg#'
-                           }
+        fcst_envars_dict = {'FCST_SEGMENT': '#seg#'}
         for key, value in fcst_envars_dict.items():
             fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -953,8 +952,7 @@ class GFSTasks(Tasks):
             num_fcst_segments = 1
 
         fcst_vars = self.envars.copy()
-        fcst_envars_dict = {'FCST_SEGMENT', '#seg#'
-                           }
+        fcst_envars_dict = {'FCST_SEGMENT', '#seg#'}
         for key, value in fcst_envars_dict.items():
             fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
