@@ -14,7 +14,7 @@ export jobid="${job}.$$"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
 
 # Strip 'enkf' from RUN for pulling data
-local RUN_local="${RUN/enkf}"
+RUN_local="${RUN/enkf}"
 
 ###############################################################
 # Set script and dependency variables
