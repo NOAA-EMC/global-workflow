@@ -11,10 +11,6 @@ class GEFSTasks(Tasks):
 
     def stage_ic(self):
         cpl_ic = self._configs['stage_ic']
-       #The if block below is added for AWS.
-       #If we have a proper way to define 'BASE_CPLIC', this if block can be removed.
-        if ('BASE_CPLIC' not in cpl_ic.keys()):
-            cpl_ic['BASE_CPLIC'] = os.environ.get('BASE_CPLIC', '/contrib/Wei.Huang/data/ICDIRS/prototype_ICs')
         deps = []
         dtg_prefix = "@Y@m@d.@H0000"
         offset = str(self._configs['base']['OFFSET_START_HOUR']).zfill(2) + ":00:00"
