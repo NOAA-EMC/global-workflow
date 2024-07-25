@@ -15,7 +15,7 @@ class Tasks:
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
                    'prepoceanobs',
-                   'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalecen', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
+                   'ocnanalprep', 'marinebmat', 'ocnanalrun', 'ocnanalecen', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
@@ -176,7 +176,7 @@ class Tasks:
 
         task_config = self._configs[task_name]
 
-        account = task_config['ACCOUNT_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['ACCOUNT']
+        account = task_config['ACCOUNT']
 
         if f'wtime_{task_name}_{self.cdump}' in task_config:
             walltime = task_config[f'wtime_{task_name}_{self.cdump}']
