@@ -635,134 +635,128 @@ case ${step} in
   "fcst" | "efcs")
     export is_exclusive=True
 
-    if [[ "${step}" == "fcst" ]]; then
-      _RUN_LIST=${RUN:-"gdas gfs"}
-    elif [[ "${step}" == "efcs" ]]; then
-      _RUN_LIST=${RUN:-"enkfgdas enkfgfs"}
+    _RUN=${RUN:-"gfs"}
+    _RUN=${RUN/enkf/}
+
+    # Declare variables from config.ufs based on _RUN
+    # Export layout and write task variables, but not ntasks/threads
+    # Capitalize _RUN for write tasks
+    for var in layout_x layout_y ntasks_fv3 ntasks_quilt nthreads_fv3 nthreads_ufs \
+               WRITE_GROUP WRTTASK_PER_GROUP_PER_THREAD; do
+      if [[ ${var} =~ "layout" ]]; then
+        ufs_var_name="${var}_${_RUN}"
+        declare -x "${var}"="${!ufs_var_name}"
+      elif [[ ${var} =~ "WR" ]]; then
+        ufs_var_name="${var}_${_RUN^^}"
+        declare -x "${var}"="${!ufs_var_name}"
+      else
+        ufs_var_name="${var}_${_RUN}"
+        declare "${var}"="${!ufs_var_name}"
+      fi
+    done
+
+    # Will not set mediator threads if we are skipping the mediator
+    if [[ ${_RUN} == "gfs" ]]; then
+      nthreads_mediator=${nthreads_mediator_gfs:-}
+    elif [[ ${_RUN} == "gdas" ]]; then
+      nthreads_mediator=${nthreads_mediator_gdas:-}
     fi
 
-    # During workflow creation, we need resources for all RUNs and RUN is undefined
-    for _RUN in ${_RUN_LIST}; do
-      if [[ "${_RUN}" =~ "gfs" ]]; then
-        export layout_x=${layout_x_gfs}
-        export layout_y=${layout_y_gfs}
-        export WRITE_GROUP=${WRITE_GROUP_GFS}
-        export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GFS}
-        ntasks_fv3=${ntasks_fv3_gfs}
-        ntasks_quilt=${ntasks_quilt_gfs}
-        nthreads_fv3=${nthreads_fv3_gfs}
-        nthreads_ufs=${nthreads_ufs_gfs}
-        # Will not be set if we are skipping the mediator
-        nthreads_mediator=${nthreads_mediator_gfs:-}
-      elif [[ "${_RUN}" =~ "gdas" ]]; then
-        export layout_x=${layout_x_gdas}
-        export layout_y=${layout_y_gdas}
-        export WRITE_GROUP=${WRITE_GROUP_GDAS}
-        export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GDAS}
-        ntasks_fv3=${ntasks_fv3_gdas}
-        ntasks_quilt=${ntasks_quilt_gdas}
-        nthreads_fv3=${nthreads_fv3_gdas}
-        nthreads_ufs=${nthreads_ufs_gdas}
-        nthreads_mediator=${nthreads_mediator_gdas:-}
-      fi
+    # Determine if using ESMF-managed threading or traditional threading
+    # If using traditional threading, set them to 1
+    if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+      export UFS_THREADS=1
+    else  # traditional threading
+      export UFS_THREADS=${nthreads_ufs:-1}
+      nthreads_fv3=1
+      nthreads_mediator=1
+      [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
+      [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
+      [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
+    fi
 
-      # Determine if using ESMF-managed threading or traditional threading
-      # If using traditional threading, set them to 1
-      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
-        export UFS_THREADS=1
-      else  # traditional threading
-        export UFS_THREADS=${nthreads_ufs:-1}
-        nthreads_fv3=1
-        nthreads_mediator=1
-        [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
-        [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
-        [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
-      fi
+    if (( ntiles > 6 )); then
+      export layout_x_nest=${layout_x_nest:-10}
+      export layout_y_nest=${layout_y_nest:-10}
+      export npx_nest=${npx_nest:-1441}
+      export npy_nest=${npy_nest:-961}
+    fi
 
-      if (( ntiles > 6 )); then
-        export layout_x_nest=${layout_x_nest:-10}
-        export layout_y_nest=${layout_y_nest:-10}
-        export npx_nest=${npx_nest:-1441}
-        export npy_nest=${npy_nest:-961}
-      fi
+    # PETS for the atmosphere dycore
+    (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
+    echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
 
-      # PETS for the atmosphere dycore
-      (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
-      echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
+    # PETS for quilting
+    if [[ "${QUILTING:-}" == ".true." ]]; then
+      (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
+      (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
+      export WRTTASK_PER_GROUP
+    else
+      QUILTPETS=0
+    fi
+    echo "QUILT using (nthreads, PETS) = (${nthreads_fv3}, ${QUILTPETS})"
 
-      # PETS for quilting
-      if [[ "${QUILTING:-}" == ".true." ]]; then
-        (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
-        (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
-        export WRTTASK_PER_GROUP
-      else
-        QUILTPETS=0
-      fi
-      echo "QUILT using (nthreads, PETS) = (${nthreads_fv3}, ${QUILTPETS})"
+    # Total PETS for the atmosphere component
+    ATMTHREADS=${nthreads_fv3}
+    (( ATMPETS = FV3PETS + QUILTPETS ))
+    export ATMPETS ATMTHREADS
+    echo "FV3ATM using (nthreads, PETS) = (${ATMTHREADS}, ${ATMPETS})"
 
-      # Total PETS for the atmosphere component
-      ATMTHREADS=${nthreads_fv3}
-      (( ATMPETS = FV3PETS + QUILTPETS ))
-      export ATMPETS ATMTHREADS
-      echo "FV3ATM using (nthreads, PETS) = (${ATMTHREADS}, ${ATMPETS})"
+    # Total PETS for the coupled model (starting w/ the atmosphere)
+    NTASKS_TOT=${ATMPETS}
 
-      # Total PETS for the coupled model (starting w/ the atmosphere)
-      NTASKS_TOT=${ATMPETS}
+    # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
+    # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
+    # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
+    # TODO: Update reference when moved to ufs-weather-model RTD
+    MEDTHREADS=${nthreads_mediator:-1}
+    MEDPETS=${MEDPETS:-${FV3PETS}}
+    (( "${MEDPETS}" > 300 )) && MEDPETS=300
+    export MEDPETS MEDTHREADS
+    echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
-      # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
-      # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
-      # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
-      # TODO: Update reference when moved to ufs-weather-model RTD
-      MEDTHREADS=${nthreads_mediator:-1}
-      MEDPETS=${MEDPETS:-${FV3PETS}}
-      (( "${MEDPETS}" > 300 )) && MEDPETS=300
-      export MEDPETS MEDTHREADS
-      echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
+    CHMPETS=0; CHMTHREADS=0
+    if [[ "${DO_AERO}" == "YES" ]]; then
+      # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
+      (( CHMTHREADS = ATMTHREADS ))
+      (( CHMPETS = FV3PETS ))
+      # Do not add to NTASKS_TOT
+      echo "GOCART using (threads, PETS) = (${CHMTHREADS}, ${CHMPETS})"
+    fi
+    export CHMPETS CHMTHREADS
 
-      CHMPETS=0; CHMTHREADS=0
-      if [[ "${DO_AERO}" == "YES" ]]; then
-        # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
-        (( CHMTHREADS = ATMTHREADS ))
-        (( CHMPETS = FV3PETS ))
-        # Do not add to NTASKS_TOT
-        echo "GOCART using (threads, PETS) = (${CHMTHREADS}, ${CHMPETS})"
-      fi
-      export CHMPETS CHMTHREADS
+    WAVPETS=0; WAVTHREADS=0
+    if [[ "${DO_WAVE}" == "YES" ]]; then
+      (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
+      (( WAVTHREADS = nthreads_ww3 ))
+      echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
+    fi
+    export WAVPETS WAVTHREADS
 
-      WAVPETS=0; WAVTHREADS=0
-      if [[ "${DO_WAVE}" == "YES" ]]; then
-        (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
-        (( WAVTHREADS = nthreads_ww3 ))
-        echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
-        (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
-      fi
-      export WAVPETS WAVTHREADS
+    OCNPETS=0; OCNTHREADS=0
+    if [[ "${DO_OCN}" == "YES" ]]; then
+      (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
+      (( OCNTHREADS = nthreads_mom6 ))
+      echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
+    fi
+    export OCNPETS OCNTHREADS
 
-      OCNPETS=0; OCNTHREADS=0
-      if [[ "${DO_OCN}" == "YES" ]]; then
-        (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
-        (( OCNTHREADS = nthreads_mom6 ))
-        echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
-        (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
-      fi
-      export OCNPETS OCNTHREADS
+    ICEPETS=0; ICETHREADS=0
+    if [[ "${DO_ICE}" == "YES" ]]; then
+      (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
+      (( ICETHREADS = nthreads_cice6 ))
+      echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
+    fi
+    export ICEPETS ICETHREADS
 
-      ICEPETS=0; ICETHREADS=0
-      if [[ "${DO_ICE}" == "YES" ]]; then
-        (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
-        (( ICETHREADS = nthreads_cice6 ))
-        echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
-        (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
-      fi
-      export ICEPETS ICETHREADS
+    echo "Total PETS for ${RUN:-gfs} = ${NTASKS_TOT}"
 
-      echo "Total PETS for ${_RUN} = ${NTASKS_TOT}"
-
-      declare -x "ntasks_${_RUN}"="${NTASKS_TOT}"
-      declare -x "threads_per_task_${_RUN}"="${UFS_THREADS}"
-      declare -x "tasks_per_node_${_RUN}"="${max_tasks_per_node}"
-
-    done
+    declare -x "ntasks"="${NTASKS_TOT}"
+    declare -x "threads_per_task"="${UFS_THREADS}"
+    declare -x "tasks_per_node"="${max_tasks_per_node}"
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
@@ -788,7 +782,7 @@ case ${step} in
         ;;
     esac
 
-    unset _RUN _RUN_LIST
+    unset _RUN
     unset NTASKS_TOT
     ;;
 
