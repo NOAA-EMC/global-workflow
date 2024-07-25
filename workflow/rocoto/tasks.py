@@ -224,9 +224,9 @@ class Tasks:
                 native += ':shared'
         elif scheduler in ['slurm']:
             if task_config.get('is_exclusive', False):
--                native = '--exclusive'
--            else:
--                native = '--export=NONE'
+                native = '--exclusive'
+            else:
+                native = '--export=NONE'
             if task_config['RESERVATION'] != "":
                 native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
             if task_config.get('CLUSTERS', "") not in ["", '@CLUSTERS@']:
