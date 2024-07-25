@@ -80,7 +80,7 @@ case ${step} in
   "fcst" | "efcs")
     export is_exclusive=True
 
-    _RUN_LIST=${RUN:-"gefs gfs"}
+    _RUN_LIST=${RUN:-"gfs"}
 
     # During workflow creation, we need resources for all RUNs and RUN is undefined
     for _RUN in ${_RUN_LIST}; do
