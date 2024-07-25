@@ -209,7 +209,7 @@ EOF
       # When replaying, the time format outputted by model in filename is HH-MM-SS
       # because first fhr is decimal number
       if [[ ${REPLAY_ICS} == "YES" ]]; then
-        if [[ $FH2 = "03" ]]; then
+        if [[ "${FH2}" = "03" ]]; then
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}-05-00.nc"
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}-05-00.nc"
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}-05-00"
