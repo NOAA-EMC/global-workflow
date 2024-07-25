@@ -71,8 +71,8 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 case "${machine}" in
   "wcoss2")   FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
   "hera")     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
-  "orion")    FIX_DIR="/work/noaa/global/glopara/fix" ;;
-  "hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
+  "orion")    FIX_DIR="/work/noaa/global/kfriedma/glopara/fix" ;;
+  "hercules") FIX_DIR="/work/noaa/global/kfriedma/glopara/fix" ;;
   "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
   "s4")       FIX_DIR="/data/prod/glopara/fix" ;;
   "gaea")     FIX_DIR="/gpfs/f5/epic/proj-shared/global/glopara/data/fix" ;;
@@ -238,7 +238,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/fix" || exit 1
   [[ ! -d gdas ]] && mkdir -p gdas
   cd gdas || exit 1
-  for gdas_sub in fv3jedi gsibec obs; do
+  for gdas_sub in fv3jedi gsibec obs soca; do
     if [[ -d "${gdas_sub}" ]]; then
        rm -rf "${gdas_sub}"
     fi
@@ -369,6 +369,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "gdas_soca_gridgen.x" \
                        "gdas_soca_error_covariance_toolbox.x" \
                        "gdas_soca_setcorscales.x" \
+                       "gdas_soca_diagb.x" \
                        "fv3jedi_plot_field.x" \
                        "fv3jedi_fv3inc.x" \
                        "gdas_ens_handler.x" \
