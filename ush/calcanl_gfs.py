@@ -19,7 +19,7 @@ python2fortran_bool = {True: '.true.', False: '.false.'}
 def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 ComIn_Ges, GPrefix,
                 FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
-                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, Run, JEDI):
+                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, run, JEDI):
     print('calcanl_gfs beginning at: ', datetime.datetime.utcnow())
 
     IAUHH = IAUHrs
