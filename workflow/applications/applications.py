@@ -75,6 +75,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
         self.nens = _base.get('NMEM_ENS', 0)
+        self.fcst_segments = _base.get('FCST_SEGMENTS_STR_GFS', None)
 
         self.wave_runs = None
         if self.do_wave:

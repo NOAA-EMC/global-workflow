@@ -33,6 +33,7 @@ source "${EXPDIR}/config.ufs" ${string}
 # Forecast length for GFS forecast
 case ${RUN} in
   *gfs)
+    export FHMIN=${FHMIN_GFS}
     # shellcheck disable=SC2153
     export FHMAX=${FHMAX_GFS}
     # shellcheck disable=SC2153

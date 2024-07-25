@@ -880,12 +880,23 @@ class GFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
+        if self.run in ['gfs']:
+            num_fcst_segments = len(self.app_config.fcst_segments) - 1
+        else:
+            num_fcst_segments = 1
+
+        fcst_vars = self.envars.copy()
+        fcst_envars_dict = {'FCST_SEGMENT': '#seg#'
+                           }
+        for key, value in fcst_envars_dict.items():
+            fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('fcst')
-        task_name = f'{self.run}fcst'
+        task_name = f'{self.run}fcst_seg#seg#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': fcst_vars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -893,7 +904,14 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+        metatask_dict = {'task_name': f'{self.run}fcst',
+                         'is_serial': True,
+                         'var_dict': seg_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -929,12 +947,23 @@ class GFSTasks(Tasks):
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
 
+        if self.run in ['gfs']:
+            num_fcst_segments = len(self.app_config.fcst_segments) - 1
+        else:
+            num_fcst_segments = 1
+
+        fcst_vars = self.envars.copy()
+        fcst_envars_dict = {'FCST_SEGMENT', '#seg#'
+                           }
+        for key, value in fcst_envars_dict.items():
+            fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('fcst')
-        task_name = f'{self.run}fcst'
+        task_name = f'{self.run}fcst_seg#seg#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': fcst_vars,
                      'cycledef': cycledef,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -942,7 +971,14 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+        metatask_dict = {'task_name': f'{self.run}fcst',
+                         'is_serial': True,
+                         'var_dict': seg_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -1169,7 +1205,7 @@ class GFSTasks(Tasks):
 
     def wavepostbndpnt(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1221,7 +1257,7 @@ class GFSTasks(Tasks):
 
     def wavepostpnt(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave_bnd:
             dep_dict = {'type': 'task', 'name': f'{self.run}wavepostbndpntbll'}
@@ -1318,7 +1354,7 @@ class GFSTasks(Tasks):
 
     def postsnd(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
