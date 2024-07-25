@@ -688,7 +688,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}marinebmat'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': 'gdasfcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gdasfcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -952,7 +952,7 @@ class GFSTasks(Tasks):
             num_fcst_segments = 1
 
         fcst_vars = self.envars.copy()
-        fcst_envars_dict = {'FCST_SEGMENT', '#seg#'}
+        fcst_envars_dict = {'FCST_SEGMENT': '#seg#'}
         for key, value in fcst_envars_dict.items():
             fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -2558,7 +2558,7 @@ class GFSTasks(Tasks):
         def _get_ecengroups():
 
             if self._base.get('DOIAU_ENKF', False):
-                fhrs = list(self._base.get('IAUFHRS', '6').split(','))
+                fhrs = self._base.get('IAUFHRS', '[6]')
 
                 necengrp = self._configs['ecen']['NECENGRP']
                 ngrps = necengrp if len(fhrs) > necengrp else len(fhrs)
@@ -2700,7 +2700,7 @@ class GFSTasks(Tasks):
         self._is_this_a_gdas_task(self.run, 'echgres')
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run.replace("enkf","")}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}fcst_mem001'}
         deps.append(rocoto.add_dependency(dep_dict))

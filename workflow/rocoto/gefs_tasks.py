@@ -423,7 +423,7 @@ class GEFSTasks(Tasks):
 
     def wavepostbndpnt(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -468,7 +468,7 @@ class GEFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
 
-        dep_dict = {'type': 'task', 'name': f'fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -504,7 +504,7 @@ class GEFSTasks(Tasks):
 
     def wavepostpnt(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave_bnd:
             dep_dict = {'type': 'task', 'name': f'wave_post_bndpnt_bull_mem#member#'}
