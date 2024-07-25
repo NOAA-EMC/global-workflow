@@ -48,7 +48,7 @@ local JCHUNK3D=$((2*restile))
 local KCHUNK3D=1
 local IMO=${LONB_IMO}
 local JMO=${LATB_JMO}
-local OUTPUT_FH=${FV3_OUTPUT_FH}
+local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
 local IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Ensure the template exists

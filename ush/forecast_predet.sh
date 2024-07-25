@@ -145,25 +145,34 @@ FV3_predet(){
   fi
 
   # Convert output settings into an explicit list for FV3
-  if (( OFFSET_START_HOUR > 0 ));then
-    FV3_OUTPUT_FH="$(echo "scale=5; ${OFFSET_START_HOUR}+(${DELTIM}/3600)" | bc -l)"
+  # Create an FV3 fhr list to be used in the namelist for when REPLAY_ICS is set to YES
+  # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
+  # are only different when REPLAY_ICS is set to YES
+  if [[ "${REPLAY_ICS}" == "YES"  ]]; then
+    FV3_OUTPUT_FH_NML="$(echo "scale=5; ${OFFSET_START_HOUR}+(${DELTIM}/3600)" | bc -l)"
     local FHMIN_REPLAY=$(( FHMIN + FHOUT ))
     local fhr=${FHMIN_REPLAY}
     if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
-      FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN_REPLAY}" "${FHOUT_HF}" "${FHMAX_HF}")"
+      FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "${FHMIN_REPLAY}" "${FHOUT_HF}" "${FHMAX_HF}")"
       fhr=${FHMAX_HF}
     fi
-    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
-  else
-    FV3_OUTPUT_FH=""
-    local fhr=${FHMIN}
-    if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
-      FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
-      fhr=${FHMAX_HF}
-    fi
-    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
+    FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
   fi
 
+  # Create an FV3 fhr list to be used in the filenames
+  FV3_OUTPUT_FH=""
+  local fhr=${FHMIN}
+  if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
+    FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
+    fhr=${FHMAX_HF}
+  fi
+  FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
+
+  # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
+  # are identical when REPLAY_ICS is set to NO
+  if [[ "${REPLAY_ICS}" == "NO"  ]]; then
+    FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH}"
+  fi
 
   # Other options
   MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
