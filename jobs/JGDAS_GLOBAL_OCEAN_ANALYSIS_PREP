@@ -27,6 +27,10 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
    COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL \
    COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
 
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
+   COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################

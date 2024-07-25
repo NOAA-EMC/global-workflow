@@ -26,7 +26,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs marinebmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -439,7 +439,8 @@ case ${step} in
     memory="48GB"
     ;;
 
-  "ocnanalbmat")
+  "marinebmat")
+    npes=16
     ntasks=16
     case ${OCNRES} in
       "025") ntasks=480;;
