@@ -1794,7 +1794,8 @@ class GFSTasks(Tasks):
 
         metpenvars = self.envars.copy()
         if self.app_config.mode in ['cycled']:
-            metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS').strftime("%Y%m%d%H")}
+            metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS').strftime("%Y%m%d%H"),
+                              'EDATE_GFS': self._base.get('EDATE_GFS').strftime("%Y%m%d%H")}
         elif self.app_config.mode in ['forecast-only']:
             metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE').strftime("%Y%m%d%H")}
         metpenvar_dict['METPCASE'] = '#metpcase#'
