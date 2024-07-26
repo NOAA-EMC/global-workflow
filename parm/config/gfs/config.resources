@@ -967,7 +967,7 @@ case ${step} in
     export wtime_metp_gfs="06:00:00"
     export npe_metp=4
     export npe_node_metp=4
-    export is_exclusive=True
+    export memory_fit2obs="80G"
     ;;
 
   "echgres")
