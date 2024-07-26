@@ -3,6 +3,7 @@ from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
 from datetime import datetime, timedelta
 
+
 class GEFSTasks(Tasks):
 
     def __init__(self, app_config: AppConfig, cdump: str) -> None:
