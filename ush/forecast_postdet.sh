@@ -209,7 +209,7 @@ EOF
       FH2=$(printf %02i "${fhr}")
       # When replaying, the time format outputted by model in filename is HH-MM-SS
       # because first fhr is a decimal number
-      if [[ ${REPLAY_ICS} == "YES" ]] && (( fhr >= OFFSET_START_HOUR )); then
+      if [[ ${REPLAY_ICS:-NO} == "YES" ]] && (( fhr >= OFFSET_START_HOUR )); then
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FV3_OUTPUT_FH_hhmmss[$iicnt]}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FV3_OUTPUT_FH_hhmmss[$iicnt]}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FV3_OUTPUT_FH_hhmmss[$iicnt]}"
