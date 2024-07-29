@@ -126,11 +126,10 @@ class SnowEnsAnalysis(Analysis):
             lat = ncfile.createDimension('lat', case_int)
             land_frac_out = ncfile.createVariable('land_frac', np.float32, ('lon', 'lat'))
             # mask the land fraction where soil moisture is less than 1
-            land_frac[np.where(smc[0,0,...] == 1)] = 0
+            land_frac[np.where(smc[0, 0, ...] == 1)] = 0
             land_frac_out[:] = land_frac
             # write out and close the file
             ncfile.close()
-
 
     @logit(logger)
     def regridDetBkg(self) -> None:
