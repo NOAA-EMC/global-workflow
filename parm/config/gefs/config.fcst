@@ -108,8 +108,9 @@ if (( gwd_opt == 2 )); then
     export do_ugwp_v0_orog_only=".false."
     export do_ugwp_v0_nst_only=".false."
     export do_gsl_drag_ls_bl=".true."
-    export do_gsl_drag_ss=".true."
+    export do_gsl_drag_ss=".false."
     export do_gsl_drag_tofd=".true."
+    export do_gwd_opt_psl=".true."    
     export do_ugwp_v1_orog_only=".false."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
