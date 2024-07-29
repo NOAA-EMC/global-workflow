@@ -202,22 +202,18 @@ EOF
 
   #============================================================================
   if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
-    local FH2 FH3
+    local FH2 FH3 iicnt
+    iicnt=0
     for fhr in ${FV3_OUTPUT_FH}; do
       FH3=$(printf %03i "${fhr}")
       FH2=$(printf %02i "${fhr}")
       # When replaying, the time format outputted by model in filename is HH-MM-SS
-      # because first fhr is decimal number
-      if [[ ${REPLAY_ICS} == "YES" ]]; then
-        if [[ "${FH2}" = "03" ]]; then
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}-05-00.nc"
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}-05-00.nc"
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}-05-00"
-        else
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}-00-00.nc"
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}-00-00.nc"
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}-00-00"
-        fi
+      # because first fhr is a decimal number
+      if [[ ${REPLAY_ICS} == "YES" ]] && (( fhr >= OFFSET_START_HOUR )); then
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FV3_OUTPUT_FH_hhmmss[$iicnt]}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FV3_OUTPUT_FH_hhmmss[$iicnt]}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FV3_OUTPUT_FH_hhmmss[$iicnt]}"
+        iicnt=$(( iicnt + 1 ))
       else
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
