@@ -150,7 +150,7 @@ FV3_predet(){
   # are only different when REPLAY_ICS is set to YES
   if [[ "${REPLAY_ICS:-NO}" == "YES"  ]]; then
     FV3_OUTPUT_FH_NML="$(echo "scale=5; ${OFFSET_START_HOUR}+(${DELTIM}/3600)" | bc -l)"
-    FV3_OUTPUT_FH_s=$(( (( OFFSET_START_HOUR * 3600 )) + DELTIM ))
+    FV3_OUTPUT_FH_s=$(( OFFSET_START_HOUR * 3600 + DELTIM ))
     local FHMIN_REPLAY=$(( FHMIN + FHOUT ))
     local fhr=${FHMIN_REPLAY}
     if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
