@@ -228,19 +228,12 @@ export FHOUT_ICE=3
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
 # GFS output and frequency
-# Forecast hour intervals to run the forecast over
-#   For a single-segment forecast, this is simply "$FHMIN_GFS,$FHMAX_GFS"
-export FCST_SEGMENTS_STR_GFS="@FCST_SEGMENTS_GFS@"
-IFS=', ' read -ra FCST_SEGMENTS_GFS <<< "${FCST_SEGMENTS_STR_GFS}"
-if (( ${FCST_SEGMENT:- -1} < 0 )); then
-    # Jobs other than the forecast don't care about segments, only the
-    #   absolute start and end
-    declare -x FHMIN_GFS=${FCST_SEGMENTS_GFS[0]}
-    declare -x FHMAX_GFS=${FCST_SEGMENTS_GFS[-1]}
-else
-    declare -x FHMIN_GFS=${FCST_SEGMENTS_GFS[${FCST_SEGMENT}]}
-    declare -x FHMAX_GFS=${FCST_SEGMENTS_GFS[${FCST_SEGMENT}+1]}
-fi
+export FHMIN_GFS=0
+export FHMAX_GFS="@FHMAX_GFS@"
+# Intermediate times to stop forecast when running in segments
+breakpnts="@FCST_BREAKPOINTS@"
+export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
+
 export FHOUT_GFS=6
 export FHMAX_HF_GFS=@FHMAX_HF_GFS@
 export FHOUT_HF_GFS=1
