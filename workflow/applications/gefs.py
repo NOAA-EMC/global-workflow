@@ -30,6 +30,9 @@ class GEFSAppConfig(AppConfig):
         if self.do_aero:
             configs += ['prep_emissions']
 
+        if self.do_extractvars:
+            configs += ['extractvars']
+
         return configs
 
     @staticmethod
@@ -72,5 +75,8 @@ class GEFSAppConfig(AppConfig):
             if self.do_wave_bnd:
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
+
+        if self.do_extractvars:
+            tasks += ['extractvars']
 
         return {f"{self._base['CDUMP']}": tasks}
