@@ -68,7 +68,7 @@ FV3_postdet() {
           ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
                  "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
         else
-          echo "'aeroanl_fv_tracer.res.tile1.nc' not found in '${COMOUT_ATMOS_RESTART}', using 'fv_tracer.res.tile1.nc'"
+          echo "WARNING: 'aeroanl_fv_tracer.res.tile1.nc' not found in '${COMOUT_ATMOS_RESTART}', using 'fv_tracer.res.tile1.nc'"
           break
         fi
       done

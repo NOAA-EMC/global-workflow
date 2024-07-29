@@ -7,14 +7,11 @@ echo "BEGIN: config.aeroanl"
 
 # define analysis resolution based on deterministic res
 case ${CASE} in
-  "C1152" | "C768" | "C384")
+  "C1152" | "C768" | "C384" | "C192")
     CASE_ANL="C192"
     ;;
-  "C192" | "C96")
-    CASE_ANL="C96"
-    ;;
-  "C48" )
-    CASE_ANL="C48"
+  "C96" | "C48")
+    CASE_ANL=${CASE}
     ;;
   *)
     echo "FATAL ERROR: Aerosol DA not supported at ${CASE} resolution"

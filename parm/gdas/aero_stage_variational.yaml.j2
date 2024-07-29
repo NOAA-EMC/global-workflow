@@ -4,7 +4,6 @@
 {% if DOIAU == True %}
     {% set bkg_times = [] %}
     {% for fh in range(0, 7, 3) %}
-      #{% set offset = "+{{ fh }}H" %}
       {% set offset = fh | string + "H" %}
       {% set fcst_timedelta = offset | to_timedelta %}
       {% set fcst_time = AERO_WINDOW_BEGIN | add_to_datetime(fcst_timedelta) %}
