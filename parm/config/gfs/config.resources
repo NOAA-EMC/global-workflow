@@ -594,7 +594,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         memory_ocnanalchkpt="128GB"
-        npes=40;;
+        npes=16;;
       "050")
         memory_ocnanalchkpt="32GB"
         npes=16;;
