@@ -9,8 +9,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
 ## HOMEgfs   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
-## CDUMP  : cycle name (gdas / gfs)
 ## PDY    : current date (YYYYMMDD)
+## RUN    : cycle name (gdas / gfs)
 ## cyc    : current cycle (HH)
 ## SDATE_GFS  : first date of GFS cycle (YYYYMMDDHHMM)
 ## METPCASE : METplus verification use case (g2g1 | g2o1 | pcp1)

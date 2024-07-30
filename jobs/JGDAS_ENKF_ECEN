@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP="${RUN/enkf}"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -23,13 +22,13 @@ export GDUMP_ENS="enkf${GDUMP}"
 
 export CASE=${CASE_ENS}
 
-export OPREFIX="${CDUMP}.t${cyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${RUN/enkf}.t${cyc}z."
+export APREFIX="${RUN/enkf}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
