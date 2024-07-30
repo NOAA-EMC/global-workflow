@@ -8,10 +8,10 @@ case ${step} in
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     case ${CASE} in
       "C768" | "C384")
-        export npe_node_eobs=50
+        export tasks_per_node=50
         ;;
       *)
-        export npe_node_eobs=40
+        export tasks_per_node=40
         ;;
     esac
     ;;

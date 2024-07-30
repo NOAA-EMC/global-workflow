@@ -6,7 +6,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalprep" -c "base ocnanal ocnanal
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 export GDUMP=${GDUMP:-"gdas"}
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153

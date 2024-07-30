@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 
 class GEFSTasks(Tasks):
 
-    def __init__(self, app_config: AppConfig, cdump: str) -> None:
-        super().__init__(app_config, cdump)
+    def __init__(self, app_config: AppConfig, run: str) -> None:
+        super().__init__(app_config, run)
 
     def stage_ic(self):
         cpl_ic = self._configs['stage_ic']
@@ -215,13 +215,13 @@ class GEFSTasks(Tasks):
         fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr#.nc'},
+                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -423,7 +423,7 @@ class GEFSTasks(Tasks):
         # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
         last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
 
-        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
+        data = f'{atmos_hist_path}/{self.run}.t@Hz.atm.logf{last_fhr:03d}.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
 
