@@ -77,8 +77,9 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+  [[ ! -d ${pr_dir} ]] && mkdir -p ${pr_dir}
   db_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
-  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_single.log"
+  output_ci_single="${pr_dir}/output_single.log"
   #############################################################
   # Check if a Ready labeled PR has changed back from once set
   # and in that case completely kill the previose driver.sh cron
@@ -107,7 +108,7 @@ for pr in ${pr_list}; do
            echo -e "${pstree_out}" | grep -Pow "(?<=\()[0-9]+(?=\))" | xargs kill
         fi
       else
-        ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
+        ssh "${driver_HOST}" "if ps -p ${driver_PID} 2>&1; then pstree -A -p \"${driver_PID}\" | grep -Eow \"[0-9]+\" | xargs kill; fi"
       fi
       {
         echo "Driver PID: Requested termination of ${driver_PID} and children on ${driver_HOST}"
