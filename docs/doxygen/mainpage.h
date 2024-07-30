@@ -24,7 +24,7 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
     usage: setup_expt.py [-h] --pslot PSLOT
                      [--configdir CONFIGDIR] [--idate IDATE] [--icsdir ICSDIR]
                      [--resdetatmos RESDET] [--resensatmos RESENS] [--comroot COMROOT]
-                     [--expdir EXPDIR] [--nens NENS] [--cdump CDUMP]
+                     [--expdir EXPDIR] [--nens NENS] [--run RUN]
 
     Setup files and directories to start a GFS parallel. Create EXPDIR, copy
     config files Create ROTDIR experiment directory structure, link initial
@@ -52,7 +52,7 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
                         (default: None)
         --nens       number of ensemble members
                         (default: 80)
-        --cdump      CDUMP to start the experiment
+        --run        RUN to start the experiment
                         (default: gdas)
 
 The above script creates directories <b>\c EXPDIR</b> and <b>\c ROTDIR</b>. It will make links for initial conditions from a location provided via the <b>\c --icsdir</b> argument for a chosen resolution for the control <b>\c --resdetatmos</b> and the ensemble <b>\c --resensatmos</b>. Experiment name is controlled by the input argument <b>\c --pslot</b>. The script will ask user input in case any of the directories already exist. It will copy experiment configuration files into the <b>\c EXPDIR</b> from <b>\c CONFIGDIR</b>.
