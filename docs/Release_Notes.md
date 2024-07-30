@@ -1,12 +1,10 @@
-GFS V16.3.16 RELEASE NOTES
+GFS V16.3.17 RELEASE NOTES
 
 -------
 PRELUDE
 -------
 
-This upgrade adds a new GDAS job - `gdaswdqms`. It generates 6-hourly summaries of observation reports, which contain information on time, location, station ID, and quality (usage flag and innovations) from GDAS analysis. The objective of this new job is to support the WMO WDQMS (WIGOS Data Quality Monitoring System) project and ensure that WMO observational data and products are reliable and correspond to agreed-upon needs.  
-
-The 6-hourly summaries include surface (synop), upper-air, and surface marine (ship and buoy) observations. 
+Upstream RTOFS package is updated to v2.4.3, which results in an update to the GFS due to the new COM location for RTOFS wave job inputs.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -15,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.16
-cd gfs.v16.3.16
-git clone -b EMC-v16.3.16 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.17
+cd gfs.v16.3.17
+git clone -b EMC-v16.3.17 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -52,90 +50,76 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.16` and `gfs_ver=v16.3.16`
+* `versions/run.ver` - change `version=v16.3.17`, `gfs_ver=v16.3.17`, and `rtofs_ver=v2.4`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.15
+* No changes from GFS v16.3.16
 
 JOBS CHANGES
 ------------
 
-* Added a new `j-job` `JGDAS_ATMOS_ANALYSIS_WDQMS`
+* No changes from GFS v16.3.16
 
 PARM/CONFIG CHANGES
 -------------------
 
-* Added a `config.wdqms` file for the new j-job added.
-* Added new configuration parameter `DO_WDQMS` in the following configuration files
-  - `config.base.emc.dyn` (default to NO)
-  - `config.base.nco.static` (default to YES)
-* Added resource parameters for `WDQMS` job in the following resource configuration files
-  - `config.resource.emc.dyn`
-  - `config.resource.nco.static`
+* No changes from GFS v16.3.16
 
 SCRIPT CHANGES
 --------------
 
-* Added `exscript` `exgdas_atmos_analysis_wdqms.sh`
-* Added a utility in `ush` `wdqms.py` called by the new job.
-* Added `ecf` script `jgdas_atmos_analysis_wdqms.ecf` and updated the `ecflow` suite definition files.
+* No changes from GFS v16.3.16
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.15
+* No changes from GFS v16.3.16
 
 MODULE CHANGES
 --------------
 
-* New job loads `python` module in the ecf script.
+* No changes from GFS v16.3.16
 
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes of existing file sizes from GFS v16.3.15
-* The `gdaswdqms` job creates three observation quality reports in CSV format for the following data types:
-  - Upper air (~0.5 MB)
-  - Marine (-6.5 MB)
-  - Synop (~ 22 MB)
+* No changes of existing file sizes from GFS v16.3.16
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* Computing resource added for the `gdaswdqms` job for each gdas cycle: The new job `gdaswdqms` requests a single (1) core with `48GB` memory for 20 minutes
+* No changes from GFS v16.3.16
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * WDQMS
+  * Wave prep and wave post jobs
 * Does this change require a 30-day evaluation?
   * No
 
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.15
+* No changes from GFS v16.3.16
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.15
+* No changes from GFS v16.3.16
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* Added a new job `gdaswdqms` after `gdasanaldiag` with dependency on the completion of `gdasanaldiag` job.
+* No changes from GFS v16.3.16
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.15
+* No changes from GFS v16.3.16
 
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
-Rahul.Mahajan@noaa.gov
-Emily.Liu@noaa.gov
