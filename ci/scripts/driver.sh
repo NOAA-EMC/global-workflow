@@ -77,7 +77,7 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  [[ ! -d ${pr_dir} ]] && mkdir -p ${pr_dir}
+  [[ ! -d ${pr_dir} ]] && mkdir -p "${pr_dir}"
   db_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
   output_ci_single="${pr_dir}/output_single.log"
   #############################################################
@@ -109,6 +109,7 @@ for pr in ${pr_list}; do
         fi
       else
         # Check if the driver is still running on the head node; if so, kill it and all child processes
+        #shellcheck disable=SC2029
         ssh "${driver_HOST}" "if ps -p ${driver_PID} 2>&1; then pstree -A -p \"${driver_PID}\" | grep -Eow \"[0-9]+\" | xargs kill; fi"
       fi
       {
