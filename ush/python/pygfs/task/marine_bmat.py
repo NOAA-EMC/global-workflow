@@ -4,7 +4,6 @@ import os
 import glob
 from logging import getLogger
 import pygfs.utils.marine_da_utils as mdau
-import shutil
 
 from wxflow import (AttrDict,
                     FileHandler,
@@ -84,7 +83,7 @@ class MarineBMat(Task):
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
-        # stage the soca utility yamls
+        # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.HOMEgfs}/parm/gdas/soca")
         soca_utility_list = parse_j2yaml(self.task_config.UTILITY_YAML_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
