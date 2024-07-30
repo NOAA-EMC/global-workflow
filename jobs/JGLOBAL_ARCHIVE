@@ -7,8 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP=${RUN/enkf}
-
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
 	COMIN_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
