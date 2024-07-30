@@ -13,7 +13,8 @@ export job="prep"
 export jobid="${job}.$$"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
 
-export CDUMP="${RUN/enkf}"
+# Strip 'enkf' from RUN for pulling data
+RUN_local="${RUN/enkf}"
 
 ###############################################################
 # Set script and dependency variables
@@ -25,9 +26,9 @@ gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 GDUMP="gdas"
 
-export OPREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${RUN_local}.t${cyc}z."
 
-YMD=${PDY} HH=${cyc} DUMP=${CDUMP} declare_from_tmpl -rx COM_OBS COM_OBSDMP
+YMD=${PDY} HH=${cyc} DUMP=${RUN_local} declare_from_tmpl -rx COM_OBS COM_OBSDMP
 
 RUN=${GDUMP} DUMP=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_OBS_PREV:COM_OBS_TMPL \
@@ -39,7 +40,7 @@ if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
 if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-   "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${CDUMP}" "${COM_OBSDMP}" "${COM_OBS}"
+   "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${RUN_local}" "${COM_OBSDMP}" "${COM_OBS}"
    status=$?
    [[ ${status} -ne 0 ]] && exit ${status}
 
@@ -73,14 +74,14 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
         done
     fi
 
-    if [[ ${ROTDIR_DUMP} = "YES" ]]; then rm "${COM_OBS}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00"; fi
+    if [[ ${ROTDIR_DUMP} = "YES" ]]; then rm "${COM_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"; fi
 
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
     [[ ${status} -ne 0 ]] && exit ${status}
 
 else
-    if [[ ${ROTDIR_DUMP} = "NO" ]]; then cp "${COM_OBSDMP}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00" "${COM_OBS}/"; fi
+    if [[ ${ROTDIR_DUMP} = "NO" ]]; then cp "${COM_OBSDMP}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COM_OBS}/"; fi
 fi
 
 
@@ -93,17 +94,17 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
         rm -f "${COM_OBS}/${OPREFIX}nsstbufr"
     fi
 
-    export job="j${CDUMP}_prep_${cyc}"
+    export job="j${RUN_local}_prep_${cyc}"
     export COMIN=${COM_OBS}
     export COMOUT=${COM_OBS}
     RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINgdas:COM_ATMOS_HISTORY_TMPL
     RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINgfs:COM_ATMOS_HISTORY_TMPL
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        export COMSP=${COMSP:-"${COM_OBSDMP}/${CDUMP}.t${cyc}z."}
+        export COMSP=${COMSP:-"${COM_OBSDMP}/${RUN_local}.t${cyc}z."}
     else
-        export COMSP=${COMSP:-"${COM_OBS}/${CDUMP}.t${cyc}z."}
+        export COMSP=${COMSP:-"${COM_OBS}/${RUN_local}.t${cyc}z."}
     fi
-    export COMSP=${COMSP:-${COMIN_OBS}/${CDUMP}.t${cyc}z.}
+    export COMSP=${COMSP:-${COMIN_OBS}/${RUN_local}.t${cyc}z.}
 
     # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then

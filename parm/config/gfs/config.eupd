@@ -8,7 +8,7 @@ echo "BEGIN: config.eupd"
 # Get task specific resources
 . $EXPDIR/config.resources eupd
 
-export npe_enkf=$npe_eupd
+export ntasks_enkf=${ntasks}
 
 # Use NAM_ENKF below for serial EnKF
 ##export NAM_ENKF="analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"
