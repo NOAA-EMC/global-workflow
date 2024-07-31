@@ -175,7 +175,7 @@ for pr in ${pr_list}; do
       DATE=$(date +'%D %r')
       echo "Experiment ${pslot} **SUCCESS** on ${MACHINE_ID^} at ${DATE}" >> "${output_ci_single}"
       echo "Experiment ${pslot} *** SUCCESS *** at ${DATE}" >> "${output_ci}"
-      "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
+      # "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
     fi
   done
 done

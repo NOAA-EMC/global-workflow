@@ -15,7 +15,6 @@ export COMPONENT="atmos"
 # Set variables used in the exglobal script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 
 
 ####################################

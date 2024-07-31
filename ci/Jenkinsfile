@@ -1,9 +1,10 @@
 def Machine = 'none'
 def machine = 'none'
-def HOME = 'none'
+def CUSTOM_WORKSPACE = 'none'
 def caseList = ''
 // Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
-def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES']
+def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea']
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI']
 def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
 def STATUS = 'Passed'
 
@@ -13,7 +14,7 @@ pipeline {
 
     options {
         skipDefaultCheckout()
-        //parallelsAlwaysFailFast()
+        parallelsAlwaysFailFast()
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -40,9 +41,9 @@ pipeline {
                         echo "This is parent job so getting list of nodes matching labels:"
                         for (label in pullRequest.labels) {
                             if (label.matches("CI-(.*?)-Ready")) {
-                                def Machine_name = label.split('-')[1].toString()
+                                def machine_name = label.split('-')[1].toString().toLowerCase()
                                 jenkins.model.Jenkins.get().computers.each { c ->
-                                    if (c.node.selfLabel.name == "${Machine_name}-EMC") {
+                                    if (c.node.selfLabel.name == NodeName[machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
                                     }
                                 }
@@ -70,28 +71,25 @@ pipeline {
         }
 
         stage('2. Get Common Workspace') {
-            agent { label "${machine}-emc" }
+            agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
-                        HOME = "${WORKSPACE}"
-                        sh(script: "mkdir -p ${HOME}/RUNTESTS;rm -Rf ${HOME}/RUNTESTS/*")
+                        CUSTOM_WORKSPACE = "${WORKSPACE}"
+                        sh(script: "mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS;rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS/*")
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
-                    echo "Building and running on ${Machine} in directory ${HOME}"
+                    echo "Building and running on ${Machine} in directory ${CUSTOM_WORKSPACE}"
                 }
             }
         }
 
         stage('3. Build System') {
             matrix {
-                agent { label "${machine}-emc" }
-                //options {
-                //    throttle(['global_matrix_build'])
-                //}
+                agent { label NodeName[machine].toLowerCase() }
                 axes {
                     axis {
                         name 'system'
@@ -101,8 +99,9 @@ pipeline {
                 stages {
                     stage('build system') {
                         steps {
+                           catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             script {
-                                def HOMEgfs = "${HOME}/${system}" // local HOMEgfs is used to build the system on per system basis under the common workspace HOME
+                                def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}" // local HOMEgfs is used to build the system on per system basis under the custome workspace for each buile system
                                 sh(script: "mkdir -p ${HOMEgfs}")
                                 ws(HOMEgfs) {
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
@@ -112,7 +111,16 @@ pipeline {
                                             sh(script: './link_workflow.sh')
                                         }
                                     } else {
-                                        checkout scm
+                                        try {
+                                            echo "Checking out the code for ${system} on ${Machine} using scm in ${HOMEgfs}"
+                                            checkout scm
+                                        } catch (Exception e) {
+                                            if (env.CHANGE_ID) {
+                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Checkout **Failed** on ${Machine}: ${e.getMessage()}" """)
+                                            }
+                                            STATUS = 'Failed'
+                                            error("Failed to checkout: ${e.getMessage()}")
+                                        }
                                         def gist_url = ""
                                         def error_logs = ""
                                         def error_logs_message = ""
@@ -145,6 +153,7 @@ pipeline {
                                                     } catch (Exception error_comment) {
                                                         echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                     }
+                                                    STATUS = 'Failed'
                                                     error("Failed to build system on ${Machine}")
                                                 }
                                             }
@@ -164,6 +173,7 @@ pipeline {
                                     }
                                }
                            }
+                          }
                         }
                     }
                 }
@@ -171,9 +181,11 @@ pipeline {
         }
 
         stage('4. Run Tests') {
-            failFast false 
+            when {
+                expression { STATUS != 'Failed' }
+            }
             matrix {
-                agent { label "${machine}-emc" }
+                agent { label NodeName[machine].toLowerCase() }
                 axes {
                     axis {
                         name 'Case'
@@ -188,14 +200,21 @@ pipeline {
                             expression { return caseList.contains(Case) }
                         }
                         steps {
+                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                 script {
-                                    sh(script: "sed -n '/{.*}/!p' ${HOME}/gfs/ci/cases/pr/${Case}.yaml > ${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp")
-                                    def yaml_case = readYaml file: "${HOME}/gfs/ci/cases/pr/${Case}.yaml.tmp"
+                                    sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp")
+                                    def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp"
                                     system = yaml_case.experiment.system
-                                    def HOMEgfs = "${HOME}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
-                                    env.RUNTESTS = "${HOME}/RUNTESTS"
-                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml")
+                                    def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
+                                    env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
+                                    try {
+                                        error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStdout: true).trim()
+                                    } catch (Exception error_create) {
+                                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                        error("Case ${Case} failed to create experment directory")
+                                    }
                                 }
+                            }
                         }
                     }
 
@@ -203,18 +222,17 @@ pipeline {
                         when {
                             expression { return caseList.contains(Case) }
                         }
-                        failFast false
                         steps {
                             script {
-                                HOMEgfs = "${HOME}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
-                                def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${HOME}/RUNTESTS ${Case}", returnStdout: true).trim()
-                                def error_file = "${HOME}/RUNTESTS/${pslot}_error.logs"
+                                HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
+                                def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${Case}", returnStdout: true).trim()
+                                def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
                                 sh(script: " rm -f ${error_file}")
                                 try {
-                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOME} ${pslot} ${system}")
+                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
                                 } catch (Exception error_experment) {
                                     sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
-                                    ws(HOME) {
+                                    ws(CUSTOM_WORKSPACE) {
                                         def error_logs = ""
                                         def error_logs_message = ""
                                         if (fileExists(error_file)) {
@@ -222,11 +240,11 @@ pipeline {
                                             def lines = fileContent.readLines()
                                             for (line in lines) {
                                                 echo "archiving: ${line}"
-                                                if (fileExists("${HOME}/${line}") && readFile("${HOME}/${line}").length() > 0) {
+                                                if (fileExists("${CUSTOM_WORKSPACE}/${line}") && readFile("${CUSTOM_WORKSPACE}/${line}").length() > 0) {
                                                     try {
                                                         archiveArtifacts artifacts: "${line}", fingerprint: true
-                                                        error_logs = error_logs + "${HOME}/${line} "
-                                                        error_logs_message = error_logs_message + "${HOME}/${line}\n"
+                                                        error_logs = error_logs + "${CUSTOM_WORKSPACE}/${line} "
+                                                        error_logs_message = error_logs_message + "${CUSTOM_WORKSPACE}/${line}\n"
                                                     } catch (Exception error_arch) {
                                                         echo "Failed to archive error log ${line}: ${error_arch.getMessage()}"
                                                     }
@@ -240,16 +258,16 @@ pipeline {
                                                 echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                             }
                                         } else {
-                                            echo "No error logs found for failed cases in $HOME/RUNTESTS/${pslot}_error.logs"
+                                            echo "No error logs found for failed cases in $CUSTOM_WORKSPACE/RUNTESTS/${pslot}_error.logs"
                                         }
                                         STATUS = 'Failed'
                                         try {
                                             sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
-                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in\n\\`${HOME}/RUNTESTS/${pslot}\\`" """)
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}\\`" """)
                                         } catch (Exception e) {
                                             echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                         }
-                                        error("Failed to run experiments ${Case} on ${Machine}")
+                                        echo "Failed to run experiments ${Case} on ${Machine}"
                                     }
                                 }
                             }
@@ -258,20 +276,32 @@ pipeline {
                 }
             }
         }
+
         stage( '5. FINALIZE' ) {
-            when { 
-                expression {
-                   STATUS == 'Passed'
-                }
-            }
-            agent { label "${machine}-emc" }
+            agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
-                    try {
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --remove-label "CI-${Machine}-Building" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
-                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "**CI ${STATUS}** ${Machine} at <br>Built and ran in directory \\`${HOME}\\`" """, returnStatus: true)
-                    } catch (Exception e) {
-                        echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
+                    sh(script: """
+                        labels=\$(gh pr view ${env.CHANGE_ID} --repo ${repo_url} --json labels --jq '.labels[].name')
+                        for label in \$labels; do
+                            if [[ "\$label" == *"${Machine}"* ]]; then
+                                gh pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "\$label"
+                            fi
+                        done
+                    """, returnStatus: true)
+                    sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                    if (fileExists("${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log")) {
+                        sh(script: """echo "**CI ${STATUS}** ${Machine} at <br>Built and ran in directory \\`${CUSTOM_WORKSPACE}\\`\n\\`\\`\\`\n" | cat - ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log > temp && mv temp ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log""", returnStatus: true)
+                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body-file ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log  """, returnStatus: true)
+                    }
+                    if (STATUS == 'Passed') {
+                        try {
+                            sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/*")
+                        } catch (Exception e) {
+                            echo "Failed to remove custom work directory ${CUSTOM_WORKSPACE} on ${Machine}: ${e.getMessage()}"
+                        }
+                    } else {
+                        echo "Failed to build and run Global-workflow in ${CUSTOM_WORKSPACE} and on ${Machine}"
                     }
                 }
             }

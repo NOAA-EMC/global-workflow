@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 
 class GEFSTasks(Tasks):
 
-    def __init__(self, app_config: AppConfig, cdump: str) -> None:
-        super().__init__(app_config, cdump)
+    def __init__(self, app_config: AppConfig, run: str) -> None:
+        super().__init__(app_config, run)
 
     def stage_ic(self):
         cpl_ic = self._configs['stage_ic']
@@ -215,13 +215,13 @@ class GEFSTasks(Tasks):
         fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr#.nc'},
+                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -265,6 +265,16 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'}
 
         fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs[config]['REPLAY_ICS']
+        if is_replay and component in ['atmos'] and 0 in fhrs:
+            fhrs.remove(0)
+
+        # ocean/ice components do not have fhr 0 as they are averaged output
+        if component in ['ocean', 'ice'] and 0 in fhrs:
+            fhrs.remove(0)
+
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'{component}_prod_#member#',
@@ -309,6 +319,12 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'}
 
         fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
+        if is_replay and 0 in fhrs:
+            fhrs.remove(0)
+
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'atmos_ensstat',
@@ -402,7 +418,7 @@ class GEFSTasks(Tasks):
         # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
         last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
 
-        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
+        data = f'{atmos_hist_path}/{self.run}.t@Hz.atm.logf{last_fhr:03d}.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
 
@@ -471,6 +487,51 @@ class GEFSTasks(Tasks):
 
         member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
         member_metatask_dict = {'task_name': 'wave_post_pnt',
+                                'task_dict': task_dict,
+                                'var_dict': member_var_dict
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
+    def extractvars(self):
+        deps = []
+        if self.app_config.do_wave:
+            dep_dict = {'type': 'task', 'name': 'wave_post_grid_mem#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ocean:
+            dep_dict = {'type': 'metatask', 'name': 'ocean_prod_#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ice:
+            dep_dict = {'type': 'metatask', 'name': 'ice_prod_#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_atm:
+            dep_dict = {'type': 'metatask', 'name': 'atmos_prod_#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        extractvars_envars = self.envars.copy()
+        extractvars_dict = {'ENSMEM': '#member#',
+                            'MEMDIR': 'mem#member#',
+                            }
+        for key, value in extractvars_dict.items():
+            extractvars_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('extractvars')
+        task_name = f'extractvars_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': extractvars_envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/extractvars.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': 'extractvars',
                                 'task_dict': task_dict,
                                 'var_dict': member_var_dict
                                 }
