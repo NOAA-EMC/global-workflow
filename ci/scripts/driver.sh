@@ -158,7 +158,7 @@ fi
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
   pr_building=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
-  if [[ -z "${pr_building}" ]]; then
+  if [[ -n "${pr_building}" ]]; then
       continue
   fi
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
