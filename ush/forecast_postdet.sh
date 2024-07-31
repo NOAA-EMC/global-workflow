@@ -654,7 +654,6 @@ CICE_avg() {
   done
 }
 
-
 GOCART_rc() {
   echo "SUB ${FUNCNAME[0]}: Linking input data and copying config files for GOCART"
   # set input directory containing GOCART input data and configuration files
