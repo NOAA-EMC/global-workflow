@@ -144,7 +144,7 @@ pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
   pr_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Ready) || true
 fi
-if [[ -z "${pr_list+x}" ]]; then
+if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"
   exit 0
 fi
@@ -158,7 +158,7 @@ fi
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
   pr_building=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
-  if [[ -z "${pr_building+x}" ]]; then
+  if [[ -z "${pr_building}" ]]; then
       continue
   fi
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
