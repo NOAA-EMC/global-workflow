@@ -5,9 +5,8 @@ COMINsyn: '' #TODO: This does not yet exist.
 HOMEDIR: '/contrib/${USER}'
 STMP: '/lustre/${USER}/stmp/'
 PTMP: '/lustre/${USER}/ptmp/'
-NOSCRUB: ${HOMEDIR}
-ACCOUNT: ${USER}
-ACCOUNT_SERVICE: ${USER}
+NOSCRUB: '${HOMEDIR}'
+ACCOUNT: '${USER}'
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
