@@ -23,7 +23,7 @@ export HOMEverif_global=${HOMEgfs}/sorc/verif-global.fd
 export VERIF_GLOBALSH=${HOMEverif_global}/ush/run_verif_global_in_global_workflow.sh
 ## INPUT DATA SETTINGS
 export model=${PSLOT}
-export model_file_format="pgbf{lead?fmt=%2H}.${CDUMP}.{init?fmt=%Y%m%d%H}.grib2"
+export model_file_format="pgbf{lead?fmt=%2H}.${RUN}.{init?fmt=%Y%m%d%H}.grib2"
 export model_hpss_dir=${ATARDIR}/..
 export model_dir=${ARCDIR}/..
 export get_data_from_hpss="NO"
@@ -41,19 +41,19 @@ export log_MET_output_to_METplus="yes"
 # GRID-TO-GRID STEP 1: gfsmetpg2g1
 export g2g1_type_list="anom pres sfc"
 export g2g1_anom_truth_name="self_anl"
-export g2g1_anom_truth_file_format="pgbanl.${CDUMP}.{valid?fmt=%Y%m%d%H}.grib2"
+export g2g1_anom_truth_file_format="pgbanl.${RUN}.{valid?fmt=%Y%m%d%H}.grib2"
 export g2g1_anom_fhr_min=${FHMIN_GFS}
 export g2g1_anom_fhr_max=${FHMAX_GFS}
 export g2g1_anom_grid="G002"
 export g2g1_anom_gather_by="VSDB"
 export g2g1_pres_truth_name="self_anl"
-export g2g1_pres_truth_file_format="pgbanl.${CDUMP}.{valid?fmt=%Y%m%d%H}.grib2"
+export g2g1_pres_truth_file_format="pgbanl.${RUN}.{valid?fmt=%Y%m%d%H}.grib2"
 export g2g1_pres_fhr_min=${FHMIN_GFS}
 export g2g1_pres_fhr_max=${FHMAX_GFS}
 export g2g1_pres_grid="G002"
 export g2g1_pres_gather_by="VSDB"
 export g2g1_sfc_truth_name="self_f00"
-export g2g1_sfc_truth_file_format="pgbf00.${CDUMP}.{valid?fmt=%Y%m%d%H}.grib2"
+export g2g1_sfc_truth_file_format="pgbf00.${RUN}.{valid?fmt=%Y%m%d%H}.grib2"
 export g2g1_sfc_fhr_min=${FHMIN_GFS}
 export g2g1_sfc_fhr_max=${FHMAX_GFS}
 export g2g1_sfc_grid="G002"
@@ -89,7 +89,7 @@ export g2o1_mv_database_desc="Grid-to-obs METplus data for global workflow exper
 export precip1_type_list="ccpa_accum24hr"
 export precip1_ccpa_accum24hr_model_bucket="06"
 export precip1_ccpa_accum24hr_model_var="APCP"
-export precip1_ccpa_accum24hr_model_file_format="pgbf{lead?fmt=%2H}.${CDUMP}.{init?fmt=%Y%m%d%H}.grib2"
+export precip1_ccpa_accum24hr_model_file_format="pgbf{lead?fmt=%2H}.${RUN}.{init?fmt=%Y%m%d%H}.grib2"
 export precip1_ccpa_accum24hr_fhr_min=${FHMIN_GFS}
 export precip1_ccpa_accum24hr_fhr_max="180"
 export precip1_ccpa_accum24hr_grid="G211"
