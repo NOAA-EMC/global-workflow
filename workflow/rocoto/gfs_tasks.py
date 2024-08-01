@@ -509,12 +509,12 @@ class GFSTasks(Tasks):
     def aeroanlgenb(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('aeroanlgenb')
-        task_name = f'{self.cdump}aeroanlgenb'
+        task_name = f'{self.run}aeroanlgenb'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -564,7 +564,7 @@ class GFSTasks(Tasks):
 
         deps = []
         dep_dict = {
-            'type': 'task', 'name': f'{self.run}aeroanlgenb',
+            'type': 'task', 'name': f'gdasaeroanlgenb',
             'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}",
         }
         deps.append(rocoto.add_dependency(dep_dict))
