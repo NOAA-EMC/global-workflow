@@ -8,7 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
 # Set variables used in the exglobal script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${RUN/enkf}
 
 
 ##############################################

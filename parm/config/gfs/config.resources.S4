@@ -11,47 +11,47 @@ case ${step} in
         #On the S4-s4 partition, this is accomplished by increasing the task
         #count to a multiple of 32
         if [[ ${PARTITION_BATCH} = "s4" ]]; then
-          export npe_anal_gdas=416
-          export npe_anal_gfs=416
+          export ntasks_gdas=416
+          export ntasks_gfs=416
         fi
         #S4 is small, so run this task with just 1 thread
-        export nth_anal=1
-        export wtime_anal_gdas="02:00:00"
-        export wtime_anal_gfs="02:00:00"
+        export threads_per_task=1
+        export walltime_gdas="02:00:00"
+        export walltime_gfs="02:00:00"
         ;;
       "C192" | "C96" | "C48")
-        export nth_anal=4
+        export threads_per_task=4
         if [[ ${PARTITION_BATCH} == "s4" ]]; then
-          export npe_anal_gdas=88
-          export npe_anal_gfs=88
+          export ntasks_gdas=88
+          export ntasks_gfs=88
         elif [[ ${PARTITION_BATCH} == "ivy" ]]; then
-          export npe_anal_gdas=90
-          export npe_anal_gfs=90
+          export ntasks_gdas=90
+          export ntasks_gfs=90
         fi
         ;;
       *)
         ;;
     esac
-    export npe_node_anal=$(( npe_node_max / nth_anal ))
+    export tasks_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "eobs")
     # The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     # For S4, this is accomplished by running 10 tasks/node
-    export npe_node_eobs=10
+    export tasks_per_node=10
     ;;
 
   "eupd")
     if [[ "${CASE}" == "C384" ]]; then
-      export npe_eupd=160
-      export nth_eupd=2
+      export ntasks=160
+      export threads_per_task=2
     fi
-    export npe_node_eupd=$(( npe_node_max / nth_eupd ))
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "ediag")
-     export memory_ediag="${mem_node_max}"
+     export memory="${mem_node_max}"
   ;;
 
   *)
