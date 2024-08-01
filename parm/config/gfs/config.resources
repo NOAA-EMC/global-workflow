@@ -892,7 +892,7 @@ case ${step} in
     walltime_gfs="06:00:00"
     ntasks=4
     tasks_per_node=4
-    export is_exclusive=True
+    export memory="80G"
     ;;
 
   "echgres")
