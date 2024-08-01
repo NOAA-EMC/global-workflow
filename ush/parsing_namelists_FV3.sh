@@ -42,7 +42,7 @@ local SDAY=${current_cycle:6:2}
 local CHOUR=${current_cycle:8:2}
 local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
 
-if (( OFFSET_START_HOUR > 0 )); then
+if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
   local current_cycle_p1 
   current_cycle_p1=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHOUT_OCN} hours" +%Y%m%d%H)
   local current_cycle_offset

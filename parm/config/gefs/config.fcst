@@ -242,7 +242,7 @@ export FSICS="0"
 
 #---------------------------------------------------------------------
 # Write more variables to output
-if (( OFFSET_START_HOUR != 0 )); then
+if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
   export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_replay"
 else
   export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
