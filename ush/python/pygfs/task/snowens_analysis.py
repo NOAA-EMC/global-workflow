@@ -124,10 +124,10 @@ class SnowEnsAnalysis(Analysis):
             case_int = int(self.task_config.CASE[1:])
             lon = ncfile.createDimension('lon', case_int)
             lat = ncfile.createDimension('lat', case_int)
-            land_frac_out = ncfile.createVariable('land_frac', np.float32, ('lon', 'lat'))
+            lsm_frac_out = ncfile.createVariable('lsm_frac', np.float32, ('lon', 'lat'))
             # mask the land fraction where soil moisture is less than 1
             land_frac[np.where(smc[0, 0, ...] == 1)] = 0
-            land_frac_out[:] = land_frac
+            lsm_frac_out[:] = land_frac
             # write out and close the file
             ncfile.close()
 
@@ -148,17 +148,17 @@ class SnowEnsAnalysis(Analysis):
             f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc",
             f"--input_dir ./bkg/det/",
             f"--input_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
-            f"--scalar_field snodl,slmsk,vtype",
+            f"--scalar_field snodl",
             f"--output_dir ./bkg/det_ensres/",
             f"--output_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
             f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
             f"--interp_method conserve_order1",
             f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight",
-            f"--weight_field land_frac",
+            f"--weight_field lsm_frac",
             f"--remap_file ./remap",
         ]
-        fregrid = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
-        exec_cmd = Executable(fregrid)
+        fregrid_exe = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
+        exec_cmd = Executable(fregrid_exe)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
@@ -191,11 +191,11 @@ class SnowEnsAnalysis(Analysis):
             f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
             f"--interp_method conserve_order1",
             f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight",
-            f"--weight_field land_frac",
+            f"--weight_field lsm_frac",
             f"--remap_file ./remap",
         ]
-        fregrid = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
-        exec_cmd = Executable(fregrid)
+        fregrid_exe = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
+        exec_cmd = Executable(fregrid_exe)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
