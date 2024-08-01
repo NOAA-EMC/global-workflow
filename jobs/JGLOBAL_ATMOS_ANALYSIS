@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 # Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${RUN/enkf}
+export rCDUMP=${RUN/enkf}
 export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
@@ -25,9 +25,9 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export OPREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${rCDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${rCDUMP}.t${cyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
