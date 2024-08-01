@@ -49,7 +49,7 @@ gdas:
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
                 {% if DOIAU %}
         # Ensemble IAU analysis residuals
-                    {% for fhr in iaufhrs if fhr != 6 %}
+                    {% for fhr in IAUFHRS if fhr != 6 %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensres.nc"
                     {% endfor %}
                 {% endif %}
