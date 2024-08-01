@@ -1,3 +1,20 @@
+# This yaml is intended to be of the following structure:
+key1:
+    mkdir:
+        - "COM directory to create"
+    copy:
+        - ["source_file", "destination_file"]
+key2:
+    mkdir:
+        - "COM directory to create"
+    copy:
+        - ["source_file", "destination_file"]
+# Any number of keys with nested mkdir and copy are permitted
+# Jinja is permitted in this yaml, as long as the keys are:
+# - COM_
+# - DO_ATM, DO_OCN, DO_ICE
+# For a full list see exglobal_stage_ic.py        
+
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set r_prefix = RDATE | to_YMD + "." + RDATE | strftime("%H") + "0000" %}
 
