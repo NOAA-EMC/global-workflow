@@ -159,11 +159,10 @@ class SnowEnsAnalysis(Analysis):
         ]
         fregrid_exe = os.path.join(self.task_config.DATA, 'fregrid.x')
         exec_cmd = Executable(fregrid_exe)
-        exec_cmd(*arg_list)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
+            exec_cmd(*arg_list)
         except OSError:
             raise OSError(f"Failed to execute {exec_cmd}")
         except Exception:
@@ -197,11 +196,10 @@ class SnowEnsAnalysis(Analysis):
         ]
         fregrid_exe = os.path.join(self.task_config.DATA, 'fregrid.x')
         exec_cmd = Executable(fregrid_exe)
-        exec_cmd(*arg_list)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
+            exec_cmd(*arg_list)
         except OSError:
             raise OSError(f"Failed to execute {exec_cmd}")
         except Exception:
