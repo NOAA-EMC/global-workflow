@@ -1,19 +1,22 @@
+#############################################################
 # This yaml is intended to be of the following structure:
-key1:
-    mkdir:
-        - "COM directory to create"
-    copy:
-        - ["source_file", "destination_file"]
-key2:
-    mkdir:
-        - "COM directory to create"
-    copy:
-        - ["source_file", "destination_file"]
+# key1:
+#     mkdir:
+#         - "COM directory to create"
+#     copy:
+#         - ["source_file", "destination_file"]
+# key2:
+#     mkdir:
+#         - "COM directory to create"
+#     copy:
+#         - ["source_file", "destination_file"]
+#
 # Any number of keys with nested mkdir and copy are permitted
 # Jinja is permitted in this yaml, as long as the keys are:
-# - COM_
-# - DO_ATM, DO_OCN, DO_ICE
-# For a full list see exglobal_stage_ic.py        
+# - COMOUT_
+# - DO_ATM, DO_OCN, DO_ICE, etc.
+# For a full list see scripts/exglobal_stage_ic.py
+#############################################################
 
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set r_prefix = RDATE | to_YMD + "." + RDATE | strftime("%H") + "0000" %}
@@ -55,7 +58,7 @@ atmosphere_cold:
         {% endfor %} # ftype
 {% endif %}
 
-{% if MEMDIR and REPLAY_ICS == "YES" %}
+{% if REPLAY_ICS == "YES" %}
 atmosphere_perturbation:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS }}"
@@ -99,7 +102,7 @@ ocean:
         - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_RESTART_PREV | relpath(ROTDIR) }}/{{ r_prefix }}.MOM.res_{{ nn }}.nc", "{{ COMOUT_OCEAN_RESTART_PREV }}"]
             {% endfor %}
         {% endif %}
-        {% if MEMDIR and REPLAY_ICS == "YES" %}
+        {% if REPLAY_ICS == "YES" %}
         - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ r_prefix }}.mom6_perturbation.nc", "{{ COMOUT_OCEAN_ANALYSIS }}/mom6_increment.nc"]
         {% endif %}
         {% if EXP_WARM_START == True %}
