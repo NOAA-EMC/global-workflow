@@ -80,5 +80,5 @@ class GEFSAppConfig(AppConfig):
             tasks += ['extractvars']
 
         tasks += ['arch']
-  
+
         return {f"{self._base['RUN']}": tasks}
