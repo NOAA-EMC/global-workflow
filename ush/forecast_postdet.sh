@@ -576,7 +576,7 @@ CICE_postdet() {
     vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
     if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-      source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE_6h}")h.${vdatestr}.nc"
+      source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
       dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
     elif [[ "${RUN}" =~ "gdas" ]]; then
       source_file="iceh_inst.${vdatestr}.nc"
@@ -639,7 +639,7 @@ CICE_avg() {
     fi
     if (( fcnt % FHOUTS_ICE == 0 ));then
       FH3=$(printf %03i ${fhr_avg})
-      thefiles_fh=$(seq "$(( fhr_avg - FHOUT_ICE + FHOUT_ICE_6h ))" "${FHOUT_ICE_6h}" "${fhr_avg}")
+      thefiles_fh=$(seq "$(( fhr_avg - FHOUT_ICE + 6 ))" "6" "${fhr_avg}")
       thefiles=""
       for fh in ${thefiles_fh}; do
         FH3_2=$(printf %03i ${fh})

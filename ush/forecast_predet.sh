@@ -607,12 +607,12 @@ CICE_predet(){
   # Convert output settings into an explicit list for CICE
   # shellcheck disable=SC2312
   if (( FHOUT_ICE > 6 )) && (( FHOUT_ICE % 6 == 0 ));then
-    FHOUT_ICE_6h=6
+    FHOUT_ICE=6
     FHOUTS_ICE=$(( FHOUT_ICE / FHOUT_ICE_6h ))
   else
-    FHOUT_ICE_6h=${FHOUT_ICE}
+    FHOUT_ICE=${FHOUT_ICE}
   fi
-  mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE_6h}" "${FHMAX}") || exit 10
+  mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
 
   # Fix files
   ${NCP} "${FIXgfs}/cice/${ICERES}/${CICE_GRID}" "${DATA}/"
