@@ -6,6 +6,6 @@
 echo "BEGIN: config.fbwind"
 
 # Get task specific resources
-. $EXPDIR/config.resources fbwind
+source "${EXPDIR}/config.resources" fbwind
 
 echo "END: config.fbwind"
