@@ -199,7 +199,7 @@ def input_args(*argv):
     def _gfs_args(parser):
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
-        parser.add_argument('--cdump', help='CDUMP to start the experiment',
+        parser.add_argument('--run', help='RUN to start the experiment',
                             type=str, required=False, default='gdas')
         # --configdir is hidden from help
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False, default=os.path.join(_top, 'parm/config/gfs'))
