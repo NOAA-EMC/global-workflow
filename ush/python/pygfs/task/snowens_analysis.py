@@ -145,20 +145,21 @@ class SnowEnsAnalysis(Analysis):
         chdir(self.task_config.DATA)
 
         arg_list = [
-            f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc",
-            f"--input_dir ./bkg/det/",
-            f"--input_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
-            f"--scalar_field snodl",
-            f"--output_dir ./bkg/det_ensres/",
-            f"--output_file {to_fv3time(self.task_config.bkg_time)}.sfc_data",
-            f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
-            f"--interp_method conserve_order1",
-            f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight",
-            f"--weight_field lsm_frac",
-            f"--remap_file ./remap",
+            "--input_mosaic", f"./orog/det/{self.task_config.CASE}_mosaic.nc",
+            "--input_dir", f"./bkg/det/",
+            "--input_file", f"{to_fv3time(self.task_config.bkg_time)}.sfc_data",
+            "--scalar_field", f"snodl",
+            "--output_dir", f"./bkg/det_ensres/",
+            "--output_file", f"{to_fv3time(self.task_config.bkg_time)}.sfc_data",
+            "--output_mosaic", f"./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
+            "--interp_method", f"conserve_order1",
+            "--weight_file", f"./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight",
+            "--weight_field", f"lsm_frac",
+            "--remap_file", f"./remap",
         ]
-        fregrid_exe = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
+        fregrid_exe = os.path.join(self.task_config.DATA, 'fregrid.x')
         exec_cmd = Executable(fregrid_exe)
+        exec_cmd(*arg_list)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
@@ -182,20 +183,21 @@ class SnowEnsAnalysis(Analysis):
         chdir(self.task_config.DATA)
 
         arg_list = [
-            f"--input_mosaic ./orog/det/{self.task_config.CASE}_mosaic.nc",
-            f"--input_dir ./inc/det/",
-            f"--input_file snowinc.{to_fv3time(self.task_config.bkg_time)}.sfc_data",
-            f"--scalar_field snodl",
-            f"--output_dir ./inc/det_ensres/",
-            f"--output_file snowinc.{to_fv3time(self.task_config.bkg_time)}.sfc_data",
-            f"--output_mosaic ./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
-            f"--interp_method conserve_order1",
-            f"--weight_file ./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight",
-            f"--weight_field lsm_frac",
-            f"--remap_file ./remap",
+            "--input_mosaic", f"./orog/det/{self.task_config.CASE}_mosaic.nc",
+            "--input_dir", f"./inc/det/",
+            "--input_file", f"snowinc.{to_fv3time(self.task_config.bkg_time)}.sfc_data",
+            "--scalar_field", f"snodl",
+            "--output_dir", f"./inc/det_ensres/",
+            "--output_file", f"snowinc.{to_fv3time(self.task_config.bkg_time)}.sfc_data",
+            "--output_mosaic", f"./orog/ens/{self.task_config.CASE_ENS}_mosaic.nc",
+            "--interp_method", f"conserve_order1",
+            "--weight_file", f"./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_interp_weight",
+            "--weight_field", f"lsm_frac",
+            "--remap_file", f"./remap",
         ]
-        fregrid_exe = os.path.join(self.task_config.DATA, 'fregrid.x') + " " + " ".join(arg_list)
+        fregrid_exe = os.path.join(self.task_config.DATA, 'fregrid.x')
         exec_cmd = Executable(fregrid_exe)
+        exec_cmd(*arg_list)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
