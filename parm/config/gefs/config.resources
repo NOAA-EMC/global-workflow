@@ -41,7 +41,7 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=40
+    max_tasks_per_node=36
     ;;
   *)
     echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
