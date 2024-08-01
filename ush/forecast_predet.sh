@@ -163,7 +163,7 @@ FV3_predet(){
     local fhr=${FHOUT}
     if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
       FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "$(( OFFSET_START_HOUR + FHOUT_HF ))" "${FHOUT_HF}" "${FHMAX_HF}")"
-      FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$(( (( OFFSET_START_HOUR + FHOUT_HF )) * 3600 ))" "$(( FHOUT_HF * 3600 ))" "$(( FHMAX_HF * 3600 ))")"
+      FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$(( OFFSET_START_HOUR * 3600 + FHOUT_HF * 3600 ))" "$(( FHOUT_HF * 3600 ))" "$(( FHMAX_HF * 3600 ))")"
       fhr=${FHMAX_HF}
     fi
     FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
