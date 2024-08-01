@@ -387,10 +387,10 @@ fi
 
 # if 3DVAR and IAU
 if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
-    export IAUFHRS="6"
+    export IAUFHRS="6,"
     export IAU_FHROT="3"
     export IAU_FILTER_INCREMENTS=".true."
-    export IAUFHRS_ENKF="6"
+    export IAUFHRS_ENKF="6,"
 fi
 
 # Generate post-processing ensemble spread files
@@ -400,10 +400,10 @@ export ENKF_SPREAD="YES"
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
-  export IAUFHRS="6"
+  export IAUFHRS="6,"
 fi
 
-if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
+if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6,"; fi
 
 # Determine restart intervals
 # For IAU, write restarts at beginning of window also
