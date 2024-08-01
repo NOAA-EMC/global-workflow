@@ -6,7 +6,7 @@
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 

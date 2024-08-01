@@ -15,7 +15,6 @@ export COMPONENT="atmos"
 # Set variables used in the exglobal script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${RUN/enkf}
 
 
 ####################################
@@ -70,7 +69,7 @@ fi
 #############################################################
 # Execute the script
 export pert="p01"
-export cmodel=${CDUMP}
+export cmodel=${RUN/enkf}
 export loopnum=1
 
 #-----------input data checking -----------------

@@ -3,6 +3,7 @@
 from typing import Dict, List, Any
 from datetime import timedelta
 from hosts import Host
+from pathlib import Path
 from wxflow import Configuration, to_timedelta
 from abc import ABC, ABCMeta, abstractmethod
 
@@ -31,7 +32,11 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         self.scheduler = Host().scheduler
 
-        _base = conf.parse_config('config.base')
+        # Save the configuration so we can source the config files when
+        # determining task resources
+        self.conf = conf
+
+        _base = self.conf.parse_config('config.base')
         # Define here so the child __init__ functions can use it; will
         # be overwritten later during _init_finalize().
         self._base = _base
@@ -65,44 +70,45 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_upp = not _base.get('WRITE_DOPOST', True)
         self.do_goes = _base.get('DO_GOES', False)
         self.do_mos = _base.get('DO_MOS', False)
+        self.do_extractvars = _base.get('DO_EXTRACTVARS', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
         self.nens = _base.get('NMEM_ENS', 0)
 
-        self.wave_cdumps = None
+        self.wave_runs = None
         if self.do_wave:
-            wave_cdump = _base.get('WAVE_CDUMP', 'BOTH').lower()
-            if wave_cdump in ['both']:
-                self.wave_cdumps = ['gfs', 'gdas']
-            elif wave_cdump in ['gfs', 'gdas']:
-                self.wave_cdumps = [wave_cdump]
+            wave_run = _base.get('WAVE_RUN', 'BOTH').lower()
+            if wave_run in ['both']:
+                self.wave_runs = ['gfs', 'gdas']
+            elif wave_run in ['gfs', 'gdas']:
+                self.wave_runs = [wave_run]
 
-        self.aero_anl_cdumps = None
-        self.aero_fcst_cdumps = None
+        self.aero_anl_runs = None
+        self.aero_fcst_runs = None
         if self.do_aero:
-            aero_anl_cdump = _base.get('AERO_ANL_CDUMP', 'BOTH').lower()
-            if aero_anl_cdump in ['both']:
-                self.aero_anl_cdumps = ['gfs', 'gdas']
-            elif aero_anl_cdump in ['gfs', 'gdas']:
-                self.aero_anl_cdumps = [aero_anl_cdump]
-            aero_fcst_cdump = _base.get('AERO_FCST_CDUMP', None).lower()
-            if aero_fcst_cdump in ['both']:
-                self.aero_fcst_cdumps = ['gfs', 'gdas']
-            elif aero_fcst_cdump in ['gfs', 'gdas']:
-                self.aero_fcst_cdumps = [aero_fcst_cdump]
+            aero_anl_run = _base.get('AERO_ANL_RUN', 'BOTH').lower()
+            if aero_anl_run in ['both']:
+                self.aero_anl_runs = ['gfs', 'gdas']
+            elif aero_anl_run in ['gfs', 'gdas']:
+                self.aero_anl_runs = [aero_anl_run]
+            aero_fcst_run = _base.get('AERO_FCST_RUN', None).lower()
+            if aero_fcst_run in ['both']:
+                self.aero_fcst_runs = ['gfs', 'gdas']
+            elif aero_fcst_run in ['gfs', 'gdas']:
+                self.aero_fcst_runs = [aero_fcst_run]
 
-    def _init_finalize(self, conf: Configuration):
+    def _init_finalize(self, *args):
         print("Finalizing initialize")
 
         # Get a list of all possible config_files that would be part of the application
         self.configs_names = self._get_app_configs()
 
         # Source the config_files for the jobs in the application
-        self.configs = self._source_configs(conf)
+        self.configs = self.source_configs()
 
         # Update the base config dictionary base on application
-        self.configs['base'] = self._update_base(self.configs['base'])
+        self.configs['base'] = self.update_base(self.configs['base'])
 
         # Save base in the internal state since it is often needed
         self._base = self.configs['base']
@@ -119,7 +125,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
     @staticmethod
     @abstractmethod
-    def _update_base(base_in: Dict[str, Any]) -> Dict[str, Any]:
+    def update_base(base_in: Dict[str, Any]) -> Dict[str, Any]:
         '''
         Make final updates to base and return an updated copy
 
@@ -136,9 +142,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         '''
         pass
 
-    def _source_configs(self, conf: Configuration) -> Dict[str, Any]:
+    def source_configs(self, run: str = "gfs", log: bool = True) -> Dict[str, Any]:
         """
-        Given the configuration object and jobs,
+        Given the configuration object used to initialize this application,
         source the configurations for each config and return a dictionary
         Every config depends on "config.base"
         """
@@ -146,7 +152,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         configs = dict()
 
         # Return config.base as well
-        configs['base'] = conf.parse_config('config.base')
+        configs['base'] = self.conf.parse_config('config.base')
 
         # Source the list of all config_files involved in the application
         for config in self.configs_names:
@@ -169,15 +175,15 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             else:
                 files += [f'config.{config}']
 
-            print(f'sourcing config.{config}')
-            configs[config] = conf.parse_config(files)
+            print(f'sourcing config.{config}') if log else 0
+            configs[config] = self.conf.parse_config(files, RUN=run)
 
         return configs
 
     @abstractmethod
     def get_task_names(self) -> Dict[str, List[str]]:
         '''
-        Create a list of task names for each CDUMP valid for the configuation.
+        Create a list of task names for each RUN valid for the configuation.
 
         Parameters
         ----------
@@ -185,7 +191,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         Returns
         -------
-        Dict[str, List[str]]: Lists of tasks for each CDUMP.
+        Dict[str, List[str]]: Lists of tasks for each RUN.
 
         '''
         pass

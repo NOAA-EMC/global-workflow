@@ -13,7 +13,6 @@ export RUN_ENVIR="emc"
 
 # Account, queue, etc.
 export ACCOUNT="@ACCOUNT@"
-export ACCOUNT_SERVICE="@ACCOUNT_SERVICE@"
 export QUEUE="@QUEUE@"
 export QUEUE_SERVICE="@QUEUE_SERVICE@"
 export PARTITION_BATCH="@PARTITION_BATCH@"
@@ -135,10 +134,7 @@ export ATARDIR="@ATARDIR@"
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
 export NET="gfs"  # NET is defined in the job-card (ecf)
-export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUMP is used at EMC as a RUN proxy
-# TODO: determine where is RUN actually used in the workflow other than here
-# TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
-#       consistent w/ EE2?
+export RUN=${RUN:-"gfs"}  # RUN is defined in the job-card (ecf)
 
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
@@ -179,9 +175,9 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-export AERO_FCST_CDUMP="" # When to run aerosol forecast: gdas, gfs, or both
-export AERO_ANL_CDUMP="" # When to run aerosol analysis: gdas, gfs, or both
-export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
+export AERO_FCST_RUN="" # When to run aerosol forecast: gdas, gfs, or both
+export AERO_ANL_RUN="" # When to run aerosol analysis: gdas, gfs, or both
+export WAVE_RUN="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -232,13 +228,13 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
-    export AERO_ANL_CDUMP="both"
-    export AERO_FCST_CDUMP="gdas"
+    export AERO_ANL_RUN="both"
+    export AERO_FCST_RUN="gdas"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
-    export WAVE_CDUMP="both"
+    export WAVE_RUN="both"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -252,13 +248,13 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export AERO_ANL_CDUMP="both"
-        export AERO_FCST_CDUMP="gdas"
+        export AERO_ANL_RUN="both"
+        export AERO_FCST_RUN="gdas"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_CDUMP="both"
+        export WAVE_RUN="both"
     fi
     ;;
   *)
@@ -268,10 +264,10 @@ case "${APP}" in
 esac
 
 # Surface cycle update frequency
-if [[ "${CDUMP}" =~ "gdas" ]] ; then
+if [[ "${RUN}" =~ "gdas" ]] ; then
    export FHCYC=1
    export FTSFS=10
-elif [[ "${CDUMP}" =~ "gfs" ]] ; then
+elif [[ "${RUN}" =~ "gfs" ]] ; then
    export FHCYC=24
 fi
 
@@ -453,6 +449,8 @@ export binary_diag=".false."
 
 # Verification options
 export DO_METP="@DO_METP@"   # Run METPLUS jobs - set METPLUS settings in config.metp
+# TODO Reenable METplus jobs when issue #2790 is resolved
+export DO_METP="NO"
 export DO_FIT2OBS="YES"      # Run fit to observations package
 export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 

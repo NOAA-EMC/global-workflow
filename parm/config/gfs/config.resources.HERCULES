@@ -8,9 +8,8 @@ case ${step} in
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     # For Hercules, this is only an issue at C384; use 20 tasks/node
     if [[ ${CASE} = "C384" ]]; then
-      export npe_node_eobs=20
+      export tasks_per_node=20
     fi
-    export npe_node_eomg=${npe_node_eobs}
     ;;
   *)
     ;;

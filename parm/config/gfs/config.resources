@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=SC2034
 
 ########## config.resources ##########
 # Set resource information for job tasks
@@ -25,7 +26,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs ocnanalbmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "ocnanalprep prepoceanobs marinebmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
     exit 1
 
 fi
@@ -36,49 +37,49 @@ echo "BEGIN: config.resources"
 
 case ${machine} in
   "WCOSS2")
-              npe_node_max=128
+              max_tasks_per_node=128
               # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
   "HERA")
-              npe_node_max=40
+              max_tasks_per_node=40
               # shellcheck disable=SC2034
               mem_node_max="96GB"
     ;;
   "GAEA")
-              npe_node_max=128
+              max_tasks_per_node=128
               # shellcheck disable=SC2034
               mem_node_max="251GB"
     ;;
   "ORION")
-              npe_node_max=40
+              max_tasks_per_node=40
               # shellcheck disable=SC2034
               mem_node_max="192GB"
     ;;
   "HERCULES")
-              npe_node_max=80
+              max_tasks_per_node=80
               # shellcheck disable=SC2034
               mem_node_max="512GB"
     ;;
   "JET")
     case ${PARTITION_BATCH} in
       "xjet")
-              npe_node_max=24
+              max_tasks_per_node=24
               # shellcheck disable=SC2034
               mem_node_max="61GB"
         ;;
       "vjet")
-              npe_node_max=16
+              max_tasks_per_node=16
               # shellcheck disable=SC2034
               mem_node_max="61GB"
         ;;
       "sjet")
-              npe_node_max=16
+              max_tasks_per_node=16
               # shellcheck disable=SC2034
               mem_node_max="29GB"
         ;;
       "kjet")
-              npe_node_max=40
+              max_tasks_per_node=40
               # shellcheck disable=SC2034
               mem_node_max="88GB"
         ;;
@@ -89,12 +90,12 @@ case ${machine} in
     ;;
   "S4")
     case ${PARTITION_BATCH} in
-      "s4")   npe_node_max=32
+      "s4")   max_tasks_per_node=32
               # shellcheck disable=SC2034
               mem_node_max="168GB"
         ;;
       "ivy")
-              npe_node_max=20
+              max_tasks_per_node=20
               # shellcheck disable=SC2034
               mem_node_max="128GB"
         ;;
@@ -105,13 +106,13 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    npe_node_max=40
+    max_tasks_per_node=40
     # TODO Supply a max mem/node value for AWS
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "CONTAINER")
-    npe_node_max=1
+    max_tasks_per_node=1
     # TODO Supply a max mem/node value for a container
     # shellcheck disable=SC2034
     mem_node_max=""
@@ -122,153 +123,139 @@ case ${machine} in
     ;;
 esac
 
-export npe_node_max
+export max_tasks_per_node
 
 case ${step} in
   "prep")
-    export wtime_prep='00:30:00'
-    export npe_prep=4
-    export npe_node_prep=2
-    export nth_prep=1
-    export memory_prep="40GB"
+    walltime='00:30:00'
+    ntasks=4
+    tasks_per_node=2
+    threads_per_task=1
+    memory="40GB"
     ;;
 
   "prepsnowobs")
-    export wtime_prepsnowobs="00:05:00"
-    export npe_prepsnowobs=1
-    export nth_prepsnowobs=1
-    export npe_node_prepsnowobs=1
+    walltime="00:05:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
     ;;
 
   "prepatmiodaobs")
-    export wtime_prepatmiodaobs="00:30:00"
-    export npe_prepatmiodaobs=1
-    export nth_prepatmiodaobs=1
-    export npe_node_prepatmiodaobs=$(( npe_node_max / nth_prepatmiodaobs ))
+    walltime="00:30:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "aerosol_init")
-    export wtime_aerosol_init="00:05:00"
-    export npe_aerosol_init=1
-    export nth_aerosol_init=1
-    export npe_node_aerosol_init=$(( npe_node_max / nth_aerosol_init ))
-    export NTASKS=${npe_aerosol_init}
-    export memory_aerosol_init="6GB"
+    walltime="00:05:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    NTASKS=${ntasks}
+    memory="6GB"
     ;;
 
   "waveinit")
-    export wtime_waveinit="00:10:00"
-    export npe_waveinit=12
-    export nth_waveinit=1
-    export npe_node_waveinit=$(( npe_node_max / nth_waveinit ))
-    export NTASKS=${npe_waveinit}
-    export memory_waveinit="2GB"
+    walltime="00:10:00"
+    ntasks=12
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    NTASKS=${ntasks}
+    memory="2GB"
     ;;
 
   "waveprep")
-    export wtime_waveprep="00:10:00"
-    export npe_waveprep_gdas=5
-    export npe_waveprep_gfs=65
-    export nth_waveprep_gdas=1
-    export nth_waveprep_gfs=1
-    export npe_node_waveprep_gdas=$(( npe_node_max / nth_waveprep_gdas ))
-    export npe_node_waveprep_gfs=$(( npe_node_max / nth_waveprep_gfs ))
-    export NTASKS_gdas=${npe_waveprep_gdas}
-    export NTASKS_gfs=${npe_waveprep_gfs}
-    export memory_waveprep_gdas="100GB"
-    export memory_waveprep_gfs="150GB"
+    walltime="00:10:00"
+    ntasks_gdas=5
+    ntasks_gfs=65
+    threads_per_task=1
 
-    var_npe_node="npe_node_waveprep_${RUN}"
-    var_nth="nth_waveprep_${RUN}"
-    var_npe="npe_waveprep_${RUN}"
-    var_NTASKS="ntasks_${RUN}"
-    # RUN is set to a single value at setup time, so these won't be found
-    # TODO rework setup_xml.py to initialize RUN to the applicable option
-    if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_waveprep"="${!var_npe_node}" \
-                 "nth_waveprep"="${!var_nth}" \
-                 "npe_waveprep"="${!var_npe}" \
-                 "NTASKS"="${!var_NTASKS}"
-    fi
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    NTASKS_gdas=${ntasks_gdas}
+    NTASKS_gfs=${ntasks_gfs}
+    memory_gdas="100GB"
+    memory_gfs="150GB"
     ;;
 
   "wavepostsbs")
-    export wtime_wavepostsbs_gdas="00:20:00"
-    export wtime_wavepostsbs_gfs="03:00:00"
-    export npe_wavepostsbs=8
-    export nth_wavepostsbs=1
-    export npe_node_wavepostsbs=$(( npe_node_max / nth_wavepostsbs ))
-    export NTASKS=${npe_wavepostsbs}
-    export memory_wavepostsbs_gdas="10GB"
-    export memory_wavepostsbs_gfs="10GB"
+    walltime_gdas="00:20:00"
+    walltime_gfs="03:00:00"
+    ntasks=8
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    NTASKS=${ntasks}
+    memory_gdas="10GB"
+    memory_gfs="10GB"
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    export wtime_wavepostbndpnt="03:00:00"
-    export npe_wavepostbndpnt=240
-    export nth_wavepostbndpnt=1
-    export npe_node_wavepostbndpnt=$(( npe_node_max / nth_wavepostbndpnt ))
+    walltime="03:00:00"
+    ntasks=240
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-    if [[ ${npe_node_wavepostbndpnt} -gt 40 ]]; then
-        export npe_node_wavepostbndpnt=40
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        tasks_per_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe_wavepostbndpnt}
+    NTASKS=${ntasks}
     ;;
 
   "wavepostbndpntbll")
-    export wtime_wavepostbndpntbll="01:00:00"
-    export npe_wavepostbndpntbll=448
-    export nth_wavepostbndpntbll=1
-    export npe_node_wavepostbndpntbll=$(( npe_node_max / nth_wavepostbndpntbll ))
+    walltime="01:00:00"
+    ntasks=448
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-    if [[ ${npe_node_wavepostbndpntbll} -gt 40 ]]; then
-        export npe_node_wavepostbndpntbll=40
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        tasks_per_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe_wavepostbndpntbll}
+    NTASKS=${ntasks}
     ;;
 
   "wavepostpnt")
-    export wtime_wavepostpnt="04:00:00"
-    export npe_wavepostpnt=200
-    export nth_wavepostpnt=1
-    export npe_node_wavepostpnt=$(( npe_node_max / nth_wavepostpnt ))
+    walltime="04:00:00"
+    ntasks=200
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-    if [[ ${npe_node_wavepostpnt} -gt 40 ]]; then
-        export npe_node_wavepostpnt=40
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        tasks_per_node=40
         export is_exclusive=False
     fi
-    export NTASKS=${npe_wavepostpnt}
+    NTASKS=${ntasks}
     ;;
 
   "wavegempak")
-    export wtime_wavegempak="02:00:00"
-    export npe_wavegempak=1
-    export nth_wavegempak=1
-    export npe_node_wavegempak=$(( npe_node_max / nth_wavegempak ))
-    export NTASKS=${npe_wavegempak}
-    export memory_wavegempak="1GB"
+    walltime="02:00:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    NTASKS=${ntasks}
+    memory="1GB"
     ;;
 
   "waveawipsbulls")
-    export wtime_waveawipsbulls="00:20:00"
-    export npe_waveawipsbulls=1
-    export nth_waveawipsbulls=1
-    export npe_node_waveawipsbulls=$(( npe_node_max / nth_waveawipsbulls ))
-    export NTASKS=${npe_waveawipsbulls}
+    walltime="00:20:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    NTASKS=${ntasks}
     export is_exclusive=True
     ;;
 
   "waveawipsgridded")
-    export wtime_waveawipsgridded="02:00:00"
-    export npe_waveawipsgridded=1
-    export nth_waveawipsgridded=1
-    export npe_node_waveawipsgridded=$(( npe_node_max / nth_waveawipsgridded ))
-    export NTASKS=${npe_waveawipsgridded}
-    export memory_waveawipsgridded_gfs="1GB"
+    walltime="02:00:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    NTASKS=${ntasks}
+    memory_gfs="1GB"
     ;;
 
   "atmanlinit")
@@ -278,67 +265,48 @@ case ${step} in
     export layout_gsib_x=$(( layout_x * 3 ))
     export layout_gsib_y=$(( layout_y * 2 ))
 
-    export wtime_atmanlinit="00:10:00"
-    export npe_atmanlinit=1
-    export nth_atmanlinit=1
-    export npe_node_atmanlinit=$(( npe_node_max / nth_atmanlinit ))
-    export npe_node_atmanlinit
-    export memory_atmanlinit="3072M"
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="3072M"
     ;;
 
   "atmanlvar")
     export layout_x=${layout_x_atmanl}
     export layout_y=${layout_y_atmanl}
 
-    export wtime_atmanlvar="00:30:00"
-    export npe_atmanlvar_gdas=$(( layout_x * layout_y * 6 ))
-    export npe_atmanlvar_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlvar_gdas=1
-    export nth_atmanlvar_gfs=${nth_atmanlvar_gdas}
-    export npe_node_atmanlvar_gdas=$(( npe_node_max / nth_atmanlvar_gdas ))
-    export npe_node_atmanlvar_gfs=$(( npe_node_max / nth_atmanlvar_gfs ))
-    export memory_atmanlvar="96GB"
+    walltime="00:30:00"
+    ntasks_gdas=$(( layout_x * layout_y * 6 ))
+    ntasks_gfs=$(( layout_x * layout_y * 6 ))
+    threads_per_task_gdas=1
+    threads_per_task_gfs=${threads_per_task_gdas}
+    tasks_per_node_gdas=$(( max_tasks_per_node / threads_per_task_gdas ))
+    tasks_per_node_gfs=$(( max_tasks_per_node / threads_per_task_gfs ))
+    memory="96GB"
     export is_exclusive=True
-
-    var_npe_node="npe_node_atmanlvar_${RUN}"
-    var_nth="nth_atmanlvar_${RUN}"
-    var_npe="npe_atmanlvar_${RUN}"
-    if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_atmanlvar"="${!var_npe_node}" \
-                 "nth_atmanlvar"="${!var_nth}" \
-                 "npe_atmanlvar"="${!var_npe}"
-    fi
     ;;
 
   "atmanlfv3inc")
     export layout_x=${layout_x_atmanl}
     export layout_y=${layout_y_atmanl}
 
-    export wtime_atmanlfv3inc="00:30:00"
-    export npe_atmanlfv3inc_gdas=$(( layout_x * layout_y * 6 ))
-    export npe_atmanlfv3inc_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmanlfv3inc_gdas=1
-    export nth_atmanlfv3inc_gfs=${nth_atmanlfv3inc_gdas}
-    export npe_node_atmanlfv3inc_gdas=$(( npe_node_max / nth_atmanlfv3inc_gdas ))
-    export npe_node_atmanlfv3inc_gfs=$(( npe_node_max / nth_atmanlfv3inc_gfs ))
-    export memory_atmanlfv3inc="96GB"
+    walltime="00:30:00"
+    ntasks_gdas=$(( layout_x * layout_y * 6 ))
+    ntasks_gfs=$(( layout_x * layout_y * 6 ))
+    threads_per_task_gdas=1
+    threads_per_task_gfs=${threads_per_task_gdas}
+    tasks_per_node_gdas=$(( max_tasks_per_node / threads_per_task_gdas ))
+    tasks_per_node_gfs=$(( max_tasks_per_node / threads_per_task_gfs ))
+    memory="96GB"
     export is_exclusive=True
-
-    var_npe_node="npe_node_atmanlfv3inc_${RUN}"
-    var_nth="nth_atmanlfv3inc_${RUN}"
-    var_npe="npe_atmanlfv3inc_${RUN}"
-    if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_atmanlfv3inc"="${!var_npe_node}" \
-                 "nth_atmanlfv3inc"="${!var_nth}" \
-                 "npe_atmanlfv3inc"="${!var_npe}"
-    fi
     ;;
 
   "atmanlfinal")
-    export wtime_atmanlfinal="00:30:00"
-    export npe_atmanlfinal=${npe_node_max}
-    export nth_atmanlfinal=1
-    export npe_node_atmanlfinal=$(( npe_node_max / nth_atmanlfinal ))
+    walltime="00:30:00"
+    ntasks=${max_tasks_per_node}
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
 
@@ -365,18 +333,18 @@ case ${step} in
     export layout_x
     export layout_y
 
-    export wtime_snowanl="00:15:00"
-    export npe_snowanl=$(( layout_x * layout_y * 6 ))
-    export nth_snowanl=1
-    export npe_node_snowanl=$(( npe_node_max / nth_snowanl ))
+    walltime="00:15:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "prepobsaero")
-    export wtime_prepobsaero="00:30:00"
-    export npe_prepobsaero=1
-    export nth_prepobsaero=1
-    export npe_node_prepobsaero=1
-    export memory_prepobsaero="96GB"
+    walltime="00:30:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="96GB"
     ;;
 
   "aeroanlinit")
@@ -406,11 +374,11 @@ case ${step} in
 
     export layout_x
     export layout_y
-    export wtime_aeroanlinit="00:10:00"
-    export npe_aeroanlinit=1
-    export nth_aeroanlinit=1
-    export npe_node_aeroanlinit=$(( npe_node_max / nth_aeroanlinit ))
-    export memory_aeroanlinit="3072M"
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="3072M"
     ;;
 
   "aeroanlrun")
@@ -440,410 +408,374 @@ case ${step} in
     export layout_x
     export layout_y
 
-    export wtime_aeroanlrun="00:30:00"
-    export npe_aeroanlrun_gdas=$(( layout_x * layout_y * 6 ))
-    export npe_aeroanlrun_gfs=$(( layout_x * layout_y * 6 ))
-    export nth_aeroanlrun_gdas=1
-    export nth_aeroanlrun_gfs=1
-    export npe_node_aeroanlrun_gdas=$(( npe_node_max / nth_aeroanlrun_gdas ))
-    export npe_node_aeroanlrun_gfs=$(( npe_node_max / nth_aeroanlrun_gfs ))
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-
-    var_npe_node="npe_node_aeroanlrun_${RUN}"
-    var_nth="nth_aeroanlrun_${RUN}"
-    var_npe="npe_aeroanlrun_${RUN}"
-    if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_aeroanlrun"="${!var_npe_node}" \
-                 "nth_aeroanlrun"="${!var_nth}" \
-                 "npe_aeroanlrun"="${!var_npe}"
-    fi
     ;;
 
   "aeroanlfinal")
-    export wtime_aeroanlfinal="00:10:00"
-    export npe_aeroanlfinal=1
-    export nth_aeroanlfinal=1
-    export npe_node_aeroanlfinal=$(( npe_node_max / nth_aeroanlfinal ))
-    export memory_aeroanlfinal="3072M"
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="3072M"
     ;;
 
   "ocnanalprep")
-    export wtime_ocnanalprep="00:10:00"
-    export npe_ocnanalprep=1
-    export nth_ocnanalprep=1
-    export npe_node_ocnanalprep=$(( npe_node_max / nth_ocnanalprep ))
-    export memory_ocnanalprep="24GB"
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="24GB"
     ;;
 
   "prepoceanobs")
-    export wtime_prepoceanobs="00:10:00"
-    export npe_prepoceanobs=1
-    export nth_prepoceanobs=1
-    export npe_node_prepoceanobs=$(( npe_node_max / nth_prepoceanobs ))
-    export memory_prepoceanobs="48GB"
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="48GB"
     ;;
 
-  "ocnanalbmat")
+  "marinebmat")
     npes=16
+    ntasks=16
     case ${OCNRES} in
-      "025") npes=480;;
-      "050")  npes=16;;
-      "500")  npes=16;;
+      "025") ntasks=480;;
+      "050")  ntasks=16;;
+      "500")  ntasks=16;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
-    export wtime_ocnanalbmat="00:30:00"
-    export npe_ocnanalbmat=${npes}
-    export nth_ocnanalbmat=1
+    walltime="00:30:00"
+    threads_per_task=1
     export is_exclusive=True
-    export npe_node_ocnanalbmat=$(( npe_node_max / nth_ocnanalbmat ))
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "ocnanalrun")
-    npes=16
+    ntasks=16
     case ${OCNRES} in
       "025")
-        npes=480
-        memory_ocnanalrun="96GB"
+        ntasks=480
+        memory="96GB"
         ;;
       "050")
-        npes=16
-        memory_ocnanalrun="96GB"
+        ntasks=16
+        memory="96GB"
         ;;
       "500")
-        npes=16
-        memory_ocnanalrun="24GB"
+        ntasks=16
+        memory="24GB"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
-    export wtime_ocnanalrun="00:15:00"
-    export npe_ocnanalrun=${npes}
-    export nth_ocnanalrun=1
+    walltime="00:15:00"
+    threads_per_task=1
     export is_exclusive=True
-    export npe_node_ocnanalrun=$(( npe_node_max / nth_ocnanalrun ))
-    export memory_ocnanalrun
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "ocnanalecen")
-    npes=16
+    ntasks=16
     case ${OCNRES} in
       "025")
-        npes=40
-        memory_ocnanalecen="96GB"
+        ntasks=40
+        memory="96GB"
         ;;
       "050")
-        npes=16
-        memory_ocnanalecen="96GB"
+        ntasks=16
+        memory="96GB"
         ;;
       "500")
-        npes=16
-        memory_ocnanalecen="24GB"
+        ntasks=16
+        memory="24GB"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
-    export wtime_ocnanalecen="00:10:00"
-    export npe_ocnanalecen=${npes}
-    export nth_ocnanalecen=1
+    walltime="00:10:00"
+    threads_per_task=1
     export is_exclusive=True
-    export npe_node_ocnanalecen=$(( npe_node_max / nth_ocnanalecen ))
-    export memory_ocnanalecen
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "marineanalletkf")
-    npes=16
+    ntasks=16
     case ${OCNRES} in
       "025")
-        npes=480
-        memory_marineanalletkf="96GB"
+        ntasks=480
+        memory="96GB"
         ;;
       "050")
-        npes=16
-        memory_marineanalletkf="96GB"
+        ntasks=16
+        memory="96GB"
         ;;
       "500")
-        npes=16
-        memory_marineanalletkf="24GB"
+        ntasks=16
+        memory="24GB"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
 
-    export wtime_marineanalletkf="00:10:00"
-    export npe_marineanalletkf=${npes}
-    export nth_marineanalletkf=1
+    walltime="00:10:00"
+    threads_per_task=1
     export is_exclusive=True
-    export npe_node_marineanalletkf=$(( npe_node_max / nth_marineanalletkf ))
-    export memory_marineanalletkf
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
 
   "ocnanalchkpt")
-    export wtime_ocnanalchkpt="00:10:00"
-    export npe_ocnanalchkpt=1
-    export nth_ocnanalchkpt=1
-    export npe_node_ocnanalchkpt=$(( npe_node_max / nth_ocnanalchkpt ))
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     case ${OCNRES} in
       "025")
-        memory_ocnanalchkpt="128GB"
-        npes=40;;
+        memory="128GB"
+        ntasks=40;;
       "050")
-        memory_ocnanalchkpt="32GB"
-        npes=16;;
+        memory="32GB"
+        ntasks=16;;
       "500")
-        memory_ocnanalchkpt="32GB"
-        npes=8;;
+        memory="32GB"
+        ntasks=8;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
         exit 4
     esac
-    export npe_ocnanalchkpt=${npes}
-    export memory_ocnanalchkpt
     ;;
 
   "ocnanalpost")
-    export wtime_ocnanalpost="00:30:00"
-    export npe_ocnanalpost=${npe_node_max}
-    export nth_ocnanalpost=1
-    export npe_node_ocnanalpost=$(( npe_node_max / nth_ocnanalpost ))
+    walltime="00:30:00"
+    ntasks=${max_tasks_per_node}
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "ocnanalvrfy")
-    export wtime_ocnanalvrfy="00:35:00"
-    export npe_ocnanalvrfy=1
-    export nth_ocnanalvrfy=1
-    export npe_node_ocnanalvrfy=$(( npe_node_max / nth_ocnanalvrfy ))
-    export memory_ocnanalvrfy="24GB"
+    walltime="00:35:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="24GB"
     ;;
 
   "anal")
-    export wtime_anal_gdas="01:20:00"
-    export wtime_anal_gfs="01:00:00"
+    walltime_gdas="01:20:00"
+    walltime_gfs="01:00:00"
     case ${CASE} in
       "C768")
-        export npe_anal_gdas=780
-        export npe_anal_gfs=825
-        export nth_anal=5
+        ntasks_gdas=780
+        ntasks_gfs=825
+        threads_per_task=5
         ;;
       "C384")
-        export npe_anal_gdas=160
-        export npe_anal_gfs=160
-        export nth_anal=10
+        ntasks_gdas=160
+        ntasks_gfs=160
+        threads_per_task=10
         ;;
       "C192" | "C96" | "C48")
-        export npe_anal_gdas=84
-        export npe_anal_gfs=84
-        export nth_anal=5
+        ntasks_gdas=84
+        ntasks_gfs=84
+        threads_per_task=5
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
-    export npe_node_anal=$(( npe_node_max / nth_anal ))
-    export nth_cycle=${nth_anal}
-    export npe_node_cycle=$(( npe_node_max / nth_cycle ))
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export threads_per_task_cycle=${threads_per_task}
+    export tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
     export is_exclusive=True
-
-    var_npe="npe_anal_${RUN}"
-    if [[ -n "${!var_npe+0}" ]]; then
-      declare -x "npe_anal"="${!var_npe}"
-    fi
     ;;
 
   "analcalc")
-    export wtime_analcalc="00:15:00"
-    export npe_analcalc=127
-    export ntasks="${npe_analcalc}"
-    export nth_analcalc=1
-    export npe_node_analcalc=$(( npe_node_max / nth_analcalc ))
-    export nth_echgres_gdas=4
-    export nth_echgres_gfs=12
+    walltime="00:15:00"
+    ntasks=127
+    export ntasks_calcanl="${ntasks}"
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export threads_per_task_echgres_gdas=4
+    export threads_per_task_echgres_gfs=12
     export is_exclusive=True
-    export memory_analcalc="48GB"
+    memory="48GB"
     if [[ "${CASE}" == "C384" || "${CASE}" == "C768" ]]; then
-       export memory_analcalc="${mem_node_max}"
-    fi
-
-    var_nth="nth_echgres_${RUN}"
-    if [[ -n "${!var_nth+0}" ]]; then
-      declare -x "nth_echgres"="${!var_nth}"
+       memory="${mem_node_max}"
     fi
     ;;
 
   "analdiag")
-    export wtime_analdiag="00:15:00"
-    export npe_analdiag=96             # Should be at least twice npe_ediag
-    export nth_analdiag=1
-    export npe_node_analdiag=$(( npe_node_max / nth_analdiag ))
-    export memory_analdiag="48GB"
+    walltime="00:15:00"
+    ntasks=96             # Should be at least twice ediag's tasks
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="48GB"
     ;;
 
   "sfcanl")
-    export wtime_sfcanl="00:20:00"
-    export npe_sfcanl=6
-    export nth_sfcanl=1
-    export npe_node_sfcanl=$(( npe_node_max / nth_sfcanl ))
+    walltime="00:20:00"
+    ntasks=${ntiles:-6}
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
 
   "fcst" | "efcs")
     export is_exclusive=True
 
-    if [[ "${step}" == "fcst" ]]; then
-      _CDUMP_LIST=${CDUMP:-"gdas gfs"}
-    elif [[ "${step}" == "efcs" ]]; then
-      _CDUMP_LIST=${CDUMP:-"enkfgdas enkfgfs"}
+    _RUN=${RUN:-"gfs"}
+    _RUN=${RUN/enkf/}
+
+    # Declare variables from config.ufs based on _RUN
+    # Export layout and write task variables, but not ntasks/threads
+    # Capitalize _RUN for write tasks
+    for var in layout_x layout_y ntasks_fv3 ntasks_quilt nthreads_fv3 nthreads_ufs \
+               WRITE_GROUP WRTTASK_PER_GROUP_PER_THREAD; do
+      if [[ ${var} =~ "layout" ]]; then
+        ufs_var_name="${var}_${_RUN}"
+        declare -x "${var}"="${!ufs_var_name}"
+      elif [[ ${var} =~ "WR" ]]; then
+        ufs_var_name="${var}_${_RUN^^}"
+        declare -x "${var}"="${!ufs_var_name}"
+      else
+        ufs_var_name="${var}_${_RUN}"
+        declare "${var}"="${!ufs_var_name}"
+      fi
+    done
+
+    # Will not set mediator threads if we are skipping the mediator
+    if [[ ${_RUN} == "gfs" ]]; then
+      nthreads_mediator=${nthreads_mediator_gfs:-}
+    elif [[ ${_RUN} == "gdas" ]]; then
+      nthreads_mediator=${nthreads_mediator_gdas:-}
     fi
 
-    # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
-    for _CDUMP in ${_CDUMP_LIST}; do
-      if [[ "${_CDUMP}" =~ "gfs" ]]; then
-        export layout_x=${layout_x_gfs}
-        export layout_y=${layout_y_gfs}
-        export WRITE_GROUP=${WRITE_GROUP_GFS}
-        export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GFS}
-        ntasks_fv3=${ntasks_fv3_gfs}
-        ntasks_quilt=${ntasks_quilt_gfs}
-        nthreads_fv3=${nthreads_fv3_gfs}
-        nthreads_ufs=${nthreads_ufs_gfs}
-        # Will not be set if we are skipping the mediator
-        nthreads_mediator=${nthreads_mediator_gfs:-}
-      elif [[ "${_CDUMP}" =~ "gdas" ]]; then
-        export layout_x=${layout_x_gdas}
-        export layout_y=${layout_y_gdas}
-        export WRITE_GROUP=${WRITE_GROUP_GDAS}
-        export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GDAS}
-        ntasks_fv3=${ntasks_fv3_gdas}
-        ntasks_quilt=${ntasks_quilt_gdas}
-        nthreads_fv3=${nthreads_fv3_gdas}
-        nthreads_ufs=${nthreads_ufs_gdas}
-        nthreads_mediator=${nthreads_mediator_gdas:-}
-      fi
+    # Determine if using ESMF-managed threading or traditional threading
+    # If using traditional threading, set them to 1
+    if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+      export UFS_THREADS=1
+    else  # traditional threading
+      export UFS_THREADS=${nthreads_ufs:-1}
+      nthreads_fv3=1
+      nthreads_mediator=1
+      [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
+      [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
+      [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
+    fi
 
-      # Determine if using ESMF-managed threading or traditional threading
-      # If using traditional threading, set them to 1
-      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
-        export UFS_THREADS=1
-      else  # traditional threading
-        export UFS_THREADS=${nthreads_ufs:-1}
-        nthreads_fv3=1
-        nthreads_mediator=1
-        [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
-        [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
-        [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
-      fi
+    if (( ntiles > 6 )); then
+      export layout_x_nest=${layout_x_nest:-10}
+      export layout_y_nest=${layout_y_nest:-10}
+      export npx_nest=${npx_nest:-1441}
+      export npy_nest=${npy_nest:-961}
+    fi
 
-      if (( ntiles > 6 )); then
-        export layout_x_nest=${layout_x_nest:-10}
-        export layout_y_nest=${layout_y_nest:-10}
-        export npx_nest=${npx_nest:-1441}
-        export npy_nest=${npy_nest:-961}
-      fi
+    # PETS for the atmosphere dycore
+    (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
+    echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
 
-      # PETS for the atmosphere dycore
-      (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
-      echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
+    # PETS for quilting
+    if [[ "${QUILTING:-}" == ".true." ]]; then
+      (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
+      (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
+      export WRTTASK_PER_GROUP
+    else
+      QUILTPETS=0
+    fi
+    echo "QUILT using (nthreads, PETS) = (${nthreads_fv3}, ${QUILTPETS})"
 
-      # PETS for quilting
-      if [[ "${QUILTING:-}" == ".true." ]]; then
-        (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
-        (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
-        export WRTTASK_PER_GROUP
-      else
-        QUILTPETS=0
-      fi
-      echo "QUILT using (nthreads, PETS) = (${nthreads_fv3}, ${QUILTPETS})"
+    # Total PETS for the atmosphere component
+    ATMTHREADS=${nthreads_fv3}
+    (( ATMPETS = FV3PETS + QUILTPETS ))
+    export ATMPETS ATMTHREADS
+    echo "FV3ATM using (nthreads, PETS) = (${ATMTHREADS}, ${ATMPETS})"
 
-      # Total PETS for the atmosphere component
-      ATMTHREADS=${nthreads_fv3}
-      (( ATMPETS = FV3PETS + QUILTPETS ))
-      export ATMPETS ATMTHREADS
-      echo "FV3ATM using (nthreads, PETS) = (${ATMTHREADS}, ${ATMPETS})"
+    # Total PETS for the coupled model (starting w/ the atmosphere)
+    NTASKS_TOT=${ATMPETS}
 
-      # Total PETS for the coupled model (starting w/ the atmosphere)
-      NTASKS_TOT=${ATMPETS}
+    # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
+    # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
+    # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
+    # TODO: Update reference when moved to ufs-weather-model RTD
+    MEDTHREADS=${nthreads_mediator:-1}
+    MEDPETS=${MEDPETS:-${FV3PETS}}
+    (( "${MEDPETS}" > 300 )) && MEDPETS=300
+    export MEDPETS MEDTHREADS
+    echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
-      # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
-      # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
-      # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
-      # TODO: Update reference when moved to ufs-weather-model RTD
-      MEDTHREADS=${nthreads_mediator:-1}
-      MEDPETS=${MEDPETS:-${FV3PETS}}
-      (( "${MEDPETS}" > 300 )) && MEDPETS=300
-      export MEDPETS MEDTHREADS
-      echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
+    CHMPETS=0; CHMTHREADS=0
+    if [[ "${DO_AERO}" == "YES" ]]; then
+      # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
+      (( CHMTHREADS = ATMTHREADS ))
+      (( CHMPETS = FV3PETS ))
+      # Do not add to NTASKS_TOT
+      echo "GOCART using (threads, PETS) = (${CHMTHREADS}, ${CHMPETS})"
+    fi
+    export CHMPETS CHMTHREADS
 
-      CHMPETS=0; CHMTHREADS=0
-      if [[ "${DO_AERO}" == "YES" ]]; then
-        # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
-        (( CHMTHREADS = ATMTHREADS ))
-        (( CHMPETS = FV3PETS ))
-        # Do not add to NTASKS_TOT
-        echo "GOCART using (threads, PETS) = (${CHMTHREADS}, ${CHMPETS})"
-      fi
-      export CHMPETS CHMTHREADS
+    WAVPETS=0; WAVTHREADS=0
+    if [[ "${DO_WAVE}" == "YES" ]]; then
+      (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
+      (( WAVTHREADS = nthreads_ww3 ))
+      echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
+    fi
+    export WAVPETS WAVTHREADS
 
-      WAVPETS=0; WAVTHREADS=0
-      if [[ "${DO_WAVE}" == "YES" ]]; then
-        (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
-        (( WAVTHREADS = nthreads_ww3 ))
-        echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
-        (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
-      fi
-      export WAVPETS WAVTHREADS
+    OCNPETS=0; OCNTHREADS=0
+    if [[ "${DO_OCN}" == "YES" ]]; then
+      (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
+      (( OCNTHREADS = nthreads_mom6 ))
+      echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
+    fi
+    export OCNPETS OCNTHREADS
 
-      OCNPETS=0; OCNTHREADS=0
-      if [[ "${DO_OCN}" == "YES" ]]; then
-        (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
-        (( OCNTHREADS = nthreads_mom6 ))
-        echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
-        (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
-      fi
-      export OCNPETS OCNTHREADS
+    ICEPETS=0; ICETHREADS=0
+    if [[ "${DO_ICE}" == "YES" ]]; then
+      (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
+      (( ICETHREADS = nthreads_cice6 ))
+      echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
+    fi
+    export ICEPETS ICETHREADS
 
-      ICEPETS=0; ICETHREADS=0
-      if [[ "${DO_ICE}" == "YES" ]]; then
-        (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
-        (( ICETHREADS = nthreads_cice6 ))
-        echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
-        (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
-      fi
-      export ICEPETS ICETHREADS
+    echo "Total PETS for ${RUN:-gfs} = ${NTASKS_TOT}"
 
-      echo "Total PETS for ${_CDUMP} = ${NTASKS_TOT}"
-
-      declare -x "npe_${step}_${_CDUMP}"="${NTASKS_TOT}"
-      declare -x "nth_${step}_${_CDUMP}"="${UFS_THREADS}"
-      declare -x "npe_node_${step}_${_CDUMP}"="${npe_node_max}"
-
-    done
+    declare -x "ntasks"="${NTASKS_TOT}"
+    declare -x "threads_per_task"="${UFS_THREADS}"
+    declare -x "tasks_per_node"="${max_tasks_per_node}"
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "wtime_${step}_gdas"="00:20:00"
-        declare -x "wtime_${step}_enkfgdas"="00:20:00"
-        declare -x "wtime_${step}_gfs"="03:00:00"
-        declare -x "wtime_${step}_enkfgfs"="00:20:00"
+        declare -x "walltime_gdas"="00:20:00"
+        declare -x "walltime_enkfgdas"="00:20:00"
+        declare -x "walltime_gfs"="03:00:00"
+        declare -x "walltime_enkfgfs"="00:20:00"
         ;;
       "C384")
-        declare -x "wtime_${step}_gdas"="00:30:00"
-        declare -x "wtime_${step}_enkfgdas"="00:30:00"
-        declare -x "wtime_${step}_gfs"="06:00:00"
-        declare -x "wtime_${step}_enkfgfs"="00:30:00"
+        declare -x "walltime_gdas"="00:30:00"
+        declare -x "walltime_enkfgdas"="00:30:00"
+        declare -x "walltime_gfs"="06:00:00"
+        declare -x "walltime_enkfgfs"="00:30:00"
         ;;
       "C768" | "C1152")
         # Not valid resolutions for ensembles
-        declare -x "wtime_${step}_gdas"="00:40:00"
-        declare -x "wtime_${step}_gfs"="06:00:00"
+        declare -x "walltime_gdas"="00:40:00"
+        declare -x "walltime_gfs"="06:00:00"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
@@ -851,175 +783,167 @@ case ${step} in
         ;;
     esac
 
-    var_npe_node="npe_node_${step}_${RUN}"
-    var_nth="nth_${step}_${RUN}"
-    var_npe="npe_${step}_${RUN}"
-    if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_${step}"="${!var_npe_node}" \
-                 "nth_${step}"="${!var_nth}" \
-                 "npe_${step}"="${!var_npe}"
-    fi
-
-    unset _CDUMP _CDUMP_LIST
+    unset _RUN
     unset NTASKS_TOT
     ;;
 
   "oceanice_products")
-    export wtime_oceanice_products="00:15:00"
-    export npe_oceanice_products=1
-    export npe_node_oceanice_products=1
-    export nth_oceanice_products=1
-    export memory_oceanice_products="96GB"
+    walltime="00:15:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="96GB"
     ;;
 
   "upp")
     case "${CASE}" in
       "C48" | "C96")
-        export npe_upp=${CASE:1}
+        ntasks=${CASE:1}
       ;;
       "C192" | "C384" | "C768" )
-        export npe_upp=120
-        export memory_upp="${mem_node_max}"
+        ntasks=120
+        memory="${mem_node_max}"
       ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
       ;;
     esac
-    export npe_node_upp=${npe_upp}
+    tasks_per_node=${ntasks}
 
-    export nth_upp=1
+    threads_per_task=1
 
-    export wtime_upp="00:15:00"
-    if (( npe_node_upp > npe_node_max )); then
-      export npe_node_upp=${npe_node_max}
+    walltime="00:15:00"
+    if (( tasks_per_node > max_tasks_per_node )); then
+      tasks_per_node=${max_tasks_per_node}
     fi
     export is_exclusive=True
     ;;
 
   "atmos_products")
-    export wtime_atmos_products="00:15:00"
-    export npe_atmos_products=24
-    export nth_atmos_products=1
-    export npe_node_atmos_products="${npe_atmos_products}"
+    walltime="00:15:00"
+    ntasks=24
+    threads_per_task=1
+    tasks_per_node="${ntasks}"
     export is_exclusive=True
     ;;
 
   "verfozn")
-    export wtime_verfozn="00:05:00"
-    export npe_verfozn=1
-    export nth_verfozn=1
-    export npe_node_verfozn=1
-    export memory_verfozn="1G"
+    walltime="00:05:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="1G"
     ;;
 
   "verfrad")
-    export wtime_verfrad="00:40:00"
-    export npe_verfrad=1
-    export nth_verfrad=1
-    export npe_node_verfrad=1
-    export memory_verfrad="5G"
+    walltime="00:40:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="5G"
     ;;
 
   "vminmon")
-    export wtime_vminmon="00:05:00"
-    export npe_vminmon=1
-    export nth_vminmon=1
-    export npe_node_vminmon=1
-    export memory_vminmon="1G"
+    walltime="00:05:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="1G"
     ;;
 
   "tracker")
-    export wtime_tracker="00:10:00"
-    export npe_tracker=1
-    export nth_tracker=1
-    export npe_node_tracker=1
-    export memory_tracker="4G"
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="4G"
     ;;
 
   "genesis")
-    export wtime_genesis="00:25:00"
-    export npe_genesis=1
-    export nth_genesis=1
-    export npe_node_genesis=1
-    export memory_genesis="10G"
+    walltime="00:25:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="10G"
     ;;
 
   "genesis_fsu")
-    export wtime_genesis_fsu="00:10:00"
-    export npe_genesis_fsu=1
-    export nth_genesis_fsu=1
-    export npe_node_genesis_fsu=1
-    export memory_genesis_fsu="10G"
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="10G"
     ;;
 
   "fit2obs")
-    export wtime_fit2obs="00:20:00"
-    export npe_fit2obs=3
-    export nth_fit2obs=1
-    export npe_node_fit2obs=1
-    export memory_fit2obs="20G"
+    walltime="00:20:00"
+    ntasks=3
+    threads_per_task=1
+    tasks_per_node=1
+    memory="20G"
+    [[ ${CASE} == "C768" ]] && memory="80GB"
     ;;
 
   "metp")
-    export nth_metp=1
-    export wtime_metp_gdas="03:00:00"
-    export wtime_metp_gfs="06:00:00"
-    export npe_metp=4
-    export npe_node_metp=4
+    threads_per_task=1
+    walltime_gdas="03:00:00"
+    walltime_gfs="06:00:00"
+    ntasks=4
+    tasks_per_node=4
     export is_exclusive=True
     ;;
 
   "echgres")
-    export wtime_echgres="00:10:00"
-    export npe_echgres=3
-    export nth_echgres=${npe_node_max}
-    export npe_node_echgres=1
+    walltime="00:10:00"
+    ntasks=3
+    threads_per_task=${max_tasks_per_node}
+    tasks_per_node=1
     ;;
 
   "init")
-    export wtime_init="00:30:00"
-    export npe_init=24
-    export nth_init=1
-    export npe_node_init=6
-    export memory_init="70GB"
+    walltime="00:30:00"
+    ntasks=24
+    threads_per_task=1
+    tasks_per_node=6
+    memory="70GB"
     ;;
 
   "init_chem")
-    export wtime_init_chem="00:30:00"
-    export npe_init_chem=1
-    export npe_node_init_chem=1
+    walltime="00:30:00"
+    ntasks=1
+    tasks_per_node=1
     export is_exclusive=True
     ;;
 
   "mom6ic")
-    export wtime_mom6ic="00:30:00"
-    export npe_mom6ic=24
-    export npe_node_mom6ic=24
+    walltime="00:30:00"
+    ntasks=24
+    tasks_per_node=24
     export is_exclusive=True
     ;;
 
   "arch" | "earc" | "getic")
-    declare -x "wtime_${step}"="06:00:00"
-    declare -x "npe_${step}"="1"
-    declare -x "npe_node_${step}"="1"
-    declare -x "nth_${step}"="1"
-    declare -x "memory_${step}"="4096M"
+    walltime="06:00:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="4096M"
     ;;
 
   "cleanup")
-    export wtime_cleanup="00:15:00"
-    export npe_cleanup=1
-    export npe_node_cleanup=1
-    export nth_cleanup=1
-    export memory_cleanup="4096M"
+    walltime="00:15:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="4096M"
     ;;
 
   "stage_ic")
-    export wtime_stage_ic="00:15:00"
-    export npe_stage_ic=1
-    export npe_node_stage_ic=1
-    export nth_stage_ic=1
+    walltime="00:15:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
     export is_exclusive=True
     ;;
 
@@ -1027,360 +951,324 @@ case ${step} in
     export layout_x=${layout_x_atmensanl}
     export layout_y=${layout_y_atmensanl}
 
-    export wtime_atmensanlinit="00:10:00"
-    export npe_atmensanlinit=1
-    export nth_atmensanlinit=1
-    export npe_node_atmensanlinit=$(( npe_node_max / nth_atmensanlinit ))
-    export memory_atmensanlinit="3072M"
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="3072M"
     ;;
 
   "atmensanlletkf")
     export layout_x=${layout_x_atmensanl}
     export layout_y=${layout_y_atmensanl}
 
-    export wtime_atmensanlletkf="00:30:00"
-    export npe_atmensanlletkf_enkfgdas=$(( layout_x * layout_y * 6 ))
-    export npe_atmensanlletkf_enkfgfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmensanlletkf_enkfgdas=1
-    export nth_atmensanlletkf_enkfgfs=${nth_atmensanlletkf_enkfgdas}
-    export npe_node_atmensanlletkf_enkfgdas=$(( npe_node_max / nth_atmensanlletkf_enkfgdas ))
-    export npe_node_atmensanlletkf_enkfgfs=$(( npe_node_max / nth_atmensanlletkf_enkfgfs ))
-    export memory_atmensanlletkf="96GB"
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="96GB"
     export is_exclusive=True
-
-    var_npe_node="npe_node_atmensanlletkf_${RUN}"
-    var_nth="nth_atmensanlletkf_${RUN}"
-    var_npe="npe_atmensanlletkf_${RUN}"
-    # RUN is set to a single value at setup time, so these won't be found
-    # TODO rework setup_xml.py to initialize RUN to the applicable option
-    if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_atmensanlletkf"="${!var_npe_node}" \
-                 "nth_atmensanlletkf"="${!var_nth}" \
-                 "npe_atmensanlletkf"="${!var_npe}"
-    fi
     ;;
 
   "atmensanlfv3inc")
     export layout_x=${layout_x_atmensanl}
     export layout_y=${layout_y_atmensanl}
 
-    export wtime_atmensanlfv3inc="00:30:00"
-    export npe_atmensanlfv3inc_enkfgdas=$(( layout_x * layout_y * 6 ))
-    export npe_atmensanlfv3inc_enkfgfs=$(( layout_x * layout_y * 6 ))
-    export nth_atmensanlfv3inc_enkfgdas=1
-    export nth_atmensanlfv3inc_enkfgfs=${nth_atmensanlfv3inc_enkfgdas}
-    export npe_node_atmensanlfv3inc_enkfgdas=$(( npe_node_max / nth_atmensanlfv3inc_enkfgdas ))
-    export npe_node_atmensanlfv3inc_enkfgfs=$(( npe_node_max / nth_atmensanlfv3inc_enkfgfs ))
-    export memory_atmensanlfv3inc="96GB"
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="96GB"
     export is_exclusive=True
-
-    var_npe_node="npe_node_atmensanlfv3inc_${RUN}"
-    var_nth="nth_atmensanlfv3inc_${RUN}"
-    var_npe="npe_atmensanlfv3inc_${RUN}"
-    # RUN is set to a single value at setup time, so these won't be found
-    # TODO rework setup_xml.py to initialize RUN to the applicable option
-    if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_atmensanlfv3inc"="${!var_npe_node}" \
-                 "nth_atmensanlfv3inc"="${!var_nth}" \
-                 "npe_atmensanlfv3inc"="${!var_npe}"
-    fi
     ;;
 
   "atmensanlfinal")
-    export wtime_atmensanlfinal="00:30:00"
-    export npe_atmensanlfinal=${npe_node_max}
-    export nth_atmensanlfinal=1
-    export npe_node_atmensanlfinal=$(( npe_node_max / nth_atmensanlfinal ))
+    walltime="00:30:00"
+    ntasks=${max_tasks_per_node}
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
 
   "eobs" | "eomg")
-    export wtime_eobs="00:15:00"
-    export wtime_eomg="00:30:00"
+    if [[ "${step}" == "eobs" ]]; then
+      walltime="00:15:00"
+    else
+      walltime="00:30:00"
+    fi
+
     case ${CASE} in
-      "C768")                 export npe_eobs=200;;
-      "C384")                 export npe_eobs=100;;
-      "C192" | "C96" | "C48") export npe_eobs=40;;
+      "C768")                 ntasks=200;;
+      "C384")                 ntasks=100;;
+      "C192" | "C96" | "C48") ntasks=40;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
-    export npe_eomg=${npe_eobs}
-    export nth_eobs=2
-    export nth_eomg=${nth_eobs}
+    threads_per_task=2
     # NOTE The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
-    export npe_node_eobs=$(( npe_node_max / nth_eobs ))
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-    export npe_node_eomg=${npe_node_eobs}
-    # Unset npe_node_eobs if it is not a multiple of npe_node_max
+    # Unset tasks_per_node if it is not a multiple of max_tasks_per_node
     # to prevent dropping data on the floor.  This should be set int
     # config.resources.{machine} instead.  This will result in an error at
     # experiment setup time if not set in config.resources.{machine}.
-    if [[ $(( npe_node_max % npe_node_eobs )) != 0 ]]; then
-      unset npe_node_max
+    if [[ $(( max_tasks_per_node % tasks_per_node )) != 0 ]]; then
+      unset max_tasks_per_node
     fi
     ;;
 
   "ediag")
-    export wtime_ediag="00:15:00"
-    export npe_ediag=48
-    export nth_ediag=1
-    export npe_node_ediag=$(( npe_node_max / nth_ediag ))
-    export memory_ediag="30GB"
+    walltime="00:15:00"
+    ntasks=48
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="30GB"
     ;;
 
   "eupd")
-    export wtime_eupd="00:30:00"
+    walltime="00:30:00"
     case ${CASE} in
       "C768")
-        export npe_eupd=480
-        export nth_eupd=6
+        ntasks=480
+        threads_per_task=6
         ;;
       "C384")
-        export npe_eupd=270
-        export nth_eupd=8
+        ntasks=270
+        threads_per_task=8
         ;;
       "C192" | "C96" | "C48")
-        export npe_eupd=42
-        export nth_eupd=2
+        ntasks=42
+        threads_per_task=2
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
-    export npe_node_eupd=$(( npe_node_max / nth_eupd ))
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
 
   "ecen")
-    export wtime_ecen="00:10:00"
-    export npe_ecen=80
-    export nth_ecen=4
+    walltime="00:10:00"
+    ntasks=80
+    threads_per_task=4
     if [[ ${CASE} == "C384" || ${CASE} == "C192" || ${CASE} == "C96" || ${CASE} == "C48" ]]; then
-      export nth_ecen=2
+      threads_per_task=2
     fi
-    export npe_node_ecen=$(( npe_node_max / nth_ecen ))
-    export nth_cycle=${nth_ecen}
-    export npe_node_cycle=$(( npe_node_max / nth_cycle ))
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export threads_per_task_cycle=${threads_per_task}
+    export tasks_per_node_cycle=${tasks_per_node}
     export is_exclusive=True
     ;;
 
   "esfc")
-    export wtime_esfc="00:15:00"
-    export npe_esfc=80
-    export nth_esfc=1
-    export npe_node_esfc=$(( npe_node_max / nth_esfc ))
-    export nth_cycle=${nth_esfc}
-    export npe_node_cycle=$(( npe_node_max / nth_cycle ))
+    walltime="00:15:00"
+    ntasks=80
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    threads_per_task_cycle=${threads_per_task}
+    tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
     ;;
 
   "epos")
-    export wtime_epos="00:15:00"
-    [[ ${CASE} == "C768" ]] && export wtime_epos="00:25:00"
-    export npe_epos=80
-    export nth_epos=1
-    export npe_node_epos=$(( npe_node_max / nth_epos ))
+    walltime="00:15:00"
+    [[ ${CASE} == "C768" ]] && walltime="00:25:00"
+    ntasks=80
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
 
   "postsnd")
-    export wtime_postsnd="02:00:00"
-    export npe_postsnd=40
-    export nth_postsnd=8
-    export npe_node_postsnd=10
-    export npe_postsndcfp=9
-    export npe_node_postsndcfp=1
-    postsnd_req_cores=$(( npe_node_postsnd * nth_postsnd ))
-    if (( postsnd_req_cores > npe_node_max )); then
-        export npe_node_postsnd=$(( npe_node_max / nth_postsnd ))
+    walltime="02:00:00"
+    ntasks=40
+    threads_per_task=8
+    tasks_per_node=10
+    export ntasks_postsndcfp=9
+    export tasks_per_node_postsndcfp=1
+    postsnd_req_cores=$(( tasks_per_node * threads_per_task ))
+    if (( postsnd_req_cores > max_tasks_per_node )); then
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     export is_exclusive=True
     ;;
 
   "awips")
-    export wtime_awips="03:30:00"
-    export npe_awips=1
-    export npe_node_awips=1
-    export nth_awips=1
-    export memory_awips="3GB"
+    walltime="03:30:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="3GB"
     ;;
 
   "npoess")
-    export wtime_npoess="03:30:00"
-    export npe_npoess=1
-    export npe_node_npoess=1
-    export nth_npoess=1
-    export memory_npoess="3GB"
+    walltime="03:30:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="3GB"
     ;;
 
   "gempak")
-    export wtime_gempak="00:30:00"
-    export npe_gempak_gdas=2
-    export npe_gempak_gfs=28
-    export npe_node_gempak_gdas=2
-    export npe_node_gempak_gfs=28
-    export nth_gempak=1
-    export memory_gempak_gdas="4GB"
-    export memory_gempak_gfs="2GB"
-
-    var_npe_node="npe_node_gempak_${RUN}"
-    var_npe="npe_gempak_${RUN}"
-    # RUN is set to a single value at setup time, so these won't be found
-    # TODO rework setup_xml.py to initialize RUN to the applicable option
-    if [[ -n "${!var_npe_node+0}" ]]; then
-      declare -x "npe_node_gempak"="${!var_npe_node}" \
-                 "npe_gempak"="${!var_npe}"
-    fi
+    walltime="00:30:00"
+    ntasks_gdas=2
+    ntasks_gfs=28
+    tasks_per_node_gdas=2
+    tasks_per_node_gfs=28
+    threads_per_task=1
+    memory_gdas="4GB"
+    memory_gfs="2GB"
     ;;
 
   "mos_stn_prep")
-    export wtime_mos_stn_prep="00:10:00"
-    export npe_mos_stn_prep=3
-    export npe_node_mos_stn_prep=3
-    export nth_mos_stn_prep=1
-    export memory_mos_stn_prep="5GB"
-    export NTASK="${npe_mos_stn_prep}"
-    export PTILE="${npe_node_mos_stn_prep}"
+    walltime="00:10:00"
+    ntasks=3
+    tasks_per_node=3
+    threads_per_task=1
+    memory="5GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     ;;
 
   "mos_grd_prep")
-    export wtime_mos_grd_prep="00:10:00"
-    export npe_mos_grd_prep=4
-    export npe_node_mos_grd_prep=4
-    export nth_mos_grd_prep=1
-    export memory_mos_grd_prep="16GB"
-    export NTASK="${npe_mos_grd_prep}"
-    export PTILE="${npe_node_mos_grd_prep}"
+    walltime="00:10:00"
+    ntasks=4
+    tasks_per_node=4
+    threads_per_task=1
+    memory="16GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     ;;
 
   "mos_ext_stn_prep")
-    export wtime_mos_ext_stn_prep="00:15:00"
-    export npe_mos_ext_stn_prep=2
-    export npe_node_mos_ext_stn_prep=2
-    export nth_mos_ext_stn_prep=1
-    export memory_mos_ext_stn_prep="5GB"
-    export NTASK="${npe_mos_ext_stn_prep}"
-    export PTILE="${npe_node_mos_ext_stn_prep}"
+    walltime="00:15:00"
+    ntasks=2
+    tasks_per_node=2
+    threads_per_task=1
+    memory="5GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     ;;
 
   "mos_ext_grd_prep")
-    export wtime_mos_ext_grd_prep="00:10:00"
-    export npe_mos_ext_grd_prep=7
-    export npe_node_mos_ext_grd_prep=7
-    export nth_mos_ext_grd_prep=1
-    export memory_mos_ext_grd_prep="3GB"
-    export NTASK="${npe_mos_ext_grd_prep}"
-    export PTILE="${npe_node_mos_ext_grd_prep}"
+    walltime="00:10:00"
+    ntasks=7
+    tasks_per_node=7
+    threads_per_task=1
+    memory="3GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     ;;
 
   "mos_stn_fcst")
-    export wtime_mos_stn_fcst="00:10:00"
-    export npe_mos_stn_fcst=5
-    export npe_node_mos_stn_fcst=5
-    export nth_mos_stn_fcst=1
-    export memory_mos_stn_fcst="40GB"
-    export NTASK="${npe_mos_stn_fcst}"
-    export PTILE="${npe_node_mos_stn_fcst}"
+    walltime="00:10:00"
+    ntasks=5
+    tasks_per_node=5
+    threads_per_task=1
+    memory="40GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     ;;
 
   "mos_grd_fcst")
-    export wtime_mos_grd_fcst="00:10:00"
-    export npe_mos_grd_fcst=7
-    export npe_node_mos_grd_fcst=7
-    export nth_mos_grd_fcst=1
-    export memory_mos_grd_fcst="50GB"
-    export NTASK="${npe_mos_grd_fcst}"
-    export PTILE="${npe_node_mos_grd_fcst}"
+    walltime="00:10:00"
+    ntasks=7
+    tasks_per_node=7
+    threads_per_task=1
+    memory="50GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     ;;
 
   "mos_ext_stn_fcst")
-    export wtime_mos_ext_stn_fcst="00:20:00"
-    export npe_mos_ext_stn_fcst=3
-    export npe_node_mos_ext_stn_fcst=3
-    export nth_mos_ext_stn_fcst=1
-    export memory_mos_ext_stn_fcst="50GB"
-    export NTASK="${npe_mos_ext_stn_fcst}"
-    export PTILE="${npe_node_mos_ext_stn_fcst}"
+    walltime="00:20:00"
+    ntasks=3
+    tasks_per_node=3
+    threads_per_task=1
+    memory="50GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     export prepost=True
     ;;
 
   "mos_ext_grd_fcst")
-    export wtime_mos_ext_grd_fcst="00:10:00"
-    export npe_mos_ext_grd_fcst=7
-    export npe_node_mos_ext_grd_fcst=7
-    export nth_mos_ext_grd_fcst=1
-    export memory_mos_ext_grd_fcst="50GB"
-    export NTASK="${npe_mos_ext_grd_fcst}"
-    export PTILE="${npe_node_mos_ext_grd_fcst}"
+    walltime="00:10:00"
+    ntasks=7
+    tasks_per_node=7
+    threads_per_task=1
+    memory="50GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     ;;
 
   "mos_stn_prdgen")
-    export wtime_mos_stn_prdgen="00:10:00"
-    export npe_mos_stn_prdgen=1
-    export npe_node_mos_stn_prdgen=1
-    export nth_mos_stn_prdgen=1
-    export memory_mos_stn_prdgen="15GB"
-    export NTASK="${npe_mos_stn_prdgen}"
-    export PTILE="${npe_node_mos_stn_prdgen}"
+    walltime="00:10:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="15GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     export prepost=True
     ;;
 
   "mos_grd_prdgen")
-    export wtime_mos_grd_prdgen="00:40:00"
-    export npe_mos_grd_prdgen=72
-    export npe_node_mos_grd_prdgen=18
-    export nth_mos_grd_prdgen=4
-    export memory_mos_grd_prdgen="20GB"
-    export NTASK="${npe_mos_grd_prdgen}"
-    export PTILE="${npe_node_mos_grd_prdgen}"
-    export OMP_NUM_THREADS="${nth_mos_grd_prdgen}"
+    walltime="00:40:00"
+    ntasks=72
+    tasks_per_node=18
+    threads_per_task=4
+    memory="20GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
+    export OMP_NUM_THREADS="${threads_per_task}"
     ;;
 
   "mos_ext_stn_prdgen")
-    export wtime_mos_ext_stn_prdgen="00:10:00"
-    export npe_mos_ext_stn_prdgen=1
-    export npe_node_mos_ext_stn_prdgen=1
-    export nth_mos_ext_stn_prdgen=1
-    export memory_mos_ext_stn_prdgen="15GB"
-    export NTASK="${npe_mos_ext_stn_prdgen}"
-    export PTILE="${npe_node_mos_ext_stn_prdgen}"
+    walltime="00:10:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="15GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
     export prepost=True
     ;;
 
   "mos_ext_grd_prdgen")
-    export wtime_mos_ext_grd_prdgen="00:30:00"
-    export npe_mos_ext_grd_prdgen=96
-    export npe_node_mos_ext_grd_prdgen=6
-    export nth_mos_ext_grd_prdgen=16
-    export memory_mos_ext_grd_prdgen="30GB"
-    export NTASK="${npe_mos_ext_grd_prdgen}"
-    export PTILE="${npe_node_mos_ext_grd_prdgen}"
-    export OMP_NUM_THREADS="${nth_mos_ext_grd_prdgen}"
+    walltime="00:30:00"
+    ntasks=96
+    tasks_per_node=6
+    threads_per_task=16
+    memory="30GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
+    export OMP_NUM_THREADS="${threads_per_task}"
     ;;
 
   "mos_wx_prdgen")
-    export wtime_mos_wx_prdgen="00:10:00"
-    export npe_mos_wx_prdgen=4
-    export npe_node_mos_wx_prdgen=2
-    export nth_mos_wx_prdgen=2
-    export memory_mos_wx_prdgen="10GB"
-    export NTASK="${npe_mos_wx_prdgen}"
-    export PTILE="${npe_node_mos_wx_prdgen}"
-    export OMP_NUM_THREADS="${nth_mos_wx_prdgen}"
+    walltime="00:10:00"
+    ntasks=4
+    tasks_per_node=2
+    threads_per_task=2
+    memory="10GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
+    export OMP_NUM_THREADS="${threads_per_task}"
     ;;
 
   "mos_wx_ext_prdgen")
-    export wtime_mos_wx_ext_prdgen="00:10:00"
-    export npe_mos_wx_ext_prdgen=4
-    export npe_node_mos_wx_ext_prdgen=2
-    export nth_mos_wx_ext_prdgen=2
-    export memory_mos_wx_ext_prdgen="10GB"
-    export NTASK="${npe_mos_wx_ext_prdgen}"
-    export PTILE="${npe_node_mos_wx_ext_prdgen}"
-    export OMP_NUM_THREADS="${nth_mos_wx_ext_prdgen}"
+    walltime="00:10:00"
+    ntasks=4
+    tasks_per_node=2
+    threads_per_task=2
+    memory="10GB"
+    NTASK="${ntasks}"
+    export PTILE="${tasks_per_node}"
+    export OMP_NUM_THREADS="${threads_per_task}"
     ;;
 
   *)
@@ -1390,15 +1278,19 @@ case ${step} in
 
 esac
 
-# Unset dynamic variable names
-unset var_NTASKS \
-      var_npe \
-      var_npe_node \
-      var_nth
-
 # Get machine-specific resources, overriding/extending the above assignments
 if [[ -f "${EXPDIR}/config.resources.${machine}" ]]; then
    source "${EXPDIR}/config.resources.${machine}"
 fi
+
+# Check for RUN-specific variables and export them
+for resource_var in threads_per_task ntasks tasks_per_node NTASKS memory walltime; do
+   run_resource_var="${resource_var}_${RUN}"
+   if [[ -n "${!run_resource_var+0}" ]]; then
+      declare -x "${resource_var}"="${!run_resource_var}"
+   elif [[ -n "${!resource_var+0}" ]]; then
+      export "${resource_var?}"
+   fi
+done
 
 echo "END: config.resources"
