@@ -44,9 +44,7 @@ class Stage(Task):
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
 
-        stage_parm = os.path.join(stage_dict.PARMgfs, "stage")
-
-        stage_set = parse_j2yaml(os.path.join(stage_parm, "stage.yaml.j2"), stage_dict)
+        stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict)
 
         # Copy files to ROTDIR
         for key in stage_set.keys():
