@@ -9,8 +9,7 @@ source "${EXPDIR}/config.resources" stage_ic
 
 export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/stage.yaml.j2"
 
-# Set ICSDIR
-
+# Set ICSDIR (if not defined)
 if [[ -z "${ICSDIR}" ]] ; then
 
   IC_VER="20240610"
