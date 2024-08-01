@@ -281,11 +281,11 @@ case ${step} in
     ;;
 
   "arch")
-    walltime="06:00:00"
-    ntasks=1
-    tasks_per_node=1
-    threads_per_task=1
-    memory="4096M"
+    export walltime="06:00:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
     ;;
 
   *)
