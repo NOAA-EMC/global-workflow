@@ -25,17 +25,16 @@ if not os.path.isfile(os.path.join(testdata_full_path, 'database.db')):
     database_destination = os.path.join(testdata_full_path, 'database.db')
     wget.download(database_url, database_destination)
 
-try:
-    rocotostat = which('rocotostat')
-except CommandNotFoundError:
+rocotostat_cmd = which('rocotostat')
+if not rocotostat_cmd:
     raise CommandNotFoundError("rocotostat not found in PATH")
 
-rocotostat.add_default_arg(['-w', os.path.join(testdata_path, 'workflow.xml'), '-d', os.path.join(testdata_path, 'database.db')])
+rocotostat_cmd.add_default_arg(['-w', os.path.join(testdata_path, 'workflow.xml'), '-d', os.path.join(testdata_path, 'database.db')])
 
 
 def test_rocoto_statcount():
 
-    result = rocoto_statcount(rocotostat)
+    result = rocoto_statcount(rocotostat_cmd)
 
     assert result['SUCCEEDED'] == 20
     assert result['FAIL'] == 0
@@ -47,7 +46,7 @@ def test_rocoto_statcount():
 
 def test_rocoto_summary():
 
-    result = rocotostat_summary(rocotostat)
+    result = rocotostat_summary(rocotostat_cmd)
 
     assert result['CYCLES_TOTAL'] == 1
     assert result['CYCLES_DONE'] == 1
@@ -55,7 +54,7 @@ def test_rocoto_summary():
 
 def test_rocoto_done():
 
-    result = rocotostat_summary(rocotostat)
+    result = rocotostat_summary(rocotostat_cmd)
 
     assert is_done(result)
 
@@ -79,10 +78,10 @@ def test_rocoto_stalled():
         database_destination = os.path.join(testdata_full_path, 'stalled.db')
         wget.download(database_url, database_destination)
 
-    rocotostat = which('rocotostat')
-    rocotostat.add_default_arg(['-w', xml, '-d', db])
+    rocotostat_cmd = which('rocotostat')
+    rocotostat_cmd.add_default_arg(['-w', xml, '-d', db])
 
-    result = rocoto_statcount(rocotostat)
+    result = rocoto_statcount(rocotostat_cmd)
 
     assert result['SUCCEEDED'] == 11
     assert is_stalled(result)
