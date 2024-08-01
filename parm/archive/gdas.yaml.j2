@@ -108,7 +108,7 @@ gdas:
         {% endif %}  # End of cycled data
 
         # Forecast and post logs
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_seg0.log"
 
         {% for fhr in range(0, FHMAX + 1, 3) %}
             {% set fhr3 = '%03d' % fhr %}
