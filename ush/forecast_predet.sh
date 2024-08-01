@@ -607,8 +607,9 @@ CICE_predet(){
   # Convert output settings into an explicit list for CICE
   # shellcheck disable=SC2312
   if (( FHOUT_ICE > 6 )) && (( FHOUT_ICE % 6 == 0 ));then
+    FHOUT_ICE_BASE=${FHOUT_ICE}
     FHOUT_ICE=6
-    FHOUTS_ICE=$(( FHOUT_ICE / FHOUT_ICE_6h ))
+    FHOUTS_ICE=$(( FHOUT_ICE_BASE / FHOUT_ICE ))
   else
     FHOUT_ICE=${FHOUT_ICE}
   fi
