@@ -567,7 +567,7 @@ class GEFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps,  dep_condition='and')
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('arch')
         task_name = 'arch'
