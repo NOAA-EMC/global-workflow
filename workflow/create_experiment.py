@@ -11,6 +11,14 @@ where ${HOMEgfs} is determined from the location of this script.
 The yaml file are simply the arguments for these two scripts.
 After this scripts runs the experiment is ready for launch.
 
+Environmental variables
+-----------------------
+    pslot
+        Name of the experiment
+
+    RUNTESTS
+        Root directory where the test EXPDIR and COMROOT will be placed
+
 Output
 ------
 Functionally an experiment is setup as a result running the two scripts described above
@@ -18,7 +26,6 @@ with an error code of 0 upon success.
 """
 
 import os
-import sys
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path
