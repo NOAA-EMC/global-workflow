@@ -8,11 +8,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="aeroanlrun"
+export job="aeroanlvar"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_RUN"
+"${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_VARIATIONAL"
 status=$?
 exit "${status}"

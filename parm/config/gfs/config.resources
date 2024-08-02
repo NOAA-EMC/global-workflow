@@ -16,7 +16,7 @@ if (( $# != 1 )); then
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlletkf atmensanlfv3inc atmensanlfinal"
     echo "snowanl"
-    echo "prepobsaero aeroanlinit aeroanlrun aeroanlfinal"
+    echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -355,12 +355,12 @@ case ${step} in
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
@@ -381,19 +381,19 @@ case ${step} in
     memory="3072M"
     ;;
 
-  "aeroanlrun")
+  "aeroanlvar")
     case ${CASE} in
       "C768")
         layout_x=8
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
@@ -414,6 +414,42 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
+
+  "aeroanlgenb")
+    case ${CASE} in
+      "C768")
+        layout_x=8
+        layout_y=8
+        ;;
+      "C384")
+        layout_x=6
+        layout_y=6
+        ;;
+      "C192" | "C96")
+        layout_x=4
+        layout_y=4
+        ;;
+      "C48" )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        exit 4
+    esac
+
+    export layout_x
+    export layout_y
+
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+
+    ;;
+
 
   "aeroanlfinal")
     walltime="00:10:00"
