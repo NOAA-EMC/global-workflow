@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     # Instantiate the atm analysis task
     AtmAnl = AtmAnalysis(config)
-    AtmAnl.variational()
+    AtmAnl.execute(config.APRUN_ATMANLVAR, ['fv3jedi', 'variational'])

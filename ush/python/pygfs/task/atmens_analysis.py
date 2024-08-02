@@ -11,19 +11,20 @@ from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD,
                     chdir,
+                    Task,
                     parse_j2yaml, save_as_yaml,
                     logit,
                     Executable,
                     WorkflowException,
                     Template, TemplateConstants)
-from pygfs.task.analysis import Analysis
+from pygfs.task.jedi import JEDI
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmEnsAnalysis(Analysis):
+class AtmEnsAnalysis(Task):
     """
-    Class for global atmens analysis tasks
+    Class for JEDI-based global atmens analysis tasks
     """
     @logit(logger, name="AtmEnsAnalysis")
     def __init__(self, config):
@@ -31,7 +32,6 @@ class AtmEnsAnalysis(Analysis):
 
         _res = int(self.task_config.CASE_ENS[1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-        _jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -45,7 +45,6 @@ class AtmEnsAnalysis(Analysis):
                 'OPREFIX': f"{self.task_config.EUPD_CYC}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'jedi_yaml': _jedi_yaml,
                 'atm_obsdatain_path': f"./obs/",
                 'atm_obsdataout_path': f"./diags/",
                 'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
@@ -55,27 +54,45 @@ class AtmEnsAnalysis(Analysis):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
+        # Create JEDI object
+        self.jedi = JEDI(self.task_config)
+        
     @logit(logger)
-    def initialize(self: Analysis) -> None:
+    def initialize_letkf(self) -> None:
         """Initialize a global atmens analysis
 
         This method will initialize a global atmens analysis using JEDI.
         This includes:
+        - staging observation files
+        - staging bias correction files
         - staging CRTM fix files
         - staging FV3-JEDI fix files
         - staging model backgrounds
-        - generating a YAML file for the JEDI executable
         - creating output directories
 
         Parameters
         ----------
-        Analysis: parent class for GDAS task
+        None
 
         Returns
         ----------
         None
         """
         super().initialize()
+
+        # get JEDI ensemble DA config dictionary and save to YAML file
+        self.jedi.get_config(self.task_config)
+
+        # link JEDI ensemble DA executable
+        self.jedi.link_exe(self.task_config)
+        
+        # stage observations
+        obs_dict = self.jedi.get_obs_dict()
+        FileHandler(obs_dict).sync()
+
+        # stage bias corrections
+        bias_dict = self.jedi.get_bias_dict()
+        FileHandler(bias_dict).sync()
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
@@ -92,11 +109,6 @@ class AtmEnsAnalysis(Analysis):
         bkg_staging_dict = parse_j2yaml(self.task_config.LGETKF_BKG_STAGING_YAML, self.task_config)
         FileHandler(bkg_staging_dict).sync()
 
-        # generate ensemble da YAML file
-        logger.debug(f"Generate ensemble da YAML file: {self.task_config.jedi_yaml}")
-        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
-        logger.info(f"Wrote ensemble da YAML to: {self.task_config.jedi_yaml}")
-
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
         newdirs = [
@@ -106,76 +118,27 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def letkf(self: Analysis) -> None:
-        """Execute a global atmens analysis
+    def initialize_fv3inc(self):
+        # get JEDI-to-FV3 increment converter config and save to YAML file
+        self.jedi.get_config(self.task_config)
 
-        This method will execute a global atmens analysis using JEDI.
-        This includes:
-        - changing to the run directory
-        - running the global atmens analysis executable
-
-        Parameters
-        ----------
-        Analysis: parent class for GDAS task
-
-        Returns
-        ----------
-        None
-        """
-        chdir(self.task_config.DATA)
-
-        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLLETKF)
-        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
-
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg('fv3jedi')
-        exec_cmd.add_default_arg('localensembleda')
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        pass
+        # link JEDI-to-FV3 increment converter executable
+        self.jedi.link_exe(self.task_config)
 
     @logit(logger)
-    def init_fv3_increment(self: Analysis) -> None:
-        # Setup JEDI YAML file
-        self.task_config.jedi_yaml = os.path.join(self.task_config.DATA,
-                                                  f"{self.task_config.JCB_ALGO}.yaml")
-        save_as_yaml(self.get_jedi_config(self.task_config.JCB_ALGO), self.task_config.jedi_yaml)
+    def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
+        super().execute()
 
-        # Link JEDI executable to run directory
-        self.task_config.jedi_exe = self.link_jediexe()
-
+        self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
+        
     @logit(logger)
-    def fv3_increment(self: Analysis) -> None:
-        # Run executable
-        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLFV3INC)
-        exec_cmd.add_default_arg(self.task_config.jedi_exe)
-        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-    @logit(logger)
-    def finalize(self: Analysis) -> None:
+    def finalize(self) -> None:
         """Finalize a global atmens analysis
 
         This method will finalize a global atmens analysis using JEDI.
         This includes:
         - tar output diag files and place in ROTDIR
         - copy the generated YAML file from initialize to the ROTDIR
-        - write UFS model readable atm incrment file
 
         Parameters
         ----------
@@ -185,6 +148,8 @@ class AtmEnsAnalysis(Analysis):
         ----------
         None
         """
+        super().finalize()
+
         # ---- tar up diags
         # path of output tar statfile
         atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX}atmensstat")
@@ -209,7 +174,7 @@ class AtmEnsAnalysis(Analysis):
 
         # copy full YAML from executable to ROTDIR
         logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
-        src = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
+        src = self.task_config.jedi_yaml
         dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
         logger.debug(f"Copying {src} to {dest}")
         yaml_copy = {
@@ -231,6 +196,7 @@ class AtmEnsAnalysis(Analysis):
         logger.info("Copy UFS model readable atm increment file")
         cdate = to_fv3time(self.task_config.current_cycle)
         cdate_inc = cdate.replace('.', '_')
+
         # loop over ensemble members
         for imem in range(1, self.task_config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # exglobal_atm_analysis_fv3_increment.py
 # This script creates an AtmAnalysis object
-# and runs the init_fv3_increment and fv3_increment methods
+# and runs the initialize_fv3inc and execute methods
 # which convert the JEDI increment into an FV3 increment
 import os
 
@@ -17,7 +17,9 @@ if __name__ == '__main__':
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the atm analysis task
-    AtmAnl = AtmAnalysis(config)
-    AtmAnl.init_fv3_increment()
-    AtmAnl.fv3_increment()
+    # Instantiate the atm analysis object
+    AtmAnlFV3Inc = AtmAnalysis(config)
+
+    # Initialize and execute
+    AtmAnlFV3Inc.initialize_fv3inc()
+    AtmAnlFV3Inc.execute(config.APRUN_ATMANLFV3INC)

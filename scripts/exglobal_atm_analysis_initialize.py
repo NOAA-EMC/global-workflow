@@ -21,4 +21,4 @@ if __name__ == '__main__':
 
     # Instantiate the atm analysis task
     AtmAnl = AtmAnalysis(config)
-    AtmAnl.initialize()
+    AtmAnl.initialize_var()
