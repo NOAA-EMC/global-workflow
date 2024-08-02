@@ -367,9 +367,11 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   declare -a JEDI_EXE=("gdas.x" \
                        "gdas_soca_gridgen.x" \
                        "gdas_soca_error_covariance_toolbox.x" \
+                       "gdas_fv3jedi_error_covariance_toolbox.x" \
                        "gdas_soca_setcorscales.x" \
                        "gdas_soca_diagb.x" \
                        "fv3jedi_plot_field.x" \
+                       "gdasapp_chem_diagb.x" \
                        "fv3jedi_fv3inc.x" \
                        "gdas_ens_handler.x" \
                        "gdas_incr_handler.x" \
