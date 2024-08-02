@@ -24,9 +24,9 @@ class AerosolBMatrix(BMatrix):
         _res = int(self.task_config['CASE'][1:])
         _res_anl = int(self.task_config['CASE_ANL'][1:])
 
-        _bmat_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diagb.yaml")
-        _diffusion_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_diffusion.yaml")
-        _convertstate_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config['cyc']:02d}z.chem_convertstate.yaml")
+        _bmat_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config['cyc']:02d}z.chem_diagb.yaml")
+        _diffusion_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config['cyc']:02d}z.chem_diffusion.yaml")
+        _convertstate_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config['cyc']:02d}z.chem_convertstate.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -39,8 +39,8 @@ class AerosolBMatrix(BMatrix):
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config['LEVS'] - 1,
                 'aero_bkg_fhr': map(int, str(self.task_config['aero_bkg_times']).split(',')),
-                'OPREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
-                'APREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",  # TODO: CDUMP is being replaced by RUN
+                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'bmat_yaml': _bmat_yaml,
                 'diffusion_yaml': _diffusion_yaml,
