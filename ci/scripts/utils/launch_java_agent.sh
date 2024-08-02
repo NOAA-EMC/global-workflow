@@ -24,6 +24,7 @@ set -e
 #           from the Jenkins controller to GitHub PR via shell commands.
 #           Jenkins agent launch directory must exist and be specified.
 #           TODO: Must use GitHub CLI v2.25.1 (newer versoins have issues)
+#           https://github.com/cli/cli/releases/download/v2.25.1/gh_2.25.1_linux_amd64.tar.gz
 #         Jenkins controller URL and authentication token must be provided.
 #         jenkins-secret-file:
 #           Must be present in the Jenkins agent launch directory.
@@ -74,12 +75,10 @@ host=$(hostname)
 source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2)
-    echo "Launch Jenkins Java Controler on ${MACHINE_ID}"
-    ;;
+    echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
   *)
     echo "Unsupported platform. Exiting with error."
-    exit 1
-    ;;
+    exit 1;;
 esac
 
 LOG=lanuched_agent-$(date +%Y%m%d%M).log
