@@ -72,8 +72,8 @@ FV3_restarts(){
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through model components"
 
-  CDUMP=${CDUMP:-gdas}
-  rCDUMP=${rCDUMP:-${CDUMP}}
+  RUN=${RUN:-gdas}
+  rCDUMP=${rCDUMP:-${RUN}}
 
   CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}

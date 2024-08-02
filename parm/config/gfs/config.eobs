@@ -11,12 +11,11 @@ echo "BEGIN: config.eobs"
 # Number of enkf members per innovation job
 export NMEM_EOMGGRP=8  
 export RERUN_EOMGGRP="YES"
-export npe_gsi=$npe_eobs
 
 # GSI namelist options related to observer for EnKF
 export OBSINPUT_INVOBS="dmesh(1)=225.0,dmesh(2)=225.0,dmesh(3)=225.0,dmesh(4)=100.0"
 export OBSQC_INVOBS="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0"
-if [ $LEVS = "128" ]; then
+if (( LEVS == 128 )); then
    export GRIDOPTS_INVOBS="nlayers(63)=1,nlayers(64)=1,"
    export SETUP_INVOBS="gpstop=55,nsig_ext=56,"
 fi
