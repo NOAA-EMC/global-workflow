@@ -1111,7 +1111,7 @@ class GFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.6hr_avg.f#fhr#.nc'},
+                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.6hr_avg.f#fhr_next#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
                                  'history_file_tmpl': f'{self.run}.ice.t@Hz.6hr_avg.f#fhr#.nc'}}
@@ -1131,13 +1131,9 @@ class GFSTasks(Tasks):
         data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        if component in ['ocean']:
-            command = f"{self.HOMEgfs}/ush/check_netcdf.sh {history_path}/{history_file_tmpl}"
-            dep_dict = {'type': 'sh', 'command': command}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
-        else:
-            dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.run}fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
         resources = self.get_resource(component_dict['config'])
@@ -1161,10 +1157,12 @@ class GFSTasks(Tasks):
             fhrs.remove(0)
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+        if component in ['ocean']:
+            fhrs_next = fhrs[1:] + [fhrs[-1] + (fhrs[-1] - fhrs[-2])]
+            fhr_var_dict['fhr_next'] = ' '.join([f"{fhr:03d}" for fhr in fhrs_next])
         metatask_dict = {'task_name': f'{self.run}{component}_prod',
                          'task_dict': task_dict,
-                         'var_dict': fhr_var_dict
-                         }
+                         'var_dict': fhr_var_dict}
 
         task = rocoto.create_task(metatask_dict)
 
