@@ -97,7 +97,7 @@ class AerosolBMatrix(BMatrix):
     def interpBackground(self) -> None:
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_AEROGENB)
+        exec_cmd = Executable(self.task_config.APRUN_AEROANLGENB)
         exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg('fv3jedi')
@@ -119,7 +119,7 @@ class AerosolBMatrix(BMatrix):
 
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_AEROGENB)
+        exec_cmd = Executable(self.task_config.APRUN_AEROANLGENB)
         exec_name = os.path.join(self.task_config.DATA, 'gdasapp_chem_diagb.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg(self.task_config.bmat_yaml)
@@ -139,7 +139,7 @@ class AerosolBMatrix(BMatrix):
 
         chdir(self.task_config.DATA)
 
-        exec_cmd_diffusion = Executable(self.task_config.APRUN_AEROGENB)
+        exec_cmd_diffusion = Executable(self.task_config.APRUN_AEROANLGENB)
         exec_name_diffusion = os.path.join(self.task_config.DATA, 'gdas_fv3jedi_error_covariance_toolbox.x')
         exec_cmd_diffusion.add_default_arg(exec_name_diffusion)
         exec_cmd_diffusion.add_default_arg(self.task_config.diffusion_yaml)
