@@ -24,7 +24,7 @@ class Tasks:
                    'prepsnowobs', 'snowanl', 'esnowrecen',
                    'fcst',
                    'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
-                   'atmosprod', 'oceanprod', 'iceprod',
+                   'atmos_prod', 'ocean_prod', 'ice_prod',
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
                    'tracker', 'genesis', 'genesis_fsu',
