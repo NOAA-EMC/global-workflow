@@ -104,7 +104,7 @@ echo "JAVA VERSION: "
 ${JAVA} -version
 
 export GH="${HOME}/bin/gh"
-command -v "${GH}"
+[[ -f "${GH}" ]] || echo "gh is not installed in ${HOME}/bin"
 ${GH} --version
 
 check_mark=$(gh auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
