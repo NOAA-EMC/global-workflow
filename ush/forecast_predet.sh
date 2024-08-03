@@ -170,11 +170,13 @@ FV3_predet(){
     FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
     FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$(( fhr * 3600 ))" "$(( FHOUT * 3600 ))" "$(( FHMAX * 3600 ))")"
     local hh mm ss s_total
+    FV3_OUTPUT_FH_hhmmss=""
     for s_total in ${FV3_OUTPUT_FH_s}; do
       # Convert seconds to HHH:MM:SS
       (( ss = s_total, mm = ss / 60, ss %= 60, hh = mm / 60, mm %= 60 )) || true
-      FV3_OUTPUT_FH_hhmmss+=("$(printf "%03d-%02d-%02d" "${hh}" "${mm}" "${ss}")")
+      FV3_OUTPUT_FH_hhmmss="${FV3_OUTPUT_FH_hhmmss} $(printf "%03d-%02d-%02d" "${hh}" "${mm}" "${ss}")"
     done
+    # Create a string from an array
   else # If non-replay ICs are being used
     # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
     # are identical when REPLAY_ICS is set to NO
