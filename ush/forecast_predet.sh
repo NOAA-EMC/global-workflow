@@ -158,6 +158,7 @@ FV3_predet(){
   # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
   # are only different when REPLAY_ICS is set to YES
   if [[ "${REPLAY_ICS:-NO}" == "YES"  ]]; then
+    local FV3_OUTPUT_FH_s
     FV3_OUTPUT_FH_NML="$(echo "scale=5; ${OFFSET_START_HOUR}+(${DELTIM}/3600)" | bc -l)"
     FV3_OUTPUT_FH_s=$(( OFFSET_START_HOUR * 3600 + DELTIM ))
     local fhr=${FHOUT}
