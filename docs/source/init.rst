@@ -384,7 +384,7 @@ The warm starts and other output from production are at C768 deterministic and C
 What files should you pull for starting a new experiment with warm starts from production?
 ------------------------------------------------------------------------------------------
 
-That depends on what mode you want to run -- forecast-only or cycled. Whichever mode, navigate to the top of your ``ROTDIR`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$CDUMP.$PDY/$CYC/$ATMOS`` folder format expected by the system.
+That depends on what mode you want to run -- forecast-only or cycled. Whichever mode, navigate to the top of your ``ROTDIR`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$RUN.$PDY/$CYC/$ATMOS`` folder format expected by the system.
 
 For forecast-only there are two tarballs to pull
 

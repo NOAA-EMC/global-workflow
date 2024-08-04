@@ -10,10 +10,10 @@ echo "BEGIN: config.wave"
 # Some others are also used across the workflow in wave component scripts
 
 # General runtime labels
-export CDUMPwave="${RUN}wave"
+export RUNwave="${RUN}wave"
 
 # In GFS/GDAS, restart files are generated/read from gdas runs
-export CDUMPRSTwave="gdas"
+export RUNRSTwave="gdas"
 
 #grid dependent variable defaults
 export waveGRDN='1'                   # grid number for ww3_multi

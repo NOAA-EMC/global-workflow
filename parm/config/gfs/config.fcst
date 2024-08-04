@@ -9,13 +9,13 @@ export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or tradi
 export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
 # Turn off waves if not used for this RUN
-case ${WAVE_CDUMP} in
+case ${WAVE_RUN} in
   both | "${RUN/enkf}" ) ;; # Don't change
   *) DO_WAVE="NO" ;; # Turn waves off
 esac
 
 # Turn off aerosols if not used for this RUN
-case ${AERO_FCST_CDUMP} in
+case ${AERO_FCST_RUN} in
   both | "${RUN/enkf}" ) ;; # Don't change
   *) DO_AERO="NO" ;; # Turn aerosols off
 esac
@@ -120,8 +120,9 @@ if (( gwd_opt == 2 )); then
     export do_ugwp_v0_orog_only=".false."
     export do_ugwp_v0_nst_only=".false."
     export do_gsl_drag_ls_bl=".true."
-    export do_gsl_drag_ss=".true."
+    export do_gsl_drag_ss=".false."
     export do_gsl_drag_tofd=".true."
+    export do_gwd_opt_psl=".true."    
     export do_ugwp_v1_orog_only=".false."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
@@ -273,7 +274,7 @@ export FSICL="0"
 export FSICS="0"
 
 #---------------------------------------------------------------------
-if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
+if [[ "${RUN}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
@@ -284,7 +285,7 @@ if [[ "${CDUMP}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
 
-elif [[ "${CDUMP}" =~ "gfs" ]] ; then # GFS cycle specific parameters
+elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"

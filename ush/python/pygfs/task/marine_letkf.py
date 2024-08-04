@@ -72,7 +72,7 @@ class MarineLETKF(Analysis):
         ensbkgconf.RUN = 'enkfgdas'
         soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.SOCA_ENS_BKG_STAGE_YAML_TMPL, ensbkgconf)
         FileHandler(soca_ens_bkg_stage_list).sync()
-        soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_STAGE_YAML_TMPL, self.task_config)
+        soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
         letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_list).sync()

@@ -70,11 +70,11 @@ class GFSForecastOnlyAppConfig(AppConfig):
         return configs
 
     @staticmethod
-    def _update_base(base_in):
+    def update_base(base_in):
 
         base_out = base_in.copy()
         base_out['INTERVAL_GFS'] = AppConfig.get_gfs_interval(base_in['gfs_cyc'])
-        base_out['CDUMP'] = 'gfs'
+        base_out['RUN'] = 'gfs'
 
         return base_out
 
@@ -88,8 +88,8 @@ class GFSForecastOnlyAppConfig(AppConfig):
         tasks = ['stage_ic']
 
         if self.do_aero:
-            aero_fcst_cdump = self._base.get('AERO_FCST_CDUMP', 'BOTH').lower()
-            if self._base['CDUMP'] in aero_fcst_cdump or aero_fcst_cdump == "both":
+            aero_fcst_run = self._base.get('AERO_FCST_RUN', 'BOTH').lower()
+            if self._base['RUN'] in aero_fcst_run or aero_fcst_run == "both":
                 if not self._base['EXP_WARM_START']:
                     tasks += ['aerosol_init']
 
@@ -153,4 +153,4 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
 
-        return {f"{self._base['CDUMP']}": tasks}
+        return {f"{self._base['RUN']}": tasks}

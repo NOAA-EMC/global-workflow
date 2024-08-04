@@ -9,7 +9,6 @@ PTMP: '/work/noaa/stmp/${USER}/ORION'
 NOSCRUB: $HOMEDIR
 SCHEDULER: slurm
 ACCOUNT: fv3-cpu
-ACCOUNT_SERVICE: fv3-cpu
 QUEUE: batch
 QUEUE_SERVICE: batch
 PARTITION_BATCH: orion

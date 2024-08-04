@@ -8,8 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
 # Set variables used in the script
 ##############################################
 
-export CDUMP=${RUN/enkf}
-
 # Ignore spelling warning; nothing is misspelled
 # shellcheck disable=SC2153
 CDATE=$(${NDATE} -"${VBACKUP_FITS}" "${PDY}${cyc}") # set CDATE to lookback cycle for use in fit2obs package
@@ -20,7 +18,7 @@ vcyc=${CDATE:8:2}
 # These are used by fit2obs, so we can't change them to the standard COM variable names
 # shellcheck disable=SC2153
 YMD=${vday} HH=${vcyc} declare_from_tmpl -rx COM_INA:COM_ATMOS_ANALYSIS_TMPL
-RUN=${CDUMP} YMD=${vday} HH=${vcyc} declare_from_tmpl -rx COM_PRP:COM_OBS_TMPL
+RUN=${RUN/enkf} YMD=${vday} HH=${vcyc} declare_from_tmpl -rx COM_PRP:COM_OBS_TMPL
 
 # We want to defer variable expansion, so ignore warning about single quotes
 # shellcheck disable=SC2016

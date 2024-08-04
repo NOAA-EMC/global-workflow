@@ -342,6 +342,7 @@ EOF
   do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
   do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
   do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
+  do_gwd_opt_psl       = ${do_gwd_opt_psl:-".false."}
   do_ugwp_v1_orog_only = ${do_ugwp_v1_orog_only:-".false."}
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
@@ -426,6 +427,7 @@ cat >> "${nml_file}" <<EOF
   betadcu      = ${betadcu:-"2.0"}
   ras          = ${ras:-".false."}
   cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
+  psl_gwd_dx_factor  = ${psl_gwd_dx_factor:-"6.0"}
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}

@@ -52,35 +52,21 @@ datasets:
     {% for mem in range(first_group_mem, last_group_mem + 1) %}
 
         # Declare a dict of search and replace terms to run on each template
-        {% set tmpl_dict = {'ROTDIR':ROTDIR,
-                            'RUN':RUN,
-                            'YMD':cycle_YMD,
-                            'HH':cycle_HH,
-                            'MEMDIR':"mem" + '%03d' % mem} %}
+        {% set mem_char = 'mem%03d' | format(mem) %}
+        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}': mem_char }) %}
 
-        # Replace template variables with tmpl_dict, one key at a time
-        # This must be done in a namespace to overcome jinja scoping
-        #  Variables set inside of a for loop are lost at the end of the loop
-        #  unless they are part of a namespace
-        {% set com_ns = namespace(COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL,
-                                  COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL,
-                                  COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL) %}
-
-        {% for key in tmpl_dict.keys() %}
-            {% set search_term = '${' + key + '}' %}
-            {% set replace_term = tmpl_dict[key] %}
-            {% set com_ns.COMIN_ATMOS_ANALYSIS_MEM =
-                com_ns.COMIN_ATMOS_ANALYSIS_MEM.replace(search_term, replace_term) %}
-            {% set com_ns.COMIN_ATMOS_HISTORY_MEM =
-                com_ns.COMIN_ATMOS_HISTORY_MEM.replace(search_term, replace_term) %}
-            {% set com_ns.COMIN_ATMOS_RESTART_MEM =
-                com_ns.COMIN_ATMOS_RESTART_MEM.replace(search_term, replace_term) %}
-        {% endfor %}
+        {% set COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
 
         # Append the member COM directories
-        {% do COMIN_ATMOS_ANALYSIS_MEM_list.append(com_ns.COMIN_ATMOS_ANALYSIS_MEM)%}
-        {% do COMIN_ATMOS_HISTORY_MEM_list.append(com_ns.COMIN_ATMOS_HISTORY_MEM)%}
-        {% do COMIN_ATMOS_RESTART_MEM_list.append(com_ns.COMIN_ATMOS_RESTART_MEM)%}
+        {% do COMIN_ATMOS_ANALYSIS_MEM_list.append(COMIN_ATMOS_ANALYSIS_MEM)%}
+        {% do COMIN_ATMOS_HISTORY_MEM_list.append(COMIN_ATMOS_HISTORY_MEM)%}
+        {% do COMIN_ATMOS_RESTART_MEM_list.append(COMIN_ATMOS_RESTART_MEM)%}
 
     {% endfor %}
 

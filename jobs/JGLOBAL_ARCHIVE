@@ -7,8 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP=${RUN/enkf}
-
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
 	COMIN_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
@@ -35,6 +33,8 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL \
 	COMIN_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL \
 	COMIN_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
+        COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
+        COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL \
 	COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
 	COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
 	COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \

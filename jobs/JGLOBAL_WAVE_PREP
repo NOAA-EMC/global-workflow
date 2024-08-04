@@ -6,8 +6,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-export CDUMP=${RUN/enkf}
-
 # Set rtofs PDY
 export RPDY=${PDY}
 

@@ -26,7 +26,6 @@ pwd=$(pwd)
 
 # Base variables
 CDATE="${PDY}${cyc}"
-CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Utilities
@@ -222,7 +221,7 @@ EOFdiag
       chmod 755 $DATA/mp_diag.sh
       ncmd=$(cat $DATA/mp_diag.sh | wc -l)
       if [ $ncmd -gt 0 ]; then
-         ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
+         ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
          APRUNCFP_DIAG=$(eval echo $APRUNCFP)
          $APRUNCFP_DIAG $DATA/mp_diag.sh
          export err=$?; err_chk

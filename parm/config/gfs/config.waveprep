@@ -21,7 +21,7 @@ export WAV_CUR_CDO_SMOOTH="NO"
 export CDO_ROOT=${CDO_ROOT:-/usrx/local/dev/packages/cdo/1.9.8}
 
 if [ "${WW3ICEINP}" = "YES" ]; then
-  export WAVICEFILE=${CDUMP}.t${cyc}z.seaice.5min.grib2
+  export WAVICEFILE=${RUN}.t${cyc}z.seaice.5min.grib2
 fi
 
 echo "END: config.waveprep"

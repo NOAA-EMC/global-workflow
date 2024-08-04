@@ -30,14 +30,17 @@ class GEFSAppConfig(AppConfig):
         if self.do_aero:
             configs += ['prep_emissions']
 
+        if self.do_extractvars:
+            configs += ['extractvars']
+
         return configs
 
     @staticmethod
-    def _update_base(base_in):
+    def update_base(base_in):
 
         base_out = base_in.copy()
         base_out['INTERVAL_GFS'] = AppConfig.get_gfs_interval(base_in['gfs_cyc'])
-        base_out['CDUMP'] = 'gefs'
+        base_out['RUN'] = 'gefs'
 
         return base_out
 
@@ -73,4 +76,7 @@ class GEFSAppConfig(AppConfig):
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
 
-        return {f"{self._base['CDUMP']}": tasks}
+        if self.do_extractvars:
+            tasks += ['extractvars']
+
+        return {f"{self._base['RUN']}": tasks}

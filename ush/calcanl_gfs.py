@@ -19,7 +19,7 @@ python2fortran_bool = {True: '.true.', False: '.false.'}
 def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 ComIn_Ges, GPrefix,
                 FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
-                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, Cdump, JEDI):
+                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, run, JEDI):
     print('calcanl_gfs beginning at: ', datetime.datetime.utcnow())
 
     IAUHH = IAUHrs
@@ -38,7 +38,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 gsi_utils.link_file(RunDir + '/siganl', CalcAnlDir + '/anl.06')
                 gsi_utils.copy_file(ExecChgresInc, CalcAnlDir + '/chgres_inc.x')
                 # for ensemble res analysis
-                if Cdump in ["gdas", "gfs"]:
+                if Run in ["gdas", "gfs"]:
                     CalcAnlDir = RunDir + '/calcanl_ensres_' + format(fh, '02')
                     if not os.path.exists(CalcAnlDir):
                         gsi_utils.make_dir(CalcAnlDir)
@@ -166,7 +166,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         [hosts.append(x) for x in hosts_tmp if x not in hosts]
         nhosts = len(hosts)
         ExecCMDMPI_host = 'mpiexec -l -n ' + str(nFH)
-        tasks = int(os.getenv('ntasks', 1))
+        tasks = int(os.getenv('ntasks_calcanl', 1))
         print('nhosts,tasks=', nhosts, tasks)
         if levs > tasks:
             ExecCMDMPILevs_host = 'mpiexec -l -n ' + str(tasks)
@@ -298,7 +298,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         sys.exit(exit_fullres)
 
     # compute determinstic analysis on ensemble resolution
-    if Cdump in ["gdas", "gfs"]:
+    if Run in ["gdas", "gfs"]:
         chgres_jobs = []
         for fh in IAUHH:
             # first check to see if guess file exists
@@ -359,7 +359,7 @@ if __name__ == '__main__':
     ExecChgresInc = os.getenv('CHGRESINCEXEC', './interp_inc.x')
     NEMSGet = os.getenv('NEMSIOGET', 'nemsio_get')
     IAUHrs = list(map(int, os.getenv('IAUFHRS', '6').split(',')))
-    Cdump = os.getenv('CDUMP', 'gdas')
+    Run = os.getenv('RUN', 'gdas')
     JEDI = gsi_utils.isTrue(os.getenv('DO_JEDIATMVAR', 'YES'))
 
     print(locals())
@@ -367,4 +367,4 @@ if __name__ == '__main__':
                 ComIn_Ges, GPrefix,
                 FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
                 ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc,
-                Cdump, JEDI)
+                Run, JEDI)

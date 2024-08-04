@@ -6,21 +6,15 @@
 echo "BEGIN: config.ocnanal"
 
 export OBS_YAML_DIR="${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config"
-export OBS_LIST=@SOCA_OBS_LIST@
-export OBS_YAML="${OBS_LIST}"
-export FV3JEDI_STAGE_YAML="${HOMEgfs}/sorc/gdas.cd/test/soca/testinput/dumy.yaml"
+export OBS_LIST=@SOCA_OBS_LIST@  # TODO(GA): doesn't look necessary as is to have
+export OBS_YAML="${OBS_LIST}"    #           OBS_LIST and OBS_YAML pick one or add logic
 export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
-export SOCA_VARS=tocn,socn,ssh
-export SABER_BLOCKS_YAML=@SABER_BLOCKS_YAML@
 export SOCA_NINNER=@SOCA_NINNER@
-export CASE_ANL=@CASE_ANL@
 export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
-export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin
-export SOCA_FIX_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage.yaml.j2"
 export SOCA_ENS_BKG_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_ens_bkg_stage.yaml.j2"
+export SOCA_FIX_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage_${OCNRES}.yaml.j2"
 
-# NICAS
-export NICAS_RESOL=@NICAS_RESOL@
-export NICAS_GRID_SIZE=@NICAS_GRID_SIZE@
+export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin  # TODO(GA): remove once analysis "run"
+                                                   #          and "checkpoint" are refactored
 
 echo "END: config.ocnanal"

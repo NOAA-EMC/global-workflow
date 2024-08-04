@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs analdiag edi
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP="${RUN/enkf}"
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
 export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 
@@ -26,12 +25,12 @@ export GDUMP_ENS="enkf${GDUMP}"
 
 export CASE=${CASE_ENS}
 
-export OPREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${RUN/enkf}.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
 GPREFIX_DET="${GDUMP}.t${gcyc}z."
 
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \

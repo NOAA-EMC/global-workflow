@@ -255,6 +255,7 @@ FV3_out() {
   # Determine the dates for restart files to be copied to COM
   local restart_date restart_dates
   restart_dates=()
+
   # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
     restart_date="${model_start_date_next_cycle}"

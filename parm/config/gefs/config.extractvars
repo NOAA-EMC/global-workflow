@@ -1,0 +1,41 @@
+#! /usr/bin/env bash                                                                                                                                                                                                                     
+
+########## config.extractvars ##########
+# Extractvars specific
+
+echo "BEGIN: config.extractvars"
+
+. "${EXPDIR}/config.resources" extractvars
+
+export COMPRSCMD=${COMPRSCMD:-bzip2}
+
+export compress_ocn=0 #1: Compress extracted ocean product, 0: Do not compress extracted ocean product
+export compress_ice=0 #1: Compress extracted ice product, 0: Do not compress extracted ice product
+
+export ocnres="5p00" # Resolution of ocean products
+export iceres="5p00" # Resolution of ice products
+export wavres="5p00" # Resolution of wave products
+
+export depthvar_name="z_l" # Name of depth variable in NetCDF ocean products
+export zmin="0." # Minimum depth to extract from NetCDF ocean products
+export zmax="300." # Maximum depth to extract from NetCDF ocean products
+
+export FHOUT_WAV_EXTRACT=6 # Frequency of wave output to be saved on disk
+
+#Paramater Tables used
+export varlist_2d="${PARMgfs}/product/gefs_shortparmlist_2d.parm" # Parameter table for surface variables
+export varlist_3d="${PARMgfs}/product/gefs_shortparmlist_3d_h.parm" # Parameter table for upper air instantaneous variables
+export varlist_3d_d="${PARMgfs}/product/gefs_shortparmlist_3d_d.parm" # Parameter table for upper air daily-averaged variables
+export varlist_wav="${PARMgfs}/product/gefs_wav_shortparmlist.parm" # Parameter table for wave variables
+export varlist_ocn_netcdf="${PARMgfs}/product/gefs_ocn_shortparmlist.parm" # Parameter table for ocean netcdf variables
+export varlist_ice_netcdf="${PARMgfs}/product/gefs_ice_shortparmlist.parm" # Parameter table for ice netcdf variables
+
+#Directory to save extracted variables
+export ARC_RFCST_PROD="${ARCDIR}/rfcst/${PDY:0:4}/${PDY:0:6}/${PDY:0:8}/mem${ENSMEM}"
+export ARC_RFCST_PROD_ATMOS_F2D="${ARC_RFCST_PROD}/atmos/f2d"
+export ARC_RFCST_PROD_ATMOS_F3D="${ARC_RFCST_PROD}/atmos/f3d"
+export ARC_RFCST_PROD_OCN="${ARC_RFCST_PROD}/ocn"
+export ARC_RFCST_PROD_ICE="${ARC_RFCST_PROD}/ice"
+export ARC_RFCST_PROD_WAV="${ARC_RFCST_PROD}/wav"
+
+echo "END: config.extractvars"

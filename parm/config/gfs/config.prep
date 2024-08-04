@@ -15,7 +15,7 @@ export cdate10=${PDY}${cyc}
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"
 
-export COMINtcvital=${COMINtcvital:-${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos}
+export COMINtcvital=${COMINtcvital:-${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos}
 export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
 # Adjust observation error for GFS v16 parallels

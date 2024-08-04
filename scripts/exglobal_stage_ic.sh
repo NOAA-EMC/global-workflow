@@ -86,7 +86,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   
   # Atmosphere Perturbation Files (usually used with replay ICS)
   # Extra zero on MEMDIR ensure we have a number even if the string is empty
-  if (( 0${MEMDIR:3} > 0 )) && [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+  if (( $((10#0${MEMDIR:3})) > 0 )) && [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
       YMD=${PDY} HH=${cyc} declare_from_tmpl COM_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
       [[ ! -d "${COM_ATMOS_ANALYSIS}" ]] && mkdir -p "${COM_ATMOS_ANALYSIS}"
       src="${BASE_CPLIC}/${CPL_ATMIC:-}/${PDY}${cyc}/${MEMDIR}/atmos/${DTG_PREFIX}.fv3_perturbation.nc"
@@ -130,7 +130,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
     # Ocean Perturbation Files
     # Extra zero on MEMDIR ensure we have a number even if the string is empty
-    if (( 0${MEMDIR:3} > 0 )) && [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+    if (( $((10#0${MEMDIR:3})) > 0 )) && [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
         YMD=${PDY} HH=${cyc} declare_from_tmpl COM_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL
         [[ ! -d "${COM_OCEAN_ANALYSIS}" ]] && mkdir -p "${COM_OCEAN_ANALYSIS}"
         src="${BASE_CPLIC}/${CPL_OCNIC:-}/${PDY}${cyc}/${MEMDIR}/ocean/${DTG_PREFIX}.mom6_perturbation.nc"

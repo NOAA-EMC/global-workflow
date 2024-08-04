@@ -14,7 +14,7 @@ This script requires the following environment variables be set beforehand:
 CDATE: 		Initial time in YYYYMMDDHH format
 STEP_GFS: 	Forecast cadence (frequency) in hours
 FHMAX_GFS: 	Forecast length in hours
-CDUMP: 		Forecast phase (gfs or gdas). Currently always expected to be gfs.
+RUN: 		Forecast phase (gfs or gdas). Currently always expected to be gfs.
 ROTDIR: 	Rotating (COM) directory
 USHgfs: 	Path to global-workflow `ush` directory
 PARMgfs: 	Path to global-workflow `parm` directory
@@ -41,14 +41,14 @@ from datetime import datetime, timedelta
 from functools import partial
 
 # Constants
-atm_base_pattern = "{rot_dir}/{cdump}.%Y%m%d/%H/model_data/atmos/input"       # Location of atmosphere ICs
+atm_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model_data/atmos/input"         # Location of atmosphere ICs
 atm_file_pattern = "{path}/gfs_data.{tile}.nc"                                # Atm IC file names
 atm_ctrl_pattern = "{path}/gfs_ctrl.nc"                                       # Atm IC control file name
-restart_base_pattern = "{rot_dir}/{cdump}.%Y%m%d/%H/model_data/atmos/restart"   # Location of restart files (time of previous run)
+restart_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model_data/atmos/restart"   # Location of restart files (time of previous run)
 restart_file_pattern = "{file_base}/{timestamp}fv_core.res.{tile}.nc"         # Name of restart data files (time when restart is valid)
 tracer_file_pattern = "{file_base}/{timestamp}fv_tracer.res.{tile}.nc"        # Name of restart tracer files (time when restart is valid)
 dycore_file_pattern = "{file_base}/{timestamp}fv_core.res.nc"                 # Name of restart dycore file (time when restart is valid)
-tracer_list_file_pattern = "{parm_gfs}/ufs/gocart/gocart_tracer.list"               # Text list of tracer names to copy
+tracer_list_file_pattern = "{parm_gfs}/ufs/gocart/gocart_tracer.list"         # Text list of tracer names to copy
 merge_script_pattern = "{ush_gfs}/merge_fv3_aerosol_tile.py"
 n_tiles = 6
 max_lookback = 4                                                              # Maximum number of past cycles to look for for tracer data
@@ -68,7 +68,7 @@ def main() -> None:
     cdate = get_env_var("CDATE")
     incr = int(get_env_var('STEP_GFS'))
     fcst_length = int(get_env_var('FHMAX_GFS'))
-    cdump = get_env_var("CDUMP")
+    run = get_env_var("RUN")
     rot_dir = get_env_var("ROTDIR")
     ush_gfs = get_env_var("USHgfs")
     parm_gfs = get_env_var("PARMgfs")
@@ -86,7 +86,7 @@ def main() -> None:
             print(f'{var} = {f"{var}"}')
 
     atm_files, ctrl_files = get_atm_files(atm_source_path)
-    tracer_files, rest_files, core_files = get_restart_files(time, incr, max_lookback, fcst_length, rot_dir, cdump)
+    tracer_files, rest_files, core_files = get_restart_files(time, incr, max_lookback, fcst_length, rot_dir, run)
 
     if (tracer_files is not None):
         merge_tracers(merge_script, atm_files, tracer_files, rest_files, core_files[0], ctrl_files[0], tracer_list_file)
@@ -167,7 +167,7 @@ def get_atm_files(path: str) -> typing.List[typing.List[str]]:
     return file_list
 
 
-def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length: int, rot_dir: str, cdump: str) -> typing.List[typing.List[str]]:
+def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length: int, rot_dir: str, run: str) -> typing.List[typing.List[str]]:
     '''
     Determines the last cycle where all the necessary restart files are available. Ideally the immediate previous cycle
 
@@ -183,8 +183,8 @@ def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length:
             Length of forecast in hours
     rot_dir : str
             Path to the ROTDIR (COM) directory
-    cdump : str
-            CDUMP of current forecast portion (currently should always be 'gfs')
+    run : str
+            RUN of current forecast portion (currently should always be 'gfs')
 
     Returns
     ----------

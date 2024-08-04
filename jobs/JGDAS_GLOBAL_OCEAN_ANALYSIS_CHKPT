@@ -19,7 +19,7 @@ export GDUMP=${GDUMP:-"gdas"}
 export GPREFIX="${GDUMP}.t${gcyc}z."
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${RUN}.t${cyc}z."
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS

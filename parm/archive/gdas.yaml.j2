@@ -22,7 +22,7 @@ gdas:
             {% if DO_JEDIOCNVAR %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}prepoceanobs.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalprep.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalbmat.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}marinebmat.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalrun.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalpost.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalchkpt.log"
@@ -66,7 +66,7 @@ gdas:
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
             {% endif %}
-            {% if AERO_ANL_CDUMP == "gdas" or AERO_ANL_CDUMP == "both" %}
+            {% if AERO_ANL_RUN == "gdas" or AERO_ANL_RUN == "both" %}
         - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
             {% endif %}
             {% if DO_PREP_OBS_AERO %}

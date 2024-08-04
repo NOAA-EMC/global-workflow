@@ -9,7 +9,6 @@ STMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
 PTMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
 NOSCRUB: $HOMEDIR
 ACCOUNT: ufs-ard
-ACCOUNT_SERVICE: ufs-ard
 SCHEDULER: slurm
 QUEUE: normal
 QUEUE_SERVICE: normal
