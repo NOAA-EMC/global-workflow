@@ -8,7 +8,6 @@ STMP: '/lfs/h2/emc/stmp/${USER}'
 PTMP: '/lfs/h2/emc/ptmp/${USER}'
 NOSCRUB: $HOMEDIR
 ACCOUNT: 'GFS-DEV'
-ACCOUNT_SERVICE: 'GFS-DEV'
 SCHEDULER: pbspro
 QUEUE: 'dev'
 QUEUE_SERVICE: 'dev_transfer'
@@ -16,6 +15,7 @@ PARTITION_BATCH: ''
 PARTITION_SERVICE: ''
 RESERVATION: ''
 CHGRP_RSTPROD: 'YES'
+CLUSTERS: ''
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global
