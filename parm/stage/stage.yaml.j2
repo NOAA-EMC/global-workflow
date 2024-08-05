@@ -22,6 +22,7 @@
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set m_prefix = model_start_date_current_cycle | to_YMD + "." + model_start_date_current_cycle | strftime("%H") + "0000" %}
 {% set o_prefix = current_cycle_offset | to_YMD + "." + current_cycle_offset | strftime("%H") + "0000" %}
+{% set p_prefix = previous_cycle | to_YMD + "." + previous_cycle | strftime("%H") + "0000" %}
 
 #############################################################
 # Initial condition to stage
@@ -44,13 +45,16 @@ atmosphere_warm:
         - "{{ COMOUT_ATMOS_RESTART_PREV }}"
     copy:
         {% for ftype in ["coupler.res", "fv_core.res.nc"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ o_prefix }}.{{ ftype }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
         {% endfor %}
         {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
             {% for ntile in range(1, ntiles + 1) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ o_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
             {% endfor %} # ntile
         {% endfor %} # ftype
+        {% for ntile in range(1, ntiles + 1) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ p_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
+        {% endfor %} # ntile
 {% else %}
 atmosphere_cold:
     mkdir:
@@ -80,7 +84,7 @@ atmosphere_nest:
     copy:
         {% if EXP_WARM_START == True %}
             {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}/{{ m_prefix }}.{{ ftype }}.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ o_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}/{{ o_prefix }}.{{ ftype }}.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
             {% endfor %} # ftype
         {% else %}
             {% for ftype in ["gfs_data", "sfc_data"] %}
