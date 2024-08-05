@@ -17,6 +17,9 @@ current_cycle="${PDY}${cyc}"
 previous_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
 current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
 current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
+current_cycle_offset=$(date --utc -d "${PDY} ${cyc} + ${OFFSET_START_HOUR} hours" +%Y%m%d%H)
+export current_cycle_offset
+
 # Define model start date for current_cycle as the time the forecast will start
 if [[ "${DOIAU:-NO}" == "YES" ]]; then
   model_start_date_current_cycle="${current_cycle_begin}"
