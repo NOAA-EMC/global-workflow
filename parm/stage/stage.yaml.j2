@@ -18,15 +18,18 @@
 # For a full list see scripts/exglobal_stage_ic.py
 #############################################################
 
+# Set variables used below
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set r_prefix = model_start_date_current_cycle | to_YMD + "." + model_start_date_current_cycle | strftime("%H") + "0000" %}
+
+#############################################################
+# Initial condition to stage
 
 {% if MODE == "cycled" and RUN == "gdas" %}
 analysis:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS }}"
     copy:
-        # TODO: Add abias_int?
         {% for ftype in ["abias", "abias_air", "abias_pc", "radstat"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
         {% endfor %}
@@ -102,13 +105,26 @@ ocean:
         - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_RESTART_PREV | relpath(ROTDIR) }}/{{ r_prefix }}.MOM.res_{{ nn }}.nc", "{{ COMOUT_OCEAN_RESTART_PREV }}"]
             {% endfor %}
         {% endif %}
-        {% if REPLAY_ICS == "YES" %}
+
+{% if REPLAY_ICS == "YES" %}
+replay:
+    mkdir:
+        - "{{ COMOUT_OCEAN_ANALYSIS }}"
+    copy:
         - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ r_prefix }}.mom6_perturbation.nc", "{{ COMOUT_OCEAN_ANALYSIS }}/mom6_increment.nc"]
-        {% endif %}
-        {% if EXP_WARM_START == True %}
-        - ["{{ ICSDIR }}/{{ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) }}/{{ r_prefix }}.ufs.cpld.cpl.r.nc", "{{ COMOUT_MED_RESTART_PREV }}"]
-        {% endif %}
 {% endif %}
+
+{% if EXP_WARM_START == True %}
+{% if path_exists(ICSDIR ~ "/" ~ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ r_prefix ~ ".ufs.cpld.cpl.r.nc") %}
+mediator:
+    mkdir:
+        - "{{ COMOUT_MED_RESTART_PREV }}"
+    copy:
+        - ["{{ ICSDIR }}/{{ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) }}/{{ r_prefix }}.ufs.cpld.cpl.r.nc", "{{ COMOUT_MED_RESTART_PREV }}"]
+{% endif %} # path exists
+{% endif %} # warm start true
+
+{% endif %} # DO_OCN=YES
 
 {% if DO_WAVE %}
 wave:
