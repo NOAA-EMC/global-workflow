@@ -203,19 +203,18 @@ EOF
   #============================================================================
   if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
     local FH2 FH3 iicnt
-    iicnt=0
     for fhr in ${FV3_OUTPUT_FH}; do
       FH3=$(printf %03i "${fhr}")
       FH2=$(printf %02i "${fhr}")
       # When replaying, the time format outputted by model in filename is HH-MM-SS
       # because first fhr is a decimal number
       if [[ ${REPLAY_ICS:-NO} == "YES" ]] && (( fhr >= OFFSET_START_HOUR )); then
-        FV3_OUTPUT_FH_hhmmss_arr2=(${FV3_OUTPUT_FH_hhmmss})
-        local f_hhmmss="${FV3_OUTPUT_FH_hhmmss_arr2[${iicnt}]}"
+        local hhmmss_substring=${FV3_OUTPUT_FH_hhmmss/" ${FH3}-"*/} # Extract substring that contains all lead times up to the one space before target lead HHH-MM-SS
+        local hhmmss_substring_len=$(( ${#hhmmss_substring} + 1 )) # Get the size of the substring and add 1 to account for space
+        local f_hhmmss=${FV3_OUTPUT_FH_hhmmss:${hhmmss_substring_len}:9} # extract HHH-MM-SS for target lead time
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${f_hhmmss}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${f_hhmmss}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${f_hhmmss}"
-        iicnt=$(( iicnt + 1 ))
       else
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
