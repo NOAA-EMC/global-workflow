@@ -33,9 +33,6 @@ def main():
         if key.startswith("COM"):
             stage_dict[key] = stage.task_config[key]
 
-    # Add the os.path.exists function to the dict for yaml parsing
-    stage_dict['path_exists'] = os.path.exists
-
     # Stage ICs
     stage.execute_stage(stage_dict)
 
