@@ -19,7 +19,7 @@
 #############################################################
 
 {% set cycle_HH = current_cycle | strftime("%H") %}
-{% set r_prefix = RDATE | to_YMD + "." + RDATE | strftime("%H") + "0000" %}
+{% set r_prefix = model_start_date_current_cycle | to_YMD + "." + model_start_date_current_cycle | strftime("%H") + "0000" %}
 
 {% if MODE == "cycled" and RUN == "gdas" %}
 analysis:
