@@ -11,7 +11,7 @@ import sys
 import gsi_utils
 from collections import OrderedDict
 import datetime
-from wxflow.Configuration import cast_as_dtype
+from wxflow import cast_as_dtype
 
 python2fortran_bool = {True: '.true.', False: '.false.'}
 
