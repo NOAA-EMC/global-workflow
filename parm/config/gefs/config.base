@@ -38,8 +38,6 @@ export FIXugwd=${FIXgfs}/ugwd
 export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
-export ICSDIR="@ICSDIR@"
-export BASE_IC="@BASE_IC@"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"

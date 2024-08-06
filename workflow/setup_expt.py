@@ -65,7 +65,17 @@ def update_configs(host, inputs):
     # First update config.base
     edit_baseconfig(host, inputs, yaml_dict)
 
-    # loop over other configs and update them
+    # Update stage config
+    stage_dict = {
+        "@ICSDIR@": inputs.icsdir
+    }
+    host_dict = get_template_dict(host.info)
+    stage_dict = dict(stage_dict, **host_dict)
+    stage_input = f'{inputs.configdir}/config.stage_ic'
+    stage_output = f'{inputs.expdir}/{inputs.pslot}/config.stage_ic'
+    edit_config(stage_input, stage_output, stage_dict)
+
+    # Loop over other configs and update them with defaults
     for cfg in yaml_dict.keys():
         if cfg == 'base':
             continue
@@ -104,7 +114,6 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@OCNRES@": f"{int(100.*inputs.resdetocean):03d}",
         "@EXPDIR@": inputs.expdir,
         "@COMROOT@": inputs.comroot,
-        "@ICSDIR@": inputs.icsdir,
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
