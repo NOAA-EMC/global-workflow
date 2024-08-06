@@ -629,7 +629,9 @@ CICE_out() {
 }
 
 CICE_avg() {
-  if (( FHOUT_ICE > 6 )) && (( FHOUT_ICE % 6 == 0 ));then
+  if (( $(( ( cyc + FHMIN ) % FHOUT_ICE )) == 0 )); then
+    echo "SUB ${FUNCNAME[0]}: No further averaging needed for CICE"
+  else
     echo "SUB ${FUNCNAME[0]}: Averaging output data for CICE"
     CDO=/apps/prod/hpc-stack/intel-19.1.3.304/cdo/1.9.8/bin/cdo
     fcnt=1
@@ -653,8 +655,6 @@ CICE_avg() {
       fi
       fcnt=$(( fcnt + 1 ))
     done
-  else
-    echo "SUB ${FUNCNAME[0]}: No further averaging needed for CICE"
   fi
 }
 
