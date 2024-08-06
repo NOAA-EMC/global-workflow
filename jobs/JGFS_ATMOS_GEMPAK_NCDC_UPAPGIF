@@ -4,7 +4,7 @@
 # GFS GEMPAK NCDC PRODUCT GENERATION
 ############################################
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_gif" -c "base"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_gif" -c "base gempak"
 
 export MP_PULSE=0
 export MP_TIMEOUT=2000

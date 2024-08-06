@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP="${RUN/enkf}"
 
 
 ##############################################
