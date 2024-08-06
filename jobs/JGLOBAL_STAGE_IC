@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 # shellcheck disable=SC2153
 rRUN=${RUN}
 # shellcheck disable=SC2153
-[[ ${RUN} = "gfs" ]] && export rRUN="gdas"
+[[ ${RUN} == "gfs" ]] && rRUN="gdas"
 
 # Define significant cycles
 # Locally scoped variables and functions
