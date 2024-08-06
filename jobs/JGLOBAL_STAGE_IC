@@ -58,8 +58,7 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
 
   # Declare COMs
   if [[ "${MODE}" = "cycled" && "${RUN}" = "gdas" ]]; then
-    YMD=${current_cycle:0:8} HH=${current_cycle:8:2} declare_from_tmpl COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-    export COMOUT_ATMOS_ANALYSIS
+    YMD=${current_cycle:0:8} HH=${current_cycle:8:2} declare_from_tmpl -x COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
   fi
 
   if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
