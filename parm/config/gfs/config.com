@@ -12,7 +12,7 @@ echo "BEGIN: config.com"
 #       declare_from_tmpl [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
 #
 #       options:
-#           -r: Make variable read-only (same as `decalre -r`)
+#           -r: Make variable read-only (same as `declare -r`)
 #           -x: Mark variable for declare -rx (same as `declare -x`)
 #       var1, var2, etc: Variable names whose values will be generated from a template
 #                   and declared
