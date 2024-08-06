@@ -110,7 +110,7 @@ for pr in ${pr_list}; do
       else
         # Check if the driver is still running on the head node; if so, kill it and all child processes
         #shellcheck disable=SC2029
-        ssh "${driver_HOST}" "if ps -p ${driver_PID} 2>&1; then pstree -A -p \"${driver_PID}\" | grep -Eow \"[0-9]+\" | xargs kill; fi"
+        ssh "${driver_HOST}" "pstree -A -p \"${driver_PID}\" | grep -Eow \"[0-9]+\" | xargs kill || echo \"Failed to kill process with PID: ${driver_PID}, it may not be valid.\""
       fi
       {
         echo "Driver PID: Requested termination of ${driver_PID} and children on ${driver_HOST}"
