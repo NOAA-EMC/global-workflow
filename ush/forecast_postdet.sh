@@ -629,29 +629,33 @@ CICE_out() {
 }
 
 CICE_avg() {
-  echo "SUB ${FUNCNAME[0]}: Averaging output data for CICE"
-  CDO=/apps/prod/hpc-stack/intel-19.1.3.304/cdo/1.9.8/bin/cdo
-  fcnt=1
-  thefiles_fh=""
-  for fhr_avg in "${CICE_OUTPUT_FH[@]}";do
-    if (( fhr_avg == 0  )); then
-      continue
-    fi
-    if (( fcnt % FHOUTS_ICE == 0 ));then
-      FH3=$(printf %03i ${fhr_avg})
-      thefiles_fh=$(seq "$(( fhr_avg - FHOUT_ICE + 6 ))" "6" "${fhr_avg}")
-      thefiles=""
-      for fh in ${thefiles_fh}; do
-        FH3_2=$(printf %03i ${fh})
-        thefiles="${thefiles} ${COMOUT_ICE_HISTORY}/gefs.ice.t12z.6hr_avg.f${FH3_2}.nc"
-      done
-      intfile="${DATA}/CICE_OUTPUT/${RUN}.ice.t${cyc}z.24hr_aggregate.f${FH3}.nc"
-      avgfile="${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.24hr_avg.f${FH3}.nc"
-      ${CDO} mergetime "${thefiles}" "${intfile}"
-      ${CDO} -timmean "${intfile}" "${avgfile}"
-    fi
-    fcnt=$(( fcnt + 1 ))
-  done
+  if (( FHOUT_ICE > 6 )) && (( FHOUT_ICE % 6 == 0 ));then
+    echo "SUB ${FUNCNAME[0]}: Averaging output data for CICE"
+    CDO=/apps/prod/hpc-stack/intel-19.1.3.304/cdo/1.9.8/bin/cdo
+    fcnt=1
+    thefiles_fh=""
+    for fhr_avg in "${CICE_OUTPUT_FH[@]}";do
+      if (( fhr_avg == 0  )); then
+        continue
+      fi
+      if (( fcnt % FHOUTS_ICE == 0 ));then
+        FH3=$(printf %03i ${fhr_avg})
+        thefiles_fh=$(seq "$(( fhr_avg - FHOUT_ICE + 6 ))" "6" "${fhr_avg}")
+        thefiles=""
+        for fh in ${thefiles_fh}; do
+          FH3_2=$(printf %03i ${fh})
+          thefiles="${thefiles} ${COMOUT_ICE_HISTORY}/gefs.ice.t12z.6hr_avg.f${FH3_2}.nc"
+        done
+        intfile="${DATA}/CICE_OUTPUT/${RUN}.ice.t${cyc}z.24hr_aggregate.f${FH3}.nc"
+        avgfile="${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.24hr_avg.f${FH3}.nc"
+        ${CDO} mergetime "${thefiles}" "${intfile}"
+        ${CDO} -timmean "${intfile}" "${avgfile}"
+      fi
+      fcnt=$(( fcnt + 1 ))
+    done
+  else
+    echo "SUB ${FUNCNAME[0]}: No further averaging needed for CICE"
+  fi
 }
 
 GOCART_rc() {
