@@ -39,6 +39,15 @@ class Stage(Task):
     @logit(logger)
     def execute_stage(self, stage_dict: Dict[str, Any]) -> None:
         """Perform local staging of initial condition files.
+
+        Parameters
+        ----------
+        stage_dict : Dict[str, Any]
+            Configuration dictionary
+
+        Returns
+        -------
+        None
         """
 
         if not os.path.isdir(stage_dict.ROTDIR):
