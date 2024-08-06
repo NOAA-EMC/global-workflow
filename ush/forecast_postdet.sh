@@ -641,11 +641,11 @@ CICE_avg() {
         continue
       fi
       if (( fcnt % FHOUTS_ICE == 0 ));then
-        FH3=$(printf %03i ${fhr_avg})
+        FH3=$(printf %03i "${fhr_avg}")
         thefiles_fh=$(seq "$(( fhr_avg - FHOUT_ICE + 6 ))" "6" "${fhr_avg}")
         thefiles=""
         for fh in ${thefiles_fh}; do
-          FH3_2=$(printf %03i ${fh})
+          FH3_2=$(printf %03i "${fh}")
           thefiles="${thefiles} ${COMOUT_ICE_HISTORY}/gefs.ice.t12z.6hr_avg.f${FH3_2}.nc"
         done
         intfile="${DATA}/CICE_OUTPUT/${RUN}.ice.t${cyc}z.24hr_aggregate.f${FH3}.nc"
