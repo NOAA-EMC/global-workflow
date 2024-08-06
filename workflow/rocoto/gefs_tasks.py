@@ -275,7 +275,7 @@ class GEFSTasks(Tasks):
         if component in ['ocean']:
             dep_dict = {'type': 'data', 'data': data, 'age': 120}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': 'fcst_mem#member#'}
+            dep_dict = {'type': 'metatask', 'name': 'fcst_mem#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
         elif component in ['ice']:
