@@ -29,7 +29,7 @@ else
     model_start_date_current_cycle=${current_cycle}
   fi
 fi
-export previous_cycle current_cycle_offset model_start_date_current_cycle
+export current_cycle previous_cycle current_cycle_offset model_start_date_current_cycle
 
 # Define MEMDIR_ARRAY
 MEMDIR_ARRAY=()
@@ -62,28 +62,22 @@ for MEMDIR in "${MEMDIR_ARRAY[@]}"; do
   fi
 
   if [[ ${EXP_WARM_START:-".false."} = ".true." ]]; then
-    RUN=${rRUN} YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl COMOUT_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
-    RUN=${rRUN} YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl COMOUT_MED_RESTART_PREV:COM_MED_RESTART_TMPL
-    export COMOUT_ATMOS_RESTART_PREV COMOUT_MED_RESTART_PREV
+    RUN=${rRUN} YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl -x COMOUT_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+    RUN=${rRUN} YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl -x COMOUT_MED_RESTART_PREV:COM_MED_RESTART_TMPL
   else
-    YMD=${current_cycle:0:8} HH=${current_cycle:8:2} declare_from_tmpl COMOUT_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL
-    export COMOUT_ATMOS_INPUT
+    YMD=${current_cycle:0:8} HH=${current_cycle:8:2} declare_from_tmpl -x COMOUT_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL
   fi
   if [[ "${DO_OCN:-}" = "YES" ]]; then
-    RUN=${rRUN} YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl COMOUT_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
-    export COMOUT_OCEAN_RESTART_PREV
-  fi
-  if [[ "${REPLAY_ICS:-NO}" = "YES" ]]; then
-    YMD=${current_cycle:0:8} HH=${current_cycle:8:2} declare_from_tmpl COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL
-    export COMOUT_OCEAN_ANALYSIS
+    RUN=${rRUN} YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl -x COMOUT_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+    if [[ "${REPLAY_ICS:-NO}" = "YES" ]]; then
+      YMD=${current_cycle:0:8} HH=${current_cycle:8:2} declare_from_tmpl -x COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL
+    fi
   fi
   if [[ "${DO_ICE:-}" = "YES" ]]; then
-    RUN=${rRUN} YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl COMOUT_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
-    export COMOUT_ICE_RESTART_PREV
+    RUN=${rRUN} YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl -x COMOUT_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
   fi
   if [[ "${DO_WAVE:-}" = "YES" ]]; then
-    YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl COMOUT_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
-    export COMOUT_WAVE_RESTART_PREV
+    YMD=${previous_cycle:0:8} HH=${previous_cycle:8:2} declare_from_tmpl -x COMOUT_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
   fi
 
   # Execute staging
