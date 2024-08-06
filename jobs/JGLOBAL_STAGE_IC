@@ -14,9 +14,9 @@ rRUN=${RUN}
 # shellcheck disable=SC2153
 half_window=$(( assim_freq / 2 ))
 current_cycle="${PDY}${cyc}"
-previous_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${assim_freq} hours" +%Y%m%d%H)
-current_cycle_begin=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} - ${half_window} hours" +%Y%m%d%H)
-current_cycle_end=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${half_window} hours" +%Y%m%d%H)
+previous_cycle=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+current_cycle_begin=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
+current_cycle_end=$(date --utc -d "${PDY} ${cyc} + ${half_window} hours" +%Y%m%d%H)
 current_cycle_offset=$(date --utc -d "${PDY} ${cyc} + ${OFFSET_START_HOUR} hours" +%Y%m%d%H)
 
 # Define model start date for current_cycle as the time the forecast will start
