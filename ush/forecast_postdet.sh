@@ -629,7 +629,7 @@ CICE_out() {
 }
 
 CICE_avg() {
-  if (( $(( ( cyc + FHMIN ) % FHOUT_ICE )) == 0 )); then
+  if (( CICE_cdoavg == 0 )); then
     echo "SUB ${FUNCNAME[0]}: No further averaging needed for CICE"
   else
     echo "SUB ${FUNCNAME[0]}: Averaging output data for CICE"
