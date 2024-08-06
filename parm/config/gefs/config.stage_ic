@@ -7,8 +7,8 @@ echo "BEGIN: config.stage_ic"
 # Get task specific resources
 source "${EXPDIR}/config.resources" stage_ic
 
-export ICSDIR="@ICSDIR@"
-export BASE_IC="@BASE_IC@"
+export ICSDIR="@ICSDIR@" # User provided ICSDIR; blank if not provided
+export BASE_IC="@BASE_IC@" # Platform home for staged ICs
 
 export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/stage.yaml.j2"
 
