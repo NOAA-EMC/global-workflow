@@ -282,10 +282,10 @@ pipeline {
             steps {
                 script {
                     sh(script: """
-                        labels=\$(gh pr view ${env.CHANGE_ID} --repo ${repo_url} --json labels --jq '.labels[].name')
+                        labels=\$(${GH} pr view ${env.CHANGE_ID} --repo ${repo_url} --json labels --jq '.labels[].name')
                         for label in \$labels; do
                             if [[ "\$label" == *"${Machine}"* ]]; then
-                                gh pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "\$label"
+                                ${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "\$label"
                             fi
                         done
                     """, returnStatus: true)
