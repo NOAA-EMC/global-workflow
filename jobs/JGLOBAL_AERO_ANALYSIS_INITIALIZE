@@ -19,15 +19,13 @@ GDUMP="gdas"
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COM_OBS:COM_OBS_TMPL \
-    COMOUT_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_CHEM_ANALYSIS
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL \
-    COMIN_CHEM_BMAT_PREV:COM_CHEM_BMAT_TMPL
+    COM_CHEM_ANALYSIS_PREV:COM_CHEM_ANALYSIS_TMPL \
+    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-mkdir -p "${COMOUT_CHEM_ANALYSIS}"
+mkdir -m 775 -p "${COM_CHEM_ANALYSIS}"
 
 ###############################################################
 # Run relevant script
