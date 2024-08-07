@@ -118,7 +118,7 @@ pipeline {
                                             checkout scm
                                         } catch (Exception e) {
                                             if (env.CHANGE_ID) {
-                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Checkout **Failed** on ${Machine}: ${e.getMessage()}" """)
+                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Checkout **Failed** on ${Machine} in Build# ${env.BUILD_NUMBER}: ${e.getMessage()}" """)
                                             }
                                             STATUS = 'Failed'
                                             error("Failed to checkout: ${e.getMessage()}")
@@ -151,7 +151,7 @@ pipeline {
                                                     try {
                                                         sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}")
                                                         gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build **FAILED** on **${Machine}** with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                        sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build **FAILED** on **${Machine}** in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                     } catch (Exception error_comment) {
                                                         echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                     }
@@ -212,7 +212,7 @@ pipeline {
                                     try {
                                         error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStdout: true).trim()
                                     } catch (Exception error_create) {
-                                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
                                         error("Case ${Case} failed to create experment directory")
                                     }
                                 }
@@ -225,7 +225,7 @@ pipeline {
                             expression { return caseList.contains(Case) }
                         }
                         steps {
-                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                            catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                                 script {
                                     HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                     def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${Case}", returnStdout: true).trim()
@@ -255,7 +255,7 @@ pipeline {
                                                 }
                                                 try {
                                                     gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                    sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                    sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                     sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}")
                                                 } catch (Exception error_comment) {
                                                     echo "Failed to comment on PR: ${error_comment.getMessage()}"
@@ -266,7 +266,7 @@ pipeline {
                                             STATUS = 'Failed'
                                             try {
                                                 sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
-                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}\\`" """)
+                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}\\`" """)
                                             } catch (Exception e) {
                                                 echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                             }
