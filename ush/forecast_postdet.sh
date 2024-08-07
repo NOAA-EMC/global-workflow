@@ -60,18 +60,6 @@ FV3_postdet() {
           break
         fi
       done
-      # Replace fv_tracer with aeroanl_fv_tracer restart files from current cycle (if found)
-      local nn
-      for (( nn = 1; nn <= ntiles; nn++ )); do
-        if [[ -f "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" ]]; then
-          rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
-          ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
-                 "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
-        else
-          echo "WARNING: 'aeroanl_fv_tracer.res.tile1.nc' not found in '${COMOUT_ATMOS_RESTART}', using 'fv_tracer.res.tile1.nc'"
-          break
-        fi
-      done
     fi  # if [[ "${RERUN}" != "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then

@@ -196,7 +196,7 @@ class Analysis(Task):
 
     @logit(logger)
     def link_jediexe(self) -> None:
-        """
+        """Compile a dictionary of background error files to copy
 
         This method links a JEDI executable to the run directory
 
