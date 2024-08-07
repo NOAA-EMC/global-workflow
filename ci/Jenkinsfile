@@ -297,7 +297,7 @@ pipeline {
                     """, returnStatus: true)
                     sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
                     if (fileExists("${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log")) {
-                        sh(script: """echo "**CI ${STATUS}** ${Machine} at <br>Built and ran in directory \\`${CUSTOM_WORKSPACE}\\`\n\\`\\`\\`\n" | cat - ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log > temp && mv temp ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log""", returnStatus: true)
+                        sh(script: """echo "**CI ${STATUS}** on ${Machine} in Build# ${env.BUILD_NUMBER}<br>Built and ran in directory \\`${CUSTOM_WORKSPACE}\\`\n\\`\\`\\`\n" | cat - ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log > temp && mv temp ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log""", returnStatus: true)
                         sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body-file ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log  """, returnStatus: true)
                     }
                     if (STATUS == 'Passed') {
