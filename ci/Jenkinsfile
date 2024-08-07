@@ -225,7 +225,7 @@ pipeline {
                             expression { return caseList.contains(Case) }
                         }
                         steps {
-                            catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                 script {
                                     HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                     def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${Case}", returnStdout: true).trim()
@@ -270,7 +270,7 @@ pipeline {
                                             } catch (Exception e) {
                                                 echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                             }
-                                            echo "Failed to run experiments ${Case} on ${Machine}"
+                                            error("Failed to run experiments ${Case} on ${Machine}")
                                         }
                                     }
                                 }
