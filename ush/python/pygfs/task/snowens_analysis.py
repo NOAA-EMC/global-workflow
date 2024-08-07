@@ -111,9 +111,9 @@ class SnowEnsAnalysis(Analysis):
 
         # loop through tiles
         for tile in range(1, self.task_config.ntiles + 1):
-            # open the sfc restart and get the soil moisture
+            # open the restart and get the vegetation type
             rst = nc.Dataset(f"./bkg/det/{to_fv3time(self.task_config.bkg_time)}.sfc_data.tile{tile}.nc")
-            smc = rst.variables['smc'][:]
+            vtype = rst.variables['vtype'][:]
             rst.close()
             # open the oro data and get the land fraction
             oro = nc.Dataset(f"./orog/det/{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data.tile{tile}.nc")
@@ -125,11 +125,39 @@ class SnowEnsAnalysis(Analysis):
             lon = ncfile.createDimension('lon', case_int)
             lat = ncfile.createDimension('lat', case_int)
             lsm_frac_out = ncfile.createVariable('lsm_frac', np.float32, ('lon', 'lat'))
-            # mask the land fraction where soil moisture is less than 1
-            land_frac[np.where(smc[0, 0, ...] == 1)] = 0
+            # set the land fraction to 0 on glaciers to not interpolate that snow
+            glacier = 15
+            land_frac[np.where(vtype[0, ...] == glacier)] = 0
             lsm_frac_out[:] = land_frac
             # write out and close the file
             ncfile.close()
+
+    @logit(logger)
+    def genMask(self) -> None:
+        """Create a mask for use by JEDI
+        to mask out snow increments on non-LSM gridpoints
+
+        Parameters
+        ----------
+        self : Analysis
+           Instance of the SnowEnsAnalysis object
+        """
+
+        chdir(self.task_config.DATA)
+
+        # loop through tiles
+        for tile in range(1, self.task_config.ntiles + 1):
+            # open the restart and get the vegetation type
+            rst = nc.Dataset(f"./bkg/mem001/{to_fv3time(self.task_config.bkg_time)}.sfc_data.tile{tile}.nc", mode="r+")
+            vtype = rst.variables['vtype'][:]
+            slmsk = rst.variables['slmsk'][:]
+            # slmsk(Time, yaxis_1, xaxis_1)
+            # set the mask to 3 on glaciers
+            glacier = 15
+            slmsk[np.where(vtype == glacier)] = 3
+            # write out and close the file
+            rst.variables['slmsk'][:] = slmsk
+            rst.close()
 
     @logit(logger)
     def regridDetBkg(self) -> None:

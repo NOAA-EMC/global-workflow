@@ -22,6 +22,7 @@ if __name__ == '__main__':
     anl = SnowEnsAnalysis(config)
     anl.initialize()
     anl.genWeights()
+    anl.genMask()
     anl.regridDetBkg()
     anl.regridDetInc()
     anl.recenterEns()
