@@ -71,13 +71,13 @@ FV3_postdet() {
           break
         fi
       done
-      if [[ use_anl_aero == "YES" ]]; then
+      if [[ ${use_anl_aero} == "YES" ]]; then
         for (( nn = 1; nn <= ntiles; nn++ )); do
           rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
           ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
                  "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
         done
-      fi # if [[ use_anl_aero == "YES" ]]; then
+      fi # if [[ ${use_anl_aero} == "YES" ]]; then
     fi  # if [[ "${RERUN}" != "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
