@@ -18,7 +18,7 @@ pipeline {
     }
 
     environment {
-        GH = '~/bin/gh'
+        GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
