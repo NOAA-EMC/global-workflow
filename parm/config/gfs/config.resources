@@ -573,7 +573,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         memory="128GB"
-        ntasks=40;;
+        ntasks=16;;
       "050")
         memory="32GB"
         ntasks=16;;
