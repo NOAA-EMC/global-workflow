@@ -62,29 +62,6 @@ def prep_input_nml(task_config: AttrDict) -> None:
 
 
 @logit(logger)
-def cice_hist2fms(input_filename: str, output_filename: str) -> None:
-    """ Reformat the CICE history file so it can be read by SOCA/FMS
-    Simple reformatting utility to allow soca/fms to read the CICE history files
-    """
-
-    # open the CICE history file
-    ds = xr.open_dataset(input_filename)
-
-    if 'aicen' in ds.variables and 'hicen' in ds.variables and 'hsnon' in ds.variables:
-        logger.info(f"*** Already reformatted, skipping.")
-        return
-
-    # rename the dimensions to xaxis_1 and yaxis_1
-    ds = ds.rename({'ni': 'xaxis_1', 'nj': 'yaxis_1'})
-
-    # rename the variables
-    ds = ds.rename({'aice_h': 'aicen', 'hi_h': 'hicen', 'hs_h': 'hsnon'})
-
-    # Save the new netCDF file
-    ds.to_netcdf(output_filename, mode='w')
-
-
-@logit(logger)
 def stage_ens_mem(task_config: AttrDict) -> None:
     """ Copy the ensemble members to the DATA directory
     Copy the ensemble members to the DATA directory and reformat the CICE history files
