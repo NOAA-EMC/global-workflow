@@ -224,6 +224,7 @@ pipeline {
                         when {
                             expression { return caseList.contains(Case) }
                         }
+                        failFast true
                         steps {
                             catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                                 script {
