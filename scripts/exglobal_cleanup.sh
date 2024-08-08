@@ -12,41 +12,26 @@ if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
 #DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 
-# Search and delete files/directories from DATAROOT/ older than ${purge_every_days} days
-# purge_every_days should be a positive integer
-#purge_every_days=3
-
-# Find and delete files older than ${purge_every_days} days
-#find "${DATAROOT}/"* -type f -mtime "+${purge_every_days}" -exec rm -f {} \;
-
-# Find and delete directories older than ${purge_every_days} days
-#find "${DATAROOT}/"* -type d -mtime "+${purge_every_days}" -exec rm -rf {} \;
+# In XML, DATAROOT is defined as:
+#DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"
+# cleanup is only executed after the entire cycle is successfully completed.
+# removing DATAROOT should be possible if that is the case.
+rm -rf "${DATAROOT}"
 
 echo "Cleanup ${DATAROOT} completed!"
 ###############################################################
-
-###############################################################
-# Clean up previous cycles; various depths
-# PRIOR CYCLE: Leave the prior cycle alone
-# shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${assim_freq} hours")
-# PREVIOUS to the PRIOR CYCLE
-GDATE=$(date --utc +%Y%m%d%H -d "${GDATE:0:8} ${GDATE:8:2} -${assim_freq} hours")
-
-# Remove the TMPDIR directory
-# TODO Only prepbufr is currently using this directory, and all jobs should be
-#   cleaning up after themselves anyway
-COMIN="${DATAROOT}/${GDATE}"
-[[ -d ${COMIN} ]] && rm -rf "${COMIN}"
 
 if [[ "${CLEANUP_COM:-YES}" == NO ]] ; then
     exit 0
 fi
 
+###############################################################
+# Clean up previous cycles; various depths
+
 # Step back every assim_freq hours and remove old rotating directories
 # for successful cycles (defaults from 24h to 120h).
 # Retain files needed by Fit2Obs
-last_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDEND:-24} hours" )
+last_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDEND:-24} hours")
 first_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
 last_rtofs=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDRTOFS:-48} hours")
 function remove_files() {

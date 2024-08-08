@@ -43,7 +43,7 @@ class MarineBMat(Task):
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
                 'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
-                'GRID_GEN_YAML': os.path.join(_home_gdas, 'parm', 'soca', 'gridgen', 'gridgen.yaml'),
+                'UTILITY_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_utils_stage.yaml.j2'),
                 'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
                 'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
                 'ENSPERT_RELPATH': _enspert_relpath,
@@ -82,12 +82,11 @@ class MarineBMat(Task):
         # TODO(G): Check ocean backgrounds dates for consistency
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
-        for cice_fname in ['./INPUT/cice.res.nc', './bkg/ice.bkg.f006.nc', './bkg/ice.bkg.f009.nc']:
-            mdau.cice_hist2fms(cice_fname, cice_fname)
 
-        # stage the grid generation yaml
-        FileHandler({'copy': [[self.task_config.GRID_GEN_YAML,
-                               os.path.join(self.task_config.DATA, 'gridgen.yaml')]]}).sync()
+        # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
+        logger.info(f"Staging SOCA utility yaml files from {self.task_config.HOMEgfs}/parm/gdas/soca")
+        soca_utility_list = parse_j2yaml(self.task_config.UTILITY_YAML_TMPL, self.task_config)
+        FileHandler(soca_utility_list).sync()
 
         # generate the variance partitioning YAML file
         logger.debug("Generate variance partitioning YAML file")
