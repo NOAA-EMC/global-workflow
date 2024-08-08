@@ -236,18 +236,23 @@ pipeline {
                                     def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
                                     sh(script: " rm -f ${error_file}")
                                     try {
-                                        // Run the run-check script in the background
                                         def process = sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system} & echo \$!", returnStdout: true).trim()
                                         def pid = process.tokenize().last()
-                                        // Periodically check for the failure flag
+                                        def checkFailureFlag = {
                                             while (true) {
                                                 if (env.FAILURE_FLAG == 'true') {
                                                     sh(script: "kill ${pid}")
                                                     error("Aborting due to previous failure")
                                                 }
-                                                sleep(time: 10, unit: 'SECONDS')
+                                                sleep(time: 60, unit: 'SECONDS')
                                             }
-
+                                        }
+                                        def checkThread = Thread.start(checkFailureFlag)
+                                        def exitCode = sh(script: "wait ${pid}", returnStatus: true)
+                                        checkThread.interrupt()
+                                        if (exitCode != 0) {
+                                            error("Experiment ${Case} failed with exit code ${exitCode}")
+                                        }
                                     } catch (Exception error_experment) {
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
                                         ws(CUSTOM_WORKSPACE) {
