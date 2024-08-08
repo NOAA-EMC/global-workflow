@@ -9,7 +9,7 @@ from logging import getLogger
 from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
-                    Task, 
+                    Task,
                     parse_j2yaml,
                     logit)
 from pygfs.task.jedi import JEDI
@@ -55,7 +55,7 @@ class AtmAnalysis(Task):
 
         # Create JEDI object
         self.jedi = JEDI(self.task_config)
-        
+
     @logit(logger)
     def initialize(self) -> None:
         """Initialize a global atm analysis
@@ -82,7 +82,7 @@ class AtmAnalysis(Task):
 
         # link JEDI variational executable
         self.jedi.link_exe(self.task_config)
-        
+
         # stage observations
         obs_dict = self.jedi.get_obs_dict()
         FileHandler(obs_dict).sync()
@@ -133,7 +133,7 @@ class AtmAnalysis(Task):
         super().execute()
 
         self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
-        
+
     @logit(logger)
     def finalize(self) -> None:
         """Finalize a global atm analysis

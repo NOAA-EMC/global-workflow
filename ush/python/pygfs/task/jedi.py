@@ -19,14 +19,14 @@ logger = getLogger(__name__.split('.')[-1])
 class JEDI:
 
     def __init__(self, task_config: AttrDict[str, Any]) -> None:
-        
+
         _exe_name = os.path.basename(task_config.JEDIEXE)
 
-        self.exe        = os.path.join(task_config.DATA, _exe_name)
-        self.yaml       = os.path.join(task_config.DATA, os.path.splitext(_exe_name)[0] + '.yaml')
-        self.config     = {}
+        self.exe = os.path.join(task_config.DATA, _exe_name)
+        self.yaml = os.path.join(task_config.DATA, os.path.splitext(_exe_name)[0] + '.yaml')
+        self.config = {}
         self.j2tmpl_dir = os.path.join(task_config.PARMgfs, 'gdas')
-        
+
     @logit(logger)
     def get_config(self, task_config: AttrDict[str, Any], algorithm: Optional[str] = None) -> None:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
@@ -45,13 +45,13 @@ class JEDI:
         """
 
         logger.info(f"Generate JEDI YAML config: {self.yaml}")
-        
+
         if 'JCB_BASE_YAML' in task_config.keys():
             # Step 1: Fill templates of the JCB base YAML file
             jcb_config = parse_j2yaml(task_config.JCB_BASE_YAML, task_config)
 
             # Step 2: If algorithm is present then override the algorithm in the JEDI
-            #         config. Otherwise, if the algorithm J2-YAML is present, fill 
+            #         config. Otherwise, if the algorithm J2-YAML is present, fill
             #         its templates and merge.
             if algorithm:
                 jcb_config['algorithm'] = algorithm
@@ -89,7 +89,7 @@ class JEDI:
         ----------
         None
         """
-        
+
         chdir(task_config.DATA)
 
         exec_cmd = Executable(aprun_cmd)
@@ -128,7 +128,7 @@ class JEDI:
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(task_config.JEDIEXE, exe_dest)
-    
+
     @logit(logger)
     def get_obs_dict(self, task_config: AttrDict[str, Any]) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy

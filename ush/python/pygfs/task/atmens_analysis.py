@@ -56,7 +56,7 @@ class AtmEnsAnalysis(Task):
 
         # Create JEDI object
         self.jedi = JEDI(self.task_config)
-        
+
     @logit(logger)
     def initialize_letkf(self) -> None:
         """Initialize a global atmens analysis
@@ -86,11 +86,11 @@ class AtmEnsAnalysis(Task):
 
         # save JEDI config to YAML file
         logger.debug(f"Writing JEDI YAML file to: {self.yaml}")
-	save_as_yaml(jedi.config, jedi.yaml)
-        
+        save_as_yaml(jedi.config, jedi.yaml)
+
         # link JEDI ensemble DA executable
         self.jedi.link_exe(self.task_config)
-        
+
         # stage observations
         obs_dict = self.jedi.get_obs_dict()
         FileHandler(obs_dict).sync()
@@ -135,7 +135,7 @@ class AtmEnsAnalysis(Task):
         super().execute()
 
         self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
-        
+
     @logit(logger)
     def finalize(self) -> None:
         """Finalize a global atmens analysis
