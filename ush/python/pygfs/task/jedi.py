@@ -72,11 +72,6 @@ class JEDI:
 
         logger.debug(f"JEDI config:\n{pformat(self.config)}")
 
-        # Save YAML to disk
-        logger.debug(f"Write YAML file to: {self.yaml}")
-        save_as_yaml(self.config, self.yaml)
-        logger.info(f"Wrote YAML file to: {self.yaml}")
-
     @logit(logger)
     def execute(self, task_config: AttrDict[str, Any], aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
         """Execute JEDI application

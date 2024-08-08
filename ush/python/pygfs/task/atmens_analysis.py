@@ -63,6 +63,7 @@ class AtmEnsAnalysis(Task):
 
         This method will initialize a global atmens analysis using JEDI.
         This includes:
+        - generating and saving JEDI YAML config
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -80,9 +81,13 @@ class AtmEnsAnalysis(Task):
         """
         super().initialize()
 
-        # get JEDI ensemble DA config dictionary and save to YAML file
+        # get JEDI ensemble DA config dictionary
         self.jedi.get_config(self.task_config)
 
+        # save JEDI config to YAML file
+        logger.debug(f"Writing JEDI YAML file to: {self.yaml}")
+	save_as_yaml(jedi.config, jedi.yaml)
+        
         # link JEDI ensemble DA executable
         self.jedi.link_exe(self.task_config)
         
