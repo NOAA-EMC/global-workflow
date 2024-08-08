@@ -39,7 +39,6 @@
 #                     [default: "YES"]
 #   - $pid          : Override the default process id
 #                     [default: $$]
-# 
 
 OPTIND=1
 while getopts "c:e:" option; do
@@ -99,7 +98,7 @@ for config in "${configs[@]:-''}"; do
     status=$?
     if (( status != 0 )); then
         echo "FATAL [${BASH_SOURCE[0]}]: Unable to load config config.${config}"
-    	exit "${status}"
+        exit "${status}"
     fi
 done
 
@@ -111,5 +110,5 @@ source "${HOMEgfs}/env/${machine}.env" "${env_job}"
 status=$?
 if (( status != 0 )); then
     echo "FATAL [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
-	exit "${status}"
+    exit "${status}"
 fi

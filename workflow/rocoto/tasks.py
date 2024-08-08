@@ -24,7 +24,7 @@ class Tasks:
                    'prepsnowobs', 'snowanl',
                    'fcst',
                    'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
-                   'atmosprod', 'oceanprod', 'iceprod',
+                   'atmos_prod', 'ocean_prod', 'ice_prod',
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
                    'tracker', 'genesis', 'genesis_fsu',
@@ -61,6 +61,8 @@ class Tasks:
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 
+        # DATAROOT is set by prod_envir in ops.  Here, we use `STMP` to construct DATAROOT
+        dataroot_str = f"{self._base.get('STMP')}/RUNDIRS/{self._base.get('PSLOT')}/{self.run}.<cyclestr>@Y@m@d@H</cyclestr>"
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
                       'HOMEgfs': self.HOMEgfs,
                       'EXPDIR': self._base.get('EXPDIR'),
@@ -70,7 +72,7 @@ class Tasks:
                       'PDY': '<cyclestr>@Y@m@d</cyclestr>',
                       'cyc': '<cyclestr>@H</cyclestr>',
                       'COMROOT': self._base.get('COMROOT'),
-                      'DATAROOT': self._base.get('DATAROOT')}
+                      'DATAROOT': dataroot_str}
 
         self.envars = self._set_envars(envar_dict)
 
