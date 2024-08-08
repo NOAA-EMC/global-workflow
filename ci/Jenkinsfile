@@ -17,6 +17,9 @@ pipeline {
         skipDefaultCheckout()
         parallelsAlwaysFailFast()
     }
+    environment {
+        FAILURE_FLAG = 'false'
+    }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
              // which is used to designate the Nodes in the Jenkins Controler by the agent label
@@ -233,7 +236,18 @@ pipeline {
                                     def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
                                     sh(script: " rm -f ${error_file}")
                                     try {
-                                        sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
+                                        // Run the run-check script in the background
+                                        def process = sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system} & echo \$!", returnStdout: true).trim()
+                                        def pid = process.tokenize().last()
+                                        // Periodically check for the failure flag
+                                            while (true) {
+                                                if (env.FAILURE_FLAG == 'true') {
+                                                    sh(script: "kill ${pid}")
+                                                    error("Aborting due to previous failure")
+                                                }
+                                                sleep(time: 10, unit: 'SECONDS')
+                                            }
+
                                     } catch (Exception error_experment) {
                                         sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
                                         ws(CUSTOM_WORKSPACE) {
@@ -264,14 +278,15 @@ pipeline {
                                             } else {
                                                 echo "No error logs found for failed cases in $CUSTOM_WORKSPACE/RUNTESTS/${pslot}_error.logs"
                                             }
-                                            STATUS = 'Failed'
                                             try {
                                                 sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
                                                 sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}\\`" """)
                                             } catch (Exception e) {
                                                 echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                             }
-                                            error("Failed to run experiments ${Case} on ${Machine}")
+                                            STATUS = 'Failed'
+                                            env.FAILURE_FLAG = 'true'
+                                            error("Failed to run experiments ${Case} on ${Machine} in Build# ${env.BUILD_NUMBER}")
                                         }
                                     }
                                 }
