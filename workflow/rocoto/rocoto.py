@@ -145,7 +145,8 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     strings.append(f'\t<walltime>{walltime}</walltime>\n')
     strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
     if memory is not None:
-        strings.append(f'\t<memory>{memory}</memory>\n')
+        if memory != 'None':
+            strings.append(f'\t<memory>{memory}</memory>\n')
     if native is not None:
         strings.append(f'\t<native>{native}</native>\n')
     strings.append('\n')
