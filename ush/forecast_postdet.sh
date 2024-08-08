@@ -202,7 +202,7 @@ EOF
 
   #============================================================================
   if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
-    local FH2 FH3 iicnt
+    local FH2 FH3
     for fhr in ${FV3_OUTPUT_FH}; do
       FH3=$(printf %03i "${fhr}")
       FH2=$(printf %02i "${fhr}")
