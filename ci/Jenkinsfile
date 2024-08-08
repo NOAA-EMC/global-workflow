@@ -193,22 +193,21 @@ pipeline {
             def parallelStages = cases.collectEntries { caseName ->
                 ["${caseName}": {
                     stage("Create Experiments: ${caseName}") {
-                        when {
-                            expression { return caseList.contains(Case) }
-                        }
                         steps {
                             catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                 script {
-                                    sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp")
-                                    def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp"
-                                    system = yaml_case.experiment.system
-                                    def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
-                                    env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
-                                    try {
-                                        error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStdout: true).trim()
-                                    } catch (Exception error_create) {
-                                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
-                                        error("Case ${Case} failed to create experment directory")
+                                    if (caseList.contains(caseName)) {
+                                        sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp")
+                                        def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${Case}.yaml.tmp"
+                                        system = yaml_case.experiment.system
+                                        def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
+                                        env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
+                                        try {
+                                            error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${Case}.yaml", returnStdout: true).trim()
+                                        } catch (Exception error_create) {
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                            error("Case ${Case} failed to create experment directory")
+                                        }
                                     }
                                 }
                             }
@@ -216,56 +215,55 @@ pipeline {
                     }
 
                     stage('Run Experiments') {
-                        when {
-                            expression { return caseList.contains(Case) }
-                        }
                         steps {
                             catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                 script {
-                                    HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
-                                    def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${Case}", returnStdout: true).trim()
-                                    def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
-                                    sh(script: " rm -f ${error_file}")
-                                    try {
-                                        sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
-                                    } catch (Exception error_experment) {
-                                        sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
-                                        ws(CUSTOM_WORKSPACE) {
-                                            def error_logs = ""
-                                            def error_logs_message = ""
-                                            if (fileExists(error_file)) {
-                                                def fileContent = readFile error_file
-                                                def lines = fileContent.readLines()
-                                                for (line in lines) {
-                                                    echo "archiving: ${line}"
-                                                    if (fileExists("${CUSTOM_WORKSPACE}/${line}") && readFile("${CUSTOM_WORKSPACE}/${line}").length() > 0) {
-                                                        try {
-                                                            archiveArtifacts artifacts: "${line}", fingerprint: true
-                                                            error_logs = error_logs + "${CUSTOM_WORKSPACE}/${line} "
-                                                            error_logs_message = error_logs_message + "${CUSTOM_WORKSPACE}/${line}\n"
-                                                        } catch (Exception error_arch) {
-                                                            echo "Failed to archive error log ${line}: ${error_arch.getMessage()}"
+                                    if (caseList.contains(caseName)) {
+                                        HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
+                                        def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${Case}", returnStdout: true).trim()
+                                        def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
+                                        sh(script: " rm -f ${error_file}")
+                                        try {
+                                            sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
+                                        } catch (Exception error_experment) {
+                                            sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
+                                            ws(CUSTOM_WORKSPACE) {
+                                                def error_logs = ""
+                                                def error_logs_message = ""
+                                                if (fileExists(error_file)) {
+                                                    def fileContent = readFile error_file
+                                                    def lines = fileContent.readLines()
+                                                    for (line in lines) {
+                                                        echo "archiving: ${line}"
+                                                        if (fileExists("${CUSTOM_WORKSPACE}/${line}") && readFile("${CUSTOM_WORKSPACE}/${line}").length() > 0) {
+                                                            try {
+                                                                archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                                error_logs = error_logs + "${CUSTOM_WORKSPACE}/${line} "
+                                                                error_logs_message = error_logs_message + "${CUSTOM_WORKSPACE}/${line}\n"
+                                                            } catch (Exception error_arch) {
+                                                                echo "Failed to archive error log ${line}: ${error_arch.getMessage()}"
+                                                            }
                                                         }
                                                     }
+                                                    try {
+                                                        gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                        sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}")
+                                                    } catch (Exception error_comment) {
+                                                        echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                                    }
+                                                } else {
+                                                    echo "No error logs found for failed cases in $CUSTOM_WORKSPACE/RUNTESTS/${pslot}_error.logs"
                                                 }
+                                                STATUS = 'Failed'
                                                 try {
-                                                    gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
-                                                    sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
-                                                    sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}")
-                                                } catch (Exception error_comment) {
-                                                    echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                                    sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                                                    sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}\\`" """)
+                                                } catch (Exception e) {
+                                                    echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
                                                 }
-                                            } else {
-                                                echo "No error logs found for failed cases in $CUSTOM_WORKSPACE/RUNTESTS/${pslot}_error.logs"
+                                                error("Failed to run experiments ${Case} on ${Machine}")
                                             }
-                                            STATUS = 'Failed'
-                                            try {
-                                                sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
-                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${Case} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}\\`" """)
-                                            } catch (Exception e) {
-                                                echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
-                                            }
-                                            error("Failed to run experiments ${Case} on ${Machine}")
                                         }
                                     }
                                 }
