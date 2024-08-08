@@ -273,12 +273,12 @@ pipeline {
                             }
                         }
                     }
-                }
-            }]
+                }]
             }
             parallel parallelStages + [failFast: true]
-        }
             }
+            }
+        }
         }
             
 
