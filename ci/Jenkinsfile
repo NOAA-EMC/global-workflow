@@ -193,7 +193,6 @@ pipeline {
             def parallelStages = cases.collectEntries { caseName ->
                 ["${caseName}": {
                     stage("Create Experiments: ${caseName}") {
-                        steps {
                             catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                 script {
                                     if (caseList.contains(caseName)) {
@@ -210,12 +209,10 @@ pipeline {
                                         }
                                     }
                                 }
-                            }
                         }
                     }
 
                     stage('Run Experiments') {
-                        steps {
                             catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                 script {
                                     if (caseList.contains(caseName)) {
@@ -268,7 +265,6 @@ pipeline {
                                     }
                                 }
                             }
-                        }
                     }
                 }]
             }
