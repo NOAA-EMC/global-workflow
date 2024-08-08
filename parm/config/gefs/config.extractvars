@@ -13,7 +13,7 @@ export compress_ocn=1 #1: Compress extracted ocean product, 0: Do not compress e
 export compress_ice=1 #1: Compress extracted ice product, 0: Do not compress extracted ice product
 
 export ocnres="1p00" # Resolution of ocean products
-export iceres="0p25" # Resolution of ice products
+export iceres="native" # Resolution of ice products
 export wavres="0p25" # Resolution of wave products
 
 export depthvar_name="z_l" # Name of depth variable in NetCDF ocean products
