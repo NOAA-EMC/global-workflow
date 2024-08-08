@@ -101,7 +101,7 @@ pipeline {
                     }
                 }
                 stages {
-                    stage("Building ${system}") {
+                    stage('Building') {
                         steps {
                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             script {
