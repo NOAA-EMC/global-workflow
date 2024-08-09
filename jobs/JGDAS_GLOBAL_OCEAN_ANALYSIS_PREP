@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalprep" -c "base ocnanal ocnanal
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -16,9 +15,9 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP=${GDUMP:-"gdas"}
 
-export OPREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${RUN}.t${cyc}z."
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
