@@ -281,7 +281,7 @@ case "${fv3_res}" in
           export rf_cutoff=100.0
           export fv_sg_adj=450
           export WRITE_GROUP_GDAS=2
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GDAS=10
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GDAS=15
           export WRITE_GROUP_GFS=4
           export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20 #Note this should be 10 for WCOSS2
         fi
