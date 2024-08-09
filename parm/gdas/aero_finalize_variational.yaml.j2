@@ -17,6 +17,7 @@ copy:
 {% for tile in range(1,ntiles+1) %}
 - ["{{ DATA }}/anl/aeroinc.{{ current_cycle | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc", "{{ COMOUT_CHEM_ANALYSIS }}/aeroinc.{{ current_cycle | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc"]
 {% endfor %}
+- ["{{ DATA }}/anl/aeroinc_gauss.{{ current_cycle | to_isotime }}.gaussian.modelLevels.nc", "{{ COMOUT_CHEM_ANALYSIS }}/{{ APREFIX }}aeroinc.nc"]
 ## copy analysis
 {% for tile in range(1,ntiles+1) %}
 - ["{{ DATA }}/anl/{{ bkgtime | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc", "{{ COMOUT_ATMOS_RESTART }}/{{ bkgtime | to_fv3time }}.aeroanl_fv_tracer.res.tile{{ tile }}.nc"]
