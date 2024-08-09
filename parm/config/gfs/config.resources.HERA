@@ -14,8 +14,8 @@ case ${step} in
   "eupd")
     case ${CASE} in
       "C768")
-        export npe_eupd=320
-        export nth_eupd=5
+        export ntasks=320
+        export threads_per_task=5
         ;;
       "C384")
         export ntasks=80
