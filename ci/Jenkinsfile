@@ -191,7 +191,7 @@ pipeline {
                 script {
                     def parallelStages = cases.collectEntries { caseName ->
                         ["${caseName}": {
-                            stage("Create: ${caseName}") {
+                            stage("Create ${caseName}") {
                                     catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                         script {
                                                 sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
@@ -209,7 +209,7 @@ pipeline {
                                 }
                             }
 
-                            stage("${caseName} Running") {
+                            stage("Running ${caseName}") {
                                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                                         script {
                                                 HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
