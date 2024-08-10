@@ -546,3 +546,44 @@ class GEFSTasks(Tasks):
         task = rocoto.create_task(member_metatask_dict)
 
         return task
+
+    def arch(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'atmos_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'atmos_ensstat'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ice:
+            dep_dict = {'type': 'metatask', 'name': 'ice_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ocean:
+            dep_dict = {'type': 'metatask', 'name': 'ocean_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_wave:
+            dep_dict = {'type': 'metatask', 'name': 'wave_post_grid'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': 'wave_post_pnt'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.app_config.do_wave_bnd:
+                dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
+                deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        resources = self.get_resource('arch')
+        task_name = 'arch'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_test.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
