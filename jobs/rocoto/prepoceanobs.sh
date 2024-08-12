@@ -14,8 +14,10 @@ export jobid="${job}.$$"
 
 ###############################################################
 # setup python path for class defs and utils
-
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush"
+# shellcheck disable=SC2311
+pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
+PYTHONPATH="${pyiodaPATH}:${PYTHONPATH}"
+export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
