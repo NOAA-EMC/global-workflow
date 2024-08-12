@@ -163,6 +163,15 @@ ocean:
             {% endfor %}
         {% endif %}
 
+{% if DO_JEDIOCNVAR == True %}
+{% set COMOUT_OCEAN_ANALYSIS = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
+rerun:
+    mkdir:
+        - "{{ COMOUT_OCEAN_ANALYSIS }}"
+    copy:
+        - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.ocninc.nc", "{{ COMOUT_OCEAN_ANALYSIS }}"]
+{% endif %}
+
 {% if REPLAY_ICS == True %}
 {% set COMOUT_OCEAN_ANALYSIS = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
 replay:
