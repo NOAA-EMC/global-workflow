@@ -63,17 +63,17 @@ class Stage(Task):
         stage_dict['rRUN'] = rRUN
 
         # Determine ensemble member settings
-        MEM_START = -1 # Deterministic default, no members
+        MEM_START = -1  # Deterministic default, no members
         if self.task_config.NMEM_ENS > 0:
             if self.task_config.RUN == "gefs":
                 MEM_START = 0
             elif self.task_config.RUN == "enkfgdas":
                 MEM_START = 1
 
-        if MEM_START >= 0: # Ensemble RUN
+        if MEM_START >= 0:  # Ensemble RUN
             first_mem = MEM_START
             last_mem = self.task_config.NMEM_ENS
-        else: # Deteministic RUN
+        else:  # Deteministic RUN
             first_mem = MEM_START
             last_mem = MEM_START
 
