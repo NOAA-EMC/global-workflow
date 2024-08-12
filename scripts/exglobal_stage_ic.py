@@ -20,9 +20,9 @@ def main():
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
             'previous_cycle', 'current_cycle',
-            'current_cycle_offset', 'model_start_date_current_cycle',
+            'model_start_date_current_cycle',
             'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL',
-            'OCNRES', 'waveGRD', 'ntiles',
+            'OCNRES', 'waveGRD', 'ntiles', 'DO_JEDIOCNVAR',
             'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST']
 
     stage_dict = AttrDict()
