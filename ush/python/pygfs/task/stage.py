@@ -56,9 +56,31 @@ class Stage(Task):
         # Add the os.path.exists function to the dict for yaml parsing
         stage_dict['path_exists'] = os.path.exists
 
-        stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict,
-                                 allow_missing=False)
+        # Determine restart RUN
+        rRUN = self.task_config.RUN
+        if self.task_config.RUN == "gfs":
+            rRUN = "gdas"
+        stage_dict['rRUN'] = rRUN
 
-        # Copy files to ROTDIR
-        for key in stage_set.keys():
-            FileHandler(stage_set[key]).sync()
+        # Determine ensemble member settings
+        MEM_START = -1 # Deterministic default, no members
+        if self.task_config.NMEM_ENS > 0:
+            if self.task_config.RUN == "gefs":
+                MEM_START = 0
+            elif self.task_config.RUN == "enkfgdas":
+                MEM_START = 1
+
+        if MEM_START >= 0: # Ensemble RUN
+            first_mem = MEM_START
+            last_mem = self.task_config.NMEM_ENS
+        else: # Deteministic RUN
+            first_mem = MEM_START
+            last_mem = MEM_START
+
+        # Loop over members
+        for mem in range(first_mem, last_mem + 1):
+            stage_dict['mem'] = mem
+            stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
+            # Copy files to ROTDIR
+            for key in stage_set.keys():
+                FileHandler(stage_set[key]).sync()

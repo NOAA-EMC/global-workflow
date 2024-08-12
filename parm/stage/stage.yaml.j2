@@ -19,43 +19,77 @@
 #############################################################
 
 # Set variables used below
-{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set current_cycle_YMD = current_cycle | to_YMD %}
+{% set current_cycle_HH = current_cycle | strftime("%H") %}
+{% set previous_cycle_YMD = previous_cycle | to_YMD %}
+{% set previous_cycle_HH = previous_cycle | strftime("%H") %}
 {% set m_prefix = model_start_date_current_cycle | to_YMD + "." + model_start_date_current_cycle | strftime("%H") + "0000" %}
 {% set o_prefix = current_cycle_offset | to_YMD + "." + current_cycle_offset | strftime("%H") + "0000" %}
 {% set p_prefix = previous_cycle | to_YMD + "." + previous_cycle | strftime("%H") + "0000" %}
 
-#############################################################
+####################################################################
 # Initial condition to stage
+####################################################################
+
+# Declare a dict of search and replace terms to run on each template
+
+{% if mem >= 0 %}
+  {% set mem_char = 'mem%03d' | format(mem) %}
+{% else %}
+  {% set mem_char = '' %}
+{% endif %}
+{% set current_dict = ({ '${ROTDIR}':ROTDIR,
+                         '${RUN}':RUN,
+                         '${YMD}':current_cycle_YMD,
+                         '${HH}':current_cycle_HH,
+                         '${MEMDIR}': mem_char }) %}
+{% set previous_dict = ({ '${ROTDIR}':ROTDIR,
+                          '${RUN}':rRUN,
+                          '${YMD}':previous_cycle_YMD,
+                          '${HH}':previous_cycle_HH,
+                          '${MEMDIR}': mem_char }) %}
+{% set previous_run_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':previous_cycle_YMD,
+                              '${HH}':previous_cycle_HH,
+                              '${MEMDIR}': mem_char }) %}
+
+# Initial condition definitions
 
 {% if MODE == "cycled" and RUN == "gdas" %}
+{% set COMOUT_ATMOS_ANALYSIS = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
 analysis:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS }}"
     copy:
         {% for ftype in ["abias", "abias_air", "abias_int", "abias_pc", "atminc.nc", "radstat"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
         {% endif %}
         {% endfor %}
 {% endif %}
 
 {% if EXP_WARM_START == True %}
+{% set COMOUT_ATMOS_RESTART_PREV = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_dict) %}
 atmosphere_warm:
     mkdir:
         - "{{ COMOUT_ATMOS_RESTART_PREV }}"
     copy:
         {% for ftype in ["coupler.res", "fv_core.res.nc"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ o_prefix }}.{{ ftype }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
         {% endfor %}
         {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
             {% for ntile in range(1, ntiles + 1) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ o_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
             {% endfor %} # ntile
         {% endfor %} # ftype
         {% for ntile in range(1, ntiles + 1) %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ p_prefix ~ ".sfcanl_data.tile" ~ ntile ~ ".nc") %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ p_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
+        {% endif %} # path_exists
         {% endfor %} # ntile
-{% else %}
+{% else %} # cold start
+{% set COMOUT_ATMOS_INPUT = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_dict) %}
 atmosphere_cold:
     mkdir:
         - "{{ COMOUT_ATMOS_INPUT }}"
@@ -69,31 +103,38 @@ atmosphere_cold:
 {% endif %}
 
 {% if REPLAY_ICS == "YES" %}
+{% set COMOUT_ATMOS_ANALYSIS = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
 atmosphere_perturbation:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS }}"
     copy:
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ m_prefix }}.fv3_perturbation.nc", "{{ COMOUT_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ cycle_HH }}z.atminc.nc"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ m_prefix }}.fv3_perturbation.nc", "{{ COMOUT_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle_HH }}z.atminc.nc"]
 {% endif %}
 
 {% if DO_NEST %}
 atmosphere_nest:
-    {% set ntile = 7 %}
+  {% set ntile = 7 %}
+  {% if EXP_WARM_START == True %}
+    {% set COMOUT_ATMOS_RESTART_PREV = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_dict) %}
     mkdir:
         - "{{ COMOUT_ATMOS_RESTART_PREV }}"
     copy:
-        {% if EXP_WARM_START == True %}
-            {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
+        {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ o_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}/{{ o_prefix }}.{{ ftype }}.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
-            {% endfor %} # ftype
-        {% else %}
-            {% for ftype in ["gfs_data", "sfc_data"] %}
+        {% endfor %}
+  {% else %} # cold start
+    {% set COMOUT_ATMOS_INPUT = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_dict) %}
+    mkdir:
+        - "{{ COMOUT_ATMOS_INPUT }}"
+    copy:
+        {% for ftype in ["gfs_data", "sfc_data"] %}
         - ["{{ COMOUT_ATMOS_INPUT }}/{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_INPUT }}/{{ ftype }}.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
-            {% endfor %} # ftype
-        {% endif %} # cold-start
+        {% endfor %}
+  {% endif %}
 {% endif %}
 
 {% if DO_ICE %}
+{% set COMOUT_ICE_RESTART_PREV = COM_ICE_RESTART_TMPL | replace_tmpl(previous_dict) %}
 ice:
     mkdir:
         - "{{ COMOUT_ICE_RESTART_PREV }}"
@@ -102,6 +143,7 @@ ice:
 {% endif %}
 
 {% if DO_OCN %}
+{% set COMOUT_OCEAN_RESTART_PREV = COM_OCEAN_RESTART_TMPL | replace_tmpl(previous_dict) %}
 ocean:
     mkdir:
         - "{{ COMOUT_OCEAN_RESTART_PREV }}"
@@ -114,6 +156,7 @@ ocean:
         {% endif %}
 
 {% if REPLAY_ICS == "YES" %}
+{% set COMOUT_OCEAN_ANALYSIS = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
 replay:
     mkdir:
         - "{{ COMOUT_OCEAN_ANALYSIS }}"
@@ -122,6 +165,7 @@ replay:
 {% endif %}
 
 {% if EXP_WARM_START == True %}
+{% set COMOUT_MED_RESTART_PREV = COM_MED_RESTART_TMPL | replace_tmpl(previous_dict) %}
 {% if path_exists(ICSDIR ~ "/" ~ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".ufs.cpld.cpl.r.nc") %}
 mediator:
     mkdir:
@@ -134,6 +178,7 @@ mediator:
 {% endif %} # DO_OCN=YES
 
 {% if DO_WAVE %}
+{% set COMOUT_WAVE_RESTART_PREV = COM_WAVE_RESTART_TMPL | replace_tmpl(previous_run_dict) %}
 wave:
     mkdir:
         - "{{ COMOUT_WAVE_RESTART_PREV }}"

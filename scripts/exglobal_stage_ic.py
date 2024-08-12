@@ -18,7 +18,7 @@ def main():
     stage = Stage(config)
 
     # Pull out all the configuration keys needed to run stage job
-    keys = ['RUN', 'MODE', 'EXP_WARM_START',
+    keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
             'previous_cycle', 'current_cycle',
             'current_cycle_offset', 'model_start_date_current_cycle',
             'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL',
