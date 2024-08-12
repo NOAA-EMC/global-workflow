@@ -868,7 +868,7 @@ class GFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
-        if self.run in ['gdas']:
+        if self.run in ['gdas','enkfgdas']:
             dep_dict = {'type': 'task', 'name': f'{self.run}stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
