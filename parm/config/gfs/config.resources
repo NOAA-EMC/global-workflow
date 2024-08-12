@@ -544,7 +544,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         memory="128GB"
-        ntasks=40;;
+        ntasks=16;;
       "050")
         memory="32GB"
         ntasks=16;;
@@ -1136,6 +1136,13 @@ case ${step} in
     threads_per_task=1
     memory_gdas="4GB"
     memory_gfs="2GB"
+    ;;
+
+  "fbwind")
+    walltime="00:05:00"
+    ntasks=1
+    threads_per_task=1
+    memory="4GB"
     ;;
 
   "mos_stn_prep")
