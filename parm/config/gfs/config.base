@@ -285,7 +285,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 
 # GFS output and frequency
 export FHMIN_GFS=0
-export FHMAX_GFS=@FHMAX_GFS@
+export FHMAX_GFS="@FHMAX_GFS@"
+# Intermediate times to stop forecast when running in segments
+breakpnts="@FCST_BREAKPOINTS@"
+export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
 export FHOUT_GFS=3 # 3 for ops
 export FHMAX_HF_GFS=@FHMAX_HF_GFS@
 export FHOUT_HF_GFS=1
@@ -384,10 +387,10 @@ fi
 
 # if 3DVAR and IAU
 if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
-    export IAUFHRS="6"
+    export IAUFHRS="6,"
     export IAU_FHROT="3"
     export IAU_FILTER_INCREMENTS=".true."
-    export IAUFHRS_ENKF="6"
+    export IAUFHRS_ENKF="6,"
 fi
 
 # Generate post-processing ensemble spread files
@@ -397,10 +400,10 @@ export ENKF_SPREAD="YES"
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
-  export IAUFHRS="6"
+  export IAUFHRS="6,"
 fi
 
-if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
+if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6,"; fi
 
 # Determine restart intervals
 # For IAU, write restarts at beginning of window also
