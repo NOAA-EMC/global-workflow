@@ -1,0 +1,22 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+
+# Declare the GEFS_ARCH where atmos data will be sent
+{% set GEFS_ARCH = ROTDIR ~ RUN ~"/arch" %}
+
+# test files
+{% if RUN == "gefs" %}
+    {% set det_files = [] %}
+    {% if path_exists(ROTDIR ~ RUN ~ "." ~ cycle_YMD ~ cycle_HH
+     ~ "/ensstat/products/atmos/grib2/0p50") %}
+        {% do det_files.append([ROTDIR ~ RUN ~ "." ~ cycle_YMD ~ cycle_HH
+         ~ "/ensstat/products/atmos/grib2/0p50/gefs.t12z.mean.pres_.0p50.f006.grib2"]) %}
+    {% endif %}
+
+# Actually write the yaml
+mkdir:
+    - "{{ GEFS_ARCH }}"
+copy:
+   - {{ det_files }}
