@@ -8,4 +8,6 @@ echo "BEGIN: config.atmensanlobs"
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmensanlobs
 
+export JCB_ALGO_YAML=${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2
+
 echo "END: config.atmensanlobs"

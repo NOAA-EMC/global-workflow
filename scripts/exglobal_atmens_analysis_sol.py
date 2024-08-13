@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# exglobal_atmens_analysis_obs.py
+# exglobal_atmens_analysis_sol.py
 # This script creates an AtmEnsAnalysis object
 # and runs the execute method
-# which executes the global atm local ensemble analysis observer
+# which executes the global atm local ensemble analysis solver
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -19,5 +19,5 @@ if __name__ == '__main__':
 
     # Instantiate the atmens analysis task
     AtmEnsAnl = AtmEnsAnalysis(config)
-    AtmEnsAnl.init_observer()
-    AtmEnsAnl.observer()
+    AtmEnsAnl.init_solver()
+    AtmEnsAnl.solver()

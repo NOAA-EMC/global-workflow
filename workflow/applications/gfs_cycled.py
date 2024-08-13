@@ -57,7 +57,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_hybvar:
             if self.do_jediatmens:
-                configs += ['atmensanlinit', 'atmensanlobs', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
+                configs += ['atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
@@ -163,7 +163,8 @@ class GFSCycledAppConfig(AppConfig):
         hybrid_after_eupd_tasks = []
         if self.do_hybvar:
             if self.do_jediatmens:
-                hybrid_tasks += ['atmensanlinit', 'atmensanlobs', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
+                hybrid_tasks += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
+                hybrid_tasks += ['atmensanlobs', 'atmensanlsol'] if self.lobsdiag_forenkf else ['atmensanlletkf']
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']

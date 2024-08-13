@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+########## config.atmensanlsol ##########
+# Pre Atm Ens Analysis specific
+
+echo "BEGIN: config.atmensanlsol"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmensanlsol
+
+export JCB_ALGO_YAML=${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_solver.yaml.j2
+
+echo "END: config.atmensanlsol"

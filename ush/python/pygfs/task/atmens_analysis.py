@@ -17,6 +17,7 @@ from wxflow import (AttrDict,
                     WorkflowException,
                     Template, TemplateConstants)
 from pygfs.task.analysis import Analysis
+from jcb import render
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -124,15 +125,54 @@ class AtmEnsAnalysis(Analysis):
         """
         chdir(self.task_config.DATA)
 
-        exec_cmd = Executable(self.task_config.APRUN_ATMENSANL)
-        exec_name = os.path.join(self.task_config.DATA, 'fv3jedi_letkf.x')
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLOBS)
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
+
         exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('localensembleda')
         exec_cmd.add_default_arg(self.task_config.jedi_yaml)
 
         try:
             logger.debug(f"Executing {exec_cmd}")
-            logger.debug(f"SKIP executing {exec_cmd} at present - need observer yaml")
-            # exec_cmd()
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
+    @logit(logger)
+    def solver(self: Analysis) -> None:
+        """Execute a global atmens analysis solver
+
+        This method will execute a global atmens analysis solver using JEDI.
+        This includes:
+        - changing to the run directory
+        - running the global atmens analysis executable in solver mode
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        chdir(self.task_config.DATA)
+
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLSOL)
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
+
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('localensembleda')
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
         except OSError:
             raise OSError(f"Failed to execute {exec_cmd}")
         except Exception:
@@ -176,6 +216,34 @@ class AtmEnsAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
         pass
+
+    @logit(logger)
+    def init_observer(self: Analysis) -> None:
+        # Setup JEDI YAML file
+        jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
+        jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
+        jcb_config = {**jcb_config, **jcb_algo_config}
+        jedi_config = render(jcb_config)
+
+        self.task_config.jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens_observer.yaml")
+
+        logger.debug(f"Generate ensemble da observer YAML file: {self.task_config.jedi_yaml}")
+        save_as_yaml(jedi_config, self.task_config.jedi_yaml)
+        logger.info(f"Wrote ensemble da observer YAML to: {self.task_config.jedi_yaml}")
+
+    @logit(logger)
+    def init_solver(self: Analysis) -> None:
+        # Setup JEDI YAML file
+        jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
+        jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
+        jcb_config = {**jcb_config, **jcb_algo_config}
+        jedi_config = render(jcb_config)
+
+        self.task_config.jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens_solver.yaml")
+
+        logger.debug(f"Generate ensemble da solver YAML file: {self.task_config.jedi_yaml}")
+        save_as_yaml(jedi_config, self.task_config.jedi_yaml)
+        logger.info(f"Wrote ensemble da solver YAML to: {self.task_config.jedi_yaml}")
 
     @logit(logger)
     def init_fv3_increment(self: Analysis) -> None:

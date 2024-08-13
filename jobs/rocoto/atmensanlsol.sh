@@ -8,11 +8,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="atmensanlobs"
+export job="atmensanlsol"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_ATMENS_ANALYSIS_OBS"
+"${HOMEgfs}/jobs/JGLOBAL_ATMENS_ANALYSIS_SOL"
 status=$?
 exit "${status}"

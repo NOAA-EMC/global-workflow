@@ -2479,14 +2479,48 @@ class GFSTasks(Tasks):
         return task
 
     def atmensanlobs(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlinit'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
         resources = self.get_resource('atmensanlobs')
-        task_name = f'{self.cdump}atmensanlobs'
+        task_name = f'{self.run}atmensanlobs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.cdump.replace('enkf', ''),
+                     'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/atmensanlobs.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def atmensanlsol(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlobs'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('atmensanlsol')
+        task_name = f'{self.run}atmensanlsol'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmensanlsol.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2525,7 +2559,10 @@ class GFSTasks(Tasks):
     def atmensanlfv3inc(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlletkf'}
+        if self.app_config.lobsdiag_forenkf:
+            dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlsol'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlletkf'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
