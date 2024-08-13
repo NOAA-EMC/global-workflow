@@ -156,9 +156,9 @@ class RocotoXML(ABC):
             replyto = ''
 
         strings = ['',
-                  f'#################### {pslot} ####################',
-                  f'MAILTO="{replyto}"'
-                  ]
+                   f'#################### {pslot} ####################',
+                   f'MAILTO="{replyto}"'
+                   ]
        #AWS need 'SHELL', and 'BASH_ENV' defined, or, the crontab job won't start.
         if os.environ.get('PW_CSP', None) in ['aws', 'azure', 'google']:
              strings.extend(
@@ -166,11 +166,10 @@ class RocotoXML(ABC):
                        f'SHELL="/bin/bash"',
                        f'BASH_ENV="/etc/bashrc"'
                        ])
-        strings.extend(
-                  [
-                  f'{cronintstr} {rocotorunstr}',
-                  '#################################################################',
-                  ''])
+        strings.extend([
+                        f'{cronintstr} {rocotorunstr}',
+                        '#################################################################',
+                        ''])
 
         if crontab_file is None:
             crontab_file = f"{expdir}/{pslot}.crontab"
