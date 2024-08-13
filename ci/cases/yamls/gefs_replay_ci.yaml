@@ -2,5 +2,6 @@ defaults:
   !INC {{ HOMEgfs }}/parm/config/gefs/yaml/defaults.yaml
 base:
   REPLAY_ICS: "YES"
+  FCST_BREAKPOINTS: ""
   BASE_CPLIC: {{ 'TOPICDIR' | getenv }}/REPLAY_ICs/CI
 
