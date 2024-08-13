@@ -4,28 +4,6 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
 
-# Split IAUFHRS into a list; typically either "3,6,9" or 6 (integer)
-{% if IAUFHRS is string %}
-    # "3,6,9"
-    {% set iaufhrs = [] %}
-    {% for iaufhr in IAUFHRS.split(",") %}
-        {% do iaufhrs.append(iaufhr | int) %}
-    {% endfor %}
-{% else %}
-    # 6 (integer)
-    {% set iaufhrs = [IAUFHRS] %}
-{% endif %}
-
-# Repeat for IAUFHRS_ENKF
-{% if IAUFHRS_ENKF is string %}
-    {% set iaufhrs_enkf = [] %}
-    {% for iaufhr in IAUFHRS_ENKF.split(",") %}
-        {% do iaufhrs_enkf.append(iaufhr | int) %}
-    {% endfor %}
-{% else %}
-    {% set iaufhrs_enkf = [IAUFHRS_ENKF] %}
-{% endif %}
-
 # Determine which data to archive
 datasets:
 {% if ENSGRP == 0 %}
