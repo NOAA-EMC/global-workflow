@@ -77,6 +77,7 @@ common_predet(){
 
   CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
+  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 
   # Define significant cycles
   half_window=$(( assim_freq / 2 ))
@@ -145,6 +146,7 @@ FV3_predet(){
   fi
 
   # Convert output settings into an explicit list for FV3
+  # Create an FV3 fhr list to be used in the filenames
   FV3_OUTPUT_FH=""
   local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
@@ -153,8 +155,36 @@ FV3_predet(){
   fi
   FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
+  # Create an FV3 fhr list to be used in the namelist
+  # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
+  # are only different when REPLAY_ICS is set to YES
+  if [[ "${REPLAY_ICS:-NO}" == "YES"  ]]; then
+    local FV3_OUTPUT_FH_s
+    FV3_OUTPUT_FH_NML="$(echo "scale=5; ${OFFSET_START_HOUR}+(${DELTIM}/3600)" | bc -l)"
+    FV3_OUTPUT_FH_s=$(( OFFSET_START_HOUR * 3600 + DELTIM ))
+    local fhr=${FHOUT}
+    if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
+      FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "$(( OFFSET_START_HOUR + FHOUT_HF ))" "${FHOUT_HF}" "${FHMAX_HF}")"
+      FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$(( OFFSET_START_HOUR * 3600 + FHOUT_HF * 3600 ))" "$(( FHOUT_HF * 3600 ))" "$(( FHMAX_HF * 3600 ))")"
+      fhr=${FHMAX_HF}
+    fi
+    FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
+    FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$(( fhr * 3600 ))" "$(( FHOUT * 3600 ))" "$(( FHMAX * 3600 ))")"
+    local hh mm ss s_total
+    FV3_OUTPUT_FH_hhmmss=""
+    for s_total in ${FV3_OUTPUT_FH_s}; do
+      # Convert seconds to HHH:MM:SS
+      (( ss = s_total, mm = ss / 60, ss %= 60, hh = mm / 60, mm %= 60 )) || true
+      FV3_OUTPUT_FH_hhmmss="${FV3_OUTPUT_FH_hhmmss} $(printf "%03d-%02d-%02d" "${hh}" "${mm}" "${ss}")"
+    done
+    # Create a string from an array
+  else # If non-replay ICs are being used
+    # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
+    # are identical when REPLAY_ICS is set to NO
+    FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH}"
+  fi
+
   # Other options
-  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options
