@@ -8,7 +8,7 @@ import numpy as np
 
 from wxflow import (AttrDict,
                     FileHandler,
-                    to_fv3time, to_YMD, to_timedelta, add_to_datetime,
+                    to_fv3time, to_timedelta, add_to_datetime,
                     rm_p, chdir,
                     parse_j2yaml, save_as_yaml,
                     Jinja,
