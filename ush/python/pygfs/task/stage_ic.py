@@ -50,18 +50,16 @@ class Stage(Task):
         """
 
         # Add the os.path.exists function to the dict for yaml parsing
-        #-------------------------------------------------------------
         stage_dict['path_exists'] = os.path.exists
 
         # Determine model start date
-        #---------------------------
         current_cycle_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
         current_cycle_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
 
-        if self.task_config.DOIAU == True and self.task_config.MODE == "cycled":
+        if self.task_config.DOIAU and self.task_config.MODE == "cycled":
             model_start_date_current_cycle = current_cycle_begin
         else:
-            if self.task_config.REPLAY_ICS == True:
+            if self.task_config.REPLAY_ICS:
                 model_start_date_current_cycle = current_cycle_end
             else:
                 model_start_date_current_cycle = self.task_config.current_cycle
@@ -69,14 +67,12 @@ class Stage(Task):
         stage_dict['model_start_date_current_cycle'] = model_start_date_current_cycle
 
         # Determine restart RUN
-        #----------------------
         rRUN = self.task_config.RUN
         if self.task_config.RUN == "gfs":
             rRUN = "gdas"
         stage_dict['rRUN'] = rRUN
 
         # Determine ensemble member settings
-        #-----------------------------------
         MEM_START = -1  # Deterministic default, no members
         if self.task_config.NMEM_ENS > 0:
             if self.task_config.RUN == "gefs":
