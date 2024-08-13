@@ -21,7 +21,7 @@ REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules | wcoss2)
+  hera | orion | hercules | wcoss2 | gaea)
    echo "Running Automated Testing on ${MACHINE_ID}"
    source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
    ;;
@@ -50,14 +50,14 @@ fi
 export GH
 
 rocotostat=$(command -v rocotostat)
-if [[ -z ${rocotostat+x} ]]; then
+if [[ -z ${rocotostat} ]]; then
   echo "rocotostat not found on system"
   exit 1
 else
   echo "rocotostat being used from ${rocotostat}"
 fi
 rocotocheck=$(command -v rocotocheck)
-if [[ -z ${rocotocheck+x} ]]; then
+if [[ -z ${rocotocheck} ]]; then
   echo "rocotocheck not found on system"
   exit 1
 else
@@ -70,7 +70,7 @@ pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
   pr_list=$("${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Running) || true
 fi
-if [[ -z "${pr_list+x}" ]]; then
+if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready to run cases on .. exiting"
   exit 0
 fi
@@ -124,7 +124,7 @@ for pr in ${pr_list}; do
 
   for pslot_dir in "${pr_dir}/RUNTESTS/EXPDIR/"*; do
     pslot=$(basename "${pslot_dir}") || true
-    if [[ -z "${pslot+x}" ]]; then
+    if [[ -z "${pslot}" ]]; then
       echo "No experiments found in ${pslot_dir} .. exiting"
       exit 0
     fi

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
@@ -23,7 +24,7 @@ class Tasks:
                    'prepsnowobs', 'snowanl',
                    'fcst',
                    'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
-                   'atmosprod', 'oceanprod', 'iceprod',
+                   'atmos_prod', 'ocean_prod', 'ice_prod',
                    'verfozn', 'verfrad', 'vminmon',
                    'metp',
                    'tracker', 'genesis', 'genesis_fsu',
@@ -36,18 +37,23 @@ class Tasks:
                    'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
                    'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-    def __init__(self, app_config: AppConfig, cdump: str) -> None:
+    def __init__(self, app_config: AppConfig, run: str) -> None:
 
-        self.app_config = app_config
-        self.cdump = cdump
+        self.app_config = copy.deepcopy(app_config)
+        self.run = run
+        # Re-source the configs with RUN specified
+        print(f"Source configs with RUN={run}")
+        self._configs = self.app_config.source_configs(run=run, log=False)
 
+        # Update the base config for the application
+        self._configs['base'] = self.app_config.update_base(self._configs['base'])
         # Save dict_configs and base in the internal state (never know where it may be needed)
-        self._configs = self.app_config.configs
         self._base = self._configs['base']
+
         self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
-        if self.cdump == "enkfgfs":
+        if self.run == "enkfgfs":
             self.nmem = int(self._base['NMEM_ENS_GFS'])
         else:
             self.nmem = int(self._base['NMEM_ENS'])
@@ -55,17 +61,18 @@ class Tasks:
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 
+        # DATAROOT is set by prod_envir in ops.  Here, we use `STMP` to construct DATAROOT
+        dataroot_str = f"{self._base.get('STMP')}/RUNDIRS/{self._base.get('PSLOT')}/{self.run}.<cyclestr>@Y@m@d@H</cyclestr>"
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
                       'HOMEgfs': self.HOMEgfs,
                       'EXPDIR': self._base.get('EXPDIR'),
                       'NET': self._base.get('NET'),
-                      'CDUMP': self.cdump,
-                      'RUN': self.cdump,
+                      'RUN': self.run,
                       'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
                       'PDY': '<cyclestr>@Y@m@d</cyclestr>',
                       'cyc': '<cyclestr>@H</cyclestr>',
                       'COMROOT': self._base.get('COMROOT'),
-                      'DATAROOT': self._base.get('DATAROOT')}
+                      'DATAROOT': dataroot_str}
 
         self.envars = self._set_envars(envar_dict)
 
@@ -87,8 +94,8 @@ class Tasks:
 
           Variables substitued by default:
             ${ROTDIR} -> '&ROTDIR;'
-            ${RUN}    -> self.cdump
-            ${DUMP}   -> self.cdump
+            ${RUN}    -> self.run
+            ${DUMP}   -> self.run
             ${MEMDIR} -> ''
             ${YMD}    -> '@Y@m@d'
             ${HH}     -> '@H'
@@ -110,8 +117,8 @@ class Tasks:
         # Defaults
         rocoto_conversion_dict = {
             'ROTDIR': '&ROTDIR;',
-            'RUN': self.cdump,
-            'DUMP': self.cdump,
+            'RUN': self.run,
+            'DUMP': self.run,
             'MEMDIR': '',
             'YMD': '@Y@m@d',
             'HH': '@H'
@@ -124,7 +131,7 @@ class Tasks:
                                              rocoto_conversion_dict.get)
 
     @staticmethod
-    def _get_forecast_hours(cdump, config, component='atmos') -> List[str]:
+    def _get_forecast_hours(run, config, component='atmos') -> List[str]:
         # Make a local copy of the config to avoid modifying the original
         local_config = config.copy()
 
@@ -146,21 +153,17 @@ class Tasks:
 
         # Get a list of all forecast hours
         fhrs = []
-        if cdump in ['gdas']:
+        if run in ['gdas']:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
-        elif cdump in ['gfs', 'gefs']:
+        elif run in ['gfs', 'gefs']:
             fhmax = local_config['FHMAX_GFS']
             fhout = local_config['FHOUT_GFS']
             fhmax_hf = local_config['FHMAX_HF_GFS']
             fhout_hf = local_config['FHOUT_HF_GFS']
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
-
-        # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice'] and 0 in fhrs:
-            fhrs.remove(0)
 
         return fhrs
 
@@ -169,7 +172,7 @@ class Tasks:
         Given a task name (task_name) and its configuration (task_names),
         return a dictionary of resources (task_resource) used by the task.
         Task resource dictionary includes:
-        account, walltime, cores, nodes, ppn, threads, memory, queue, partition, native
+        account, walltime, ntasks, nodes, ppn, threads, memory, queue, partition, native
         """
 
         scheduler = self.app_config.scheduler
@@ -178,33 +181,16 @@ class Tasks:
 
         account = task_config['ACCOUNT']
 
-        if f'wtime_{task_name}_{self.cdump}' in task_config:
-            walltime = task_config[f'wtime_{task_name}_{self.cdump}']
-        else:
-            walltime = task_config[f'wtime_{task_name}']
+        walltime = task_config[f'walltime']
+        ntasks = task_config[f'ntasks']
+        ppn = task_config[f'tasks_per_node']
 
-        if f'npe_{task_name}_{self.cdump}' in task_config:
-            cores = task_config[f'npe_{task_name}_{self.cdump}']
-        else:
-            cores = task_config[f'npe_{task_name}']
+        nodes = int(np.ceil(float(ntasks) / float(ppn)))
 
-        if f'npe_node_{task_name}_{self.cdump}' in task_config:
-            ppn = task_config[f'npe_node_{task_name}_{self.cdump}']
-        else:
-            ppn = task_config[f'npe_node_{task_name}']
+        threads = task_config[f'threads_per_task']
 
-        nodes = int(np.ceil(float(cores) / float(ppn)))
-
-        if f'nth_{task_name}_{self.cdump}' in task_config:
-            threads = task_config[f'nth_{task_name}_{self.cdump}']
-        else:
-            threads = task_config[f'nth_{task_name}']
-
-        if f'memory_{task_name}_{self.cdump}' in task_config:
-            memory = task_config[f'memory_{task_name}_{self.cdump}']
-        else:
-            # Memory is not required
-            memory = task_config.get(f'memory_{task_name}', None)
+        # Memory is not required
+        memory = task_config.get(f'memory', None)
 
         if scheduler in ['pbspro']:
             if task_config.get('prepost', False):
@@ -223,7 +209,10 @@ class Tasks:
             else:
                 native += ':shared'
         elif scheduler in ['slurm']:
-            native = '--export=NONE'
+            if task_config.get('is_exclusive', False):
+                native = '--exclusive'
+            else:
+                native = '--export=NONE'
             if task_config['RESERVATION'] != "":
                 native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
             if task_config.get('CLUSTERS', "") not in ["", '@CLUSTERS@']:
@@ -239,7 +228,7 @@ class Tasks:
         task_resource = {'account': account,
                          'walltime': walltime,
                          'nodes': nodes,
-                         'cores': cores,
+                         'ntasks': ntasks,
                          'ppn': ppn,
                          'threads': threads,
                          'memory': memory,

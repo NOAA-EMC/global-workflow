@@ -30,7 +30,7 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 source "${ROOT_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules | wcoss2)
+  hera | orion | hercules | wcoss2 | gaea)
     echo "Running Automated Testing on ${MACHINE_ID}"
     source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
     ;;
@@ -77,8 +77,9 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+  [[ ! -d ${pr_dir} ]] && mkdir -p "${pr_dir}"
   db_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
-  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_single.log"
+  output_ci_single="${pr_dir}/output_single.log"
   #############################################################
   # Check if a Ready labeled PR has changed back from once set
   # and in that case completely kill the previose driver.sh cron
@@ -107,7 +108,9 @@ for pr in ${pr_list}; do
            echo -e "${pstree_out}" | grep -Pow "(?<=\()[0-9]+(?=\))" | xargs kill
         fi
       else
-        ssh "${driver_HOST}" 'pstree -A -p "${driver_PID}" | grep -Eow "[0-9]+" | xargs kill'
+        # Check if the driver is still running on the head node; if so, kill it and all child processes
+        #shellcheck disable=SC2029
+        ssh "${driver_HOST}" "pstree -A -p \"${driver_PID}\" | grep -Eow \"[0-9]+\" | xargs kill || echo \"Failed to kill process with PID: ${driver_PID}, it may not be valid.\""
       fi
       {
         echo "Driver PID: Requested termination of ${driver_PID} and children on ${driver_HOST}"
@@ -141,7 +144,7 @@ pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
   pr_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Ready) || true
 fi
-if [[ -z "${pr_list+x}" ]]; then
+if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"
   exit 0
 fi
@@ -155,7 +158,7 @@ fi
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
   pr_building=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
-  if [[ -z "${pr_building+x}" ]]; then
+  if [[ -n "${pr_building}" ]]; then
       continue
   fi
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')

@@ -11,7 +11,7 @@ enkf:
         {% endfor %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}echgres.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}esfc.log"
-        {% for grp in range(iaufhrs | length) %}
+        {% for grp in range(IAUFHRS | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen{{ '%03d' % grp }}.log"
         {% endfor %}
 
@@ -68,7 +68,7 @@ enkf:
         {% if DOIAU %}
         # IAU increments/analyses
 
-        {% for fhr in iaufhrs if fhr != 6 %}
+        {% for fhr in IAUFHRS if fhr != 6 %}
         {% if do_calc_increment %}
         # Store analyses instead of increments
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"

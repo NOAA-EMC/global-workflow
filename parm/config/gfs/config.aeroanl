@@ -24,7 +24,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
   export aero_bkg_times="3,6,9"
   export JEDIYAML="${PARMgfs}/gdas/aero/variational/3dvar_fgat_gfs_aero.yaml.j2"
 else
-  export aero_bkg_times="6"
+  export aero_bkg_times="6," # Trailing comma is necessary so this is treated as a list
   export JEDIYAML="${PARMgfs}/gdas/aero/variational/3dvar_gfs_aero.yaml.j2"
 fi
 

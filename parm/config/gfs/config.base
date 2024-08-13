@@ -13,7 +13,6 @@ export RUN_ENVIR="emc"
 
 # Account, queue, etc.
 export ACCOUNT="@ACCOUNT@"
-export ACCOUNT_SERVICE="@ACCOUNT_SERVICE@"
 export QUEUE="@QUEUE@"
 export QUEUE_SERVICE="@QUEUE_SERVICE@"
 export PARTITION_BATCH="@PARTITION_BATCH@"
@@ -128,17 +127,13 @@ export DUMP_SUFFIX=""
 if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
 fi
-export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
 export NET="gfs"  # NET is defined in the job-card (ecf)
-export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUMP is used at EMC as a RUN proxy
-# TODO: determine where is RUN actually used in the workflow other than here
-# TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
-#       consistent w/ EE2?
+export RUN=${RUN:-"gfs"}  # RUN is defined in the job-card (ecf)
 
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
@@ -179,9 +174,9 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-export AERO_FCST_CDUMP="" # When to run aerosol forecast: gdas, gfs, or both
-export AERO_ANL_CDUMP="" # When to run aerosol analysis: gdas, gfs, or both
-export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
+export AERO_FCST_RUN="" # When to run aerosol forecast: gdas, gfs, or both
+export AERO_ANL_RUN="" # When to run aerosol analysis: gdas, gfs, or both
+export WAVE_RUN="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -232,13 +227,13 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
-    export AERO_ANL_CDUMP="both"
-    export AERO_FCST_CDUMP="gdas"
+    export AERO_ANL_RUN="both"
+    export AERO_FCST_RUN="gdas"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
-    export WAVE_CDUMP="both"
+    export WAVE_RUN="both"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -252,13 +247,13 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export AERO_ANL_CDUMP="both"
-        export AERO_FCST_CDUMP="gdas"
+        export AERO_ANL_RUN="both"
+        export AERO_FCST_RUN="gdas"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_CDUMP="both"
+        export WAVE_RUN="both"
     fi
     ;;
   *)
@@ -268,10 +263,10 @@ case "${APP}" in
 esac
 
 # Surface cycle update frequency
-if [[ "${CDUMP}" =~ "gdas" ]] ; then
+if [[ "${RUN}" =~ "gdas" ]] ; then
    export FHCYC=1
    export FTSFS=10
-elif [[ "${CDUMP}" =~ "gfs" ]] ; then
+elif [[ "${RUN}" =~ "gfs" ]] ; then
    export FHCYC=24
 fi
 
@@ -290,7 +285,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 
 # GFS output and frequency
 export FHMIN_GFS=0
-export FHMAX_GFS=@FHMAX_GFS@
+export FHMAX_GFS="@FHMAX_GFS@"
+# Intermediate times to stop forecast when running in segments
+breakpnts="@FCST_BREAKPOINTS@"
+export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
 export FHOUT_GFS=3 # 3 for ops
 export FHMAX_HF_GFS=@FHMAX_HF_GFS@
 export FHOUT_HF_GFS=1
@@ -389,10 +387,10 @@ fi
 
 # if 3DVAR and IAU
 if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
-    export IAUFHRS="6"
+    export IAUFHRS="6,"
     export IAU_FHROT="3"
     export IAU_FILTER_INCREMENTS=".true."
-    export IAUFHRS_ENKF="6"
+    export IAUFHRS_ENKF="6,"
 fi
 
 # Generate post-processing ensemble spread files
@@ -402,10 +400,10 @@ export ENKF_SPREAD="YES"
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
-  export IAUFHRS="6"
+  export IAUFHRS="6,"
 fi
 
-if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6"; fi
+if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6,"; fi
 
 # Determine restart intervals
 # For IAU, write restarts at beginning of window also
@@ -484,5 +482,13 @@ export OFFSET_START_HOUR=0
 
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
+
+# The tracker, genesis, and METplus jobs are not supported on AWS yet
+# TODO: we should place these in workflow/hosts/awspw.yaml as part of AWS setup, not for general.
+if [[ "${machine}" == "AWSPW" ]]; then
+   export DO_TRACKER="NO"
+   export DO_GENESIS="NO"
+   export DO_METP="NO"
+fi
 
 echo "END: config.base"
