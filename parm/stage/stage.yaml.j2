@@ -23,8 +23,8 @@
 {% set current_cycle_HH = current_cycle | strftime("%H") %}
 {% set previous_cycle_YMD = previous_cycle | to_YMD %}
 {% set previous_cycle_HH = previous_cycle | strftime("%H") %}
-{% set m_prefix = model_start_date_current_cycle | to_YMD + "." + model_start_date_current_cycle | strftime("%H") + "0000" %}
-{% set p_prefix = previous_cycle | to_YMD + "." + previous_cycle | strftime("%H") + "0000" %}
+{% set m_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
+{% set p_prefix = previous_cycle | strftime("%Y%m%d.%H0000") %}
 
 ####################################################################
 # Initial condition to stage
@@ -37,26 +37,26 @@
 {% else %}
   {% set mem_char = '' %}
 {% endif %}
-{% set current_dict = ({ '${ROTDIR}':ROTDIR,
-                         '${RUN}':RUN,
-                         '${YMD}':current_cycle_YMD,
-                         '${HH}':current_cycle_HH,
-                         '${MEMDIR}': mem_char }) %}
-{% set previous_dict = ({ '${ROTDIR}':ROTDIR,
-                          '${RUN}':rRUN,
-                          '${YMD}':previous_cycle_YMD,
-                          '${HH}':previous_cycle_HH,
-                          '${MEMDIR}': mem_char }) %}
-{% set previous_run_dict = ({ '${ROTDIR}':ROTDIR,
-                              '${RUN}':RUN,
-                              '${YMD}':previous_cycle_YMD,
-                              '${HH}':previous_cycle_HH,
-                              '${MEMDIR}': mem_char }) %}
+{% set current_cycle_dict = ({ '${ROTDIR}':ROTDIR,
+                               '${RUN}':RUN,
+                               '${YMD}':current_cycle_YMD,
+                               '${HH}':current_cycle_HH,
+                               '${MEMDIR}': mem_char }) %}
+{% set previous_cycle_dict = ({ '${ROTDIR}':ROTDIR,
+                                '${RUN}':rRUN,
+                                '${YMD}':previous_cycle_YMD,
+                                '${HH}':previous_cycle_HH,
+                                '${MEMDIR}': mem_char }) %}
+{% set previous_cycle_and_run_dict = ({ '${ROTDIR}':ROTDIR,
+                                        '${RUN}':RUN,
+                                        '${YMD}':previous_cycle_YMD,
+                                        '${HH}':previous_cycle_HH,
+                                        '${MEMDIR}': mem_char }) %}
 
 # Initial condition definitions
 
 {% if MODE == "cycled" and RUN == "gdas" %}
-{% set COMOUT_ATMOS_ANALYSIS = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
+{% set COMOUT_ATMOS_ANALYSIS = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
 analysis:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS }}"
@@ -69,7 +69,7 @@ analysis:
 {% endif %}
 
 {% if EXP_WARM_START == True %}
-{% set COMOUT_ATMOS_RESTART_PREV = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_dict) %}
+{% set COMOUT_ATMOS_RESTART_PREV = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
 atmosphere_warm:
     mkdir:
         - "{{ COMOUT_ATMOS_RESTART_PREV }}"
@@ -88,7 +88,7 @@ atmosphere_warm:
         {% endif %} # path_exists
         {% endfor %} # ntile
 {% else %} # cold start
-{% set COMOUT_ATMOS_INPUT = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_dict) %}
+{% set COMOUT_ATMOS_INPUT = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_cycle_dict) %}
 atmosphere_cold:
     mkdir:
         - "{{ COMOUT_ATMOS_INPUT }}"
@@ -102,7 +102,7 @@ atmosphere_cold:
 {% endif %}
 
 {% if REPLAY_ICS == True %}
-{% set COMOUT_ATMOS_ANALYSIS = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
+{% set COMOUT_ATMOS_ANALYSIS = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
 atmosphere_perturbation:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS }}"
@@ -114,7 +114,7 @@ atmosphere_perturbation:
 atmosphere_nest:
   {% set ntile = 7 %}
   {% if EXP_WARM_START == True %}
-    {% set COMOUT_ATMOS_RESTART_PREV = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_dict) %}
+    {% set COMOUT_ATMOS_RESTART_PREV = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
     mkdir:
         - "{{ COMOUT_ATMOS_RESTART_PREV }}"
     copy:
@@ -122,7 +122,7 @@ atmosphere_nest:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}/{{ m_prefix }}.{{ ftype }}.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
         {% endfor %}
   {% else %} # cold start
-    {% set COMOUT_ATMOS_INPUT = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_dict) %}
+    {% set COMOUT_ATMOS_INPUT = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_cycle_dict) %}
     mkdir:
         - "{{ COMOUT_ATMOS_INPUT }}"
     copy:
@@ -134,14 +134,14 @@ atmosphere_nest:
 
 {% if DO_ICE %}
 {% if DO_JEDIOCNVAR == True %}
-{% set COMOUT_ICE_ANALYSIS = COM_ICE_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
+{% set COMOUT_ICE_ANALYSIS = COM_ICE_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
 ice:
     mkdir:
         - "{{ COMOUT_ICE_ANALYSIS }}"
     copy:
         - ["{{ ICSDIR }}/{{ COMOUT_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ m_prefix }}.cice_model_anl.res.nc", "{{ COMOUT_ICE_ANALYSIS }}"]
 {% else %}
-{% set COMOUT_ICE_RESTART_PREV = COM_ICE_RESTART_TMPL | replace_tmpl(previous_dict) %}
+{% set COMOUT_ICE_RESTART_PREV = COM_ICE_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
 ice:
     mkdir:
         - "{{ COMOUT_ICE_RESTART_PREV }}"
@@ -151,7 +151,7 @@ ice:
 {% endif %}
 
 {% if DO_OCN %}
-{% set COMOUT_OCEAN_RESTART_PREV = COM_OCEAN_RESTART_TMPL | replace_tmpl(previous_dict) %}
+{% set COMOUT_OCEAN_RESTART_PREV = COM_OCEAN_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
 ocean:
     mkdir:
         - "{{ COMOUT_OCEAN_RESTART_PREV }}"
@@ -164,7 +164,7 @@ ocean:
         {% endif %}
 
 {% if DO_JEDIOCNVAR == True %}
-{% set COMOUT_OCEAN_ANALYSIS = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
+{% set COMOUT_OCEAN_ANALYSIS = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
 rerun:
     mkdir:
         - "{{ COMOUT_OCEAN_ANALYSIS }}"
@@ -173,7 +173,7 @@ rerun:
 {% endif %}
 
 {% if REPLAY_ICS == True %}
-{% set COMOUT_OCEAN_ANALYSIS = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_dict) %}
+{% set COMOUT_OCEAN_ANALYSIS = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
 replay:
     mkdir:
         - "{{ COMOUT_OCEAN_ANALYSIS }}"
@@ -182,7 +182,7 @@ replay:
 {% endif %}
 
 {% if EXP_WARM_START == True %}
-{% set COMOUT_MED_RESTART_PREV = COM_MED_RESTART_TMPL | replace_tmpl(previous_dict) %}
+{% set COMOUT_MED_RESTART_PREV = COM_MED_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
 {% if path_exists(ICSDIR ~ "/" ~ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".ufs.cpld.cpl.r.nc") %}
 mediator:
     mkdir:
@@ -195,7 +195,7 @@ mediator:
 {% endif %} # DO_OCN=True
 
 {% if DO_WAVE %}
-{% set COMOUT_WAVE_RESTART_PREV = COM_WAVE_RESTART_TMPL | replace_tmpl(previous_run_dict) %}
+{% set COMOUT_WAVE_RESTART_PREV = COM_WAVE_RESTART_TMPL | replace_tmpl(previous_cycle_and_run_dict) %}
 wave:
     mkdir:
         - "{{ COMOUT_WAVE_RESTART_PREV }}"
