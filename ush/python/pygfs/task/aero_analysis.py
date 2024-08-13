@@ -46,7 +46,7 @@ class AerosolAnalysis(Analysis):
                 'npz_anl': self.task_config['LEVS'] - 1,
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
-                'aero_bkg_fhr': map(int, str(self.task_config['aero_bkg_times']).split(',')),
+                'aero_bkg_fhr': self.task_config['aero_bkg_times'],
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
