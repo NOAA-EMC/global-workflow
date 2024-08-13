@@ -214,14 +214,16 @@ if __name__ == '__main__':
     elif rocoto_status['DEAD'] > 0:
         error_return = rocoto_status['FAIL'] + rocoto_status['DEAD']
         rocoto_state = 'FAIL'
-    elif 'UNKNOWN' in rocoto_status:
-        error_return = rocoto_status['UNKNOWN']
-        rocoto_state = 'UNKNOWN'
-    elif 'UNAVAILABLE' in rocoto_status:
+    elif 'UNAVAILABLE' in rocoto_status or 'UNKNOWN' in rocoto_status:
         rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
+        error_return = 0
+        rocoto_state = 'RUNNING'
         if 'UNAVAILABLE' in rocoto_status:
             error_return = rocoto_status['UNAVAILABLE']
             rocoto_state = 'UNAVAILABLE'
+        if 'UNKNOWN' in rocoto_status:
+            error_return += rocoto_status['UNKNOWN']
+            rocoto_state = 'UNKNOWN'
     elif is_stalled(rocoto_status):
         rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
         if is_stalled(rocoto_status):
