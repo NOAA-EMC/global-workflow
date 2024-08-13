@@ -77,6 +77,7 @@ common_predet(){
 
   CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
+  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 
   # Define significant cycles
   half_window=$(( assim_freq / 2 ))
@@ -184,7 +185,6 @@ FV3_predet(){
   fi
 
   # Other options
-  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options
