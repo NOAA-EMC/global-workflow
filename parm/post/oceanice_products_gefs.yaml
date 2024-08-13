@@ -39,14 +39,15 @@ ocean:
       - ["{{ COM_OCEAN_HISTORY }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
   data_out:
     mkdir:
-      - "{{ COM_OCEAN_NETCDF }}"
+      - "{{ COM_OCEAN_NETCDF }}/native"
       {% for grid in product_grids %}
+      - "{{ COM_OCEAN_NETCDF }}/{{ grid }}"
       - "{{ COM_OCEAN_GRIB }}/{{ grid }}"
       {% endfor %}
     copy:
-      - ["{{ DATA }}/ocean_subset.nc", "{{ COM_OCEAN_NETCDF }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ocean_subset.nc", "{{ COM_OCEAN_NETCDF }}/native/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
-      - ["{{ DATA }}/ocean.{{ grid }}.nc", "{{ COM_OCEAN_NETCDF }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ocean.{{ grid }}.nc", "{{ COM_OCEAN_NETCDF }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
       {% endfor %}
 
 ice:
@@ -62,12 +63,13 @@ ice:
       - ["{{ COM_ICE_HISTORY }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
   data_out:
     mkdir:
-      - "{{ COM_ICE_NETCDF }}"
+      - "{{ COM_ICE_NETCDF }}/native"
       {% for grid in product_grids %}
+      - "{{ COM_ICE_NETCDF }}/{{ grid }}"
       - "{{ COM_ICE_GRIB }}/{{ grid }}"
       {% endfor %}
     copy:
-      - ["{{ DATA }}/ice_subset.nc", "{{ COM_ICE_NETCDF }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ice_subset.nc", "{{ COM_ICE_NETCDF }}/native/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
-      - ["{{ DATA }}/ice.{{ grid }}.nc", "{{ COM_ICE_NETCDF }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ice.{{ grid }}.nc", "{{ COM_ICE_NETCDF }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
       {% endfor %}
