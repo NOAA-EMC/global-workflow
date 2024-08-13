@@ -32,8 +32,6 @@ class Stage(Task):
         """
         super().__init__(config)
 
-        self.task_config = AttrDict(**self.task_config)
-
     @logit(logger)
     def configure(self, stage_dict: Dict[str, Any]) -> (Dict[str, Any]):
         """Determine stage settings based on configuration and runtime options.
@@ -73,7 +71,7 @@ class Stage(Task):
         stage_dict['rRUN'] = rRUN
 
         # Determine ensemble member settings
-        if self.task_config.NMEM_ENS > 0:  # Ensemble RUN
+        if self.task_config.NMEM_ENS > 0 and self.task_config.RUN in ['enkfgdas', 'gefs']:  # Ensemble RUN
             if self.task_config.RUN == "gefs":
                 stage_dict['first_mem'] = 0
                 stage_dict['last_mem'] = self.task_config.NMEM_ENS
