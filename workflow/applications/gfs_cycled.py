@@ -245,7 +245,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_vminmon:
             gfs_tasks += ['vminmon']
-        
+
         if self.do_anlstat:
             gfs_tasks += ['anlstat']
 
