@@ -74,6 +74,9 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_vminmon:
             configs += ['vminmon']
 
+        if self.do_anlstat:
+            configs += ['anlstat']
+
         if self.do_tracker:
             configs += ['tracker']
 
@@ -206,6 +209,9 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_vminmon:
             gdas_tasks += ['vminmon']
 
+        if self.do_anlstat:
+            gdas_tasks += ['anlstat']
+
         if self.do_gempak:
             gdas_tasks += ['gempak', 'gempakmetancdc']
 
@@ -239,6 +245,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_vminmon:
             gfs_tasks += ['vminmon']
+        
+        if self.do_anlstat:
+            gfs_tasks += ['anlstat']
 
         if self.do_tracker:
             gfs_tasks += ['tracker']
