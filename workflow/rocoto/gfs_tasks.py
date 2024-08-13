@@ -20,8 +20,6 @@ class GFSTasks(Tasks):
 
         cycledef = 'gdas_half' if self.run in ['gdas', 'enkfgdas'] else self.run
 
-        cpl_ic = self._configs['stage_ic']
-
         resources = self.get_resource('stage_ic')
         task_name = f'{self.run}stage_ic'
         task_dict = {'task_name': task_name,

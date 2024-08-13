@@ -10,7 +10,6 @@ class GEFSTasks(Tasks):
         super().__init__(app_config, run)
 
     def stage_ic(self):
-        cpl_ic = self._configs['stage_ic']
 
         resources = self.get_resource('stage_ic')
         task_name = f'stage_ic'
