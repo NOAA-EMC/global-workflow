@@ -2,10 +2,9 @@ BASE_GIT: '' #TODO: This does not yet exist.
 DMPDIR: '' # TODO: This does not yet exist.
 PACKAGEROOT: '' #TODO: This does not yet exist.
 COMINsyn: '' #TODO: This does not yet exist.
-HOMEgfs: '/contrib/${USER}/src/global-workflow-cloud'
 HOMEDIR: '/contrib/${USER}'
-STMP: '/contrib/${USER}/stmp/'
-PTMP: '/contrib/${USER}/ptmp/'
+STMP: '/lustre/${USER}/stmp/'
+PTMP: '/lustre/${USER}/ptmp/'
 NOSCRUB: '${HOMEDIR}'
 ACCOUNT: '${USER}'
 SCHEDULER: slurm
@@ -19,8 +18,7 @@ CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
-#BASE_CPLIC: '/bucket/global-workflow-shared-data/ICSDIR/prototype_ICs'
-BASE_CPLIC: '/contrib/global-workflow-shared-data/ICDIRS/prototype_ICs'
+BASE_CPLIC: '/bucket/global-workflow-shared-data/ICSDIR/prototype_ICs'
 LOCALARCH: 'NO'
 ATARDIR: '' # TODO: This will not yet work from GOOGLE.
 MAKE_NSSTBUFR: 'NO'
