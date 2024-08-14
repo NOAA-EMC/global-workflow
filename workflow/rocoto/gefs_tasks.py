@@ -617,7 +617,7 @@ class GEFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': 'gefs',
                      'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_test.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
