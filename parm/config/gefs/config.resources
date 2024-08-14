@@ -272,7 +272,7 @@ case ${step} in
     export walltime_gefs="00:30:00"
     export ntasks_gefs=1
     export threads_per_task_gefs=1
-    export tasks_per_node_gefs="${ntasks}"
+    export tasks_per_node_gefs="${ntasks_gefs}"
     export walltime_gfs="${walltime_gefs}"
     export ntasks_gfs="${ntasks_gefs}"
     export threads_per_tasks_gfs="${threads_per_task_gefs}"
@@ -280,6 +280,13 @@ case ${step} in
     export is_exclusive=False
     ;;
 
+  "arch")
+    export walltime="06:00:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
   *)
     echo "FATAL ERROR: Invalid job ${step} passed to ${BASH_SOURCE[0]}"
     exit 1
