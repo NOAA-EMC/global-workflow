@@ -3,6 +3,7 @@
 # AWS-specific job resources
 
 export is_exclusive="True"
+export memory=None
 
 # shellcheck disable=SC2312
 for mem_var in $(env | grep '^memory_' | cut -d= -f1); do
