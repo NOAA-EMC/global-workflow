@@ -228,6 +228,21 @@ def fill_ROTDIR_cycled(host, inputs):
         src_file = os.path.join(src_dir, fname)
         if os.path.exists(src_file):
             os.symlink(src_file, os.path.join(dst_dir, fname))
+
+    fname = f'{inputs.run}.t{idatestr[8:]}z.*satbias*'
+    satbias_list = glob.glob(os.path.join(src_dir,fname))
+    for src_file in satbias_list:
+        if os.path.exists(src_file):
+            fname=os.path.basename(src_file)
+            os.symlink(src_file, os.path.join(dst_dir, fname))
+            
+    fname = f'{inputs.run}.t{idatestr[8:]}z.*tlapse*'
+    tlapse_list = glob.glob(os.path.join(src_dir,fname))
+    for src_file in tlapse_list:
+        if os.path.exists(src_file):
+            fname=os.path.basename(src_file)
+            os.symlink(src_file, os.path.join(dst_dir, fname))
+                
     # First 1/2 cycle also needs a atmos increment if doing warm start
     if inputs.start in ['warm']:
         for ftype in ['atmi003.nc', 'atminc.nc', 'atmi009.nc']:
