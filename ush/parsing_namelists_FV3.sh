@@ -42,6 +42,18 @@ local SDAY=${current_cycle:6:2}
 local CHOUR=${current_cycle:8:2}
 local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
 
+if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+  local current_cycle_p1 
+  current_cycle_p1=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHOUT_OCN} hours" +%Y%m%d%H)
+  local current_cycle_offset
+  current_cycle_offset=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${OFFSET_START_HOUR} hours" +%Y%m%d%H)
+  local SYEAR1=${current_cycle_p1:0:4}
+  local SMONTH1=${current_cycle_p1:4:2}
+  local SDAY1=${current_cycle_p1:6:2}
+  local CHOUR1=${current_cycle_p1:8:2}
+  local CHOUR_offset=${current_cycle_offset:8:2}
+fi
+
 atparse < "${template}" >> "diag_table"
 
 
@@ -284,6 +296,7 @@ EOF
   do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
   do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
   do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
+  do_gwd_opt_psl       = ${do_gwd_opt_psl:-".false."}
   do_ugwp_v1_orog_only = ${do_ugwp_v1_orog_only:-".false."}
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
@@ -369,6 +382,7 @@ cat >> input.nml <<EOF
   betadcu      = ${betadcu:-"2.0"}
   ras          = ${ras:-".false."}
   cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
+  psl_gwd_dx_factor  = ${psl_gwd_dx_factor:-"6.0"}
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
@@ -387,7 +401,7 @@ cat >> input.nml <<EOF
   iopt_tbot    = ${iopt_tbot:-"2"}
   iopt_stc     = ${iopt_stc:-"1"}
   iopt_trs     = ${iopt_trs:-"2"}
-  iopt_diag    = ${iopt_diag:-"1"}
+  iopt_diag    = ${iopt_diag:-"2"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = ${nstf_name}
   nst_anl      = ${nst_anl}

@@ -5,8 +5,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
 # Restart conditions for GFS cycle come from GDAS
 # shellcheck disable=SC2153
-rCDUMP=${CDUMP}
-[[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
+rCDUMP=${RUN}
+# shellcheck disable=SC2153
+[[ ${RUN} = "gfs" ]] && export rCDUMP="gdas"
 export rCDUMP
 
 # Execute the Script

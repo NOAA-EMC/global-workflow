@@ -133,12 +133,9 @@ done
 ################################################################
 # Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files 
 ################################################################
-export SHOUR=0
-export FHOUR=180
-export FHINC=3
-if (( FHOUR > FHMAX_GFS )); then
-   export FHOUR="${FHMAX_GFS}"
-fi
+export SHOUR=${FHMIN_GFS}
+export FHOUR=${FHMAX_GOES}
+export FHINC=${FHOUT_GOES}
 
 #################################
 # Process GFS PGRB2_SPECIAL_POST

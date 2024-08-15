@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP=${RUN/enkf}
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
 export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 
@@ -24,20 +23,20 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export OPREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${RUN/enkf}.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
-APREFIX_DET="${CDUMP}.t${cyc}z."
+APREFIX_DET="${RUN/enkf}.t${cyc}z."
 GPREFIX_DET="${GDUMP}.t${gcyc}z."
 
 export GSUFFIX=".ensmean.nc"
 
 # Generate COM variables from templates
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
 MEMDIR='ensstat' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
 declare -rx COM_ATMOS_ANALYSIS_ENS="${COM_ATMOS_ANALYSIS}"
 
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -r COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
+RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -r COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \

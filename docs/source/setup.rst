@@ -145,7 +145,7 @@ The following command examples include variables for reference but users should 
 
    cd workflow
    ./setup_expt.py gfs cycled --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--gfs_cyc $GFS_CYC]
-     [--resdetatmos $RESDETATMOS] [--resdetocean $RESDETOCEAN] [--resensatmos $RESENSATMOS] [--nens $NENS] [--cdump $CDUMP]
+     [--resdetatmos $RESDETATMOS] [--resdetocean $RESDETOCEAN] [--resensatmos $RESENSATMOS] [--nens $NENS] [--run $RUN]
      [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comroot $COMROOT] [--expdir $EXPDIR] [--icsdir $ICSDIR]
 
 where:
@@ -170,7 +170,7 @@ where:
    * ``$RESDETOCEAN`` is the resolution of the ocean component of the deterministic forecast [default: 0.; determined based on atmosphere resolution]
    * ``$RESENSATMOS`` is the resolution of the atmosphere component of the ensemble forecast [default: 192]
    * ``$NENS`` is the number of ensemble members [default: 20]
-   * ``$CDUMP`` is the starting phase [default: gdas]
+   * ``$RUN`` is the starting phase [default: gdas]
    * ``$PSLOT`` is the name of your experiment [default: test]
    * ``$CONFIGDIR`` is the path to the config folder under the copy of the system you're using [default: $TOP_OF_CLONE/parm/config/]
    * ``$COMROOT`` is the path to your experiment output directory. Your ``ROTDIR`` (rotating com directory) will be created using ``COMROOT`` and ``PSLOT``. [default: $HOME]

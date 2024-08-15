@@ -31,7 +31,7 @@ class AerosolObsPrep(Task):
             {
                 'window_begin': _window_begin,
                 'window_end': _window_end,
-                'sensors': str(self.task_config['SENSORS']).split(','),
+                'sensors': self.task_config['SENSORS'],
                 'data_dir': self.task_config['VIIRS_DATA_DIR'],
                 'input_files': '',
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",

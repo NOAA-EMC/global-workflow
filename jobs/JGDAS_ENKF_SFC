@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esfc" -c "base esfc"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP="${RUN/enkf}"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -21,19 +20,19 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export OPREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${RUN/enkf}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${RUN/enkf}.t${cyc}z."
 
 export CASE=${CASE_ENS}
 
-export OPREFIX="${CDUMP}.t${cyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${RUN/enkf}.t${cyc}z."
+export APREFIX="${RUN/enkf}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS \
+RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS \
   COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \

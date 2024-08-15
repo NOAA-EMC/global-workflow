@@ -6,7 +6,7 @@
 # GFS FBWIND PRODUCT GENERATION
 ############################################
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base fbwind"
 
 ###################################
 # Specify NET and RUN Name and model

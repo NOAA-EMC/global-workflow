@@ -76,6 +76,7 @@ case "${machine}" in
   "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
   "s4")       FIX_DIR="/data/prod/glopara/fix" ;;
   "gaea")     FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
+  "noaacloud") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
   *)
     echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
     exit 1
@@ -237,7 +238,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/fix" || exit 1
   [[ ! -d gdas ]] && mkdir -p gdas
   cd gdas || exit 1
-  for gdas_sub in fv3jedi gsibec obs; do
+  for gdas_sub in fv3jedi gsibec obs soca; do
     if [[ -d "${gdas_sub}" ]]; then
        rm -rf "${gdas_sub}"
     fi
@@ -368,6 +369,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "gdas_soca_gridgen.x" \
                        "gdas_soca_error_covariance_toolbox.x" \
                        "gdas_soca_setcorscales.x" \
+                       "gdas_soca_diagb.x" \
                        "fv3jedi_plot_field.x" \
                        "fv3jedi_fv3inc.x" \
                        "gdas_ens_handler.x" \

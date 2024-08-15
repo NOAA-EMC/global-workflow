@@ -102,7 +102,7 @@ case "${fv3_res}" in
         export knob_ugwp_tauamp=6.0e-3      # setting for UGWPv1 non-stationary GWD
         export k_split=1
         export n_split=4
-        export tau=10.0
+        export tau=8.0
         export rf_cutoff=100.0
         export fv_sg_adj=3600
         export WRITE_GROUP_GDAS=1

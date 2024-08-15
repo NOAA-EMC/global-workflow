@@ -73,10 +73,10 @@ def fill_ROTDIR_cycled(host, inputs):
 
     # Test if we are using the new COM structure or the old flat one for ICs
     if inputs.start in ['warm']:
-        pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{rdatestr[:8]}',
+        pathstr = os.path.join(inputs.icsdir, f'{inputs.run}.{rdatestr[:8]}',
                                rdatestr[8:], 'model_data', 'atmos')
     else:
-        pathstr = os.path.join(inputs.icsdir, f'{inputs.cdump}.{idatestr[:8]}',
+        pathstr = os.path.join(inputs.icsdir, f'{inputs.run}.{idatestr[:8]}',
                                idatestr[8:], 'model_data', 'atmos')
 
     if os.path.isdir(pathstr):
@@ -132,8 +132,8 @@ def fill_ROTDIR_cycled(host, inputs):
 
     # Link ensemble member initial conditions
     if inputs.nens > 0:
-        previous_cycle_dir = f'enkf{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-        current_cycle_dir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+        previous_cycle_dir = f'enkf{inputs.run}.{rdatestr[:8]}/{rdatestr[8:]}'
+        current_cycle_dir = f'enkf{inputs.run}.{idatestr[:8]}/{idatestr[8:]}'
 
         for ii in range(1, inputs.nens + 1):
             memdir = f'mem{ii:03d}'
@@ -155,7 +155,7 @@ def fill_ROTDIR_cycled(host, inputs):
                 link_files_from_src_to_dst(src_dir, dst_dir)
 
                 # First 1/2 cycle needs a MOM6 increment
-                incfile = f'enkf{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
+                incfile = f'enkf{inputs.run}.t{idatestr[8:]}z.ocninc.nc'
                 src_file = os.path.join(inputs.icsdir, current_cycle_dir, memdir, src_ocn_anl_dir, incfile)
                 dst_file = os.path.join(rotdir, current_cycle_dir, memdir, dst_ocn_anl_dir, incfile)
                 makedirs_if_missing(os.path.join(rotdir, current_cycle_dir, memdir, dst_ocn_anl_dir))
@@ -176,8 +176,8 @@ def fill_ROTDIR_cycled(host, inputs):
                 link_files_from_src_to_dst(src_dir, dst_dir)
 
     # Link deterministic initial conditions
-    previous_cycle_dir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-    current_cycle_dir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+    previous_cycle_dir = f'{inputs.run}.{rdatestr[:8]}/{rdatestr[8:]}'
+    current_cycle_dir = f'{inputs.run}.{idatestr[:8]}/{idatestr[8:]}'
 
     # Link atmospheric files
     if inputs.start in ['warm']:
@@ -198,7 +198,7 @@ def fill_ROTDIR_cycled(host, inputs):
         link_files_from_src_to_dst(src_dir, dst_dir)
 
         # First 1/2 cycle needs a MOM6 increment
-        incfile = f'{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
+        incfile = f'{inputs.run}.t{idatestr[8:]}z.ocninc.nc'
         src_file = os.path.join(inputs.icsdir, current_cycle_dir, src_ocn_anl_dir, incfile)
         dst_file = os.path.join(rotdir, current_cycle_dir, dst_ocn_anl_dir, incfile)
         makedirs_if_missing(os.path.join(rotdir, current_cycle_dir, dst_ocn_anl_dir))
@@ -224,26 +224,26 @@ def fill_ROTDIR_cycled(host, inputs):
     dst_dir = os.path.join(rotdir, current_cycle_dir, dst_atm_anl_dir)
     makedirs_if_missing(dst_dir)
     for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat']:
-        fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
+        fname = f'{inputs.run}.t{idatestr[8:]}z.{ftype}'
         src_file = os.path.join(src_dir, fname)
         if os.path.exists(src_file):
             os.symlink(src_file, os.path.join(dst_dir, fname))
     # First 1/2 cycle also needs a atmos increment if doing warm start
     if inputs.start in ['warm']:
         for ftype in ['atmi003.nc', 'atminc.nc', 'atmi009.nc']:
-            fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
+            fname = f'{inputs.run}.t{idatestr[8:]}z.{ftype}'
             src_file = os.path.join(src_dir, fname)
             if os.path.exists(src_file):
                 os.symlink(src_file, os.path.join(dst_dir, fname))
         if inputs.nens > 0:
-            current_cycle_dir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+            current_cycle_dir = f'enkf{inputs.run}.{idatestr[:8]}/{idatestr[8:]}'
             for ii in range(1, inputs.nens + 1):
                 memdir = f'mem{ii:03d}'
                 src_dir = os.path.join(inputs.icsdir, current_cycle_dir, memdir, src_atm_anl_dir)
                 dst_dir = os.path.join(rotdir, current_cycle_dir, memdir, dst_atm_anl_dir)
                 makedirs_if_missing(dst_dir)
                 for ftype in ['ratmi003.nc', 'ratminc.nc', 'ratmi009.nc']:
-                    fname = f'enkf{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
+                    fname = f'enkf{inputs.run}.t{idatestr[8:]}z.{ftype}'
                     src_file = os.path.join(src_dir, fname)
                     if os.path.exists(src_file):
                         os.symlink(src_file, os.path.join(dst_dir, fname))
@@ -426,7 +426,7 @@ def input_args(*argv):
     def _gfs_args(parser):
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
-        parser.add_argument('--cdump', help='CDUMP to start the experiment',
+        parser.add_argument('--run', help='RUN to start the experiment',
                             type=str, required=False, default='gdas')
         # --configdir is hidden from help
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False, default=os.path.join(_top, 'parm/config/gfs'))

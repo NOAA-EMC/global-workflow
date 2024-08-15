@@ -24,7 +24,6 @@ pwd=$(pwd)
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
-CDUMP=${CDUMP:-"enkfgdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
@@ -164,7 +163,7 @@ EOF
       chmod 755 $DATA/mp_chgres.sh
       ncmd=$(cat $DATA/mp_chgres.sh | wc -l)
       if [ $ncmd -gt 0 ]; then
-         ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
+         ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
          APRUNCFP_CHGRES=$(eval echo $APRUNCFP)
 
          export pgm=$CHGRESNCEXEC

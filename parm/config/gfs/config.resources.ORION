@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+# Orion-specific job resources
+
+case ${step} in
+  "anal")
+    # TODO:
+    # On Orion, after Rocky 9 upgrade, GSI performance is degraded.
+    # Remove this block once GSI issue is resolved
+    # https://github.com/NOAA-EMC/GSI/pull/764
+    # https://github.com/JCSDA/spack-stack/issues/1166
+    export wtime_anal_gdas="02:40:00"
+    export wtime_anal_gfs="02:00:00"
+  ;;
+  *)
+  ;;
+esac
