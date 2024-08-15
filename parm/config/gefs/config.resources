@@ -77,6 +77,14 @@ case ${step} in
     export memory_prep_emissions="1GB"
     ;;
 
+  "repairf0306")
+    export wtime_repairf0306="00:10:00"
+    export npe_repairf0306=1
+    export nth_repairf0306=1
+    export npe_node_repairf0306=$(( npe_node_max / nth_repairf0306 ))
+    export memory_repairf0306="2GB"
+    ;;
+
   "fcst" | "efcs")
     export is_exclusive=True
 
@@ -202,7 +210,7 @@ case ${step} in
         declare -x "wtime_${step}_gfs"="06:00:00"
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
         exit 4
         ;;
     esac
@@ -210,6 +218,7 @@ case ${step} in
     unset _CDUMP _CDUMP_LIST
     unset NTASKS_TOT
     ;;
+
 
   "atmos_products")
     export wtime_atmos_products="00:15:00"

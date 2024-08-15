@@ -14,7 +14,7 @@ class GEFSAppConfig(AppConfig):
         """
         Returns the config_files that are involved in gefs
         """
-        configs = ['stage_ic', 'fcst', 'atmos_products']
+        configs = ['stage_ic', 'fcst', 'repairf0306', 'atmos_products']
 
         if self.nens > 0:
             configs += ['efcs', 'atmos_ensstat']
@@ -56,6 +56,8 @@ class GEFSAppConfig(AppConfig):
         if self.nens > 0:
             tasks += ['efcs']
 
+        tasks += ['repairf0306']
+
         tasks += ['atmos_prod']
 
         if self.nens > 0:
@@ -72,5 +74,6 @@ class GEFSAppConfig(AppConfig):
             if self.do_wave_bnd:
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
+
 
         return {f"{self._base['CDUMP']}": tasks}

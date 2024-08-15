@@ -1,0 +1,11 @@
+#! /usr/bin/env bash                                                                                                                                                                                                                     
+
+########## config.repairf0306 #########
+# repairf0306 specific
+
+echo "BEGIN: config.repairf0306"
+
+
+. "${EXPDIR}/config.resources" repairf0306
+
+echo "END: config.repairf0306"
