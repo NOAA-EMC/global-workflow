@@ -347,8 +347,8 @@
 :TMP:PV=5e-07 (Km^2/kg/s) surface:
 :TMP:surface:
 :TMP:tropopause:
-:TSNOWP:surface:
 :TOZNE:entire atmosphere (considered as a single layer):
+:TSNOWP:surface:
 :TSOIL:0.1-0.4 m below ground:
 :TSOIL:0.4-1 m below ground:
 :TSOIL:1-2 m below ground:
