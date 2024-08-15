@@ -19,9 +19,9 @@ def main():
 
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
-            'current_cycle', 'previous_cycle',
+            'assim_freq', 'current_cycle', 'previous_cycle',
             'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL',
-            'OCNRES', 'waveGRD', 'ntiles', 'DO_JEDIOCNVAR',
+            'OCNRES', 'waveGRD', 'ntiles', 'DOIAU', 'DO_JEDIOCNVAR',
             'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST']
 
     stage_dict = AttrDict()
@@ -32,9 +32,6 @@ def main():
     for key in stage.task_config.keys():
         if key.startswith("COM"):
             stage_dict[key] = stage.task_config[key]
-
-    # Configure staging
-    stage_dict = stage.configure(stage_dict)
 
     # Stage ICs
     stage.execute_stage(stage_dict)

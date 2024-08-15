@@ -1,0 +1,10 @@
+analysis:
+    {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[0] %}
+    mkdir:
+        - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
+    copy:
+        {% for ftype in ["abias", "abias_air", "abias_int", "abias_pc", "atminc.nc", "radstat"] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        {% endif %}
+        {% endfor %}
