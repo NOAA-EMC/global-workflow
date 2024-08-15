@@ -14,8 +14,8 @@ case ${step} in
   "eupd")
     case ${CASE} in
       "C768")
-        export ntasks=320
-        export threads_per_task=5
+        export ntasks=80
+        export threads_per_task=20
         ;;
       "C384")
         export ntasks=80
@@ -32,6 +32,13 @@ case ${step} in
   "ecen")
     if [[ "${CASE}" == "C768" ]]; then export threads_per_task=6; fi
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "upp")
+    if [[ "${CASE}" == "C768" ]]; then
+       # Run fewer tasks per node for memory
+       tasks_per_node=20
+    fi
     ;;
 
   *)
