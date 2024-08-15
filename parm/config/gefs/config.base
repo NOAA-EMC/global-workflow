@@ -245,9 +245,9 @@ export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
 
 export FHOUT_GFS=6
 export FHMAX_HF_GFS=@FHMAX_HF_GFS@
-export FHOUT_HF_GFS=1
-export FHOUT_OCN_GFS=6
-export FHOUT_ICE_GFS=6
+export FHOUT_HF_GFS=@FHOUT_HF_GFS@
+export FHOUT_OCN_GFS=@FHOUT_OCN_GFS@
+export FHOUT_ICE_GFS=@FHOUT_ICE_GFS@
 export FHMIN_WAV=${OFFSET_START_HOUR:-0}
 export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
