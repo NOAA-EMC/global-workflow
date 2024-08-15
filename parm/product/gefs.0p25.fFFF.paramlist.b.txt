@@ -277,7 +277,6 @@
 :TCDC:475 mb:
 :TCDC:boundary layer cloud layer:
 :TCDC:convective cloud layer:
-:TCDC:entire atmosphere (considered as a single layer):
 :TCDC:high cloud layer:
 :TCDC:low cloud layer:
 :TCDC:middle cloud layer:
