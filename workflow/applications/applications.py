@@ -116,6 +116,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         # Get task names for the application
         self.task_names = self.get_task_names()
 
+        # Finally, source the configuration files for each valid `RUN`
         for run in self.task_names.keys():
             self.configs[run] = self._source_configs(conf, run=run, log=False)
 
