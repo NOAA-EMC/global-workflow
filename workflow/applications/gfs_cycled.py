@@ -123,7 +123,7 @@ class GFSCycledAppConfig(AppConfig):
         return configs
 
     @staticmethod
-    def update_base(base_in):
+    def _update_base(base_in):
 
         return GFSCycledAppConfig.get_gfs_cyc_dates(base_in)
 

@@ -32,57 +32,50 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         self.scheduler = Host().scheduler
 
-        # Save the configuration so we can source the config files when
-        # determining task resources
-        self.conf = conf
+        self._base = conf.parse_config('config.base')
 
-        _base = self.conf.parse_config('config.base')
-        # Define here so the child __init__ functions can use it; will
-        # be overwritten later during _init_finalize().
-        self._base = _base
-
-        self.mode = _base['MODE']
+        self.mode = self._base['MODE']
 
         if self.mode not in self.VALID_MODES:
             raise NotImplementedError(f'{self.mode} is not a valid application mode.\n' +
                                       'Valid application modes are:\n' +
                                       f'{", ".join(self.VALID_MODES)}')
 
-        self.net = _base['NET']
-        self.model_app = _base.get('APP', 'ATM')
-        self.do_atm = _base.get('DO_ATM', True)
-        self.do_wave = _base.get('DO_WAVE', False)
-        self.do_wave_bnd = _base.get('DOBNDPNT_WAVE', False)
-        self.do_ocean = _base.get('DO_OCN', False)
-        self.do_ice = _base.get('DO_ICE', False)
-        self.do_aero = _base.get('DO_AERO', False)
-        self.do_prep_obs_aero = _base.get('DO_PREP_OBS_AERO', False)
-        self.do_bufrsnd = _base.get('DO_BUFRSND', False)
-        self.do_gempak = _base.get('DO_GEMPAK', False)
-        self.do_awips = _base.get('DO_AWIPS', False)
-        self.do_verfozn = _base.get('DO_VERFOZN', True)
-        self.do_verfrad = _base.get('DO_VERFRAD', True)
-        self.do_vminmon = _base.get('DO_VMINMON', True)
-        self.do_tracker = _base.get('DO_TRACKER', True)
-        self.do_genesis = _base.get('DO_GENESIS', True)
-        self.do_genesis_fsu = _base.get('DO_GENESIS_FSU', False)
-        self.do_metp = _base.get('DO_METP', False)
-        self.do_upp = not _base.get('WRITE_DOPOST', True)
-        self.do_goes = _base.get('DO_GOES', False)
-        self.do_mos = _base.get('DO_MOS', False)
-        self.do_extractvars = _base.get('DO_EXTRACTVARS', False)
+        self.net = self._base['NET']
+        self.model_app = self._base.get('APP', 'ATM')
+        self.do_atm = self._base.get('DO_ATM', True)
+        self.do_wave = self._base.get('DO_WAVE', False)
+        self.do_wave_bnd = self._base.get('DOBNDPNT_WAVE', False)
+        self.do_ocean = self._base.get('DO_OCN', False)
+        self.do_ice = self._base.get('DO_ICE', False)
+        self.do_aero = self._base.get('DO_AERO', False)
+        self.do_prep_obs_aero = self._base.get('DO_PREP_OBS_AERO', False)
+        self.do_bufrsnd = self._base.get('DO_BUFRSND', False)
+        self.do_gempak = self._base.get('DO_GEMPAK', False)
+        self.do_awips = self._base.get('DO_AWIPS', False)
+        self.do_verfozn = self._base.get('DO_VERFOZN', True)
+        self.do_verfrad = self._base.get('DO_VERFRAD', True)
+        self.do_vminmon = self._base.get('DO_VMINMON', True)
+        self.do_tracker = self._base.get('DO_TRACKER', True)
+        self.do_genesis = self._base.get('DO_GENESIS', True)
+        self.do_genesis_fsu = self._base.get('DO_GENESIS_FSU', False)
+        self.do_metp = self._base.get('DO_METP', False)
+        self.do_upp = not self._base.get('WRITE_DOPOST', True)
+        self.do_goes = self._base.get('DO_GOES', False)
+        self.do_mos = self._base.get('DO_MOS', False)
+        self.do_extractvars = self._base.get('DO_EXTRACTVARS', False)
 
-        self.do_hpssarch = _base.get('HPSSARCH', False)
+        self.do_hpssarch = self._base.get('HPSSARCH', False)
 
-        self.nens = _base.get('NMEM_ENS', 0)
-        self.fcst_segments = _base.get('FCST_SEGMENTS', None)
+        self.nens = self._base.get('NMEM_ENS', 0)
+        self.fcst_segments = self._base.get('FCST_SEGMENTS', None)
 
         if not AppConfig.is_monotonic(self.fcst_segments):
             raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
 
         self.wave_runs = None
         if self.do_wave:
-            wave_run = _base.get('WAVE_RUN', 'BOTH').lower()
+            wave_run = self._base.get('WAVE_RUN', 'BOTH').lower()
             if wave_run in ['both']:
                 self.wave_runs = ['gfs', 'gdas']
             elif wave_run in ['gfs', 'gdas']:
@@ -91,37 +84,40 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.aero_anl_runs = None
         self.aero_fcst_runs = None
         if self.do_aero:
-            aero_anl_run = _base.get('AERO_ANL_RUN', 'BOTH').lower()
+            aero_anl_run = self._base.get('AERO_ANL_RUN', 'BOTH').lower()
             if aero_anl_run in ['both']:
                 self.aero_anl_runs = ['gfs', 'gdas']
             elif aero_anl_run in ['gfs', 'gdas']:
                 self.aero_anl_runs = [aero_anl_run]
-            aero_fcst_run = _base.get('AERO_FCST_RUN', None).lower()
+            aero_fcst_run = self._base.get('AERO_FCST_RUN', None).lower()
             if aero_fcst_run in ['both']:
                 self.aero_fcst_runs = ['gfs', 'gdas']
             elif aero_fcst_run in ['gfs', 'gdas']:
                 self.aero_fcst_runs = [aero_fcst_run]
 
-    def _init_finalize(self, *args):
+    def _init_finalize(self, conf: Configuration):
         print("Finalizing initialize")
 
         # Get a list of all possible config_files that would be part of the application
         self.configs_names = self._get_app_configs()
 
-        # Source the config_files for the jobs in the application
-        self.configs = self.source_configs()
+        # Source the config files for the jobs in the application without specifying a RUN
+        self.configs = {'_': self._source_configs(conf)}
 
         # Update the base config dictionary base on application
-        self.configs['base'] = self.update_base(self.configs['base'])
+        self.configs['_']['base'] = self._update_base(self.configs['_']['base'])
 
         # Save base in the internal state since it is often needed
-        self._base = self.configs['base']
+        self._base = self.configs['_']['base']
 
         # Get more configuration options into the class attributes
         self.gfs_cyc = self._base.get('gfs_cyc')
 
-        # Finally get task names for the application
+        # Get task names for the application
         self.task_names = self.get_task_names()
+
+        for run in self.task_names.keys():
+            self.configs[run] = self._source_configs(conf, run=run, log=False)
 
     @abstractmethod
     def _get_app_configs(self):
@@ -129,7 +125,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
     @staticmethod
     @abstractmethod
-    def update_base(base_in: Dict[str, Any]) -> Dict[str, Any]:
+    def _update_base(base_in: Dict[str, Any]) -> Dict[str, Any]:
         '''
         Make final updates to base and return an updated copy
 
@@ -146,7 +142,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         '''
         pass
 
-    def source_configs(self, run: str = "gfs", log: bool = True) -> Dict[str, Any]:
+    def _source_configs(self, conf: Configuration, run: str = "gfs", log: bool = True) -> Dict[str, Any]:
         """
         Given the configuration object used to initialize this application,
         source the configurations for each config and return a dictionary
@@ -156,7 +152,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         configs = dict()
 
         # Return config.base as well
-        configs['base'] = self.conf.parse_config('config.base')
+        configs['base'] = conf.parse_config('config.base')
 
         # Source the list of all config_files involved in the application
         for config in self.configs_names:
@@ -180,7 +176,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += [f'config.{config}']
 
             print(f'sourcing config.{config}') if log else 0
-            configs[config] = self.conf.parse_config(files, RUN=run)
+            configs[config] = conf.parse_config(files, RUN=run)
 
         return configs
 
