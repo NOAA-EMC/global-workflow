@@ -11,5 +11,25 @@ echo "BEGIN: config.arch"
 export ARCH_GAUSSIAN="YES"
 export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS}
 export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS}
+#GEFS
+export DO_VERFRAD="NO"
+export DO_VMINMON="NO"                  # GSI minimization monitoring
+export DO_MOS="NO"                       # GFS Model Output Statistics - Only supported on WCOSS2
+export DO_VERFOZN="NO"
+export FHMAX_WAV_GFS=240
+export restart_interval_gdas=6
+export restart_interval_gfs=6
+export AERO_ANL_RUN="NO"
+export AERO_FCST_RUN="NO"
+export DOIBP_WAV="NO"
+export DO_JEDIOCNVAR="NO"
+export NMEM_ENS=20
+export DO_JEDIATMVAR="NO"
+export DO_VRFY_OCEANDA="NO"
+export FHMAX_FITS=240
+export IAUFHRS=6
+export DO_FIT2OBS="NO"
+export DO_PREP_OBS_AERO="NO"
+export DOHYBVAR="NO"
 
 echo "END: config.arch"
