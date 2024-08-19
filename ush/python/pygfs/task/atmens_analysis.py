@@ -312,7 +312,7 @@ class AtmEnsAnalysis(Analysis):
 
         # get list of yamls to cop to ROTDIR
         yamls = glob.glob(os.path.join(self.task_config.DATA, '*atmens*yaml'))
-        
+
         # copy full YAML from executable to ROTDIR
         for src in yamls:
             logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
