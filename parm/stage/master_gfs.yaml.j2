@@ -54,7 +54,7 @@
 
 # Set first/last mem for loop
 # ---------------------------
-{% if NMEM_ENS > 0 and RUN == "enkfgdas" %} # Ensemble RUN
+{% if RUN == "enkfgdas" %} # Ensemble RUN
   {% set first_mem = 1 %}
   {% set last_mem = NMEM_ENS %}
 {% else %} # Deterministic RUN
