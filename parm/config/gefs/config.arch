@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+########## config.arch ##########
+# Archive specific
+
+echo "BEGIN: config.arch"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" arch
+
+export ARCH_GAUSSIAN="YES"
+export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS}
+export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS}
+
+echo "END: config.arch"

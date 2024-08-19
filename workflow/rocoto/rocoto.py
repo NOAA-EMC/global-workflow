@@ -56,9 +56,10 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
     else:
         # There is a nested task_dict, so this is a metatask
         metataskname = f"{task_dict.get('task_name', 'demometatask')}"
+        metataskmode = 'serial' if task_dict.get('is_serial', False) else 'parallel'
         var_dict = task_dict.get('var_dict', None)
 
-        strings = [f'<metatask name="{metataskname}">\n',
+        strings = [f'<metatask name="{metataskname}" mode="{metataskmode}">\n',
                    '\n']
 
         if var_dict is None:
