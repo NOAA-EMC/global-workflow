@@ -15,17 +15,21 @@ enkf:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen{{ '%03d' % grp }}.log"
         {% endfor %}
 
-        {% if DO_JEDIATMENS %}
-        {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal"] %}
-        {% else %}
-        {% set steps = ["eobs", "eupd"] %}
         {% if lobsdiag_forenkf %}
-        {% do steps.append("ediag") %}
+           {% if DO_JEDIATMENS %}
+              {% set steps = ["atmensanlinit", "atmensanlobs", "atmensanlsol", "atmensanlfv3inc", "atmensanlfinal"] %}
+           {% else %}
+              {% set steps = ["eobs", "ediag", "eupd"] %}
+           {% endif %}
         {% else %}
-        {% for mem in range(1, nmem_ens + 1) %}
-        {% do steps.append("eomg_mem{{ '%03d' % mem }}") %}
-        {% endfor %}
-        {% endif %}
+           {% if DO_JEDIATMENS %}
+              {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal"] %}
+           {% else %}
+              {% set steps = ["eobs", "eupd"] %}
+              {% for mem in range(1, nmem_ens + 1) %}
+                 {% do steps.append("eomg_mem{{ '%03d' % mem }}") %}
+              {% endfor %}
+           {% endif %}
         {% endif %}
 
         {% for step in steps %}
