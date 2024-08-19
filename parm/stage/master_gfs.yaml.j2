@@ -127,7 +127,7 @@
 # Initial condition to stage - include components based on switches
 ###################################################################
 
-{% if MODE == "cycled" and RUN == "gdas" %}
+{% if MODE == "cycled" %}
 {% filter indent(width=4) %}
 {% include "analysis.yaml.j2" %}
 {% endfilter %}
