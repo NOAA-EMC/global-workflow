@@ -106,7 +106,8 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=40
+    npe_node_max=36
+    max_tasks_per_node=36
     # TODO Supply a max mem/node value for AWS
     # shellcheck disable=SC2034
     mem_node_max=""

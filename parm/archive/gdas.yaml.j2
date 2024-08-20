@@ -49,7 +49,7 @@ gdas:
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
                 {% if DOIAU %}
         # Ensemble IAU analysis residuals
-                    {% for fhr in iaufhrs if fhr != 6 %}
+                    {% for fhr in IAUFHRS if fhr != 6 %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensres.nc"
                     {% endfor %}
                 {% endif %}
@@ -108,7 +108,7 @@ gdas:
         {% endif %}  # End of cycled data
 
         # Forecast and post logs
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_seg0.log"
 
         {% for fhr in range(0, FHMAX + 1, 3) %}
             {% set fhr3 = '%03d' % fhr %}

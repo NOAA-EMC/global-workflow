@@ -11,40 +11,21 @@ ulimit_s=$( ulimit -S -s )
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
-if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
-  module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
-  module load "ufs_${MACHINE_ID}.intel"
-  module load prod_util
-  if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-    module load cray-pals
-    module load cfp
-    module load libjpeg
-    module load craype-network-ucx
-    module load cray-mpich-ucx
-  else
-    export UTILROOT=${prod_util_ROOT}
-  fi
-  module load wgrib2
-  export WGRIB2=wgrib2
-fi
-if [[ "${MACHINE_ID}" == "noaacloud" ]]; then
-   if [[ "${PW_CSP:-}" = "aws" ]]; then
 
-      # TODO: This can be cleaned-up; most of this is a hack for now.
-      module use "/contrib/spack-stack/envs/ufswm/install/modulefiles/Core"
-      module load "stack-intel"
-      module load "stack-intel-oneapi-mpi"
-      module use -a "/contrib/spack-stack/miniconda/modulefiles/miniconda/"
-      module load "py39_4.12.0"
-      module load "ufs-weather-model-env/1.0.0"
-      export NETCDF="/contrib/spack-stack/miniconda/apps/miniconda/py39_4.12.0"
-      # TODO: Are there plans for EPIC to maintain this package or should GW provide support?
-      export UTILROOT="/contrib/global-workflow/NCEPLIBS-prod_util"
-      export PATH="${PATH}:/contrib/global-workflow/bin"
-      ndate_path="$(command -v ndate)"
-      export NDATE="${ndate_path}"
-   fi
+module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+module load "ufs_${MACHINE_ID}.intel"
+module load prod_util
+if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+  module load cray-pals
+  module load cfp
+  module load libjpeg
+  module load craype-network-ucx
+  module load cray-mpich-ucx
+else
+  export UTILROOT=${prod_util_ROOT}
 fi
+module load wgrib2
+export WGRIB2=wgrib2
 
 module list
 unset MACHINE_ID
