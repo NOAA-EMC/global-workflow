@@ -1,0 +1,11 @@
+#!/bin/bash -x
+
+########## config.anlstat ##########
+# Analysis Stat
+
+echo "BEGIN: config.anlstat"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" anlstat
+
+echo "END: config.anlstat"

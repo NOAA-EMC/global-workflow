@@ -17,7 +17,7 @@ if (( $# != 1 )); then
     echo "atmensanlinit atmensanlletkf atmensanlfv3inc atmensanlfinal"
     echo "snowanl"
     echo "prepobsaero aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag fcst echgres"
+    echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
@@ -624,6 +624,14 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="48GB"
+    ;;
+
+  "anlstat")
+    walltime="00:30:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="24GB"
     ;;
 
   "sfcanl")
