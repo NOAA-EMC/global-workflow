@@ -141,13 +141,6 @@ class AerosolAnalysis(Analysis):
             with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
                 f_out.writelines(f_in)
 
-        # open tar file for writing
-        with tarfile.open(aerostat, "w") as archive:
-            for diagfile in diags:
-                diaggzip = f"{diagfile}.gz"
-                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
-        logger.info(f'Saved diags to {aerostat}')
-
         # ---- add increments to RESTART files
         logger.info('Adding increments to RESTART files')
         self._add_fms_cube_sphere_increments()
@@ -156,6 +149,13 @@ class AerosolAnalysis(Analysis):
         logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL}")
         aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL, self.task_config)
         FileHandler(aero_var_final_list).sync()
+
+        # open tar file for writing
+        with tarfile.open(aerostat, "w") as archive:
+            for diagfile in diags:
+                diaggzip = f"{diagfile}.gz"
+                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
+        logger.info(f'Saved diags to {aerostat}')
 
     def clean(self):
         super().clean()
