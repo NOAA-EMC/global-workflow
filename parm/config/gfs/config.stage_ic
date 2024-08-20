@@ -7,39 +7,26 @@ echo "BEGIN: config.stage_ic"
 # Get task specific resources
 source "${EXPDIR}/config.resources" stage_ic
 
-case "${CASE}" in
-  "C48" | "C96" | "C192")
-    export CPL_ATMIC="workflow_${CASE}_refactored"
-    export CPL_ICEIC="workflow_${CASE}_refactored"
-    export CPL_OCNIC="workflow_${CASE}_refactored"
-    export CPL_WAVIC="workflow_${CASE}_refactored"
-    ;;
-  "C384")
-    export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c_refactored
-    export CPL_ICEIC=CPC_refactored
-    export CPL_OCNIC=CPC3Dvar_refactored
-    export CPL_WAVIC=workflow_C384_refactored
-    ;;
-  "C768")
-    export CPL_ATMIC=HR3C768
-    export CPL_ICEIC=HR3marine
-    export CPL_OCNIC=HR3marine
-    export CPL_WAVIC=HR3marine
-    ;;
-  "C1152")
-    export CPL_ATMIC=HR3C1152
-    export CPL_ICEIC=HR3marine
-    export CPL_OCNIC=HR3marine
-    export CPL_WAVIC=HR3marine
-    ;;
-  *)
-    echo "FATAL ERROR Unrecognized resolution: ${CASE}"
-    exit 1
-    ;;
-esac
+export ICSDIR="@ICSDIR@" # User provided ICSDIR; blank if not provided
+export BASE_IC="@BASE_IC@" # Platform home for staged ICs
 
-if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-  export CPL_ATMIC="GLOBAL-NEST_${CASE}"
+export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gfs.yaml.j2"
+
+# Set ICSDIR (if not defined)
+if [[ -z "${ICSDIR}" ]] ; then
+
+  ic_ver="20240610"
+
+  if (( NMEM_ENS > 0 )) ; then
+    ensic="${CASE_ENS}"
+  fi
+
+  if [[ "${DO_OCN:-NO}" == "YES" ]] ; then
+    ocnic="mx${OCNRES}"
+  fi
+
+  export ICSDIR="${BASE_IC}/${CASE}${ensic:-}${ocnic:-}/${ic_ver}"
+
 fi
 
 echo "END: config.stage_ic"
