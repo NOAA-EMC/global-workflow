@@ -30,14 +30,19 @@ string="--fv3 ${CASE}"
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
 
-# shellcheck disable=SC2153
-export FHMAX=${FHMAX_GFS}
+# Convert comma-separated string into bash array
+IFS=', ' read -ra segments <<< "${FCST_SEGMENTS}"
+# Determine MIN and MAX based on the forecast segment
+export FHMIN=${segments[${FCST_SEGMENT}]}
+export FHMAX=${segments[${FCST_SEGMENT}+1]}
+# Cap other FHMAX variables at FHMAX for the segment
+export FHMAX_HF=$(( FHMAX_HF_GFS > FHMAX ? FHMAX : FHMAX_HF_GFS ))
+export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
 # shellcheck disable=SC2153
 export FHOUT=${FHOUT_GFS}
-export FHMAX_HF=${FHMAX_HF_GFS}
 export FHOUT_HF=${FHOUT_HF_GFS}
 export FHOUT_OCN=${FHOUT_OCN_GFS}
-export FHOUT_ICE=${FHOUT_ICE_GFS} 
+export FHOUT_ICE=${FHOUT_ICE_GFS}
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
@@ -242,7 +247,11 @@ export FSICS="0"
 
 #---------------------------------------------------------------------
 # Write more variables to output
-export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
+if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+  export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_replay"
+else
+  export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
+fi
 
 # Write gfs restart files to rerun fcst from any break point
 export restart_interval=${restart_interval_gfs:-12}
