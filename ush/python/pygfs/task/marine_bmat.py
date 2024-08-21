@@ -81,6 +81,7 @@ class MarineBMat(Task):
         # stage backgrounds
         # TODO(G): Check ocean backgrounds dates for consistency
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
+        print("bkg_list: ",bkg_list)
         FileHandler(bkg_list).sync()
         for cice_fname in ['./INPUT/cice.res.nc', './bkg/ice.bkg.f006.nc', './bkg/ice.bkg.f009.nc']:
             mdau.cice_hist2fms(cice_fname, cice_fname)
@@ -214,6 +215,7 @@ class MarineBMat(Task):
         # compute the coefficients of the diffusion operator
         mdau.run(exec_cmd)
 
+
     @logit(logger)
     def ensemble_perturbations(self: Task) -> None:
         """Generate the 3D ensemble of perturbation for the 3DEnVAR
@@ -323,7 +325,7 @@ class MarineBMat(Task):
         FileHandler({'copy': diagb_list}).sync()
 
         # Copy the ensemble perturbation diagnostics to the ROTDIR
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 3:
+        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
             window_middle_iso = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
             weight_list = []
             src = os.path.join(self.task_config.DATA, f"ocn.ens_weights.incr.{window_middle_iso}.nc")

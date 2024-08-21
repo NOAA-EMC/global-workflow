@@ -168,6 +168,12 @@ def fill_ROTDIR_cycled(host, inputs):
                 makedirs_if_missing(dst_dir)
                 link_files_from_src_to_dst(src_dir, dst_dir)
 
+                dst_dir = os.path.join(rotdir, current_cycle_dir, memdir, dst_ice_anl_dir)
+                src_dir = os.path.join(inputs.icsdir, current_cycle_dir, memdir, src_ice_anl_dir)
+                makedirs_if_missing(dst_dir)
+                link_files_from_src_to_dst(src_dir, dst_dir)
+
+
             # Link mediator files
             if do_med:
                 dst_dir = os.path.join(rotdir, previous_cycle_dir, memdir, dst_med_dir)
