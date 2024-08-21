@@ -3,7 +3,7 @@ export hpc_intel_ver=2018.4
 export hpc_impi_ver=2018.4
 
 export obsproc_run_ver=1.2.0
-export prepobs_run_ver=1.0.1
+export prepobs_run_ver=1.1.0
 
 export prod_util_ver=1.2.2
 export cmake_ver=3.22.1
