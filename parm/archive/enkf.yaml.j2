@@ -53,9 +53,16 @@ enkf:
                            "oznstat.ensmean",
                            "radstat.ensmean"] %}
         {% else %}
+        {% if lobsdiag_forenkf %}
+        {% set da_files = ["atmens_observer.yaml",
+                           "atmens_solver.yaml",
+                           "atminc.ensmean.nc",
+                           "atmensstat"] %}
+        {% else %}
         {% set da_files = ["atmens.yaml",
                            "atminc.ensmean.nc",
                            "atmensstat"] %}
+        {% endif %}
         {% endif %}
         {% for file in da_files %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
