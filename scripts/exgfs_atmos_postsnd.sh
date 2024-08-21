@@ -27,7 +27,7 @@ source "${USHgfs}/preamble.sh"
 
 runscript=${USHgfs}/gfs_bufr.sh 
 
-cd $DATA
+cd "${DATA}" || exit 2
 
 ########################################
 
@@ -66,12 +66,12 @@ hour_list=()
 # Generate hours from 0 to NEND1 with interval NINT1
 # Convert ENDHOUR to decimal through $((10#$ENDHOUR)) to avoid it is thought as octal number
 for (( hour=0; hour<=$((10#$NEND1)) && hour<=$((10#$ENDHOUR)); hour+=$((10#$NINT1)) )); do
-  hour_list+=("$(printf "%03d" $hour)")
+  hour_list+=("$(printf "%03d" "$hour")")
 done
 
 # Generate hours from NEND1 + NINT3 to ENDHOUR with interval NINT3
 for (( hour=$((10#$NEND1))+$((10#$NINT3)); hour<=$((10#$ENDHOUR)); hour+=$((10#$NINT3)) )); do
-  hour_list+=("$(printf "%03d" $hour)")
+  hour_list+=("$(printf "%03d" "$hour")")
 done
 
 # Print the hour list
@@ -118,7 +118,7 @@ for fhr in "${hour_list[@]}"; do
   fi
 
   # Format fhr_p with leading zeros
-  fhr_p="$(printf "%03d" $fhr_p)" 
+  fhr_p="$(printf "%03d" "$fhr_p")" 
 
   filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
   if ! wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
@@ -133,7 +133,7 @@ startmsg
 $APRUN "${DATA}/poescript_bufr"
 export err=$?; err_chk
 
-cd "${DATA}"
+cd "${DATA}" || exit 2
 
 # Initialize fortnum
 fortnum=20

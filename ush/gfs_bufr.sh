@@ -27,7 +27,7 @@ FINT="$3"
 F00FLAG="$4"
 workdir="$5"
 
-cd "${workdir}"
+cd "${workdir}" || exit 2
 
 source "${USHgfs}/preamble.sh"
 
