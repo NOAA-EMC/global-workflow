@@ -12,7 +12,7 @@ from wxflow import (AttrDict,
                     Task,
                     parse_j2yaml,
                     logit)
-from pygfs.task.jedi import JEDI
+from pygfs.jedi.jedi import JEDI
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -74,37 +74,41 @@ class AtmAnalysis(Task):
         super().initialize()
 
         # set JEDI variational configuration
-        logger.info(f"Generate JEDI YAML config: {self.yaml}")
+        logger.info(f"Generating JEDI YAML config: {jedi.yaml}")
         jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.config)}")        
+        logger.debug(f"JEDI config:\n{pformat(jedi.config)}")        
 
         # save JEDI config to YAML file
-        logger.debug(f"Writing JEDI YAML file to: {self.yaml}")
+        logger.debug(f"Writing JEDI YAML config to: {jedi.yaml}")
         save_as_yaml(jedi.config, jedi.yaml)
 
         # link JEDI variational executable
-        logger.debug(f"Linking JEDI variational DA executable to: {self.exe}")
+        logger.info(f"Linking JEDI executable {task_config.JEDIEXE} to {jedi.exe}")
         self.jedi.link_exe(self.task_config)
 
         # stage observations
-        logger.info(f"Staging observations")
+        logger.info(f"Staging list of observation files generated from JEDI config")
         obs_dict = self.jedi.get_obs_dict(self.task_config)
         FileHandler(obs_dict).sync()
+        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
-        logger.info(f"Staging bias corrections")
+        logger.info(f"Staging list of bias correction files generated from JEDI config")
         bias_dict = self.jedi.get_bias_dict(self.task_config)
         FileHandler(bias_dict).sync()
+        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
-        crtm_fix_list = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
-        FileHandler(crtm_fix_list).sync()
+        crtm_fix_dict = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
+        FileHandler(crtm_fix_dict).sync()
+        logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_list).sync()
+        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        FileHandler(jedi_fix_dict).sync()
+        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # stage static background error files, otherwise it will assume ID matrix
         logger.info(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
@@ -113,17 +117,20 @@ class AtmAnalysis(Task):
         else:
             berror_staging_dict = {}
         FileHandler(berror_staging_dict).sync()
+        logger.debug(f"Background error files:\n{pformat(berror_staging_dict)}")
 
         # stage ensemble files for use in hybrid background error
         if self.task_config.DOHYBVAR:
             logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
             fv3ens_staging_dict = parse_j2yaml(self.task_config.FV3ENS_STAGING_YAML, self.task_config)
             FileHandler(fv3ens_staging_dict).sync()
+            logger.debug(f"Ensemble files:\n{pformat(fv3ens_staging_dict)}")
 
         # stage backgrounds
         logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}")
         bkg_staging_dict = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
         FileHandler(bkg_staging_dict).sync()
+        logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}"
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -133,6 +140,17 @@ class AtmAnalysis(Task):
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
+    @logit(logger)
+    def initialize_fv3inc(self):
+        # get JEDI-to-FV3 increment converter config and save to YAML file
+        logger.info(f"Generating JEDI YAML config: {self.yaml}")
+        self.jedi.get_config(self.task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.config)}")
+
+        # link JEDI-to-FV3 increment converter executable
+        logger.info(f"Linking JEDI executable {task_config.JEDIEXE} to {jedi.exe}")
+        self.jedi.link_exe(self.task_config)
+                     
     @logit(logger)
     def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
         super().execute()

@@ -121,7 +121,6 @@ class JEDI:
         """
 
         # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
-        logger.info(f"Link executable {task_config.JEDIEXE} to DATA/")
         logger.warn("Linking is not permitted per EE2.")
         exe_dest = os.path.join(task_config.DATA, os.path.basename(task_config.JEDIEXE))
         if os.path.exists(exe_dest):
@@ -147,9 +146,7 @@ class JEDI:
             a dictionary containing the list of observation files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of observation files from Jedi config file")
         observations = find_value_in_nested_dict(self.config, 'observations')
-        logger.debug(f"observations:\n{pformat(observations)}")
 
         copylist = []
         for ob in observations['observers']:
@@ -184,9 +181,7 @@ class JEDI:
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
 
-        logger.info(f"Extracting a list of bias correction files from Jedi config file")
         observations = find_value_in_nested_dict(self.config, 'observations')
-        logger.debug(f"observations:\n{pformat(observations)}")
 
         copylist = []
         for ob in observations['observers']:
