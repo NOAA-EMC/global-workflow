@@ -50,8 +50,7 @@ class Tasks:
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._base = self._configs['base']
 
-       #self.HOMEgfs = self._base['HOMEgfs']
-        self.HOMEgfs = '/contrib/Wei.Huang/src/global-workflow-cloud'
+        self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
         if self.run == "enkfgfs":
