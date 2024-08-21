@@ -21,14 +21,14 @@ class JEDI:
 
         # For provenance, save incoming task_config as a private attribute of JEDI object
         self._task_config = task_config
-        
+
         _exe_name = os.path.basename(task_config.JEDIEXE)
 
         self.exe = os.path.join(task_config.DATA, _exe_name)
         self.yaml = os.path.join(task_config.DATA, os.path.splitext(_exe_name)[0] + '.yaml')
         self.config = AttrDict()
         self.j2tmpl_dir = os.path.join(task_config.PARMgfs, 'gdas')
-    
+
     @logit(logger)
     def set_config(self, task_config: AttrDict[str, Any], algorithm: Optional[str] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
@@ -69,7 +69,7 @@ class JEDI:
                                        searchpath=self.j2tmpl_dir)
         else:
             raise KeyError(f"Task config must contain JCB_BASE_YAML or JEDIYAML")
-    
+
     @logit(logger)
     def execute(self, task_config: AttrDict[str, Any], aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
         """Execute JEDI application
@@ -105,7 +105,7 @@ class JEDI:
             raise OSError(f"Failed to execute {exec_cmd}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-        
+
     @logit(logger)
     def link_exe(self, task_config: AttrDict[str, Any]) -> None:
         """Link JEDI executable to run directory
@@ -125,7 +125,7 @@ class JEDI:
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(task_config.JEDIEXE, exe_dest)
-        
+
     @logit(logger)
     def get_obs_dict(self, task_config: AttrDict[str, Any]) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
@@ -137,7 +137,7 @@ class JEDI:
         Parameters
         ----------
         task_config: AttrDict
-            Attribute-dictionary of all configuration variables associated with a GDAS task. 
+            Attribute-dictionary of all configuration variables associated with a GDAS task.
 
         Returns
         ----------
@@ -157,7 +157,7 @@ class JEDI:
             'copy': copylist
         }
         return obs_dict
-    
+
     @logit(logger)
     @staticmethod
     def get_bias_dict(self, task_config: Dict[str, Any]) -> Dict[str, Any]:
@@ -199,6 +199,7 @@ class JEDI:
             'copy': copylist
         }
         return bias_dict
+
 
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:

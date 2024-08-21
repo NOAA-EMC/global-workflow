@@ -145,7 +145,7 @@ class AtmAnalysis(Task):
     @logit(logger)
     def initialize_fv3inc(self):
         super().initialize()
-        
+
         # get JEDI-to-FV3 increment converter config and save to YAML file
         logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
         self.jedi.set_config(self.task_config)
@@ -154,11 +154,11 @@ class AtmAnalysis(Task):
         # save JEDI config to YAML file
         logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
         save_as_yaml(self.jedi.config, self.jedi.yaml)
-        
+
         # link JEDI-to-FV3 increment converter executable
         logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
-                     
+
     @logit(logger)
     def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
         super().execute()

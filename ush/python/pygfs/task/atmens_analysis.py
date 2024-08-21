@@ -143,7 +143,7 @@ class AtmEnsAnalysis(Task):
         # save JEDI config to YAML file
         logger.info(f"Writing JEDI config to YAML file: {self.jedi.yaml}")
         save_as_yaml(self.jedi.config, self.jedi.yaml)
-        
+
         # link JEDI-to-FV3 increment converter executable
         logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
