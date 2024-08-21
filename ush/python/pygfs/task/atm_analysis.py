@@ -5,12 +5,14 @@ import glob
 import gzip
 import tarfile
 from logging import getLogger
+from pprint import pformat
+from typing import Optional
 
 from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
                     Task,
-                    parse_j2yaml,
+                    parse_j2yaml, save_as_yaml,
                     logit)
 from pygfs.jedi.jedi import JEDI
 
@@ -57,7 +59,7 @@ class AtmAnalysis(Task):
         self.jedi = JEDI(self.task_config)
 
     @logit(logger)
-    def initialize(self) -> None:
+    def initialize_var(self) -> None:
         """Initialize a global atm analysis
 
         This method will initialize a global atm analysis using JEDI.
@@ -73,17 +75,17 @@ class AtmAnalysis(Task):
         """
         super().initialize()
 
-        # set JEDI variational configuration
-        logger.info(f"Generating JEDI YAML config: {jedi.yaml}")
-        jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(jedi.config)}")        
+        # set JEDI config
+        logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
+        self.jedi.set_config(self.task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
 
         # save JEDI config to YAML file
-        logger.debug(f"Writing JEDI YAML config to: {jedi.yaml}")
-        save_as_yaml(jedi.config, jedi.yaml)
+        logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
+        save_as_yaml(self.jedi.config, self.jedi.yaml)
 
         # link JEDI variational executable
-        logger.info(f"Linking JEDI executable {task_config.JEDIEXE} to {jedi.exe}")
+        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
 
         # stage observations
@@ -130,7 +132,7 @@ class AtmAnalysis(Task):
         logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}")
         bkg_staging_dict = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
         FileHandler(bkg_staging_dict).sync()
-        logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}"
+        logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -142,13 +144,19 @@ class AtmAnalysis(Task):
 
     @logit(logger)
     def initialize_fv3inc(self):
+        super().initialize()
+        
         # get JEDI-to-FV3 increment converter config and save to YAML file
-        logger.info(f"Generating JEDI YAML config: {self.yaml}")
-        self.jedi.get_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.config)}")
+        logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
+        self.jedi.set_config(self.task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
 
+        # save JEDI config to YAML file
+        logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
+        save_as_yaml(self.jedi.config, self.jedi.yaml)
+        
         # link JEDI-to-FV3 increment converter executable
-        logger.info(f"Linking JEDI executable {task_config.JEDIEXE} to {jedi.exe}")
+        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
                      
     @logit(logger)
@@ -192,8 +200,8 @@ class AtmAnalysis(Task):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
-        src = self.task_config.jedi_yaml
+        logger.info(f"Copying {self.jedi.yaml} to {self.task_config.COM_ATMOS_ANALYSIS}")
+        src = self.jedi.yaml
         dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         logger.debug(f"Copying {src} to {dest}")
         yaml_copy = {

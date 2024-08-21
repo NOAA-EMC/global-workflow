@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     # Instantiate the atmens analysis task
     AtmEnsAnl = AtmEnsAnalysis(config)
-    AtmEnsAnl.execute(config.APRUN_ATMENSANLLETKF, ['fv3jedi', 'localensembleda']))
+    AtmEnsAnl.execute(config.APRUN_ATMENSANLLETKF, ['fv3jedi', 'localensembleda'])

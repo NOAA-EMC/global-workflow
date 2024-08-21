@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-1;95;0cimport os
+import os
 import glob
 import gzip
 import tarfile
 from logging import getLogger
-from typing import Dict, List
+from pprint import pformat
+from typing import Optional
 
 from wxflow import (AttrDict,
                     FileHandler,
@@ -82,16 +83,16 @@ class AtmEnsAnalysis(Task):
         super().initialize()
 
         # set JEDI ensemble DA config dictionary
-        logger.info(f"Generating JEDI YAML config: {self.yaml}")
-        jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.config)}")
+        logger.info(f"Generating JEDI config: {self.jedi.yaml}")
+        self.jedi.set_config(self.task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
 
         # save JEDI config to YAML file
-        logger.info(f"Writing JEDI YAML config to: {self.yaml}")
-        save_as_yaml(jedi.config, jedi.yaml)
+        logger.info(f"Writing JEDI config to YAML file: {self.jedi.yaml}")
+        save_as_yaml(self.jedi.config, self.jedi.yaml)
 
         # link JEDI ensemble DA executable
-        logger.info(f"Linking JEDI executable {task_config.JEDIEXE} to {jedi.exe}")
+        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
 
         # stage observations
@@ -135,19 +136,22 @@ class AtmEnsAnalysis(Task):
     @logit(logger)
     def initialize_fv3inc(self):
         # get JEDI-to-FV3 increment converter config and save to YAML file
-        logger.info(f"Generating JEDI YAML config: {self.yaml}")
-        self.jedi.get_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.config)}")
+        logger.info(f"Generating JEDI config: {self.jedi.yaml}")
+        self.jedi.set_config(self.task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
 
+        # save JEDI config to YAML file
+        logger.info(f"Writing JEDI config to YAML file: {self.jedi.yaml}")
+        save_as_yaml(self.jedi.config, self.jedi.yaml)
+        
         # link JEDI-to-FV3 increment converter executable
-        logger.info(f"Linking JEDI executable {task_config.JEDIEXE} to {jedi.exe}")
+        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
 
     @logit(logger)
     def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
         super().execute()
 
-        
         self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
 
     @logit(logger)
@@ -192,8 +196,8 @@ class AtmEnsAnalysis(Task):
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
-        src = self.task_config.jedi_yaml
+        logger.info(f"Copying {self.jedi.yaml} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
+        src = self.jedi.yaml
         dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
         logger.debug(f"Copying {src} to {dest}")
         yaml_copy = {

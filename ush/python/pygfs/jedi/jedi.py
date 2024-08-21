@@ -2,12 +2,11 @@
 
 import os
 from logging import getLogger
-from pprint import pformat
 from typing import List, Dict, Any, Optional
 from jcb import render
 from wxflow import (AttrDict,
                     chdir, rm_p,
-                    parse_j2yaml, save_as_yaml,
+                    parse_j2yaml,
                     logit,
                     Task,
                     Executable,
@@ -31,7 +30,7 @@ class JEDI:
         self.j2tmpl_dir = os.path.join(task_config.PARMgfs, 'gdas')
     
     @logit(logger)
-    def set_config(self, task_config: AttrDict[str, Any], algorithm: Optional[str] = None) -> AttrDict
+    def set_config(self, task_config: AttrDict[str, Any], algorithm: Optional[str] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
         Parameters
