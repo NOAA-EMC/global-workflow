@@ -19,7 +19,7 @@ class RocotoXML(ABC):
         self.rocoto_config = rocoto_config
 
         # Use the generic config.base (without RUN specified)
-        self._base = self._app_config.configs['_']['base']
+        self._base = self._app_config.configs['_no_run']['base']
 
         self.preamble = self._get_preamble()
         self.definitions = self._get_definitions()

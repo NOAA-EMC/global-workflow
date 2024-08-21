@@ -102,13 +102,13 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.configs_names = self._get_app_configs()
 
         # Source the config files for the jobs in the application without specifying a RUN
-        self.configs = {'_': self._source_configs(conf)}
+        self.configs = {'_no_run': self._source_configs(conf)}
 
         # Update the base config dictionary base on application
-        self.configs['_']['base'] = self._update_base(self.configs['_']['base'])
+        self.configs['_no_run']['base'] = self._update_base(self.configs['_no_run']['base'])
 
         # Save base in the internal state since it is often needed
-        self._base = self.configs['_']['base']
+        self._base = self.configs['_no_run']['base']
 
         # Get more configuration options into the class attributes
         self.gfs_cyc = self._base.get('gfs_cyc')
