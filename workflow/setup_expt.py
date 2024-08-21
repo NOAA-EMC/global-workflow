@@ -300,7 +300,17 @@ def update_configs(host, inputs):
     # First update config.base
     edit_baseconfig(host, inputs, yaml_dict)
 
-    # loop over other configs and update them
+    # Update stage config
+    stage_dict = {
+        "@ICSDIR@": inputs.icsdir
+    }
+    host_dict = get_template_dict(host.info)
+    stage_dict = dict(stage_dict, **host_dict)
+    stage_input = f'{inputs.configdir}/config.stage_ic'
+    stage_output = f'{inputs.expdir}/{inputs.pslot}/config.stage_ic'
+    edit_config(stage_input, stage_output, stage_dict)
+
+    # Loop over other configs and update them with defaults
     for cfg in yaml_dict.keys():
         if cfg == 'base':
             continue
@@ -425,6 +435,7 @@ def input_args(*argv):
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
         parser.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
+        parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
         parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
                             action='store_true', required=False)
         return parser
@@ -441,7 +452,6 @@ def input_args(*argv):
         return parser
 
     def _gfs_cycled_args(parser):
-        parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
         parser.add_argument('--app', help='UFS application', type=str,
                             choices=ufs_apps, required=False, default='ATM')
         parser.add_argument('--gfs_cyc', help='cycles to run forecast', type=int,
@@ -469,8 +479,6 @@ def input_args(*argv):
                             default=os.path.join(_top, 'parm/config/gefs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
                             default=os.path.join(_top, 'parm/config/gefs/yaml/defaults.yaml'))
-        parser.add_argument('--icsdir', help='full path to initial condition directory [temporary hack in place for testing]',
-                            type=str, required=False, default=None)
         return parser
 
     description = """
@@ -588,7 +596,6 @@ def main(*argv):
 
     if create_rotdir:
         makedirs_if_missing(rotdir)
-        fill_ROTDIR(host, user_inputs)
 
     if create_expdir:
         makedirs_if_missing(expdir)

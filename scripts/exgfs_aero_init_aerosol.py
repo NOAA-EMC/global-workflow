@@ -41,10 +41,10 @@ from datetime import datetime, timedelta
 from functools import partial
 
 # Constants
-atm_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model_data/atmos/input"         # Location of atmosphere ICs
+atm_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model/atmos/input"         # Location of atmosphere ICs
 atm_file_pattern = "{path}/gfs_data.{tile}.nc"                                # Atm IC file names
 atm_ctrl_pattern = "{path}/gfs_ctrl.nc"                                       # Atm IC control file name
-restart_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model_data/atmos/restart"   # Location of restart files (time of previous run)
+restart_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model/atmos/restart"   # Location of restart files (time of previous run)
 restart_file_pattern = "{file_base}/{timestamp}fv_core.res.{tile}.nc"         # Name of restart data files (time when restart is valid)
 tracer_file_pattern = "{file_base}/{timestamp}fv_tracer.res.{tile}.nc"        # Name of restart tracer files (time when restart is valid)
 dycore_file_pattern = "{file_base}/{timestamp}fv_core.res.nc"                 # Name of restart dycore file (time when restart is valid)

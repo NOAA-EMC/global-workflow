@@ -38,7 +38,6 @@ export FIXugwd=${FIXgfs}/ugwd
 export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
-export BASE_CPLIC="@BASE_CPLIC@"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -97,7 +96,6 @@ export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/${PSLOT}"
 export ROTDIR="@COMROOT@/${PSLOT}"
 
-export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
 
@@ -230,8 +228,11 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 
 # GFS output and frequency
 export FHMIN_GFS=0
-export FHMIN=${FHMIN_GFS}
-export FHMAX_GFS=@FHMAX_GFS@
+export FHMAX_GFS="@FHMAX_GFS@"
+# Intermediate times to stop forecast when running in segments
+breakpnts="@FCST_BREAKPOINTS@"
+export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
+
 export FHOUT_GFS=6
 export FHMAX_HF_GFS=@FHMAX_HF_GFS@
 export FHOUT_HF_GFS=1

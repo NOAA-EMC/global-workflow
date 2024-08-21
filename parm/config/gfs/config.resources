@@ -106,8 +106,17 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=40
+    npe_node_max=36
+    max_tasks_per_node=36
     # TODO Supply a max mem/node value for AWS
+    # shellcheck disable=SC2034
+    mem_node_max=""
+    ;;
+  "AZUREPW")
+    export PARTITION_BATCH="compute"
+    npe_node_max=24
+    max_tasks_per_node=24
+    # TODO Supply a max mem/node value for AZURE
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;
@@ -544,7 +553,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         memory="128GB"
-        ntasks=40;;
+        ntasks=16;;
       "050")
         memory="32GB"
         ntasks=16;;
@@ -889,8 +898,8 @@ case ${step} in
     threads_per_task=1
     walltime_gdas="03:00:00"
     walltime_gfs="06:00:00"
-    ntasks=4
-    tasks_per_node=4
+    ntasks=1
+    tasks_per_node=1
     export memory="80G"
     ;;
 
@@ -1122,6 +1131,13 @@ case ${step} in
     threads_per_task=1
     memory_gdas="4GB"
     memory_gfs="2GB"
+    ;;
+
+  "fbwind")
+    walltime="00:05:00"
+    ntasks=1
+    threads_per_task=1
+    memory="4GB"
     ;;
 
   "mos_stn_prep")
