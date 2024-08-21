@@ -53,7 +53,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean or self.do_ice:
             configs += ['oceanice_products']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -171,7 +171,7 @@ class GFSCycledAppConfig(AppConfig):
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
             if self.do_jedisnowda:
                 hybrid_tasks += ['esnowrecen']
-            hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
+            hybrid_after_eupd_tasks += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
@@ -187,7 +187,7 @@ class GFSCycledAppConfig(AppConfig):
             if self.do_prep_obs_aero:
                 gdas_tasks += ['prepobsaero']
 
-        gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
+        gdas_tasks += ['stage_ic', 'atmanlupp', 'atmanlprod', 'fcst']
 
         if self.do_upp:
             gdas_tasks += ['atmupp']
