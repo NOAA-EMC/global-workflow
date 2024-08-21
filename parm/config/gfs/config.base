@@ -62,7 +62,6 @@ export NOSCRUB="@NOSCRUB@"
 
 # Base directories for various builds
 export BASE_GIT="@BASE_GIT@"
-export BASE_IC="@BASE_IC@"
 
 # Toggle to turn on/off GFS downstream processing.
 export DO_GOES="@DO_GOES@"               # GOES products
