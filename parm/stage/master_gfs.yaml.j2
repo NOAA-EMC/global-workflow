@@ -1,0 +1,189 @@
+###################################################################
+# This is the master yaml for the GFS
+#
+# Cycle, member, and RUN settings are set before including each
+# component yaml based on DO switches
+#
+# The included yamls are intended to be of the following structure:
+# key1:
+#     mkdir:
+#         - "COM directory to create"
+#     copy:
+#         - ["source_file", "destination_file"]
+# key2:
+#     mkdir:
+#         - "COM directory to create"
+#     copy:
+#         - ["source_file", "destination_file"]
+#
+# Any number of keys with nested mkdir and copy are permitted
+# Jinja is permitted in this yaml, as long as the keys are:
+# - COMOUT_
+# - DO_ATM, DO_OCN, DO_ICE, etc.
+# For a full list see scripts/exglobal_stage_ic.py
+###################################################################
+
+# Set cycle date variables
+# ------------------------
+{% set half_window = assim_freq // 2 %}
+{% set half_window_begin = (-half_window | string + "H") | to_timedelta %}
+{% set half_window_end = (half_window | string + "H") | to_timedelta %}
+{% if DOIAU and MODE == "cycled" %}
+    {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_begin) %}
+{% else %}
+    {% if REPLAY_ICS %}
+        {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_end) %}
+    {% else %}
+        {% set model_start_date_current_cycle = current_cycle %}
+    {% endif %}
+{% endif %}
+
+{% set current_cycle_YMD = current_cycle | to_YMD %}
+{% set current_cycle_HH = current_cycle | strftime("%H") %}
+{% set previous_cycle_YMD = previous_cycle | to_YMD %}
+{% set previous_cycle_HH = previous_cycle | strftime("%H") %}
+{% set p_prefix = previous_cycle | strftime("%Y%m%d.%H0000") %}
+{% set m_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
+
+# Determine restart RUN
+# ---------------------
+{% set rRUN = RUN %}
+{% if RUN == "gfs" %}
+    {% set rRUN = "gdas" %}
+{% endif %}
+
+# Set first/last mem for loop
+# ---------------------------
+{% if RUN == "enkfgdas" %} # Ensemble RUN
+  {% set first_mem = 1 %}
+  {% set last_mem = NMEM_ENS %}
+{% else %} # Deterministic RUN
+  {% set first_mem = -1 %}
+  {% set last_mem = -1 %}
+{% endif %}
+
+# Declare to-be-filled lists of member COM directories
+# ----------------------------------------------------
+{% set COMOUT_ATMOS_INPUT_MEM_list = [] %}
+{% set COMOUT_ATMOS_RESTART_PREV_MEM_list = [] %}
+{% set COMOUT_ATMOS_ANALYSIS_MEM_list = [] %}
+{% set COMOUT_ICE_ANALYSIS_MEM_list = [] %}
+{% set COMOUT_ICE_RESTART_PREV_MEM_list = [] %}
+{% set COMOUT_OCEAN_RESTART_PREV_MEM_list = [] %}
+{% set COMOUT_OCEAN_ANALYSIS_MEM_list = [] %}
+{% set COMOUT_MED_RESTART_PREV_MEM_list = [] %}
+{% set COMOUT_WAVE_RESTART_PREV_MEM_list = [] %}
+
+# Construct member COM directory lists
+# ------------------------------------
+{% for mem in range(first_mem, last_mem + 1) %}
+
+    {% if mem >= 0 %}
+        {% set mem_char = 'mem%03d' | format(mem) %}
+    {% else %}
+        {% set mem_char = '' %}
+    {% endif %}
+
+    {% set current_cycle_dict = ({ '${ROTDIR}':ROTDIR,
+                                   '${RUN}':RUN,
+                                   '${YMD}':current_cycle_YMD,
+                                   '${HH}':current_cycle_HH,
+                                   '${MEMDIR}': mem_char }) %}
+    {% set previous_cycle_dict = ({ '${ROTDIR}':ROTDIR,
+                                    '${RUN}':rRUN,
+                                    '${YMD}':previous_cycle_YMD,
+                                    '${HH}':previous_cycle_HH,
+                                    '${MEMDIR}': mem_char }) %}
+    {% set previous_cycle_and_run_dict = ({ '${ROTDIR}':ROTDIR,
+                                            '${RUN}':RUN,
+                                            '${YMD}':previous_cycle_YMD,
+                                            '${HH}':previous_cycle_HH,
+                                            '${MEMDIR}': mem_char }) %}
+
+    {% set COMOUT_ATMOS_INPUT_MEM = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_cycle_dict) %}
+    {% set COMOUT_ATMOS_RESTART_PREV_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
+    {% set COMOUT_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
+    {% set COMOUT_ICE_ANALYSIS_MEM = COM_ICE_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
+    {% set COMOUT_ICE_RESTART_PREV_MEM = COM_ICE_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
+    {% set COMOUT_OCEAN_RESTART_PREV_MEM = COM_OCEAN_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
+    {% set COMOUT_OCEAN_ANALYSIS_MEM = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
+    {% set COMOUT_MED_RESTART_PREV_MEM = COM_MED_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
+    {% set COMOUT_WAVE_RESTART_PREV_MEM = COM_WAVE_RESTART_TMPL | replace_tmpl(previous_cycle_and_run_dict) %}
+
+    # Append the member COM directories
+    {% do COMOUT_ATMOS_INPUT_MEM_list.append(COMOUT_ATMOS_INPUT_MEM)%}
+    {% do COMOUT_ATMOS_RESTART_PREV_MEM_list.append(COMOUT_ATMOS_RESTART_PREV_MEM)%}
+    {% do COMOUT_ATMOS_ANALYSIS_MEM_list.append(COMOUT_ATMOS_ANALYSIS_MEM)%}
+    {% do COMOUT_ICE_ANALYSIS_MEM_list.append(COMOUT_ICE_ANALYSIS_MEM)%}
+    {% do COMOUT_ICE_RESTART_PREV_MEM_list.append(COMOUT_ICE_RESTART_PREV_MEM)%}
+    {% do COMOUT_OCEAN_RESTART_PREV_MEM_list.append(COMOUT_OCEAN_RESTART_PREV_MEM)%}
+    {% do COMOUT_OCEAN_ANALYSIS_MEM_list.append(COMOUT_OCEAN_ANALYSIS_MEM)%}
+    {% do COMOUT_MED_RESTART_PREV_MEM_list.append(COMOUT_MED_RESTART_PREV_MEM)%}
+    {% do COMOUT_WAVE_RESTART_PREV_MEM_list.append(COMOUT_WAVE_RESTART_PREV_MEM)%}
+
+{% endfor %}
+
+###################################################################
+# Initial condition to stage - include components based on switches
+###################################################################
+
+{% if MODE == "cycled" %}
+{% filter indent(width=4) %}
+{% include "analysis.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if EXP_WARM_START %}
+{% filter indent(width=4) %}
+{% include "atmosphere_warm.yaml.j2" %}
+{% endfilter %}
+{% else %} # cold start
+{% filter indent(width=4) %}
+{% include "atmosphere_cold.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if DO_NEST %}
+{% filter indent(width=4) %}
+{% include "atmosphere_nest.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if REPLAY_ICS %}
+{% filter indent(width=4) %}
+{% include "atmosphere_perturbation.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if DO_ICE %}
+{% filter indent(width=4) %}
+{% include "ice.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if DO_OCN %}
+{% filter indent(width=4) %}
+{% include "ocean.yaml.j2" %}
+{% endfilter %}
+{% if DO_JEDIOCNVAR %}
+{% filter indent(width=4) %}
+{% include "ocean_rerun.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+{% if REPLAY_ICS %}
+{% filter indent(width=4) %}
+{% include "ocean_replay.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+{% if EXP_WARM_START %}
+{% filter indent(width=4) %}
+{% include "ocean_mediator.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+{% endif %}
+
+{% if DO_WAVE %}
+{% filter indent(width=4) %}
+{% include "wave.yaml.j2" %}
+{% endfilter %}
+{% endif %}
