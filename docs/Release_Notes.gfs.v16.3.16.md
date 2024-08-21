@@ -53,6 +53,7 @@ VERSION FILE CHANGES
 --------------------
 
 * `versions/run.ver` - change `version=v16.3.16` and `gfs_ver=v16.3.16`
+* `versions/hera[orion][wcoss2].ver` - change `prepobs_run_ver=1.1.0` (used for dev runs only)
 
 SORC CHANGES
 ------------
