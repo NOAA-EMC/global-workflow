@@ -458,7 +458,7 @@ class GFSTasks(Tasks):
     def aeroanlgenb(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
