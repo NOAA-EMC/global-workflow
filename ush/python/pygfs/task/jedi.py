@@ -20,15 +20,18 @@ class JEDI:
 
     def __init__(self, task_config: AttrDict[str, Any]) -> None:
 
+        # For provenance, save incoming task_config as a private attribute of JEDI object
+        self._task_config = task_config
+        
         _exe_name = os.path.basename(task_config.JEDIEXE)
 
         self.exe = os.path.join(task_config.DATA, _exe_name)
         self.yaml = os.path.join(task_config.DATA, os.path.splitext(_exe_name)[0] + '.yaml')
-        self.config = {}
+        self.config = AttrDict()
         self.j2tmpl_dir = os.path.join(task_config.PARMgfs, 'gdas')
-
+    
     @logit(logger)
-    def get_config(self, task_config: AttrDict[str, Any], algorithm: Optional[str] = None) -> None:
+    def set_config(self, task_config: AttrDict[str, Any], algorithm: Optional[str] = None) -> AttrDict
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
         Parameters
@@ -43,8 +46,6 @@ class JEDI:
         ----------
         None
         """
-
-        logger.info(f"Generate JEDI YAML config: {self.yaml}")
 
         if 'JCB_BASE_YAML' in task_config.keys():
             # Step 1: Fill templates of the JCB base YAML file
@@ -69,17 +70,15 @@ class JEDI:
                                        searchpath=self.j2tmpl_dir)
         else:
             raise KeyError(f"Task config must contain JCB_BASE_YAML or JEDIYAML")
-
-        logger.debug(f"JEDI config:\n{pformat(self.config)}")
-
+    
     @logit(logger)
     def execute(self, task_config: AttrDict[str, Any], aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
         """Execute JEDI application
 
         Parameters
         ----------
-        task_config : AttrDict
-            Dictionary of all configuration variables associated with a GDAS task.
+        task_config: AttrDict
+            Attribute-dictionary of all configuration variables associated with a GDAS task.
         aprun_cmd: str
             String comprising the run command for the JEDI executable.
         jedi_args (optional): List
@@ -87,7 +86,8 @@ class JEDI:
 
         Returns
         ----------
-        None
+        jedi_config: AttrDict
+            Attribute-dictionary of JEDI configuration rendered from a template.
         """
 
         chdir(task_config.DATA)
@@ -106,9 +106,8 @@ class JEDI:
             raise OSError(f"Failed to execute {exec_cmd}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        pass
-
+        
+    @logit(logger)
     def link_exe(self, task_config: AttrDict[str, Any]) -> None:
         """Link JEDI executable to run directory
 
@@ -128,7 +127,7 @@ class JEDI:
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(task_config.JEDIEXE, exe_dest)
-
+        
     @logit(logger)
     def get_obs_dict(self, task_config: AttrDict[str, Any]) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
@@ -139,7 +138,8 @@ class JEDI:
 
         Parameters
         ----------
-        None
+        task_config: AttrDict
+            Attribute-dictionary of all configuration variables associated with a GDAS task. 
 
         Returns
         ----------
@@ -161,8 +161,9 @@ class JEDI:
             'copy': copylist
         }
         return obs_dict
-
+    
     @logit(logger)
+    @staticmethod
     def get_bias_dict(self, task_config: Dict[str, Any]) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
@@ -174,7 +175,8 @@ class JEDI:
 
         Parameters
         ----------
-        None
+        task_config: AttrDict
+            Attribute-dictionary of all configuration variables associated with a GDAS task.
 
         Returns
         ----------
@@ -203,7 +205,6 @@ class JEDI:
             'copy': copylist
         }
         return bias_dict
-
 
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:

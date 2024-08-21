@@ -73,22 +73,27 @@ class AtmAnalysis(Task):
         """
         super().initialize()
 
-        # get JEDI variational configuration
-        self.jedi.get_config(self.task_config)
+        # set JEDI variational configuration
+        logger.info(f"Generate JEDI YAML config: {self.yaml}")
+        jedi.set_config(self.task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.config)}")        
 
         # save JEDI config to YAML file
         logger.debug(f"Writing JEDI YAML file to: {self.yaml}")
         save_as_yaml(jedi.config, jedi.yaml)
 
         # link JEDI variational executable
+        logger.debug(f"Linking JEDI variational DA executable to: {self.exe}")
         self.jedi.link_exe(self.task_config)
 
         # stage observations
-        obs_dict = self.jedi.get_obs_dict()
+        logger.info(f"Staging observations")
+        obs_dict = self.jedi.get_obs_dict(self.task_config)
         FileHandler(obs_dict).sync()
 
         # stage bias corrections
-        bias_dict = self.jedi.get_bias_dict()
+        logger.info(f"Staging bias corrections")
+        bias_dict = self.jedi.get_bias_dict(self.task_config)
         FileHandler(bias_dict).sync()
 
         # stage CRTM fix files
