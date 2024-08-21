@@ -6,16 +6,17 @@
 # Declare the GEFS_ARCH where atmos data will be sent
 {% set GEFS_ARCH = ROTDIR ~"/gefsarch" %}
 
+{% set file_set = [] %}
+
 # test files
 {% if RUN == "gefs" %}
-    {% set det_files = [] %}
-    {% if path_exists(ROTDIR ~ "/gefs.20210323/" ~ "12"
-         ~ "/ensstat/products/atmos/grib2/0p50") %}
-        {% do det_files.append([ROTDIR ~ "/gefs.20210323/" ~ "12"
-         ~ "/ensstat/products/atmos/grib2/0p50/gefs.t12z.mean.pres_.0p50.f000.grib2.idx", GEFS_ARCH]) %}
+    {% set atmos_files = [] %}
+    {% if path_exists(ROTDIR ~ "/gefs." ~ cycle_YMD ~ "12/ensstat/products/atmos/grib2/1p00") %}
+        {% do atmos_files.append([ROTDIR ~ "/gefs." ~ cycle_YMD ~
+         ~ "12/ensstat/products/atmos/grib2/1p00/gefs.t12z.mean.pres_.0p50.f000.grib2.idx", GEFS_ARCH]) %}
     {% endif %}
 {% endif %}
-{% set file_set = det_files %}
+{% set file_set = atmos_files %}
 # Actually write the yaml
 mkdir:
     - "{{ GEFS_ARCH }}"
