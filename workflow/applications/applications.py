@@ -3,7 +3,6 @@
 from typing import Dict, List, Any
 from datetime import timedelta
 from hosts import Host
-from pathlib import Path
 from wxflow import Configuration, to_timedelta
 from abc import ABC, ABCMeta, abstractmethod
 
@@ -37,9 +36,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.mode = self._base['MODE']
 
         if self.mode not in self.VALID_MODES:
-            raise NotImplementedError(f'{self.mode} is not a valid application mode.\n' +
-                                      'Valid application modes are:\n' +
-                                      f'{", ".join(self.VALID_MODES)}')
+            raise NotImplementedError(f'{self.mode} is not a valid application mode.\n'
+                                      f'Valid application modes are:\n'
+                                      f'{", ".join(self.VALID_MODES)}\n')
 
         self.net = self._base['NET']
         self.model_app = self._base.get('APP', 'ATM')
