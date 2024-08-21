@@ -94,9 +94,10 @@ class AtmEnsAnalysis(Analysis):
         FileHandler(bkg_staging_dict).sync()
 
         # generate ensemble da YAML file
-        logger.debug(f"Generate ensemble da YAML file: {self.task_config.jedi_yaml}")
-        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
-        logger.info(f"Wrote ensemble da YAML to: {self.task_config.jedi_yaml}")
+        if not self.task_config.lobsdiag_forenkf:
+            logger.debug(f"Generate ensemble da YAML file: {self.task_config.jedi_yaml}")
+            save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
+            logger.info(f"Wrote ensemble da YAML to: {self.task_config.jedi_yaml}")
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
