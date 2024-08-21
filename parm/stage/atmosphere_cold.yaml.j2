@@ -1,0 +1,18 @@
+atmosphere_cold:
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_ATMOS_INPUT_MEM = COMOUT_ATMOS_INPUT_MEM_list[imem] %}
+        - "{{ COMOUT_ATMOS_INPUT_MEM }}"
+        {% endfor %} # mem loop
+    copy:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_ATMOS_INPUT_MEM = COMOUT_ATMOS_INPUT_MEM_list[imem] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_INPUT_MEM | relpath(ROTDIR) }}/gfs_ctrl.nc", "{{ COMOUT_ATMOS_INPUT_MEM }}"]
+        {% for ftype in ["gfs_data", "sfc_data"] %}
+        {% for ntile in range(1, ntiles + 1) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_INPUT_MEM | relpath(ROTDIR) }}/{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_INPUT_MEM }}"]
+        {% endfor %} # ntile
+        {% endfor %} # ftype
+        {% endfor %} # mem loop
