@@ -11,6 +11,7 @@ import sys
 import gsi_utils
 from collections import OrderedDict
 import datetime
+from wxflow import cast_as_dtype
 
 python2fortran_bool = {True: '.true.', False: '.false.'}
 
@@ -358,7 +359,7 @@ if __name__ == '__main__':
     ExecAnl = os.getenv('CALCANLEXEC', './calc_analysis.x')
     ExecChgresInc = os.getenv('CHGRESINCEXEC', './interp_inc.x')
     NEMSGet = os.getenv('NEMSIOGET', 'nemsio_get')
-    IAUHrs = list(map(int, os.getenv('IAUFHRS', '6').split(',')))
+    IAUHrs = cast_as_dtype(os.getenv('IAUFHRS', '6,'))
     Run = os.getenv('RUN', 'gdas')
     JEDI = gsi_utils.isTrue(os.getenv('DO_JEDIATMVAR', 'YES'))
 

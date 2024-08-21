@@ -75,6 +75,10 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
         self.nens = _base.get('NMEM_ENS', 0)
+        self.fcst_segments = _base.get('FCST_SEGMENTS', None)
+
+        if not AppConfig.is_monotonic(self.fcst_segments):
+            raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
 
         self.wave_runs = None
         if self.do_wave:
@@ -208,3 +212,26 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             return to_timedelta(gfs_internal_map[str(gfs_cyc)])
         except KeyError:
             raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
+
+    @staticmethod
+    def is_monotonic(test_list: List, check_decreasing: bool = False) -> bool:
+        """
+        Determine if an array is monotonically increasing or decreasing
+
+        TODO: Move this into wxflow somewhere
+
+        Inputs
+          test_list: List
+            A list of comparable values to check
+          check_decreasing: bool [default: False]
+            Check whether list is monotonically decreasing
+
+        Returns
+          bool: Whether the list is monotonically increasing (if check_decreasing
+                if False) or decreasing (if check_decreasing is True)
+
+        """
+        if check_decreasing:
+            return all(x > y for x, y in zip(test_list, test_list[1:]))
+        else:
+            return all(x < y for x, y in zip(test_list, test_list[1:]))

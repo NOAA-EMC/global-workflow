@@ -6,7 +6,7 @@ gdas_restarta:
         # Deterministic analysis increments
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
         # IAU increments
-        {% for iaufhr in iaufhrs if iaufhr != 6 %}
+        {% for iaufhr in IAUFHRS if iaufhr != 6 %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iaufhr }}.nc"
         {% endfor %}
 
