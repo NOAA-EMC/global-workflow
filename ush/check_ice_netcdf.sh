@@ -19,12 +19,12 @@ if (( offset != 0  )); then
   fhr3=$(printf %03i "${fhri}")
   if (( fhri <= FHOUT_ICE_GFS  )); then
     (( interval = FHOUT_ICE_GFS - cyc )) 
-    ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model_data/ice/history/gefs.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc
+    ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model/ice/history/gefs.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc
   else
-    ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model_data/ice/history/gefs.ice.t${cyc}z.${FHOUT_ICE_GFS}hr_avg.f${fhr3}.nc
+    ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model/ice/history/gefs.ice.t${cyc}z.${FHOUT_ICE_GFS}hr_avg.f${fhr3}.nc
   fi
 else
-  ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model_data/ice/history/gefs.ice.t${cyc}z.${FHOUT_ICE_GFS}hr_avg.f${fhr}.nc
+  ncfile=${ROTDIR}/gefs.${yyyy}${mm}${dd}/${cyc}/mem${member}/model/ice/history/gefs.ice.t${cyc}z.${FHOUT_ICE_GFS}hr_avg.f${fhr}.nc
 fi
 
 #Check if netcdf file exists.
