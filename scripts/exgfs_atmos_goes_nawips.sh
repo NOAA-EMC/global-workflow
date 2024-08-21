@@ -1,26 +1,22 @@
 #! /usr/bin/env bash
 
 ###################################################################
-# echo "----------------------------------------------------"
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
-# echo "----------------------------------------------------"
-# echo "History: Mar 2000 - First implementation of this new script."
-# echo "S Lilly: May 2008 - add logic to make sure that all of the "
-# echo "                    data produced from the restricted ECMWF"
-# echo "                    data on the CCS is properly protected."
-# echo "C. Magee: 10/2013 - swap X and Y for rtgssthr Atl and Pac."
-#####################################################################
+###################################################################
 
 source "${USHgfs}/preamble.sh"
 
-cd "${DATA}" || exit 2
+cd "${DATA}" || exit 1
+fhr3=$1
+
+# "Import" functions used in this script
+source "${USHgfs}/product_functions.sh"
 
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
   cp "${HOMEgfs}/gempak/fix/${table}" "${table}" || \
     ( echo "FATAL ERROR: ${table} is missing" && exit 2 )
 done
 
-#
 NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
 NAGRIB="${GEMEXE}/nagrib2"
 
@@ -48,58 +44,49 @@ else
 fi  
 pdsext=no
 
-sleep_interval=20
-max_tries=180
-fhr=${fstart}
-for (( fhr=fstart; fhr <= fend; fhr=fhr+finc )); do
-  fhr3=$(printf "%03d" "${fhr}")
-  GRIBIN="${COM_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
-  GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
 
-  GRIBIN_chk="${GRIBIN}"
 
-  if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
-    echo "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr3} to end."
-    export err=7 ; err_chk
-    exit "${err}"
-  fi
+GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
+GRIBIN="${COM_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
+GRIBIN_chk="${GRIBIN}"
 
-  cp "${GRIBIN}" "grib${fhr3}"
+if [[ ! -r "${GRIBIN_chk}" ]]; then
+  echo "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
+  export err=7 ; err_chk
+  exit "${err}"
+fi
 
-  export pgm="nagrib_nc F${fhr3}"
+cp "${GRIBIN}" "grib${fhr3}"
 
-   ${NAGRIB} << EOF
-   GBFILE   = grib${fhr3}
-   INDXFL   = 
-   GDOUTF   = ${GEMGRD}
-   PROJ     = ${proj}
-   GRDAREA  = ${grdarea}
-   KXKY     = ${kxky}
-   MAXGRD   = ${maxgrd}
-   CPYFIL   = ${cpyfil}
-   GAREA    = ${garea}
-   OUTPUT   = ${output}
-   GBTBLS   = ${gbtbls}
-   GBDIAG   = 
-   PDSEXT   = ${pdsext}
-  l
-  r
+export pgm="nagrib_nc F${fhr3}"
+startmsg
+
+${NAGRIB} << EOF
+GBFILE   = grib${fhr3}
+INDXFL   = 
+GDOUTF   = ${GEMGRD}
+PROJ     = ${proj}
+GRDAREA  = ${grdarea}
+KXKY     = ${kxky}
+MAXGRD   = ${maxgrd}
+CPYFIL   = ${cpyfil}
+GAREA    = ${garea}
+OUTPUT   = ${output}
+GBTBLS   = ${gbtbls}
+GBDIAG   = 
+PDSEXT   = ${pdsext}
+l
+r
 EOF
-  export err=$?;err_chk
 
-  "${GEMEXE}/gpend"
+export err=$?; err_chk
 
-  cpfs "${GEMGRD}" "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
-  if [[ ${SENDDBN} == "YES" ]] ; then
-      "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-			     "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
-  else
-      echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
-  fi
+cpfs "${GEMGRD}" "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+if [[ ${SENDDBN} == "YES" ]] ; then
+  "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+    "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+fi
 
-done
-
-#####################################################################
-
+"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################

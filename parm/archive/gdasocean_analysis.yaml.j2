@@ -3,23 +3,30 @@ gdasocean_analysis:
     name: "GDASOCEAN_ANALYSIS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
     required:
+        # analysis and analysis increments
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocninc.nc'
-        {% set ocngrid_cycle = '%02d' % (((cycle_HH | int) - 3) % 24) %}
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/gdas.t{{ ocngrid_cycle }}z.ocngrid.nc'
         {% for domain in ["ocn", "ice"] %}
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.bkgerr_stddev.nc'
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.incr.nc'
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}ana.nc'
-        {% if NMEM_ENS > 2 %}
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.recentering_error.nc'
-        {% endif %}
         {% endfor %}
+
+        # static background error
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_stddev.nc'
+
+        # ensemble background error
         {% if NMEM_ENS > 2 %}
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.ssh_steric_stddev.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.ssh_unbal_stddev.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.ssh_total_stddev.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.steric_explained_variance.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.ens_weights.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.ens_weights.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.recentering_error.nc'
+        {% for diag_type in ["ssh_steric_stddev", "ssh_unbal_stddev", "ssh_total_stddev", "steric_explained_variance"] %}
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.{{ diag_type }}.nc'
+        {% endfor %}
         {% endif %}
+
+        # obs space diags
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocn.*.stats.csv'
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/*.nc4'
+
+        # runtime configs
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/yaml/*.yaml'

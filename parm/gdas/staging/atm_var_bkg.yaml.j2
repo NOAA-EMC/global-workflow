@@ -1,0 +1,5 @@
+mkdir:
+- '{{ DATA }}/bkg'
+copy:
+- ['{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_atmf006.nc', '{{ DATA }}/bkg/']
+- ['{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_sfcf006.nc', '{{ DATA }}/bkg/']

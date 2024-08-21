@@ -33,6 +33,17 @@
 # Change characteristics
 - Is this a breaking change (a change in existing functionality)? YES/NO
 - Does this change require a documentation update? YES/NO
+- Does this change require an update to any of the following submodules? YES/NO (If YES, please add a link to any PRs that are pending.)
+  - [ ] EMC verif-global
+  - [ ] GDAS
+  - [ ] GFS-utils
+  - [ ] GSI
+  - [ ] GSI-monitor
+  - [ ] GSI-utils
+  - [ ] UFS-utils
+  - [ ] UFS-weather-model
+  - [ ] wxflow
+
 
 # How has this been tested?
 <!-- Please list any test you conducted, including the machine.

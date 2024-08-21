@@ -125,14 +125,14 @@ Start date = 2021032312
    ├── enkfgdas.20210323
    │   ├── 06
    │   │   ├── mem001
-   │   │   │   └── model_data -> ../../../gdas.20210323/06/model_data
+   │   │   │   └── model -> ../../../gdas.20210323/06/model
    │   │   ├── mem002
-   │   │   │   └── model_data -> ../../../gdas.20210323/06/model_data
+   │   │   │   └── model -> ../../../gdas.20210323/06/model
    │   │   ├── mem003
-   │   │   │   └── model_data -> ../../../gdas.20210323/06/model_data
+   │   │   │   └── model -> ../../../gdas.20210323/06/model
    ...
    │   │   └── mem080
-   │   │       └── model_data -> ../../../gdas.20210323/06/model_data
+   │   │       └── model -> ../../../gdas.20210323/06/model
    │   └── 12
    │       ├── mem001
    │       │   └── analysis
@@ -153,7 +153,7 @@ Start date = 2021032312
    │                   └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
    └── gdas.20210323
        ├── 06
-       │   └── model_data
+       │   └── model
        │       ├── atmos
        │       │   └── restart
        │       │       ├── 20210323.120000.ca_data.tile1.nc
@@ -384,7 +384,7 @@ The warm starts and other output from production are at C768 deterministic and C
 What files should you pull for starting a new experiment with warm starts from production?
 ------------------------------------------------------------------------------------------
 
-That depends on what mode you want to run -- forecast-only or cycled. Whichever mode, navigate to the top of your ``ROTDIR`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$CDUMP.$PDY/$CYC/$ATMOS`` folder format expected by the system.
+That depends on what mode you want to run -- forecast-only or cycled. Whichever mode, navigate to the top of your ``ROTDIR`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$RUN.$PDY/$CYC/$ATMOS`` folder format expected by the system.
 
 For forecast-only there are two tarballs to pull
 

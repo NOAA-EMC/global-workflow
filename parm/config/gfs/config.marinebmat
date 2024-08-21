@@ -1,0 +1,11 @@
+#!/bin/bash
+
+########## config.marinebmat ##########
+# configuration for the marine B-matrix
+
+echo "BEGIN: config.marinebmat"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" marinebmat
+
+echo "END: config.marinebmat"

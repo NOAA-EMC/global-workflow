@@ -14,6 +14,35 @@ logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=Fals
 
 
 def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception_class=Exception):
+    """
+    Retries a function multiple times.
+
+    Try to execute the function expression up to max_attempts times ignoring any exceptions
+    of the type exception_class, It waits for sleep_duration seconds between attempts.
+
+    Parameters
+    ----------
+    expression : callable
+        The function to be executed.
+    max_attempts : int
+        The maximum number of attempts to execute the function.
+    sleep_duration : int, optional
+        The number of seconds to wait between attempts. Default is 0.
+    exception_class : Exception, optional
+        The type of exception to catch. Default is the base Exception class, catching all exceptions.
+
+    Returns
+    -------
+    The return value of the function expression.
+
+    Raises
+    ------
+    exception_class
+        If the function expression raises an exception of type exception_class
+        in all max_attempts attempts.
+
+    """
+
     attempt = 0
     last_exception = None
     while attempt < max_attempts:
@@ -107,7 +136,7 @@ def rocoto_statcount(rocotostat):
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
     rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
 
-    status_cases = ['SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED']
+    status_cases = ['SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED', 'UNAVAILABLE', 'UNKNOWN']
 
     rocoto_status = {}
     status_counts = Counter(case for sublist in rocotostat_output for case in sublist)
@@ -185,11 +214,18 @@ if __name__ == '__main__':
     elif rocoto_status['DEAD'] > 0:
         error_return = rocoto_status['FAIL'] + rocoto_status['DEAD']
         rocoto_state = 'FAIL'
-    elif 'UNKNOWN' in rocoto_status:
-        error_return = rocoto_status['UNKNOWN']
-        rocoto_state = 'UNKNOWN'
+    elif rocoto_status['UNAVAILABLE'] > 0 or rocoto_status['UNKNOWN'] > 0:
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
+        error_return = 0
+        rocoto_state = 'RUNNING'
+        if rocoto_status['UNAVAILABLE'] > 0:
+            error_return = rocoto_status['UNAVAILABLE']
+            rocoto_state = 'UNAVAILABLE'
+        if rocoto_status['UNKNOWN'] > 0:
+            error_return += rocoto_status['UNKNOWN']
+            rocoto_state = 'UNKNOWN'
     elif is_stalled(rocoto_status):
-        rocoto_status = attempt_multiple_times(rocoto_statcount(rocotostat), 2, 120, ProcessError)
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
         if is_stalled(rocoto_status):
             error_return = 3
             rocoto_state = 'STALLED'

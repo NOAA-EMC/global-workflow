@@ -1,6 +1,6 @@
 BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git'
 DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump'
-BASE_CPLIC: '/scratch1/NCEPDEV/global/glopara/data/ICSDIR/prototype_ICs'
+BASE_IC: '/scratch1/NCEPDEV/global/glopara/data/ICSDIR'
 PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara'
 COMINsyn: '/scratch1/NCEPDEV/global/glopara/com/gfs/prod/syndat'
 HOMEDIR: '/scratch1/NCEPDEV/global/${USER}'
@@ -8,7 +8,6 @@ STMP: '/scratch1/NCEPDEV/stmp2/${USER}'
 PTMP: '/scratch1/NCEPDEV/stmp4/${USER}'
 NOSCRUB: $HOMEDIR
 ACCOUNT: fv3-cpu
-ACCOUNT_SERVICE: fv3-cpu
 SCHEDULER: slurm
 QUEUE: batch
 QUEUE_SERVICE: batch
@@ -16,6 +15,7 @@ PARTITION_BATCH: hera
 PARTITION_SERVICE: service
 RESERVATION: ''
 CHGRP_RSTPROD: 'YES'
+CLUSTERS: ''
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'YES'
 HPSS_PROJECT: emc-global

@@ -16,7 +16,6 @@ set -x
 
 export NET=%NET:gfs%
 export RUN=%RUN%
-export CDUMP=%RUN%
 
 ############################################################
 # Load modules

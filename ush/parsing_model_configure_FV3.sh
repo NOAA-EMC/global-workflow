@@ -31,7 +31,7 @@ local WRITE_GROUP=${WRITE_GROUP:-1}
 local WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-24}
 local ITASKS=1
 local OUTPUT_HISTORY=${OUTPUT_HISTORY:-".true."}
-local HISTORY_FILE_ON_NATIVE_GRID=".false."
+local HISTORY_FILE_ON_NATIVE_GRID=".true."
 local WRITE_DOPOST=${WRITE_DOPOST:-".false."}
 local WRITE_NSFLIP=${WRITE_NSFLIP:-".false."}
 local NUM_FILES=${NUM_FILES:-2}
@@ -39,7 +39,7 @@ local FILENAME_BASE="'atm' 'sfc'"
 # OUTPUT_GRID
 local OUTPUT_FILE="'${OUTPUT_FILETYPE_ATM}' '${OUTPUT_FILETYPE_SFC}'"
 local ZSTANDARD_LEVEL=0
-local IDEFLATE=1  # netCDF zlib lossless compression (0-9); 0: no compression
+local IDEFLATE=0  # netCDF zlib lossless compression (0-9); 0: no compression
 local QUANTIZE_NSD=${QUANTIZE_NSD:-0}  # netCDF compression
 local ICHUNK2D=$((4*restile))
 local JCHUNK2D=$((2*restile))
@@ -48,7 +48,7 @@ local JCHUNK3D=$((2*restile))
 local KCHUNK3D=1
 local IMO=${LONB_IMO}
 local JMO=${LATB_JMO}
-local OUTPUT_FH=${FV3_OUTPUT_FH}
+local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
 local IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Ensure the template exists

@@ -12,12 +12,11 @@ export job="prepsnowobs"
 export jobid="${job}.$$"
 
 ###############################################################
-# setup python path for workflow utilities and tasks
-wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src"
+# setup python path for ioda utilities
 # shellcheck disable=SC2311
 pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
 gdasappPATH="${HOMEgfs}/sorc/gdas.cd/sorc/iodaconv/src:${pyiodaPATH}"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}:${gdasappPATH}"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}:${gdasappPATH}"
 export PYTHONPATH
 
 ###############################################################

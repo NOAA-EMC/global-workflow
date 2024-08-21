@@ -15,14 +15,17 @@ export INTERP_METHOD='barycentric'
 if [[ ${DOHYBVAR} = "YES" ]]; then
     # shellcheck disable=SC2153
     export CASE_ANL=${CASE_ENS}
-    export BERROR_YAML="background_error_hybrid_${STATICB_TYPE}_${LOCALIZATION_TYPE}"
+    export BERROR_YAML="atmosphere_background_error_hybrid_${STATICB_TYPE}_${LOCALIZATION_TYPE}"
 else
     export CASE_ANL=${CASE}
-    export BERROR_YAML="background_error_static_${STATICB_TYPE}"
+    export BERROR_YAML="atmosphere_background_error_static_${STATICB_TYPE}"
 fi
 
 export CRTM_FIX_YAML="${PARMgfs}/gdas/atm_crtm_coeff.yaml.j2"
 export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
+export VAR_BKG_STAGING_YAML="${PARMgfs}/gdas/staging/atm_var_bkg.yaml.j2"
+export BERROR_STAGING_YAML="${PARMgfs}/gdas/staging/atm_berror_${STATICB_TYPE}.yaml.j2"
+export FV3ENS_STAGING_YAML="${PARMgfs}/gdas/staging/atm_var_fv3ens.yaml.j2"
 
 export layout_x_atmanl=@LAYOUT_X_ATMANL@
 export layout_y_atmanl=@LAYOUT_Y_ATMANL@

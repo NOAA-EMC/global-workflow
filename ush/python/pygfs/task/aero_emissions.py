@@ -42,7 +42,9 @@ class AerosolEmissions(Task):
         localdict = AttrDict(
             {'variable_used_repeatedly': local_variable}
         )
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **localdict)
+
+        # Extend task_config with localdict
+        self.task_config = AttrDict(**self.task_config, **localdict)
 
     @staticmethod
     @logit(logger)

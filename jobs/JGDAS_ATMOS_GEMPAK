@@ -3,26 +3,16 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
-# TODO (#1219) This j-job is not part of the rocoto suite
-
 ############################################
 # Set up model and cycle specific variables
 ############################################
-
-export fend=09
-export finc=3
-export fstart=00
-export GRIB=pgrb2f
+export model=${model:-gdas}
+export GRIB=${GRIB:-pgrb2f}
 export EXT=""
-export DBN_ALERT_TYPE=GDAS_GEMPAK
+export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GDAS_GEMPAK}
 
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-
-###################################
-# Specify NET and RUN Name and model
-####################################
-export model=${model:-gdas}
 
 ##############################################
 # Define COM directories
@@ -40,26 +30,18 @@ for grid in 0p25 1p00; do
   fi
 done
 
-# TODO: These actions belong in an ex-script not a j-job
-if [[ -f poescript ]]; then
-   rm -f poescript
-fi
+########################################################
+# Execute the script for one degree grib
+########################################################
 
-{
-  ########################################################
-  # Execute the script.
-  echo "${SCRgfs}/exgdas_atmos_nawips.sh 1p00 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_1p00}"
-  ########################################################
+"${SCRgfs}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COM_ATMOS_GEMPAK_1p00}"
 
-  ########################################################
-  # Execute the script for quater-degree grib
-  echo "${SCRgfs}/exgdas_atmos_nawips.sh 0p25 009 GDAS_GEMPAK ${COM_ATMOS_GEMPAK_0p25}"
-  ########################################################
-} > poescript
+########################################################
+# Execute the script for quater-degree grib
+########################################################
 
-cat poescript
+"${SCRgfs}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}"
 
-"${HOMEgfs}/ush/run_mpmd.sh" poescript
 export err=$?; err_chk
 
 ############################################

@@ -59,6 +59,7 @@ local CICE_RUNID="unknown"
 local CICE_USE_RESTART_TIME=${use_restart_time}
 local CICE_RESTART_DIR="./CICE_RESTART/"
 local CICE_RESTART_FILE="cice_model.res"
+local CICE_ICE_IC='cice_model.res.nc'
 local CICE_RESTART_DEFLATE=0
 local CICE_RESTART_CHUNK=0,0
 local CICE_RESTART_STRIDE=-99
@@ -117,6 +118,12 @@ local CICE_NPROC=${ntasks_cice6}
 local CICE_BLCKX=${block_size_x}
 local CICE_BLCKY=${block_size_y}
 local CICE_DECOMP=${processor_shape}
+# ice_prescribed_nml section 
+local CICE_PRESCRIBED="false"
+local MESH_DICE="none"
+local stream_files_dice="none"
+
+
 
 # Ensure the template exists
 local template=${CICE_TEMPLATE:-"${PARMgfs}/ufs/ice_in.IN"}
