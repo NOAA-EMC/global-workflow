@@ -12,7 +12,7 @@ echo "BEGIN: config.com"
 #       declare_from_tmpl [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
 #
 #       options:
-#           -r: Make variable read-only (same as `decalre -r`)
+#           -r: Make variable read-only (same as `declare -r`)
 #           -x: Mark variable for declare -rx (same as `declare -x`)
 #       var1, var2, etc: Variable names whose values will be generated from a template
 #                   and declared
@@ -51,12 +51,12 @@ declare -rx COM_TOP_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
 declare -rx COM_CONF_TMPL=${COM_BASE}'/conf'
 declare -rx COM_OBS_JEDI=${COM_BASE}'/obs_jedi'
 
-declare -rx COM_ATMOS_INPUT_TMPL=${COM_BASE}'/model_data/atmos/input'
-declare -rx COM_ATMOS_RESTART_TMPL=${COM_BASE}'/model_data/atmos/restart'
+declare -rx COM_ATMOS_INPUT_TMPL=${COM_BASE}'/model/atmos/input'
+declare -rx COM_ATMOS_RESTART_TMPL=${COM_BASE}'/model/atmos/restart'
 declare -rx COM_ATMOS_ANALYSIS_TMPL=${COM_BASE}'/analysis/atmos'
 declare -rx COM_SNOW_ANALYSIS_TMPL=${COM_BASE}'/analysis/snow'
-declare -rx COM_ATMOS_HISTORY_TMPL=${COM_BASE}'/model_data/atmos/history'
-declare -rx COM_ATMOS_MASTER_TMPL=${COM_BASE}'/model_data/atmos/master'
+declare -rx COM_ATMOS_HISTORY_TMPL=${COM_BASE}'/model/atmos/history'
+declare -rx COM_ATMOS_MASTER_TMPL=${COM_BASE}'/model/atmos/master'
 declare -rx COM_ATMOS_GRIB_TMPL=${COM_BASE}'/products/atmos/grib2'
 declare -rx COM_ATMOS_GRIB_GRID_TMPL=${COM_ATMOS_GRIB_TMPL}'/${GRID}'
 declare -rx COM_ATMOS_BUFR_TMPL=${COM_BASE}'/products/atmos/bufr'
@@ -70,17 +70,17 @@ declare -rx COM_ATMOS_RADMON_TMPL=${COM_BASE}'/products/atmos/radmon'
 declare -rx COM_ATMOS_MINMON_TMPL=${COM_BASE}'/products/atmos/minmon'
 declare -rx COM_ATMOS_WMO_TMPL=${COM_BASE}'/products/atmos/wmo'
 
-declare -rx COM_WAVE_RESTART_TMPL=${COM_BASE}'/model_data/wave/restart'
-declare -rx COM_WAVE_PREP_TMPL=${COM_BASE}'/model_data/wave/prep'
-declare -rx COM_WAVE_HISTORY_TMPL=${COM_BASE}'/model_data/wave/history'
+declare -rx COM_WAVE_RESTART_TMPL=${COM_BASE}'/model/wave/restart'
+declare -rx COM_WAVE_PREP_TMPL=${COM_BASE}'/model/wave/prep'
+declare -rx COM_WAVE_HISTORY_TMPL=${COM_BASE}'/model/wave/history'
 declare -rx COM_WAVE_GRID_TMPL=${COM_BASE}'/products/wave/gridded'
 declare -rx COM_WAVE_STATION_TMPL=${COM_BASE}'/products/wave/station'
 declare -rx COM_WAVE_GEMPAK_TMPL=${COM_BASE}'/products/wave/gempak'
 declare -rx COM_WAVE_WMO_TMPL=${COM_BASE}'/products/wave/wmo'
 
-declare -rx COM_OCEAN_HISTORY_TMPL=${COM_BASE}'/model_data/ocean/history'
-declare -rx COM_OCEAN_RESTART_TMPL=${COM_BASE}'/model_data/ocean/restart'
-declare -rx COM_OCEAN_INPUT_TMPL=${COM_BASE}'/model_data/ocean/input'
+declare -rx COM_OCEAN_HISTORY_TMPL=${COM_BASE}'/model/ocean/history'
+declare -rx COM_OCEAN_RESTART_TMPL=${COM_BASE}'/model/ocean/restart'
+declare -rx COM_OCEAN_INPUT_TMPL=${COM_BASE}'/model/ocean/input'
 declare -rx COM_OCEAN_ANALYSIS_TMPL=${COM_BASE}'/analysis/ocean'
 declare -rx COM_OCEAN_BMATRIX_TMPL=${COM_BASE}'/bmatrix/ocean'
 declare -rx COM_OCEAN_NETCDF_TMPL=${COM_BASE}'/products/ocean/netcdf'
@@ -89,14 +89,14 @@ declare -rx COM_OCEAN_GRIB_GRID_TMPL=${COM_OCEAN_GRIB_TMPL}'/${GRID}'
 
 declare -rx COM_ICE_ANALYSIS_TMPL=${COM_BASE}'/analysis/ice'
 declare -rx COM_ICE_BMATRIX_TMPL=${COM_BASE}'/bmatrix/ice'
-declare -rx COM_ICE_INPUT_TMPL=${COM_BASE}'/model_data/ice/input'
-declare -rx COM_ICE_HISTORY_TMPL=${COM_BASE}'/model_data/ice/history'
-declare -rx COM_ICE_RESTART_TMPL=${COM_BASE}'/model_data/ice/restart'
+declare -rx COM_ICE_INPUT_TMPL=${COM_BASE}'/model/ice/input'
+declare -rx COM_ICE_HISTORY_TMPL=${COM_BASE}'/model/ice/history'
+declare -rx COM_ICE_RESTART_TMPL=${COM_BASE}'/model/ice/restart'
 declare -rx COM_ICE_NETCDF_TMPL=${COM_BASE}'/products/ice/netcdf'
 declare -rx COM_ICE_GRIB_TMPL=${COM_BASE}'/products/ice/grib2'
 declare -rx COM_ICE_GRIB_GRID_TMPL=${COM_ICE_GRIB_TMPL}'/${GRID}'
 
-declare -rx COM_CHEM_HISTORY_TMPL=${COM_BASE}'/model_data/chem/history'
+declare -rx COM_CHEM_HISTORY_TMPL=${COM_BASE}'/model/chem/history'
 declare -rx COM_CHEM_ANALYSIS_TMPL=${COM_BASE}'/analysis/chem'
 
-declare -rx COM_MED_RESTART_TMPL=${COM_BASE}'/model_data/med/restart'
+declare -rx COM_MED_RESTART_TMPL=${COM_BASE}'/model/med/restart'
