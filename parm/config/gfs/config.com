@@ -69,6 +69,7 @@ declare -rx COM_ATMOS_OZNMON_TMPL=${COM_BASE}'/products/atmos/oznmon'
 declare -rx COM_ATMOS_RADMON_TMPL=${COM_BASE}'/products/atmos/radmon'
 declare -rx COM_ATMOS_MINMON_TMPL=${COM_BASE}'/products/atmos/minmon'
 declare -rx COM_ATMOS_WMO_TMPL=${COM_BASE}'/products/atmos/wmo'
+declare -rx COM_ATMOS_ENSSTAT_TMPL=${COM_TOP_TMPL}'/ensstat/products/atmos/grib2'
 
 declare -rx COM_WAVE_RESTART_TMPL=${COM_BASE}'/model/wave/restart'
 declare -rx COM_WAVE_PREP_TMPL=${COM_BASE}'/model/wave/prep'
