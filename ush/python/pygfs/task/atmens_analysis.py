@@ -219,7 +219,7 @@ class AtmEnsAnalysis(Analysis):
         pass
 
     @logit(logger)
-    def init_observe(self: Analysis) -> None:
+    def init_observer(self: Analysis) -> None:
         # Setup JEDI YAML file
         jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
         jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
@@ -233,7 +233,7 @@ class AtmEnsAnalysis(Analysis):
         logger.info(f"Wrote ensemble da observer YAML to: {self.task_config.jedi_yaml}")
 
     @logit(logger)
-    def init_solve(self: Analysis) -> None:
+    def init_solver(self: Analysis) -> None:
         # Setup JEDI YAML file
         jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
         jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
