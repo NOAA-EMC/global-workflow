@@ -35,7 +35,7 @@ case ${step} in
     ;;
 
   "upp")
-    if [[ "${CASE}" == "C768" ]]; then
+    if (( "${CASE:1}" >= 768 )); then
        # Run fewer tasks per node for memory
        tasks_per_node=20
     fi
