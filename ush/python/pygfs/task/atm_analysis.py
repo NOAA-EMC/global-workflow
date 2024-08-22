@@ -76,7 +76,7 @@ class AtmAnalysis(Task):
 
         Parameters
         ----------
-        None                                                                                                                                  
+        None
 
         Returns
         ----------
@@ -162,7 +162,7 @@ class AtmAnalysis(Task):
 
         Parameters
         ----------
-        None                                                                                                                                  
+        None
 
         Returns
         ----------
@@ -222,7 +222,7 @@ class AtmAnalysis(Task):
 
         Parameters
         ----------
-        None                                                                                                                                  
+        None
 
         Returns
         ----------
