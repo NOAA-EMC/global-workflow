@@ -272,7 +272,7 @@ case ${step} in
     export walltime_gefs="00:30:00"
     export ntasks_gefs=1
     export threads_per_task_gefs=1
-    export tasks_per_node_gefs="${ntasks}"
+    export tasks_per_node_gefs="${ntasks_gefs}"
     export walltime_gfs="${walltime_gefs}"
     export ntasks_gfs="${ntasks_gefs}"
     export threads_per_tasks_gfs="${threads_per_task_gefs}"
