@@ -10,13 +10,16 @@
 
 # test files
 {% if RUN == "gefs" %}
-    {% set atmos_files = [] %}
-    {% if path_exists(ROTDIR ~ "/gefs." ~ cycle_YMD ~ "12/ensstat/products/atmos/grib2/1p00") %}
-        {% do atmos_files.append([ROTDIR ~ "/gefs." ~ cycle_YMD ~
-         ~ "12/ensstat/products/atmos/grib2/1p00/gefs.t12z.mean.pres_.0p50.f000.grib2.idx", GEFS_ARCH]) %}
+    {% set ensstat_files = [] %}
+    {% if path_exists(COMIN_ATMOS_GRIB_1p00) %}
+        {% for fhr in range(FHMIN_GFS, FHMIN_GFS + FHOUT_GFS, FHMAX_GFS) %}
+            {% do ensstat_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "mean.pres_." ~ "/" ~
+                                        grid ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2",
+                                        GEFS_ARCH]) %}
+        {% endfor %}
     {% endif %}
 {% endif %}
-{% set file_set = atmos_files %}
+{% set file_set = ensstat_files %}
 # Actually write the yaml
 mkdir:
     - "{{ GEFS_ARCH }}"
