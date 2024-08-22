@@ -223,7 +223,7 @@ class AtmEnsAnalysis(Analysis):
         # Setup JEDI YAML file
         jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
         jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
-        jcb_config = {**jcb_config, **jcb_algo_config}
+        jcb_config.update(jcb_algo_config)
         jedi_config = render(jcb_config)
 
         self.task_config.jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens_observer.yaml")
@@ -237,7 +237,7 @@ class AtmEnsAnalysis(Analysis):
         # Setup JEDI YAML file
         jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
         jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
-        jcb_config = {**jcb_config, **jcb_algo_config}
+        jcb_config.update(jcb_algo_config)
         jedi_config = render(jcb_config)
 
         self.task_config.jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens_solver.yaml")
