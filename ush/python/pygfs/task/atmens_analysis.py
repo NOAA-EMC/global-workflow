@@ -108,10 +108,10 @@ class AtmEnsAnalysis(Analysis):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def observer(self: Analysis) -> None:
-        """Execute a global atmens analysis observer
+    def observe(self: Analysis) -> None:
+        """Execute a global atmens analysis in observer mode
 
-        This method will execute a global atmens analysis observer using JEDI.
+        This method will execute a global atmens analysis in observer mode using JEDI.
         This includes:
         - changing to the run directory
         - running the global atmens analysis executable in observer mode
@@ -145,10 +145,10 @@ class AtmEnsAnalysis(Analysis):
         pass
 
     @logit(logger)
-    def solver(self: Analysis) -> None:
-        """Execute a global atmens analysis solver
+    def solve(self: Analysis) -> None:
+        """Execute a global atmens analysis in solver mode
 
-        This method will execute a global atmens analysis solver using JEDI.
+        This method will execute a global atmens analysis in solver mode using JEDI.
         This includes:
         - changing to the run directory
         - running the global atmens analysis executable in solver mode
@@ -219,7 +219,7 @@ class AtmEnsAnalysis(Analysis):
         pass
 
     @logit(logger)
-    def init_observer(self: Analysis) -> None:
+    def init_observe(self: Analysis) -> None:
         # Setup JEDI YAML file
         jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
         jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
@@ -233,7 +233,7 @@ class AtmEnsAnalysis(Analysis):
         logger.info(f"Wrote ensemble da observer YAML to: {self.task_config.jedi_yaml}")
 
     @logit(logger)
-    def init_solver(self: Analysis) -> None:
+    def init_solve(self: Analysis) -> None:
         # Setup JEDI YAML file
         jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
         jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
