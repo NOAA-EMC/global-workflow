@@ -76,7 +76,8 @@ class AtmAnalysis(Task):
 
         Parameters
         ----------
-        None                                                                                                                                               
+        None                                                                                                                                  
+
         Returns
         ----------
         None
@@ -161,7 +162,8 @@ class AtmAnalysis(Task):
 
         Parameters
         ----------
-        None                                                                                                                                               
+        None                                                                                                                                  
+
         Returns
         ----------
         None
@@ -205,7 +207,7 @@ class AtmAnalysis(Task):
             logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
         else:
             logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
-            
+
         self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
 
     @logit(logger)
@@ -220,7 +222,8 @@ class AtmAnalysis(Task):
 
         Parameters
         ----------
-        None                                                                                                                                               
+        None                                                                                                                                  
+
         Returns
         ----------
         None
