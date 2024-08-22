@@ -78,14 +78,9 @@ class GEFSAppConfig(AppConfig):
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
 
-<<<<<<< HEAD
-
-        return {f"{self._base['CDUMP']}": tasks}
-=======
         if self.do_extractvars:
             tasks += ['extractvars']
 
         tasks += ['arch']
 
         return {f"{self._base['RUN']}": tasks}
->>>>>>> EMC/develop
