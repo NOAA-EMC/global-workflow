@@ -11,9 +11,9 @@
 # test files
 {% if RUN == "gefs" %}
     {% set ensstat_files = [] %}
-    {% if path_exists(COMIN_ATMOS_GRIB_1p00) %}
+    {% if path_exists(COMIN_ATMOS_ENSSTAT_1p00) %}
         {% for fhr in range(FHMIN_GFS, FHMIN_GFS + FHOUT_GFS, FHMAX_GFS) %}
-            {% do ensstat_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "mean.pres_." ~ "/" ~
+            {% do ensstat_files.append([COMIN_ATMOS_ENSSTAT_1p00 ~ "/" ~ head ~ "mean.pres_." ~ "/" ~
                                         grid ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2",
                                         GEFS_ARCH]) %}
         {% endfor %}
