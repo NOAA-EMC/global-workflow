@@ -99,7 +99,6 @@ class JEDI:
         exec_cmd.add_default_arg(self.yaml)
 
         try:
-            logger.debug(f"Executing {exec_cmd}")
             exec_cmd()
         except OSError:
             raise OSError(f"Failed to execute {exec_cmd}")

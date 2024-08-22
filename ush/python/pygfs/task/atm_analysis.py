@@ -65,6 +65,7 @@ class AtmAnalysis(Task):
         This method will initialize a global atm analysis using JEDI.
         This includes:
         - generating and saving JEDI YAML config
+        - linking the JEDI executable
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -72,6 +73,13 @@ class AtmAnalysis(Task):
         - staging B error files
         - staging model backgrounds
         - creating output directories
+
+        Parameters
+        ----------
+        None                                                                                                                                               
+        Returns
+        ----------
+        None
         """
         super().initialize()
 
@@ -84,7 +92,7 @@ class AtmAnalysis(Task):
         logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
         save_as_yaml(self.jedi.config, self.jedi.yaml)
 
-        # link JEDI variational executable
+        # link JEDI executable
         logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
 
@@ -144,6 +152,20 @@ class AtmAnalysis(Task):
 
     @logit(logger)
     def initialize_fv3inc(self):
+        """Initialize FV3 increment converter
+
+        This method will initialize a global atm analysis using JEDI.
+        This includes:
+        - generating and saving JEDI YAML config
+        - linking the JEDI executable
+
+        Parameters
+        ----------
+        None                                                                                                                                               
+        Returns
+        ----------
+        None
+        """
         super().initialize()
 
         # get JEDI-to-FV3 increment converter config and save to YAML file
@@ -155,14 +177,35 @@ class AtmAnalysis(Task):
         logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
         save_as_yaml(self.jedi.config, self.jedi.yaml)
 
-        # link JEDI-to-FV3 increment converter executable
+        # link JEDI executable
         logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
 
     @logit(logger)
     def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
+        """Run JEDI executable
+
+        This method will run the JEDI executable for the global atm analysis
+        or FV3 increment converter
+
+        Parameters
+        ----------
+        aprun_cmd : str
+           Run command for JEDI application on HPC system
+        jedi_args : List
+           List of additional optional arguments for JEDI application
+
+        Returns
+        ----------
+        None
+        """
         super().execute()
 
+        if jedi_args:
+            logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
+        else:
+            logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
+            
         self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
 
     @logit(logger)
@@ -174,6 +217,13 @@ class AtmAnalysis(Task):
         - tar output diag files and place in ROTDIR
         - copy the generated YAML file from initialize to the ROTDIR
         - copy the updated bias correction files to ROTDIR
+
+        Parameters
+        ----------
+        None                                                                                                                                               
+        Returns
+        ----------
+        None
         """
         super().finalize()
 

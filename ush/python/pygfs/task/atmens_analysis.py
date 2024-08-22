@@ -135,6 +135,23 @@ class AtmEnsAnalysis(Task):
 
     @logit(logger)
     def initialize_fv3inc(self):
+        """Initialize FV3 increment converter
+
+        This method will initialize a global atmens analysis using JEDI.
+        This includes:
+        - generating and saving JEDI YAML config
+        - linking the JEDI executable
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        super().initialize()
+        
         # get JEDI-to-FV3 increment converter config and save to YAML file
         logger.info(f"Generating JEDI config: {self.jedi.yaml}")
         self.jedi.set_config(self.task_config)
@@ -150,7 +167,27 @@ class AtmEnsAnalysis(Task):
 
     @logit(logger)
     def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
+        """Run JEDI executable
+
+        This method will run the JEDI executable for either the global atm analysis
+        or FV3 increment converter
+
+        Parameters
+        ----------
+        aprun_cmd : str
+           Run command for JEDI application on HPC system
+        jedi_args : List
+           List of additional optional arguments for JEDI application
+        Returns
+        ----------
+        None
+        """
         super().execute()
+
+        if jedi_args:
+            logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
+        else:
+            logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
 
         self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
 
@@ -165,7 +202,7 @@ class AtmEnsAnalysis(Task):
 
         Parameters
         ----------
-        Analysis: parent class for GDAS task
+        None
 
         Returns
         ----------
