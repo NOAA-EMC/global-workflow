@@ -636,14 +636,6 @@ CICE_predet(){
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
-  if (( $(( ( cyc + FHMIN ) % FHOUT_ICE )) == 0 )); then
-    CICE_cdoavg=0 # Indicate that no averging needs to be done later
-  else
-    FHOUT_ICE_BASE=${FHOUT_ICE}
-    FHOUT_ICE=6
-    FHOUTS_ICE=$(( FHOUT_ICE_BASE / FHOUT_ICE ))
-    CICE_cdoavg=1 # Indicate that averging needs to be done later
-  fi
   # shellcheck disable=SC2312
   mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
 
