@@ -34,9 +34,9 @@ cd "${DATA}" || exit 1
       ${WGRIB2} "${infile}" | grep ":NCPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp
       ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null
 
-      ${WGRIB2} "${infile}" | grep ":HCDC:high cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "$(oufile}">/dev/null
-      ${WGRIB2} "${infile}" | grep ":MCDC:middle cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "$(oufile}">/dev/null
-      ${WGRIB2} "${infile}"| grep ":LCDC:low cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "$(oufile}">/dev/null
+      ${WGRIB2} "${infile}" | grep ":HCDC:high cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
+      ${WGRIB2} "${infile}" | grep ":MCDC:middle cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
+      ${WGRIB2} "${infile}" | grep ":LCDC:low cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
 
       rm tmp
    else
