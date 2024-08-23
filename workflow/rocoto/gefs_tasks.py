@@ -169,7 +169,6 @@ class GEFSTasks(Tasks):
 
         return task
 
-                     
     def atmos_prod(self):
         return self._atmosoceaniceprod('atmos')
 
