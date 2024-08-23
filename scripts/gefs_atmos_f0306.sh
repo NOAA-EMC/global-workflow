@@ -22,7 +22,7 @@ cd "${DATA}" || exit 1
       infile=${COMIN_00and03}/GFSPRS.GrbF03
       if [[ -f "${infile}" ]]; then #check if input file exists before extraction
 
-      ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp || exit
+      ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp ||true
       ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null
  
       ${WGRIB2} "${infile}" | grep ":APCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp
@@ -148,7 +148,7 @@ cd "${DATA}" || exit 1
 
 #   cd $DATA
 
-   "$exec_dir/$sorc_name" >sorc_name.exe.out
+   "${exec_dir}/${sorc_name}" >sorc_name.exe.out
    cat sorc_name.exe.out
 
 #output f06
