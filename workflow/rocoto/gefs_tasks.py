@@ -182,8 +182,7 @@ class GEFSTasks(Tasks):
                                  }
 
         for key, value in repairf0306envar_dict.items():
-                        repairf0306_envars.append(rocoto.create_envar(name=key, value=str(value)))
- 
+            repairf0306_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('repairf0306')
         task_name = f'repairf0306_mem#member#'
@@ -206,7 +205,7 @@ class GEFSTasks(Tasks):
 
         task = rocoto.create_task(member_metatask_dict)
 
-        return task      
+        return task
 
     def efcs(self):
         dependencies = []
@@ -247,14 +246,11 @@ class GEFSTasks(Tasks):
         member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(1, self.nmem + 1)])}
         metatask_dict = {'task_name': 'fcst_ens',
                          'var_dict': member_var_dict,
-                         'task_dict': task_dict
-                        }
+                         'task_dict': task_dict}
 
         task = rocoto.create_task(metatask_dict)
 
         return task
-
-
 
     def ocean_prod(self):
         return self._atmosoceaniceprod('ocean')
@@ -276,7 +272,6 @@ class GEFSTasks(Tasks):
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
                                  'history_file_tmpl': f'{self.cdump}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
-
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -308,7 +303,6 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'data', 'data': data2, 'age': 120}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
-
 
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
