@@ -1,7 +1,7 @@
 #!/bin/ksh
 
 set -xa
-cdate=$1
+#cdate=$1
 DATA=$2
 
 #foutmax=6 #last lead hour to extract 
@@ -22,7 +22,7 @@ cd "${DATA}" || exit 1
       infile=${COMIN_00and03}/GFSPRS.GrbF03
       if [[ -f "${infile}" ]]; then #check if input file exists before extraction
 
-      ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp
+      ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp || exit
       ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null
  
       ${WGRIB2} "${infile}" | grep ":APCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp
@@ -44,7 +44,7 @@ cd "${DATA}" || exit 1
    fi 
 
       infile=${COMIN_00and03}/GFSFLX.GrbF03
-      if [ -f "${infile}" ]; then #check if input file exists before extraction
+      if [[ -f "${infile}" ]]; then #check if input file exists before extraction
         ${WGRIB2} "${infile}" | grep "WATR" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
         ${WGRIB2} "${infile}" | grep "SNOWC" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
         ${WGRIB2} "${infile}" | grep "SNOHF" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
@@ -92,10 +92,10 @@ cd "${DATA}" || exit 1
     infile=${COMIN_master}/gefs.t00z.master.grb2f${fnh}
     oufile=${DATA}/gefs.t00z.master.grb2f${fnh}
 
-   if [ -f "${infile}" ]; then #check if input file exists before extraction
+   if [[ -f "${infile}" ]]; then #check if input file exists before extraction
 #    rm -f ${outfile}/gefs.t00z.master.grb2f${fnh}  #remove outfile if it already exists before extraction
     ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp
-    ${WGRIB2} tmp -for "2:2" -append -grib  $oufile>/dev/null
+    ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null
     ${WGRIB2} "${infile}" | grep "WATR" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
     ${WGRIB2} "${infile}" | grep "SNOWC" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
     ${WGRIB2} "${infile}" | grep "SNOHF" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
@@ -142,13 +142,13 @@ cd "${DATA}" || exit 1
     echo "${infile} does not exist"
    fi
 
- export exec_dir=$EXECacc
- export sorc_dir=$SORCacc
+ export exec_dir=${EXECacc}
+ export sorc_dir=${SORCacc}
  export sorc_name=gefs_6h_ave_1mem
 
 #   cd $DATA
 
-   $exec_dir/$sorc_name >sorc_name.exe.out
+   "$exec_dir/$sorc_name" >sorc_name.exe.out
    cat sorc_name.exe.out
 
 #output f06
@@ -161,11 +161,11 @@ cd "${DATA}" || exit 1
    
    cat out1.grb2 gefs.t00z.pgrb2af006 TSNOWP1.dat > out2.grb
 
-   mv ${COMIN_master}/gefs.t00z.master.grb2f006 ${COMIN_master}/gefs.t00z.master.grb2f006_org
-   mv ${COMIN_master}/gefs.t00z.master.grb2if006 ${COMIN_master}/gefs.t00z.master.grb2if006_org
+   mv "${COMIN_master}/gefs.t00z.master.grb2f006" "${COMIN_master}/gefs.t00z.master.grb2f006_org"
+   mv "${COMIN_master}/gefs.t00z.master.grb2if006" "${COMIN_master}/gefs.t00z.master.grb2if006_org"
 
-   mv out2.grb ${COMIN_master}/gefs.t00z.master.grb2f006
-   $GRB2INDEX ${COMIN_master}/gefs.t00z.master.grb2f006  ${COMIN_master}/gefs.t00z.master.grb2if006
+   mv out2.grb "${COMIN_master}/gefs.t00z.master.grb2f006"
+   ${GRB2INDEX} "${COMIN_master}/gefs.t00z.master.grb2f006"  "${COMIN_master}/gefs.t00z.master.grb2if006"
 
    rm -fr out1.grb2 out2.grb TSNOWP*.dat
 
@@ -181,11 +181,11 @@ cd "${DATA}" || exit 1
    ${WGRIB2}   out1.grb -set_ftime "3 hour fcst" -grib out2.grb
    cat out2.grb gefs.t00z.pgrb2af003 TSNOWP1.dat > out3.grb
 
-   mv ${COMIN_master}/gefs.t00z.master.grb2f003 ${COMIN_master}/gefs.t00z.master.grb2f003_org
-   mv ${COMIN_master}/gefs.t00z.master.grb2if003 ${COMIN_master}/gefs.t00z.master.grb2if003_org
+   mv "${COMIN_master}/gefs.t00z.master.grb2f003" "${COMIN_master}/gefs.t00z.master.grb2f003_org"
+   mv "${COMIN_master}/gefs.t00z.master.grb2if003" "${COMIN_master}/gefs.t00z.master.grb2if003_org"
 
-   mv out3.grb ${COMIN_master}/gefs.t00z.master.grb2f003
-   $GRB2INDEX ${COMIN_master}/gefs.t00z.master.grb2f003  ${COMIN_master}/gefs.t00z.master.grb2if003
+   mv out3.grb "${COMIN_master}/gefs.t00z.master.grb2f003"
+   ${GRB2INDEX} "${COMIN_master}/gefs.t00z.master.grb2f003"  "${COMIN_master}/gefs.t00z.master.grb2if003"
 
    rm -fr out.grb out1.grb out2.grb
 
