@@ -209,6 +209,7 @@ case ${imp_physics} in
         export dt_inner=$((DELTIM/2))
         export sedi_semi=.true.
         if [[ "${sedi_semi}" == .true. ]]; then export dt_inner=${DELTIM} ; fi
+        if [[ dt_inner -gt 300 ]]; then export  dt_inner=300; fi
         export decfl=10
 
         export hord_mt_nh_nonmono=5
