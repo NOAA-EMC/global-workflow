@@ -94,7 +94,7 @@ cd "${DATA}" || exit 1
 
    if [[ -f "${infile}" ]]; then #check if input file exists before extraction
 #    rm -f ${outfile}/gefs.t00z.master.grb2f${fnh}  #remove outfile if it already exists before extraction
-    ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp
+    ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp || true
     ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null || true
     ${WGRIB2} "${infile}" | grep "WATR" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
     ${WGRIB2} "${infile}" | grep "SNOWC" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
@@ -154,7 +154,7 @@ cd "${DATA}" || exit 1
 #output f06
    infile=${COMIN_master}/gefs.t00z.master.grb2f006
 
-    ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib TSNOWP2.dat
+    ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib TSNOWP2.dat || true
     ${WGRIB2}  TSNOWP2.dat -for "1:1" -append -grib  TSNOWP1.dat >/dev/null || true
 
    ${WGRIB2} "${infile}" -not "(ULWRF|USWRF)" -not "(TSNOWP|DLWRF|DSWRF|UFLX|VFLX|SHTFL|LHTFL|PRATE|CPRAT|ALBDO|GFLUX|U-GWD|V-GWD)" -not "TCDC:(entire|boundary)" -not "HCDC:high cloud layer:0-6" -not "LCDC:low cloud layer:0-6" -not "MCDC:middle cloud layer:0-6" -not "(APCP|ACPCP|NCPCP)" -not "(TMIN|TMAX|DUVB|CDUVB|CWORK|SNOHF|SNOWC|WATR)" -not "(TMP:middle cloud top|TMP:low cloud top|TMP:high cloud top)" -not "(PRES:high cloud top|PRES:middle cloud top|PRES:low cloud top|PRES:high cloud bottom|PRES:middle cloud bottom|PRES:low cloud bottom)" -grib out1.grb2
@@ -172,7 +172,7 @@ cd "${DATA}" || exit 1
 #output f03
    infile=${COMIN_master}/gefs.t00z.master.grb2f003
 #
-    ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib TSNOWP2.dat
+    ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib TSNOWP2.dat || true
     ${WGRIB2}  TSNOWP2.dat -for "1:1" -grib  out.grb >/dev/null || true
     ${WGRIB2}   out.grb -set_ftime "0-3 hour acc fcst" -grib TSNOWP1.dat 
 
