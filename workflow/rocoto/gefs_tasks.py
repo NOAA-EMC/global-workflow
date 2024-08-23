@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 
 class GEFSTasks(Tasks):
 
-    def __init__(self, app_config: AppConfig, cdump: str) -> None:
-        super().__init__(app_config, cdump)
+    def __init__(self, app_config: AppConfig, run: str) -> None:
+        super().__init__(app_config, run)
 
     def stage_ic(self):
         cpl_ic = self._configs['stage_ic']
@@ -138,22 +138,38 @@ class GEFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
+        num_fcst_segments = len(self.app_config.fcst_segments) - 1
+
+        fcst_vars = self.envars.copy()
+        fcst_envars_dict = {'FCST_SEGMENT': '#seg#'}
+        for key, value in fcst_envars_dict.items():
+            fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('fcst')
-        task_name = f'fcst_mem000'
+        task_name = f'fcst_mem000_seg#seg#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': fcst_vars,
                      'cycledef': 'gefs',
                      'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
-        task = rocoto.create_task(task_dict)
+
+        seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+        metatask_dict = {'task_name': f'fcst_mem000',
+                         'is_serial': True,
+                         'var_dict': seg_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
+                     
     def atmos_prod(self):
         return self._atmosoceaniceprod('atmos')
 
@@ -222,35 +238,63 @@ class GEFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
-        efcsenvars = self.envars.copy()
-        efcsenvars_dict = {'ENSMEM': '#member#',
-                           'MEMDIR': 'mem#member#'
-                           }
-        for key, value in efcsenvars_dict.items():
-            efcsenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
+        num_fcst_segments = len(self.app_config.fcst_segments) - 1
         resources = self.get_resource('efcs')
 
-        task_name = f'fcst_mem#member#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': efcsenvars,
-                     'cycledef': 'gefs',
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
+        # Kludge to work around bug in rocoto with serial metatasks nested
+        #   in a parallel one (see christopherwharrop/rocoto#109). For now,
+        #   loop over member to create a separate metatask for each instead
+        #   of a metatask of a metatask.
+        #
+        tasks = []
+        for member in [f"{mem:03d}" for mem in range(1, self.nmem + 1)]:
 
-        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(1, self.nmem + 1)])}
-        metatask_dict = {'task_name': 'fcst_ens',
-                         'var_dict': member_var_dict,
-                         'task_dict': task_dict}
+            efcsenvars = self.envars.copy()
+            efcsenvars_dict = {'ENSMEM': f'{member}',
+                               'MEMDIR': f'mem{member}',
+                               'FCST_SEGMENT': '#seg#'
+                               }
+            for key, value in efcsenvars_dict.items():
+                efcsenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        task = rocoto.create_task(metatask_dict)
+            task_name = f'fcst_mem{member}_seg#seg#'
+            task_dict = {'task_name': task_name,
+                         'resources': resources,
+                         'dependency': dependencies,
+                         'envars': efcsenvars,
+                         'cycledef': 'gefs',
+                         'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
+                         'job_name': f'{self.pslot}_{task_name}_@H',
+                         'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                         'maxtries': '&MAXTRIES;'
+                         }
 
-        return task
+            seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+            seg_metatask_dict = {'task_name': f'fcst_mem{member}',
+                                 'is_serial': True,
+                                 'var_dict': seg_var_dict,
+                                 'task_dict': task_dict
+                                 }
+
+            tasks.append(rocoto.create_task(seg_metatask_dict))
+
+        return '\n'.join(tasks)
+
+        # Keeping this in hopes the kludge is no longer necessary at some point
+        #
+        # member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(1, self.nmem + 1)])}
+        # mem_metatask_dict = {'task_name': 'fcst_ens',
+        #                      'is_serial': False,
+        #                      'var_dict': member_var_dict,
+        #                      'task_dict': seg_metatask_dict
+        #                      }
+
+        # task = rocoto.create_task(mem_metatask_dict)
+
+        # return task
+
+    def atmos_prod(self):
+        return self._atmosoceaniceprod('atmos')
 
     def ocean_prod(self):
         return self._atmosoceaniceprod('ocean')
@@ -264,14 +308,13 @@ class GEFSTasks(Tasks):
         fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f#fhr#',
-                                   'history_file_tmp2': f'{self.cdump}.t@Hz.master.grb2f006_org'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr#.nc'},
+                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr_next#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.cdump}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -286,28 +329,23 @@ class GEFSTasks(Tasks):
         if component in ['ocean']:
             dep_dict = {'type': 'data', 'data': data, 'age': 120}
             deps.append(rocoto.add_dependency(dep_dict))
-            command = f"{self.HOMEgfs}/ush/check_netcdf.sh {history_path}/{history_file_tmpl}"
-            dep_dict = {'type': 'sh', 'command': command}
+            dep_dict = {'type': 'metatask', 'name': 'fcst_mem#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+            dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
         elif component in ['ice']:
             command = f"{self.HOMEgfs}/ush/check_ice_netcdf.sh @Y @m @d @H #fhr# &ROTDIR; #member# {fhout_ice_gfs}"
             dep_dict = {'type': 'sh', 'command': command}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
         else:
-            history_file_tmp2 = component_dict['history_file_tmp2']
-            data2 = f'{history_path}/{history_file_tmp2}'
             dep_dict = {'type': 'data', 'data': data, 'age': 120}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'data', 'data': data2, 'age': 120}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+            dependencies = rocoto.create_dependency(dep=deps)
 
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
-                          'FHRLST': '#fhr#',
+                          'FHR3': '#fhr#',
                           'COMPONENT': component}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
@@ -325,11 +363,19 @@ class GEFSTasks(Tasks):
 
         fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
 
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs[config]['REPLAY_ICS']
+        if is_replay and component in ['atmos'] and 0 in fhrs:
+            fhrs.remove(0)
+
         # ocean/ice components do not have fhr 0 as they are averaged output
         if component in ['ocean', 'ice'] and 0 in fhrs:
             fhrs.remove(0)
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+        if component in ['ocean']:
+            fhrs_next = fhrs[1:] + [fhrs[-1] + (fhrs[-1] - fhrs[-2])]
+            fhr_var_dict['fhr_next'] = ' '.join([f"{fhr:03d}" for fhr in fhrs_next])
 
         fhr_metatask_dict = {'task_name': f'{component}_prod_#member#',
                              'task_dict': task_dict,
@@ -357,7 +403,7 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHRLST': '#fhr#'}
+        postenvar_dict = {'FHR3': '#fhr#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -373,6 +419,12 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'}
 
         fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
+        if is_replay and 0 in fhrs:
+            fhrs.remove(0)
+
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'atmos_ensstat',
@@ -425,7 +477,7 @@ class GEFSTasks(Tasks):
 
     def wavepostbndpnt(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -466,11 +518,11 @@ class GEFSTasks(Tasks):
         # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
         last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
 
-        data = f'{atmos_hist_path}/{self.cdump}.t@Hz.atm.logf{last_fhr:03d}.txt'
+        data = f'{atmos_hist_path}/{self.run}.t@Hz.atm.logf{last_fhr:03d}.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
 
-        dep_dict = {'type': 'task', 'name': f'fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -506,7 +558,7 @@ class GEFSTasks(Tasks):
 
     def wavepostpnt(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave_bnd:
             dep_dict = {'type': 'task', 'name': f'wave_post_bndpnt_bull_mem#member#'}
@@ -540,5 +592,91 @@ class GEFSTasks(Tasks):
                                 }
 
         task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
+    def extractvars(self):
+        deps = []
+        if self.app_config.do_wave:
+            dep_dict = {'type': 'task', 'name': 'wave_post_grid_mem#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ocean:
+            dep_dict = {'type': 'metatask', 'name': 'ocean_prod_#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ice:
+            dep_dict = {'type': 'metatask', 'name': 'ice_prod_#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_atm:
+            dep_dict = {'type': 'metatask', 'name': 'atmos_prod_#member#'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        extractvars_envars = self.envars.copy()
+        extractvars_dict = {'ENSMEM': '#member#',
+                            'MEMDIR': 'mem#member#',
+                            }
+        for key, value in extractvars_dict.items():
+            extractvars_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('extractvars')
+        task_name = f'extractvars_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': extractvars_envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/extractvars.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': 'extractvars',
+                                'task_dict': task_dict,
+                                'var_dict': member_var_dict
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
+    def arch(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'atmos_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'atmos_ensstat'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ice:
+            dep_dict = {'type': 'metatask', 'name': 'ice_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_ocean:
+            dep_dict = {'type': 'metatask', 'name': 'ocean_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_wave:
+            dep_dict = {'type': 'metatask', 'name': 'wave_post_grid'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': 'wave_post_pnt'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.app_config.do_wave_bnd:
+                dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
+                deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        resources = self.get_resource('arch')
+        task_name = 'arch'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_test.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
 
         return task
