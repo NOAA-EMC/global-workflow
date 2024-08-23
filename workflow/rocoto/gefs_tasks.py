@@ -178,7 +178,7 @@ class GEFSTasks(Tasks):
 
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.cdump}.t@Hz.master.grb2f006'}}
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f006'}}
         component_dict = products_dict['atmos']
         config = component_dict['config']
         history_path_tmpl = component_dict['history_path_tmpl']

@@ -78,11 +78,11 @@ case ${step} in
     ;;
 
   "repairf0306")
-    export wtime_repairf0306="00:10:00"
-    export npe_repairf0306=1
-    export nth_repairf0306=1
-    export npe_node_repairf0306=$(( npe_node_max / nth_repairf0306 ))
-    export memory_repairf0306="2GB"
+    export walltime="00:10:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export memory="2GB"
     ;;
 
   "fcst" | "efcs")
