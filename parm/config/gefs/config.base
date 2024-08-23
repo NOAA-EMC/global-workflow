@@ -345,4 +345,12 @@ export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arc
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
 
+# The tracker, genesis, and METplus jobs are not supported on CSPs yet
+# TODO: we should place these in workflow/hosts/[csp]pw.yaml as part of AWS/AZURE/GOOGLE setup, not for general.
+if [[ "${machine}" =~ "PW" ]]; then
+   export DO_TRACKER="NO"
+   export DO_GENESIS="NO"
+   export DO_METP="NO"
+fi
+
 echo "END: config.base"
