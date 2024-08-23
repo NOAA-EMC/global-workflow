@@ -23,20 +23,20 @@ cd "${DATA}" || exit 1
       if [[ -f "${infile}" ]]; then #check if input file exists before extraction
 
       ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp ||true
-      ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null
+      ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null || true 
  
-      ${WGRIB2} "${infile}" | grep ":APCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp
-      ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null
+      ${WGRIB2} "${infile}" | grep ":APCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp ||true
+      ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || true
 
-      ${WGRIB2} "${infile}" | grep ":ACPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp
-      ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null
+      ${WGRIB2} "${infile}" | grep ":ACPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp ||true
+      ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || true
 
-      ${WGRIB2} "${infile}" | grep ":NCPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp
-      ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null
+      ${WGRIB2} "${infile}" | grep ":NCPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp ||true
+      ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || true
 
-      ${WGRIB2} "${infile}" | grep ":HCDC:high cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-      ${WGRIB2} "${infile}" | grep ":MCDC:middle cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-      ${WGRIB2} "${infile}" | grep ":LCDC:low cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
+      ${WGRIB2} "${infile}" | grep ":HCDC:high cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+      ${WGRIB2} "${infile}" | grep ":MCDC:middle cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+      ${WGRIB2} "${infile}" | grep ":LCDC:low cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
 
       rm tmp
    else
@@ -45,41 +45,41 @@ cd "${DATA}" || exit 1
 
       infile=${COMIN_00and03}/GFSFLX.GrbF03
       if [[ -f "${infile}" ]]; then #check if input file exists before extraction
-        ${WGRIB2} "${infile}" | grep "WATR" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "SNOWC" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "SNOHF" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":DLWRF:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":ULWRF:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":DSWRF:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":USWRF:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":USWRF:top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":ULWRF:top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":UFLX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":VFLX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":SHTFL:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":LHTFL:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":PRATE:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":CPRAT:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":ALBDO:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":TCDC:entire" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":TCDC:boundary" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":GFLUX:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":U-GWD:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep ":V-GWD:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "TMP:middle cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "TMP:low cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "TMP:high cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "PRES:high cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "PRES:middle cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "PRES:low cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "PRES:high cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "PRES:middle cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "PRES:low cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "CWORK" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "DUVB" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "CDUVB" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "TMAX" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-        ${WGRIB2} "${infile}" | grep "TMIN" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
+        ${WGRIB2} "${infile}" | grep "WATR" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "SNOWC" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "SNOHF" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":DLWRF:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":ULWRF:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":DSWRF:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":USWRF:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":USWRF:top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":ULWRF:top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":UFLX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":VFLX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":SHTFL:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":LHTFL:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":PRATE:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":CPRAT:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":ALBDO:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":TCDC:entire" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":TCDC:boundary" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":GFLUX:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":U-GWD:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep ":V-GWD:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "TMP:middle cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "TMP:low cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "TMP:high cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "PRES:high cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "PRES:middle cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "PRES:low cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "PRES:high cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "PRES:middle cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "PRES:low cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "CWORK" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "DUVB" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "CDUVB" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "TMAX" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+        ${WGRIB2} "${infile}" | grep "TMIN" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
       else
         echo "${infile} does not exist"
       fi 
@@ -95,48 +95,48 @@ cd "${DATA}" || exit 1
    if [[ -f "${infile}" ]]; then #check if input file exists before extraction
 #    rm -f ${outfile}/gefs.t00z.master.grb2f${fnh}  #remove outfile if it already exists before extraction
     ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp
-    ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "WATR" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "SNOWC" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "SNOHF" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":DLWRF:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":ULWRF:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":DSWRF:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":USWRF:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":USWRF:top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":ULWRF:top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":UFLX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":VFLX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":SHTFL:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":LHTFL:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":PRATE:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":CPRAT:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":ALBDO:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":TCDC:entire" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":TCDC:boundary" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":HCDC:high cloud layer:0-6" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":MCDC:middle cloud layer:0-6" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":LCDC:low cloud layer:0-6" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":GFLUX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":U-GWD:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":V-GWD:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":APCP:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":ACPCP:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep ":NCPCP:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "TMP:middle cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "TMP:low cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "TMP:high cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "PRES:high cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "PRES:middle cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "PRES:low cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "PRES:high cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "PRES:middle cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "PRES:low cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "CWORK" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "DUVB" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "CDUVB" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "TMAX" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
-    ${WGRIB2} "${infile}" | grep "TMIN" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null
+    ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "WATR" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "SNOWC" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "SNOHF" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":DLWRF:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":ULWRF:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":DSWRF:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":USWRF:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":USWRF:top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":ULWRF:top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":UFLX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":VFLX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":SHTFL:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":LHTFL:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":PRATE:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":CPRAT:surface:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":ALBDO:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":TCDC:entire" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":TCDC:boundary" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":HCDC:high cloud layer:0-6" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":MCDC:middle cloud layer:0-6" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":LCDC:low cloud layer:0-6" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":GFLUX:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":U-GWD:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":V-GWD:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":APCP:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":ACPCP:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep ":NCPCP:surface" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "TMP:middle cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "TMP:low cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "TMP:high cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "PRES:high cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "PRES:middle cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "PRES:low cloud top" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "PRES:high cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "PRES:middle cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "PRES:low cloud bottom" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "CWORK" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "DUVB" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "CDUVB" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "TMAX" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+    ${WGRIB2} "${infile}" | grep "TMIN" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
 
    else
     echo "${infile} does not exist"
@@ -155,7 +155,7 @@ cd "${DATA}" || exit 1
    infile=${COMIN_master}/gefs.t00z.master.grb2f006
 
     ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib TSNOWP2.dat
-    ${WGRIB2}  TSNOWP2.dat -for "1:1" -append -grib  TSNOWP1.dat >/dev/null
+    ${WGRIB2}  TSNOWP2.dat -for "1:1" -append -grib  TSNOWP1.dat >/dev/null || true
 
    ${WGRIB2} "${infile}" -not "(ULWRF|USWRF)" -not "(TSNOWP|DLWRF|DSWRF|UFLX|VFLX|SHTFL|LHTFL|PRATE|CPRAT|ALBDO|GFLUX|U-GWD|V-GWD)" -not "TCDC:(entire|boundary)" -not "HCDC:high cloud layer:0-6" -not "LCDC:low cloud layer:0-6" -not "MCDC:middle cloud layer:0-6" -not "(APCP|ACPCP|NCPCP)" -not "(TMIN|TMAX|DUVB|CDUVB|CWORK|SNOHF|SNOWC|WATR)" -not "(TMP:middle cloud top|TMP:low cloud top|TMP:high cloud top)" -not "(PRES:high cloud top|PRES:middle cloud top|PRES:low cloud top|PRES:high cloud bottom|PRES:middle cloud bottom|PRES:low cloud bottom)" -grib out1.grb2
    
@@ -173,7 +173,7 @@ cd "${DATA}" || exit 1
    infile=${COMIN_master}/gefs.t00z.master.grb2f003
 #
     ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib TSNOWP2.dat
-    ${WGRIB2}  TSNOWP2.dat -for "1:1" -grib  out.grb >/dev/null
+    ${WGRIB2}  TSNOWP2.dat -for "1:1" -grib  out.grb >/dev/null || true
     ${WGRIB2}   out.grb -set_ftime "0-3 hour acc fcst" -grib TSNOWP1.dat 
 
    ${WGRIB2} "${infile}" -not "(TSNOWP|ULWRF|USWRF)" -not "(DLWRF|DSWRF|UFLX|VFLX|SHTFL|LHTFL|PRATE|CPRAT|ALBDO|GFLUX|U-GWD|V-GWD)" -not "TCDC:(entire|boundary)" -not "HCDC:high cloud layer:182-185 min" -not "LCDC:low cloud layer:182-185 min" -not "MCDC:middle cloud layer:182-185 min" -not "(APCP|ACPCP|NCPCP)" -not "(TMIN|TMAX|DUVB|CDUVB|CWORK|SNOHF|SNOWC|WATR)" -not "(TMP:middle cloud top|TMP:low cloud top|TMP:high cloud top)" -not "(PRES:high cloud top|PRES:middle cloud top|PRES:low cloud top|PRES:high cloud bottom|PRES:middle cloud bottom|PRES:low cloud bottom)" -grib out1.grb
