@@ -15,7 +15,7 @@ if (( $# != 1 )); then
     echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlletkf atmensanlfv3inc atmensanlfinal"
-    echo "snowanl"
+    echo "snowanl esnowrecen"
     echo "prepobsaero aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
@@ -320,6 +320,35 @@ case ${step} in
     ;;
 
   "snowanl")
+    # below lines are for creating JEDI YAML
+    case ${CASE} in
+      "C768")
+        layout_x=6
+        layout_y=6
+        ;;
+      "C384")
+        layout_x=5
+        layout_y=5
+        ;;
+      "C192" | "C96" | "C48")
+        layout_x=1
+        layout_y=1
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        exit 4
+    esac
+
+    export layout_x
+    export layout_y
+
+    walltime="00:15:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "esnowrecen")
     # below lines are for creating JEDI YAML
     case ${CASE} in
       "C768")
