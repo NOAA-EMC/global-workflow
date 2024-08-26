@@ -200,6 +200,7 @@ ush/month_name.sh
 ush/imsfv3_scf2ioda.py
 ush/atparse.bash
 ush/run_bufr2ioda.py
+ush/bufr2ioda_insitu*
 
 # version files
 versions/build.ver
