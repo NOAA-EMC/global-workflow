@@ -134,6 +134,7 @@ cat > input.nml <<EOF
   hydrostatic = ${hydrostatic}
   phys_hydrostatic = ${phys_hydrostatic}
   use_hydro_pressure = ${use_hydro_pressure}
+  pass_full_omega_to_physics_in_non_hydrostatic_mode = ${pass_full_omega_to_physics_in_non_hydrostatic_mode:-".false."}
   beta = 0.
   a_imp = 1.
   p_fac = 0.1
