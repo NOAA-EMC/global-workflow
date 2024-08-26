@@ -120,6 +120,14 @@ case ${machine} in
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;
+  "GOOGLEPW")
+    export PARTITION_BATCH="compute"
+    npe_node_max=30
+    max_tasks_per_node=30
+    # TODO Supply a max mem/node value for GOOGLE
+    # shellcheck disable=SC2034
+    mem_node_max=""
+    ;;
   "CONTAINER")
     max_tasks_per_node=1
     # TODO Supply a max mem/node value for a container
