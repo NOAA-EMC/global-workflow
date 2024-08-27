@@ -517,13 +517,13 @@ source "${USHgfs}/preamble.sh"
   if [ "$DOSPC_WAV" = 'YES' ]
   then
     # Construct wave_outp_cat (spec) call for each buoy in buoy_lst.txt
-    sed "s%^\(.*\)$%${escaped_USHgfs}/wave_outp_cat.sh 1 ${FHMAX_WAV_PNT} spec > ${escaped_CATOUTDIR}/spec_cat_1.out 2>\&1%" buoy_lst.txt >> cmdfile.buoy
+    sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} spec > ${escaped_CATOUTDIR}\/spec_cat_\1.out 2>\&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
   if [ "$DOBLL_WAV" = 'YES' ]
   then
     # Construct wave_outp_cat (bull) call for each buoy in buoy_lst.txt
-    sed "s%^\(.*\)$%${escaped_USHgfs}/wave_outp_cat.sh 1 ${FHMAX_WAV_PNT} bull > ${escaped_CATOUTDIR}/bull_cat_1.out 2>\&1%" buoy_lst.txt >> cmdfile.buoy
+    sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} bull > ${escaped_CATOUTDIR}\/bull_cat_\1.out 2>\&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
