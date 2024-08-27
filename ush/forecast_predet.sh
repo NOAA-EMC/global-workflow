@@ -304,6 +304,7 @@ FV3_predet(){
     phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
     use_hydro_pressure=".false."   # use hydrostatic pressure for physics
     make_nh=".true."               # running in non-hydrostatic mode
+    pass_full_omega_to_physics_in_non_hydrostatic_mode=".true."
   else  # hydrostatic options
     hydrostatic=".true."
     phys_hydrostatic=".false."     # ignored when hydrostatic = T

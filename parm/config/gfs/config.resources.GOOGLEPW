@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# AWS-specific job resources
+# GOOGLE-specific job resources
 
 export is_exclusive="True"
 unset memory
