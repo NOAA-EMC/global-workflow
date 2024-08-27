@@ -163,6 +163,13 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     prod_dir="COM_ATMOS_GRIB_${grid}"
     ${NCP} "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
     ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
+    bucket_dir="BUCKET_ATMOS_GRIB_${grid}"
+    echo "!prod_dir: ${!prod_dir}"
+    echo "!bucket_dir: ${!bucket_dir}"
+    if [ "${!prod_dir}" != "${!bucket_dir}" ]; then
+      cp "pgb2${grp}file_${fhr3}_${grid}" "${!bucket_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
+      cp "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx" "${!bucket_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
+    fi
   done
 
   echo "Finished processing nset = ${nset}"
@@ -195,6 +202,13 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
     prod_dir="COM_ATMOS_GRIB_${grid}"
     ${NCP} "sflux_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}"
     ${WGRIB2} -s "sflux_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.idx"
+    bucket_dir="BUCKET_ATMOS_GRIB_${grid}"
+    echo "!prod_dir: ${!prod_dir}"
+    echo "!bucket_dir: ${!bucket_dir}"
+    if [ "${!prod_dir}" != "${!bucket_dir}" ]; then
+      cp "sflux_${fhr3}_${grid}" "${!bucket_dir}/${PREFIX}flux.${grid}.${fhr3}"
+      cp "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.idx" "${!bucket_dir}/${PREFIX}flux.${grid}.${fhr3}.idx"
+    fi
   done
 fi
 
