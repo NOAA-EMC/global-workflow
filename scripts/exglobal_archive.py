@@ -35,7 +35,7 @@ def main():
 
     archive_dict = AttrDict()
     for key in keys:
-        archive_dict[key] = archive.task_config[key, "undefined"]
+        archive_dict[key] = archive.task_config[key, "Undefined"]
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
