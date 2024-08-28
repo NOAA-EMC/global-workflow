@@ -489,6 +489,7 @@ if [[ "${machine}" =~ "PW" ]]; then
    export DO_TRACKER="NO"
    export DO_GENESIS="NO"
    export DO_METP="NO"
+   export DO_WAVE="NO"
 fi
 
 echo "END: config.base"
