@@ -40,8 +40,10 @@ ocean:
   data_out:
     mkdir:
       - "{{ COM_OCEAN_NETCDF }}"
+      - "{{ BUCKET_OCEAN_NETCDF }}"
       {% for grid in product_grids %}
       - "{{ COM_OCEAN_GRIB }}/{{ grid }}"
+      - "{{ BUCKET_OCEAN_GRIB }}/{{ grid }}"
       {% endfor %}
     copy:
       - ["{{ DATA }}/ocean_subset.nc", "{{ COM_OCEAN_NETCDF }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
@@ -70,8 +72,10 @@ ice:
   data_out:
     mkdir:
       - "{{ COM_ICE_NETCDF }}"
+      - "{{ BUCKET_ICE_NETCDF }}"
       {% for grid in product_grids %}
       - "{{ COM_ICE_GRIB }}/{{ grid }}"
+      - "{{ BUCKET_ICE_GRIB }}/{{ grid }}"
       {% endfor %}
     copy:
       - ["{{ DATA }}/ice_subset.nc", "{{ COM_ICE_NETCDF }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
