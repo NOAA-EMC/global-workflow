@@ -31,7 +31,7 @@ class MarineBMat(Task):
 
         # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
         if self.task_config.NMEM_ENS > 0:
-            _enspert_relpath = os.path.relpath(self.task_config.DATAenspert, self.task_config.DATA)
+            _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
         else:
             _enspert_relpath = None
 

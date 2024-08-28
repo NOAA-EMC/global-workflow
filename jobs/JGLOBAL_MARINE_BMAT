@@ -3,11 +3,11 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 if (( 10#${ENSMEM:-0} > 0 )); then
-  export DATAjob="${DATAROOT}/${RUN}marinebmat.${PDY:-}${cyc}"
-  export DATA="${DATAjob}/${jobid}"
+  export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+  export DATA="${DATAjob}/marinebmat.${jobid}"
   # Create the directory to hold ensemble perturbations
-  export DATAenspert="${DATAjob}/enspert"
-  if [[ ! -d "${DATAenspert}" ]]; then mkdir -p "${DATAenspert}"; fi
+  export DATAens="${DATAjob}/ensdata"
+  if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 fi
 
 # source config.base, config.ocnanal and config.marinebmat
