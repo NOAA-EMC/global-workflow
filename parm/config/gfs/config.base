@@ -470,6 +470,7 @@ export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs foreca
 
 # The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
+   export DO_FIT2OBS="NO"     # Run fit to observations package    
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring

@@ -20,7 +20,7 @@ def main():
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
             'assim_freq', 'current_cycle', 'previous_cycle',
-            'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL',
+            'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU', 'DO_JEDIOCNVAR',
             'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST']
 
