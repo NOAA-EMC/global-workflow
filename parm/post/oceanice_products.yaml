@@ -50,6 +50,12 @@ ocean:
       - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}
 
+      - ["{{ DATA }}/ocean_subset.nc", "{{ BUCKET_OCEAN_NETCDF }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      {% for grid in product_grids %}
+      - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ BUCKET_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ BUCKET_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      {% endfor %}
+
 ice:
   namelist:
     ftype: "ice"
@@ -72,4 +78,10 @@ ice:
       {% for grid in product_grids %}
       - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
       - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      {% endfor %}
+
+      - ["{{ DATA }}/ice_subset.nc", "{{ BUCKET_ICE_NETCDF }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      {% for grid in product_grids %}
+      - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ BUCKET_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ BUCKET_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}

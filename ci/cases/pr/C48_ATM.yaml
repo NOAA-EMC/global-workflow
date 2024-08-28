@@ -8,7 +8,7 @@ arguments:
   resdetatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  bucketroot: /bucket/Wei.Huang/gefsc48
+  bucketroot: /bucket/pr-gen-results
   idate: 2021032312
   edate: 2021032312
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
