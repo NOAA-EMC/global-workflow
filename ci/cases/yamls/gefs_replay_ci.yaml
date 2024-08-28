@@ -9,5 +9,4 @@ base:
   FHOUT_HF_GFS: 3
   FHOUT_OCN_GFS: 24
   FHOUT_ICE_GFS: 24
-  BASE_CPLIC: {{ 'TOPICDIR' | getenv }}/REPLAY_ICs/CI
-
+  HOMEDIR: {{ 'RUNTESTS' | getenv }}/GLOBAL
