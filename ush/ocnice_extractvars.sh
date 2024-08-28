@@ -21,7 +21,7 @@ comout_rfcst_prod_ocnice=${6}
 
 [[ -d "${subdata}" ]] || mkdir -p "${subdata}"
 
-for (( nh = FHMIN_GFS; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
+for (( nh = FHMIN_GFS + fhout_ocnice; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   fnh=$(printf "%3.3d" "${nh}")
 
   if [[ ${component_name} == "ocn" ]]; then
