@@ -37,6 +37,12 @@ atmensanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
+atmensanlobs:
+  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2"
+
+atmensanlsol:
+  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_solver.yaml.j2"
+  
 aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import glob
 import os
 from logging import getLogger
 from typing import Any, Dict, List
@@ -51,6 +52,9 @@ class Stage(Task):
 
         # Add the os.path.exists function to the dict for yaml parsing
         stage_dict['path_exists'] = os.path.exists
+
+        # Add the glob.glob function for capturing filenames
+        stage_dict['glob'] = glob.glob
 
         # Parse stage yaml to get list of files to copy
         stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
