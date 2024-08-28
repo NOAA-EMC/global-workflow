@@ -10,7 +10,7 @@
                       '${MEMDIR}': 'ensstat' }) %}
 
 {% set COMIN_ATMOS_ENSSTAT_1p00 = COMIN_ATMOS_GRIB_1p00 | replace_tmpl(tmpl_dict) %}
-{% echo COMIN_ATMOS_ENSSTAT_1p00 = COMIN_ATMOS_GRIB_1p00 %}
+{% echo COMIN_ATMOS_ENSSTAT_1p00 %}
 # Declare the GEFS_ARCH where atmos data will be sent
 {% set GEFS_ARCH = ROTDIR ~ "/gefsarch" %}
 
