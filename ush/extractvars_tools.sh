@@ -15,6 +15,7 @@ check_atmos() {
     # shellcheck disable=SC2312
     ${WGRIB2} "${infilep}" | grep -F -f "${varlist}" >> "${requestedvar_in_allgrb2file}" || true
   done
+  # shellcheck disable=SC2076
   mapfile -t requestedvar_in_allgrb2file_arr < "${requestedvar_in_allgrb2file}"
   while read -r vari; do
     if [[ ! ${requestedvar_in_allgrb2file_arr[*]} =~ "${vari}" ]] ;then
