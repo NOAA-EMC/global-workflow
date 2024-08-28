@@ -78,7 +78,7 @@ pipeline {
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
-                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'Gaea'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
                         CUSTOM_WORKSPACE = "${WORKSPACE}"
                         sh(script: "mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS;rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS/*")
@@ -267,7 +267,7 @@ pipeline {
                 }
             }
         }
-            
+
 
         stage( '5. FINALIZE' ) {
             agent { label NodeName[machine].toLowerCase() }
@@ -297,6 +297,6 @@ pipeline {
                     }
                 }
             }
-        }   
+        }
     }
 }
