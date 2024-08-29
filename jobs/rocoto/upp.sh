@@ -36,29 +36,7 @@ if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
   export PYTHONPATH
 
 else
-  # For spack-stack 1.6.0, the UPP has its own environment (upp-addon-dev)
-  source "${HOMEgfs}/ush/module-setup.sh"
-  module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
-  module load "${MACHINE_ID}"
-  source "${HOMEgfs}/versions/run.spack.ver"
-  module load "prod_util/${prod_util_ver}"
-  module load "grib-util/${grib_util_ver}"
-  # The numpy version in the UPP environment differs from the gsi-addon
-  module load "py-numpy/1.22.3"
-  module load "py-pyyaml/${py_pyyaml_ver}"
-  module load "py-netcdf4/${py_netcdf4_ver}"
-  module load "py-f90nml/${py_f90nml_ver}"
-
-  # The jinja2 version in the UPP environment differs from the gsi-addon
-  module load "py-jinja2/3.0.3"
-
-  # xarray is not in this environment...
-  # module load "py-xarray/${py_xarray_ver}"
-
-  wxflowPATH="${HOMEgfs}/ush/python"
-  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
-  export PYTHONPATH
-  #. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+  . "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 
   status=$?
   if (( status != 0 )); then exit "${status}"; fi
