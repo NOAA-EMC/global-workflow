@@ -15,5 +15,12 @@ analysis:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
         {% endfor %}
+        {% if DO_JEDIATMVAR %}
+        {% for ftype in ["satbias.nc", "satbias_cov.nc", "tlapse.txt"] %}
+        {% for file in glob(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.atms_*." ~ ftype) %}
+        - ["{{ file }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        {% endfor %}
+        {% endfor %}
+        {% endif %}
         {% endfor %} # mem loop
 {% endif %}
