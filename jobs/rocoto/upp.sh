@@ -36,7 +36,10 @@ if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
   export PYTHONPATH
 
 else
-  . "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+  # For spack-stack 1.6.0, the UPP has its own environment (upp-addon-dev)
+  module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
+  module load "${MACHINE_ID}"
+  #. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
   status=$?
   if (( status != 0 )); then exit "${status}"; fi
 fi
