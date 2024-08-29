@@ -166,11 +166,11 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
     echo "!prod_dir: ${!prod_dir}"
     bucket_dir="BUCKET_ATMOS_GRIB_${grid}"
-    if [ -z ${!bucket_dir+x} ]; then
+    if [[ -z ${!bucket_dir+x} ]]; then
       echo "!bucket_dir is unset"
     else
       echo "!bucket_dir is set to: ${!bucket_dir}"
-      if [ "${!prod_dir}" != "${!bucket_dir}" ]; then
+      if [[ "${!prod_dir}" != "${!bucket_dir}" ]]; then
         cp "pgb2${grp}file_${fhr3}_${grid}" "${!bucket_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
         cp "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx" "${!bucket_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
       fi
@@ -210,11 +210,11 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
 
     echo "!prod_dir: ${!prod_dir}"
     bucket_dir="BUCKET_ATMOS_GRIB_${grid}"
-    if [ -z ${!bucket_dir+x} ]; then
+    if [[ -z ${!bucket_dir+x} ]]; then
       echo "!bucket_dir is unset"
     else
       echo "!bucket_dir is set to: ${!bucket_dir}"
-      if [ "${!prod_dir}" != "${!bucket_dir}" ]; then
+      if [[ "${!prod_dir}" != "${!bucket_dir}" ]]; then
         cp "sflux_${fhr3}_${grid}" "${!bucket_dir}/${PREFIX}flux.${grid}.${fhr3}"
         cp "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.idx" "${!bucket_dir}/${PREFIX}flux.${grid}.${fhr3}.idx"
       fi
