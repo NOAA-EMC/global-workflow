@@ -50,10 +50,6 @@ class Tasks:
         # Save dict_configs and base in the internal state (never know where it may be needed)
         self._base = self._configs['base']
 
-       #print('self._base:')
-       #for key in self._base.keys():
-       #  print('%20s: %20s' %(key, self._base[key]))
-
         self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
         self._base['BUCKETDIR'] = '/lustre/Wei.Huang/run/GEFSTESTS/COMROOT/c48gefs'
