@@ -134,8 +134,8 @@ class AtmEnsAnalysis(Task):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def initialize_fv3inc(self):
-        """Initialize FV3 increment converter
+    def initialize(self):
+        """Initialize FV3 increment converter, LETKF observer, or LETKF solver
 
         This method will initialize a global atmens analysis using JEDI.
         This includes:
@@ -232,16 +232,18 @@ class AtmEnsAnalysis(Task):
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
+        # get list of yamls to cop to ROTDIR
+        yamls = glob.glob(os.path.join(self.task_config.DATA, '*atmens*yaml'))
+
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.jedi.yaml} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
-        src = self.jedi.yaml
-        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
-        logger.debug(f"Copying {src} to {dest}")
-        yaml_copy = {
-            'mkdir': [self.task_config.COM_ATMOS_ANALYSIS_ENS],
-            'copy': [[src, dest]]
-        }
-        FileHandler(yaml_copy).sync()
+        for src in yamls:
+            logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
+            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, os.path.basename(src))
+            logger.debug(f"Copying {src} to {dest}")
+            yaml_copy = {
+                'copy': [[src, dest]]
+            }
+            FileHandler(yaml_copy).sync()
 
         # create template dictionaries
         template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
