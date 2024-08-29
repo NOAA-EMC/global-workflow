@@ -21,5 +21,5 @@ if __name__ == '__main__':
     AtmEnsAnlFV3Inc = AtmEnsAnalysis(config)
 
     # Initialize and execute
-    AtmEnsAnlFV3Inc.initialize_fv3inc()
-    AtmEnsAnlFV3Inc.execute(config.APRUN_ATMENSANLFV3INC)
+    AtmEnsAnl.initialize()
+    AtmEnsAnl.execute(config.APRUN_ATMENSANLFV3INC)

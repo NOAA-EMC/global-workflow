@@ -152,7 +152,7 @@ class AtmEnsAnalysis(Task):
         """
         super().initialize()
 
-        # get JEDI-to-FV3 increment converter config and save to YAML file
+        # get JEDI config and save to YAML file
         logger.info(f"Generating JEDI config: {self.jedi.yaml}")
         self.jedi.set_config(self.task_config)
         logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
