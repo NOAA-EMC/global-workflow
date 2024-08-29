@@ -72,7 +72,7 @@ class Archive(Task):
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
 
         # Collect the dataset to archive locally
-        arcdir_j2yaml = os.path.join(archive_parm, f"{arch_dict.RUN}_arcdir.yaml.j2")
+        arcdir_j2yaml = os.path.join(archive_parm, f"{arch_dict.NET}_arcdir.yaml.j2")
 
         # Add the glob.glob function for capturing log filenames
         # TODO remove this kludge once log filenames are explicit
