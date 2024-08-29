@@ -208,7 +208,7 @@ class AtmAnalysis(Analysis):
         FileHandler(yaml_copy).sync()
 
         # path of output radiance bias correction tarfile
-        bfile = f"{self.task_config.APREFIX}radbcor"
+        bfile = f"{self.task_config.APREFIX}rad_varbc_params.tar"
         radtar = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, bfile)
 
         # get lists of radiance bias correction files to put in tarball

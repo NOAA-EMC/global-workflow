@@ -152,7 +152,7 @@ class Analysis(Task):
                 obdir = os.path.dirname(obfile)
                 basename = os.path.basename(obfile)
                 prefix = '.'.join(basename.split('.')[:-3])
-                bfile = f"{prefix}.radbcor"
+                bfile = f"{prefix}.rad_varbc_params.tar"
                 copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
                 break
 
