@@ -18,7 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis object
-    AtmEnsAnlFV3Inc = AtmEnsAnalysis(config)
+    AtmEnsAnl = AtmEnsAnalysis(config)
 
     # Initialize and execute
     AtmEnsAnl.initialize()
