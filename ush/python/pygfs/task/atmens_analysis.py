@@ -17,6 +17,7 @@ from wxflow import (AttrDict,
                     WorkflowException,
                     Template, TemplateConstants)
 from pygfs.task.analysis import Analysis
+from jcb import render
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -93,9 +94,10 @@ class AtmEnsAnalysis(Analysis):
         FileHandler(bkg_staging_dict).sync()
 
         # generate ensemble da YAML file
-        logger.debug(f"Generate ensemble da YAML file: {self.task_config.jedi_yaml}")
-        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
-        logger.info(f"Wrote ensemble da YAML to: {self.task_config.jedi_yaml}")
+        if not self.task_config.lobsdiag_forenkf:
+            logger.debug(f"Generate ensemble da YAML file: {self.task_config.jedi_yaml}")
+            save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
+            logger.info(f"Wrote ensemble da YAML to: {self.task_config.jedi_yaml}")
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -104,6 +106,80 @@ class AtmEnsAnalysis(Analysis):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+    @logit(logger)
+    def observe(self: Analysis) -> None:
+        """Execute a global atmens analysis in observer mode
+
+        This method will execute a global atmens analysis in observer mode using JEDI.
+        This includes:
+        - changing to the run directory
+        - running the global atmens analysis executable in observer mode
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        chdir(self.task_config.DATA)
+
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLOBS)
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
+
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('localensembleda')
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
+
+    @logit(logger)
+    def solve(self: Analysis) -> None:
+        """Execute a global atmens analysis in solver mode
+
+        This method will execute a global atmens analysis in solver mode using JEDI.
+        This includes:
+        - changing to the run directory
+        - running the global atmens analysis executable in solver mode
+
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+
+        Returns
+        ----------
+        None
+        """
+        chdir(self.task_config.DATA)
+
+        exec_cmd = Executable(self.task_config.APRUN_ATMENSANLSOL)
+        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
+
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('fv3jedi')
+        exec_cmd.add_default_arg('localensembleda')
+        exec_cmd.add_default_arg(self.task_config.jedi_yaml)
+
+        try:
+            logger.debug(f"Executing {exec_cmd}")
+            exec_cmd()
+        except OSError:
+            raise OSError(f"Failed to execute {exec_cmd}")
+        except Exception:
+            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+
+        pass
 
     @logit(logger)
     def letkf(self: Analysis) -> None:
@@ -141,6 +217,34 @@ class AtmEnsAnalysis(Analysis):
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
         pass
+
+    @logit(logger)
+    def init_observer(self: Analysis) -> None:
+        # Setup JEDI YAML file
+        jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
+        jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
+        jcb_config.update(jcb_algo_config)
+        jedi_config = render(jcb_config)
+
+        self.task_config.jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens_observer.yaml")
+
+        logger.debug(f"Generate ensemble da observer YAML file: {self.task_config.jedi_yaml}")
+        save_as_yaml(jedi_config, self.task_config.jedi_yaml)
+        logger.info(f"Wrote ensemble da observer YAML to: {self.task_config.jedi_yaml}")
+
+    @logit(logger)
+    def init_solver(self: Analysis) -> None:
+        # Setup JEDI YAML file
+        jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
+        jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config)
+        jcb_config.update(jcb_algo_config)
+        jedi_config = render(jcb_config)
+
+        self.task_config.jedi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens_solver.yaml")
+
+        logger.debug(f"Generate ensemble da solver YAML file: {self.task_config.jedi_yaml}")
+        save_as_yaml(jedi_config, self.task_config.jedi_yaml)
+        logger.info(f"Wrote ensemble da solver YAML to: {self.task_config.jedi_yaml}")
 
     @logit(logger)
     def init_fv3_increment(self: Analysis) -> None:
@@ -207,16 +311,18 @@ class AtmEnsAnalysis(Analysis):
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
+        # get list of yamls to cop to ROTDIR
+        yamls = glob.glob(os.path.join(self.task_config.DATA, '*atmens*yaml'))
+
         # copy full YAML from executable to ROTDIR
-        logger.info(f"Copying {self.task_config.jedi_yaml} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
-        src = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
-        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atmens.yaml")
-        logger.debug(f"Copying {src} to {dest}")
-        yaml_copy = {
-            'mkdir': [self.task_config.COM_ATMOS_ANALYSIS_ENS],
-            'copy': [[src, dest]]
-        }
-        FileHandler(yaml_copy).sync()
+        for src in yamls:
+            logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
+            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, os.path.basename(src))
+            logger.debug(f"Copying {src} to {dest}")
+            yaml_copy = {
+                'copy': [[src, dest]]
+            }
+            FileHandler(yaml_copy).sync()
 
         # create template dictionaries
         template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL

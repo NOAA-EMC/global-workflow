@@ -17,12 +17,12 @@ DU_UTHRES         '1'  Y E           -           none none uthres      ExtData/n
 
 #====== Sulfate Sources =================================================
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
-SU_ANTHROL1 NA  N Y %y4-%m2-%d2t12:00:00 none none SO2      ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-SU_ANTHROL2 NA  N Y %y4-%m2-%d2t12:00:00 none none SO2_elev ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+SU_ANTHROL1 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2      ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+SU_ANTHROL2 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2_elev ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
 
 # Ship emissions
-SU_SHIPSO2 NA  N Y %y4-%m2-%d2t12:00:00 none none SO2_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-SU_SHIPSO4 NA  N Y %y4-%m2-%d2t12:00:00 none none SO4_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+SU_SHIPSO2 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+SU_SHIPSO4 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO4_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
 
 # Aircraft fuel consumption
 SU_AIRCRAFT NA  Y Y %y4-%m2-%d2t12:00:00 none none none /dev/null
@@ -63,11 +63,11 @@ OC_MTPO     NA  Y Y %y4-%m2-%d2t12:00:00 none none mtpo     ExtData/nexus/MEGAN_
 OC_BIOFUEL NA  Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
 
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
-OC_ANTEOC1 NA  N Y %y4-%m2-%d2t12:00:00 none none OC       ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-OC_ANTEOC2 NA  N Y %y4-%m2-%d2t12:00:00 none none OC_elev  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+OC_ANTEOC1 NA  Y Y %y4-%m2-%d2t12:00:00 none none OC       ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+OC_ANTEOC2 NA  Y Y %y4-%m2-%d2t12:00:00 none none OC_elev  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
 
 # EDGAR based ship emissions
-OC_SHIP    NA  N Y %y4-%m2-%d2t12:00:00 none none OC_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+OC_SHIP    NA  Y Y %y4-%m2-%d2t12:00:00 none none OC_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
 
 # Aircraft fuel consumption
 OC_AIRCRAFT NA  N Y %y4-%m2-%d2t12:00:00 none none oc_aviation /dev/null
@@ -88,11 +88,11 @@ pSOA_ANTHRO_VOC NA Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
 BC_BIOFUEL NA  Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
 
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
-BC_ANTEBC1 NA  N Y %y4-%m2-%d2t12:00:00 none none BC       ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-BC_ANTEBC2 NA  N Y %y4-%m2-%d2t12:00:00 none none BC_elev  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+BC_ANTEBC1 NA  Y Y %y4-%m2-%d2t12:00:00 none none BC       ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+BC_ANTEBC2 NA  Y Y %y4-%m2-%d2t12:00:00 none none BC_elev  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
 
 # EDGAR based ship emissions
-BC_SHIP NA  N Y %y4-%m2-%d2t12:00:00 none none BC_ship     ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+BC_SHIP NA  Y Y %y4-%m2-%d2t12:00:00 none none BC_ship     ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
 
 # Aircraft fuel consumption
 BC_AIRCRAFT NA  N Y %y4-%m2-%d2t12:00:00 none none bc_aviation /dev/null
