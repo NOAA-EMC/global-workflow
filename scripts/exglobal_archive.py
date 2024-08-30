@@ -44,7 +44,7 @@ def main():
     for key in archive.task_config.keys():
         if key.startswith("COMIN_") or key.startswith("COMOUT_"):
             try:
-                archive_dict[key] = archive.task_config.get[key]
+                archive_dict[key] = archive.task_config.get(key)
             except KeyError:
                 print(f"Key {key} not found")
 
