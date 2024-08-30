@@ -162,14 +162,30 @@ cd "${HOMEgfs}/parm/ufs" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
-for file in postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GEFS-WAFS.txt \
-    postxconfig-NT-GEFS-F00-aerosol.txt postxconfig-NT-GEFS-aerosol.txt \
-    postxconfig-NT-GFS-ANL.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt \
-    postxconfig-NT-GFS.txt postxconfig-NT-GFS-FLUX.txt postxconfig-NT-GFS-GOES.txt \
-    postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-TWO.txt \
-    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat
+#for file in postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GEFS-WAFS.txt \
+#    postxconfig-NT-GEFS-F00-aerosol.txt postxconfig-NT-GEFS-aerosol.txt \
+#    postxconfig-NT-GFS-ANL.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt \
+#    postxconfig-NT-GFS.txt postxconfig-NT-GFS-FLUX.txt postxconfig-NT-GFS-GOES.txt \
+#    postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-TWO.txt \
+#    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat
+#do
+#  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
+#done
+for file in nam_micro_lookup.dat params_grib2_tbl_new
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
+done
+for file in postxconfig-NT-gefs-f00.txt postxconfig-NT-gefs.txt postxconfig-NT-gefs-wafs.txt \
+    postxconfig-NT-gefs-f00-aerosol.txt postxconfig-NT-gefs-aerosol.txt
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/gefs/${file}" .
+done
+for file in postxconfig-NT-gfs-anl.txt postxconfig-NT-gfs-f00.txt postxconfig-NT-gfs-flux-f00.txt \
+    postxconfig-NT-gfs.txt postxconfig-NT-gfs-flus.txt postxconfig-NT-gfs-goes.txt \
+    postxconfig-NT-gfs-f00-two.txt postxconfig-NT-gfs-two.txt post_tag_gfs128 post_tag_gfs65 \
+
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/gfs/${file}" .
 done
 for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
     optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
