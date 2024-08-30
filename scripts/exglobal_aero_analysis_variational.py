@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# exglobal_aero_analysis_run.py
+# exglobal_aero_analysis_variational.py
 # This script creates an AerosolAnalysis object
-# and runs the execute method
+# and runs the variational method
 # which executes the global aerosol variational analysis
 import os
 
@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     # Instantiate the aerosol analysis task
     AeroAnl = AerosolAnalysis(config)
-    AeroAnl.execute()
+    AeroAnl.variational()
