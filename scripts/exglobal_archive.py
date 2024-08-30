@@ -39,7 +39,7 @@ def main():
             archive_dict[key] = archive.task_config[key]
         except KeyError:
             archive_dict[key] = archive.task_config.get(key)
-            print(f"Key {key} not found in task_config")
+            print(f"Key ({key}) not found in task_config")
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
@@ -48,7 +48,7 @@ def main():
                 archive_dict[key] = archive.task_config[key]
             except KeyError:
                 archive_dict[key] = archive.task_config.get(key)
-                print(f"Key {key} not found in task_config")
+                print(f"Key ({key}) not found in task_config")
 
     cwd = os.getcwd()
 
