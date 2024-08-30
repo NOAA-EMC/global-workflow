@@ -39,7 +39,6 @@ def main():
             archive_dict[key] = archive.task_config.get(key)
         except:
             pass
-    print(archive_dict)
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
