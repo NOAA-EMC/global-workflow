@@ -1,4 +1,4 @@
-BASE_GIT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git'
+BASE_GIT: '/gpfs/f5/ufs-ard/scratch/David.Burrows/aug28/git'
 DMPDIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/dump'
 BASE_IC: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/ICSDIR'
 PACKAGEROOT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/nwpara'
