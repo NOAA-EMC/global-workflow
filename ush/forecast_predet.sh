@@ -537,7 +537,7 @@ FV3_predet(){
 
   # Inline UPP fix files
   if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
-    ${NCP} "${PARMgfs}/post/gfs/post_tag_gfs${LEVS}"                              "${DATA}/itag"
+    ${NCP} "${PARMgfs}/post/post_tag_gfs${LEVS}"                                  "${DATA}/itag"
     ${NCP} "${FLTFILEGFS:-${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt}"        "${DATA}/postxconfig-NT.txt"
     ${NCP} "${FLTFILEGFSF00:-${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt}" "${DATA}/postxconfig-NT_FH00.txt"
     ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}"                 "${DATA}/params_grib2_tbl_new"
