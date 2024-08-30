@@ -10,6 +10,9 @@ class GEFSAppConfig(AppConfig):
     def __init__(self, conf: Configuration):
         super().__init__(conf)
 
+        base = conf.parse_config('config.base')
+        self.run = base.get('RUN', 'gefs')
+
     def _get_app_configs(self):
         """
         Returns the config_files that are involved in gefs
@@ -81,4 +84,4 @@ class GEFSAppConfig(AppConfig):
 
         tasks += ['arch']
 
-        return {f"{self.configs['_no_run']['base']['RUN']}": tasks}
+        return {f"{self.run}": tasks}
