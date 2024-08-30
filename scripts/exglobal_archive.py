@@ -35,12 +35,18 @@ def main():
 
     archive_dict = AttrDict()
     for key in keys:
-        archive_dict[key] = archive.task_config.get(key, "Undefined")
+        try:
+            archive_dict[key] = archive.task_config.get(key)
+        except KeyError:
+            print(f"Key {key} not found")
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
         if key.startswith("COMIN_") or key.startswith("COMOUT_"):
-            archive_dict[key] = archive.task_config.get[key, "Undefined"]
+            try:
+                archive_dict[key] = archive.task_config.get[key]
+            except KeyError:
+                print(f"Key {key} not found")
 
     cwd = os.getcwd()
 
