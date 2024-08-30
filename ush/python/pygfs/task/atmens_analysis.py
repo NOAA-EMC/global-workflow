@@ -88,7 +88,7 @@ class AtmEnsAnalysis(Task):
         # link JEDI-to-FV3 increment converter executable
         logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
-        
+
     @logit(logger)
     def initialize_analysis(self) -> None:
         """Initialize a global atmens analysis

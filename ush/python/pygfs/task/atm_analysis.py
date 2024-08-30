@@ -89,7 +89,7 @@ class AtmAnalysis(Task):
         # link JEDI executable
         logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
-        
+
     @logit(logger)
     def initialize_analysis(self) -> None:
         """Initialize a global atm analysis
@@ -250,7 +250,7 @@ class AtmAnalysis(Task):
             yaml_copy = {
                 'copy': [[src, dest]]
             }
-            FileHandler(yaml_copy).sync()            
+            FileHandler(yaml_copy).sync()
 
         # copy bias correction files to ROTDIR
         logger.info("Copy bias correction files from DATA/ to COM/")
