@@ -36,7 +36,7 @@ def main():
     archive_dict = AttrDict()
     for key in keys:
         try:
-            archive_dict[key] = archive.task_config(key)
+            archive_dict[key] = archive.task_config[key]
         except KeyError:
             archive_dict[key] = archive.task_config.get(key)
             print(f"Key {key} not found in task_config")
@@ -45,7 +45,7 @@ def main():
     for key in archive.task_config.keys():
         if key.startswith("COMIN_") or key.startswith("COMOUT_"):
             try:
-                archive_dict[key] = archive.task_config(key)
+                archive_dict[key] = archive.task_config[key]
             except KeyError:
                 archive_dict[key] = archive.task_config.get(key)
                 print(f"Key {key} not found in task_config")
