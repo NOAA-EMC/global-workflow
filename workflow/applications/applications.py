@@ -31,50 +31,50 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         self.scheduler = Host().scheduler
 
-        self._base = conf.parse_config('config.base')
+        base = conf.parse_config('config.base')
 
-        self.mode = self._base['MODE']
+        self.mode = base['MODE']
 
         if self.mode not in self.VALID_MODES:
             raise NotImplementedError(f'{self.mode} is not a valid application mode.\n'
                                       f'Valid application modes are:\n'
                                       f'{", ".join(self.VALID_MODES)}\n')
 
-        self.net = self._base['NET']
-        self.model_app = self._base.get('APP', 'ATM')
-        self.do_atm = self._base.get('DO_ATM', True)
-        self.do_wave = self._base.get('DO_WAVE', False)
-        self.do_wave_bnd = self._base.get('DOBNDPNT_WAVE', False)
-        self.do_ocean = self._base.get('DO_OCN', False)
-        self.do_ice = self._base.get('DO_ICE', False)
-        self.do_aero = self._base.get('DO_AERO', False)
-        self.do_prep_obs_aero = self._base.get('DO_PREP_OBS_AERO', False)
-        self.do_bufrsnd = self._base.get('DO_BUFRSND', False)
-        self.do_gempak = self._base.get('DO_GEMPAK', False)
-        self.do_awips = self._base.get('DO_AWIPS', False)
-        self.do_verfozn = self._base.get('DO_VERFOZN', True)
-        self.do_verfrad = self._base.get('DO_VERFRAD', True)
-        self.do_vminmon = self._base.get('DO_VMINMON', True)
-        self.do_tracker = self._base.get('DO_TRACKER', True)
-        self.do_genesis = self._base.get('DO_GENESIS', True)
-        self.do_genesis_fsu = self._base.get('DO_GENESIS_FSU', False)
-        self.do_metp = self._base.get('DO_METP', False)
-        self.do_upp = not self._base.get('WRITE_DOPOST', True)
-        self.do_goes = self._base.get('DO_GOES', False)
-        self.do_mos = self._base.get('DO_MOS', False)
-        self.do_extractvars = self._base.get('DO_EXTRACTVARS', False)
+        self.net = base['NET']
+        self.model_app = base.get('APP', 'ATM')
+        self.do_atm = base.get('DO_ATM', True)
+        self.do_wave = base.get('DO_WAVE', False)
+        self.do_wave_bnd = base.get('DOBNDPNT_WAVE', False)
+        self.do_ocean = base.get('DO_OCN', False)
+        self.do_ice = base.get('DO_ICE', False)
+        self.do_aero = base.get('DO_AERO', False)
+        self.do_prep_obs_aero = base.get('DO_PREP_OBS_AERO', False)
+        self.do_bufrsnd = base.get('DO_BUFRSND', False)
+        self.do_gempak = base.get('DO_GEMPAK', False)
+        self.do_awips = base.get('DO_AWIPS', False)
+        self.do_verfozn = base.get('DO_VERFOZN', True)
+        self.do_verfrad = base.get('DO_VERFRAD', True)
+        self.do_vminmon = base.get('DO_VMINMON', True)
+        self.do_tracker = base.get('DO_TRACKER', True)
+        self.do_genesis = base.get('DO_GENESIS', True)
+        self.do_genesis_fsu = base.get('DO_GENESIS_FSU', False)
+        self.do_metp = base.get('DO_METP', False)
+        self.do_upp = not base.get('WRITE_DOPOST', True)
+        self.do_goes = base.get('DO_GOES', False)
+        self.do_mos = base.get('DO_MOS', False)
+        self.do_extractvars = base.get('DO_EXTRACTVARS', False)
 
-        self.do_hpssarch = self._base.get('HPSSARCH', False)
+        self.do_hpssarch = base.get('HPSSARCH', False)
 
-        self.nens = self._base.get('NMEM_ENS', 0)
-        self.fcst_segments = self._base.get('FCST_SEGMENTS', None)
+        self.nens = base.get('NMEM_ENS', 0)
+        self.fcst_segments = base.get('FCST_SEGMENTS', None)
 
         if not AppConfig.is_monotonic(self.fcst_segments):
             raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
 
         self.wave_runs = None
         if self.do_wave:
-            wave_run = self._base.get('WAVE_RUN', 'BOTH').lower()
+            wave_run = base.get('WAVE_RUN', 'BOTH').lower()
             if wave_run in ['both']:
                 self.wave_runs = ['gfs', 'gdas']
             elif wave_run in ['gfs', 'gdas']:
@@ -83,12 +83,12 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.aero_anl_runs = None
         self.aero_fcst_runs = None
         if self.do_aero:
-            aero_anl_run = self._base.get('AERO_ANL_RUN', 'BOTH').lower()
+            aero_anl_run = base.get('AERO_ANL_RUN', 'BOTH').lower()
             if aero_anl_run in ['both']:
                 self.aero_anl_runs = ['gfs', 'gdas']
             elif aero_anl_run in ['gfs', 'gdas']:
                 self.aero_anl_runs = [aero_anl_run]
-            aero_fcst_run = self._base.get('AERO_FCST_RUN', None).lower()
+            aero_fcst_run = base.get('AERO_FCST_RUN', None).lower()
             if aero_fcst_run in ['both']:
                 self.aero_fcst_runs = ['gfs', 'gdas']
             elif aero_fcst_run in ['gfs', 'gdas']:
@@ -103,14 +103,14 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         # Source the config files for the jobs in the application without specifying a RUN
         self.configs = {'_no_run': self._source_configs(conf)}
 
-        # Update the base config dictionary base on application
+        # Update the base config dictionary based on application
         self.configs['_no_run']['base'] = self._update_base(self.configs['_no_run']['base'])
 
         # Save base in the internal state since it is often needed
-        self._base = self.configs['_no_run']['base']
+        base = self.configs['_no_run']['base']
 
         # Get more configuration options into the class attributes
-        self.gfs_cyc = self._base.get('gfs_cyc')
+        self.gfs_cyc = base.get('gfs_cyc')
 
         # Get task names for the application
         self.task_names = self.get_task_names()
@@ -118,6 +118,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         # Finally, source the configuration files for each valid `RUN`
         for run in self.task_names.keys():
             self.configs[run] = self._source_configs(conf, run=run, log=False)
+
+            # Update the base config dictionary based on application and RUN
+            self.configs[run]['base'] = self._update_base(self.configs[run]['base'])
 
     @abstractmethod
     def _get_app_configs(self):
@@ -152,7 +155,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         configs = dict()
 
         # Return config.base as well
-        configs['base'] = conf.parse_config('config.base')
+        configs['base'] = conf.parse_config('config.base', RUN=run)
 
         # Source the list of all config_files involved in the application
         for config in self.configs_names:
@@ -181,7 +184,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         return configs
 
     @abstractmethod
-    def get_task_names(self) -> Dict[str, List[str]]:
+    def get_task_names(self, run="_no_run") -> Dict[str, List[str]]:
         '''
         Create a list of task names for each RUN valid for the configuation.
 

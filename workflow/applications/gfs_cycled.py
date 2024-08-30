@@ -11,20 +11,21 @@ class GFSCycledAppConfig(AppConfig):
 
     def __init__(self, conf: Configuration):
         super().__init__(conf)
-        self.do_hybvar = self._base.get('DOHYBVAR', False)
-        self.do_fit2obs = self._base.get('DO_FIT2OBS', True)
-        self.do_jediatmvar = self._base.get('DO_JEDIATMVAR', False)
-        self.do_jediatmens = self._base.get('DO_JEDIATMENS', False)
-        self.do_jediocnvar = self._base.get('DO_JEDIOCNVAR', False)
-        self.do_jedisnowda = self._base.get('DO_JEDISNOWDA', False)
-        self.do_mergensst = self._base.get('DO_MERGENSST', False)
-        self.do_vrfy_oceanda = self._base.get('DO_VRFY_OCEANDA', False)
+        base = conf.parse_config('config.base')
+        self.do_hybvar = base.get('DOHYBVAR', False)
+        self.do_fit2obs = base.get('DO_FIT2OBS', True)
+        self.do_jediatmvar = base.get('DO_JEDIATMVAR', False)
+        self.do_jediatmens = base.get('DO_JEDIATMENS', False)
+        self.do_jediocnvar = base.get('DO_JEDIOCNVAR', False)
+        self.do_jedisnowda = base.get('DO_JEDISNOWDA', False)
+        self.do_mergensst = base.get('DO_MERGENSST', False)
+        self.do_vrfy_oceanda = base.get('DO_VRFY_OCEANDA', False)
 
         self.lobsdiag_forenkf = False
         self.eupd_runs = None
         if self.do_hybvar:
-            self.lobsdiag_forenkf = self._base.get('lobsdiag_forenkf', False)
-            eupd_run = self._base.get('EUPD_CYC', 'gdas').lower()
+            self.lobsdiag_forenkf = base.get('lobsdiag_forenkf', False)
+            eupd_run = base.get('EUPD_CYC', 'gdas').lower()
             if eupd_run in ['both']:
                 self.eupd_runs = ['gfs', 'gdas']
             elif eupd_run in ['gfs', 'gdas']:

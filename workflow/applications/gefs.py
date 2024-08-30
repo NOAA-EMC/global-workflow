@@ -81,4 +81,4 @@ class GEFSAppConfig(AppConfig):
 
         tasks += ['arch']
 
-        return {f"{self._base['RUN']}": tasks}
+        return {f"{self.configs['_no_run']['base']['RUN']}": tasks}
