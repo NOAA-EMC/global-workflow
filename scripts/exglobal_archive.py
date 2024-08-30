@@ -37,16 +37,17 @@ def main():
     for key in keys:
         try:
             archive_dict[key] = archive.task_config.get(key)
-        except KeyError:
-            print(f"Key {key} not found")
+        except:
+            pass
+    print(archive_dict)
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
         if key.startswith("COMIN_") or key.startswith("COMOUT_"):
             try:
                 archive_dict[key] = archive.task_config.get(key)
-            except KeyError:
-                print(f"Key {key} not found")
+            except:
+                pass
 
     cwd = os.getcwd()
 
