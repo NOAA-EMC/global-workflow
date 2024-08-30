@@ -17,7 +17,7 @@ logger = getLogger(__name__.split('.')[-1])
 
 class JEDI:
 
-    def __init__(self, task_config: AttrDict[str, Any]) -> None:
+    def __init__(self, task_config: AttrDict[str, Any], yaml_name: Optional[str] = None) -> None:
 
         # For provenance, save incoming task_config as a private attribute of JEDI object
         self._task_config = task_config
@@ -25,7 +25,10 @@ class JEDI:
         _exe_name = os.path.basename(task_config.JEDIEXE)
 
         self.exe = os.path.join(task_config.DATA, _exe_name)
-        self.yaml = os.path.join(task_config.DATA, os.path.splitext(_exe_name)[0] + '.yaml')
+        if yaml_name:
+            self.yaml = os.path.join(task_config.DATA, yaml_name + '.yaml')
+        else:
+            self.yaml = os.path.join(task_config.DATA, os.path.splitext(_exe_name)[0] + '.yaml')
         self.config = AttrDict()
         self.j2tmpl_dir = os.path.join(task_config.PARMgfs, 'gdas')
 

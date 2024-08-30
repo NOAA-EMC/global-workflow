@@ -18,5 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis task
-    AtmEnsAnl = AtmEnsAnalysis(config)
+    AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlletkf')
+
+    # Execute the JEDI ensemble DA analysis
     AtmEnsAnl.execute(config.APRUN_ATMENSANLLETKF, ['fv3jedi', 'localensembleda'])

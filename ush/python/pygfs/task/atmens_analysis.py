@@ -28,7 +28,7 @@ class AtmEnsAnalysis(Task):
     Class for JEDI-based global atmens analysis tasks
     """
     @logit(logger, name="AtmEnsAnalysis")
-    def __init__(self, config):
+    def __init__(self, config, yaml_name=None):
         super().__init__(config)
 
         _res = int(self.task_config.CASE_ENS[1:])
@@ -56,15 +56,45 @@ class AtmEnsAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create JEDI object
-        self.jedi = JEDI(self.task_config)
+        self.jedi = JEDI(self.task_config, yaml_name)
 
     @logit(logger)
-    def initialize_letkf(self) -> None:
-        """Initialize a global atmens analysis
+    def initialize_jedi(self):
+        """Initialize JEDI application
 
-        This method will initialize a global atmens analysis using JEDI.
+        This method will initialize a JEDI application used in the global atmens analysis.
         This includes:
         - generating and saving JEDI YAML config
+        - linking the JEDI executable
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        # get JEDI config and save to YAML file
+        logger.info(f"Generating JEDI config: {self.jedi.yaml}")
+        self.jedi.set_config(self.task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
+
+        # save JEDI config to YAML file
+        logger.info(f"Writing JEDI config to YAML file: {self.jedi.yaml}")
+        save_as_yaml(self.jedi.config, self.jedi.yaml)
+
+        # link JEDI-to-FV3 increment converter executable
+        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
+        self.jedi.link_exe(self.task_config)
+        
+    @logit(logger)
+    def initialize_analysis(self) -> None:
+        """Initialize a global atmens analysis
+
+        This method will initialize a global atmens analysis.
+        This includes:
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -81,19 +111,6 @@ class AtmEnsAnalysis(Task):
         None
         """
         super().initialize()
-
-        # set JEDI ensemble DA config dictionary
-        logger.info(f"Generating JEDI config: {self.jedi.yaml}")
-        self.jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
-
-        # save JEDI config to YAML file
-        logger.info(f"Writing JEDI config to YAML file: {self.jedi.yaml}")
-        save_as_yaml(self.jedi.config, self.jedi.yaml)
-
-        # link JEDI ensemble DA executable
-        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
-        self.jedi.link_exe(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files generated from JEDI config")
@@ -132,38 +149,6 @@ class AtmEnsAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
-
-    @logit(logger)
-    def initialize(self):
-        """Initialize FV3 increment converter, LETKF observer, or LETKF solver
-
-        This method will initialize a global atmens analysis using JEDI.
-        This includes:
-        - generating and saving JEDI YAML config
-        - linking the JEDI executable
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-        super().initialize()
-
-        # get JEDI config and save to YAML file
-        logger.info(f"Generating JEDI config: {self.jedi.yaml}")
-        self.jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
-
-        # save JEDI config to YAML file
-        logger.info(f"Writing JEDI config to YAML file: {self.jedi.yaml}")
-        save_as_yaml(self.jedi.config, self.jedi.yaml)
-
-        # link JEDI-to-FV3 increment converter executable
-        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
-        self.jedi.link_exe(self.task_config)
 
     @logit(logger)
     def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
@@ -238,7 +223,9 @@ class AtmEnsAnalysis(Task):
         # copy full YAML from executable to ROTDIR
         for src in yamls:
             logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
-            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, os.path.basename(src))
+            yaml_base = os.path.splitext(os.path.basename(src))[0]
+            dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
+            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
                 'copy': [[src, dest]]

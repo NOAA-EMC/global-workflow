@@ -20,5 +20,8 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis task
-    AtmEnsAnl = AtmEnsAnalysis(config)
-    AtmEnsAnl.initialize_letkf()
+    AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlletkf')
+
+    # Initialize JEDI ensemble DA analysis
+    AtmEnsAnl.initialize_jedi()
+    AtmEnsAnl.initialize_analysis()
