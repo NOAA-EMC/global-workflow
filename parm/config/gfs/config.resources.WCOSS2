@@ -18,6 +18,17 @@ case ${step} in
     fi
     ;;
 
+  "atmanlvar")
+    export tasks_per_node_gdas=48
+    export tasks_per_node_gfs=48   
+    export memory="400GB"
+    ;;
+
+  "atmensanlobs")
+    export tasks_per_node=48
+    export memory="400GB"
+    ;;
+
   "fit2obs")
     export tasks_per_node=3
     ;;
