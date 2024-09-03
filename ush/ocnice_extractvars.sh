@@ -26,17 +26,17 @@ for (( nh = FHMIN_GFS + fhout_ocnice; nh <= FHMAX_GFS; nh = nh + fhout_ocnice ))
 
   if [[ ${component_name} == "ocn" ]]; then
     if [[ "${datares}" == "native" ]]; then
-      infile=${COMIN_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.${fhout_ocnice}hr_avg.f${fnh}.nc
+      infile="${COMIN_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.${fhout_ocnice}hr_avg.f${fnh}.nc"
     else
-      infile=${COMIN_OCEAN_NETCDF}/${datares}/${RUN}.ocean.t${cyc}z.${datares}.f${fnh}.nc
+      infile="${COMIN_OCEAN_NETCDF}/${datares}/${RUN}.ocean.t${cyc}z.${datares}.f${fnh}.nc"
     fi
     # For ocean products, add an argument to extract a subset of levels
     otherargs=(-d "${depthvar_name},""${zmin},""${zmax}")
   elif [[ ${component_name} == "ice" ]]; then
     if [[ "${datares}" == "native" ]]; then
-      infile=${COMIN_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${fhout_ocnice}hr_avg.f${fnh}.nc
+      infile="${COMIN_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${fhout_ocnice}hr_avg.f${fnh}.nc"
     else
-      infile=${COMIN_ICE_NETCDF}/${datares}/${RUN}.ice.t${cyc}z.${datares}.f${fnh}.nc
+      infile="${COMIN_ICE_NETCDF}/${datares}/${RUN}.ice.t${cyc}z.${datares}.f${fnh}.nc"
     fi
     otherargs=()
   fi
