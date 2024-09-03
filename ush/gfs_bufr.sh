@@ -63,20 +63,17 @@ cat << EOF > gfsparm
 /
 EOF
 
-sleep_interval=10
-max_tries=1000
-
 #---------------------------------------------------------
 # Make sure all files are available:
 
 filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
-if ! wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
+if [[ -z ${filename} ]]; then
   echo "FATAL ERROR: COULD NOT LOCATE logf${fhr} file"
   exit 2
 fi
 
 filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr_p}.${logfm}"
-if ! wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
+if [[ -z ${filename} ]]; then
   echo "FATAL ERROR: COULD NOT LOCATE logf${fhr_p} file"
   exit 2
 fi

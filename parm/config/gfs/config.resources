@@ -1094,9 +1094,9 @@ case ${step} in
 
   "postsnd")
     walltime="02:00:00"
-    ntasks=40
-    threads_per_task=8
-    tasks_per_node=10
+    export ntasks=141
+    threads_per_task=6
+    export tasks_per_node=21 
     export ntasks_postsndcfp=9
     export tasks_per_node_postsndcfp=1
     postsnd_req_cores=$(( tasks_per_node * threads_per_task ))

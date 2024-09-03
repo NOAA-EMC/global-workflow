@@ -49,28 +49,21 @@ export NINT3=${FHOUT_GFS:-3}
 
 rm -f -r "${COM_ATMOS_BUFR}"
 mkdir -p "${COM_ATMOS_BUFR}"
-export COM_ATMOS_BUFR="${COM_ATMOS_BUFR}"
 
 GETDIM="${USHgfs}/getncdimlen"
-export LEVS=$(${GETDIM} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
+LEVS=$(${GETDIM} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
 declare -x LEVS
-
-### wait for the sigma and surface flux file:
-sleep_interval=10
-max_tries=360
-#
 
 # Initialize an empty list to store the hours
 hour_list=()
 
 # Generate hours from 0 to NEND1 with interval NINT1
-# Convert ENDHOUR to decimal through $((10#$ENDHOUR)) to avoid it is thought as octal number
-for (( hour=0; hour<=$((10#$NEND1)) && hour<=$((10#$ENDHOUR)); hour+=$((10#$NINT1)) )); do
+for (( hour=0; hour<=NEND1 && hour<=ENDHOUR; hour+=NINT1 )); do
   hour_list+=("$(printf "%03d" "$hour")")
 done
 
 # Generate hours from NEND1 + NINT3 to ENDHOUR with interval NINT3
-for (( hour=$((10#$NEND1))+$((10#$NINT3)); hour<=$((10#$ENDHOUR)); hour+=$((10#$NINT3)) )); do
+for (( hour=NEND1+NINT3; hour<=ENDHOUR; hour+=NINT3 )); do
   hour_list+=("$(printf "%03d" "$hour")")
 done
 
@@ -78,15 +71,15 @@ done
 echo "Hour List:" "${hour_list[@]}"
 
 # Count the number of elements in the hour_list
-num_hours="${#hour_list[@]}"
+export ntasks="${#hour_list[@]}"
 
 # Print the total number of hours
-echo "Total number of hours: $num_hours"
+echo "Total number of hours: $ntasks"
 
 # allocate 21 processes per node
 # don't allocate more processes, or it might have memory issue
-num_ppn=21
-export APRUN="mpiexec -np ${num_hours} -ppn ${num_ppn} --cpu-bind core cfp "
+#export tasks_per_node=21
+export APRUN="mpiexec -np ${ntasks} -ppn ${tasks_per_node} --cpu-bind core cfp "
 
 if [ -s "${DATA}/poescript_bufr" ]; then
   rm ${DATA}/poescript_bufr
@@ -95,13 +88,12 @@ fi
 for fhr in "${hour_list[@]}"; do
 
   if [ ! -s "${DATA}/${fhr}" ]; then mkdir -p ${DATA}/${fhr}; fi
-  export fhr=${fhr}
   export FINT=${NINT1}
   ## 1-hourly output before $NEND1, 3-hourly output after
   if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
     export FINT=${NINT3}
   fi
-  if [[ ${fhr} -eq 000 ]]; then 
+  if [[ $((10#${fhr})) -eq 0 ]]; then 
      export F00FLAG="YES"
   else
      export F00FLAG="NO"
@@ -121,17 +113,23 @@ for fhr in "${hour_list[@]}"; do
   fhr_p="$(printf "%03d" "$fhr_p")" 
 
   filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
-  if ! wait_for_file "${filename}" "${sleep_interval}" "${max_tries}"; then
-    echo "Waiting for the file ${filename} for $((sleep_interval * (max_tries - 1))) seconds..."
-    err_exit "FATAL ERROR: logf${fhr} not found after waiting $((sleep_interval * (max_tries - 1))) secs"
+  if [[ -z ${filename} ]]; then
+    echo "File ${filename} is required but not found."
+    err_exit "FATAL ERROR: logf${fhr} not found."
+  else
+    echo "${runscript} \"${fhr}\" \"${fhr_p}\" \"${FINT}\" \"${F00FLAG}\" \"${DATA}/${fhr}\"" >> "${DATA}/poescript_bufr"
   fi
-  echo "${runscript} \"${fhr}\" \"${fhr_p}\" \"${FINT}\" \"${F00FLAG}\" \"${DATA}/${fhr}\"" >> "${DATA}/poescript_bufr"
 done
 
+# Run with MPMD 
 chmod +x "${DATA}/poescript_bufr"
-startmsg
 $APRUN "${DATA}/poescript_bufr"
 export err=$?; err_chk
+
+# Run with MPMD 
+#chmod +x "${DATA}/poescript_bufr"
+#bash +x "${DATA}/poescript_bufr" > mpmd.out 2>&1
+#export err=$?; err_chk
 
 cd "${DATA}" || exit 2
 
@@ -152,7 +150,7 @@ export FINT=${NINT1}
 if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
   export FINT=${NINT3}
 fi
-if [[ ${fhr} -eq 000 ]]; then 
+if [[ $((10#${fhr})) -eq 0 ]]; then
   export F00FLAG="YES"
 else
   export F00FLAG="NO"
@@ -179,7 +177,7 @@ fi
 # add appropriate WMO Headers.
 ########################################
 rm -rf poe_col
-for (( m = 1; m <= $((10#$NUM_SND_COLLECTIVES)); m++ )); do
+for (( m = 1; m <= NUM_SND_COLLECTIVES; m++ )); do
     echo "sh ${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
 done
 
