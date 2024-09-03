@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-# exglobal_aero_analysis_run.py
-# This script creates an AerosolAnalysis object
+# exglobal_atmens_analysis_sol.py
+# This script creates an AtmEnsAnalysis object
 # and runs the execute method
-# which executes the global aerosol variational analysis
+# which executes the global atm local ensemble analysis in solver mode
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
-from pygfs.task.aero_analysis import AerosolAnalysis
+from pygfs.task.atmens_analysis import AtmEnsAnalysis
 
 # Initialize root logger
 logger = Logger(level='DEBUG', colored_log=True)
@@ -17,6 +17,7 @@ if __name__ == '__main__':
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the aerosol analysis task
-    AeroAnl = AerosolAnalysis(config)
-    AeroAnl.execute()
+    # Instantiate the atmens analysis task
+    AtmEnsAnl = AtmEnsAnalysis(config)
+    AtmEnsAnl.init_solver()
+    AtmEnsAnl.solve()
