@@ -172,8 +172,7 @@ class AtmAnalysis(Task):
     def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
         """Run JEDI executable
 
-        This method will run the JEDI executable for the global atm analysis
-        or FV3 increment converter
+        This method will run JEDI executables for the global atm analysis
 
         Parameters
         ----------
