@@ -154,7 +154,7 @@ class AtmEnsAnalysis(Task):
     def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
         """Run JEDI executable
 
-        This method will run JEDI executables for the global atm analysis
+        This method will run JEDI executables for the global atmens analysis
 
         Parameters
         ----------
