@@ -52,6 +52,8 @@ class Tasks:
 
         self.HOMEgfs = self._base['HOMEgfs']
         self.rotdir = self._base['ROTDIR']
+        self._base['BUCKETDIR'] = '/lustre/Wei.Huang/run/GEFSTESTS/COMROOT/c48gefs'
+        self.bucketdir = self._base['BUCKETDIR']
         self.pslot = self._base['PSLOT']
         if self.run == "enkfgfs":
             self.nmem = int(self._base['NMEM_ENS_GFS'])
@@ -66,6 +68,7 @@ class Tasks:
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
                       'HOMEgfs': self.HOMEgfs,
                       'EXPDIR': self._base.get('EXPDIR'),
+                      'BUCKETDIR': self._base.get('BUCKETDIR'),
                       'NET': self._base.get('NET'),
                       'RUN': self.run,
                       'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',

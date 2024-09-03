@@ -114,6 +114,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@OCNRES@": f"{int(100.*inputs.resdetocean):03d}",
         "@EXPDIR@": inputs.expdir,
         "@COMROOT@": inputs.comroot,
+        "@BUCKETROOT@": inputs.bucketroot,
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
@@ -196,6 +197,8 @@ def input_args(*argv):
         parser.add_argument('--comroot', help='full path to COMROOT',
                             type=str, required=False, default=os.getenv('HOME'))
         parser.add_argument('--expdir', help='full path to EXPDIR',
+                            type=str, required=False, default=os.getenv('HOME'))
+        parser.add_argument('--bucketroot', help='full path to BUCKETROOT',
                             type=str, required=False, default=os.getenv('HOME'))
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
@@ -347,6 +350,9 @@ def main(*argv):
     user_inputs = input_args(*argv)
     host = Host()
 
+    print('user_inputs = ', user_inputs)
+    print('host = ', host)
+
     validate_user_request(host, user_inputs)
 
     # Determine ocean resolution if not provided
@@ -355,12 +361,17 @@ def main(*argv):
 
     rotdir = os.path.join(user_inputs.comroot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
+    bucketdir = os.path.join(user_inputs.bucketroot, user_inputs.pslot)
 
     create_rotdir = query_and_clean(rotdir, force_clean=user_inputs.overwrite)
     create_expdir = query_and_clean(expdir, force_clean=user_inputs.overwrite)
+    create_bucketdir = query_and_clean(bucketdir, force_clean=user_inputs.overwrite)
 
     if create_rotdir:
         makedirs_if_missing(rotdir)
+
+    if create_bucketdir:
+        makedirs_if_missing(bucketdir)
 
     if create_expdir:
         makedirs_if_missing(expdir)
@@ -370,6 +381,7 @@ def main(*argv):
     print(f"*" * 100)
     print(f'EXPDIR: {expdir}')
     print(f'ROTDIR: {rotdir}')
+    print(f'BUCKETDIR: {bucketdir}')
     print(f"*" * 100)
 
 

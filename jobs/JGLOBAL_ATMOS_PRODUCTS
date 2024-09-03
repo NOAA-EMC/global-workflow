@@ -15,6 +15,12 @@ for grid in '0p25' '0p50' '1p00'; do
   prod_dir="COM_ATMOS_GRIB_${grid}"
   GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
+
+  bueckt_dir="BUCKET_ATMOS_GRIB_${grid}"
+  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${bueckt_dir}:BUCKET_ATMOS_GRIB_GRID_TMPL"
+  if [[ ! -d "${!bueckt_dir}" ]]; then mkdir -m 775 -p "${!bueckt_dir}"; fi
+
+  echo "!bueckt_dir is set: ${!bueckt_dir}"
 done
 
 # Variables used in this job

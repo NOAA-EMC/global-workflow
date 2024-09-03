@@ -45,6 +45,7 @@ export FIXgdas="${FIXgfs}/gdas"
 # GLOBAL static environment parameters
 export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
 export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
+export BUCKETROOT="@BUCKETROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 
@@ -121,6 +122,7 @@ export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/${PSLOT}"
 export ROTDIR="@COMROOT@/${PSLOT}"
+export BUCKETDIR="@BUCKETROOT@/${PSLOT}"
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
 if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then

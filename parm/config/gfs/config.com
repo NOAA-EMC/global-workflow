@@ -101,3 +101,26 @@ declare -rx COM_CHEM_ANALYSIS_TMPL=${COM_BASE}'/analysis/chem'
 declare -rx COM_CHEM_BMAT_TMPL=${COM_CHEM_ANALYSIS_TMPL}'/bmatrix'
 
 declare -rx COM_MED_RESTART_TMPL=${COM_BASE}'/model/med/restart'
+
+BUCKET_BASE='${BUCKETDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
+
+declare -rx BUCKET_TOP_TMPL='${BUCKETDIR}/${RUN}.${YMD}/${HH}'
+
+declare -rx BUCKET_CONF_TMPL=${BUCKET_BASE}'/conf'
+declare -rx BUCKET_OBS_JEDI=${BUCKET_BASE}'/obs_jedi'
+
+declare -rx BUCKET_ATMOS_INPUT_TMPL=${BUCKET_BASE}'/model/atmos/input'
+declare -rx BUCKET_ATMOS_RESTART_TMPL=${BUCKET_BASE}'/model/atmos/restart'
+declare -rx BUCKET_ATMOS_HISTORY_TMPL=${BUCKET_BASE}'/model/atmos/history'
+declare -rx BUCKET_ATMOS_MASTER_TMPL=${BUCKET_BASE}'/model/atmos/master'
+declare -rx BUCKET_ATMOS_GRIB_TMPL=${BUCKET_BASE}'/products/atmos/grib2'
+declare -rx BUCKET_ATMOS_GRIB_GRID_TMPL=${BUCKET_ATMOS_GRIB_TMPL}'/${GRID}'
+
+declare -rx BUCKET_OCEAN_NETCDF_TMPL=${BUCKET_BASE}'/products/ocean/netcdf'
+declare -rx BUCKET_OCEAN_GRIB_TMPL=${BUCKET_BASE}'/products/ocean/grib2'
+declare -rx BUCKET_OCEAN_GRIB_GRID_TMPL=${BUCKET_OCEAN_GRIB_TMPL}'/${GRID}'
+
+declare -rx BUCKET_ICE_NETCDF_TMPL=${BUCKET_BASE}'/products/ice/netcdf'
+declare -rx BUCKET_ICE_GRIB_TMPL=${BUCKET_BASE}'/products/ice/grib2'
+declare -rx BUCKET_ICE_GRIB_GRID_TMPL=${BUCKET_ICE_GRIB_TMPL}'/${GRID}'
+

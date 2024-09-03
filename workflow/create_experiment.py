@@ -17,7 +17,7 @@ Environmental variables
         Name of the experiment
 
     RUNTESTS
-        Root directory where the test EXPDIR and COMROOT will be placed
+        Root directory where the test EXPDIR and COMROOT/BUCKETROOT will be placed
 
 Output
 ------
