@@ -56,7 +56,7 @@ class AtmEnsAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create JEDI object
-        self.jedi = JEDI(self.task_config, yaml_name)
+        self.jedi = Jedi(self.task_config, yaml_name)
 
     @logit(logger)
     def initialize_jedi(self):

@@ -15,7 +15,7 @@ from wxflow import (AttrDict,
 logger = getLogger(__name__.split('.')[-1])
 
 
-class JEDI:
+class Jedi:
 
     def __init__(self, task_config: AttrDict[str, Any], yaml_name: Optional[str] = None) -> None:
 
@@ -62,7 +62,7 @@ class JEDI:
                 jcb_config['algorithm'] = task_config.JCB_ALGO
             elif 'JCB_ALGO_YAML' in task_config.keys():
                 jcb_algo_config = parse_j2yaml(task_config.JCB_ALGO_YAML, task_config)
-                jcb_config = {**jcb_config, **jcb_algo_config}
+                jcb_config.update(jcb_algo_config)
 
             # Step 3: Generate the JEDI YAML using JCB
             self.config = render(jcb_config)
@@ -114,14 +114,16 @@ class JEDI:
 
         Parameters
         ----------
-        None
+        task_config: AttrDict
+            Attribute-dictionary of all configuration variables associated with a GDAS task.
 
         Returns
         ----------
         None
         """
 
-        # TODO: linking is not permitted per EE2.  Needs work in JEDI to be able to copy the exec.
+        # TODO: linking is not permitted per EE2.
+        # Needs work in JEDI to be able to copy the exec. [NOAA-EMC/GDASApp#1254]
         logger.warn("Linking is not permitted per EE2.")
         exe_dest = os.path.join(task_config.DATA, os.path.basename(task_config.JEDIEXE))
         if os.path.exists(exe_dest):
@@ -204,6 +206,7 @@ class JEDI:
 
 
 @logit(logger)
+@staticmethod
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
     Recursively search through a nested dictionary and return the value for the target key.
