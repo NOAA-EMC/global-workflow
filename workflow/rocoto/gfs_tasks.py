@@ -657,7 +657,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def ocnanalprep(self):
+    def marineanlinit(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}prepoceanobs'}
@@ -668,14 +668,14 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('ocnanalprep')
-        task_name = f'{self.run}ocnanalprep'
+        resources = self.get_resource('marineanlinit')
+        task_name = f'{self.run}marineanlinit'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalprep.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/marineanlinit.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -685,21 +685,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def ocnanalrun(self):
+    def marineanlvar(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalprep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}marineanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('ocnanalrun')
-        task_name = f'{self.run}ocnanalrun'
+        resources = self.get_resource('marineanlvar')
+        task_name = f'{self.run}marineanlvar'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalrun.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/marineanlvar.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -712,7 +712,7 @@ class GFSTasks(Tasks):
     def ocnanalecen(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalrun'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -739,7 +739,7 @@ class GFSTasks(Tasks):
         if self.app_config.do_hybvar:
             dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalecen'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalrun'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_mergensst:
             data = f'&ROTDIR;/{self.run}.@Y@m@d/@H/atmos/{self.run}.t@Hz.sfcanl.nc'

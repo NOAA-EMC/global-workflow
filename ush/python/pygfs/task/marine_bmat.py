@@ -30,10 +30,7 @@ class MarineBMat(Task):
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
         # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
-        if self.task_config.NMEM_ENS > 0:
-            _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
-        else:
-            _enspert_relpath = None
+        _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -137,9 +134,12 @@ class MarineBMat(Task):
                                                 data=self.task_config)
             hybridweights_config.save(os.path.join(self.task_config.DATA, 'soca_ensweights.yaml'))
 
-        # need output dir for ensemble perturbations and static B-matrix
-        logger.debug("Create empty diagb directories to receive output from executables")
-        FileHandler({'mkdir': [os.path.join(self.task_config.DATA, 'diagb')]}).sync()
+        # create the symbolic link to the static B-matrix directory
+        link_target = os.path.join(self.task_config.DATA, '..', 'staticb')
+        link_name = os.path.join(self.task_config.DATA, 'diagb')
+        if os.path.exists(link_name):
+            os.remove(link_name)
+        os.symlink(link_target, link_name)
 
     @logit(logger)
     def gridgen(self: Task) -> None:
