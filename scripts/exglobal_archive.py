@@ -31,23 +31,19 @@ def main():
             'restart_interval_gdas', 'restart_interval_gfs',
             'AERO_ANL_RUN', 'AERO_FCST_RUN', 'DOIBP_WAV', 'DO_JEDIOCNVAR',
             'NMEM_ENS', 'DO_JEDIATMVAR', 'DO_VRFY_OCEANDA', 'FHMAX_FITS',
-            'IAUFHRS', 'DO_FIT2OBS', 'NET']
+            'IAUFHRS', 'DO_FIT2OBS', 'NET', 'MEMDIR']
 
     archive_dict = AttrDict()
     for key in keys:
-        try:
-            archive_dict[key] = archive.task_config[key]
-        except KeyError:
-            archive_dict[key] = archive.task_config.get(key)
+        archive_dict[key] = archive.task_config.get(key)
+        if archive_dict[key] is None:
             print(f"Key ({key}) not found in task_config")
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
         if key.startswith("COMIN_") or key.startswith("COMOUT_"):
-            try:
-                archive_dict[key] = archive.task_config[key]
-            except KeyError:
-                archive_dict[key] = archive.task_config.get(key)
+            archive_dict[key] = archive.task_config.get(key)
+            if archive_dict[key] is None:
                 print(f"Key ({key}) not found in task_config")
 
     cwd = os.getcwd()
