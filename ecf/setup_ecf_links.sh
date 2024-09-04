@@ -52,8 +52,3 @@ echo "Linking gfs/atmos/post_processing/awips_g2 ..."
 fhrs=($(seq 0 3 84) $(seq 90 6 240))
 link_master_to_fhr "jgfs_atmos_awips_g2" "$fhrs"
 
-# GFS atmos wafs files
-cd $ECF_DIR/scripts/gfs/atmos/post_processing/grib_wafs
-echo "Linking gfs/atmos/post_processing/grib_wafs ..."
-fhrs=($(seq 0 6 120))
-link_master_to_fhr "jgfs_atmos_wafs" "$fhrs"
