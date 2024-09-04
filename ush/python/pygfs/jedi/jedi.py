@@ -33,7 +33,7 @@ class Jedi:
         self.j2tmpl_dir = os.path.join(task_config.PARMgfs, 'gdas')
 
     @logit(logger)
-    def set_config(self, task_config: AttrDict[str, Any], algorithm: Optional[str] = None) -> AttrDict:
+    def set_config(self, task_config: AttrDict, algorithm: Optional[str] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
         Parameters
@@ -74,7 +74,7 @@ class Jedi:
             raise KeyError(f"Task config must contain JCB_BASE_YAML or JEDIYAML")
 
     @logit(logger)
-    def execute(self, task_config: AttrDict[str, Any], aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
+    def execute(self, task_config: AttrDict, aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
         """Execute JEDI application
 
         Parameters
@@ -109,7 +109,7 @@ class Jedi:
             raise WorkflowException(f"An error occured during execution of {exec_cmd}")
 
     @logit(logger)
-    def link_exe(self, task_config: AttrDict[str, Any]) -> None:
+    def link_exe(self, task_config: AttrDict) -> None:
         """Link JEDI executable to run directory
 
         Parameters
@@ -131,7 +131,7 @@ class Jedi:
         os.symlink(task_config.JEDIEXE, exe_dest)
 
     @logit(logger)
-    def get_obs_dict(self, task_config: AttrDict[str, Any]) -> Dict[str, Any]:
+    def get_obs_dict(self, task_config: AttrDict) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
         This method extracts 'observers' from the JEDI yaml and from that list, extracts a list of
@@ -163,7 +163,7 @@ class Jedi:
         return obs_dict
 
     @logit(logger)
-    def get_bias_dict(self, task_config: Dict[str, Any]) -> Dict[str, Any]:
+    def get_bias_dict(self, task_config: AttrDict) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
         This method extracts 'observers' from the JEDI yaml and from that list, extracts a list of
