@@ -49,6 +49,7 @@ for grid in "0p25" "0p50" "1p00"; do
     YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
+
 ###############################################################
 # Run archive script
 ###############################################################
