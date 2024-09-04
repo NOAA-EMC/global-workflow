@@ -14,9 +14,9 @@ if (( $# != 1 )); then
     echo "stage_ic aerosol_init"
     echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
-    echo "atmensanlinit atmensanlletkf atmensanlfv3inc atmensanlfinal"
+    echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
     echo "snowanl esnowrecen"
-    echo "prepobsaero aeroanlinit aeroanlrun aeroanlfinal"
+    echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -117,6 +117,14 @@ case ${machine} in
     npe_node_max=24
     max_tasks_per_node=24
     # TODO Supply a max mem/node value for AZURE
+    # shellcheck disable=SC2034
+    mem_node_max=""
+    ;;
+  "GOOGLEPW")
+    export PARTITION_BATCH="compute"
+    npe_node_max=30
+    max_tasks_per_node=30
+    # TODO Supply a max mem/node value for GOOGLE
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;
@@ -278,7 +286,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="3072M"
+    memory="4GB"
     ;;
 
   "atmanlvar")
@@ -393,12 +401,12 @@ case ${step} in
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
@@ -419,19 +427,19 @@ case ${step} in
     memory="3072M"
     ;;
 
-  "aeroanlrun")
+  "aeroanlvar")
     case ${CASE} in
       "C768")
         layout_x=8
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
@@ -452,6 +460,42 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
+
+  "aeroanlgenb")
+    case ${CASE} in
+      "C768")
+        layout_x=8
+        layout_y=8
+        ;;
+      "C384")
+        layout_x=6
+        layout_y=6
+        ;;
+      "C192" | "C96")
+        layout_x=4
+        layout_y=4
+        ;;
+      "C48" )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        exit 4
+    esac
+
+    export layout_x
+    export layout_y
+
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+
+    ;;
+
 
   "aeroanlfinal")
     walltime="00:10:00"
@@ -994,6 +1038,30 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="3072M"
+    ;;
+
+  "atmensanlobs")
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
+
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="96GB"
+    export is_exclusive=True
+    ;;
+
+  "atmensanlsol")
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
+
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="96GB"
+    export is_exclusive=True
     ;;
 
   "atmensanlletkf")
