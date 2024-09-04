@@ -163,7 +163,6 @@ class Jedi:
         return obs_dict
 
     @logit(logger)
-    @staticmethod
     def get_bias_dict(self, task_config: Dict[str, Any]) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
