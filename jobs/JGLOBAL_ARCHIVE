@@ -51,7 +51,7 @@ for grid in "0p25" "0p50" "1p00"; do
 done
 
 for grid in '0p25' '0p50' '1p00'; do
-  prod_dir="COMOUT_ATMOS_ENSSTAT_${grid}"
+  prod_dir="COMIN_ATMOS_ENSSTAT_${grid}"
   MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 ###############################################################
