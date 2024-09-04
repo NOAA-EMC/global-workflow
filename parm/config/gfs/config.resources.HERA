@@ -11,6 +11,19 @@ case ${step} in
     fi
     ;;
 
+  "atmanlvar")
+    export tasks_per_node_gdas=12
+    export tasks_per_node_gfs=12
+    ;;
+
+  "atmensanlobs")
+    export tasks_per_node=12
+    ;;
+
+  "atmensanlsol")
+    export tasks_per_node=12
+    ;;
+
   "eupd")
     case ${CASE} in
       "C384")
