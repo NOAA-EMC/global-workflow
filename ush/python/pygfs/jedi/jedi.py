@@ -17,7 +17,7 @@ logger = getLogger(__name__.split('.')[-1])
 
 class Jedi:
 
-    def __init__(self, task_config: AttrDict[str, Any], yaml_name: Optional[str] = None) -> None:
+    def __init__(self, task_config: AttrDict, yaml_name: Optional[str] = None) -> None:
 
         # For provenance, save incoming task_config as a private attribute of JEDI object
         self._task_config = task_config
@@ -205,7 +205,6 @@ class Jedi:
 
 
 @logit(logger)
-@staticmethod
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
     Recursively search through a nested dictionary and return the value for the target key.
