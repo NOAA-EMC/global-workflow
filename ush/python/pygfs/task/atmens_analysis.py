@@ -18,7 +18,7 @@ from wxflow import (AttrDict,
                     Executable,
                     WorkflowException,
                     Template, TemplateConstants)
-from pygfs.jedi.jedi import JEDI
+from pygfs.jedi.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 

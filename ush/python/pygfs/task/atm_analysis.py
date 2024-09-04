@@ -14,7 +14,7 @@ from wxflow import (AttrDict,
                     Task,
                     parse_j2yaml, save_as_yaml,
                     logit)
-from pygfs.jedi.jedi import JEDI
+from pygfs.jedi.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
