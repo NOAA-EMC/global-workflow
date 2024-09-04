@@ -122,14 +122,7 @@ for fhr in "${hour_list[@]}"; do
 done
 
 # Run with MPMD 
-chmod +x "${DATA}/poescript_bufr"
-$APRUN "${DATA}/poescript_bufr"
-export err=$?; err_chk
-
-# Run with MPMD 
-#chmod +x "${DATA}/poescript_bufr"
-#bash +x "${DATA}/poescript_bufr" > mpmd.out 2>&1
-#export err=$?; err_chk
+"${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr"
 
 cd "${DATA}" || exit 2
 
