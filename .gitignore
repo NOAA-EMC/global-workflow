@@ -67,7 +67,6 @@ parm/post/optics_luts_WASO.dat
 parm/post/optics_luts_WASO_nasa.dat
 parm/post/params_grib2_tbl_new
 parm/post/post_tag_gfs128
-parm/post/post_tag_gfs65
 parm/post/gfs
 parm/post/gefs
 parm/post/ocean.csv

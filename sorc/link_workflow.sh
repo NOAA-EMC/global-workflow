@@ -170,11 +170,8 @@ for dir in gfs gefs
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
-# Link the post_tag files into parm/post from upp.fd/parm/gfs
-for file in post_tag_gfs128 post_tag_gfs65
-do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/gfs/${file}" .
-done
+# Link the 128-level post_tag file into parm/post from upp.fd/parm/gfs
+${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/gfs/post_tag_gfs128" .
 for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
     optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
     optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat
