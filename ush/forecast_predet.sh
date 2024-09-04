@@ -498,7 +498,7 @@ FV3_predet(){
     local month mm
     for (( month = 1; month <=12; month++ )); do
       mm=$(printf %02d "${month}")
-      ${NCP} "${FIXgfs}/aer/merra2.aerclim.2003-2014.m${mm}.nc" "aeroclim.m${mm}.nc"
+      ${NCP} "${FIXgfs}/aer/merra2_1423_${mm}.nc" "aeroclim.m${mm}.nc"
     done
   fi
 
