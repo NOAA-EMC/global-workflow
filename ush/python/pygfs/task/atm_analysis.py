@@ -228,7 +228,6 @@ class AtmAnalysis(Task):
         ----------
         None
         """
-        super().finalize()
 
         # ---- tar up diags
         # path of output tar statfile
