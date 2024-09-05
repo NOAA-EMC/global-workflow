@@ -75,7 +75,6 @@ class AtmAnalysis(Task):
         ----------
         None
         """
-        super().initialize()
 
         # get JEDI-to-FV3 increment converter config and save to YAML file
         logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
