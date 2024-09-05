@@ -25,9 +25,9 @@ class AtmAnalysis(Task):
     """
     @logit(logger, name="AtmAnalysis")
     def __init__(self, config: Dict[str,Any], yaml_name: Optional[str] = None):
-        """Initialize global atm analysis task
+        """Constructor global atm analysis task
 
-        This method will initialize a global atm analysis task.
+        This method will construct a global atm analysis task.
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
         - instantiate the Jedi attribute object

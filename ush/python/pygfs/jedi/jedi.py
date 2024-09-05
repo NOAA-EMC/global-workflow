@@ -19,9 +19,26 @@ class Jedi:
 
     @logit(logger, name="Jedi")
     def __init__(self, task_config: AttrDict, yaml_name: Optional[str] = None) -> None:
-    """Constructor for JEDI objects
-    Needs a doc-block
-    """
+        """Constructor for JEDI objects
+
+        This method will construct a Jedi object.
+        This includes:
+        - save a copy of task_config for provenance
+        - set the default JEDI YAML and executable names
+        - set an empty AttrDict for the JEDI config
+        - set the default directory for J2-YAML templates
+
+        Parameters
+        ----------
+        task_config: AttrDict
+            Attribute-dictionary of all configuration variables associated with a GDAS task.
+        yaml_name: str, optional
+            Name of YAML file for JEDI configuration
+
+        Returns
+        ----------
+        None
+        """
 
         # For provenance, save incoming task_config as a private attribute of JEDI object
         self._task_config = task_config

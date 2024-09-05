@@ -29,8 +29,8 @@ class AtmEnsAnalysis(Task):
     """
     @logit(logger, name="AtmEnsAnalysis")
     def __init__(self, config: Dict[str,Any], yaml_name: Optional[str] = None):
-        """Initialize global atmens analysis task                                                                                                                                               
-        This method will initialize a global atmens analysis task.
+        """Constructor global atmens analysis task                                                                                                                                               
+        This method will construct a global atmens analysis task.
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
         - instantiate the Jedi attribute object
