@@ -75,7 +75,8 @@ class Jedi:
             self.config = parse_j2yaml(task_config.JEDIYAML, task_config,
                                        searchpath=self.j2tmpl_dir)
         else:
-            raise KeyError(f"Task config must contain JCB_BASE_YAML or JEDIYAML")
+            logger.exception(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
+            raise KeyError(f"FATAL ERROR: Task config must contain JCB_BASE_YAML or JEDIYAML")
 
     @logit(logger)
     def execute(self, task_config: AttrDict, aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
