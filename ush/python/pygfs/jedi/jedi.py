@@ -17,7 +17,11 @@ logger = getLogger(__name__.split('.')[-1])
 
 class Jedi:
 
+    @logit(logger, name="Jedi")
     def __init__(self, task_config: AttrDict, yaml_name: Optional[str] = None) -> None:
+    """Constructor for JEDI objects
+    Needs a doc-block
+    """
 
         # For provenance, save incoming task_config as a private attribute of JEDI object
         self._task_config = task_config
