@@ -234,7 +234,7 @@ class AtmAnalysis(Task):
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
-        # get list of yamls to cop to ROTDIR
+        # get list of yamls to copy to ROTDIR
         yamls = glob.glob(os.path.join(self.task_config.DATA, '*atm*yaml'))
 
         # copy full YAML from executable to ROTDIR
