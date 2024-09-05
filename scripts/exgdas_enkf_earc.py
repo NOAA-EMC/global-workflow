@@ -28,7 +28,7 @@ def main():
             'DOHYBVAR', 'DOIAU_ENKF', 'IAU_OFFSET', 'DOIAU',
             'DO_CALC_INCREMENT', 'assim_freq', 'ARCH_CYC',
             'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ',
-            'IAUFHRS_ENKF']
+            'IAUFHRS_ENKF', 'NET']
 
     archive_dict = AttrDict()
     for key in keys:
