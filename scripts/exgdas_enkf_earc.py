@@ -32,7 +32,9 @@ def main():
 
     archive_dict = AttrDict()
     for key in keys:
-        archive_dict[key] = archive.task_config[key]
+        archive_dict[key] = archive.task_config.get(key)
+        if archive_dict[key] is None:
+            print(f"Key ({key}) not found in task_config")
 
     # Also import all COMIN* directory and template variables
     for key in archive.task_config.keys():
