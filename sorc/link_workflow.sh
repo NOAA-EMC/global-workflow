@@ -170,12 +170,6 @@ for dir in gfs gefs
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
-for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
-    optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
-    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat
-do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
-done
 for file in ice.csv ocean.csv ocnicepost.nml.jinja2
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
@@ -218,7 +212,12 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"\
                           "ufs.configure.s2swa.IN" \
                           "ufs.configure.s2swa_esmf.IN" \
                           "ufs.configure.leapfrog_atm_wav.IN" \
-                          "ufs.configure.leapfrog_atm_wav_esmf.IN" )
+                          "ufs.configure.leapfrog_atm_wav_esmf.IN" \
+                          "post_itag_gfs" \  # TODO: Need a GEFS version of this in the UFS-weather-model
+                          "postxconfig-NT-gfs.txt" \  # TODO: Need a GEFS version of this in the UFS-weather-model
+                          "postxconfig-NT-gfs_FH00.txt")  # TODO: Need a GEFS version of this in the UFS-weather-model
+                          # TODO: The above postxconfig files in the UFSWM are not the same as the ones in UPP
+                          # See forecast_predet.sh where the UPP versions are used.  They will need to be replaced with these.
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
