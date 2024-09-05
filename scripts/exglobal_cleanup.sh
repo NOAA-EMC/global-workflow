@@ -11,14 +11,6 @@ DATAfcst="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
 #DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
-
-# In XML, DATAROOT is defined as:
-#DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"
-# cleanup is only executed after the entire cycle is successfully completed.
-# removing DATAROOT should be possible if that is the case.
-rm -rf "${DATAROOT}"
-
-echo "Cleanup ${DATAROOT} completed!"
 ###############################################################
 
 if [[ "${CLEANUP_COM:-YES}" == NO ]] ; then
@@ -113,3 +105,13 @@ if (( GDATE < RDATE )); then
 fi
 deletion_target="${ROTDIR}/${RUN}.${RDATE:0:8}"
 if [[ -d ${deletion_target} ]]; then rm -rf "${deletion_target}"; fi
+
+# Finally, delete DATAROOT.
+# This will also delete the working directory, so save it until the end.
+# In XML, DATAROOT is defined as:
+#DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"
+# cleanup is only executed after the entire cycle is successfully completed.
+# removing DATAROOT should be possible if that is the case.
+rm -rf "${DATAROOT}"
+
+echo "Cleanup ${DATAROOT} completed!"
