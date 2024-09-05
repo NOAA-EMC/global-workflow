@@ -184,7 +184,6 @@ class AtmEnsAnalysis(Task):
         ----------
         None
         """
-        super().execute()
 
         if jedi_args:
             logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
