@@ -109,9 +109,9 @@ class Jedi:
         try:
             exec_cmd()
         except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
+            raise OSError(f"FATAL ERROR: Failed to execute {exec_cmd}")
         except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+            raise WorkflowException(f"FATAL ERROR: An error occurred during execution of {exec_cmd}")
 
     @logit(logger)
     def link_exe(self, task_config: AttrDict) -> None:
