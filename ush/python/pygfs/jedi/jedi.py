@@ -16,7 +16,9 @@ logger = getLogger(__name__.split('.')[-1])
 
 
 class Jedi:
-
+    """
+    Class for initializing and executing JEDI applications
+    """
     @logit(logger, name="Jedi")
     def __init__(self, task_config: AttrDict, yaml_name: Optional[str] = None) -> None:
         """Constructor for JEDI objects
