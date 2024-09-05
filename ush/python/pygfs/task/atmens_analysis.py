@@ -28,8 +28,9 @@ class AtmEnsAnalysis(Task):
     Class for JEDI-based global atmens analysis tasks
     """
     @logit(logger, name="AtmEnsAnalysis")
-    def __init__(self, config: Dict[str,Any], yaml_name: Optional[str] = None):
-        """Constructor global atmens analysis task                                                                                                                                               
+    def __init__(self, config: Dict[str, Any], yaml_name: Optional[str] = None):
+        """Constructor global atmens analysis task
+
         This method will construct a global atmens analysis task.
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
@@ -40,12 +41,12 @@ class AtmEnsAnalysis(Task):
         config: Dict
             dictionary object containing task configuration
         yaml_name: str, optional
-            name of YAML file for JEDI configuration 
+            name of YAML file for JEDI configuration
 
         Returns
         ----------
         None
-        """        
+        """
         super().__init__(config)
 
         _res = int(self.task_config.CASE_ENS[1:])

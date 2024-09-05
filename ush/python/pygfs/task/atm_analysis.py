@@ -24,7 +24,7 @@ class AtmAnalysis(Task):
     Class for JEDI-based global atm analysis tasks
     """
     @logit(logger, name="AtmAnalysis")
-    def __init__(self, config: Dict[str,Any], yaml_name: Optional[str] = None):
+    def __init__(self, config: Dict[str, Any], yaml_name: Optional[str] = None):
         """Constructor global atm analysis task
 
         This method will construct a global atm analysis task.
@@ -42,7 +42,7 @@ class AtmAnalysis(Task):
         Returns
         ----------
         None
-        """ 
+        """
         super().__init__(config)
 
         _res = int(self.task_config.CASE[1:])
