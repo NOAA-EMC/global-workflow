@@ -170,14 +170,6 @@ for dir in gfs gefs
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
-# Link the 128-level post_tag file into parm/post from upp.fd/parm/gfs
-${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/gfs/post_tag_gfs128" .
-for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
-    optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
-    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat
-do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
-done
 for file in ice.csv ocean.csv ocnicepost.nml.jinja2
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
@@ -220,7 +212,13 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"\
                           "ufs.configure.s2swa.IN" \
                           "ufs.configure.s2swa_esmf.IN" \
                           "ufs.configure.leapfrog_atm_wav.IN" \
-                          "ufs.configure.leapfrog_atm_wav_esmf.IN" )
+                          "ufs.configure.leapfrog_atm_wav_esmf.IN" \
+                          "post_itag_gfs" \
+                          "postxconfig-NT-gfs.txt" \
+                          "postxconfig-NT-gfs_FH00.txt")
+                          # TODO: The above postxconfig files in the UFSWM are not the same as the ones in UPP
+                          # TODO: GEFS postxconfig files also need to be received from UFSWM
+                          # See forecast_predet.sh where the UPP versions are used.  They will need to be replaced with these.
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
