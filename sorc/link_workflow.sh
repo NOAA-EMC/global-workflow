@@ -213,10 +213,11 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"\
                           "ufs.configure.s2swa_esmf.IN" \
                           "ufs.configure.leapfrog_atm_wav.IN" \
                           "ufs.configure.leapfrog_atm_wav_esmf.IN" \
-                          "post_itag_gfs" \  # TODO: Need a GEFS version of this in the UFS-weather-model
-                          "postxconfig-NT-gfs.txt" \  # TODO: Need a GEFS version of this in the UFS-weather-model
-                          "postxconfig-NT-gfs_FH00.txt")  # TODO: Need a GEFS version of this in the UFS-weather-model
+                          "post_itag_gfs" \
+                          "postxconfig-NT-gfs.txt" \
+                          "postxconfig-NT-gfs_FH00.txt")
                           # TODO: The above postxconfig files in the UFSWM are not the same as the ones in UPP
+                          # TODO: GEFS postxconfig files also need to be received from UFSWM
                           # See forecast_predet.sh where the UPP versions are used.  They will need to be replaced with these.
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
