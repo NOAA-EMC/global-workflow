@@ -240,7 +240,6 @@ class AtmAnalysis(Task):
 
         # copy full YAML from executable to ROTDIR
         for src in yamls:
-            logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS}")
             yaml_base = os.path.splitext(os.path.basename(src))[0]
             dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, dest_yaml_name)
