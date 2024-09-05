@@ -6,7 +6,7 @@ import gzip
 import tarfile
 from logging import getLogger
 from pprint import pformat
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from wxflow import (AttrDict,
                     FileHandler,
