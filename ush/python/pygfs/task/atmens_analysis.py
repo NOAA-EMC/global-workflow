@@ -18,7 +18,7 @@ from wxflow import (AttrDict,
                     Executable,
                     WorkflowException,
                     Template, TemplateConstants)
-from pygfs.jedi.jedi import Jedi
+from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -28,7 +28,24 @@ class AtmEnsAnalysis(Task):
     Class for JEDI-based global atmens analysis tasks
     """
     @logit(logger, name="AtmEnsAnalysis")
-    def __init__(self, config, yaml_name=None):
+    def __init__(self, config: Dict[str,Any], yaml_name: Optional[str] = None):
+        """Initialize global atmens analysis task                                                                                                                                               
+        This method will initialize a global atmens analysis task.
+        This includes:
+        - extending the task_config attribute AttrDict to include parameters required for this task
+        - instantiate the Jedi attribute object
+
+        Parameters
+        ----------
+        config: Dict
+            dictionary object containing task configuration
+        yaml_name: str, optional
+            name of YAML file for JEDI configuration 
+
+        Returns
+        ----------
+        None
+        """        
         super().__init__(config)
 
         _res = int(self.task_config.CASE_ENS[1:])

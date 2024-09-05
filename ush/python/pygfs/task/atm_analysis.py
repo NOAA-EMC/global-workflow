@@ -14,7 +14,7 @@ from wxflow import (AttrDict,
                     Task,
                     parse_j2yaml, save_as_yaml,
                     logit)
-from pygfs.jedi.jedi import Jedi
+from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -24,7 +24,25 @@ class AtmAnalysis(Task):
     Class for JEDI-based global atm analysis tasks
     """
     @logit(logger, name="AtmAnalysis")
-    def __init__(self, config, yaml_name=None):
+    def __init__(self, config: Dict[str,Any], yaml_name: Optional[str] = None):
+        """Initialize global atm analysis task
+
+        This method will initialize a global atm analysis task.
+        This includes:
+        - extending the task_config attribute AttrDict to include parameters required for this task
+        - instantiate the Jedi attribute object
+
+        Parameters
+        ----------
+        config: Dict
+            dictionary object containing task configuration
+        yaml_name: str, optional
+            name of YAML file for JEDI configuration
+
+        Returns
+        ----------
+        None
+        """ 
         super().__init__(config)
 
         _res = int(self.task_config.CASE[1:])
