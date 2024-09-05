@@ -113,8 +113,9 @@ class Jedi:
         except Exception:
             raise WorkflowException(f"FATAL ERROR: An error occurred during execution of {exec_cmd}")
 
+    @staticmethod
     @logit(logger)
-    def link_exe(self, task_config: AttrDict) -> None:
+    def link_exe(task_config: AttrDict) -> None:
         """Link JEDI executable to run directory
 
         Parameters
