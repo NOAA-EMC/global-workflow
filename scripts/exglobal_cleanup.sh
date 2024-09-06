@@ -106,6 +106,9 @@ fi
 deletion_target="${ROTDIR}/${RUN}.${RDATE:0:8}"
 if [[ -d ${deletion_target} ]]; then rm -rf "${deletion_target}"; fi
 
+# sync and wait to avoid filesystem synchronization issues
+sync && sleep 1
+
 # Finally, delete DATAROOT.
 # This will also delete the working directory, so save it until the end.
 # In XML, DATAROOT is defined as:
