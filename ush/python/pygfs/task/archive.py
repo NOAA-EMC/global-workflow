@@ -114,6 +114,9 @@ class Archive(Task):
             self.tar_cmd = ""
             return arcdir_set, []
 
+        if arch_dict.NET == "gefs":
+            raise NotImplementedError("GEFS archiving is not yet implemented!")
+
         master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
         parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml),
