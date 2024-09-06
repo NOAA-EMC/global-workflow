@@ -330,8 +330,8 @@ export DO_METP="NO"         # Run METPLUS jobs - set METPLUS settings in config.
 export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
-export HPSSARCH="NO"        # save data to HPSS archive
-export LOCALARCH="NO"        # save data to local archive
+export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
+export LOCALARCH="@LOCALARCH@"        # save data to local archive
 if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
    echo "Both HPSS and local archiving selected.  Please choose one or the other."
    exit 2

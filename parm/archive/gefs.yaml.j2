@@ -1,0 +1,10 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+
+gefs:
+    name: "GEFS"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs.tar"
+    required:
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/gefs.t12z.spread.pres_.1p00.f120.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/gefs.t12z.spread.pres_.1p00.f120.grib2"
