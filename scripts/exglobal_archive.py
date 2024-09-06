@@ -37,14 +37,14 @@ def main():
     for key in keys:
         archive_dict[key] = archive.task_config.get(key)
         if archive_dict[key] is None:
-            print(f"Key ({key}) not found in task_config")
+            print(f"Warning: key ({key}) not found in task_config!")
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
         if key.startswith("COM_") or key.startswith("COMIN_") or key.startswith("COMOUT_"):
             archive_dict[key] = archive.task_config.get(key)
             if archive_dict[key] is None:
-                print(f"Key ({key}) not found in task_config")
+                print(f"Warning: key ({key}) not found in task_config!")
 
     cwd = os.getcwd()
 
