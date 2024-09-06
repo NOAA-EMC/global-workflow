@@ -46,8 +46,20 @@ else
    bufrflag=".false."
 fi
 
-##fformat="nc"
-##fformat="nemsio"
+# check if read in bufr_ij_gfs_${CASE}.txt 
+
+if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt"  ]]; then
+  # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt 
+  ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
+  np1=0
+else
+  # find the nearest neighbor grid point(i,j) in the code
+  np1=1
+  echo "No bufr_ij_gfs_${CASE}.txt For CASE ${CASE}"
+  echo "Find the nearest neighbor grid (i,j) in the code"
+fi   
+
+##fformat="netcdf"
 
 CLASS="class1fv3"
 cat << EOF > gfsparm
@@ -56,7 +68,7 @@ cat << EOF > gfsparm
   dird="${COM_ATMOS_BUFR}/bufr",
   nstart=${fhr},nend=${fhr},nint=${FINT},
   nend1=${NEND1},nint1=${NINT1},nint3=${NINT3},
-  nsfc=80,f00=${f00flag},fformat=${fformat},np1=0,
+  nsfc=80,f00=${f00flag},fformat=${fformat},np1=${np1},
   fnsig="sigf${fhr}",
   fngrib="flxf${fhr}", 
   fngrib2="flxf${fhr_p}" 
@@ -87,19 +99,8 @@ ${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr_p}.${atmfm}" "flxf${fhr_p
 ${NLN} "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
 ${NLN} "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
 
-case "${CASE}" in
-    "C768")
-        ${NLN} "${PARMgfs}/product/bufr_ij13km.txt" fort.7
-        ;;
-    "C1152")
-        ${NLN} "${PARMgfs}/product/bufr_ij9km.txt"  fort.7
-        ;;
-    *)
-        echo "FATAL ERROR: Unrecognized bufr_ij*km.txt For CASE ${CASE}, ABORT!"
-        exit 1
-        ;;
-esac
 
+#------------------------------------------------------------------
 "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${fhr}"
 
 export err=$?

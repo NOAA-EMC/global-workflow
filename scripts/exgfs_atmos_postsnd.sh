@@ -79,7 +79,7 @@ echo "Total number of hours: $ntasks"
 # allocate 21 processes per node
 # don't allocate more processes, or it might have memory issue
 #export tasks_per_node=21
-export APRUN="mpiexec -np ${ntasks} -ppn ${tasks_per_node} --cpu-bind core cfp "
+#export APRUN="mpiexec -np ${ntasks} -ppn ${tasks_per_node} --cpu-bind core cfp "
 
 if [ -s "${DATA}/poescript_bufr" ]; then
   rm ${DATA}/poescript_bufr
@@ -136,8 +136,10 @@ for fhr in "${hour_list[@]}"; do
     ${NLN} "${DATA}/${fhr}/fort.${fortnum}" "fort.${fortnum}"
 done
 
+# start to generate bufr products at fhr=${ENDHOUR}
+
 export MAKEBUFR=YES
-export fhr=${ENDHOUR}
+export fhr="$(printf "%03d" "$ENDHOUR")" 
 export FINT=${NINT1}
 ## 1-hourly output before $NEND1, 3-hourly output after
 if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
