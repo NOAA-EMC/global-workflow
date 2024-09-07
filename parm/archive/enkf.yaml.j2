@@ -54,12 +54,14 @@ enkf:
                            "radstat.ensmean"] %}
         {% else %}
         {% if lobsdiag_forenkf %}
-        {% set da_files = ["atmens_observer.yaml",
-                           "atmens_solver.yaml",
+        {% set da_files = ["atmensanlobs.yaml",
+                           "atmensanlsol.yaml",
+                           "atmensanlfv3inc.yaml",
                            "atminc.ensmean.nc",
                            "atmensstat"] %}
         {% else %}
-        {% set da_files = ["atmens.yaml",
+        {% set da_files = ["atmensanlletkf.yaml",
+                           "atmensanlfv3inc.yaml",
                            "atminc.ensmean.nc",
                            "atmensstat"] %}
         {% endif %}
