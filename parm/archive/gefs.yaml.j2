@@ -1,0 +1,33 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+
+gefs:
+    name: "GEFS"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs.tar"
+    required:
+    {% set file_set = [] %}
+
+{% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                      '${RUN}':RUN,
+                      '${YMD}':cycle_YMD,
+                      '${HH}':cycle_HH,
+                      '${GRID}': '0p50',
+                      '${MEMDIR}': 'mem000' }) %}
+
+{% set COMIN_ATMOS_GRIB_1p00 = COM_ATMOS_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
+
+# Select ensstat files to copy to the arcdir
+{% if RUN == "gefs" %}
+    {% set ensstat_files = [] %}
+    {% if path_exists(COMIN_ATMOS_GRIB_1p00) %}
+        {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS - 50, FHOUT_GFS) %}
+            {% do ensstat_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2a." ~
+                                        "1p00" ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2",
+                                        GEFS_ARCH]) %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+{% set file_set = ensstat_files %}
+        - "{{ file_set }}"
