@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.calcanl ##########
+# Diagnostic amospheric analysis calculation specific
+
+echo "BEGIN: config.calcanl"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" calcanl
+
+export JCB_ALGO=fv3jedi_calcanl
+export JEDIEXE=${EXECgfs}/fv3jedi_calcanl.x
+
+echo "END: config.calcanl"

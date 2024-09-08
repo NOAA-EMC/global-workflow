@@ -244,13 +244,39 @@ class GFSTasks(Tasks):
 
         return task
 
+    def calcanl(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}atmanlfinal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}sfcanl'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_hybvar and self.run in ['gdas']:
+            dep_dict = {'type': 'task', 'name': 'enkfgdasechgres', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('calcanl')
+        task_name = f'{self.run}calcanl'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/calcanl.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def analcalc(self):
 
         deps = []
-        if self.app_config.do_jediatmvar:
-            dep_dict = {'type': 'task', 'name': f'{self.run}atmanlfinal'}
-        else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}anal'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))

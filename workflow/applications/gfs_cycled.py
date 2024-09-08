@@ -38,9 +38,9 @@ class GFSCycledAppConfig(AppConfig):
         configs = ['prep']
 
         if self.do_jediatmvar:
-            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
+            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'calcanl']
         else:
-            configs += ['anal', 'analdiag']
+            configs += ['anal', 'analdiag', 'analcalc']
 
         if self.do_jediocnvar:
             configs += ['prepoceanobs', 'ocnanalprep', 'marinebmat', 'ocnanalrun']
@@ -53,7 +53,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_ocean or self.do_ice:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
@@ -140,9 +140,9 @@ class GFSCycledAppConfig(AppConfig):
         gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
 
         if self.do_jediatmvar:
-            gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
+            gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'calcanl']
         else:
-            gdas_gfs_common_tasks_before_fcst += ['anal']
+            gdas_gfs_common_tasks_before_fcst += ['anal', 'analcalc']
 
         if self.do_jediocnvar:
             gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep', 'marinebmat', 'ocnanalrun']
@@ -152,7 +152,7 @@ class GFSCycledAppConfig(AppConfig):
             if self.do_vrfy_oceanda:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 
-        gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
+        gdas_gfs_common_tasks_before_fcst += ['sfcanl']
 
         if self.do_jedisnowda:
             gdas_gfs_common_tasks_before_fcst += ['prepsnowobs', 'snowanl']

@@ -17,7 +17,7 @@ if (( $# != 1 )); then
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
     echo "snowanl esnowrecen"
     echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
-    echo "anal sfcanl analcalc analdiag fcst echgres"
+    echo "anal sfcanl calcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
@@ -684,6 +684,21 @@ case ${step} in
     export is_exclusive=True
     ;;
 
+  "calcanl")
+    walltime="00:15:00"
+    ntasks=127
+    export ntasks_calcanl="${ntasks}"
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export threads_per_task_echgres_gdas=4
+    export threads_per_task_echgres_gfs=12
+    export is_exclusive=True
+    memory="48GB"
+    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" ]]; then
+       memory="${mem_node_max}"
+    fi
+    ;;
+  
   "analcalc")
     walltime="00:15:00"
     ntasks=127
