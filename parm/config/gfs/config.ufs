@@ -356,6 +356,25 @@ export ntasks_fv3_gfs
 export ntasks_quilt_gdas
 export ntasks_quilt_gfs
 
+# Determine whether to use compression in the write grid component based on resolution
+case ${fv3_res} in
+  "C48" | "C96" | "C192" | "C384")
+    zstandard_level=0
+    ideflate=0
+    quantize_nsd=0
+    ;;
+  "C768" | "C1152" | "C3072")
+    zstandard_level=0
+    ideflate=1
+    quantize_nsd=5
+    ;;
+  *)
+    echo "FATAL ERROR: Unrecognized FV3 resolution ${fv3_res}"
+    exit 15
+    ;;
+esac
+export zstandard_level ideflate quantize_nsd
+
 # Determine whether to use parallel NetCDF based on resolution
 case ${fv3_res} in
   "C48" | "C96" | "C192" | "C384")

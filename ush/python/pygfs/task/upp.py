@@ -202,7 +202,7 @@ class UPP(Task):
 
         template = f"GFS{{file_type}}.GrbF{forecast_hour:02d}"
 
-        for ftype in ['PRS', 'FLX']:
+        for ftype in ['PRS', 'FLX', 'GOES']:
             grbfile = template.format(file_type=ftype)
             grbfidx = f"{grbfile}.idx"
 
