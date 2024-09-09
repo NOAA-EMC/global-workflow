@@ -8,7 +8,14 @@ echo "BEGIN: config.calcanl"
 # Get task specific resources
 . "${EXPDIR}/config.resources" calcanl
 
+export JCB_BASE_YAML=${PARMgfs}/gdas/atm/jcb-base.yaml.j2
 export JCB_ALGO=fv3jedi_calcanl
 export JEDIEXE=${EXECgfs}/fv3jedi_calcanl.x
+
+if [[ ${DOHYBVAR} = "YES" ]]; then
+    export CASE_ANL=${CASE_ENS}
+else
+    export CASE_ANL=${CASE}
+fi
 
 echo "END: config.calcanl"
