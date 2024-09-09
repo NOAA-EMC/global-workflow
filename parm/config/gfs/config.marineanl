@@ -1,9 +1,9 @@
 #!/bin/bash
 
-########## config.ocnanal ##########
+########## config.marineanl ##########
 # configuration common to all ocean analysis tasks
 
-echo "BEGIN: config.ocnanal"
+echo "BEGIN: config.marineanl"
 
 export OBS_YAML_DIR="${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config"
 export OBS_LIST=@SOCA_OBS_LIST@  # TODO(GA): doesn't look necessary as is to have
@@ -17,4 +17,4 @@ export SOCA_FIX_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage_${OCNRES}.yaml.j2
 export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin  # TODO(GA): remove once analysis "run"
                                                    #          and "checkpoint" are refactored
 
-echo "END: config.ocnanal"
+echo "END: config.marineanl"

@@ -281,6 +281,26 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   done
 fi
 
+#------------------------------
+#-- Link the JEDI/SOCA experimental observations
+#------------------------------
+case "${machine}" in
+  "wcoss2")   EXPOBS_DIR="" ;;
+  "hera")     EXPOBS_DIR="/scratch1/NCEPDEV/global/glopara/data/experimental_obs" ;;
+  "orion")    EXPOBS_DIR="/work/noaa/global/glopara/data/experimental_obs/" ;;
+  "hercules") EXPOBS_DIR="/work/noaa/global/glopara/data/experimental_obs/" ;;
+  "jet")      EXPOBS_DIR="" ;;
+  "s4")       EXPOBS_DIR="" ;;
+  "gaea")     EXPOBS_DIR="" ;;
+  "noaacloud") EXPOBS_DIR="" ;;
+  *)
+    echo "FATAL: Unknown target machine ${machine}, couldn't set EXPOBS_DIR"
+    exit 1
+    ;;
+esac
+if [[ -d "${EXPOBS_DIR}" ]]; then
+  ${LINK_OR_COPY} "${EXPOBS_DIR}" "${HOMEgfs}/parm/gdas/experimental_obs"
+fi
 
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)

@@ -4,7 +4,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marinevariational"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlvar" -c "base ocnanal marineanlvar"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl marineanlvar"
 
 ##############################################
 # Set variables used in the script

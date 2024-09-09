@@ -8,11 +8,10 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="ocnanalchkpt"
-export jobid="${job}.$$"
+export job="marineanlchkpt"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_CHKPT
+"${HOMEgfs}"/jobs/JGLOBAL_MARINE_ANALYSIS_CHECKPOINT
 status=$?
 exit "${status}"

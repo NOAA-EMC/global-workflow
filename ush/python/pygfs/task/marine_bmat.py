@@ -58,7 +58,7 @@ class MarineBMat(Task):
 
         This method will initialize a global B-Matrix.
         This includes:
-        - staging the deterministic backgrounds (middle of window)
+        - staging the deterministic backgrounds
         - staging SOCA fix files
         - staging static ensemble members (optional)
         - staging ensemble members (optional)
@@ -135,8 +135,8 @@ class MarineBMat(Task):
             hybridweights_config.save(os.path.join(self.task_config.DATA, 'soca_ensweights.yaml'))
 
         # create the symbolic link to the static B-matrix directory
-        link_target = os.path.join(self.task_config.DATA, '..', 'staticb')
-        link_name = os.path.join(self.task_config.DATA, 'diagb')
+        link_target = os.path.join(self.task_config.DATAstaticb)
+        link_name = os.path.join(self.task_config.DATA, 'staticb')
         if os.path.exists(link_name):
             os.remove(link_name)
         os.symlink(link_target, link_name)
@@ -290,12 +290,12 @@ class MarineBMat(Task):
         logger.info(f"Copying the diffusion coefficient files to the ROTDIR")
         diffusion_coeff_list = []
         for diff_type in ['hz', 'vt']:
-            src = os.path.join(self.task_config.DATA, f"{diff_type}_ocean.nc")
+            src = os.path.join(self.task_config.DATAstaticb, f"{diff_type}_ocean.nc")
             dest = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
                                 f"{self.task_config.APREFIX}{diff_type}_ocean.nc")
             diffusion_coeff_list.append([src, dest])
 
-        src = os.path.join(self.task_config.DATA, f"hz_ice.nc")
+        src = os.path.join(self.task_config.DATAstaticb, f"hz_ice.nc")
         dest = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
                             f"{self.task_config.APREFIX}hz_ice.nc")
         diffusion_coeff_list.append([src, dest])
@@ -308,13 +308,17 @@ class MarineBMat(Task):
         window_end_iso = self.task_config.MARINE_WINDOW_END.strftime('%Y-%m-%dT%H:%M:%SZ')
 
         # ocean diag B
-        src = os.path.join(self.task_config.DATA, 'diagb', f"ocn.bkgerr_stddev.incr.{window_end_iso}.nc")
+        os.rename(os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.incr.{window_end_iso}.nc"),
+                  os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc"))
+        src = os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc")
         dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
                            f"{self.task_config.APREFIX}ocean.bkgerr_stddev.nc")
         diagb_list.append([src, dst])
 
         # ice diag B
-        src = os.path.join(self.task_config.DATA, 'diagb', f"ice.bkgerr_stddev.incr.{window_end_iso}.nc")
+        os.rename(os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.incr.{window_end_iso}.nc"),
+                  os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc"))
+        src = os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc")
         dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
                            f"{self.task_config.APREFIX}ice.bkgerr_stddev.nc")
         diagb_list.append([src, dst])
