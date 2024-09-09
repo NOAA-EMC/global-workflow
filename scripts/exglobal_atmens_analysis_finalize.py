@@ -21,4 +21,6 @@ if __name__ == '__main__':
 
     # Instantiate the atmens analysis task
     AtmEnsAnl = AtmEnsAnalysis(config)
+
+    # Finalize ensemble DA analysis
     AtmEnsAnl.finalize()
