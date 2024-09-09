@@ -41,9 +41,6 @@ class Analysis(Task):
         obs_dict = self.get_obs_dict()
         FileHandler(obs_dict).sync()
 
-        # some analyses need to stage bias corrections
-        self.get_bias()
-
         # link jedi executable to run directory
         self.link_jediexe()
 
@@ -125,48 +122,6 @@ class Analysis(Task):
             'copy': copylist
         }
         return obs_dict
-
-    @logit(logger)
-    def get_bias(self) -> None:
-        """Stage radiance bias correciton files
-
-        This method stages radiance bias correction files in the obs sub-diretory of the run directory
-
-        Parameters
-        ----------
-        Task: GDAS task
-
-        Returns
-        ----------
-        None
-        """
-
-        logger.info(f"Copy radiance bias correction tarball if Jedi config processes bias corrected radiances")
-        observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
-        logger.debug(f"observations:\n{pformat(observations)}")
-
-        copylist = []
-        for ob in observations['observers']:
-            if 'obs bias' in ob.keys():
-                obfile = ob['obs bias']['input file']
-                obdir = os.path.dirname(obfile)
-                basename = os.path.basename(obfile)
-                prefix = '.'.join(basename.split('.')[:-3])
-                bfile = f"{prefix}.rad_varbc_params.tar"
-                copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
-                break
-
-        bias_dict = {
-            'mkdir': [os.path.join(self.task_config.DATA, 'bc')],
-            'copy': copylist
-        }
-        FileHandler(bias_dict).sync()
-
-        radtar = os.path.join(obdir, bfile)
-        with tarfile.open(radtar, "r") as radbcor:
-            radbcor.extractall(path=os.path.join(self.task_config.DATA, 'obs'))
-            logger.info(f"Extract {radbcor.getnames()}")
-        radbcor.close()
 
     @logit(logger)
     def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:

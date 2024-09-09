@@ -216,11 +216,10 @@ class Jedi:
                 obfile = ob['obs bias']['input file']
                 obdir = os.path.dirname(obfile)
                 basename = os.path.basename(obfile)
-                prefix = '.'.join(basename.split('.')[:-2])
-                for file in ['satbias.nc', 'satbias_cov.nc', 'tlapse.txt']:
-                    bfile = f"{prefix}.{file}"
-                    copylist.append([os.path.join(task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
-                    # TODO: Why is this specific to ATMOS?
+                prefix = '.'.join(basename.split('.')[:-3])
+                bfile = f"{prefix}.rad_varbc_params.tar"
+                copylist.append([os.path.join(task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
+                break
 
         bias_dict = {
             'mkdir': [os.path.join(task_config.DATA, 'bc')],
