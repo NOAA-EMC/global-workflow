@@ -57,7 +57,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if self.do_hybvar:
             if self.do_jediatmens:
-                configs += ['atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
+                configs += ['atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
@@ -107,12 +107,14 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
         if self.do_aero:
-            configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+            configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             if self.do_prep_obs_aero:
                 configs += ['prepobsaero']
 
         if self.do_jedisnowda:
             configs += ['prepsnowobs', 'snowanl']
+            if self.do_hybvar:
+                configs += ['esnowrecen']
 
         if self.do_mos:
             configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
@@ -163,10 +165,13 @@ class GFSCycledAppConfig(AppConfig):
         hybrid_after_eupd_tasks = []
         if self.do_hybvar:
             if self.do_jediatmens:
-                hybrid_tasks += ['atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
+                hybrid_tasks += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
+                hybrid_tasks += ['atmensanlobs', 'atmensanlsol'] if self.lobsdiag_forenkf else ['atmensanlletkf']
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            if self.do_jedisnowda:
+                hybrid_tasks += ['esnowrecen']
             hybrid_after_eupd_tasks += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks
@@ -179,7 +184,7 @@ class GFSCycledAppConfig(AppConfig):
             gdas_tasks += wave_prep_tasks
 
         if self.do_aero and 'gdas' in self.aero_anl_runs:
-            gdas_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+            gdas_tasks += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             if self.do_prep_obs_aero:
                 gdas_tasks += ['prepobsaero']
 
@@ -218,7 +223,7 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += wave_prep_tasks
 
         if self.do_aero and 'gfs' in self.aero_anl_runs:
-            gfs_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+            gfs_tasks += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             if self.do_prep_obs_aero:
                 gfs_tasks += ['prepobsaero']
 
@@ -297,6 +302,7 @@ class GFSCycledAppConfig(AppConfig):
             if self.do_hybvar and 'gfs' in self.eupd_runs:
                 enkfgfs_tasks = hybrid_tasks + hybrid_after_eupd_tasks
                 enkfgfs_tasks.remove("echgres")
+                enkfgfs_tasks.remove("esnowrecen")
                 tasks['enkfgfs'] = enkfgfs_tasks
 
         return tasks

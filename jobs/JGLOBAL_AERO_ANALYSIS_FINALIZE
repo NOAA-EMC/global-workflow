@@ -8,25 +8,15 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlfinal" -c "base aeroanl aeroan
 ##############################################
 # Set variables used in the script
 ##############################################
-# shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-gPDY=${GDATE:0:8}
-gcyc=${GDATE:8:2}
-GDUMP="gdas"
-
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_CHEM_ANALYSIS
-
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_CHEM_ANALYSIS_PREV:COM_CHEM_ANALYSIS_TMPL \
-    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
-
-mkdir -m 775 -p "${COM_CHEM_ANALYSIS}"
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
+    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
 
 ###############################################################
 # Run relevant script

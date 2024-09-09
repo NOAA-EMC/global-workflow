@@ -162,36 +162,13 @@ cd "${HOMEgfs}/parm/ufs" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
-#for file in postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GEFS-WAFS.txt \
-#    postxconfig-NT-GEFS-F00-aerosol.txt postxconfig-NT-GEFS-aerosol.txt \
-#    postxconfig-NT-GFS-ANL.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt \
-#    postxconfig-NT-GFS.txt postxconfig-NT-GFS-FLUX.txt postxconfig-NT-GFS-GOES.txt \
-#    postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-TWO.txt \
-#    params_grib2_tbl_new post_tag_gfs128 post_tag_gfs65 nam_micro_lookup.dat
-#do
-#  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
-#done
-for file in nam_micro_lookup.dat params_grib2_tbl_new
+for file in params_grib2_tbl_new nam_micro_lookup.dat
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
 done
-for file in postxconfig-NT-gefs-f00.txt postxconfig-NT-gefs.txt postxconfig-NT-gefs-wafs.txt \
-    postxconfig-NT-gefs-f00-aerosol.txt postxconfig-NT-gefs-aerosol.txt
+for dir in gfs gefs
 do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/gefs/${file}" .
-done
-for file in postxconfig-NT-gfs-anl.txt postxconfig-NT-gfs-f00.txt postxconfig-NT-gfs-flux-f00.txt \
-    postxconfig-NT-gfs.txt postxconfig-NT-gfs-flus.txt postxconfig-NT-gfs-goes.txt \
-    postxconfig-NT-gfs-f00-two.txt postxconfig-NT-gfs-two.txt post_tag_gfs128 post_tag_gfs65 \
-
-do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/gfs/${file}" .
-done
-for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
-    optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
-    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat
-do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
 for file in ice.csv ocean.csv ocnicepost.nml.jinja2
 do
@@ -218,7 +195,7 @@ done
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
-declare -a ufs_templates=("model_configure.IN" "model_configure_nest.IN"\
+declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"\
                           "MOM_input_025.IN" "MOM_input_050.IN" "MOM_input_100.IN" "MOM_input_500.IN" \
                           "MOM6_data_table.IN" \
                           "ice_in.IN" \
@@ -235,7 +212,13 @@ declare -a ufs_templates=("model_configure.IN" "model_configure_nest.IN"\
                           "ufs.configure.s2swa.IN" \
                           "ufs.configure.s2swa_esmf.IN" \
                           "ufs.configure.leapfrog_atm_wav.IN" \
-                          "ufs.configure.leapfrog_atm_wav_esmf.IN" )
+                          "ufs.configure.leapfrog_atm_wav_esmf.IN" \
+                          "post_itag_gfs" \
+                          "postxconfig-NT-gfs.txt" \
+                          "postxconfig-NT-gfs_FH00.txt")
+                          # TODO: The above postxconfig files in the UFSWM are not the same as the ones in UPP
+                          # TODO: GEFS postxconfig files also need to be received from UFSWM
+                          # See forecast_predet.sh where the UPP versions are used.  They will need to be replaced with these.
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
@@ -254,7 +237,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/fix" || exit 1
   [[ ! -d gdas ]] && mkdir -p gdas
   cd gdas || exit 1
-  for gdas_sub in fv3jedi gsibec obs soca; do
+  for gdas_sub in fv3jedi gsibec obs soca aero; do
     if [[ -d "${gdas_sub}" ]]; then
        rm -rf "${gdas_sub}"
     fi
@@ -345,7 +328,7 @@ ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/ufs_model.x" .
 [[ -s "upp.x" ]] && rm -f upp.x
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
 
-for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle; do
+for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid; do
     [[ -s "${ufs_utilsexe}" ]] && rm -f "${ufs_utilsexe}"
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/exec/${ufs_utilsexe}" .
 done
@@ -384,14 +367,17 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   declare -a JEDI_EXE=("gdas.x" \
                        "gdas_soca_gridgen.x" \
                        "gdas_soca_error_covariance_toolbox.x" \
+                       "gdas_fv3jedi_error_covariance_toolbox.x" \
                        "gdas_soca_setcorscales.x" \
                        "gdas_soca_diagb.x" \
                        "fv3jedi_plot_field.x" \
+                       "gdasapp_chem_diagb.x" \
                        "fv3jedi_fv3inc.x" \
                        "gdas_ens_handler.x" \
                        "gdas_incr_handler.x" \
                        "gdas_obsprovider2ioda.x" \
                        "gdas_socahybridweights.x" \
+                       "gdasapp_land_ensrecenter.x" \
                        "bufr2ioda.x" \
                        "calcfIMS.exe" \
                        "apply_incr.exe" )
