@@ -8,10 +8,7 @@ echo "BEGIN: config.prepsnowobs"
 # Get task specific resources
 . "${EXPDIR}/config.resources" prepsnowobs
 
-export GTS_OBS_LIST="${PARMgfs}/gdas/snow/prep/prep_gts.yaml.j2"
 export IMS_OBS_LIST="${PARMgfs}/gdas/snow/prep/prep_ims.yaml.j2"
-
-export BUFR2IODAX="${EXECgfs}/bufr2ioda.x"
 
 export CALCFIMSEXE="${EXECgfs}/calcfIMS.exe"
 export FIMS_NML_TMPL="${PARMgfs}/gdas/snow/prep/fims.nml.j2"
