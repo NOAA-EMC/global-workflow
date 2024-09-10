@@ -20,12 +20,15 @@ def main():
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
             'assim_freq', 'current_cycle', 'previous_cycle',
-            'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL',
+            'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU', 'DO_JEDIOCNVAR',
             'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST']
 
     stage_dict = AttrDict()
     for key in keys:
+        # Make sure OCNRES is three digits
+        if key == "OCNRES":
+            stage.task_config.OCNRES = f"{stage.task_config.OCNRES :03d}"
         stage_dict[key] = stage.task_config[key]
 
     # Also import all COM* directory and template variables
