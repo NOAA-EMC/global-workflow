@@ -10,6 +10,9 @@ class GEFSAppConfig(AppConfig):
     def __init__(self, conf: Configuration):
         super().__init__(conf)
 
+        base = conf.parse_config('config.base')
+        self.run = base.get('RUN', 'gefs')
+
     def _get_app_configs(self):
         """
         Returns the config_files that are involved in gefs
@@ -36,7 +39,7 @@ class GEFSAppConfig(AppConfig):
         return configs
 
     @staticmethod
-    def update_base(base_in):
+    def _update_base(base_in):
 
         base_out = base_in.copy()
         base_out['INTERVAL_GFS'] = AppConfig.get_gfs_interval(base_in['gfs_cyc'])
@@ -81,4 +84,4 @@ class GEFSAppConfig(AppConfig):
 
         tasks += ['arch']
 
-        return {f"{self._base['RUN']}": tasks}
+        return {f"{self.run}": tasks}
