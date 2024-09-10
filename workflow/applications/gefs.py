@@ -61,7 +61,7 @@ class GEFSAppConfig(AppConfig):
 
         if self.do_repair_replay:
             tasks += ['repair_replay']
-        
+
         tasks += ['atmos_prod']
 
         if self.nens > 0:
