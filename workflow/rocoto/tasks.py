@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import copy
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
@@ -19,9 +18,9 @@ class Tasks:
                    'ocnanalprep', 'marinebmat', 'ocnanalrun', 'ocnanalecen', 'ocnanalchkpt', 'ocnanalpost', 'ocnanalvrfy',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
-                   'atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
-                   'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
-                   'prepsnowobs', 'snowanl',
+                   'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
+                   'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
+                   'prepsnowobs', 'snowanl', 'esnowrecen',
                    'fcst',
                    'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmos_prod', 'ocean_prod', 'ice_prod',
@@ -39,15 +38,16 @@ class Tasks:
 
     def __init__(self, app_config: AppConfig, run: str) -> None:
 
-        self.app_config = copy.deepcopy(app_config)
+        self.app_config = app_config
         self.run = run
-        # Re-source the configs with RUN specified
-        print(f"Source configs with RUN={run}")
-        self._configs = self.app_config.source_configs(run=run, log=False)
+
+        # Get the configs for the specified RUN
+        self._configs = self.app_config.configs[run]
 
         # Update the base config for the application
-        self._configs['base'] = self.app_config.update_base(self._configs['base'])
-        # Save dict_configs and base in the internal state (never know where it may be needed)
+        self._configs['base'] = self.app_config._update_base(self._configs['base'])
+
+        # Save base in the internal state (never know where it may be needed)
         self._base = self._configs['base']
 
         self.HOMEgfs = self._base['HOMEgfs']
@@ -134,7 +134,6 @@ class Tasks:
     def _get_forecast_hours(run, config, component='atmos') -> List[str]:
         # Make a local copy of the config to avoid modifying the original
         local_config = config.copy()
-
         # Ocean/Ice components do not have a HF output option like the atmosphere
         if component in ['ocean', 'ice']:
             local_config['FHMAX_HF_GFS'] = 0

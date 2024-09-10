@@ -18,7 +18,8 @@ class RocotoXML(ABC):
         self._app_config = app_config
         self.rocoto_config = rocoto_config
 
-        self._base = self._app_config.configs['base']
+        # Use the generic config.base (without RUN specified)
+        self._base = self._app_config.configs['_no_run']['base']
 
         self.preamble = self._get_preamble()
         self.definitions = self._get_definitions()
@@ -162,8 +163,7 @@ class RocotoXML(ABC):
         # AWS need 'SHELL', and 'BASH_ENV' defined, or, the crontab job won't start.
         if os.environ.get('PW_CSP', None) in ['aws', 'azure', 'google']:
             strings.extend([f'SHELL="/bin/bash"',
-                            f'BASH_ENV="/etc/bashrc"'
-                            ])
+                            f'BASH_ENV="/etc/bashrc"'])
         strings.extend([f'{cronintstr} {rocotorunstr}',
                         '#################################################################',
                         ''])

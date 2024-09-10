@@ -304,6 +304,7 @@ FV3_predet(){
     phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
     use_hydro_pressure=".false."   # use hydrostatic pressure for physics
     make_nh=".true."               # running in non-hydrostatic mode
+    pass_full_omega_to_physics_in_non_hydrostatic_mode=".true."
   else  # hydrostatic options
     hydrostatic=".true."
     phys_hydrostatic=".false."     # ignored when hydrostatic = T
@@ -497,7 +498,7 @@ FV3_predet(){
     local month mm
     for (( month = 1; month <=12; month++ )); do
       mm=$(printf %02d "${month}")
-      ${NCP} "${FIXgfs}/aer/merra2.aerclim.2003-2014.m${mm}.nc" "aeroclim.m${mm}.nc"
+      ${NCP} "${FIXgfs}/aer/merra2.aerclim.2014-2023.m${mm}.nc" "aeroclim.m${mm}.nc"
     done
   fi
 
@@ -536,10 +537,16 @@ FV3_predet(){
 
   # Inline UPP fix files
   if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
-    ${NCP} "${PARMgfs}/post/post_tag_gfs${LEVS}"                              "${DATA}/itag"
-    ${NCP} "${FLTFILEGFS:-${PARMgfs}/post/postxconfig-NT-GFS-TWO.txt}"        "${DATA}/postxconfig-NT.txt"
-    ${NCP} "${FLTFILEGFSF00:-${PARMgfs}/post/postxconfig-NT-GFS-F00-TWO.txt}" "${DATA}/postxconfig-NT_FH00.txt"
-    ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}"             "${DATA}/params_grib2_tbl_new"
+    ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}" "${DATA}/params_grib2_tbl_new"
+    ${NCP} "${PARMgfs}/ufs/post_itag_gfs"                         "${DATA}/itag"  # TODO: Need a GEFS version when available in the UFS-weather-model
+    # TODO: These should be replaced with ones from the ufs-weather-model when available there
+    if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gfs" ]]; then  # RUN = gdas | enkfgdas | gfs | enkfgfs
+      ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
+      ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
+    elif [[ "${RUN}" == "gefs" ]]; then  # RUN = gefs
+      ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
+      ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
+    fi
   fi
 
 }

@@ -28,6 +28,8 @@ class Analysis(Task):
         super().__init__(config)
         # Store location of GDASApp jinja2 templates
         self.gdasapp_j2tmpl_dir = os.path.join(self.task_config.PARMgfs, 'gdas')
+        # fix ocnres
+        self.task_config.OCNRES = f"{self.task_config.OCNRES :03d}"
 
     def initialize(self) -> None:
         super().initialize()
@@ -196,7 +198,7 @@ class Analysis(Task):
 
     @logit(logger)
     def link_jediexe(self) -> None:
-        """Compile a dictionary of background error files to copy
+        """
 
         This method links a JEDI executable to the run directory
 
