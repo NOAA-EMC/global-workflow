@@ -324,14 +324,11 @@ class GEFSTasks(Tasks):
 
     def wavepostsbs(self):
         deps = []
-        dtg_prefix = "@Y@m@d.@H0000"
-        offset = str(self._configs['base']['OFFSET_START_HOUR']).zfill(2) + ":00:00"
-        for wave_grid in self._configs['wavepostsbs']['waveGRD'].split():
-            wave_hist_path = self._template_to_rocoto_cycstring(self._base["COM_WAVE_HISTORY_TMPL"], {'MEMDIR': 'mem#member#'}) + '/'
-            data = [wave_hist_path, f"gefswave.out_grd.{wave_grid}.@Y@m@d.@H0000"]
-            dep_dict = {'type': 'data', 'data': data, 'offset': [None, offset]}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
 
         wave_post_envars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
@@ -560,7 +557,7 @@ class GEFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': 'gefs',
                      'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_test.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
