@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-GRB2INDEX=/apps/ops/prod/libs/intel/19.1.3.304/grib_util/1.2.3/bin/grb2index
+
 
 source "${USHgfs}/preamble.sh"
 
@@ -84,7 +84,7 @@ cat sorc_name.exe.out
 #output f06
 infile=${COMIN_ATMOS_MASTER}/gefs.t00z.master.grb2f006
 
-${WGRIB2} "${infile}" -match_inv | fgrep -v -f "$varlist" | wgrib2 -i  "${infile}" -grib out1.grb2
+${WGRIB2} "${infile}" -match_inv | grep -v -F -f "${varlist}" | wgrib2 -i  "${infile}" -grib out1.grb2 || true
 ${WGRIB2} out1.grb2 -not "TSNOWP" -grib out2.grb2
    
 cat out2.grb2 TSNOWP1.dat gefs.t00z.pgrb2af006 > out3.grb2
@@ -101,7 +101,7 @@ ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib TSNOWP2.d
 ${WGRIB2} TSNOWP2.dat -for "1:1" -grib  out1.grb2 >/dev/null || true
 ${WGRIB2} out1.grb2 -set_ftime "0-3 hour acc fcst" -grib TSNOWP1.dat 
 
-${WGRIB2} "${infile}" -match_inv | fgrep -v -f "$varlist" | wgrib2 -i  "${infile}" -grib out2.grb2
+${WGRIB2} "${infile}" -match_inv | grep -v -F -f "${varlist}" | wgrib2 -i  "${infile}" -grib out2.grb2 || true
 ${WGRIB2} out2.grb2 -set_ftime "3 hour fcst" -grib out3.grb2
 
 mv "${COMIN_ATMOS_MASTER}/gefs.t00z.master.grb2f003" "${COMIN_ATMOS_MASTER}/gefs.t00z.master.grb2f003_org"
