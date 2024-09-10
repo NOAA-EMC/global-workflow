@@ -21,11 +21,9 @@ export COMIN_03=${HOMEgfs}/anl
 # Execute the acc script.
 "${SCRgfs}/exgefs_atmos_repair_replay.sh"
 
-exit
-
 ##############################
 # Remove the Temporary working directory
 ##############################
-if [[ "${KEEPDATA}" !="YES" ]] ; then
+if [[ "${KEEPDATA}" != "YES" ]] ; then
   rm -fr "${DATA}"
 fi
