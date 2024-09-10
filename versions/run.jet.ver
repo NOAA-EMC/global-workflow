@@ -12,8 +12,4 @@ export perl_ver=5.38.0
 
 source "${HOMEgfs:-}/versions/run.spack.ver"
 export spack_mod_path="/contrib/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
-# overwrite localy on Jet
-export obsproc_run_ver=1.2.0
-export prepobs_run_ver=1.1.0
-#export ens_tracker_ver=feature-GFSv17_com_reorg
-export fit2obs_ver=1.1.3
+
