@@ -46,6 +46,9 @@ case ${machine} in
   "AZUREPW")
     export PARTITION_BATCH="compute"
     max_tasks_per_node=24
+  "GOOGLEPW")
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=32
     ;;
   *)
     echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
