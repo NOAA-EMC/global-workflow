@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
 import os
+import tarfile
 from logging import getLogger
+from pprint import pformat
 from typing import List, Dict, Any, Optional
 from jcb import render
 from wxflow import (AttrDict,
+                    FileHandler,
                     chdir, rm_p,
                     parse_j2yaml,
                     logit,
@@ -188,14 +191,10 @@ class Jedi:
         return obs_dict
 
     @logit(logger)
-    def get_bias_dict(self, task_config: AttrDict) -> Dict[str, Any]:
+    def get_bias(self, task_config: AttrDict) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
-        This method extracts 'observers' from the JEDI yaml and from that list, extracts a list of
-        observation bias correction files that are to be copied to the run directory
-        from the component directory.
-        TODO: COM_ATMOS_ANALYSIS_PREV is hardwired here and this method is not appropriate in
-        `analysis.py` and should be implemented in the component where this is applicable.
+        This method stages radiance bias correction files in the obs sub-diretory of the run directory
 
         Parameters
         ----------
@@ -204,8 +203,7 @@ class Jedi:
 
         Returns
         ----------
-        bias_dict: Dict
-            a dictionary containing the list of observation bias files to copy for FileHandler
+        None
         """
 
         observations = find_value_in_nested_dict(self.config, 'observations')
@@ -218,14 +216,25 @@ class Jedi:
                 basename = os.path.basename(obfile)
                 prefix = '.'.join(basename.split('.')[:-3])
                 bfile = f"{prefix}.rad_varbc_params.tar"
-                copylist.append([os.path.join(task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
+                radtar = os.path.join(obdir, bfile)
+                copylist.append([os.path.join(task_config.COM_ATMOS_ANALYSIS_PREV, bfile), radtar])
                 break
 
         bias_dict = {
             'mkdir': [os.path.join(task_config.DATA, 'bc')],
             'copy': copylist
         }
-        return bias_dict
+
+        # stage bias corrections
+        FileHandler(bias_dict).sync()
+        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+
+        # extract radiance bias correction files from tarball
+        radtar = os.path.join(obdir, bfile)
+        with tarfile.open(radtar, "r") as radbcor:
+            radbcor.extractall(path=os.path.join(task_config.DATA, 'obs'))
+            logger.info(f"Extract {radbcor.getnames()}")
+        radbcor.close()
 
 
 @logit(logger)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import re
 import glob
 import gzip
 import tarfile
@@ -140,24 +139,7 @@ class AtmAnalysis(Task):
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files generated from JEDI config")
-        bias_dict = self.jedi.get_bias_dict(self.task_config)
-        FileHandler(bias_dict).sync()
-        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
-
-        # Extract radiance bias correction files from tarball
-        for action, filelist in bias_dict.items():
-            if 'copy' in action:
-                for sublist in filelist:
-                    if len(sublist) != 2:
-                        raise Exception(
-                            f"List must be of the form ['src', 'dest'], not {sublist}")
-                    src = sublist[0]
-                    if re.search(".tar", src):
-                        radtar = src
-                        with tarfile.open(radtar, "r") as radbcor:
-                            radbcor.extractall(path=os.path.join(self.task_config.DATA, 'obs'))
-                            logger.info(f"Extract {radbcor.getnames()}")
-                        radbcor.close()
+        self.jedi.get_bias(self.task_config)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
