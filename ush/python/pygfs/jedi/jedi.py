@@ -191,7 +191,7 @@ class Jedi:
         return obs_dict
 
     @logit(logger)
-    def get_bias(self, task_config: AttrDict) -> Dict[str, Any]:
+    def get_bias(self, task_config: AttrDict, bias_file) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
         This method stages radiance bias correction files in the obs sub-diretory of the run directory
@@ -215,9 +215,9 @@ class Jedi:
                 obdir = os.path.dirname(obfile)
                 basename = os.path.basename(obfile)
                 prefix = '.'.join(basename.split('.')[:-3])
-                bfile = f"{prefix}.rad_varbc_params.tar"
+                bfile = f"{prefix}.{bias_file}"
                 radtar = os.path.join(obdir, bfile)
-                copylist.append([os.path.join(task_config.COM_ATMOS_ANALYSIS_PREV, bfile), radtar])
+                copylist.append([os.path.join(task_config.VarBcDir, bfile), radtar])
                 break
 
         bias_dict = {

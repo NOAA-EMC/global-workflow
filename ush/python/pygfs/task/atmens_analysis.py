@@ -66,7 +66,8 @@ class AtmEnsAnalysis(Task):
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'atm_obsdatain_path': f"./obs/",
                 'atm_obsdataout_path': f"./diags/",
-                'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
+                'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
+                'VarBcDir': f"{self.task_config.COM_ATMOS_ANALYSIS_PREV}",
             }
         )
 
@@ -138,7 +139,8 @@ class AtmEnsAnalysis(Task):
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files generated from JEDI config")
-        self.jedi.get_bias(self.task_config)
+        bias_file = f"rad_varbc_params.tar"
+        self.jedi.get_bias(self.task_config, bias_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
