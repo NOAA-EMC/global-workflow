@@ -15,17 +15,21 @@ enkf:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen{{ '%03d' % grp }}.log"
         {% endfor %}
 
-        {% if DO_JEDIATMENS %}
-        {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal"] %}
-        {% else %}
-        {% set steps = ["eobs", "eupd"] %}
         {% if lobsdiag_forenkf %}
-        {% do steps.append("ediag") %}
+           {% if DO_JEDIATMENS %}
+              {% set steps = ["atmensanlinit", "atmensanlobs", "atmensanlsol", "atmensanlfv3inc", "atmensanlfinal"] %}
+           {% else %}
+              {% set steps = ["eobs", "ediag", "eupd"] %}
+           {% endif %}
         {% else %}
-        {% for mem in range(1, nmem_ens + 1) %}
-        {% do steps.append("eomg_mem{{ '%03d' % mem }}") %}
-        {% endfor %}
-        {% endif %}
+           {% if DO_JEDIATMENS %}
+              {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal"] %}
+           {% else %}
+              {% set steps = ["eobs", "eupd"] %}
+              {% for mem in range(1, nmem_ens + 1) %}
+                 {% do steps.append("eomg_mem{{ '%03d' % mem }}") %}
+              {% endfor %}
+           {% endif %}
         {% endif %}
 
         {% for step in steps %}
@@ -49,9 +53,18 @@ enkf:
                            "oznstat.ensmean",
                            "radstat.ensmean"] %}
         {% else %}
-        {% set da_files = ["atmens.yaml",
+        {% if lobsdiag_forenkf %}
+        {% set da_files = ["atmensanlobs.yaml",
+                           "atmensanlsol.yaml",
+                           "atmensanlfv3inc.yaml",
                            "atminc.ensmean.nc",
                            "atmensstat"] %}
+        {% else %}
+        {% set da_files = ["atmensanlletkf.yaml",
+                           "atmensanlfv3inc.yaml",
+                           "atminc.ensmean.nc",
+                           "atmensstat"] %}
+        {% endif %}
         {% endif %}
         {% for file in da_files %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"

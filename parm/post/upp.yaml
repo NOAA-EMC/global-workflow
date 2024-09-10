@@ -18,9 +18,15 @@ analysis:
     rdaod: True
   data_in:
     copy:
+<<<<<<< HEAD
       - ["{{ PARMgfs }}/post/postxconfig-NT-GFS-ANL.txt", "{{ DATA }}/postxconfig-NT.txt"]
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmanl.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcanl.nc", "{{ DATA }}/{{ flux_filename }}"]
+=======
+      - ["{{ PARMgfs }}/post/gfs/postxconfig-NT-gfs-anl.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ COM_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmanl.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COM_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcanl.nc", "{{ DATA }}/{{ flux_filename }}"]
+>>>>>>> 0953c0f38efb5fbe425520dc40b24dcfdd33a98f
   data_out:
     copy:
       - ["{{ DATA }}/GFSPRS.GrbF00", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.grb2anl"]
@@ -32,9 +38,9 @@ forecast:
   data_in:
     copy:
       {% if forecast_hour == 0 %}
-      - ["{{ PARMgfs }}/post/postxconfig-NT-GFS-F00-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ PARMgfs }}/post/gfs/postxconfig-NT-gfs-f00-two.txt", "{{ DATA }}/postxconfig-NT.txt"]
       {% else %}
-      - ["{{ PARMgfs }}/post/postxconfig-NT-GFS-TWO.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ PARMgfs }}/post/gfs/postxconfig-NT-gfs-two.txt", "{{ DATA }}/postxconfig-NT.txt"]
       {% endif %}
       - ["{{ COMIN_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atmf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COMIN_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
