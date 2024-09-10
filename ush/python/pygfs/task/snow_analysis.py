@@ -171,7 +171,7 @@ class SnowAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+        keys = ['PARMgfs', 'DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
