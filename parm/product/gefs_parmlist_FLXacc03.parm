@@ -1,0 +1,35 @@
+:WATR:surface:0-3 hour acc fcst:
+:SNOWC:surface:0-3 hour ave fcst:
+:SNOHF:surface:0-3 hour ave fcst:
+:DLWRF:surface:0-3 hour ave fcst:
+:ULWRF:surface:0-3 hour ave fcst:
+:DSWRF:surface:0-3 hour ave fcst:
+:USWRF:surface:0-3 hour ave fcst:
+:USWRF:top of atmosphere:0-3 hour ave fcst:
+:ULWRF:top of atmosphere:0-3 hour ave fcst:
+:UFLX:surface:0-3 hour ave fcst:
+:VFLX:surface:0-3 hour ave fcst:
+:SHTFL:surface:0-3 hour ave fcst:
+:LHTFL:surface:0-3 hour ave fcst:
+:PRATE:surface:0-3 hour ave fcst:
+:CPRAT:surface:0-3 hour ave fcst:
+:ALBDO:surface:0-3 hour ave fcst:
+:TCDC:entire atmosphere (considered as a single layer):0-3 hour ave fcst:
+:TCDC:boundary layer cloud layer:0-3 hour ave fcst:
+:GFLUX:surface:0-3 hour ave fcst:
+:U-GWD:surface:0-3 hour ave fcst:
+:V-GWD:surface:0-3 hour ave fcst:
+:TMP:middle cloud top level:0-3 hour ave fcst:
+:TMP:low cloud top level:0-3 hour ave fcst:
+:TMP:high cloud top level:0-3 hour ave fcst:
+:PRES:high cloud top level:0-3 hour ave fcst:
+:PRES:middle cloud top level:0-3 hour ave fcst:
+:PRES:low cloud top level:0-3 hour ave fcst:
+:PRES:high cloud bottom level:0-3 hour ave fcst:
+:PRES:middle cloud bottom level:0-3 hour ave fcst:
+:PRES:low cloud bottom level:0-3 hour ave fcst:
+:CWORK:entire atmosphere (considered as a single layer):0-3 hour ave fcst:
+:DUVB:surface:0-3 hour ave fcst:
+:CDUVB:surface:0-3 hour ave fcst:
+:TMAX:2 m above ground:0-3 hour max fcst:
+:TMIN:2 m above ground:0-3 hour min fcst:
