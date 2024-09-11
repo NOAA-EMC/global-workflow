@@ -5,7 +5,7 @@
 
 gefs:
     name: "GEFS"
-    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_atmos1.tar"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_atmos.tar"
     required:
 {% set file_set = [] %}
 {% for mem in range(1, NMEM_ENS + 1) %}
