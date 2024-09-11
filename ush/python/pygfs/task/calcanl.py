@@ -5,7 +5,7 @@ from logging import getLogger
 from pprint import pformat
 import os
 from pygfs.jedi import Jedi
-from wxflow import add_to_datetime, AttrDict, FileHandler, logit, Task, save_as_yaml, to_timedelta
+from wxflow import add_to_datetime, AttrDict, FileHandler, logit, parse_j2yaml, Task, save_as_yaml, to_timedelta
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -56,66 +56,38 @@ class CalcAnalysis(Task):
         logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
         save_as_yaml(self.jedi.config, self.jedi.yaml)
 
+        # stage fix files
+        if not os.path.isdir(self.task_config.DATA + 'fv3jedi'):
+            logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+            jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+            FileHandler(jedi_fix_dict).sync()
+            logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
+        
         # link JEDI executable
         logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
 
     @logit(logger)
     def initialize(self) -> None:
-        logger.info('calcanl_gfs beginning at: ', datetime.datetime.utcnow())
-
         # Initialize dictionary used to construct Filehandler
         fh_dict = {'mkdir': [],
                    'copy': []}
 
-        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
-        self.jedi.link_exe(self.task_config)
-        
         # Initialize FileHandler to make directories and copy files
-        if self.task_config.DOIAU and self.task_config.l4densvar and self.task_config.lwrite4danl:
-
-            for fh in self.task_config.IAUFHRS:
-                if fh == 6:
-                    CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(fh, '02')
-
-                    if not os.path.exists(CalcAnlDir):
-                        fh_dict['mkdir'].append(CalcAnlDir)
-                    fh_dict['copy'].append([self.task_config.DATA + '/siginc.nc',
-                                            CalcAnlDir + '/siginc.nc.06'])
-                    fh_dict['copy'].append([self.task_config.DATA + '/sigf06',
-                                            CalcAnlDir + '/ges.06'])
-                    fh_dict['copy'].append([self.task_config.DATA + '/siganl',
-                                            CalcAnlDir + '/anl.06'])
-                else:
-                    if os.path.isfile('sigi' + format(fh, '02') + '.nc'):
-                        CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(fh, '02')
-                        CalcAnlDir6 = self.task_config.DATA + '/calcanl_' + format(6, '02')
-
-                        if not os.path.exists(CalcAnlDir):
-                            fh_dict['mkdir'].append(CalcAnlDir)
-                        if not os.path.exists(CalcAnlDir6):
-                            fh_dict['mkdir'].append(CalcAnlDir6)
-                        fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atma' + format(fh, '03') + '.nc',
-                                                CalcAnlDir6 + '/anl.' + format(fh, '02')])
-                        fh_dict['copy'].append([self.task_config.DATA + '/siga' + format(fh, '02'),
-                                                CalcAnlDir6 + '/anl.' + format(fh, '02')])
-                        fh_dict['copy'].append([self.task_config.DATA + '/sigi' + format(fh, '02') + '.nc',
-                                                CalcAnlDir + '/siginc.nc.' + format(fh, '02')])
-                        fh_dict['copy'].append([CalcAnlDir6 + '/inc.fullres.' + format(fh, '02'),
-                                                CalcAnlDir + '/inc.fullres.' + format(fh, '02')])
-                        fh_dict['copy'].append([self.task_config.DATA + '/sigf' + format(fh, '02'),
-                                                CalcAnlDir6 + '/ges.' + format(fh, '02')])
-                        fh_dict['copy'].append([self.task_config.DATA + '/sigf' + format(fh, '02'),
-                                                CalcAnlDir + '/ges.' + format(fh, '02')])
-        else:
-            CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(6, '02')
-
-            if not os.path.exists(CalcAnlDir):
-                fh_dict['mkdir'].append(CalcAnlDir)
-            fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atminc006.nc',
-                                    CalcAnlDir + '/siginc.nc.06'])
-            fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'cubed_sphere_grid_atmf006.nc'
-                                    CalcAnlDir + '/ges.06'])
+        for fh in self.task_config.IAUFHRS:
+            CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(fh, '02')
+            fh_dict['mkdir'].append(CalcAnlDir)
+                    
+            if fh == 6:
+                fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atminc.nc',
+                                        CalcAnlDir + '/siginc.nc.06'])
+                fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'cubed_sphere_grid_atmf006.nc',
+                                        CalcAnlDir + '/ges.06'])                    
+            else:
+                fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + '/atmi' + format(fh, '02') + '.nc',
+                                        CalcAnlDir + '/siginc.nc.' + format(fh, '02')])
+                fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'cubed_sphere_grid_atmf' + format(fh, '02'),
+                                        CalcAnlDir + '/ges.' + format(fh, '02')])
 
         # Stage files
         FileHandler(fh_dict).sync()

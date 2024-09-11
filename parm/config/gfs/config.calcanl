@@ -18,4 +18,6 @@ else
     export CASE_ANL=${CASE}
 fi
 
+export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
+
 echo "END: config.calcanl"
