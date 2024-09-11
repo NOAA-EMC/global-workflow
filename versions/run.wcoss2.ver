@@ -45,7 +45,7 @@ export metplus_ver=3.1.1
 # Development-only below
 
 export obsproc_run_ver=1.2.0
-export prepobs_run_ver=1.1.0_gfsv17
+export prepobs_run_ver=1.1.0
 
 export ens_tracker_ver=feature-GFSv17_com_reorg
 export fit2obs_ver=1.1.2
