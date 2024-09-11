@@ -19,11 +19,11 @@ gefs:
 
         {% set COMIN_ATMOS_GRIB = COM_ATMOS_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
 
-        # Select ensstat files to copy to the arcdir
+        # Select pgrb files to copy to the atardir
         {% if RUN == "gefs" %}
             {% if path_exists(COMIN_ATMOS_GRIB) %}
                 {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-                    {% set file_set = COMIN_ATMOS_GRIB ~ "/" ~ head ~ "pgrb2b." ~
+                    {% set file_set = {{ COMIN_ATMOS_GRIB | relpath(ATARDIR) }} ~ "/" ~ head ~ "pgrb2b." ~
                                                 res ~ ".f" ~ '%03d'|format(fhr) %}
                     - "{{ file_set }}"
                 {% endfor %}
