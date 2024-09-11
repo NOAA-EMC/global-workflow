@@ -76,41 +76,18 @@ class CalcAnalysis(Task):
 
             for fh in self.task_config.IAUFHRS:
                 if fh == 6:
-                    # For full res analysis
                     CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(fh, '02')
 
                     if not os.path.exists(CalcAnlDir):
                         fh_dict['mkdir'].append(CalcAnlDir)
-#                    fh_dict['copy'].append([self.task_config.CALCANLEXEC,
-#                                            CalcAnlDir + '/calc_anl.x'])
                     fh_dict['copy'].append([self.task_config.DATA + '/siginc.nc',
                                             CalcAnlDir + '/siginc.nc.06'])
                     fh_dict['copy'].append([self.task_config.DATA + '/sigf06',
                                             CalcAnlDir + '/ges.06'])
                     fh_dict['copy'].append([self.task_config.DATA + '/siganl',
                                             CalcAnlDir + '/anl.06'])
-#                    fh_dict['copy'].append([self.task_config.CHGRESINCEXEC,
-#                                            CalcAnlDir + '/chgres_inc.x'])
-
-                    # For ensemble res analysis
-                    if Run in ["gdas", "gfs"]:
-                        CalcAnlDir = self.task_config.DATA + '/calcanl_ensres_' + format(fh, '02')
-
-                        if not os.path.exists(CalcAnlDir):
-                            fh_dict['mkdir'].append(CalcAnlDir)
-#                        fh_dict['copy'].append([self.task_config.CALCANLEXEC,
-#                                                CalcAnlDir + '/calc_anl.x'])
-                        fh_dict['copy'].append([self.task_config.DATA + '/siginc.nc',
-                                                CalcAnlDir + '/siginc.nc.06'])
-                        fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atmanl.ensres.nc',
-                                                CalcAnlDir + '/anl.ensres.06'])
-                        fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'atmf006.ensres.nc',
-                                                CalcAnlDir + '/ges.ensres.06'])
-                        fh_dict['copy'].append([self.task_config.DATA + '/sigf06',
-                                                CalcAnlDir + '/ges.06'])
                 else:
                     if os.path.isfile('sigi' + format(fh, '02') + '.nc'):
-                        # For full res analysis
                         CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(fh, '02')
                         CalcAnlDir6 = self.task_config.DATA + '/calcanl_' + format(6, '02')
 
@@ -130,52 +107,15 @@ class CalcAnalysis(Task):
                                                 CalcAnlDir6 + '/ges.' + format(fh, '02')])
                         fh_dict['copy'].append([self.task_config.DATA + '/sigf' + format(fh, '02'),
                                                 CalcAnlDir + '/ges.' + format(fh, '02')])
-#                        fh_dict['copy'].append([self.task_config.CHGRESINCEXEC,
-#                                                CalcAnlDir + '/chgres_inc.x'])
-
-                        # For ensemble res analysis
-                        CalcAnlDir = self.task_config.DATA + '/calcanl_ensres_' + format(fh, '02')
-                        CalcAnlDir6 = self.task_config.DATA + '/calcanl_ensres_' + format(6, '02')
-                        if not os.path.exists(CalcAnlDir):
-                            fh_dict['mkdir'].append(CalcAnlDir)
-                        if not os.path.exists(CalcAnlDir6):
-                            fh_dict['mkdir'].append(CalcAnlDir6)
-                        fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atma' + format(fh, '03') + '.ensres.nc',
-                                                CalcAnlDir6 + '/anl.ensres.' + format(fh, '02')])
-                        fh_dict['copy'].append([self.task_config.DATA + '/sigi' + format(fh, '02') + '.nc',
-                                                CalcAnlDir6 + '/siginc.nc.' + format(fh, '02')])
-                        fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'atmf' + format(fh, '03') + '.ensres.nc',
-                                                CalcAnlDir6 + '/ges.ensres.' + format(fh, '02')])
         else:
-            # For full res analysis
             CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(6, '02')
 
             if not os.path.exists(CalcAnlDir):
                 fh_dict['mkdir'].append(CalcAnlDir)
-#            fh_dict['copy'].append([self.task_config.CALCANLEXEC,
-#                                    CalcAnlDir + '/calc_anl.x'])
-            fh_dict['copy'].append([self.task_config.DATA + '/siginc.nc',
+            fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atminc006.nc',
                                     CalcAnlDir + '/siginc.nc.06'])
-            fh_dict['copy'].append([self.task_config.DATA + '/sigf06',
+            fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'cubed_sphere_grid_atmf006.nc'
                                     CalcAnlDir + '/ges.06'])
-            fh_dict['copy'].append([self.task_config.DATA + '/siganl',
-                                    CalcAnlDir + '/anl.06'])
-#            fh_dict['copy'].append([self.task_config.CHGRESINCEXEC,
-#                                    CalcAnlDir + '/chgres_inc.x'])
-
-            # For ensemble res analysis
-            CalcAnlDir = self.task_config.DATA + '/calcanl_ensres_' + format(6, '02')
-
-            if not os.path.exists(CalcAnlDir):
-                fh_dict['mkdir'].append(CalcAnlDir)
-#            fh_dict['copy'].append([self.task_config.CALCANLEXEC,
-#                                    CalcAnlDir + '/calc_anl.x'])
-            fh_dict['copy'].append([self.task_config.DATA + '/siginc.nc',
-                                    CalcAnlDir + '/siginc.nc.06'])
-            fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atmanl.ensres.nc',
-                                    CalcAnlDir + '/anl.ensres.06'])
-            fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'atmf006.ensres.nc',
-                                    CalcAnlDir + '/ges.ensres.06'])
 
         # Stage files
         FileHandler(fh_dict).sync()
