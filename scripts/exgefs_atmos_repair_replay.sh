@@ -74,7 +74,7 @@ fi
 
  export exec_dir=${HOMEgfs}/exec
 # export sorc_dir=${SORCacc}
- export sorc_name=gefs_6h_ave_1mem
+ export sorc_name=gefs_6h_ave_1mem.x
 
 #   cd $DATA
 
