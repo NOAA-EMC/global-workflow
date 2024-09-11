@@ -94,6 +94,7 @@ FV3_postdet() {
         inc_files=("atminc.nc")
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
+	increment_file_on_native_grid=".true."
       fi
       local increment_file
       for inc_file in "${inc_files[@]}"; do
@@ -161,6 +162,7 @@ EOF
         inc_files=("atminc.nc")
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
+	increment_file_on_native_grid=".true."
         if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
           IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
           # Control member has no perturbation
@@ -168,6 +170,7 @@ EOF
             inc_files=()
             read_increment=".false."
             res_latlon_dynamics='""'
+	    increment_file_on_native_grid=".true."
           fi
         fi
       fi
