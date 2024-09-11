@@ -926,7 +926,7 @@ case ${step} in
     ;;
 
   "verfozn")
-    walltime="00:05:00"
+    walltime="00:10:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
