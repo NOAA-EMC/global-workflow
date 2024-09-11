@@ -23,7 +23,7 @@ gefs:
         {% if RUN == "gefs" %}
             {% if path_exists(COMIN_ATMOS_GRIB) %}
                 {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-                    {% set file_set = COMIN_ATMOS_GRIB ~ "/" ~ head ~ "pgrb2b." ~
+                    {% set file_set = COMIN_ATMOS_GRIB ~ "/" ~ head ~ "pgrb2." ~
                                                 res ~ ".f" ~ '%03d'|format(fhr) %}
                     - "{{ file_set | relpath(ROTDIR)}}"
                 {% endfor %}
