@@ -31,12 +31,19 @@ atmanl:
   IO_LAYOUT_Y: 1
 
 atmensanl:
-  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf.yaml.j2"
+  JCB_ALGO_YAML_LETKF: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf.yaml.j2"
+  JCB_ALGO_YAML_OBS: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2"
   LAYOUT_X_ATMENSANL: 8
   LAYOUT_Y_ATMENSANL: 8
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
+atmensanlobs:
+  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2"
+
+atmensanlsol:
+  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_solver.yaml.j2"
+  
 aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
