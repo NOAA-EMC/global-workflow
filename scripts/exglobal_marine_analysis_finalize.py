@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# exglobal_marine_analysis_variational.py
+# exglobal_marine_analysis_finalize.py
 # This script creates an MarineAnalysis object
-# and runs the execute method
-# which executes the global marine variational analysis
+# and makes copies of the variational analysis output
+# to the COMROOT
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -20,5 +20,8 @@ if __name__ == '__main__':
     # Create a MarineAnalysis object
     MarineAnl = MarineAnalysis(config)
 
-    # Run the variational application
-    MarineAnl.variational()
+    # Make a copy of the analysis output to the COMROOT
+    MarineAnl.finalize()
+
+    # Compute the observation space statistics
+    MarineAnl.obs_space_stats()

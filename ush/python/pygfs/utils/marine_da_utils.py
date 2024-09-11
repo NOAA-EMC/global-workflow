@@ -1,11 +1,16 @@
 from netCDF4 import Dataset
 from datetime import datetime, timedelta
 import dateutil.parser as dparser
-import f90nml
 import os
+import glob
+import re
+import netCDF4
+from multiprocessing import Process
+import subprocess
 from logging import getLogger
 import xarray as xr
 import yaml
+from jinja2 import Template
 
 from wxflow import (FileHandler,
                     logit,
@@ -48,22 +53,19 @@ def link_executable(task_config: AttrDict, exe_name: str) -> None:
 
 @logit(logger)
 def prep_input_nml(task_config: AttrDict) -> None:
-    """Prepare the input.nml file
-       TODO: Use jinja2 instead of f90nml
+    """Prepare the mom_input.nml file
     """
-    # stage input.nml
-    mom_input_nml_tmpl_src = os.path.join(task_config.HOMEgdas, 'parm', 'soca', 'fms', 'input.nml')
+    # stage input.nml.j2
+    mom_input_nml_tmpl_src = os.path.join(task_config.HOMEgdas, 'parm', 'soca', 'fms', 'input.nml.j2')
     mom_input_nml_tmpl = os.path.join(task_config.DATA, 'mom_input.nml.tmpl')
     FileHandler({'copy': [[mom_input_nml_tmpl_src, mom_input_nml_tmpl]]}).sync()
 
     # swap date and stacksize
-    domain_stack_size = task_config.DOMAIN_STACK_SIZE
-    ymdhms = [int(s) for s in task_config.MARINE_WINDOW_END.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
-    with open(mom_input_nml_tmpl, 'r') as nml_file:
-        nml = f90nml.read(nml_file)
-        nml['ocean_solo_nml']['date_init'] = ymdhms
-        nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
-        nml.write('mom_input.nml')
+    date_init = [int(s) for s in task_config.MARINE_WINDOW_END.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
+    input_nml_config = { 'domain_stack_size': task_config.DOMAIN_STACK_SIZE,
+                         'date_init': date_init }
+    jinja_input_nml = jinja.Jinja(mom_input_nml_tmpl, input_nml_config)
+    jinja_input_nml.save('mom_input.nml')
 
 
 @logit(logger)

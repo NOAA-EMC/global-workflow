@@ -26,28 +26,29 @@ class MarineBMat(Task):
         super().__init__(config)
         _home_gdas = os.path.join(self.task_config.HOMEgfs, 'sorc', 'gdas.cd')
         _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-        _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
+        _window_begin = add_to_datetime(self.task_config.current_cycle,
+                                        -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
+        _window_end = add_to_datetime(self.task_config.current_cycle,
+                                      to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
         # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
         _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
 
         # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
-            {
-                'HOMEgdas': _home_gdas,
-                'MARINE_WINDOW_BEGIN': _window_begin,
-                'MARINE_WINDOW_END': _window_end,
-                'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
-                'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
-                'UTILITY_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_utils_stage.yaml.j2'),
-                'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
-                'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
-                'ENSPERT_RELPATH': _enspert_relpath,
-                'CALC_SCALE_EXEC': _calc_scale_exec,
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-            }
-        )
+        local_dict = AttrDict({
+           'HOMEgdas': _home_gdas,
+           'MARINE_WINDOW_BEGIN': _window_begin,
+           'MARINE_WINDOW_END': _window_end,
+           'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
+           'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
+           'UTILITY_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_utils_stage.yaml.j2'),
+           'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(
+               _home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
+           'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
+           'ENSPERT_RELPATH': _enspert_relpath,
+           'CALC_SCALE_EXEC': _calc_scale_exec,
+           'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
+        })
 
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
@@ -99,8 +100,9 @@ class MarineBMat(Task):
 
         # generate vertical diffusion scale YAML file
         logger.debug("Generate vertical diffusion YAML file")
-        diffvz_config = parse_j2yaml(path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_parameters_diffusion_vt.yaml.j2'),
-                                     data=self.task_config)
+        diffvz_config = parse_j2yaml(
+            path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_parameters_diffusion_vt.yaml.j2'),
+            data=self.task_config)
         diffvz_config.save(os.path.join(self.task_config.DATA, 'soca_parameters_diffusion_vt.yaml'))
 
         # generate the horizontal diffusion YAML files
@@ -112,8 +114,9 @@ class MarineBMat(Task):
 
             # generate horizontal diffusion scale YAML file
             logger.debug("Generate horizontal diffusion scale YAML file")
-            diffhz_config = parse_j2yaml(path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_parameters_diffusion_hz.yaml.j2'),
-                                         data=self.task_config)
+            diffhz_config = parse_j2yaml(
+                path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_parameters_diffusion_hz.yaml.j2'),
+                data=self.task_config)
             diffhz_config.save(os.path.join(self.task_config.DATA, 'soca_parameters_diffusion_hz.yaml'))
 
         # hybrid EnVAR case
@@ -130,8 +133,9 @@ class MarineBMat(Task):
 
             # generate ensemble weights YAML file
             logger.debug("Generate ensemble recentering YAML file: {self.task_config.abcd_yaml}")
-            hybridweights_config = parse_j2yaml(path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_ensweights.yaml.j2'),
-                                                data=self.task_config)
+            hybridweights_config = parse_j2yaml(
+                path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_ensweights.yaml.j2'),
+                data=self.task_config)
             hybridweights_config.save(os.path.join(self.task_config.DATA, 'soca_ensweights.yaml'))
 
         # create the symbolic link to the static B-matrix directory

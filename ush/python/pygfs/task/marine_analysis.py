@@ -4,7 +4,11 @@ import copy
 import os
 from logging import getLogger
 import pygfs.utils.marine_da_utils as mdau
+import glob
 import re
+import netCDF4
+from multiprocessing import Process
+import subprocess
 import yaml
 from jcb import render
 
@@ -189,7 +193,7 @@ class MarineAnalysis(Task):
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.HOMEgfs}/parm/gdas/soca")
         soca_utility_list = parse_j2yaml(self.task_config.UTILITY_YAML_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
-        
+
 
     @logit(logger)
     def _prep_variational_yaml(self: Task) -> None:
@@ -333,15 +337,115 @@ class MarineAnalysis(Task):
 
         mdau.run(exec_cmd)
 
-        
+
+    @logit(logger)
+    def finalize(self: Task) -> None:
+        """Finalize the marine analysis job
+           This method saves the results of the deterministic variational analysis to the COMROOT
+        """
+
+        def list_all_files(dir_in, dir_out, wc='*', fh_list=[]):
+            files = glob.glob(os.path.join(dir_in, wc))
+            for file_src in files:
+                file_dst = os.path.join(dir_out, os.path.basename(file_src))
+                fh_list.append([file_src, file_dst])
+            return fh_list
+
+        # variables of convenience
+        com_ocean_analysis = self.task_config.COMOUT_OCEAN_ANALYSIS
+        com_ice_analysis = self.task_config.COMOUT_ICE_ANALYSIS
+        com_ice_restart = self.task_config.COMOUT_ICE_RESTART
+        anl_dir = self.task_config.DATA
+        cdate = self.task_config.CDATE
+        pdy = self.task_config.PDY
+        staticsoca_dir = self.task_config.SOCA_INPUT_FIX_DIR
+        RUN = self.task_config.RUN
+        cyc = str(self.task_config.cyc).zfill(2)
+        bcyc = str(self.task_config.MARINE_WINDOW_BEGIN.hour).zfill(2)
+        bdate = self.task_config.MARINE_WINDOW_BEGIN_ISO
+        mdate = self.task_config.MARINE_WINDOW_MIDDLE_ISO
+        nmem_ens = int(self.task_config.NMEM_ENS)
+
+        logger.info(f"---------------- Copy from RUNDIR to COMOUT")
+
+        post_file_list = []
+
+        # Make a copy the IAU increment
+        post_file_list.append([os.path.join(anl_dir, 'inc.nc'),
+                               os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.ocninc.nc')])
+
+        domains = ['ocn', 'ice']
+        for domain in domains:
+            '''
+            # Copy of the diagonal of the background error for the cycle
+            post_file_list.append([os.path.join(anl_dir, f'{domain}.bkgerr_stddev.incr.{mdate}.nc'),
+                                   os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.{domain}.bkgerr_stddev.nc')])
+
+            # Copy the recentering error
+            if nmem_ens > 2:
+                post_file_list.append([os.path.join(anl_dir, 'static_ens', f'{domain}.ssh_recentering_error.incr.{bdate}.nc'),
+                                       os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.{domain}.recentering_error.nc')])
+            '''
+
+            # Copy the ice and ocean increments
+            post_file_list.append([os.path.join(anl_dir, 'Data', f'{domain}.3dvarfgat_pseudo.incr.{mdate}.nc'),
+                                   os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.{domain}.incr.nc')])
+
+            # Copy the analysis at the start of the window
+            post_file_list.append([os.path.join(anl_dir, 'Data', f'{domain}.3dvarfgat_pseudo.an.{mdate}.nc'),
+                                   os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.{domain}ana.nc')])
+
+        # Copy of the ssh diagnostics
+        '''
+        if nmem_ens > 2:
+            for string in ['ssh_steric_stddev', 'ssh_unbal_stddev', 'ssh_total_stddev', 'steric_explained_variance']:
+                post_file_list.append([os.path.join(anl_dir, 'static_ens', f'ocn.{string}.incr.{bdate}.nc'),
+                                       os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.ocn.{string}.nc')])
+        '''
+
+        # Copy DA grid (computed for the start of the window)
+        post_file_list.append([os.path.join(anl_dir, 'soca_gridspec.nc'),
+                               os.path.join(com_ocean_analysis, f'{RUN}.t{bcyc}z.ocngrid.nc')])
+
+        # Copy the CICE analysis restart
+        if os.getenv('DOIAU') == "YES":
+            cice_rst_date = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y%m%d.%H%M%S')
+        else:
+            cice_rst_date = cdate.strftime('%Y%m%d.%H%M%S')
+
+        post_file_list.append([os.path.join(anl_dir, 'Data', f'{cice_rst_date}.cice_model.res.nc'),
+                               os.path.join(com_ice_analysis, f'{cice_rst_date}.cice_model_anl.res.nc')])
+
+        FileHandler({'copy': post_file_list}).sync()
+
+        # create COM sub-directories
+        FileHandler({'mkdir': [os.path.join(com_ocean_analysis, 'diags'),
+                               os.path.join(com_ocean_analysis, 'bump'),
+                               os.path.join(com_ocean_analysis, 'yaml')]}).sync()
+
+        # ioda output files
+        fh_list = list_all_files(os.path.join(anl_dir, 'diags'),
+                                 os.path.join(com_ocean_analysis, 'diags'))
+
+        # yaml configurations
+        fh_list = list_all_files(os.path.join(anl_dir),
+                                 os.path.join(com_ocean_analysis, 'yaml'), wc='*.yaml', fh_list=fh_list)
+
+        FileHandler({'copy': fh_list}).sync()
+
+
     @logit(logger)
     def obs_space_stats(self: Task) -> None:
+        """Observation space statistics
+           This method computes a few basic statistics on the observation spaces
+        """
+
         # obs space statistics
         logger.info(f"---------------- Compute basic stats")
-        diags_list = glob.glob(os.path.join(os.path.join(com_ocean_analysis, 'diags', '*.nc4')))
-        obsstats_j2yaml = str(os.path.join(self.task_config.HOMEgdas,
+        diags_list = glob.glob(os.path.join(os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'diags', '*.nc4')))
+        obsstats_j2yaml = str(os.path.join(os.getenv('HOMEgfs'), 'sorc', 'gdas.cd',
                                            'parm', 'soca', 'obs', 'obs_stats.yaml.j2'))
-        
+
         # function to create a minimalist ioda obs sapce
         def create_obs_space(data):
             os_dict = {"obs space": {
@@ -356,55 +460,48 @@ class MarineAnalysis(Task):
                        "csv output": data["csv_output"]
                        }
             return os_dict
-        
+
+
         # get the experiment id
         pslot = self.task_config.PSLOT
-        
+
         # iterate through the obs spaces and generate the yaml for gdassoca_obsstats.x
         obs_spaces = []
         for obsfile in diags_list:
-        
+
             # define an obs space name
             obs_space = re.sub(r'\.\d{10}\.nc4$', '', os.path.basename(obsfile))
-        
+
             # get the variable name, assume 1 variable per file
             nc = netCDF4.Dataset(obsfile, 'r')
             variable = next(iter(nc.groups["ObsValue"].variables))
             nc.close()
-        
+
             # filling values for the templated yaml
             data = {'obs_space': os.path.basename(obsfile),
                     'obsfile': obsfile,
                     'pslot': pslot,
                     'variable': variable,
-                    'csv_output': os.path.join(com_ocean_analysis,
-                                               f"{RUN}.t{cyc}z.ocn.{obs_space}.stats.csv")}
+                    'csv_output': os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
+                                               f"{self.task_config.OPREFIX}ocn.{obs_space}.stats.csv")}
             obs_spaces.append(create_obs_space(data))
-        
+
         # create the yaml
         data = {'obs_spaces': obs_spaces}
         conf = parse_j2yaml(path=obsstats_j2yaml, data=data)
         stats_yaml = 'diag_stats.yaml'
         conf.save(stats_yaml)
-        
+
         # run the application
-        mdau.link_executable(self.task_config, 'gdassoca_obsstats.x')
-        exec_cmd = Executable(f"{self.task_config.launcher} -n 1")
-        exec_name = os.path.join(self.task_config.DATA, 'gdassoca_obsstats.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(stats_yaml)
+        # TODO(GorA): this should be setup properly in the g-w once gdassoca_obsstats is in develop
+        gdassoca_obsstats_exec = os.path.join(os.getenv('HOMEgfs'),
+                                              'sorc', 'gdas.cd', 'build', 'bin', 'gdassoca_obsstats.x')
+        command = f"{os.getenv('launcher')} -n 1 {gdassoca_obsstats_exec} {stats_yaml}"
+        logger.info(f"{command}")
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        mdau.run(exec_cmd)
-
-        
-
-    @logit(logger)
-    def finalize(self: Task) -> None:
-        """Finalize the marine analysis job
-
-        This method will finalize the marine analysis job.
-        This includes:
-        -
-        - ...
-
-        """
+        # issue a warning if the process has failed
+        if result.returncode != 0:
+            logger.warning(f"{command} has failed")
+        if result.stderr:
+            print("STDERR:", result.stderr.decode())
