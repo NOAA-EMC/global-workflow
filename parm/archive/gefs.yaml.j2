@@ -5,26 +5,29 @@
 
 gefs:
     name: "GEFS"
-    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs.tar"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_atmos.tar"
     required:
-        {% set file_set = [] %}
-
+{% set file_set = [] %}
+{% for res in ["0p25", "0p50", "1p00"] %}
+    {% for mem in range(1, nmem_ens + 1) %}
         {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
                               '${RUN}':RUN,
                               '${YMD}':cycle_YMD,
                               '${HH}':cycle_HH,
-                              '${GRID}': '0p50',
-                              '${MEMDIR}': 'mem000' }) %}
+                              '${GRID}':res,
+                              '${MEMDIR}':'%03d'|format(mem) }) %}
 
-        {% set COMIN_ATMOS_GRIB_1p00 = COM_ATMOS_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ATMOS_GRIB = COM_ATMOS_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
 
         # Select ensstat files to copy to the arcdir
         {% if RUN == "gefs" %}
-            {% if path_exists(COMIN_ATMOS_GRIB_1p00) %}
-                {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS - 70, FHOUT_GFS) %}
-                    {% set file_set = COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2." ~
-                                                "0p50" ~ ".f" ~ '%03d'|format(fhr) %}
+            {% if path_exists(COMIN_ATMOS_GRIB) %}
+                {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+                    {% set file_set = COMIN_ATMOS_GRIB ~ "/" ~ head ~ "pgrb2b." ~
+                                                res ~ ".f" ~ '%03d'|format(fhr) %}
                     - "{{ file_set }}"
                 {% endfor %}
             {% endif %}
         {% endif %}
+    {% endfor %}
+{% endfor %}
