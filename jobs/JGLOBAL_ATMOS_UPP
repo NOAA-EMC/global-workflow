@@ -16,7 +16,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY \
    COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER
-if [[ ! -d ${COMOUT_ATMOS_MASTER} ]]; then mkdir -m 775 -p "${COMOUT_ATMOS_MASTER}"; fi
+if [[ ! -d ${COMOUT_ATMOS_MASTER} ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
 
 
 ###############################################################
