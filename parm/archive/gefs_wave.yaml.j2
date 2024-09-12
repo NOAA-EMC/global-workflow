@@ -1,0 +1,37 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN + "wave.t" + cycle_HH + "z." %}
+
+gefs:
+    name: "GEFS"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_wave.tar"
+    required:
+#select mem%03d and ensstat files required
+{% set file_set = [] %}
+{% set membr = [] %}
+{% for mem_nm in range(0, NMEM_ENS + 1) %}
+    {% do membr.append("mem" ~ '%03d' % mem_nm ) %}
+{% endfor %}
+
+{% for mem in membr %}
+    {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                          '${RUN}':RUN,
+                          '${YMD}':cycle_YMD,
+                          '${HH}':cycle_HH,
+                          '${GRID}':"5p00",
+                          '${MEMDIR}':mem }) %}
+
+    {% set COMIN_WAVE_GRID = COM_WAVE_GRID_TMPL | replace_tmpl(tmpl_dict) %}
+
+    # Select grib2 files to copy to the atardir
+    {% if RUN == "gefs" %}
+        {% if path_exists(COMIN_WAVE_GRID) %}
+            {% for fhr in range(FHMIN_WAV, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
+                {% set file_name = head ~ "5p00" ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
+                {% set file_set = COMIN_WAVE_GRID ~ "/" ~ file_name %}
+                - "{{ file_set | relpath(ROTDIR)}}"
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
