@@ -62,7 +62,7 @@ class CalcAnalysis(Task):
             jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
             FileHandler(jedi_fix_dict).sync()
             logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
-        
+
         # link JEDI executable
         logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
         self.jedi.link_exe(self.task_config)
@@ -77,12 +77,12 @@ class CalcAnalysis(Task):
         for fh in self.task_config.IAUFHRS:
             CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(fh, '02')
             fh_dict['mkdir'].append(CalcAnlDir)
-                    
+
             if fh == 6:
                 fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atminc.nc',
                                         CalcAnlDir + '/siginc.nc.06'])
                 fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'cubed_sphere_grid_atmf006.nc',
-                                        CalcAnlDir + '/ges.06'])                    
+                                        CalcAnlDir + '/ges.06'])
             else:
                 fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + '/atmi' + format(fh, '02') + '.nc',
                                         CalcAnlDir + '/siginc.nc.' + format(fh, '02')])
