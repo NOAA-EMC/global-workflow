@@ -27,7 +27,7 @@ enkf:
            {% else %}
               {% set steps = ["eobs", "eupd"] %}
               {% for mem in range(1, nmem_ens + 1) %}
-                 {% do steps.append("eomg_mem{{ '%03d' % mem }}") %}
+                 {% do steps.append("eomg_mem" ~ '%03d' % mem) %}
               {% endfor %}
            {% endif %}
         {% endif %}
