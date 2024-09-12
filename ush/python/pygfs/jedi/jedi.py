@@ -3,7 +3,6 @@
 import os
 import tarfile
 from logging import getLogger
-from pprint import pformat
 from typing import List, Dict, Any, Optional
 from jcb import render
 from wxflow import (AttrDict,
@@ -191,19 +190,24 @@ class Jedi:
         return obs_dict
 
     @logit(logger)
-    def get_bias(self, task_config: AttrDict, bias_file) -> Dict[str, Any]:
+    def get_bias_dict(self, task_config: AttrDict, bias_file) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
-        This method stages radiance bias correction files in the obs sub-diretory of the run directory
+        This method extracts 'observers' from the JEDI yaml and determines from that list
+        if bias correction tar files are to be copied to the run directory
+        from the component directory.
 
         Parameters
         ----------
         task_config: AttrDict
             Attribute-dictionary of all configuration variables associated with a GDAS task.
+        bias_file
+            name of bias correction tar file
 
         Returns
         ----------
-        None
+        bias_dict: Dict
+            a dictionary containing the list of observation bias files to copy for FileHandler
         """
 
         observations = find_value_in_nested_dict(self.config, 'observations')
@@ -216,8 +220,8 @@ class Jedi:
                 basename = os.path.basename(obfile)
                 prefix = '.'.join(basename.split('.')[:-3])
                 bfile = f"{prefix}.{bias_file}"
-                radtar = os.path.join(obdir, bfile)
-                copylist.append([os.path.join(task_config.VarBcDir, bfile), radtar])
+                tar_file = os.path.join(obdir, bfile)
+                copylist.append([os.path.join(task_config.VarBcDir, bfile), tar_file])
                 break
 
         bias_dict = {
@@ -225,16 +229,33 @@ class Jedi:
             'copy': copylist
         }
 
-        # stage bias corrections
-        FileHandler(bias_dict).sync()
-        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        return bias_dict
 
-        # extract radiance bias correction files from tarball
-        radtar = os.path.join(obdir, bfile)
-        with tarfile.open(radtar, "r") as radbcor:
-            radbcor.extractall(path=os.path.join(task_config.DATA, 'obs'))
-            logger.info(f"Extract {radbcor.getnames()}")
-        radbcor.close()
+    @logit(logger)
+    def extract_tar(self, task_config: AttrDict, tar_dict) -> Dict[str, Any]:
+        """Extract files from list of tarfiles
+
+        This method extract bias correction files from tarball(s)
+
+        Parameters
+        ----------
+        task_config: AttrDict
+            Attribute-dictionary of all configuration variables associated with a GDAS task.
+        tar_dict
+            a dictionary containing the list of tar files
+
+        Returns
+        ----------
+        None
+        """
+
+        # extract bias correction files from tar file
+        for tar_file in tar_dict['copy']:
+            if ".tar" in tar_file[1]:
+                with tarfile.open(tar_file[1], "r") as tarball:
+                    tarball.extractall(path=os.path.join(task_config.DATA, 'obs'))
+                    logger.info(f"Extract {tarball.getnames()}")
+        tarball.close()
 
 
 @logit(logger)
