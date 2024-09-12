@@ -4,15 +4,10 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 
 datasets:
-{% filter indent(width=4) %}
-{% include "gefs_atmos.yaml.j2" %}
-{% endfilter %}
-{% filter indent(width=4) %}
-{% include "gefs_ocean.yaml.j2" %}
-{% endfilter %}
-{% filter indent(width=4) %}
-{% include "gefs_wave.yaml.j2" %}
-{% endfilter %}
-{% filter indent(width=4) %}
-{% include "gefs_ice.yaml.j2" %}
-{% endfilter %}
+{% set file_list = ["gefs_atmos.yaml.j2", "gefs_ocean.yaml.j2", "gefs_ice.yaml.j2", "gefs_wave.yaml.j2"] %}
+
+{% for file_name in file_list %}
+    {% filter indent(width=4) %}
+    {% include file_name %}
+    {% endfilter %}
+{% endfor %}
