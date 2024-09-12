@@ -273,8 +273,8 @@ class AtmEnsAnalysis(Task):
                 src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.{itile+1}.nc4")
                 dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.tile{itile+1}.nc")
                 inc_copy['copy'].append([src, dest])
-            src_list,dest_list = zip(*inc_copy['copy'])
-                
+            src_list, dest_list = zip(*inc_copy['copy'])
+
             # copy increments
             logger.debug(f"Copying {src_list}\nto {dest_list}")
             FileHandler(inc_copy).sync()

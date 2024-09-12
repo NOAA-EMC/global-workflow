@@ -308,7 +308,7 @@ class AtmAnalysis(Task):
             inc_copy['copy'].append([src, dest])
 
         # copy increments
-        src_list,dest_list = zip(*inc_copy['copy'])
+        src_list, dest_list = zip(*inc_copy['copy'])
         logger.debug(f"Copying {src_list}\nto {dest_list}")
         FileHandler(inc_copy).sync()
 
