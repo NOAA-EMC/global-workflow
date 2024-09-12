@@ -9,7 +9,7 @@ gefs:
     required:
 #select mem%03d and ensstat files required
 {% set file_set = [] %}
-{% set membr = ["ensstat"] %}
+{% set membr = [] %}
 {% for mem_nm in range(0, NMEM_ENS + 1) %}
     {% do membr.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
@@ -27,7 +27,7 @@ gefs:
     # Select pgrb and grib files to copy to the atardir
     {% if RUN == "gefs" %}
         {% if path_exists(COMIN_OCEAN_GRIB) %}
-            {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+            {% for fhr in range(FHMIN_GFS + FHOUT_OCN_GFS, FHMAX_GFS, FHOUT_OCN_GFS) %}
                 {% set file_name = head ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
                 {% set file_set = COMIN_OCEAN_GRIB ~ "/" ~ file_name %}
                 - "{{ file_set | relpath(ROTDIR)}}"
