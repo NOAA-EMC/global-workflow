@@ -22,7 +22,7 @@ gefs:
                           '${GRID}':"5p00",
                           '${MEMDIR}':mem }) %}
 
-    {% set COMIN_OCEAN_NETCDF = COM_OCEAN_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
+    {% set COMIN_OCEAN_NETCDF = COM_OCEAN_NETCDF_TMPL | replace_tmpl(tmpl_dict) %}
 
     # Select netcdf files to copy to the atardir
     {% if RUN == "gefs" %}
