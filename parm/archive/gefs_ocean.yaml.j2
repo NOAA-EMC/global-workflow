@@ -28,7 +28,7 @@ gefs:
     {% if RUN == "gefs" %}
         {% if path_exists(COMIN_OCEAN_GRIB) %}
             {% for fhr in range(FHMIN_GFS + FHOUT_OCN_GFS, FHMAX_GFS, FHOUT_OCN_GFS) %}
-                {% set file_name = head ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
+                {% set file_name = head ~ "5p00" ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
                 {% set file_set = COMIN_OCEAN_GRIB ~ "/" ~ file_name %}
                 - "{{ file_set | relpath(ROTDIR)}}"
             {% endfor %}
