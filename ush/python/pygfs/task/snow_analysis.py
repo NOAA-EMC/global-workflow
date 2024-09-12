@@ -191,22 +191,14 @@ class SnowAnalysis(Analysis):
         logger.info("Staging ensemble backgrounds")
         FileHandler(self.get_ens_bkg_dict(localconf)).sync()
 
+        # stage GTS bufr2ioda mapping YAML files
+        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.GTS_LIST}")
+        gts_mapping_list = parse_j2yaml(self.task_config.GTS_LIST, localconf)
+        FileHandler(gts_mapping_list).sync()
+
         # Write out letkfoi YAML file
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
         logger.info(f"Wrote letkfoi YAML to: {self.task_config.jedi_yaml}")
-
-        # Read and render the GTS_LIST yaml
-        logger.info(f"Reading {self.task_config.GTS_LIST}")
-        gts_config = parse_j2yaml(self.task_config.GTS_LIST, localconf)
-        logger.debug(f"{self.task_config.GTS_LIST}:\n{pformat(gts_config)}")
-
-        # Generate bufr2ioda mapping YAML files
-        for name in gts_config.bufr2ioda.keys():
-            mapping_yaml = os.path.join(self.task_config.DATA, "obs", f"bufr_{name}_mapping.yaml")
-            logger.info(f"Generate BUFR2IODA YAML file: {mapping_yaml}")
-            temp_yaml = parse_j2yaml(gts_config.bufr2ioda[name], localconf)
-            save_as_yaml(temp_yaml, mapping_yaml)
-            logger.info(f"Wrote bufr2ioda YAML to: {mapping_yaml}")
 
         # need output dir for diags and anl
         logger.info("Create empty output [anl, diags] directories to receive output from executable")
