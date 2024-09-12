@@ -19,7 +19,6 @@ gefs:
                           '${RUN}':RUN,
                           '${YMD}':cycle_YMD,
                           '${HH}':cycle_HH,
-                          '${GRID}':"5p00",
                           '${MEMDIR}':mem }) %}
 
     {% set COMIN_WAVE_GRID = COM_WAVE_GRID_TMPL | replace_tmpl(tmpl_dict) %}
