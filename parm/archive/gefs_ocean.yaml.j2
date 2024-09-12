@@ -24,7 +24,7 @@ gefs:
 
     {% set COMIN_OCEAN_GRIB = COM_OCEAN_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
 
-    # Select pgrb and grib files to copy to the atardir
+    # Select netcdf files to copy to the atardir
     {% if RUN == "gefs" %}
         {% if path_exists(COMIN_OCEAN_GRIB) %}
             {% for fhr in range(FHMIN_GFS + FHOUT_OCN_GFS, FHMAX_GFS, FHOUT_OCN_GFS) %}
