@@ -6,7 +6,13 @@
 datasets:
 {% filter indent(width=4) %}
 {% include "gefs_atmos.yaml.j2" %}
+{% endfilter %}
+{% filter indent(width=4) %}
 {% include "gefs_ocean.yaml.j2" %}
+{% endfilter %}
+{% filter indent(width=4) %}
 {% include "gefs_wave.yaml.j2" %}
+{% endfilter %}
+{% filter indent(width=4) %}
 {% include "gefs_ice.yaml.j2" %}
 {% endfilter %}
