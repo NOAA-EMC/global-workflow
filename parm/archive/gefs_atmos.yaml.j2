@@ -9,10 +9,7 @@ gefs:
     required:
 #select mem%03d and ensstat files required
 {% set file_set = [] %}
-{% set membr = ["ensstat"] %}
-{% for mem in range(1, NMEM_ENS + 1) %}
-    {% do membr.append("mem{{ '%03d' % mem }}") %}
-{% endfor %}
+{% set membr = ["ensstat", "mem000", "mem001", "mem002"] %}
 
 {% for mem in membr %}
     {% for res in ['0p25', '0p50', '1p00'] %}
@@ -29,13 +26,18 @@ gefs:
         {% if RUN == "gefs" %}
             {% if path_exists(COMIN_ATMOS_GRIB) %}
                 {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-                    {% if membr=="ensstat" %}
+                    {% if mem=="ensstat" %}
                         {% set file_name = head ~ "mean.pres_." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
-                    {% else%}
+                        {% set file_set = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                        - "{{ file_set | relpath(ROTDIR)}}"
+                    {% else %}
                         {% set file_name = head ~ "pgrb2." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                        {% set file_set = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                        - "{{ file_set | relpath(ROTDIR)}}"
+                        {% set file_name = head ~ "pgrb2b." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                        {% set file_set = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                        - "{{ file_set | relpath(ROTDIR)}}"
                     {% endif %}
-                    {% set file_set = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
-                    - "{{ file_set | relpath(ROTDIR)}}"
                 {% endfor %}
             {% endif %}
         {% endif %}
