@@ -192,8 +192,8 @@ class SnowAnalysis(Analysis):
         FileHandler(self.get_ens_bkg_dict(localconf)).sync()
 
         # stage GTS bufr2ioda mapping YAML files
-        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.GTS_LIST}")
-        gts_mapping_list = parse_j2yaml(self.task_config.GTS_LIST, localconf)
+        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.GTS_SNOW_STAGE_YAML}")
+        gts_mapping_list = parse_j2yaml(self.task_config.GTS_SNOW_STAGE_YAML, localconf)
         FileHandler(gts_mapping_list).sync()
 
         # Write out letkfoi YAML file
