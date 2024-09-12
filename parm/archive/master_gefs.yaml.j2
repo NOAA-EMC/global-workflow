@@ -4,9 +4,9 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 
 datasets:
-    {% filter indent(width=4) %}
+{% filter indent(width=4) %}
 {% include "gefs_atmos.yaml.j2" %}
 {% include "gefs_ocean.yaml.j2" %}
 {% include "gefs_ice.yaml.j2" %}
 {% include "gefs_wave.yaml.j2" %}
-    {% endfilter %}
+{% endfilter %}
