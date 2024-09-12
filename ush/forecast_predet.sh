@@ -95,12 +95,22 @@ common_predet(){
     model_start_date_next_cycle="${next_cycle_begin}"
   else
     if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-      model_start_date_current_cycle=${current_cycle_end}
+      model_start_date_current_cycle="${current_cycle_end}"
     else
-      model_start_date_current_cycle=${current_cycle}
+      model_start_date_current_cycle="${current_cycle}"
     fi
-    model_start_date_next_cycle=${next_cycle}
+    model_start_date_next_cycle="${next_cycle}"
   fi
+  # Define ice/mediator/ocean/wave current_cycle and next_cycle
+  model_atmos_start_date_current_cycle="${model_start_date_current_cycle}"
+  model_atmos_start_date_next_cycle="${model_start_date_next_cycle}"
+  model_ice_start_date_current_cycle="${model_start_date_current_cycle}"
+  model_ice_start_date_next_cycle="${next_cycle}"
+  model_med_start_date_current_cycle="${model_start_date_current_cycle}"
+  model_med_start_date_next_cycle="${next_cycle}"
+  model_ocean_start_date_current_cycle="${model_start_date_current_cycle}"
+  model_ocean_start_date_next_cycle="${next_cycle}"
+  model_wave_start_date_current_cycle="${current_cycle}"
 
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}

@@ -42,8 +42,12 @@
 {% set current_cycle_HH = current_cycle | strftime("%H") %}
 {% set previous_cycle_YMD = previous_cycle | to_YMD %}
 {% set previous_cycle_HH = previous_cycle | strftime("%H") %}
-{% set p_prefix = previous_cycle | strftime("%Y%m%d.%H0000") %}
-{% set m_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
+{% set model_atmos_prev_prefix = previous_cycle | strftime("%Y%m%d.%H0000") %}
+{% set model_atmos_cur_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
+{% set model_ice_cur_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
+{% set model_med_cur_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
+{% set model_ocean_cur_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
+{% set model_wave_cur_prefix = current_cycle | strftime("%Y%m%d.%H0000") %}
 
 # Determine restart RUN
 # ---------------------
