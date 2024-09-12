@@ -41,6 +41,10 @@ cat input.nml
 # ---------
 # Prepare local variables for use in MOM_input.IN from UFSWM
 # The ones already defined are left commented as a reminder
+# == MOM options to start from coarsed grained restarts, set to off by default
+local MOM6_INIT_FROM_Z=${MOM6_INIT_FROM_Z:-True}
+local MOM6_WARMSTART_FILE=${MOM6_WARMSTART_FILE:-"none"}
+local MOM6_INIT_UV=${MOM6_INIT_UV:-"zero"}
 # == MOM_domains section ==
 # NX_GLB
 # NY_GLB
