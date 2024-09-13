@@ -25,6 +25,6 @@ case ${RUN} in
 	enkf*)      exclude_string="*f006.ens*" ;;
 	*)			exclude_string="" ;;
 esac
-export exclude_string
+export exclude_string=""
 
 echo "END: config.cleanup"
