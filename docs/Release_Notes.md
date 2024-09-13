@@ -4,7 +4,7 @@ GFS V16.3.17 RELEASE NOTES
 PRELUDE
 -------
 
-Upstream RTOFS package is updated to v2.4.3, which results in an update to the GFS due to the new COM location for RTOFS wave job inputs.
+Upstream RTOFS package is updated to v2.4.4, which results in an update to the GFS due to the new COM location for RTOFS wave job inputs.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
