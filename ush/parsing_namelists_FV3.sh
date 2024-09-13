@@ -180,6 +180,7 @@ cat > input.nml <<EOF
   agrid_vel_rst = ${agrid_vel_rst:-".true."}
   read_increment = ${read_increment}
   res_latlon_dynamics = ${res_latlon_dynamics}
+  increment_file_on_native_grid = ${increment_file_on_native_grid}
   ${fv_core_nml-}
 /
 
