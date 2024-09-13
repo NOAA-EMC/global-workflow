@@ -356,17 +356,26 @@ export ntasks_fv3_gfs
 export ntasks_quilt_gdas
 export ntasks_quilt_gfs
 
-# Determine whether to use compression in the write grid component based on resolution
+# Determine whether to use compression in the write grid component
+# and whether to use parallel NetCDF based on resolution
 case ${fv3_res} in
-  "C48" | "C96" | "C192" | "C384")
+  "C48" | "C96" | "C192")
     zstandard_level=0
     ideflate=0
     quantize_nsd=0
+    OUTPUT_FILETYPE_ATM="netcdf"
+    OUTPUT_FILETYPE_SFC="netcdf"
     ;;
-  "C768" | "C1152" | "C3072")
+  "C384" | "C768" | "C1152" | "C3072")
     zstandard_level=0
     ideflate=1
     quantize_nsd=5
+    OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    if [[ "${fv3_res}" == "C384" ]]; then
+      OUTPUT_FILETYPE_SFC="netcdf"  # For C384, the write grid component is better off with serial netcdf
+    else
+      OUTPUT_FILETYPE_SFC="netcdf_parallel"
+    fi
     ;;
   *)
     echo "FATAL ERROR: Unrecognized FV3 resolution ${fv3_res}"
@@ -374,22 +383,6 @@ case ${fv3_res} in
     ;;
 esac
 export zstandard_level ideflate quantize_nsd
-
-# Determine whether to use parallel NetCDF based on resolution
-case ${fv3_res} in
-  "C48" | "C96" | "C192" | "C384")
-    OUTPUT_FILETYPE_ATM="netcdf"
-    OUTPUT_FILETYPE_SFC="netcdf"
-    ;;
-  "C768" | "C1152" | "C3072")
-    OUTPUT_FILETYPE_ATM="netcdf_parallel"
-    OUTPUT_FILETYPE_SFC="netcdf_parallel"
-    ;;
-  *)
-    echo "FATAL ERROR: Unrecognized FV3 resolution ${fv3_res}"
-    exit 15
-    ;;
-esac
 export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
 
 # cpl defaults
