@@ -3,8 +3,8 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + ".ice.t" + cycle_HH + "z." %}
 
-gefs:
-    name: "GEFS"
+gefs_ice:
+    name: "GEFS_ICE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_ice.tar"
     required:
 #select mem%03d and ensstat files required
@@ -29,7 +29,7 @@ gefs:
             {% for fhr in range(FHMIN_GFS + FHOUT_ICE_GFS, FHMAX_GFS + FHOUT_ICE_GFS, FHOUT_ICE_GFS) %}
                 {% set file_name = head ~ "6hr_avg" ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
                 {% set file_set = COMIN_ICE_HISTORY ~ "/" ~ file_name %}
-                - "{{ file_set | relpath(ROTDIR)}}"
+        - "{{ file_set | relpath(ROTDIR)}}"
             {% endfor %}
         {% endif %}
     {% endif %}

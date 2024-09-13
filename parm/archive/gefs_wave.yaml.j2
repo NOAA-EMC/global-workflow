@@ -3,8 +3,8 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + "wave.t" + cycle_HH + "z." %}
 
-gefs:
-    name: "GEFS"
+gefs_wave:
+    name: "GEFS_WAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_wave.tar"
     required:
 #select mem%03d and ensstat files required
@@ -29,7 +29,7 @@ gefs:
             {% for fhr in range(1, 121, 1) %}
                 {% set file_name = head ~ "global.5p00.f" ~ '%03d'|format(fhr) ~ ".grib2" %}
                 {% set file_set = COMIN_WAVE_GRID ~ "/" ~ file_name %}
-                - "{{ file_set | relpath(ROTDIR)}}"
+        - "{{ file_set | relpath(ROTDIR)}}"
             {% endfor %}
         {% endif %}
     {% endif %}

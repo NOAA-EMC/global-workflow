@@ -3,8 +3,8 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
 
-gefs:
-    name: "GEFS"
+gefs_atmos:
+    name: "GEFS_ATMOS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_atmos.tar"
     required:
 #select mem%03d and ensstat files required
