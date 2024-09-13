@@ -11,7 +11,7 @@ if (( $# != 1 )); then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "stage_ic aerosol_init"
+    echo "stage_ic aerosol_init prep_emissions"
     echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
@@ -1193,7 +1193,7 @@ case ${step} in
     walltime="02:00:00"
     export ntasks=141
     threads_per_task=6
-    export tasks_per_node=21 
+    export tasks_per_node=21
     export ntasks_postsndcfp=9
     export tasks_per_node_postsndcfp=1
     postsnd_req_cores=$(( tasks_per_node * threads_per_task ))

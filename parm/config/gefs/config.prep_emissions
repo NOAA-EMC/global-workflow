@@ -2,10 +2,38 @@
 
 ########## config.prep_emissions ##########
 # aerosol emissions preprocessing specific
+# TODO: this is duplicated in the config.aero file.  Should use a common function
+case ${machine} in
+  "HERA")
+    AERO_INPUTS_DIR="/scratch1/NCEPDEV/global/glopara/data/gocart_emissions"
+    ;;
+  "ORION" | "HERCULES")
+    AERO_INPUTS_DIR="/work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions"
+    ;;
+  "S4")
+    AERO_INPUTS_DIR="/data/prod/glopara/gocart_emissions"
+    ;;
+  "WCOSS2")
+    AERO_INPUTS_DIR="/lfs/h2/emc/global/noscrub/emc.global/data/gocart_emissions"
+    ;;
+  "GAEA")
+    AERO_INPUTS_DIR="/gpfs/f5/epic/proj-shared/global/glopara/data/gocart_emissions"
+    ;;
+  "JET")
+    AERO_INPUTS_DIR="/lfs4/HFIP/hfv3gfs/glopara/data/gocart_emissions"
+    ;;
+  *)
+    echo "FATAL ERROR: Machine ${machine} unsupported for aerosols"
+    exit 2
+    ;;
+esac
+export AERO_INPUTS_DIR
 
 echo "BEGIN: config.prep_emissions"
 
 # Get task specific resources
+export STARTHOUR=${STARTHOUR:-00}
+export PREP_EMISSION_CONFIG="${PARMgfs}/prep/aero_emissions.yaml"
 source "${EXPDIR}/config.resources" prep_emissions
 
 echo "END: config.prep_emissions"

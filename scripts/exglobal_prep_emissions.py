@@ -1,10 +1,20 @@
 #!/usr/bin/env python3
-# exglobal_prep_emissions.py
-# This script creates a emissions object
-# which perform the pre-processing for aerosol emissions
+"""
+This script initializes a logger, reads configuration from the environment, and performs emissions pre-processing tasks using the AerosolEmissions class.
+
+The script does the following:
+1. Initializes a root logger with the specified logging level and colored log output.
+2. Reads configuration from the environment and converts it into a Python dictionary.
+3. Instantiates an AerosolEmissions object with the configuration.
+4. Retrieves specific keys from the emissions task configuration and stores them in a dictionary.
+5. Sets the 'emistype' attribute in the configuration dictionary based on the 'emistype' value in the emissions configuration.
+6. Initializes, configures, runs, and finalizes the emissions task using the provided parameters.
+
+Note: Make sure to have the necessary dependencies (wxflow, pygfs) installed to run this script successfully.
+"""
 import os
 
-from wxflow import Logger, cast_strdict_as_dtypedict
+from wxflow import Logger, AttrDict, cast_strdict_as_dtypedict
 from pygfs import AerosolEmissions
 
 
@@ -19,7 +29,17 @@ if __name__ == '__main__':
 
     # Instantiate the emissions pre-processing task
     emissions = AerosolEmissions(config)
-    emissions.initialize()
-    emissions.configure()
-    emissions.execute(emissions.task_config.DATA, emissions.task_config.APRUN)
-    emissions.finalize()
+
+    # get local keys for configuration
+    keys = ['DATA', 'forecast_dates', 'cdate', 'aero_emission_yaml']
+    edict = AttrDict()
+    for key in keys:
+        edict[key] = emissions.task_config[key]
+    edict['CONFIG'] = edict.aero_emission_yaml.aero_emissions['config']
+    edict.aero_emission_yaml['emistype'] = edict['CONFIG'].emistype
+
+    # print(aero_emission_yaml.aero_emissions['fix_data'])
+    emissions.initialize(edict.aero_emission_yaml)
+    emissions.configure(edict.aero_emission_yaml)
+    emissions.run(workdir=edict.DATA, current_date=edict.cdate, forecast_dates=edict.forecast_dates, Config_dict=edict.CONFIG)
+    emissions.finalize(edict['CONFIG'])
