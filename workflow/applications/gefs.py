@@ -82,8 +82,6 @@ class GEFSAppConfig(AppConfig):
         if self.do_extractvars:
             tasks += ['extractvars']
 
-        tasks += ['arch']
-
         tasks += ['arch', 'cleanup']
 
         return {f"{self.run}": tasks}
