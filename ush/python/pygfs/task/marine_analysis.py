@@ -452,7 +452,6 @@ class MarineAnalysis(Task):
                        }
             return os_dict
 
-
         # get the experiment id
         pslot = self.task_config.PSLOT
 
