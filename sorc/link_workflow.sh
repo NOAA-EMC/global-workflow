@@ -286,8 +286,8 @@ fi
 case "${machine}" in
   "wcoss2")   EXPOBS_DIR="" ;;
   "hera")     EXPOBS_DIR="/scratch1/NCEPDEV/global/glopara/data/experimental_obs" ;;
-  "orion")    EXPOBS_DIR="/work/noaa/global/glopara/data/experimental_obs/" ;;
-  "hercules") EXPOBS_DIR="/work/noaa/global/glopara/data/experimental_obs/" ;;
+  "orion")    EXPOBS_DIR="/work/noaa/global/glopara/data/experimental_obs" ;;
+  "hercules") EXPOBS_DIR="/work/noaa/global/glopara/data/experimental_obs" ;;
   "jet")      EXPOBS_DIR="" ;;
   "s4")       EXPOBS_DIR="" ;;
   "gaea")     EXPOBS_DIR="" ;;
