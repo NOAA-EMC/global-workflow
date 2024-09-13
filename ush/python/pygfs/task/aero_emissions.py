@@ -112,10 +112,8 @@ class AerosolEmissions(Task):
     def run(cls, workdir: Union[str, os.PathLike], current_date: str = None, forecast_dates: list = None, Config_dict: Dict = {}) -> None:
         emistype = Config_dict.emistype
         ratio = Config_dict.ratio
-        debug = Config_dict.debug
         climfiles = sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
         print(Config_dict.data_out['copy'][0][0])
-        output_name = Config_dict.data_out.copy
 
         if emistype.lower() == "qfed":
             basefile = glob("qfed2.emis_*.nc4")
@@ -153,7 +151,6 @@ class AerosolEmissions(Task):
 
         vrs = ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
         qfed_vars = ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
-        das = []
 
         if len(fname) > 1:
             files = sort(fname)
@@ -166,13 +163,12 @@ class AerosolEmissions(Task):
             index_good = [[i, v] for i, v in enumerate(qfed_vars) if v in f]
             good = index_good[0][0]
             found_species.append(index_good[0][1])
-            da = xr.open_dataset(f,decode_cf=False).biomass
+            da = xr.open_dataset(f, decode_cf=False).biomass
             da.name = vrs[good]
             dset_dict[vrs[good]] = da
 
         dset = xr.Dataset(dset_dict)
         return dset
-
 
     @staticmethod
     @logit(logger)
@@ -261,7 +257,7 @@ class AerosolEmissions(Task):
             clim_slice = clim.data[index, :, :]
 
             # Calculate the weighted alpha ratio parameter
-            alpha = 1.0 - 1.0 / (index + 1)
+            # alpha = 1.0 - 1.0 / (index + 1)
 
             # Scale the current time slice
             scaled_slice = clim_slice * ratio_interp[index, :, :]
@@ -295,11 +291,11 @@ class AerosolEmissions(Task):
         Returns:
         - list: A list of xarray.Dataset objects representing fire emissions data for each forecast day.
         """
-        import pandas as pd
+        # import pandas as pd
         import numpy as np
 
         # get the timestamp
-        dd = pd.Timestamp(d)
+        # dd = pd.Timestamp(d)
 
         # open fire emission
         if len(obsfile) > 1:
