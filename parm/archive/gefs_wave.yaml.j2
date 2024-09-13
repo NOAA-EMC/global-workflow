@@ -26,7 +26,7 @@ gefs_wave:
     # Select grib2 files to copy to the atardir
     {% if RUN == "gefs" %}
         {% if path_exists(COMIN_WAVE_GRID) %}
-            {% for fhr in range(1, 121, 1) %}
+            {% for fhr in range(FHMIN, FHMAX_GFS + 1, 1) %}
                 {% set file_name = head ~ "global.5p00.f" ~ '%03d'|format(fhr) ~ ".grib2" %}
                 {% set file_set = COMIN_WAVE_GRID ~ "/" ~ file_name %}
         - "{{ file_set | relpath(ROTDIR)}}"
