@@ -346,8 +346,7 @@ class AerosolEmissions(Task):
                         # print(cn)
                         if tslice > 5:
                             dset[v].data = (
-                                ratio * dset[v]
-                                + (1 - ratio) * climo_scaled[v].data[tslice, :, :]
+                                ratio * dset[v] + (1 - ratio) * climo_scaled[v].data[tslice, :, :]
                             )
                         else:
                             dset[v] = dset[v]

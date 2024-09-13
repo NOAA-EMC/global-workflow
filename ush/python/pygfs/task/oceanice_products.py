@@ -78,7 +78,7 @@ class OceanIceProducts(Task):
 
         # TODO: This is a bit of a hack, but it works for now
         # FIXME: find a better way to provide the averaging period
-        avg_period = f"{forecast_hour-interval:03d}-{forecast_hour:03d}"
+        avg_period = f"{forecast_hour - interval:03d}-{forecast_hour:03d}"
 
         # Extend task_config with localdict
         localdict = AttrDict(
