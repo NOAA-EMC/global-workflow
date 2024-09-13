@@ -75,8 +75,3 @@ def stage_ens_mem(task_config: AttrDict) -> None:
     letkf_stage_list = parse_j2yaml(task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, ensbkgconf)
     logger.info(f"{letkf_stage_list}")
     FileHandler(letkf_stage_list).sync()
-
- #   for _, ens_mem_file in letkf_stage_list['copy']:
- #       print("ens_mem_file: ", ens_mem_file)
- #       if re.fullmatch(r'ice\.\d+\.nc', os.path.basename(ens_mem_file)):
- #           cice_hist2fms(ens_mem_file, ens_mem_file)
