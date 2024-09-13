@@ -62,8 +62,8 @@ def prep_input_nml(task_config: AttrDict) -> None:
 
     # swap date and stacksize
     date_init = [int(s) for s in task_config.MARINE_WINDOW_END.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
-    input_nml_config = { 'domain_stack_size': task_config.DOMAIN_STACK_SIZE,
-                         'date_init': date_init }
+    input_nml_config = {'domain_stack_size': task_config.DOMAIN_STACK_SIZE,
+                        'date_init': date_init}
     jinja_input_nml = jinja.Jinja(mom_input_nml_tmpl, input_nml_config)
     jinja_input_nml.save('mom_input.nml')
 
@@ -81,6 +81,7 @@ def stage_ens_mem(task_config: AttrDict) -> None:
     letkf_stage_list = parse_j2yaml(task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, ensbkgconf)
     logger.info(f"{letkf_stage_list}")
     FileHandler(letkf_stage_list).sync()
+
 
 @logit(logger)
 def test_hist_date(histfile: str, ref_date: datetime) -> None:
@@ -126,7 +127,7 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=
         # assert validity of the ocean bkg date, remove basename
         bkg_date = bkg_date + timedelta(hours=dt_pseudo)
         test_hist_date(bkg, bkg_date)
-        ocn_filename = os.path.splitext(os.path.basename(bkg))[0]+'.nc'
+        ocn_filename = os.path.splitext(os.path.basename(bkg))[0] + '.nc'
 
         # prepare the seaice background, aggregate if the backgrounds are CICE restarts
         ice_filename = ocn_filename.replace("ocean", "ice")
@@ -143,6 +144,7 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=
     # save pseudo model yaml configuration
     f = open(yaml_name, 'w')
     yaml.dump(bkg_list, f, sort_keys=False, default_flow_style=False)
+
 
 @logit(logger)
 def clean_empty_obsspaces(config, target, app='var'):

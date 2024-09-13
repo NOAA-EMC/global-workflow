@@ -36,18 +36,18 @@ class MarineBMat(Task):
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict({
-           'HOMEgdas': _home_gdas,
-           'MARINE_WINDOW_BEGIN': _window_begin,
-           'MARINE_WINDOW_END': _window_end,
-           'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
-           'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
-           'UTILITY_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_utils_stage.yaml.j2'),
-           'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(
+            'HOMEgdas': _home_gdas,
+            'MARINE_WINDOW_BEGIN': _window_begin,
+            'MARINE_WINDOW_END': _window_end,
+            'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
+            'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
+            'UTILITY_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_utils_stage.yaml.j2'),
+            'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(
                _home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
-           'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
-           'ENSPERT_RELPATH': _enspert_relpath,
-           'CALC_SCALE_EXEC': _calc_scale_exec,
-           'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
+            'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
+            'ENSPERT_RELPATH': _enspert_relpath,
+            'CALC_SCALE_EXEC': _calc_scale_exec,
+            'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
         })
 
         # Extend task_config with local_dict

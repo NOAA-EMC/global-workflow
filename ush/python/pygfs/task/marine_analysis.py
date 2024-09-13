@@ -84,7 +84,6 @@ class MarineAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config.update(local_dict)
 
-
     @logit(logger)
     def initialize(self: Task) -> None:
         """Initialize the marine analysis
@@ -130,7 +129,6 @@ class MarineAnalysis(Task):
         # prepare the yaml configuration to run the SOCA to MOM6 IAU increment
         self._prep_checkpoint()
 
-
     @logit(logger)
     def _fetch_observations(self: Task) -> None:
         """Fetch observations from COMIN_OBS
@@ -165,7 +163,6 @@ class MarineAnalysis(Task):
 
         FileHandler({'copy': obs_list}).sync()
 
-
     @logit(logger)
     def _prep_scratch_dir(self: Task) -> None:
         """Create and stage all the resources needed to run SOCA/JEDI, including the necesssary
@@ -193,7 +190,6 @@ class MarineAnalysis(Task):
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.HOMEgfs}/parm/gdas/soca")
         soca_utility_list = parse_j2yaml(self.task_config.UTILITY_YAML_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
-
 
     @logit(logger)
     def _prep_variational_yaml(self: Task) -> None:
@@ -253,7 +249,6 @@ class MarineAnalysis(Task):
         var_yaml_jcb = 'var.yaml'
         mdau.clean_empty_obsspaces(jedi_config, target=var_yaml_jcb, app='var')
 
-
     def _prep_checkpoint(self: Task) -> None:
         """Create the yaml configuration to run the SOCA to MOM6 IAU increment
         """
@@ -278,7 +273,7 @@ class MarineAnalysis(Task):
 
         # make a copy of the CICE6 restart
         ice_rst = os.path.join(self.task_config.COMIN_ICE_RESTART_PREV, f'{rst_date}.cice_model.res.nc')
-        ice_rst_ana = os.path.join(self.task_config.DATA, 'Data', rst_date+'.cice_model.res.nc')
+        ice_rst_ana = os.path.join(self.task_config.DATA, 'Data', rst_date + '.cice_model.res.nc')
         FileHandler({'copy': [[ice_rst, ice_rst_ana]]}).sync()
 
         # prepare the necessary configuration for the SOCA to CICE application
@@ -298,7 +293,6 @@ class MarineAnalysis(Task):
                                             data=soca2cice_param)
             soca2cice_config.save(os.path.join(self.task_config.DATA, varchgyaml))
 
-
     @logit(logger)
     def variational(self: Task) -> None:
         # link gdas_soca_gridgen.x
@@ -311,7 +305,6 @@ class MarineAnalysis(Task):
         exec_cmd.add_default_arg('var.yaml')
 
         mdau.run(exec_cmd)
-
 
     @logit(logger)
     def checkpoint_cice6(self: Task, soca2ciceyaml) -> None:
@@ -336,7 +329,6 @@ class MarineAnalysis(Task):
         exec_cmd.add_default_arg(socaincr2mom6yaml)
 
         mdau.run(exec_cmd)
-
 
     @logit(logger)
     def finalize(self: Task) -> None:
@@ -432,7 +424,6 @@ class MarineAnalysis(Task):
                                  os.path.join(com_ocean_analysis, 'yaml'), wc='*.yaml', fh_list=fh_list)
 
         FileHandler({'copy': fh_list}).sync()
-
 
     @logit(logger)
     def obs_space_stats(self: Task) -> None:
