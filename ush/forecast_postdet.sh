@@ -94,8 +94,8 @@ FV3_postdet() {
         inc_files=("atminc.nc")
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
-	increment_file_on_native_grid=".true."
       fi
+      increment_file_on_native_grid=".false."
       local increment_file
       for inc_file in "${inc_files[@]}"; do
         increment_file="${COMIN_ATMOS_INPUT}/${RUN}.t${cyc}z.${inc_file}"
@@ -159,10 +159,16 @@ EOF
           delimiter=","
         done
       else  # "${DOIAU}" == "NO"
-        inc_files=("atminc.nc")
         read_increment=".true."
-        res_latlon_dynamics="atminc.nc"
-	increment_file_on_native_grid=".true."
+	if [[ "${DO_JEDIATMVAR:-NO}" ]]; then
+	  inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
+          res_latlon_dynamics="atminc"
+	  increment_file_on_native_grid=".true."
+	else
+	  inc_files=("atminc.nc")
+          res_latlon_dynamics="atminc.nc"
+          increment_file_on_native_grid=".false."
+	fi    
         if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
           IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
           # Control member has no perturbation
@@ -170,8 +176,8 @@ EOF
             inc_files=()
             read_increment=".false."
             res_latlon_dynamics='""'
-	    increment_file_on_native_grid=".true."
           fi
+	  increment_file_on_native_grid=".false."
         fi
       fi
 
