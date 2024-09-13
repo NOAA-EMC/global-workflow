@@ -13,7 +13,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_emissions" -c "base prep_emissio
 ##############################################
 # Generate COM variables from templates
 # TODO: Add necessary COMIN, COMOUT variables for this job
-COM_CHEM_HISTORY_TMPL
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
     COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
 
