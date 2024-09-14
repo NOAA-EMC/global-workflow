@@ -23,7 +23,7 @@ fi
 
 # Set whether to archive downstream products
 DO_DOWN=${DO_DOWN:-"NO"}
-if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
+if [ $DO_BUFRSND = "YES" ]; then
   export DO_DOWN="YES"
 fi
 
@@ -98,16 +98,6 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}wmo/gfs_collective*.postsnd_${cyc}       " >>gfs_downstream.txt
     echo  "${dirname}bufr.t${cyc}z                            " >>gfs_downstream.txt
     echo  "${dirname}gfs.t${cyc}z.bufrsnd.tar.gz              " >>gfs_downstream.txt
-   fi
-   if [ $WAFSF = "YES" ]; then
-    echo  "${dirname}wafsgfs*.t${cyc}z.gribf*.grib2           " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.grib2          " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.nouswafs.grib2 " >>gfs_downstream.txt
-    echo  "${dirname}WAFS_blended_${PDY}${cyc}f*.grib2        " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t*z.gcip.f*.grib2                    " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.wafs_0p25.f*.grib2          " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.wafs_0p25_unblended.f*.grib2" >>gfs_downstream.txt
-    echo  "${dirname}WAFS_0p25_blended_${PDY}${cyc}f*.grib2   " >>gfs_downstream.txt
    fi
   fi
 

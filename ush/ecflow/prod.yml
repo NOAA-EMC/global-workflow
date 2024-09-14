@@ -89,40 +89,6 @@ suites:
                   HR: '( )'
           post_processing:
             tasks:
-              jgfs_atmos_wafs_gcip:
-                triggers:
-                - task: jgfs_atmos_post_f003
-            grib_wafs:
-              tasks:
-                jgfs_atmos_wafs_f000:
-                  template: jgfs_atmos_wafs_master
-                  triggers:
-                  - task: jgfs_atmos_post_f000
-                  - task: jgfs_atmos_post_f120
-                  - task: jgfs_atmos_wafs_grib2
-                  edits:
-                    FCSTHR: '000'
-                jgfs_atmos_wafs_f( 6,20,6 ):
-                  template: jgfs_atmos_wafs_master
-                  triggers:
-                  - task: jgfs_atmos_post_f( )
-                  - task: jgfs_atmos_wafs_f( 0,,6 )
-                  edits:
-                    FCSTHR: ( )
-            grib2_wafs:
-              tasks:
-                jgfs_atmos_wafs_grib2:
-                  triggers:
-                  - task: jgfs_atmos_post_f000
-                jgfs_atmos_wafs_grib2_0p25:
-                  triggers:
-                  - task: jgfs_atmos_post_f036
-                jgfs_atmos_wafs_blending:
-                  triggers:
-                  - task: jgfs_atmos_wafs_grib2
-                jgfs_atmos_wafs_blending_0p25:
-                  triggers:
-                  - task: jgfs_atmos_wafs_grib2_0p25
             bufr_sounding:
               tasks:
                 jgfs_atmos_postsnd:
