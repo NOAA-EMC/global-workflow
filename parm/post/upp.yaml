@@ -86,5 +86,5 @@ goes:
       - ["{{ COMIN_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcf{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:
     copy:
-      - ["{{ DATA }}/GFSPRS.GrbF{{ '%02d' % forecast_hour }}", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.special.grb2f{{ '%03d' % forecast_hour }}"]
-      - ["{{ DATA }}/GFSPRS.GrbF{{ '%02d' % forecast_hour }}.idx", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.special.grb2if{{ '%03d' % forecast_hour }}"]
+      - ["{{ DATA }}/GFSGOES.GrbF{{ '%02d' % forecast_hour }}", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.special.grb2f{{ '%03d' % forecast_hour }}"]
+      - ["{{ DATA }}/GFSGOES.GrbF{{ '%02d' % forecast_hour }}.idx", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.special.grb2if{{ '%03d' % forecast_hour }}"]
