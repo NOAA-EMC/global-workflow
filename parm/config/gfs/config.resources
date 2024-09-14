@@ -527,6 +527,7 @@ case ${step} in
     case ${OCNRES} in
       "025") ntasks=480;;
       "050")  ntasks=16;;
+      "100")  ntasks=16;;
       "500")  ntasks=16;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
@@ -547,6 +548,10 @@ case ${step} in
         memory="96GB"
         ;;
       "050")
+        ntasks=16
+        memory="96GB"
+        ;;
+      "100")
         ntasks=16
         memory="96GB"
         ;;
@@ -576,6 +581,10 @@ case ${step} in
         ntasks=16
         memory="96GB"
         ;;
+      "100")
+        ntasks=16
+        memory="96GB"
+        ;;
       "500")
         ntasks=16
         memory="24GB"
@@ -599,6 +608,10 @@ case ${step} in
         memory="96GB"
         ;;
       "050")
+        ntasks=16
+        memory="96GB"
+        ;;
+      "100")
         ntasks=16
         memory="96GB"
         ;;
@@ -628,6 +641,9 @@ case ${step} in
         memory="128GB"
         ntasks=16;;
       "050")
+        memory="32GB"
+        ntasks=16;;
+      "100")
         memory="32GB"
         ntasks=16;;
       "500")
@@ -911,7 +927,7 @@ case ${step} in
     ;;
 
   "verfozn")
-    walltime="00:05:00"
+    walltime="00:10:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
