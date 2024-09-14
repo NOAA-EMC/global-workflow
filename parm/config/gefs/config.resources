@@ -295,6 +295,14 @@ case ${step} in
     export threads_per_task=1
     export memory="4096M"
     ;;
+
+  "cleanup")
+    export walltime="00:15:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
   *)
     echo "FATAL ERROR: Invalid job ${step} passed to ${BASH_SOURCE[0]}"
     exit 1
