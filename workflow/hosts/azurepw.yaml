@@ -18,7 +18,7 @@ CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
-BASE_CPLIC: '/bucket/global-workflow-shared-data/ICSDIR/prototype_ICs'
+BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
 LOCALARCH: 'NO'
 ATARDIR: '' # TODO: This will not yet work from AZURE.
 MAKE_NSSTBUFR: 'NO'
