@@ -145,7 +145,7 @@ build_opts["ww3prepost"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_buil
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
-   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" && "${MACHINE_ID}" != "wcoss2" && "${MACHINE_ID}" != "noaacloud" ]]; then
+   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" && "${MACHINE_ID}" != "wcoss2" && "${MACHINE_ID}" != "noaacloud" && "${MACHINE_ID}" != "gaea" ]]; then
       echo "NOTE: The GDAS App is not supported on ${MACHINE_ID}.  Disabling build."
    else
       build_jobs["gdas"]=8
