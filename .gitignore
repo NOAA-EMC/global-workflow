@@ -79,6 +79,7 @@ parm/ufs/MOM_input_*.IN
 parm/ufs/MOM6_data_table.IN
 parm/ufs/ice_in.IN
 parm/ufs/ufs.configure.*.IN
+parm/ufs/post_itag_gfs
 parm/wafs
 
 # Ignore sorc and logs folders from externals
