@@ -1,10 +1,10 @@
-GFS V16.3.17 RELEASE NOTES
+GFS V16.3.18 RELEASE NOTES
 
 -------
 PRELUDE
 -------
 
-Upstream RTOFS package is updated to v2.4.4, which results in an update to the GFS due to the new COM location for RTOFS wave job inputs.
+The WAFS blending 0.25 job is updated to increase the wait time for UKMet data from 900 to 1500 seconds. Additional error handling is also added.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.17
-cd gfs.v16.3.17
-git clone -b EMC-v16.3.17 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.18
+cd gfs.v16.3.18
+git clone -b EMC-v16.3.18 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -50,75 +50,76 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.17`, `gfs_ver=v16.3.17`, and `rtofs_ver=v2.4`
+* `versions/run.ver` - change `version=v16.3.18` and `gfs_ver=v16.3.18`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.16
+* `jobs/JGFS_ATMOS_WAFS_BLENDING_0P25`
+* `scripts/exgfs_atmos_wafs_blending_0p25.sh`
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes of existing file sizes from GFS v16.3.16
+* No changes of existing file sizes from GFS v16.3.17
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * Wave prep and wave post jobs
+  * WAFS blending 0p25 job
 * Does this change require a 30-day evaluation?
   * No
 
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.17
 
 PREPARED BY
 -----------
