@@ -43,6 +43,10 @@ case ${machine} in
     export PARTITION_BATCH="compute"
     max_tasks_per_node=36
     ;;
+  "AZUREPW")
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=24
+    ;;
   "GOOGLEPW")
     export PARTITION_BATCH="compute"
     max_tasks_per_node=32
@@ -286,6 +290,14 @@ case ${step} in
 
   "arch")
     export walltime="06:00:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
+
+  "cleanup")
+    export walltime="00:15:00"
     export ntasks=1
     export tasks_per_node=1
     export threads_per_task=1
