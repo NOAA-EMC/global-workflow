@@ -26,7 +26,7 @@ gefs_ice:
     {% if RUN == "gefs" %}
         {% if path_exists(COMIN_ICE_HISTORY) %}
             {% for fhr in range(FHMIN_GFS + FHOUT_ICE_GFS, FHMAX_GFS + FHOUT_ICE_GFS, FHOUT_ICE_GFS) %}
-                {% set file_name = head ~ "6hr_avg" ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
+                {% set file_name = head ~ FHOUT_ICE_GFS ~ "hr_avg" ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
                 {% set file_path = COMIN_ICE_HISTORY ~ "/" ~ file_name %}
                 - "{{ file_path | relpath(ROTDIR)}}"
             {% endfor %}
