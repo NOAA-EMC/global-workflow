@@ -56,7 +56,7 @@ def prep_input_nml(task_config: AttrDict) -> None:
     """Prepare the mom_input.nml file
     """
     # stage input.nml.j2
-    mom_input_nml_tmpl_src = os.path.join(task_config.HOMEgdas, 'parm', 'soca', 'fms', 'input.nml.j2')
+    mom_input_nml_tmpl_src = os.path.join(task_config.PARMsoca, 'fms', 'input.nml.j2')
     mom_input_nml_tmpl = os.path.join(task_config.DATA, 'mom_input.nml.tmpl')
     FileHandler({'copy': [[mom_input_nml_tmpl_src, mom_input_nml_tmpl]]}).sync()
 

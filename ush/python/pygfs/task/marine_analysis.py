@@ -24,17 +24,16 @@ from wxflow import (AttrDict,
 logger = getLogger(__name__.split('.')[-1])
 
 
-def parse_obs_list_file(gdas_home):
+def parse_obs_list_file(obs_list_yaml_path):
     # Get the list of observation types from the obs_list.yaml
-    obs_list_path = os.path.join(gdas_home, 'parm', 'soca', 'obs', 'obs_list.yaml')
     obs_types = []
-    with open(obs_list_path, 'r') as file:
+    with open(obs_list_yaml_path, 'r') as file:
         for line in file:
             # Remove leading/trailing whitespace and check if the line is uncommented
             line = line.strip()
             if line.startswith('- !INC') and not line.startswith('#'):
                 # Extract the type using regex
-                match = re.search(r'\$\{OBS_YAML_DIR\}/(.+)\.yaml', line)
+                match = re.search(r'\$\{MARINE_OBS_YAML_DIR\}/(.+)\.yaml', line)
                 if match:
                     obs_types.append(str(match.group(1)))
     return obs_types
@@ -47,7 +46,6 @@ class MarineAnalysis(Task):
     @logit(logger, name="MarineAnalysis")
     def __init__(self, config):
         super().__init__(config)
-        _home_gdas = os.path.join(self.task_config.HOMEgfs, 'sorc', 'gdas.cd')
         _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
@@ -61,22 +59,15 @@ class MarineAnalysis(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'HOMEgdas': _home_gdas,
+                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'soca'),
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_BEGIN_ISO': _window_begin.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
                 'MARINE_WINDOW_MIDDLE_ISO': self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
-                'UTILITY_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_utils_stage.yaml.j2'),
-                'JCB_GDAS_ALGO': os.path.join(_home_gdas, 'parm', 'jcb-gdas', 'algorithm', 'marine'),
-                'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
-                'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
-                'MARINE_OBS_LIST_YAML': os.path.join(_home_gdas, 'parm', 'soca', 'obs', 'obs_list.yaml'),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
             }
         )
@@ -145,8 +136,8 @@ class MarineAnalysis(Task):
 
         obs_files = []
         for ob in obs_list_config['observations']['observers']:
-            logger.info(f"******** {self.task_config.APREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc}.nc4")
-            obs_files.append(f"{self.task_config.APREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc}.nc4")
+            logger.info(f"******** {self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc}.nc4")
+            obs_files.append(f"{self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc}.nc4")
         obs_list = []
 
         # copy obs from COM_OBS to DATA/obs
@@ -187,8 +178,8 @@ class MarineAnalysis(Task):
         mdau.prep_input_nml(self.task_config)
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
-        logger.info(f"Staging SOCA utility yaml files from {self.task_config.HOMEgfs}/parm/gdas/soca")
-        soca_utility_list = parse_j2yaml(self.task_config.UTILITY_YAML_TMPL, self.task_config)
+        logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
+        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
 
     @logit(logger)
@@ -221,12 +212,12 @@ class MarineAnalysis(Task):
 
         # Write obs_list_short
         with open('obs_list_short.yaml', 'w') as file:
-            yaml.dump(parse_obs_list_file(self.task_config.HOMEgdas), file, default_flow_style=False)
+            yaml.dump(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), file, default_flow_style=False)
         os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
 
         # Render the JCB configuration files
-        jcb_base_yaml = os.path.join(self.task_config.HOMEgdas, 'parm', 'soca', 'marine-jcb-base.yaml')
-        jcb_algo_yaml = os.path.join(self.task_config.HOMEgdas, 'parm', 'soca', 'marine-jcb-3dfgat.yaml.j2')
+        jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
+        jcb_algo_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-3dfgat.yaml.j2')
 
         jcb_base_config = YAMLFile(path=jcb_base_yaml)
         jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
@@ -254,8 +245,10 @@ class MarineAnalysis(Task):
         """
         # prepare the socaincr2mom6.yaml
         logger.info("Generate the SOCA to MOM6 IAU increment YAML file")
-        soca2mom6inc_config = parse_j2yaml(path=os.path.join(self.task_config.JCB_GDAS_ALGO, 'socaincr2mom6.yaml.j2'),
-                                           data=self.task_config)
+        data = {'marine_window_begin': self.task_config.MARINE_WINDOW_BEGIN_ISO,
+                'marine_window_middle': self.task_config.MARINE_WINDOW_MIDDLE_ISO}
+        soca2mom6inc_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, 'socaincr2mom6.yaml.j2'),
+                                           data=data)
         soca2mom6inc_config.save(os.path.join(self.task_config.DATA, 'socaincr2mom6.yaml'))
 
         # prepare the SOCA to CICE YAML file
@@ -278,10 +271,10 @@ class MarineAnalysis(Task):
 
         # prepare the necessary configuration for the SOCA to CICE application
         soca2cice_param = AttrDict({
-            "OCN_ANA": f"./Data/ocn.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
-            "ICE_ANA": f"./Data/ice.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
-            "ICE_RST": ice_rst_ana,
-            "FCST_BEGIN": fcst_begin
+            "ocn_ana": f"./Data/ocn.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
+            "ice_ana": f"./Data/ice.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
+            "ice_rst": ice_rst_ana,
+            "fcst_begin": fcst_begin
         })
         logger.debug(f"{soca2cice_param}")
 
@@ -289,7 +282,7 @@ class MarineAnalysis(Task):
         logger.info("render the SOCA to CICE YAML file for the Arctic and Antarctic")
         varchgyamls = ['soca_2cice_arctic.yaml', 'soca_2cice_antarctic.yaml']
         for varchgyaml in varchgyamls:
-            soca2cice_config = parse_j2yaml(path=os.path.join(self.task_config.JCB_GDAS_ALGO, f'{varchgyaml}.j2'),
+            soca2cice_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, f'{varchgyaml}.j2'),
                                             data=soca2cice_param)
             soca2cice_config.save(os.path.join(self.task_config.DATA, varchgyaml))
 

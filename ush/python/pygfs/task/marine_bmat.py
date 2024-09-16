@@ -37,14 +37,10 @@ class MarineBMat(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'HOMEgdas': _home_gdas,
+                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'soca'),
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
-                'BERROR_YAML_DIR': os.path.join(_home_gdas, 'parm', 'soca', 'berror'),
-                'UTILITY_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_utils_stage.yaml.j2'),
-                'MARINE_ENSDA_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'ensda', 'stage_ens_mem.yaml.j2'),
-                'MARINE_DET_STAGE_BKG_YAML_TMPL': os.path.join(_home_gdas, 'parm', 'soca', 'soca_det_bkg_stage.yaml.j2'),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
@@ -83,41 +79,35 @@ class MarineBMat(Task):
         FileHandler(bkg_list).sync()
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
-        logger.info(f"Staging SOCA utility yaml files from {self.task_config.HOMEgfs}/parm/gdas/soca")
-        soca_utility_list = parse_j2yaml(self.task_config.UTILITY_YAML_TMPL, self.task_config)
+        logger.info(f"Staging SOCA utility yaml files")
+        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
 
         # generate the variance partitioning YAML file
-        logger.debug("Generate variance partitioning YAML file")
-        diagb_config = parse_j2yaml(path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_diagb.yaml.j2'),
-                                    data=self.task_config)
+        logger.info(f"Generate variance partitioning YAML file from {self.task_config.BERROR_DIAGB_YAML}")
+        diagb_config = parse_j2yaml(path=self.task_config.BERROR_DIAGB_YAML, data=self.task_config)
         diagb_config.save(os.path.join(self.task_config.DATA, 'soca_diagb.yaml'))
 
         # generate the vertical decorrelation scale YAML file
-        logger.debug("Generate the vertical correlation scale YAML file")
-        vtscales_config = parse_j2yaml(path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_vtscales.yaml.j2'),
-                                       data=self.task_config)
+        logger.info(f"Generate the vertical correlation scale YAML file from {self.task_config.BERROR_VTSCALES_YAML}")
+        vtscales_config = parse_j2yaml(path=self.task_config.BERROR_VTSCALES_YAML, data=self.task_config)
         vtscales_config.save(os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
 
         # generate vertical diffusion scale YAML file
-        logger.debug("Generate vertical diffusion YAML file")
-        diffvz_config = parse_j2yaml(
-            path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_parameters_diffusion_vt.yaml.j2'),
-            data=self.task_config)
+        logger.info(f"Generate vertical diffusion YAML file from {self.task_config.BERROR_DIFFV_YAML}")
+        diffvz_config = parse_j2yaml(path=self.task_config.BERROR_DIFFV_YAML, data=self.task_config)
         diffvz_config.save(os.path.join(self.task_config.DATA, 'soca_parameters_diffusion_vt.yaml'))
 
         # generate the horizontal diffusion YAML files
         if True:  # TODO(G): skip this section once we have optimized the scales
             # stage the correlation scale configuration
-            logger.debug("Generate correlation scale YAML file")
-            FileHandler({'copy': [[os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_setcorscales.yaml'),
+            logger.info(f"Generate correlation scale YAML file from {self.task_config.BERROR_HZSCALES_YAML}")
+            FileHandler({'copy': [[self.task_config.BERROR_HZSCALES_YAML,
                                    os.path.join(self.task_config.DATA, 'soca_setcorscales.yaml')]]}).sync()
 
             # generate horizontal diffusion scale YAML file
-            logger.debug("Generate horizontal diffusion scale YAML file")
-            diffhz_config = parse_j2yaml(
-                path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_parameters_diffusion_hz.yaml.j2'),
-                data=self.task_config)
+            logger.info(f"Generate horizontal diffusion scale YAML file from {self.task_config.BERROR_DIFFH_YAML}")
+            diffhz_config = parse_j2yaml(path=self.task_config.BERROR_DIFFH_YAML, data=self.task_config)
             diffhz_config.save(os.path.join(self.task_config.DATA, 'soca_parameters_diffusion_hz.yaml'))
 
         # hybrid EnVAR case
@@ -128,15 +118,12 @@ class MarineBMat(Task):
 
             # generate ensemble recentering/rebalancing YAML file
             logger.debug("Generate ensemble recentering YAML file")
-            ensrecenter_config = parse_j2yaml(path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_ensb.yaml.j2'),
-                                              data=self.task_config)
+            ensrecenter_config = parse_j2yaml(path=self.task_config.BERROR_ENS_RECENTER_YAML, data=self.task_config)
             ensrecenter_config.save(os.path.join(self.task_config.DATA, 'soca_ensb.yaml'))
 
             # generate ensemble weights YAML file
-            logger.debug("Generate ensemble recentering YAML file: {self.task_config.abcd_yaml}")
-            hybridweights_config = parse_j2yaml(
-                path=os.path.join(self.task_config.BERROR_YAML_DIR, 'soca_ensweights.yaml.j2'),
-                data=self.task_config)
+            logger.debug("Generate hybrid-weigths YAML file")
+            hybridweights_config = parse_j2yaml(path=self.task_config.BERROR_HYB_WEIGHTS_YAML, data=self.task_config)
             hybridweights_config.save(os.path.join(self.task_config.DATA, 'soca_ensweights.yaml'))
 
         # create the symbolic link to the static B-matrix directory
