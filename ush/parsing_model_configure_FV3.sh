@@ -31,7 +31,11 @@ local WRITE_GROUP=${WRITE_GROUP:-1}
 local WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-24}
 local ITASKS=1
 local OUTPUT_HISTORY=${OUTPUT_HISTORY:-".true."}
-local HISTORY_FILE_ON_NATIVE_GRID=".true."
+if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+  local HISTORY_FILE_ON_NATIVE_GRID=".true."
+else
+  local HISTORY_FILE_ON_NATIVE_GRID=".false."
+fi
 local WRITE_DOPOST=${WRITE_DOPOST:-".false."}
 local WRITE_NSFLIP=${WRITE_NSFLIP:-".false."}
 local NUM_FILES=${NUM_FILES:-2}
