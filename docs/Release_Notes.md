@@ -1,10 +1,10 @@
-GFS V16.3.17 RELEASE NOTES
+GFS V16.3.19 RELEASE NOTES
 
 -------
 PRELUDE
 -------
 
-Upstream RTOFS package is updated to v2.4.3, which results in an update to the GFS due to the new COM location for RTOFS wave job inputs.
+The WAFS is separated from the GFS and is now its own package in production as WAFS.v7.0.0.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.17
-cd gfs.v16.3.17
-git clone -b EMC-v16.3.17 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.19
+cd gfs.v16.3.19
+git clone -b EMC-v16.3.19 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -49,75 +49,127 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.17`, `gfs_ver=v16.3.17`, and `rtofs_ver=v2.4`
+* `versions/run.ver` - change `version=v16.3.19` and `gfs_ver=v16.3.19`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.16
+The WAFS is no longer a submodule that is checked out within the GFS package.
+The `sorc/checkout.sh` and `Externals.cfg` checkout script no longer clone WAFS.
+The `sorc/build_all.sh` script no longer builds the WAFS code.
+The `sorc/build_gfs_wafs.sh` build script is deleted.
+The `sorc/link_fv3gfs.sh` script no longer links/copies WAFS files/execs.
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.16
+All WAFS jobs are removed from the GFS ecFlow definition file, rocoto mesh, and `ush/ecflow/prod.yml`.
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.16
+The following config files are deleted:
+* `parm/config/config.wafs`
+* `parm/config/config.wafsblending`
+* `parm/config/config.wafsblending0p25`
+* `parm/config/config.wafsgcip`
+* `parm/config/config.wafsgrib2`
+* `parm/config/config.wafsgrib20p25`
+
+* The `WAFSF` flag is removed from `parm/config/config.base.emc.dyn` and `parm/config/config.base.nco.static`.
+* All WAFS jobs are removed from platform env files, `parm/config/config.resources.emc.dyn`, and `parm/config/config.resources.nco.static`.
+* The WAFS jobs are removed from experiment setup.
+
+WAFS output is removed from the following transfer list files:
+* `parm/product/transfer_gfs_1.list`
+* `parm/product/transfer_gfs_7.list`
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.16
+The following WAFS rocoto scripts are removed:
+* `jobs/rocoto/wafs.sh`
+* `jobs/rocoto/wafsblending.sh`
+* `jobs/rocoto/wafsblending0p25.sh`
+* `jobs/rocoto/wafsgcip.sh`
+* `jobs/rocoto/wafsgrib2.sh`
+* `jobs/rocoto/wafsgrib20p25.sh`
+
+The following ecf scripts are removed from the GFS:
+* `ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_blending.ecf`
+* `ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_blending_0p25.ecf`
+* `ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2.ecf`
+* `ecf/scripts/gfs/atmos/post_processing/grib2_wafs/jgfs_atmos_wafs_grib2_0p25.ecf`
+* `ecf/scripts/gfs/atmos/post_processing/grib_wafs/jgfs_atmos_wafs_master.ecf`
+* `ecf/scripts/gfs/atmos/post_processing/jgfs_atmos_wafs_gcip.ecf`
+
+The WAFS is removed from `ecf/setup_ecf_links.sh`.
+
+The WAFS output is removed from archival (`ush/hpssarch_gen.sh`).
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.16
+* `fix/product/wafs_admin_msg` - removed
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.16
+Modules needed by WAFS are removed from `modulefiles/module_base.wcoss_dell_p3`.
 
-CHANGES TO FILE SIZES
----------------------
+CHANGES TO FILE AND FILE SIZES
+------------------------------
 
-* No changes of existing file sizes from GFS v16.3.16
+The following files will no longer be produced within the GFS COM:
+* `gfs.tCCz.control.wafsblending_0p25`
+* `gfs.tCCz.wafs.0p25.anl`
+* `gfs.tCCz.wafs.0p25.anl.idx`
+* `gfs.tCCz.wafs_0p25.f[006-120].grib2`
+* `gfs.tCCz.wafs_0p25.f[006-120].grib2.idx`
+* `gfs.tCCz.wafs_0p25_unblended.f[06-48].grib2`
+* `gfs.tCCz.wafs_0p25_unblended.f[06-48].grib2.idx`
+* `gfs.tCCz.wafs.grb2f[000-120]`
+* `gfs.tCCz.wafs.grb2f[000-120].idx`
+* `gfs.tCCz.wafs_grb45f[06-36].grib2`
+* `gfs.tCCz.wafs_grb45f[06-36].grib2.idx`
+* `WAFS_0p25_blended_YYYYMMDDCCf[06-48].grib2`
+The following files will no longer be produced within the GFS COM
+and are being retired from the WAFS package:
+* `gfs.tCCz.wafs_icao.grb2f[000-048]`
+* `gfs.tCCz.wafs_icao.grb2f[000-048].idx`
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.18
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * Wave prep and wave post jobs
+  * None
 * Does this change require a 30-day evaluation?
   * No
 
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.18
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.18
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.18
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.16
+* No changes from GFS v16.3.18
 
 PREPARED BY
 -----------
