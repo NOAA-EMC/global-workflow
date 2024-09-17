@@ -17,9 +17,9 @@ gefs_wave:
 {% endif %}
 
 {% if REPLAY_ICS == "YES" %}
-    {% set ofst_hr = 'OFFSET_START_HOUR' %}
+    {% set ofst_hr = OFFSET_START_HOUR %}
 {% elif REPLAY_ICS == "NO" %}
-    {% set ofst_hr = 'FHMIN_GFS' %}
+    {% set ofst_hr = FHMIN_GFS %}
 {% endif %}
 
 {% if CASE == "C48" %}
