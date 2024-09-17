@@ -8,10 +8,10 @@ gefs_wave:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_wave.tar"
     required:
 
-{% if FHOUT_HF_GFS == FHOUT_HF_GFS %}
+{% if FHOUT_HF_GFS == FHOUT_HF_GFS %}#need the right logic
     {% set fcst_freq = FHOUT_HF_GFS %}
     {% set max_hr = FHMAX_HF_GF %}
-{% elif FHOUT_GFS == FHOUT_GFS %}
+{% elif FHOUT_GFS == FHOUT_GFS %}#need the right logic
     {% set fcst_freq = FHOUT_GFS %}
     {% set max_hr = FHMAX_GFS %}
 {% endif %}
