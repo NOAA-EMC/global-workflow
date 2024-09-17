@@ -7,6 +7,31 @@ gefs_wave:
     name: "GEFS_WAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_wave.tar"
     required:
+
+{% if FHOUT_HF_GFS == FHOUT_HF_GFS %}
+    {% set fcst_freq = FHOUT_HF_GFS %}
+    {% set max_hr = FHMAX_HF_GF %}
+{% elif FHOUT_GFS == FHOUT_GFS %}
+    {% set fcst_freq = FHOUT_GFS %}
+    {% set max_hr = FHMAX_GFS %}
+{% endif %}
+
+{% if REPLAY_ICS == "YES" %}
+    {% set ofst_hr = 'OFFSET_START_HOUR' %}
+{% elif REPLAY_ICS == "NO" %}
+    {% set ofst_hr = 'FHMIN_GFS' %}
+{% endif %}
+
+{% if CASE == "C48" %}
+    {% set res = '5p00' %}
+{% elif CASE == "C96" | "C192" %}
+    {% set res = '1p00' %}
+{% elif CASE == "C384" %}
+    {% set res = '0p25' %}
+{% elif CASE == "C768" %}
+    {% set res = '0p25' %}
+{% endif %}
+
 #select mem%03d and ensstat files required
 {% set membr = [] %}
 {% for mem_nm in range(0, NMEM_ENS + 1) %}
@@ -25,8 +50,8 @@ gefs_wave:
     # Select grib2 files to copy to the atardir
     {% if RUN == "gefs" %}
         {% if path_exists(COMIN_WAVE_GRID) %}
-            {% for fhr in range(FHMIN, FHMAX_GFS + 1, 1) %}
-                {% set file_name = head ~ "global.5p00.f" ~ '%03d'|format(fhr) ~ ".grib2" %}
+            {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_WAV, FHOUT_WAV) %}
+                {% set file_name = head ~ "global." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
                 {% set file_path = COMIN_WAVE_GRID ~ "/" ~ file_name %}
                 - "{{ file_path | relpath(ROTDIR)}}"
             {% endfor %}
