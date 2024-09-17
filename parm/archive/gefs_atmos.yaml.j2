@@ -13,6 +13,19 @@ gefs_atmos:
     {% do membr.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
 
+{% if FHOUT_HF_GFS == FHOUT_HF_GFS %}#need some logic here to select FHOUT_HF_GFS or FHOUT_GFS
+    {% set fcst_freq = FHOUT_HF_GFS %}
+    {% set max_hr = FHMAX_HF_GF %}
+{% elif FHOUT_GFS == FHOUT_GFS %}#need some logic here to select FHOUT_HF_GFS or FHOUT_GFS
+    {% set fcst_freq = FHOUT_GFS %}
+    {% set max_hr = FHMAX_GFS %}
+{% endif %}
+{% if REPLAY_ICS == "YES" %}
+    {% set ofst_hr = OFFSET_START_HOUR %}
+{% elif REPLAY_ICS == "NO" %}
+    {% set ofst_hr = FHMIN_GFS %}
+{% endif %}
+
 {% for mem in membr %}
     {% for res in ['0p25', '0p50', '1p00'] %}
         {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
@@ -27,7 +40,7 @@ gefs_atmos:
         # Select pgrb and grib files to copy to the atardir
         {% if RUN == "gefs" %}
             {% if path_exists(COMIN_ATMOS_GRIB) %}
-                {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+                {% for fhr in range(ofst_hr, max_hr + fcst_freq, fcst_freq) %}
                     {% if mem=="ensstat" %}
                         {% set file_name = head ~ "mean.pres_." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
                         {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
