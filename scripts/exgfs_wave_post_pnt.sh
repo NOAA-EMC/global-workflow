@@ -253,8 +253,8 @@ source "${USHgfs}/preamble.sh"
 
     ${NLN} mod_def.$waveuoutpGRD mod_def.ww3
     #export OFFSET_START_HOUR=$( printf "%02d" ${half_assim} )
-    sec=$( printf "%02d" $(( cyc + OFFSET_START_HOUR )) )
-    HMS="${sec}0000"
+    hh=$( printf "%02d" $(( cyc + OFFSET_START_HOUR )) )
+    HMS="${hh}0000"
     if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
       ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
         "./out_pnt.${waveuoutpGRD}"
