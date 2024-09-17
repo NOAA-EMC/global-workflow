@@ -58,7 +58,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and self.interval_gfs == 6:
+        if self.run in ['gfs'] and gfs_enkf and self.interval_gfs != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('prep')
@@ -339,7 +339,7 @@ class GFSTasks(Tasks):
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and interval_gfs == 6:
+        if self.run in ['gfs'] and gfs_enkf and interval_gfs != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('atmanlinit')
