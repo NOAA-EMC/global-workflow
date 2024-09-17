@@ -183,6 +183,7 @@ def add_dependency(dep_dict: Dict[str, Any]) -> str:
                'metatask': _add_task_tag,
                'data': _add_data_tag,
                'cycleexist': _add_cycle_tag,
+               'taskvalid': _add_taskvalid_tag,
                'streq': _add_streq_tag,
                'strneq': _add_streq_tag,
                'sh': _add_sh_tag}
@@ -292,6 +293,27 @@ def _add_cycle_tag(dep_dict: Dict[str, Any]) -> str:
         raise KeyError(msg)
 
     string = f'<cycleexistdep cycle_offset="{dep_offset}"/>'
+
+    return string
+
+
+def _add_taskvalid_tag(dep_dict: Dict[str, Any]) -> str:
+    """
+    create a validtask tag
+    :param dep_dict: dependency key-value parameters
+    :type dep_dict: dict
+    :return: Rocoto validtask dependency
+    :rtype: str
+    """
+
+    dep_type = dep_dict.get('type', None)
+    dep_name = dep_dict.get('name', None)
+
+    if dep_name is None:
+        msg = f'a {dep_type} name is necessary for {dep_type} dependency'
+        raise KeyError(msg)
+
+    string = f'<{dep_type} task="{dep_name}"/>'
 
     return string
 

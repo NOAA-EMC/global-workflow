@@ -42,9 +42,6 @@ class GFSForecastOnlyAppConfig(AppConfig):
             if self.do_genesis_fsu:
                 configs += ['genesis_fsu']
 
-            if self.do_metp:
-                configs += ['metp']
-
             if self.do_bufrsnd:
                 configs += ['postsnd']
 
@@ -78,7 +75,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
     def _update_base(base_in):
 
         base_out = base_in.copy()
-        base_out['INTERVAL_GFS'] = AppConfig.get_gfs_interval(base_in['gfs_cyc'])
+        base_out['RUN'] = 'gfs'
 
         return base_out
 
@@ -121,9 +118,6 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
             if self.do_genesis_fsu:
                 tasks += ['genesis_fsu']
-
-            if self.do_metp:
-                tasks += ['metp']
 
             if self.do_bufrsnd:
                 tasks += ['postsnd']
