@@ -28,12 +28,12 @@ gefs_wave:
 {% endif %}
 
 #select mem%03d and ensstat files required
-{% set membr = [] %}
+{% set members = [] %}
 {% for mem_nm in range(0, NMEM_ENS + 1) %}
-    {% do membr.append("mem" ~ '%03d' % mem_nm ) %}
+    {% do members.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
 
-{% for mem in membr %}
+{% for mem in members %}
     {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
                           '${RUN}':RUN,
                           '${YMD}':cycle_YMD,
@@ -43,13 +43,11 @@ gefs_wave:
     {% set COMIN_WAVE_GRID = COM_WAVE_GRID_TMPL | replace_tmpl(tmpl_dict) %}
 
     # Select grib2 files to copy to the atardir
-    {% if RUN == "gefs" %}
-        {% if path_exists(COMIN_WAVE_GRID) %}
-            {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
-                {% set file_name = head ~ "global." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
-                {% set file_path = COMIN_WAVE_GRID ~ "/" ~ file_name %}
-                - "{{ file_path | relpath(ROTDIR)}}"
-            {% endfor %}
-        {% endif %}
+    {% if path_exists(COMIN_WAVE_GRID) %}
+        {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
+            {% set file_name = head ~ "global." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
+            {% set file_path = COMIN_WAVE_GRID ~ "/" ~ file_name %}
+            - "{{ file_path | relpath(ROTDIR)}}"
+        {% endfor %}
     {% endif %}
 {% endfor %}
