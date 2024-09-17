@@ -8,9 +8,9 @@ gefs_atmos:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_atmos.tar"
     required:
 #select mem%03d and ensstat files required
-{% set membr = ["ensstat"] %}
+{% set members = ["ensstat"] %}
 {% for mem_nm in range(0, NMEM_ENS + 1) %}
-    {% do membr.append("mem" ~ '%03d' % mem_nm ) %}
+    {% do members.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
 
 #need some logic here to select FHOUT_HF_GFS or FHOUT_GFS
@@ -24,7 +24,7 @@ gefs_atmos:
     {% set ofst_hr = FHMIN_GFS %}
 {% endif %}
 
-{% for mem in membr %}
+{% for mem in members %}
     {% for res in ['0p25', '0p50', '1p00'] %}
         {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
                               '${RUN}':RUN,
