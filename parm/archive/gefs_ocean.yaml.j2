@@ -7,6 +7,16 @@ gefs_ocean:
     name: "GEFS_OCEAN"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_ocean.tar"
     required:
+{% if CASE == "C48" %}
+    {% set res = '5p00' %}
+{% elif CASE == "C96" | "C192" %}
+    {% set res = '1p00' %}
+{% elif CASE == "C384" %}
+    {% set res = '0p25' %}
+{% elif CASE == "C768" %}
+    {% set res = '0p25' %}
+{% endif %}
+
 #select mem%03d and ensstat files required
 {% set membr = [] %}
 {% for mem_nm in range(0, NMEM_ENS + 1) %}
@@ -14,24 +24,23 @@ gefs_ocean:
 {% endfor %}
 
 {% for mem in membr %}
-    {% for res in ['1p00', '5p00'] %}
-        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
-                              '${RUN}':RUN,
-                              '${YMD}':cycle_YMD,
-                              '${HH}':cycle_HH,
-                              '${GRID}':res,
-                              '${MEMDIR}':mem }) %}
+    {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                          '${RUN}':RUN,
+                          '${YMD}':cycle_YMD,
+                          '${HH}':cycle_HH,
+                          '${GRID}':res,
+                          '${MEMDIR}':mem }) %}
 
-        {% set COMIN_OCEAN_NETCDF = COM_OCEAN_NETCDF_GRID_TMPL | replace_tmpl(tmpl_dict) %}
+    {% set COMIN_OCEAN_NETCDF = COM_OCEAN_NETCDF_GRID_TMPL | replace_tmpl(tmpl_dict) %}
 
-        # Select netcdf files to copy to the atardir
-        {% if RUN == "gefs" %}
-            {% if path_exists(COMIN_OCEAN_NETCDF) %}
-                {% for fhr in range(FHMIN_GFS + FHOUT_OCN_GFS, FHMAX_GFS, FHOUT_OCN_GFS) %}
-                    {% set file_name = head ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
-                    {% set file_path = COMIN_OCEAN_NETCDF ~ "/" ~ file_name %}
-                    - "{{ file_path | relpath(ROTDIR)}}"
-                {% endfor %}
-            {% endif %}
+    # Select netcdf files to copy to the atardir
+    {% if RUN == "gefs" %}
+        {% if path_exists(COMIN_OCEAN_NETCDF) %}
+            {% for fhr in range(FHMIN_GFS + FHOUT_OCN_GFS, FHMAX_GFS, FHOUT_OCN_GFS) %}
+                {% set file_name = head ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
+                {% set file_path = COMIN_OCEAN_NETCDF ~ "/" ~ file_name %}
+                - "{{ file_path | relpath(ROTDIR)}}"
+            {% endfor %}
         {% endif %}
-    {% endfor %}
+    {% endif %}
+{% endfor %}
