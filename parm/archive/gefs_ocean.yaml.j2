@@ -7,21 +7,12 @@ gefs_ocean:
     name: "GEFS_OCEAN"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_ocean.tar"
     required:
-{% if CASE == "C48" %}
-    {% set res = '5p00' %}
-{% elif CASE == "C96" or "C192" %}
-    {% set res = '1p00' %}
-{% elif CASE == "C384" %}
-    {% set res = '0p25' %}
-{% elif CASE == "C768" %}
-    {% set res = '0p25' %}
-{% endif %}
-
 #select mem%03d and ensstat files required
 {% set members = [] %}
 {% for mem_nm in range(0, NMEM_ENS + 1) %}
     {% do members.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
+{{ % res = OCNRES[0] ~ "p" ~ OCNRES[-2:] %}}
 
 {% for mem in members %}
     {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
