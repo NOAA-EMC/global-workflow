@@ -13,13 +13,11 @@ gefs_atmos:
     {% do membr.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
 
-{% if FHOUT_HF_GFS == FHOUT_HF_GFS %}#need some logic here to select FHOUT_HF_GFS or FHOUT_GFS
-    {% set fcst_freq = FHOUT_HF_GFS %}
-    {% set max_hr = FHMAX_HF_GF %}
-{% elif FHOUT_GFS == FHOUT_GFS %}#need some logic here to select FHOUT_HF_GFS or FHOUT_GFS
-    {% set fcst_freq = FHOUT_GFS %}
-    {% set max_hr = FHMAX_GFS %}
-{% endif %}
+#need some logic here to select FHOUT_HF_GFS or FHOUT_GFS
+#for the time being using FHOUT_GFS
+{% set fcst_freq = FHOUT_GFS %}
+{% set max_hr = FHMAX_GF %}
+
 {% if REPLAY_ICS == "YES" %}
     {% set ofst_hr = OFFSET_START_HOUR %}
 {% elif REPLAY_ICS == "NO" %}
