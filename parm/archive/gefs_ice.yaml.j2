@@ -22,14 +22,12 @@ gefs_ice:
 
     {% set COMIN_ICE_HISTORY = COM_ICE_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
 
-    # Select netcdf files to copy to the atardir
-    {% if RUN == "gefs" %}
-        {% if path_exists(COMIN_ICE_HISTORY) %}
-            {% for fhr in range(FHMIN_GFS + FHOUT_ICE_GFS, FHMAX_GFS + FHOUT_ICE_GFS, FHOUT_ICE_GFS) %}
-                {% set file_name = head ~ FHOUT_ICE_GFS ~ "hr_avg" ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
-                {% set file_path = COMIN_ICE_HISTORY ~ "/" ~ file_name %}
-                - "{{ file_path | relpath(ROTDIR)}}"
-            {% endfor %}
-        {% endif %}
+# Select netcdf files to copy to the atardir
+    {% if path_exists(COMIN_ICE_HISTORY) %}
+        {% for fhr in range(FHMIN_GFS + FHOUT_ICE_GFS, FHMAX_GFS + FHOUT_ICE_GFS, FHOUT_ICE_GFS) %}
+            {% set file_name = head ~ FHOUT_ICE_GFS ~ "hr_avg" ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
+            {% set file_path = COMIN_ICE_HISTORY ~ "/" ~ file_name %}
+            - "{{ file_path | relpath(ROTDIR)}}"
+        {% endfor %}
     {% endif %}
 {% endfor %}
