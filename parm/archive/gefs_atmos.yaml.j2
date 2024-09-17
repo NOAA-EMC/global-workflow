@@ -35,24 +35,21 @@ gefs_atmos:
 
         {% set COMIN_ATMOS_GRIB = COM_ATMOS_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
 
-        # Select pgrb and grib files to copy to the atardir
-        {% if RUN == "gefs" %}
-            {% if path_exists(COMIN_ATMOS_GRIB) %}
-                {% for fhr in range(ofst_hr, max_hr + fcst_freq, fcst_freq) %}
-                    {% if mem=="ensstat" %}
-                        {% set file_name = head ~ "mean.pres_." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
-                        {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
-                        - "{{ file_path | relpath(ROTDIR)}}"
-                    {% else %}
-                        {% set file_name = head ~ "pgrb2." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
-                        {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
-                        - "{{ file_path | relpath(ROTDIR)}}"
-                        {% set file_name = head ~ "pgrb2b." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
-                        {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
-                        - "{{ file_path | relpath(ROTDIR)}}"
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endif %}
+# Select pgrb and grib files to copy to the atardir
+        {% if path_exists(COMIN_ATMOS_GRIB) %}
+            {% for fhr in range(ofst_hr, max_hr + fcst_freq, fcst_freq) %}
+                {% if mem=="ensstat" %}
+                    {% set file_name = head ~ "mean.pres_." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
+                    {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                    - "{{ file_path | relpath(ROTDIR)}}"
+                {% else %}
+                    {% set file_name = head ~ "pgrb2." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                    {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                    - "{{ file_path | relpath(ROTDIR)}}"
+                    {% set file_name = head ~ "pgrb2b." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                    {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                    - "{{ file_path | relpath(ROTDIR)}}"
+                {% endif %}
+            {% endfor %}
     {% endfor %}
 {% endfor %}
