@@ -19,7 +19,6 @@ class GFSForecastOnlyRocotoXML(RocotoXML):
         strings.append(f'\t<cycledef group="gfs">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {timedelta_to_HMS(interval)}</cycledef>')
 
         date2 = sdate + interval
-        date2_str = date2.strftime("%Y%m%d%H%M")
         if date2 <= edate:
             strings.append(f'\t<cycledef group="gfs_seq">{date2.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {timedelta_to_HMS(interval)}</cycledef>')
 
