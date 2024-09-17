@@ -19,7 +19,7 @@ gefs_wave:
 
 {% if CASE == "C48" %}
     {% set res = '5p00' %}
-{% elif CASE == "C96" | "C192" %}
+{% elif CASE == "C96" or "C192" %}
     {% set res = '1p00' %}
 {% elif CASE == "C384" %}
     {% set res = '0p25' %}
