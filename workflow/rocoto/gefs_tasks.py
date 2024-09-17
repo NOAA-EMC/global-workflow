@@ -324,12 +324,9 @@ class GEFSTasks(Tasks):
 
     def wavepostsbs(self):
         deps = []
-        for wave_grid in self._configs['wavepostsbs']['waveGRD'].split():
-            wave_hist_path = self._template_to_rocoto_cycstring(self._base["COM_WAVE_HISTORY_TMPL"], {'MEMDIR': 'mem#member#'})
-            data = f'{wave_hist_path}/gefswave.out_grd.{wave_grid}.@Y@m@d.@H0000'
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
 
         wave_post_envars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
@@ -549,6 +546,9 @@ class GEFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
                 deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_extractvars:
+            dep_dict = {'type': 'metatask', 'name': 'extractvars'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('arch')
@@ -558,7 +558,31 @@ class GEFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': 'gefs',
                      'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_test.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def cleanup(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': 'arch'}
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('cleanup')
+        task_name = 'cleanup'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/cleanup.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
