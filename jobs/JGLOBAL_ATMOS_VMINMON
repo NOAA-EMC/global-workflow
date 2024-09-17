@@ -17,8 +17,8 @@ export gcyc=${GDATE:8:2}
 #############################################
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx  COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx  COMOUT_ATMOS_MINMON:COM_ATMOS_MINMON_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_MINMON:COM_ATMOS_MINMON_TMPL
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMOUT_ATMOS_MINMON_PREV:COM_ATMOS_MINMON_TMPL
 
 export gsistat="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat"
