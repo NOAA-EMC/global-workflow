@@ -287,7 +287,6 @@ class AtmAnalysis(Task):
             for tlapfile in tlaplist:
                 radbcor.add(tlapfile, arcname=os.path.basename(tlapfile))
             logger.info(f"Add {radbcor.getnames()}")
-        radbcor.close()
 
         # Copy FV3 atm increment to comrot directory
         logger.info("Copy UFS model readable atm increment file")
