@@ -2330,8 +2330,7 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'task', 'name': f'{self.run}npoess_pgrb2_0p5deg'}
                     deps.append(rocoto.add_dependency(dep_dict))
 
-        if self.run in ['gfs']:
-            if self.app_config.do_metp:
+        if self.app_config.do_metp and self.run in ['gfs']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}metp'}
                 deps.append(rocoto.add_dependency(dep_dict))
 
