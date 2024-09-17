@@ -8,13 +8,8 @@ gefs_wave:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_wave.tar"
     required:
 
-{% if FHOUT_HF_GFS == FHOUT_HF_GFS %}#need the right logic
-    {% set fcst_freq = FHOUT_HF_GFS %}
-    {% set max_hr = FHMAX_HF_GF %}
-{% elif FHOUT_GFS == FHOUT_GFS %}#need the right logic
-    {% set fcst_freq = FHOUT_GFS %}
-    {% set max_hr = FHMAX_GFS %}
-{% endif %}
+#need some logic here to select FHOUT_WAV or FHOUT_HF_WAV
+
 
 {% if REPLAY_ICS == "YES" %}
     {% set ofst_hr = OFFSET_START_HOUR %}
@@ -50,7 +45,7 @@ gefs_wave:
     # Select grib2 files to copy to the atardir
     {% if RUN == "gefs" %}
         {% if path_exists(COMIN_WAVE_GRID) %}
-            {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_WAV, FHOUT_WAV) %}
+            {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
                 {% set file_name = head ~ "global." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
                 {% set file_path = COMIN_WAVE_GRID ~ "/" ~ file_name %}
                 - "{{ file_path | relpath(ROTDIR)}}"
