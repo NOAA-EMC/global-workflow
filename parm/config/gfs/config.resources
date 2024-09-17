@@ -701,18 +701,14 @@ case ${step} in
     ;;
 
   "calcanl")
+    export layout_x=${layout_x_calcanl}
+    export layout_y=${layout_y_calcanl}
+
     walltime="00:15:00"
-    ntasks=127
-    export ntasks_calcanl="${ntasks}"
+    ntasks=$(( layout_x * layout_y * 6 ))
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export threads_per_task_echgres_gdas=4
-    export threads_per_task_echgres_gfs=12
     export is_exclusive=True
-    memory="48GB"
-    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" ]]; then
-       memory="${mem_node_max}"
-    fi
     ;;
   
   "analcalc")

@@ -79,15 +79,17 @@ class CalcAnalysis(Task):
             fh_dict['mkdir'].append(CalcAnlDir)
 
             if fh == 6:
-                fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + 'atminc.nc',
-                                        CalcAnlDir + '/siginc.06.nc'])
-                fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'cubed_sphere_grid_atmf006.nc',
-                                        CalcAnlDir + '/ges.06.nc'])
+                fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_HISTORY_PREV}/{self.task_config.GPREFIX}cubed_sphere_grid_atmf006.nc",
+                                        f"{CalcAnlDir}/ges.06.nc"])
+                for itile in range(6):
+                    fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}atminc.tile{itile+1}.nc",
+                                            f"{CalcAnlDir}/siginc.06.tile{itile+1}.nc"])
             else:
-                fh_dict['copy'].append([self.task_config.COM_ATMOS_ANALYSIS + '/' + self.task_config.APREFIX + '/atmi' + format(fh, '02') + '.nc',
-                                        CalcAnlDir + '/siginc.' + format(fh, '02') + '.nc'])
-                fh_dict['copy'].append([self.task_config.COM_ATMOS_HISTORY_PREV + '/' + self.task_config.GPREFIX + 'cubed_sphere_grid_atmf' + format(fh, '02'),
-                                        CalcAnlDir + '/ges.' + format(fh, '02') + '.nc'])
+                fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_HISTORY_PREV}/{self.task_config.GPREFIX}cubed_sphere_grid_atmf{format(fh, '02')}.nc",
+                                        f"{CalcAnlDir}/ges.{format(fh, '02')}.nc"])
+                for itile in range(6):
+                    fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}/atmi{format(fh, '02')}.tile{itile+1}.nc",
+                                            f"{CalcAnlDir}/siginc.{format(fh, '02')}.tile{itile+1}.nc"])
 
         # Stage files
         FileHandler(fh_dict).sync()

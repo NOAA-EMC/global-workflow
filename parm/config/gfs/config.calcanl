@@ -5,6 +5,9 @@
 
 echo "BEGIN: config.calcanl"
 
+export layout_x_calcanl=8
+export layout_y_calcanl=8
+
 # Get task specific resources
 . "${EXPDIR}/config.resources" calcanl
 
