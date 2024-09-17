@@ -8,12 +8,12 @@ gefs_ice:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_ice.tar"
     required:
 #select mem%03d and ensstat files required
-{% set membr = [] %}
+{% set members = [] %}
 {% for mem_nm in range(0, NMEM_ENS + 1) %}
-    {% do membr.append("mem" ~ '%03d' % mem_nm ) %}
+    {% do members.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
 
-{% for mem in membr %}
+{% for mem in members %}
     {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
                           '${RUN}':RUN,
                           '${YMD}':cycle_YMD,
