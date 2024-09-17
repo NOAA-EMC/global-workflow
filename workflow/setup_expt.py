@@ -314,7 +314,7 @@ def input_args(*argv):
 
     # For forecast-only, GFS starts in the first cycle
     if not hasattr(inputs, 'sdate_gfs'):
-            inputs.sdate_gfs = inputs.idate
+        inputs.sdate_gfs = inputs.idate
 
     # For cycled, GFS starts after the half-cycle
     if inputs.sdate_gfs is None:
