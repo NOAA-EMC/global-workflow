@@ -13,7 +13,7 @@ gefs_wave:
 
 {% if REPLAY_ICS == "YES" %}
     {% set ofst_hr = OFFSET_START_HOUR %}
-{% elif REPLAY_ICS == "NO" %}
+{% else %}
     {% set ofst_hr = FHMIN_GFS %}
 {% endif %}
 
