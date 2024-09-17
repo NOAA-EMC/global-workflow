@@ -251,7 +251,7 @@ class Jedi:
 
         # extract bias correction files from tar file
         for tar_file in tar_dict['copy']:
-            if ".tar" in tar_file[1]:
+            if tar_file[1].endswith('.tar'):
                 try:
                     with tarfile.open(tar_file[1], "r") as tarball:
                         tarball.extractall(path=os.path.join(task_config.DATA, 'obs'))
