@@ -268,10 +268,6 @@ export OUTPUT_GRID="gaussian_grid"
 export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST
 export WRITE_NSFLIP=".true."
 
-# Override normal post flat files for GEFS
-export FLTFILEGFS="${PARMgfs}/post/postxconfig-NT-GEFS.txt"
-export FLTFILEGFSF00="${PARMgfs}/post/postxconfig-NT-GEFS-F00.txt"
-
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=8
 
@@ -345,9 +341,9 @@ export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arc
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
 
-# The tracker, genesis, and METplus jobs are not supported on AWS yet
-# TODO: we should place these in workflow/hosts/awspw.yaml as part of AWS setup, not for general.
-if [[ "${machine}" == "AWSPW" ]]; then
+# The tracker, genesis, and METplus jobs are not supported on CSPs yet
+# TODO: we should place these in workflow/hosts/[aws|azure|google]pw.yaml as part of CSP's setup, not for general.
+if [[ "${machine}" =~ "PW" ]]; then
    export DO_WAVE="NO"
 fi
 
