@@ -15,8 +15,13 @@ gefs_atmos:
 
 #need some logic here to select FHOUT_HF_GFS or FHOUT_GFS
 #for the time being using FHOUT_GFS
-{% set fcst_freq = FHOUT_GFS %}
-{% set max_hr = FHMAX_GFS %}
+{% if FHMAX_HF_GFS  == 0 %}
+    {% set fcst_freq = FHOUT_GFS %}
+    {% set max_hr = FHMAX_GFS %}
+{% else %}
+    {% set fcst_freq = FHOUT_HF_GFS %}
+    {% set max_hr = FHMAX_HF_GF %}
+{% endif %}
 
 {% if REPLAY_ICS == "YES" %}
     {% set ofst_hr = OFFSET_START_HOUR %}
