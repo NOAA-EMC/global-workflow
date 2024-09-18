@@ -231,9 +231,10 @@ class Jedi:
 
         return bias_dict
 
+    @staticmethod
     @logit(logger)
-    def extract_tar(self, tar_file: str) -> None:
-        """Extract bias correction files from a tarball
+    def extract_tar(tar_file: str) -> None:
+        """Extract files from a tarball
 
         This method extract files from a tarball
 
@@ -254,14 +255,14 @@ class Jedi:
                 tarball.extractall(path=tar_path)
                 logger.info(f"Extract {tarball.getnames()}")
         except tarfile.ReadError as err:
-            if tarfile.is_tarfile(tarfile[1]):
-                logger.error(f"FATAL ERROR: {tarfile[1]} could not be read")
-                raise tarfile.ReadError(f"FATAL ERROR: unable to read {tarfile[1]}")
+            if tarfile.is_tarfile(tar_file):
+                logger.error(f"FATAL ERROR: {tar_file} could not be read")
+                raise tarfile.ReadError(f"FATAL ERROR: unable to read {tar_file}")
             else:
                 logger.info()
         except tarfile.ExtractError as err:
-            logger.exception(f"FATAL ERROR: unable to extract from {tarfile[1]}")
-            raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tarfile[1]}")
+            logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
+            raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
 
 
 @logit(logger)
