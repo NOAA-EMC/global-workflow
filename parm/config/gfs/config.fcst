@@ -311,15 +311,6 @@ elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
 
 fi
 
-if (( $(( ( cyc + FHMIN ) % FHOUT_ICE )) == 0 )); then
-  export CICE_cdoavg=0 # Indicate that no averging needs to be done later
-else
-  export FHOUT_ICE_BASE=${FHOUT_ICE}
-  export FHOUT_ICE=6
-  export FHOUTS_ICE=$(( FHOUT_ICE_BASE / FHOUT_ICE ))
-  export CICE_cdoavg=1 # Indicate that averging needs to be done later
-fi
-
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst

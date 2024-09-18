@@ -159,7 +159,6 @@ FV3_out
 [[ ${cplflx} = .true. ]] && MOM6_out
 [[ ${cplflx} = .true. ]] && CMEPS_out
 [[ ${cplwav} = .true. ]] && WW3_out
-[[ ${cplice} = .true. ]] && CICE_avg
 [[ ${cplice} = .true. ]] && CICE_out
 [[ ${cplchm} = .true. ]] && GOCART_out
 [[ ${esmf_profile:-} = .true. ]] && CPL_out
