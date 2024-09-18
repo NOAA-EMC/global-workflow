@@ -17,15 +17,7 @@ gefs_wave:
     {% set ofst_hr = FHMIN_GFS %}
 {% endif %}
 
-{% if CASE == "C48" %}
-    {% set res = '5p00' %}
-{% elif CASE == "C96" or "C192" %}
-    {% set res = '1p00' %}
-{% elif CASE == "C384" %}
-    {% set res = '0p25' %}
-{% elif CASE == "C768" %}
-    {% set res = '0p25' %}
-{% endif %}
+{% set res = (waveGRD[-3:])[0] ~ "p" ~ (waveGRD[-3:])[-2:] %}
 
 #select mem%03d and ensstat files required
 {% set members = [] %}
