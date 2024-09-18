@@ -41,20 +41,55 @@ gefs_atmos:
 
 # Select pgrb and grib files to copy to the atardir
         {% if path_exists(COMIN_ATMOS_GRIB) %}
-            {% for fhr in range(ofst_hr, max_hr + fcst_freq, fcst_freq) %}
-                {% if mem=="ensstat" %}
-                    {% set file_name = head ~ "mean.pres_." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
-                    {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
-                    - "{{ file_path | relpath(ROTDIR)}}"
-                {% else %}
-                    {% set file_name = head ~ "pgrb2." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
-                    {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
-                    - "{{ file_path | relpath(ROTDIR)}}"
-                    {% set file_name = head ~ "pgrb2b." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
-                    {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
-                    - "{{ file_path | relpath(ROTDIR)}}"
+            {% if FHMAX_HF_GFS  == 0 %}
+                {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+                    {% if mem=="ensstat" %}
+                        {% set file_name = head ~ "mean.pres_." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
+                        {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                        - "{{ file_path | relpath(ROTDIR)}}"
+                    {% else %}
+                        {% set file_name = head ~ "pgrb2." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                        {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                        - "{{ file_path | relpath(ROTDIR)}}"
+                        {% set file_name = head ~ "pgrb2b." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                        {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                        - "{{ file_path | relpath(ROTDIR)}}"
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                 {% if res == "0p25" %}
+                    {% for fhr in range(ofst_hr, FHMAX_HF_GFS + FHOUT_HF_GFS, FHOUT_HF_GFS) %}
+                        {% if mem=="ensstat" %}
+                            {% set file_name = head ~ "mean.pres_." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
+                            {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                            - "{{ file_path | relpath(ROTDIR)}}"
+                        {% else %}
+                            {% set file_name = head ~ "pgrb2." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                            {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                            - "{{ file_path | relpath(ROTDIR)}}"
+                            {% set file_name = head ~ "pgrb2b." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                            {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                            - "{{ file_path | relpath(ROTDIR)}}"
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
-            {% endfor %}
+                {% if res == "0p50" %}
+                    {% for fhr in range(FHMAX_HF_GFS + FHOUT_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+                        {% if mem=="ensstat" %}
+                            {% set file_name = head ~ "mean.pres_." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
+                            {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                            - "{{ file_path | relpath(ROTDIR)}}"
+                        {% else %}
+                            {% set file_name = head ~ "pgrb2." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                            {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                            - "{{ file_path | relpath(ROTDIR)}}"
+                            {% set file_name = head ~ "pgrb2b." ~ res ~ ".f" ~ '%03d'|format(fhr) %}
+                            {% set file_path = COMIN_ATMOS_GRIB ~ "/" ~ file_name %}
+                            - "{{ file_path | relpath(ROTDIR)}}"
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
         {% endif %}
     {% endfor %}
 {% endfor %}
