@@ -10,5 +10,5 @@ export gempak_ver=7.4.2
 # Adding perl as a module; With Rocky8, perl packages will not be from the OS
 export perl_ver=5.38.0
 
-source "${HOMEgfs:-}/versions/run.spack.ver"
+source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/lfs4/HFIP/hfv3gfs/role.epic/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
