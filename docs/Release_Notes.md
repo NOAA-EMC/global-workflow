@@ -128,7 +128,7 @@ The following files will no longer be produced within the GFS COM:
 * `gfs.tCCz.wafs_0p25.f[006-120].grib2.idx`
 * `gfs.tCCz.wafs_0p25_unblended.f[06-48].grib2`
 * `gfs.tCCz.wafs_0p25_unblended.f[06-48].grib2.idx`
-* `gfs.tCCz.wafs.grb2f[000-120]`
+* `gfs.tCCz.wafs.grb2f[000-120]` - renamed to `wafs.tCCz.master.fFFF.grib2` in new WAFS package
 * `gfs.tCCz.wafs.grb2f[000-120].idx`
 * `gfs.tCCz.wafs_grb45f[06-36].grib2`
 * `gfs.tCCz.wafs_grb45f[06-36].grib2.idx`
