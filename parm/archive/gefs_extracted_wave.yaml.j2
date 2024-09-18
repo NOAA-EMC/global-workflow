@@ -7,10 +7,6 @@ gefs_wave:
     name: "GEFS_WAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_wave.tar"
     required:
-
-#need some logic here to select FHOUT_WAV or FHOUT_HF_WAV
-
-
 {% if REPLAY_ICS == "YES" %}
     {% set ofst_hr = OFFSET_START_HOUR %}
 {% else %}
