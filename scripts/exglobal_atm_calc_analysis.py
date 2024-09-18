@@ -26,3 +26,6 @@ if __name__ == '__main__':
 
     # Execute JEDI application
     CalcAnl.execute(config.APRUN_CALCANL)
+
+    # Finalize
+    CalcAnl.finalize()

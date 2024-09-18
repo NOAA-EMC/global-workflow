@@ -5,7 +5,7 @@ from logging import getLogger
 from pprint import pformat
 import os
 from pygfs.jedi import Jedi
-from wxflow import add_to_datetime, AttrDict, FileHandler, logit, parse_j2yaml, Task, save_as_yaml, to_timedelta
+from wxflow import add_to_datetime, AttrDict, FileHandler, logit, parse_j2yaml, Task, save_as_yaml, to_fv3time, to_timedelta
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -36,6 +36,7 @@ class CalcAnalysis(Task):
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'CalcAnlDir': lambda fh : f"{self.task_config.DATA}/calcanl_{format(fh, '02')}"
             }
         )
 
@@ -74,46 +75,47 @@ class CalcAnalysis(Task):
                    'copy': []}
 
         # Initialize FileHandler to make directories and copy files
+        hist_prefix = f"{self.task_config.COM_ATMOS_HISTORY_PREV}/{self.task_config.GPREFIX}"
+        anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
         for fh in self.task_config.IAUFHRS:
-            CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(fh, '02')
-            fh_dict['mkdir'].append(CalcAnlDir)
+            fh_dict['mkdir'].append(self.task_config.CalcAnlDir(fh))
 
+            fh_dict['copy'].append([f"{hist_prefix}cubed_sphere_grid_atmf{format(fh, '03')}.nc",
+                                    f"{self.task_config.CalcAnlDir(fh)}/ges.atm.{format(fh, '02')}.nc"])
+            fh_dict['copy'].append([f"{hist_prefix}cubed_sphere_grid_sfcf{format(fh, '03')}.nc",
+                                    f"{self.task_config.CalcAnlDir(fh)}/ges.sfc.{format(fh, '02')}.nc"])
+            
             if fh == 6:
-                fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_HISTORY_PREV}/{self.task_config.GPREFIX}cubed_sphere_grid_atmf006.nc",
-                                        f"{CalcAnlDir}/ges.atm.06.nc"])
-                fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_HISTORY_PREV}/{self.task_config.GPREFIX}cubed_sphere_grid_sfcf006.nc",
-                                        f"{CalcAnlDir}/ges.sfc.06.nc"])
                 for itile in range(6):
-                    fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}atminc.tile{itile+1}.nc",
-                                            f"{CalcAnlDir}/siginc.06.tile{itile+1}.nc"])
+                    fh_dict['copy'].append([f"{anl_prefix}atminc.tile{itile+1}.nc",
+                                            f"{self.task_config.CalcAnlDir(fh)}/siginc.06.tile{itile+1}.nc"])
             else:
-                fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_HISTORY_PREV}/{self.task_config.GPREFIX}cubed_sphere_grid_atmf{format(fh, '02')}.nc",
-                                        f"{CalcAnlDir}/ges.atm.{format(fh, '02')}.nc"])
-                fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_HISTORY_PREV}/{self.task_config.GPREFIX}cubed_sphere_grid_sfcf{format(fh, '02')}.nc",
-                                        f"{CalcAnlDir}/ges.sfc.{format(fh, '02')}.nc"])
-             
                 for itile in range(6):
-                    fh_dict['copy'].append([f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}/atmi{format(fh, '02')}.tile{itile+1}.nc",
-                                            f"{CalcAnlDir}/siginc.{format(fh, '02')}.tile{itile+1}.nc"])
+                    fh_dict['copy'].append([f"{anl_prefix}/atmi{format(fh, '02')}.tile{itile+1}.nc",
+                                            f"{self.task_config.CalcAnlDir(fh)}/siginc.{format(fh, '02')}.tile{itile+1}.nc"])
 
         # Stage files
         FileHandler(fh_dict).sync()
 
     @logit(logger)
     def finalize(self) -> None:
-        CalcAnlDir = self.task_config.DATA + '/calcanl_' + format(fh, '02')
-        
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_ = cdate.replace('.', '_')
+        cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
+        anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
         
         # Initialize dictionary used to construct Filehandler
         fh_dict = {'mkdir': [],
                    'copy': []}
         
         for fh in self.task_config.IAUFHRS:
-            fh_dict['copy'].append([f"{CalcAnlDir}/anl.{format(fh, '02')}.{cdate_}",
-                                    f"{self.task_config.COM_ATMOS_ANALYSIS}"]
-        
+            if fh == 6:
+                fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
+                                        f"{anl_prefix}atmanl.nc"])
+            else:
+                fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
+                                        f"{anl_prefix}atma{format(fh, '03')}.nc"])
+
+        FileHandler(fh_dict).sync()
+                                   
     @logit(logger)
     def execute(self, aprun_cmd: str) -> None:
         self.jedi.execute(self.task_config, aprun_cmd)
