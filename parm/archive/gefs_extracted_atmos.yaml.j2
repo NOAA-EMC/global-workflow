@@ -51,5 +51,6 @@ gefs_atmos:
                     - "{{ file_path | relpath(ROTDIR)}}"
                 {% endif %}
             {% endfor %}
+        {% endif %}
     {% endfor %}
 {% endfor %}
