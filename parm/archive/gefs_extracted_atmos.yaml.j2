@@ -13,8 +13,7 @@ gefs_atmos:
     {% do members.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
 
-#need some logic here to select FHOUT_HF_GFS or FHOUT_GFS
-#for the time being using FHOUT_GFS
+#logic here to select FHOUT_HF_GFS or FHOUT_GFS
 {% if FHMAX_HF_GFS  == 0 %}
     {% set fcst_freq = FHOUT_GFS %}
     {% set max_hr = FHMAX_GFS %}
