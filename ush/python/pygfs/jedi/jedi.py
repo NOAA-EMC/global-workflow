@@ -232,39 +232,36 @@ class Jedi:
         return bias_dict
 
     @logit(logger)
-    def extract_tar(self, task_config: AttrDict, tar_dict) -> Dict[str, Any]:
-        """Extract files from list of tarfiles
+    def extract_tar(self, tar_file: str) -> None:
+        """Extract bias correction files from a tarball
 
-        This method extract bias correction files from tarball(s)
+        This method extract files from a tarball
 
         Parameters
         ----------
-        task_config: AttrDict
-            Attribute-dictionary of all configuration variables associated with a GDAS task.
-        tar_dict
-            a dictionary containing the list of tar files
+        tar_file
+            path/name of tarball
 
         Returns
         ----------
         None
         """
 
-        # extract bias correction files from tar file
-        for tar_file in tar_dict['copy']:
-            if tar_file[1].endswith('.tar'):
-                try:
-                    with tarfile.open(tar_file[1], "r") as tarball:
-                        tarball.extractall(path=os.path.join(task_config.DATA, 'obs'))
-                        logger.info(f"Extract {tarball.getnames()}")
-                except tarfile.ReadError as err:
-                    if tarfile.is_tarfile(tarfile[1]):
-                        logger.error(f"FATAL ERROR: {tarfile[1]} could not be read")
-                        raise tarfile.ReadError(f"FATAL ERROR: unable to read {tarfile[1]}")
-                    else:
-                        logger.info()
-                except tarfile.ExtractError as err:
-                    logger.exception(f"FATAL ERROR: unable to extract from {tarfile[1]}")
-                    raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tarfile[1]}")
+        # extract files from tar file
+        tar_path = os.path.dirname(tar_file)
+        try:
+            with tarfile.open(tar_file, "r") as tarball:
+                tarball.extractall(path=tar_path)
+                logger.info(f"Extract {tarball.getnames()}")
+        except tarfile.ReadError as err:
+            if tarfile.is_tarfile(tarfile[1]):
+                logger.error(f"FATAL ERROR: {tarfile[1]} could not be read")
+                raise tarfile.ReadError(f"FATAL ERROR: unable to read {tarfile[1]}")
+            else:
+                logger.info()
+        except tarfile.ExtractError as err:
+            logger.exception(f"FATAL ERROR: unable to extract from {tarfile[1]}")
+            raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tarfile[1]}")
 
 
 @logit(logger)

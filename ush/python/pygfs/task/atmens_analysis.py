@@ -145,8 +145,9 @@ class AtmEnsAnalysis(Task):
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # extract bias corrections
-        logger.info(f"Extract bias correction files from tarball")
-        self.jedi.extract_tar(self.task_config, bias_dict)
+        tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
+        logger.info(f"Extract bias correction files from {tar_file}")
+        self.jedi.extract_tar(tar_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
