@@ -95,7 +95,7 @@ export MODE="@MODE@" # cycled/forecast-only
 # Build paths relative to $HOMEgfs
 export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
-export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
+export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
