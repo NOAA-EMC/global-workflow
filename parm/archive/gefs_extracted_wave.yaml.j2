@@ -7,7 +7,7 @@ gefs_wave:
     name: "GEFS_WAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_wave.tar"
     required:
-{% if REPLAY_ICS == "YES" %}
+{% if REPLAY_ICS %}
     {% set ofst_hr = OFFSET_START_HOUR %}
 {% else %}
     {% set ofst_hr = FHMIN_GFS %}
