@@ -22,7 +22,7 @@ gefs_atmos:
     {% set max_hr = FHMAX_HF_GF %}
 {% endif %}
 
-{% if REPLAY_ICS == "YES" %}
+{% if REPLAY_ICS %}
     {% set ofst_hr = OFFSET_START_HOUR %}
 {% else %}
     {% set ofst_hr = FHMIN_GFS %}
