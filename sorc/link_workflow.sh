@@ -293,7 +293,9 @@ case "${machine}" in
     ;;
 esac
 if [[ -d "${EXPOBS_DIR}" ]]; then
-  ${LINK_OR_COPY} "${EXPOBS_DIR}" "${HOMEgfs}/parm/gdas/experimental_obs"
+  if [[ ! -L "${HOMEgfs}/parm/gdas/experimental_obs" ]]; then
+    ${LINK_OR_COPY} "${EXPOBS_DIR}" "${HOMEgfs}/parm/gdas/experimental_obs"
+  fi
 fi
 
 #------------------------------
