@@ -12,7 +12,7 @@ gefs_ocean:
 {% for mem_nm in range(0, NMEM_ENS + 1) %}
     {% do members.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
-{% set res = OCNRES[0] ~ "p" ~ OCNRES[-2:] %}
+{% set res = OCNRES[0]|string() ~ "p" ~ '%02d'|format(OCNRES[-2:]) %}
 
 {% for mem in members %}
     {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
