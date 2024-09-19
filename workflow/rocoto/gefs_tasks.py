@@ -213,16 +213,11 @@ class GEFSTasks(Tasks):
         history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
         deps = []
         data = f'{history_path}/{history_file_tmpl}'
-        if component in ['ocean']:
-            dep_dict = {'type': 'data', 'data': data, 'age': 120}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': 'fcst_mem#member#'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
-        else:
-            dep_dict = {'type': 'data', 'data': data, 'age': 120}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
