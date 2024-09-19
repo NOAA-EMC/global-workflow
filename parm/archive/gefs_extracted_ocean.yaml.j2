@@ -13,23 +13,27 @@ gefs_ocean:
     {% do members.append("mem" ~ '%03d' % mem_nm ) %}
 {% endfor %}
 
-{% set res = (OCNRES|string())[0] ~ "p" ~ (OCNRES|string())[-2:] %}
+{% if OCNRES == "025" %}
+    {% set res = "1p00" %}
+{% else %}
+    {% set res = (OCNRES|string())[0] ~ "p" ~ (OCNRES|string())[-2:] %}
+{% endif %}
 
 {% for mem in members %}
     {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
                           '${RUN}':RUN,
                           '${YMD}':cycle_YMD,
                           '${HH}':cycle_HH,
-                          '${GRID}':res,
                           '${MEMDIR}':mem }) %}
 
-    {% set COMIN_OCEAN_NETCDF = COM_OCEAN_NETCDF_GRID_TMPL | replace_tmpl(tmpl_dict) %}
+    {% set COMIN_OCEAN_NETCDF = COM_OCEAN_NETCDF_TMPL | replace_tmpl(tmpl_dict) %}
 
     # Select netcdf files to copy to the atardir
-    {% if path_exists(COMIN_OCEAN_NETCDF) %}
+    {% set netcdf_grid_dir = COMIN_OCEAN_NETCDF ~ "/" ~ res %}
+    {% if path_exists(netcdf_grid_dir) %}
         {% for fhr in range(FHMIN_GFS + FHOUT_OCN_GFS, FHMAX_GFS + FHOUT_OCN_GFS, FHOUT_OCN_GFS) %}
             {% set file_name = head ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
-            {% set file_path = COMIN_OCEAN_NETCDF ~ "/" ~ file_name %}
+            {% set file_path = netcdf_grid_dir ~ "/" ~ file_name %}
             - "{{ file_path | relpath(ROTDIR)}}"
         {% endfor %}
     {% endif %}
