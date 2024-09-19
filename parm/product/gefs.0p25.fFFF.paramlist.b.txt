@@ -65,7 +65,6 @@
 :CWORK:entire atmosphere (considered as a single layer):
 :DPT:30-0 mb above ground:
 :DUVB:surface:
-:FDNSSTMP:surface:
 :FLDCP:surface:
 :FRICV:surface:
 :GFLUX:surface:

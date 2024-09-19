@@ -12,6 +12,7 @@
 :CSNOW:surface:
 :CFRZR:surface:
 :CICEP:surface:
+:FDNSSTMP:surface:
 :PWAT:entire atmosphere (considered as a single layer):
 :CAPE:180-0 mb above ground:
 :CAPE:surface:
