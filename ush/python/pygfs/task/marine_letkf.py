@@ -68,7 +68,6 @@ class MarineLETKF(Analysis):
         # make directories and stage ensemble background files
         soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
-        self.task_config['NMEM_ENS']=3
         stageconf = AttrDict()
         keys = ['current_cycle',
                 'previous_cycle',
@@ -92,7 +91,6 @@ class MarineLETKF(Analysis):
 
         # stage ensemble background files
         soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.SOCA_ENS_BKG_STAGE_YAML_TMPL, stageconf)
-        print("soca_ens_bkg_stage_list: ",soca_ens_bkg_stage_list)
         FileHandler(soca_ens_bkg_stage_list).sync()
 
         # stage letkf-specific files
@@ -137,7 +135,6 @@ class MarineLETKF(Analysis):
             nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
             nml.write(self.task_config.mom_input_nml, force=True)  # force to overwrite if necessary
 
-
     @logit(logger)
     def run(self):
         """Method run for ocean and sea ice LETKF task
@@ -176,7 +173,6 @@ class MarineLETKF(Analysis):
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd_letkf}")
         pass
-
 
     @logit(logger)
     def finalize(self):

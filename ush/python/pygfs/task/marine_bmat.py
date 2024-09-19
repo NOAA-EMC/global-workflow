@@ -213,7 +213,6 @@ class MarineBMat(Task):
         # compute the coefficients of the diffusion operator
         mdau.run(exec_cmd)
 
-
     @logit(logger)
     def ensemble_perturbations(self: Task) -> None:
         """Generate the 3D ensemble of perturbation for the 3DEnVAR
