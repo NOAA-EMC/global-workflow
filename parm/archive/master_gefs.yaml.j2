@@ -4,11 +4,11 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 
 datasets:
+{% filter indent(width=4) %}
 {% if DO_EXTRACTVARS %}
-    {% filter indent(width=4) %}
     {% include "gefs_extracted_atmos.yaml.j2" %}
     {% include "gefs_extracted_ocean.yaml.j2" %}
     {% include "gefs_extracted_ice.yaml.j2" %}
     {% include "gefs_extracted_wave.yaml.j2" %}
-    {% endfilter %}
 {% endif %}
+{% endfilter %}
