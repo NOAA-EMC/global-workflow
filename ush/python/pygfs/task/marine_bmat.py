@@ -81,7 +81,6 @@ class MarineBMat(Task):
         # stage backgrounds
         # TODO(G): Check ocean backgrounds dates for consistency
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
-        print("bkg_list: ",bkg_list)
         FileHandler(bkg_list).sync()
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)

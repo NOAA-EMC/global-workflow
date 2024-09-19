@@ -51,7 +51,6 @@ class MarineLETKF(Analysis):
         self.task_config.mom_input_nml_tmpl = os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
         self.task_config.mom_input_nml = os.path.join(self.task_config.DATA, 'mom_input.nml')
         self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs')
-        self.task_config.OPREFIX = f"{self.task_config.RUN}.t{self.task_config.cyc}z."
 
     @logit(logger)
     def initialize(self):

@@ -7,10 +7,8 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmat" -c "base ocnanal marinebmat"
 
 
-#if (( 10#${ENSMEM:-0} > 0 )); then
 if (( 10#${NMEM_ENS:-0} > 0 )); then
   export DATAjob="${DATAROOT}/${RUN}marinebmat.${PDY:-}${cyc}"
-  #export DATA="${DATAjob}/${jobid}"
   export DATA=${DATA:-${DATAROOT}/${jobid:?}}
   # Create the directory to hold ensemble perturbations
   export DATAenspert="${DATAjob}/enspert"
