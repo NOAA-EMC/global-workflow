@@ -26,9 +26,9 @@ def run(exec_cmd: Executable) -> None:
         logger.debug(f"Executing {exec_cmd}")
         exec_cmd()
     except OSError:
-        raise OSError(f"Failed to execute {exec_cmd}")
+        raise OSError(f"FATAL ERROR: Failed to execute {exec_cmd}")
     except Exception:
-        raise WorkflowException(f"An error occured during execution of {exec_cmd}")
+        raise WorkflowException(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
 
 
 @logit(logger)

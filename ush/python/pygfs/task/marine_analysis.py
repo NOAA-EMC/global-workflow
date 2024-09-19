@@ -487,4 +487,4 @@ class MarineAnalysis(Task):
         if result.returncode != 0:
             logger.warning(f"{command} has failed")
         if result.stderr:
-            print("STDERR:", result.stderr.decode())
+            logger.warning("STDERR:", result.stderr.decode())
