@@ -157,4 +157,4 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
 
-        return [self.run], {f"{self.run}": tasks}
+        return {f"{self.run}": tasks}

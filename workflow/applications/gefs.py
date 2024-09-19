@@ -84,4 +84,4 @@ class GEFSAppConfig(AppConfig):
 
         tasks += ['arch', 'cleanup']
 
-        return [self.run], {f"{self.run}": tasks}
+        return {f"{self.run}": tasks}

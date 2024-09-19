@@ -132,12 +132,10 @@ class GFSCycledAppConfig(AppConfig):
 
     def get_task_names(self):
         """
-        Get the task names in this cycled configuration and all of the valid runs.
+        Get the task names for each valid run in this cycled configuration.
         Note that the order of the task names matters in the XML.
         This is the place where that order is set.
         """
-
-        runs = ["gdas"]
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
         gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
@@ -295,23 +293,20 @@ class GFSCycledAppConfig(AppConfig):
         tasks['gdas'] = gdas_tasks
 
         if self.do_hybvar and 'gdas' in self.eupd_runs:
-            runs.append("enkfgdas")
             enkfgdas_tasks = hybrid_tasks + hybrid_after_eupd_tasks
             tasks['enkfgdas'] = enkfgdas_tasks
 
         # Add RUN=gfs tasks if running early cycle
         if self.gfs_cyc > 0:
-            runs.append("gfs")
             tasks['gfs'] = gfs_tasks
 
             if self.do_hybvar and 'gfs' in self.eupd_runs:
-                runs.append("enkfgfs")
                 enkfgfs_tasks = hybrid_tasks + hybrid_after_eupd_tasks
                 enkfgfs_tasks.remove("echgres")
                 enkfgfs_tasks.remove("esnowrecen")
                 tasks['enkfgfs'] = enkfgfs_tasks
 
-        return runs, tasks
+        return tasks
 
     @staticmethod
     def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
