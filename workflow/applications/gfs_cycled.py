@@ -130,33 +130,14 @@ class GFSCycledAppConfig(AppConfig):
 
         return GFSCycledAppConfig.get_gfs_cyc_dates(base_in)
 
-    def get_valid_runs(self):
+    def get_task_names(self):
         """
-        Get a list of valid RUNs in cycled MODE.
-        """
-
-        # The gdas run is always present for the cycled application
-        runs = ["gdas"]
-
-        # Are we running the early cycle deterministic forecast?
-        if self.gfs_cyc > 0:
-            runs.append("gfs")
-
-        # Ensembles?  Add the valid run based on eupd_runs.
-        if self.do_hybvar:
-            if 'gdas' in self.eupd_runs:
-                runs.append("enkfgdas")
-            if 'gfs' in self.eupd_runs:
-                runs.append("enkfgfs")
-
-        return runs
-
-    def get_task_names(self, run: str):
-        """
-        Get the task names for all the tasks in the cycled application.
+        Get the task names in this cycled configuration and all of the valid runs.
         Note that the order of the task names matters in the XML.
         This is the place where that order is set.
         """
+
+        runs = ["gdas"]
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
         gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
@@ -314,24 +295,23 @@ class GFSCycledAppConfig(AppConfig):
         tasks['gdas'] = gdas_tasks
 
         if self.do_hybvar and 'gdas' in self.eupd_runs:
+            runs.append("enkfgdas")
             enkfgdas_tasks = hybrid_tasks + hybrid_after_eupd_tasks
             tasks['enkfgdas'] = enkfgdas_tasks
 
         # Add RUN=gfs tasks if running early cycle
         if self.gfs_cyc > 0:
+            runs.append("gfs")
             tasks['gfs'] = gfs_tasks
 
             if self.do_hybvar and 'gfs' in self.eupd_runs:
+                runs.append("enkfgfs")
                 enkfgfs_tasks = hybrid_tasks + hybrid_after_eupd_tasks
                 enkfgfs_tasks.remove("echgres")
                 enkfgfs_tasks.remove("esnowrecen")
                 tasks['enkfgfs'] = enkfgfs_tasks
 
-        if run not in tasks:
-            raise KeyError(f"FATAL ERROR: GFS cycled experiment is not configured "
-                           f"for the input run ({run})")
-
-        return tasks[run]
+        return runs, tasks
 
     @staticmethod
     def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:

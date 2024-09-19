@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Dict, List, Any
+from typing import Dict, List, Tuple, Any
 from datetime import timedelta
 from hosts import Host
 from wxflow import Configuration, to_timedelta
@@ -100,19 +100,15 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         # Get a list of all possible config files that would be part of the application
         self.configs_names = self._get_app_configs()
 
-        # Get the list of valid runs for the configuration
-        self.runs = self.get_valid_runs()
+        # Get task names, configs, and APPs for the application
+        self.runs, self.task_names = self.get_task_names()
 
-        # Initialize the task_names, configs, and model_apps dictionaries
-        self.task_names = dict.fromkeys(self.runs)
+        # Initialize the configs and model_apps dictionaries
         self.model_apps = dict.fromkeys(self.runs)
         self.configs = dict.fromkeys(self.runs)
 
         # Now configure the experiment for each valid run
         for run in self.runs:
-
-            # Get task names, configs, and APPs for the application
-            self.task_names[run] = self.get_task_names(run)
 
             self.configs[run] = self._source_configs(conf, run=run, log=False)
 
@@ -183,9 +179,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         return configs
 
     @abstractmethod
-    def get_valid_runs(self) -> List[str]:
+    def get_task_names(self, run: str) -> Tuple[List[str], Dict[str, List[str]]]:
         '''
-        Create a list of RUNs for the configuation.
+        Create a list of valid RUNs and a dict of task names for each RUN valid for the configuation.
 
         Parameters
         ----------
@@ -193,23 +189,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         Returns
         -------
-        Dict[str, List[str]]: Lists of tasks for each RUN.
-
-        '''
-        pass
-
-    @abstractmethod
-    def get_task_names(self, run: str) -> Dict[str, List[str]]:
-        '''
-        Create a list of task names for each RUN valid for the configuation.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        Dict[str, List[str]]: Lists of tasks for each RUN.
+        Tuple[List[str], Dict[str, List[str]]]: List of valid runs and lists of all tasks for each RUN.
 
         '''
         pass
