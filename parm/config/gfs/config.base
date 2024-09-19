@@ -492,4 +492,11 @@ if [[ "${machine}" =~ "PW" ]]; then
    export DO_WAVE="NO"
 fi
 
+# The tracker and genesis are not installed on Orion/Hercules yet; this requires spack-stack builds of the package.
+# TODO: we should place these in workflow/hosts/[orion|hercules].yaml.
+if [[ "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
+   export DO_TRACKER="NO"
+   export DO_GENESIS="NO"
+fi
+
 echo "END: config.base"
