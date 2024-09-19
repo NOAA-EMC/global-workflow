@@ -64,6 +64,12 @@ JOBS CHANGES
 ------------
 
 All WAFS jobs are removed from the GFS ecFlow definition file, rocoto mesh, and `ush/ecflow/prod.yml`.
+Jobs removed:
+* `jgfs_atmos_wafs_gcip`
+* `jgfs_atmos_wafs_fFFF`
+* `jgfs_atmos_wafs_grib2`
+* `jgfs_atmos_wafs_grib2_0p25`
+* `jgfs_atmos_wafs_blending_0p25`
 
 PARM/CONFIG CHANGES
 -------------------
@@ -121,22 +127,29 @@ CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
 The following files will no longer be produced within the GFS COM:
+* `gfs.tCCz.awf_0p25.fFFF.grib2` - renamed to `wafs.tCCz.awf.0p25.fFFF.grib2` in WAFSv7
+* `gfs.tCCz.awf_grb45fFF.grib2` - renamed to `wafs.tCCz.awf_grid45.fFFF.grib2` in WAFSv7
+* `wmo/grib2.tCCz.awf_grbfFF.45` - renamed to `wmo/grib2.wafs.tCCz.awf_grid45.fFFF` in WAFSv7
 * `gfs.tCCz.control.wafsblending_0p25`
-* `gfs.tCCz.wafs.0p25.anl`
+* `gfs.tCCz.wafs.0p25.anl` - renamed to `wafs.tCCz.0p25.anl.grib2` in WAFSv7
 * `gfs.tCCz.wafs.0p25.anl.idx`
-* `gfs.tCCz.wafs_0p25.f[006-120].grib2`
-* `gfs.tCCz.wafs_0p25.f[006-120].grib2.idx`
-* `gfs.tCCz.wafs_0p25_unblended.f[06-48].grib2`
-* `gfs.tCCz.wafs_0p25_unblended.f[06-48].grib2.idx`
-* `gfs.tCCz.wafs.grb2f[000-120]` - renamed to `wafs.tCCz.master.fFFF.grib2` in new WAFS package
-* `gfs.tCCz.wafs.grb2f[000-120].idx`
-* `gfs.tCCz.wafs_grb45f[06-36].grib2`
-* `gfs.tCCz.wafs_grb45f[06-36].grib2.idx`
-* `WAFS_0p25_blended_YYYYMMDDCCf[06-48].grib2`
+* `gfs.tCCz.wafs_0p25.fFFF.grib2`
+* `gfs.tCCz.wafs_0p25.fFFF.grib2.idx`
+* `gfs.tCCz.wafs_0p25_unblended.fFFF.grib2` - renamed to `WAFS_0p25_unblended_YYYYMMDDHHfFFF.grib2` in WAFSv7
+* `gfs.tCCz.wafs_0p25_unblended.fFFF.grib2.idx`
+* `gfs.tCCz.wafs.grb2fFFF` - renamed to `wafs.tCCz.master.fFFF.grib2` in WAFSv7
+* `gfs.tCCz.wafs.grb2fFFF.idx`
+* `gfs.tCCz.wafs_grb45fFF.grib2` - renamed to `gfs.tCCz.wafs_grb45fFFF.grib2` in WAFSv7
+* `gfs.tCCz.wafs_grb45fFF.grib2.idx`
+* `wmo/grib2.tCCz.wafs_grbfFF.45` - renamed to `wmo/grib2.wafs.tCCz.awf_grid45.fFFF` in WAFSv7
+* `gfs.tCCz.gcip.fFF.grib2` - renamed to `wafs.tCCz.gcip.fFFF.grib2` in WAFSv7
+* `WAFS_0p25_blended_YYYYMMDDHHf[06-48].grib2` - renamed to `WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2` in WAFSv7
+
 The following files will no longer be produced within the GFS COM
 and are being retired from the WAFS package:
-* `gfs.tCCz.wafs_icao.grb2f[000-048]`
-* `gfs.tCCz.wafs_icao.grb2f[000-048].idx`
+* `gfs.tCCz.wafs_icao.grb2fFFF`
+* `gfs.tCCz.wafs_icao.grb2fFFF.idx`
+* `wmo/xtrn.wfsgfs0006.gfs_atmos_wafs_f30_00`
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
