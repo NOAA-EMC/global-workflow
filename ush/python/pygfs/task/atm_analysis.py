@@ -276,9 +276,21 @@ class AtmAnalysis(Task):
         bfile = f"{self.task_config.APREFIX}rad_varbc_params.tar"
         radtar = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, bfile)
 
-        # get lists of radiance bias correction files to put in tarball
+        # rename and copy tlapse radiance bias correction files from obs to bc
+        tlapobs = glob.glob(os.path.join(self.task_config.DATA, 'obs', '*tlapse.txt'))
+        copylist = []
+        for tlapfile in tlapobs:
+            obsfile = os.path.basename(tlapfile).split('.', 2)
+            newfile = f"{self.task_config.APREFIX}{obsfile[2]}"
+            copylist.append([tlapfile, os.path.join(self.task_config.DATA, 'bc', newfile)])
+        tlapse_dict = {
+            'copy': copylist
+        }
+        FileHandler(tlapse_dict).sync()
+
+        # get lists of radiance bias correction files to add to tarball
         satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
-        tlaplist = glob.glob(os.path.join(self.task_config.DATA, 'obs', '*tlapse.txt'))
+        tlaplist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*tlapse.txt'))
 
         # tar radiance bias correction files to ROTDIR
         logger.info(f"Creating radiance bias correction tar file {radtar}")
