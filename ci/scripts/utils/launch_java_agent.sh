@@ -5,6 +5,7 @@ set -e
 # ==============================================================================
 # Script Name: launch_java_agent.sh
 #
+#  no operation - just ci test
 # Description:
 #        This script automates the process of launching a Jenkins agent
 #        on a specified machine. It ensures that the necessary
