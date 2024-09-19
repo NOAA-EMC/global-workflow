@@ -47,7 +47,15 @@ class GEFSAppConfig(AppConfig):
 
         return base_out
 
-    def get_task_names(self):
+    def get_valid_runs(self):
+        """
+        Return the GEFS RUN.
+        """
+
+        # Only one RUN (should be gefs) is allowed as specified in __init__
+        return [self.run]
+
+    def get_task_names(self, run):
 
         tasks = ['stage_ic']
 
@@ -84,4 +92,4 @@ class GEFSAppConfig(AppConfig):
 
         tasks += ['arch', 'cleanup']
 
-        return {f"{self.run}": tasks}
+        return tasks

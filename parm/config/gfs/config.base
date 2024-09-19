@@ -151,8 +151,25 @@ export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
-# APP settings
-export APP=@APP@
+# APP settings; configurable by RUN
+case "${RUN}" in
+    "gfs")
+        export APP=@APP@
+        ;;
+    "gdas")
+        export APP=@APP@
+        ;;
+    "enkfgfs")
+        export APP=@APP@
+        ;;
+    "enkfgdas")
+        export APP=@APP@
+        ;;
+    *)
+        echo "FATAL ERROR: Unrecognized RUN (${RUN})!"
+        exit 1
+        ;;
+esac
 
 shopt -s extglob
 # Adjust APP based on RUN
@@ -217,7 +234,7 @@ case "${CASE}" in
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
-        exit 1
+        exit 2
         ;;
 esac
 
@@ -256,8 +273,8 @@ case "${APP}" in
     fi
     ;;
   *)
-    echo "Unrecognized APP: '${APP}'"
-    exit 1
+    echo "FATAL ERROR: Unrecognized APP: '${APP}'"
+    exit 3
     ;;
 esac
 
@@ -461,8 +478,8 @@ export FHMAX_FITS=132
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export LOCALARCH="@LOCALARCH@"        # save data to local archive
 if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
-   echo "Both HPSS and local archiving selected.  Please choose one or the other."
-   exit 2
+   echo "FATAL ERROR: Both HPSS and local archiving selected.  Please choose one or the other."
+   exit 4
 fi
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability

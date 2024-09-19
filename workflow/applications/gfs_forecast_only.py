@@ -82,7 +82,15 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         return base_out
 
-    def get_task_names(self):
+    def get_valid_runs(self):
+        """
+        Return the specified RUN for forecast-only MODE.
+        """
+
+        # Only one RUN is allowed for forecast-only mode as specified in __init__
+        return [self.run]
+
+    def get_task_names(self, run: str):
         """
         Get the task names for all the tasks in the forecast-only application.
         Note that the order of the task names matters in the XML.
@@ -157,4 +165,4 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
 
-        return {f"{self.run}": tasks}
+        return tasks

@@ -41,7 +41,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                                       f'{", ".join(self.VALID_MODES)}\n')
 
         self.net = base['NET']
-        self.model_app = base.get('APP', 'ATM')
         self.do_atm = base.get('DO_ATM', True)
         self.do_wave = base.get('DO_WAVE', False)
         self.do_wave_bnd = base.get('DOBNDPNT_WAVE', False)
@@ -63,6 +62,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_goes = base.get('DO_GOES', False)
         self.do_mos = base.get('DO_MOS', False)
         self.do_extractvars = base.get('DO_EXTRACTVARS', False)
+        self.gfs_cyc = base.get('gfs_cyc')
 
         self.do_hpssarch = base.get('HPSSARCH', False)
 
@@ -97,27 +97,26 @@ class AppConfig(ABC, metaclass=AppConfigInit):
     def _init_finalize(self, conf: Configuration):
         print("Finalizing initialize")
 
-        # Get a list of all possible config_files that would be part of the application
+        # Get a list of all possible config files that would be part of the application
         self.configs_names = self._get_app_configs()
 
-        # Source the config files for the jobs in the application without specifying a RUN
-        self.configs = {'_no_run': self._source_configs(conf)}
+        # Get the list of valid runs for the configuration
+        self.runs = self.get_valid_runs()
 
-        # Update the base config dictionary based on application
-        self.configs['_no_run']['base'] = self._update_base(self.configs['_no_run']['base'])
+        # Initialize the task_names, configs, and model_apps dictionaries
+        self.task_names = dict.fromkeys(self.runs)
+        self.model_apps = dict.fromkeys(self.runs)
+        self.configs = dict.fromkeys(self.runs)
 
-        # Save base in the internal state since it is often needed
-        base = self.configs['_no_run']['base']
+        # Now configure the experiment for each valid run
+        for run in self.runs:
 
-        # Get more configuration options into the class attributes
-        self.gfs_cyc = base.get('gfs_cyc')
+            # Get task names, configs, and APPs for the application
+            self.task_names[run] = self.get_task_names(run)
 
-        # Get task names for the application
-        self.task_names = self.get_task_names()
-
-        # Finally, source the configuration files for each valid `RUN`
-        for run in self.task_names.keys():
             self.configs[run] = self._source_configs(conf, run=run, log=False)
+
+            self.model_apps[run] = self.configs[run]['base'].get('APP', 'ATM')
 
             # Update the base config dictionary based on application and RUN
             self.configs[run]['base'] = self._update_base(self.configs[run]['base'])
@@ -184,7 +183,23 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         return configs
 
     @abstractmethod
-    def get_task_names(self, run="_no_run") -> Dict[str, List[str]]:
+    def get_valid_runs(self) -> List[str]:
+        '''
+        Create a list of RUNs for the configuation.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        Dict[str, List[str]]: Lists of tasks for each RUN.
+
+        '''
+        pass
+
+    @abstractmethod
+    def get_task_names(self, run: str) -> Dict[str, List[str]]:
         '''
         Create a list of task names for each RUN valid for the configuation.
 

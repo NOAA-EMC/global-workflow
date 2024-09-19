@@ -855,8 +855,8 @@ class GFSTasks(Tasks):
         try:
             task = fcst_map[self.app_config.mode]()
         except KeyError:
-            raise NotImplementedError(f'{self.app_config.mode} is not a valid type.\n' +
-                                      'Currently supported forecast types are:\n' +
+            raise NotImplementedError(f'{self.app_config.mode} is not a valid type.\n'
+                                      f'Currently supported forecast types are:\n'
                                       f'{" | ".join(fcst_map.keys())}')
 
         return task
@@ -868,7 +868,7 @@ class GFSTasks(Tasks):
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_wave and self.run in self.app_config.wave_runs:
-            wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
+            wave_job = 'waveprep' if self.app_config.model_apps[self.run] in ['ATMW'] else 'waveinit'
             dep_dict = {'type': 'task', 'name': f'{self.run}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 

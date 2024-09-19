@@ -130,7 +130,28 @@ class GFSCycledAppConfig(AppConfig):
 
         return GFSCycledAppConfig.get_gfs_cyc_dates(base_in)
 
-    def get_task_names(self):
+    def get_valid_runs(self):
+        """
+        Get a list of valid RUNs in cycled MODE.
+        """
+
+        # The gdas run is always present for the cycled application
+        runs = ["gdas"]
+
+        # Are we running the early cycle deterministic forecast?
+        if self.gfs_cyc > 0:
+            runs.append("gfs")
+
+        # Ensembles?  Add the valid run based on eupd_runs.
+        if self.do_hybvar:
+            if 'gdas' in self.eupd_runs:
+                runs.append("enkfgdas")
+            if 'gfs' in self.eupd_runs:
+                runs.append("enkfgfs")
+
+        return runs
+
+    def get_task_names(self, run: str):
         """
         Get the task names for all the tasks in the cycled application.
         Note that the order of the task names matters in the XML.
@@ -306,7 +327,11 @@ class GFSCycledAppConfig(AppConfig):
                 enkfgfs_tasks.remove("esnowrecen")
                 tasks['enkfgfs'] = enkfgfs_tasks
 
-        return tasks
+        if run not in tasks:
+            raise KeyError(f"FATAL ERROR: GFS cycled experiment is not configured "
+                           f"for the input run ({run})")
+
+        return tasks[run]
 
     @staticmethod
     def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
