@@ -4,5 +4,5 @@ export spack_env=gsi-addon-dev
 
 export perl_ver=5.38.2
 
-source "${HOMEgfs:-}/versions/run.spack.ver"
+source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/ncrc/proj/epic/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
