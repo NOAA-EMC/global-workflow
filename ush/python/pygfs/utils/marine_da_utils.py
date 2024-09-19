@@ -75,3 +75,4 @@ def stage_ens_mem(task_config: AttrDict) -> None:
     letkf_stage_list = parse_j2yaml(task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, ensbkgconf)
     logger.info(f"{letkf_stage_list}")
     FileHandler(letkf_stage_list).sync()
+
