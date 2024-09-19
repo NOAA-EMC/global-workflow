@@ -1,4 +1,4 @@
-BASE_GIT: '/work/noaa/global/glopara/git'
+BASE_GIT: '/work/noaa/global/glopara/git_rocky9'
 DMPDIR: '/work/noaa/rstprod/dump'
 BASE_IC: '/work/noaa/global/glopara/data/ICSDIR'
 PACKAGEROOT: '/work/noaa/global/glopara/nwpara'
