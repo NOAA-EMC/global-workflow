@@ -17,7 +17,7 @@ export GDUMP=${GDUMP:-"gdas"}
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
 
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
