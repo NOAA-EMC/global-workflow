@@ -45,7 +45,7 @@ class GFSTasks(Tasks):
         dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
                                                        {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
 
-        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
+        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.ens_runs else False
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdasatmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
@@ -337,7 +337,7 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep=deps)
 
         gfs_cyc = self._base["gfs_cyc"]
-        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
+        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.ens_runs else False
 
         cycledef = self.run
         if self.run in ['gfs'] and gfs_enkf and gfs_cyc != 4:
@@ -2685,8 +2685,6 @@ class GFSTasks(Tasks):
         return task
 
     def esfc(self):
-
-        # eupd_run = 'gdas' if 'gdas' in self.app_config.eupd_runs else 'gfs'
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc'}

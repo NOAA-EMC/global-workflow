@@ -12,6 +12,7 @@ class GEFSAppConfig(AppConfig):
 
         base = conf.parse_config('config.base')
         self.run = base.get('RUN', 'gefs')
+        self.runs = [self.run]
 
     def _get_app_configs(self):
         """

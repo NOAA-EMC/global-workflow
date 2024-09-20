@@ -13,6 +13,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         base = conf.parse_config('config.base')
         self.aero_fcst_run = base.get('AERO_FCST_RUN', 'BOTH').lower()
         self.run = base.get('RUN', 'gfs')
+        self.runs = [self.run]
         self.exp_warm_start = base.get('EXP_WARM_START', False)
 
     def _get_app_configs(self):

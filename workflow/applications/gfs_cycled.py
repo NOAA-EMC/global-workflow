@@ -11,25 +11,40 @@ class GFSCycledAppConfig(AppConfig):
 
     def __init__(self, conf: Configuration):
         super().__init__(conf)
+        # Re-read config.base without RUN specified to get the basic settings for
+        # cycled cases to be able to determine valid runs
         base = conf.parse_config('config.base')
-        self.do_hybvar = base.get('DOHYBVAR', False)
-        self.do_fit2obs = base.get('DO_FIT2OBS', True)
-        self.do_jediatmvar = base.get('DO_JEDIATMVAR', False)
-        self.do_jediatmens = base.get('DO_JEDIATMENS', False)
-        self.do_jediocnvar = base.get('DO_JEDIOCNVAR', False)
-        self.do_jedisnowda = base.get('DO_JEDISNOWDA', False)
-        self.do_mergensst = base.get('DO_MERGENSST', False)
-        self.do_vrfy_oceanda = base.get('DO_VRFY_OCEANDA', False)
+        self.runs = ["gdas"]
+        self.runs.append("gfs") if gfs_cyc > 0 else 0
 
-        self.lobsdiag_forenkf = False
-        self.eupd_runs = None
+        self.ens_runs = None
+
         if self.do_hybvar:
-            self.lobsdiag_forenkf = base.get('lobsdiag_forenkf', False)
-            eupd_run = base.get('EUPD_CYC', 'gdas').lower()
-            if eupd_run in ['both']:
-                self.eupd_runs = ['gfs', 'gdas']
-            elif eupd_run in ['gfs', 'gdas']:
-                self.eupd_runs = [eupd_run]
+            ens_run = base.get('EUPD_CYC', 'gdas').lower()
+            if ens_run in ['both']:
+                self.ens_runs = ['gfs', 'gdas']
+            elif ens_run in ['gfs', 'gdas']:
+                self.ens_runs = [ens_run]
+
+            for ens_run in self.ens_runs:
+                self.runs.append(f"enkf{ens_run}") if ens_run in self.runs else 0
+
+    def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
+
+        run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
+        run_options[run]['nens'] = base.get('NMEM_ENS', 0)
+        if run_options[run]['do_hybvar']:
+            run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
+
+        run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
+        run_options[run]['do_jediatmvar'] = base.get('DO_JEDIATMVAR', False)
+        run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
+        run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
+        run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
+        run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
+        run_options[run]['do_vrfy_oceanda'] = base.get('DO_VRFY_OCEANDA', False)
+
+        return run_options
 
     def _get_app_configs(self):
         """
@@ -292,16 +307,16 @@ class GFSCycledAppConfig(AppConfig):
         tasks = dict()
         tasks['gdas'] = gdas_tasks
 
-        if self.do_hybvar and 'gdas' in self.eupd_runs:
-            enkfgdas_tasks = hybrid_tasks + hybrid_after_eupd_tasks
+        if self.do_hybvar and 'gdas' in self.ens_runs:
+            enkfgdas_tasks = hybrid_tasks + hybrid_after_ens_tasks
             tasks['enkfgdas'] = enkfgdas_tasks
 
         # Add RUN=gfs tasks if running early cycle
         if self.gfs_cyc > 0:
             tasks['gfs'] = gfs_tasks
 
-            if self.do_hybvar and 'gfs' in self.eupd_runs:
-                enkfgfs_tasks = hybrid_tasks + hybrid_after_eupd_tasks
+            if self.do_hybvar and 'gfs' in self.ens_runs:
+                enkfgfs_tasks = hybrid_tasks + hybrid_after_ens_tasks
                 enkfgfs_tasks.remove("echgres")
                 enkfgfs_tasks.remove("esnowrecen")
                 tasks['enkfgfs'] = enkfgfs_tasks
