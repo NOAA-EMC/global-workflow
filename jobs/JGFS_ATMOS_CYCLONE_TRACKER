@@ -3,11 +3,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "tracker" -c "base tracker"
 
-# Hack to temporary skip this as the tracker has not been build
-#   on Hercules Rocky 9 yet
-# TODO: Remove this after tracker has been built for Rocky 9 #2639
-if [[ "${machine}" == 'HERCULES' ]]; then exit 0; fi
-
 export COMPONENT="atmos"
 
 

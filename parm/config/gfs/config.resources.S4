@@ -32,7 +32,7 @@ case ${step} in
       *)
         ;;
     esac
-    export tasks_node=$(( max_tasks_per_node / threads_per_task ))
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "eobs")
