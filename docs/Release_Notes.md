@@ -142,6 +142,7 @@ The following files will no longer be produced within the GFS COM:
 * `gfs.tCCz.wafs_grb45fFF.grib2` - renamed to `gfs.tCCz.wafs_grb45fFFF.grib2` in WAFSv7
 * `gfs.tCCz.wafs_grb45fFF.grib2.idx`
 * `wmo/grib2.tCCz.wafs_grbfFF.45` - renamed to `wmo/grib2.wafs.tCCz.awf_grid45.fFFF` in WAFSv7
+* `wmo/xtrn.wfsgfs0006.gfs_atmos_wafs_f30_00`
 * `gfs.tCCz.gcip.fFF.grib2` - renamed to `wafs.tCCz.gcip.fFFF.grib2` in WAFSv7
 * `WAFS_0p25_blended_YYYYMMDDHHf[06-48].grib2` - renamed to `WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2` in WAFSv7
 
@@ -149,7 +150,7 @@ The following files will no longer be produced within the GFS COM
 and are being retired from the WAFS package:
 * `gfs.tCCz.wafs_icao.grb2fFFF`
 * `gfs.tCCz.wafs_icao.grb2fFFF.idx`
-* `wmo/xtrn.wfsgfs0006.gfs_atmos_wafs_f30_00`
+* `wafs.tCCz.master.fFFF.grib2` where FFF is from 001 to 005
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
