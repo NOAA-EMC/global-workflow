@@ -24,7 +24,7 @@ RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
    COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL
 
-mkdir -p "${COMOUT_OCEAN_ANALYSIS}"
+if [[ -d "${COMOUT_OCEAN_ANALYSIS}" ]]; then mkdir -p "${COMOUT_OCEAN_ANALYSIS}"; fi
 mkdir -p "${COMOUT_ICE_ANALYSIS}"
 mkdir -p "${COMOUT_ICE_RESTART}"
 
