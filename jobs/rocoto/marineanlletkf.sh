@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="marineanalletkf"
+export job="marineanlletkf"
 export jobid="${job}.$$"
 
 ###############################################################

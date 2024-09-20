@@ -148,7 +148,7 @@ class MarineLETKF(Analysis):
 
         logger.info("run")
 
-        exec_cmd_gridgen = Executable(self.task_config.APRUN_MARINEANALLETKF)
+        exec_cmd_gridgen = Executable(self.task_config.APRUN_MARINEANLLETKF)
         exec_cmd_gridgen.add_default_arg(self.task_config.GRIDGEN_EXEC)
         exec_cmd_gridgen.add_default_arg(self.task_config.GRIDGEN_YAML)
 
@@ -161,7 +161,7 @@ class MarineLETKF(Analysis):
             raise WorkflowException(f"An error occured during execution of {exec_cmd_gridgen}")
         pass
 
-        exec_cmd_letkf = Executable(self.task_config.APRUN_MARINEANALLETKF)
+        exec_cmd_letkf = Executable(self.task_config.APRUN_MARINEANLLETKF)
         for letkf_exec_arg in self.task_config.letkf_exec_args:
             exec_cmd_letkf.add_default_arg(letkf_exec_arg)
 

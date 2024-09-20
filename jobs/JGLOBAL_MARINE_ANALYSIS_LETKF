@@ -1,6 +1,6 @@
 #!/bin/bash
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanalletkf" -c "base ocnanal marineanalletkf"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base ocnanal marineanlletkf"
 
 ##############################################
 # Set variables used in the script
