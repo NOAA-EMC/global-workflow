@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import dateutil.parser as dparser
 import os
-import re
+from netCDF4 import Dataset
 from logging import getLogger
 import yaml
 
