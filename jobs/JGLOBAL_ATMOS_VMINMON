@@ -19,7 +19,7 @@ export gcyc=${GDATE:8:2}
 #############################################
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-	COMOUT_ATMOS_MINMON:COM_ATMOS_MINMON_TMPL 
+	COMOUT_ATMOS_MINMON:COM_ATMOS_MINMON_TMPL
 
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 	COMIN_ATMOS_MINMON_PREV:COM_ATMOS_MINMON_TMPL
