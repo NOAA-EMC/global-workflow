@@ -49,11 +49,11 @@ class AppConfig(ABC, metaclass=AppConfigInit):
     def _init_finalize(self, conf: Configuration):
         print("Finalizing initialize")
 
+        # Get run-, net-, and mode-based options
+        self.run_options = self._get_run_options(conf)
+
         # Get task names and runs for the application
         self.task_names = self.get_task_names()
-
-        # Get a list of all possible config files that could be part of the application
-        self.configs_names = self._get_app_configs()
 
         # Initialize the configs and model_apps dictionaries
         self.model_apps = dict.fromkeys(self.runs)
@@ -195,13 +195,11 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         Every config depends on "config.base"
         """
 
-        configs = dict()
-
-        # Return config.base as well
-        configs['base'] = conf.parse_config('config.base', RUN=run)
+        # Include config.base by its lonesome
+        configs{'base': conf.parse_config('config.base', RUN=run)}
 
         # Source the list of all config_files involved in the application
-        for config in self.configs_names:
+        for config in self._get_app_configs(run):
 
             # All must source config.base first
             files = ['config.base']

@@ -14,27 +14,33 @@ class GEFSAppConfig(AppConfig):
         self.run = base.get('RUN', 'gefs')
         self.runs = [self.run]
 
-    def _get_app_configs(self):
+    def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
+
+        # Nothing specific to do for gefs (yet).
+        return run_options
+
+    def _get_app_configs(self, run):
         """
         Returns the config_files that are involved in gefs
         """
+        options = self.run_options[run]
         configs = ['stage_ic', 'fcst', 'atmos_products', 'arch', 'cleanup']
 
-        if self.nens > 0:
+        if options['nens'] > 0:
             configs += ['efcs', 'atmos_ensstat']
 
-        if self.do_wave:
+        if options['do_wave']:
             configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
-            if self.do_wave_bnd:
+            if options['do_wave_bnd']:
                 configs += ['wavepostbndpnt', 'wavepostbndpntbll']
 
-        if self.do_ocean or self.do_ice:
+        if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        if self.do_aero:
+        if options['do_aero']:
             configs += ['prep_emissions']
 
-        if self.do_extractvars:
+        if options['do_extractvars']:
             configs += ['extractvars']
 
         return configs
@@ -50,37 +56,38 @@ class GEFSAppConfig(AppConfig):
 
     def get_task_names(self):
 
+        options = self.run_options[self.run]
         tasks = ['stage_ic']
 
-        if self.do_wave:
+        if options['do_wave']:
             tasks += ['waveinit']
 
-        if self.do_aero:
+        if options['do_aero']:
             tasks += ['prep_emissions']
 
         tasks += ['fcst']
 
-        if self.nens > 0:
+        if options['nens'] > 0:
             tasks += ['efcs']
 
         tasks += ['atmos_prod']
 
-        if self.nens > 0:
+        if options['nens'] > 0:
             tasks += ['atmos_ensstat']
 
-        if self.do_ocean:
+        if options['do_ocean']:
             tasks += ['ocean_prod']
 
-        if self.do_ice:
+        if options['do_ice']:
             tasks += ['ice_prod']
 
-        if self.do_wave:
+        if options['do_wave']:
             tasks += ['wavepostsbs']
-            if self.do_wave_bnd:
+            if options['do_wave_bnd']:
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
 
-        if self.do_extractvars:
+        if options['do_extractvars']:
             tasks += ['extractvars']
 
         tasks += ['arch', 'cleanup']

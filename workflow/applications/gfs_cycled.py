@@ -46,10 +46,11 @@ class GFSCycledAppConfig(AppConfig):
 
         return run_options
 
-    def _get_app_configs(self):
+    def _get_app_configs(self, run):
         """
-        Returns the config_files that are involved in the cycled app
+        Returns the config files that are involved in the cycled app
         """
+        options = self.run_options[run]
 
         configs = ['prep']
 
