@@ -17,7 +17,7 @@ if (( $# != 1 )); then
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
     echo "snowanl esnowrecen"
     echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
-    echo "anal sfcanl calcanl analcalc analdiag fcst echgres"
+    echo "anal sfcanl analcalc_fv3jedi analcalc_gsi analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
@@ -700,9 +700,9 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "calcanl")
-    export layout_x=${layout_x_calcanl}
-    export layout_y=${layout_y_calcanl}
+  "analcalc_fv3jedi")
+    export layout_x=${layout_x_analcalc_fv3jedi}
+    export layout_y=${layout_y_analcalc_fv3jedi}
 
     walltime="00:15:00"
     ntasks=$(( layout_x * layout_y * 6 ))
@@ -711,7 +711,7 @@ case ${step} in
     export is_exclusive=True
     ;;
   
-  "analcalc")
+  "analcalc_gsi")
     walltime="00:15:00"
     ntasks=127
     export ntasks_calcanl="${ntasks}"

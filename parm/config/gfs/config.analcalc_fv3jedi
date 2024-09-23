@@ -1,19 +1,19 @@
 #! /usr/bin/env bash
 
-########## config.calcanl ##########
+########## config.analcalc_fv3jedi ##########
 # Diagnostic amospheric analysis calculation specific
 
-echo "BEGIN: config.calcanl"
+echo "BEGIN: config.analcalc_fv3jedi"
 
-export layout_x_calcanl=2
-export layout_y_calcanl=2
+export layout_x_analcalc_fv3jedi=2
+export layout_y_analcalc_fv3jedi=2
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" calcanl
+. "${EXPDIR}/config.resources" analcalc_fv3jedi
 
 export JCB_BASE_YAML=${PARMgfs}/gdas/atm/jcb-base.yaml.j2
-export JCB_ALGO=fv3jedi_calcanl
-export JEDIEXE=${EXECgfs}/fv3jedi_calcanl.x
+export JCB_ALGO=fv3jedi_analcalc
+export JEDIEXE=${EXECgfs}/fv3jedi_analcalc.x
 
 if [[ ${DOHYBVAR} = "YES" ]]; then
     export CASE_ANL=${CASE_ENS}
@@ -23,4 +23,4 @@ fi
 
 export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
 
-echo "END: config.calcanl"
+echo "END: config.analcalc_fv3jedi"

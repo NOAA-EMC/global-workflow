@@ -13,11 +13,11 @@ from wxflow import (AttrDict, FileHandler, Task,
 logger = getLogger(__name__.split('.')[-1])
 
 
-class CalcAnalysis(Task):
+class AnalysisCalc(Task):
     """
     Class for JEDI-based analysis calculation
     """
-    @logit(logger, name="CalcAnalysis")
+    @logit(logger, name="AnalysisCalc")
     def __init__(self, config, yaml_name=None):
         """Constructor diagnostic atmospheric analysis calculation task
 

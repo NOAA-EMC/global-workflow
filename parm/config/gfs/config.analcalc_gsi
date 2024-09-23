@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-########## config.analcalc ##########
+########## config.analcalc_gsi ##########
 # GFS post-anal specific (non-diag)
 
-echo "BEGIN: config.analcalc"
+echo "BEGIN: config.analcalc_gsi"
 
 # Get task specific resources
-. ${EXPDIR}/config.resources analcalc
+. ${EXPDIR}/config.resources analcalc_gsi
 
-echo "END: config.analcalc"
+echo "END: config.analcalc_gsi"

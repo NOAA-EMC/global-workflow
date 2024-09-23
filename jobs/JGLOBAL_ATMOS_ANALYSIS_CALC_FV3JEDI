@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "calcanl" -c "base calcanl"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc_fv3jedi" -c "base analcalc_fv3jedi"
 
 ##############################################
 # Set variables used in the script
@@ -26,7 +26,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 # Run relevant script
 ##############################################
 
-EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_calc_analysis.py}
+EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atmos_analysis_calc_fv3jedi.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
