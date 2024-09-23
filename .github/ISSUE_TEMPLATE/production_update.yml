@@ -33,18 +33,19 @@ body:
     validations:
       required: true
 
-  - type: markdown
+  - type: checkboxes
     attributes:
-      value: |
-        ** Tasks **
-        - [ ] Create release branch
-        - [ ] Make workflow changes for upgrade in release branch (add additional checklist items as needed)
-        - [ ] Create release notes
-        - [ ] Cut hand-off tag for CDF
-        - [ ] Submit CDF to NCO
-        - [ ] Implementation into operations complete
-        - [ ] Merge release branch into operational branch
-        - [ ] Cut version tag from operational branch
-        - [ ] Release new version tag
-        - [ ] Announce to users
-        - [ ] Update Read-The-Docs operations status version in develop
+      label: Tasks
+      description: List of tasks to complete update. For use after issue is created.
+      options:
+        - Create release branch
+        - Make workflow changes for upgrade in release branch (add additional checklist items as needed)
+        - Create release notes
+        - Cut hand-off tag for CDF
+        - Submit CDF to NCO
+        - Implementation into operations complete
+        - Merge release branch into operational branch
+        - Cut version tag from operational branch
+        - Release new version tag
+        - Announce to users
+        - Update Read-The-Docs operations status version in develop

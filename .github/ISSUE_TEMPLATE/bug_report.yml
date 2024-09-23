@@ -72,6 +72,7 @@ body:
     attributes:
       label: Additional information
       description: Provide context or any additional information about the bug.
+      placeholder: Optional
     validations:
       required: false
 
