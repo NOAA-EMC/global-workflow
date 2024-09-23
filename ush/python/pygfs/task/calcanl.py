@@ -110,9 +110,13 @@ class CalcAnalysis(Task):
             if fh == 6:
                 fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
                                         f"{anl_prefix}atmanl.nc"])
+                fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.ensres.{format(fh, '02')}.{cdate}z.nc4",
+                                        f"{anl_prefix}atmanl.ensres.nc"])
             else:
                 fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
                                         f"{anl_prefix}atma{format(fh, '03')}.nc"])
+                fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.ensres.{format(fh, '02')}.{cdate}z.nc4",
+                                        f"{anl_prefix}atma{format(fh, '03')}.ensres.nc"])
 
         FileHandler(fh_dict).sync()
                                    
