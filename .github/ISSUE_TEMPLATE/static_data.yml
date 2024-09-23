@@ -130,5 +130,5 @@ body:
         - [ ] Discuss needs with global-workflow developer assigned to request
         - [ ] Stage a CLEAN copy of data on Hera or WCOSS in the location provided above
         - [ ] [global-workflow CM] Update data in "glopara"-managed space on supported platforms
-        - [ ] [Fix only] Update "Fix File Management" spreadsheet [https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing]
+        - [ ] [Fix only] Update "Fix File Management" [spreadsheet](https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing)
         - [ ] Make related workflow/component updates (if any)
