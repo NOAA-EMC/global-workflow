@@ -244,7 +244,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def calcanl(self):
+    def analcalc_fv3jedi(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}atmanlfinal'}
@@ -256,14 +256,14 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('calcanl')
-        task_name = f'{self.run}calcanl'
+        resources = self.get_resource('analcalc_fv3jedi')
+        task_name = f'{self.run}analcalc_fv3jedi'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/calcanl.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc_fv3jedi.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -273,7 +273,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def analcalc(self):
+    def analcalc_gsi(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}anal'}
@@ -285,14 +285,14 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('analcalc')
-        task_name = f'{self.run}analcalc'
+        resources = self.get_resource('analcalc_gsi')
+        task_name = f'{self.run}analcalc_gsi'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc_gsi.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2669,7 +2669,7 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc_gsi'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
             dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlfinal'}
@@ -2715,7 +2715,7 @@ class GFSTasks(Tasks):
         # eupd_run = 'gdas' if 'gdas' in self.app_config.eupd_runs else 'gfs'
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc_gsi'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
             dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlfinal'}

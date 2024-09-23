@@ -6,7 +6,7 @@
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
-from pygfs.task.analcalc_fv3jedi import AnalysisCalc
+from pygfs.task.analcalc import AnalysisCalc
 
 # Initialize root logger
 logger = Logger(level='DEBUG', colored_log=True)

@@ -57,7 +57,7 @@ class AnalysisCalc(Task):
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'CalcAnlDir': lambda fh: f"{self.task_config.DATA}/calcanl_{format(fh, '02')}"
+                'AnalCalcDir': lambda fh: f"{self.task_config.DATA}/analcalc_{format(fh, '02')}"
             }
         )
 
@@ -133,21 +133,21 @@ class AnalysisCalc(Task):
         hist_prefix = f"{self.task_config.COM_ATMOS_HISTORY_PREV}/{self.task_config.GPREFIX}"
         anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
         for fh in self.task_config.IAUFHRS:
-            fh_dict['mkdir'].append(self.task_config.CalcAnlDir(fh))
+            fh_dict['mkdir'].append(self.task_config.AnalCalcDir(fh))
 
             fh_dict['copy'].append([f"{hist_prefix}cubed_sphere_grid_atmf{format(fh, '03')}.nc",
-                                    f"{self.task_config.CalcAnlDir(fh)}/ges.atm.{format(fh, '02')}.nc"])
+                                    f"{self.task_config.AnalCalcDir(fh)}/ges.atm.{format(fh, '02')}.nc"])
             fh_dict['copy'].append([f"{hist_prefix}cubed_sphere_grid_sfcf{format(fh, '03')}.nc",
-                                    f"{self.task_config.CalcAnlDir(fh)}/ges.sfc.{format(fh, '02')}.nc"])
+                                    f"{self.task_config.AnalCalcDir(fh)}/ges.sfc.{format(fh, '02')}.nc"])
 
             if fh == 6:
                 for itile in range(6):
                     fh_dict['copy'].append([f"{anl_prefix}atminc.tile{itile+1}.nc",
-                                            f"{self.task_config.CalcAnlDir(fh)}/siginc.06.tile{itile+1}.nc"])
+                                            f"{self.task_config.AnalCalcDir(fh)}/siginc.06.tile{itile+1}.nc"])
             else:
                 for itile in range(6):
                     fh_dict['copy'].append([f"{anl_prefix}/atmi{format(fh, '02')}.tile{itile+1}.nc",
-                                            f"{self.task_config.CalcAnlDir(fh)}/siginc.{format(fh, '02')}.tile{itile+1}.nc"])
+                                            f"{self.task_config.AnalCalcDir(fh)}/siginc.{format(fh, '02')}.tile{itile+1}.nc"])
 
         # Stage files
         FileHandler(fh_dict).sync()
@@ -196,14 +196,14 @@ class AnalysisCalc(Task):
 
         for fh in self.task_config.IAUFHRS:
             if fh == 6:
-                fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
+                fh_dict['copy'].append([f"{self.task_config.AnalCalcDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
                                         f"{anl_prefix}atmanl.nc"])
-                fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.ensres.{format(fh, '02')}.{cdate}z.nc4",
+                fh_dict['copy'].append([f"{self.task_config.AnalCalcDir(fh)}/anl.ensres.{format(fh, '02')}.{cdate}z.nc4",
                                         f"{anl_prefix}atmanl.ensres.nc"])
             else:
-                fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
+                fh_dict['copy'].append([f"{self.task_config.AnalCalcDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
                                         f"{anl_prefix}atma{format(fh, '03')}.nc"])
-                fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.ensres.{format(fh, '02')}.{cdate}z.nc4",
+                fh_dict['copy'].append([f"{self.task_config.AnalCalcDir(fh)}/anl.ensres.{format(fh, '02')}.{cdate}z.nc4",
                                         f"{anl_prefix}atma{format(fh, '03')}.ensres.nc"])
 
         FileHandler(fh_dict).sync()
