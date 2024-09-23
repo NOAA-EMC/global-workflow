@@ -34,7 +34,7 @@ gefs_wave:
         {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_WAV, FHOUT_WAV) %}
             {% set file_name = head ~ "global." ~ res ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
             {% set file_path = COMIN_WAVE_GRID ~ "/" ~ file_name %}
-            - "{{ file_path | relpath(ROTDIR)}}"
+        - "{{ file_path | relpath(ROTDIR)}}"
         {% endfor %}
     {% endif %}
 
