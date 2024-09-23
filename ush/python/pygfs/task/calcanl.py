@@ -86,7 +86,7 @@ class CalcAnalysis(Task):
         ----------
         None
         """
-        
+
         # get JEDI-to-FV3 increment converter config and save to YAML file
         logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
         self.jedi.set_config(self.task_config)
@@ -124,7 +124,7 @@ class CalcAnalysis(Task):
         ----------
         None
         """
-        
+
         # Initialize dictionary used to construct Filehandler
         fh_dict = {'mkdir': [],
                    'copy': []}
@@ -156,7 +156,7 @@ class CalcAnalysis(Task):
     def execute(self, aprun_cmd: str) -> None:
         """Run JEDI executable
 
-        This method will run the JEDI executable for the diagnostic atmospheric analysis computation 
+        This method will run the JEDI executable for the diagnostic atmospheric analysis computation
 
         Parameters
         ----------
@@ -167,9 +167,9 @@ class CalcAnalysis(Task):
         ----------
         None
         """
-        
+
         self.jedi.execute(self.task_config, aprun_cmd)
-        
+
     @logit(logger)
     def finalize(self) -> None:
         """Finalize the diagnostic atmospheric analysis computation task
@@ -186,7 +186,7 @@ class CalcAnalysis(Task):
         ----------
         None
         """
-        
+
         cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
         anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
 
