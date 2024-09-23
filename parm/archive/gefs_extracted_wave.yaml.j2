@@ -29,7 +29,6 @@ gefs_wave:
                           '${MEMDIR}':mem }) %}
 
     {% set COMIN_WAVE_GRID = COM_WAVE_GRID_TMPL | replace_tmpl(tmpl_dict) %}
-
     # Select grib2 files to copy to the atardir
     {% if path_exists(COMIN_WAVE_GRID) %}
         {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_WAV, FHOUT_WAV) %}
@@ -37,5 +36,16 @@ gefs_wave:
             {% set file_path = COMIN_WAVE_GRID ~ "/" ~ file_name %}
             - "{{ file_path | relpath(ROTDIR)}}"
         {% endfor %}
+    {% endif %}
+
+    {% set COMIN_WAVE_STATION = COM_WAVE_STATION_TMPL | replace_tmpl(tmpl_dict) %}
+    # Select station files to copy to the atardir
+    {% if path_exists(COMIN_WAVE_STATION) %}
+        {% set file_path = COMIN_WAVE_GRID ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.spec_tar.gz" %}
+        - "{{ file_path | relpath(ROTDIR)}}"
+        {% set file_name = COMIN_WAVE_GRID ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.cbull_tar" %}
+        - "{{ file_path | relpath(ROTDIR)}}"
+        {% set file_name = COMIN_WAVE_GRID ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.bull_tar" %}
+        - "{{ file_path | relpath(ROTDIR)}}"
     {% endif %}
 {% endfor %}
