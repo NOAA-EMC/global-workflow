@@ -5,7 +5,10 @@ from logging import getLogger
 from pprint import pformat
 import os
 from pygfs.jedi import Jedi
-from wxflow import add_to_datetime, AttrDict, FileHandler, logit, parse_j2yaml, Task, save_as_yaml, to_fv3time, to_timedelta
+from wxflow import (AttrDict, FileHandler, Task,
+                    add_to_datetime, to_fv3time, to_timedelta,
+                    parse_j2yaml, save_as_yaml,
+                    logit)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -16,6 +19,24 @@ class CalcAnalysis(Task):
     """
     @logit(logger, name="CalcAnalysis")
     def __init__(self, config, yaml_name=None):
+        """Constructor diagnostic atmospheric analysis calculation task
+
+        This method will construct a diagnostic atmospheric analysis calculation task.
+        This includes:
+        - extending the task_config attribute AttrDict to include parameters required for this task
+        - instantiate the Jedi attribute object
+
+        Parameters
+        ----------
+        config: Dict
+            dictionary object containing task configuration
+        yaml_name: str, optional
+            name of YAML file for JEDI configuration
+
+        Returns
+        ----------
+        None
+        """
         super().__init__(config)
 
         _res = int(self.task_config.CASE[1:])
@@ -48,6 +69,24 @@ class CalcAnalysis(Task):
 
     @logit(logger)
     def initialize_jedi(self) -> None:
+        """Initialize JEDI application
+
+        This method will initialize a JEDI application used in the diagnostic
+        atmospheric analysis computation task.
+        This includes:
+        - generating and saving JEDI YAML config
+        - staging the JEDI fix files
+        - linking the JEDI executable
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        
         # get JEDI-to-FV3 increment converter config and save to YAML file
         logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
         self.jedi.set_config(self.task_config)
@@ -70,6 +109,22 @@ class CalcAnalysis(Task):
 
     @logit(logger)
     def initialize(self) -> None:
+        """Initialize the diagnostic atmospheric analysis computation task
+
+        This method will initialize the diagnostic atmospheric analysis computation task.
+        This includes:
+        - creating working directories for each forecast hour
+        - staging backgrounds and increments
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        
         # Initialize dictionary used to construct Filehandler
         fh_dict = {'mkdir': [],
                    'copy': []}
@@ -98,7 +153,40 @@ class CalcAnalysis(Task):
         FileHandler(fh_dict).sync()
 
     @logit(logger)
+    def execute(self, aprun_cmd: str) -> None:
+        """Run JEDI executable
+
+        This method will run the JEDI executable for the diagnostic atmospheric analysis computation 
+
+        Parameters
+        ----------
+        aprun_cmd : str
+           Run command for JEDI application on HPC system
+
+        Returns
+        ----------
+        None
+        """
+        
+        self.jedi.execute(self.task_config, aprun_cmd)
+        
+    @logit(logger)
     def finalize(self) -> None:
+        """Finalize the diagnostic atmospheric analysis computation task
+
+        This method will finalize the diagnostic atmospheric analysis computation task.
+        This includes:
+        - Move analysis files to the comrot directory
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        
         cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
         anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
 
@@ -119,7 +207,3 @@ class CalcAnalysis(Task):
                                         f"{anl_prefix}atma{format(fh, '03')}.ensres.nc"])
 
         FileHandler(fh_dict).sync()
-
-    @logit(logger)
-    def execute(self, aprun_cmd: str) -> None:
-        self.jedi.execute(self.task_config, aprun_cmd)
