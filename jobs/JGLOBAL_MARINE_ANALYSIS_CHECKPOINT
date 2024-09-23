@@ -9,9 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlchkpt" -c "base marineanl ma
 ##############################################
 # Set variables used in the script
 ##############################################
-# Ignore possible spelling error (nothing is misspelled)
-# shellcheck disable=SC2153
-export GDUMP=${GDUMP:-"gdas"}
 
 ##############################################
 # Begin JOB SPECIFIC work

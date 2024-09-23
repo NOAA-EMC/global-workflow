@@ -9,6 +9,7 @@ status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
 export job="marineanlchkpt"
+export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB

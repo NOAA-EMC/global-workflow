@@ -8,9 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlfinal" -c "base marineanl ma
 ##############################################
 # Set variables used in the script
 ##############################################
-# Ignore possible spelling error (nothing is misspelled)
-# shellcheck disable=SC2153
-export GDUMP=${GDUMP:-"gdas"}
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -19,12 +16,12 @@ export GDUMP=${GDUMP:-"gdas"}
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
 
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
    COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL
 
-if [[ -d "${COMOUT_OCEAN_ANALYSIS}" ]]; then mkdir -p "${COMOUT_OCEAN_ANALYSIS}"; fi
+mkdir -p "${COMOUT_OCEAN_ANALYSIS}"
 mkdir -p "${COMOUT_ICE_ANALYSIS}"
 mkdir -p "${COMOUT_ICE_RESTART}"
 
@@ -41,6 +38,6 @@ status=$?
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit 1
-[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
+#[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
