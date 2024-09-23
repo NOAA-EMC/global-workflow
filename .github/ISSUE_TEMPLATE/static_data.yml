@@ -12,7 +12,7 @@ body:
       description: |
         - Fix: large static files needed to run global-workflow
         - Initial conditions: ICs needed to run one of global-workflow's included tests
-        - Experimental data: Temporary datasets needed for development that will be replaced by other sources for operations (e.g. data that will be one DCOM)
+        - Experimental data: Temporary datasets needed for development that will be replaced by other sources for operations (e.g. data that will be in DCOM)
       options:
         - Fix
         - Initial conditions
