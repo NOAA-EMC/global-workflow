@@ -32,7 +32,7 @@
   Refs #4321
   Refs NOAA-EMC/repo#5678
 -->
-<!-- For more on writing good commit messages, see https://cdeas.ms/git-commit/ -->
+<!-- For more on writing good commit messages, see https://cbea.ms/git-commit/ -->
 
 # Type of change
 - [ ] Bug fix (fixes something broken)
