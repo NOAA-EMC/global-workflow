@@ -160,7 +160,7 @@ EOF
         done
       else  # "${DOIAU}" == "NO"
         read_increment=".true."
-	if [[ "${DO_JEDIATMVAR:-NO}" ]]; then
+	if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
 	  inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
           res_latlon_dynamics="atminc"
 	  increment_file_on_native_grid=".true."
