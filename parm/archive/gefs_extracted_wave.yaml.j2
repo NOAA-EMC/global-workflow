@@ -43,9 +43,9 @@ gefs_wave:
     {% if path_exists(COMIN_WAVE_STATION) %}
         {% set file_path = COMIN_WAVE_STATION ~ "/" ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.spec_tar.gz" %}
         - "{{ file_path | relpath(ROTDIR)}}"
-        {% set file_name = COMIN_WAVE_STATION ~ "/" ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.cbull_tar" %}
+        {% set file_path = COMIN_WAVE_STATION ~ "/" ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.cbull_tar" %}
         - "{{ file_path | relpath(ROTDIR)}}"
-        {% set file_name = COMIN_WAVE_STATION ~ "/" ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.bull_tar" %}
+        {% set file_path = COMIN_WAVE_STATION ~ "/" ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.bull_tar" %}
         - "{{ file_path | relpath(ROTDIR)}}"
     {% endif %}
 {% endfor %}
