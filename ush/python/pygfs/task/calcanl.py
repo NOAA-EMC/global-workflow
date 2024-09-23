@@ -36,7 +36,7 @@ class CalcAnalysis(Task):
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'CalcAnlDir': lambda fh : f"{self.task_config.DATA}/calcanl_{format(fh, '02')}"
+                'CalcAnlDir': lambda fh: f"{self.task_config.DATA}/calcanl_{format(fh, '02')}"
             }
         )
 
@@ -84,7 +84,7 @@ class CalcAnalysis(Task):
                                     f"{self.task_config.CalcAnlDir(fh)}/ges.atm.{format(fh, '02')}.nc"])
             fh_dict['copy'].append([f"{hist_prefix}cubed_sphere_grid_sfcf{format(fh, '03')}.nc",
                                     f"{self.task_config.CalcAnlDir(fh)}/ges.sfc.{format(fh, '02')}.nc"])
-            
+
             if fh == 6:
                 for itile in range(6):
                     fh_dict['copy'].append([f"{anl_prefix}atminc.tile{itile+1}.nc",
@@ -101,11 +101,11 @@ class CalcAnalysis(Task):
     def finalize(self) -> None:
         cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
         anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
-        
+
         # Initialize dictionary used to construct Filehandler
         fh_dict = {'mkdir': [],
                    'copy': []}
-        
+
         for fh in self.task_config.IAUFHRS:
             if fh == 6:
                 fh_dict['copy'].append([f"{self.task_config.CalcAnlDir(fh)}/anl.{format(fh, '02')}.{cdate}z.nc4",
@@ -119,7 +119,7 @@ class CalcAnalysis(Task):
                                         f"{anl_prefix}atma{format(fh, '03')}.ensres.nc"])
 
         FileHandler(fh_dict).sync()
-                                   
+
     @logit(logger)
     def execute(self, aprun_cmd: str) -> None:
         self.jedi.execute(self.task_config, aprun_cmd)
