@@ -13,7 +13,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC_GSI
+"${HOMEgfs}"/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC_GSI
 status=$?
 
 

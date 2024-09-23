@@ -6,6 +6,6 @@
 echo "BEGIN: config.analcalc_gsi"
 
 # Get task specific resources
-. ${EXPDIR}/config.resources analcalc_gsi
+. "${EXPDIR}"/config.resources analcalc_gsi
 
 echo "END: config.analcalc_gsi"
