@@ -17,16 +17,18 @@ export gcyc=${GDATE:8:2}
 #############################################
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_MINMON
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COM_ATMOS_MINMON_PREV:COM_ATMOS_MINMON_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+	COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+	COMOUT_ATMOS_MINMON:COM_ATMOS_MINMON_TMPL
 
-export gsistat="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat"
-export M_TANKverf=${M_TANKverf:-${COM_ATMOS_MINMON}}
-export M_TANKverfM1=${M_TANKverfM1:-${COM_ATMOS_MINMON_PREV}}
+YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+	COMIN_ATMOS_MINMON_PREV:COM_ATMOS_MINMON_TMPL
 
-if [[ ! -d ${M_TANKverf} ]]; then mkdir -p -m 775 "${M_TANKverf}" ; fi
-if [[ ! -d ${M_TANKverfM1} ]]; then mkdir -p -m 775 "${M_TANKverfM1}" ; fi
+export gsistat="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat"
+export M_TANKverf=${M_TANKverf:-${COMOUT_ATMOS_MINMON}}
+export M_TANKverfM1=${M_TANKverfM1:-${COMIN_ATMOS_MINMON_PREV}}
+
+if [[ ! -d ${M_TANKverf} ]]; then mkdir -p "${M_TANKverf}" ; fi
 
 ########################################################
 # Execute the script.
