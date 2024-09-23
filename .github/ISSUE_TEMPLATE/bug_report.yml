@@ -9,6 +9,8 @@ body:
         Your bug may already be reported!
         Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) before creating one.
 
+        Is this actually a workflow bug? If not, please open an issue in the appropriate repository first.
+
   - type: textarea
     id: current_behavior
     attributes:
@@ -46,6 +48,13 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: hash
+    attributes:
+      label: What global-workflow hash are you using?
+    validations:
+      required: true
+
   - type: textarea
     id: reproduction_steps
     attributes:
@@ -64,7 +73,7 @@ body:
       label: Additional information
       description: Provide context or any additional information about the bug.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: propsed_implementation
