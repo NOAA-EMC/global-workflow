@@ -38,6 +38,7 @@ echo "BEGIN: config.resources"
 case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128
+              # WCOSS2 nodes have 512GB of RAM, but only 500GB are reservable
               # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
@@ -145,10 +146,10 @@ export max_tasks_per_node
 case ${step} in
   "prep")
     walltime='00:30:00'
-    ntasks=4
-    tasks_per_node=2
+    ntasks=14
+    tasks_per_node=1
     threads_per_task=1
-    memory="40GB"
+    memory="500GB"
     ;;
 
   "prepsnowobs")
