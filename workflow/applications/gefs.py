@@ -17,7 +17,8 @@ class GEFSAppConfig(AppConfig):
 
     def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
 
-        # Nothing specific to do for gefs (yet).
+        run_options[self.run]['nens'] = base.get('NMEM_ENS', 0)
+        print(run_options[self.run]['nens'])
         return run_options
 
     def _get_app_configs(self, run):

@@ -113,6 +113,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 elif wave_run in ['gfs', 'gdas']:
                     wave_runs = [wave_run]
 
+            run_options[run]['wave_runs'] = wave_runs
+
             aero_anl_runs = []
             aero_fcst_runs = []
             if run_options[run]['do_aero']:
@@ -122,7 +124,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 elif aero_anl_run in ['gfs', 'gdas']:
                     aero_anl_runs = [aero_anl_run]
 
-                aero_fcst_run = base.get('AERO_FCST_RUN', None).lower()
+                aero_fcst_run = run_base.get('AERO_FCST_RUN', None).lower()
                 if aero_fcst_run in ['both']:
                     aero_fcst_runs = ['gfs', 'gdas']
                 elif aero_fcst_run in ['gfs', 'gdas']:
@@ -130,6 +132,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
                 run_options[run]['do_aero_anl'] = True if run in aero_anl_runs else False
                 run_options[run]['do_aero_fcst'] = True if run in aero_fcst_runs else False
+
+            run_options[run]['aero_anl_runs'] = aero_anl_runs
+            run_options[run]['aero_fcst_runs'] = aero_fcst_runs
 
             # Append any MODE-specific options
             run_options = self._netmode_run_options(run_base, run_options)

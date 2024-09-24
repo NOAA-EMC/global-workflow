@@ -15,11 +15,11 @@ class GFSCycledAppConfig(AppConfig):
         # cycled cases to be able to determine valid runs
         base = conf.parse_config('config.base')
         self.runs = ["gdas"]
-        self.runs.append("gfs") if gfs_cyc > 0 else 0
+        self.runs.append("gfs") if base['gfs_cyc'] > 0 else 0
 
         self.ens_runs = None
 
-        if self.do_hybvar:
+        if base.get('DOHYBVAR', False):
             ens_run = base.get('EUPD_CYC', 'gdas').lower()
             if ens_run in ['both']:
                 self.ens_runs = ['gfs', 'gdas']
@@ -31,18 +31,19 @@ class GFSCycledAppConfig(AppConfig):
 
     def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
 
-        run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
-        run_options[run]['nens'] = base.get('NMEM_ENS', 0)
-        if run_options[run]['do_hybvar']:
-            run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
+        for run in self.runs:
+            run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
+            run_options[run]['nens'] = base.get('NMEM_ENS', 0)
+            if run_options[run]['do_hybvar']:
+                run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
 
-        run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
-        run_options[run]['do_jediatmvar'] = base.get('DO_JEDIATMVAR', False)
-        run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
-        run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
-        run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
-        run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
-        run_options[run]['do_vrfy_oceanda'] = base.get('DO_VRFY_OCEANDA', False)
+            run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
+            run_options[run]['do_jediatmvar'] = base.get('DO_JEDIATMVAR', False)
+            run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
+            run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
+            run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
+            run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
+            run_options[run]['do_vrfy_oceanda'] = base.get('DO_VRFY_OCEANDA', False)
 
         return run_options
 
@@ -158,7 +159,7 @@ class GFSCycledAppConfig(AppConfig):
         task_names = {run: [] for run in self.runs}
 
         for run in self.runs:
-            options = self.run_options(run)
+            options = self.run_options[run]
 
             # Common gdas and gfs tasks before fcst
             if run in ['gdas', 'gfs']:
@@ -180,7 +181,7 @@ class GFSCycledAppConfig(AppConfig):
                 if options['do_jedisnowda']:
                     task_names[run] += ['prepsnowobs', 'snowanl']
 
-                if options['do_wave'] and run in options['wave_runs']:
+                if options['do_wave'] and run in self.wave_runs:
                     task_names[run] += ['waveinit', 'waveprep']
 
                 # gdas-specific analysis tasks
@@ -191,7 +192,7 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_aero'] and run in options['aero_anl_runs']:
                         task_names[run] += ['aeroanlgenb']
 
-                if options['do_aero'] and run in options[aero_anl_runs]:
+                if options['do_aero'] and run in options['aero_anl_runs']:
                     task_names[run] = ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
 
                     if options['do_aero'] and run in options['aero_anl_runs']:
@@ -203,7 +204,7 @@ class GFSCycledAppConfig(AppConfig):
                 if run == 'gdas':
                     task_names[run] += ['stage_ic']
 
-                task_name[run] += ['atmanlupp', 'atmanlprod', 'fcst']
+                task_names[run] += ['atmanlupp', 'atmanlprod', 'fcst']
 
                 # gfs-specific products
                 if run == 'gfs':
@@ -308,7 +309,7 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
-        return tasks
+        return task_names
 
     @staticmethod
     def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
