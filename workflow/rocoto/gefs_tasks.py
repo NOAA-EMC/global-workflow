@@ -564,17 +564,6 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': 'arch'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
-        else:
-            dep_dict = {'type': 'metatask', 'name': 'atmos_prod'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': 'atmos_ensstat'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_ice:
-                dep_dict = {'type': 'metatask', 'name': 'ice_prod'}
-                deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_ocean:
-                dep_dict = {'type': 'metatask', 'name': 'ocean_prod'}
-                deps.append(rocoto.add_dependency(dep_dict))
 
         resources = self.get_resource('cleanup')
         task_name = 'cleanup'
