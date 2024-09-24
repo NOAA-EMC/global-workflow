@@ -75,7 +75,7 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.18
+* Updated `global_convinfo.txt` file in GSI package
 
 MODULE CHANGES
 --------------
