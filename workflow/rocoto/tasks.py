@@ -244,6 +244,6 @@ class Tasks:
         try:
             return getattr(self, task_name, *args, **kwargs)()
         except AttributeError:
-            raise AttributeError(f'"{task_name}" is not a valid task.\n' +
-                                 'Valid tasks are:\n' +
+            raise AttributeError(f'"{task_name}" is not a valid task.\n'
+                                 f'Valid tasks are:\n'
                                  f'{", ".join(Tasks.VALID_TASKS)}')
