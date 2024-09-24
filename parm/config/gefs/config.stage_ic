@@ -30,4 +30,8 @@ if [[ -z "${ICSDIR}" ]] ; then
 
 fi
 
+#use of perturbations files for ensembles
+export USE_OCN_ENS_PERTURB_FILES=@USE_OCN_ENS_PERTURB_FILES@
+export USE_ATM_ENS_PERTURB_FILES=@USE_ATM_ENS_PERTURB_FILES@
+
 echo "END: config.stage_ic"
