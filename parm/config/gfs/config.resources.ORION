@@ -6,7 +6,7 @@ case ${step} in
   "prep")
     # Run on 2 nodes for memory requirement
     # This may not be enough and may need to run on more nodes.
-    tasks_per_node=7
+    export tasks_per_node=7
     ;;
 
   "anal")
