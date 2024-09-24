@@ -235,7 +235,9 @@ component=${1:?"Need a valid component; options: ice|ocean"}
 grid=${2:-"0p25"} # Default to 0.25-degree grid
 current_cycle=${3:-"2013100100"} # Default to 2013100100
 avg_period=${4:-"0-6"} # Default to 6-hourly average
-ocean_levels=${5:-"5:15:25:35:45:55:65:75:85:95:105:115:125"} # Default to 12-levels
+ocean_levels=${5:-"5:15:25:35:45:55:65:75:85:95:105:115\
+:125:135:145:155:165:175:185:195:205:215:226:241:267:309\
+:374:467:594:757:960:1204:1490:1817:2184:2587:3024:3489:3977:4481"} # Default to 40-levels
 
 case "${grid}" in
   "0p25")
