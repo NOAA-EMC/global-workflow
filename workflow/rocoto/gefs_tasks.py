@@ -586,6 +586,7 @@ class GEFSTasks(Tasks):
                     dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
                     deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
         resources = self.get_resource('cleanup')
         task_name = 'cleanup'
         task_dict = {'task_name': task_name,
@@ -598,5 +599,7 @@ class GEFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                     }
+
         task = rocoto.create_task(task_dict)
+
         return task
