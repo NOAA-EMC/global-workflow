@@ -1,10 +1,10 @@
-GFS V16.3.18 RELEASE NOTES
+GFS V16.3.19 RELEASE NOTES
 
 -------
 PRELUDE
 -------
 
-The WAFS blending 0.25 job is updated to increase the wait time for UKMet data from 900 to 1500 seconds. Additional error handling is also added.
+PlanetiQ RO data has added noise and is placed into monitor mode.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.18
-cd gfs.v16.3.18
-git clone -b EMC-v16.3.18 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.19
+cd gfs.v16.3.19
+git clone -b EMC-v16.3.19 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -50,77 +50,77 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.18` and `gfs_ver=v16.3.18`
+* `versions/run.ver` - change `version=v16.3.19` and `gfs_ver=v16.3.19`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 SCRIPT CHANGES
 --------------
 
-* `jobs/JGFS_ATMOS_WAFS_BLENDING_0P25`
-* `scripts/exgfs_atmos_wafs_blending_0p25.sh`
+* No changes from GFS v16.3.18
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes of existing file sizes from GFS v16.3.17
+* No changes of existing file sizes from GFS v16.3.18
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * WAFS blending 0p25 job
+  * Analysis
 * Does this change require a 30-day evaluation?
   * No
 
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.17
+* No changes from GFS v16.3.18
 
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
+Russ.Treadon@noaa.gov
