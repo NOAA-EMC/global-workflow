@@ -564,7 +564,6 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': 'arch'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
-
         resources = self.get_resource('cleanup')
         task_name = 'cleanup'
         task_dict = {'task_name': task_name,
