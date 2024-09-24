@@ -12,3 +12,7 @@ export perl_ver=5.38.0
 
 source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/contrib/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
+
+# Local version of TC_tracker
+export ens_tracker_ver=v1.1.15.7
+
