@@ -4,7 +4,7 @@ GFS V16.3.19 RELEASE NOTES
 PRELUDE
 -------
 
-PlanetiQ RO data has added noise and is placed into monitor mode.
+PlanetiQ RO data has added noise and is placed into monitor mode until its impact on the cycled analysis forecast system can be assessed.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
