@@ -561,8 +561,9 @@ class GEFSTasks(Tasks):
     def cleanup(self):
         deps = []
         if self.app_config.do_extractvars:
-            dep_dict = {'type': 'metatask', 'name': 'extractvars'}
+            dep_dict = {'type': 'task', 'name': 'arch'}
             deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
         else:
             dep_dict = {'type': 'metatask', 'name': 'atmos_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -574,16 +575,6 @@ class GEFSTasks(Tasks):
             if self.app_config.do_ocean:
                 dep_dict = {'type': 'metatask', 'name': 'ocean_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_wave:
-                dep_dict = {'type': 'metatask', 'name': 'wave_post_grid'}
-                deps.append(rocoto.add_dependency(dep_dict))
-                dep_dict = {'type': 'metatask', 'name': 'wave_post_pnt'}
-                deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_wave_bnd:
-                    dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt'}
-                    deps.append(rocoto.add_dependency(dep_dict))
-                    dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
-                    deps.append(rocoto.add_dependency(dep_dict))
 
         resources = self.get_resource('cleanup')
         task_name = 'cleanup'
