@@ -2669,13 +2669,16 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc_gsi'}
-        deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc_fv3jedi'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
         else:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc_gsi'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}eupd'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         ecenenvars = self.envars.copy()
@@ -2715,13 +2718,17 @@ class GFSTasks(Tasks):
         # eupd_run = 'gdas' if 'gdas' in self.app_config.eupd_runs else 'gfs'
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc_gsi'}
-        deps.append(rocoto.add_dependency(dep_dict))
+
         if self.app_config.do_jediatmens:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc_fv3jedi'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
         else:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc_gsi'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}eupd'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jedisnowda:
             dep_dict = {'type': 'task', 'name': f'{self.run}esnowrecen'}
             deps.append(rocoto.add_dependency(dep_dict))
