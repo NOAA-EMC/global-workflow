@@ -87,7 +87,9 @@ def test_hist_date(histfile: str, ref_date: datetime) -> None:
     hist_date = dparser.parse(ncf.variables['time'].units, fuzzy=True) + timedelta(hours=int(ncf.variables['time'][0]))
     ncf.close()
     logger.info(f"*** history file date: {hist_date} expected date: {ref_date}")
-    assert hist_date == ref_date, 'Inconsistent bkg date'
+
+    if hist_date != ref_date:
+        raise ValueError(f"FATAL ERROR: Inconsistent bkg date'")
 
 
 @logit(logger)
@@ -135,8 +137,7 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=
         bkg_list.append(bkg_dict)
 
     # save pseudo model yaml configuration
-    f = open(yaml_name, 'w')
-    yaml.dump(bkg_list, f, sort_keys=False, default_flow_style=False)
+    save_as_yaml(bkg_list, yaml_name)
 
 
 @logit(logger)
@@ -149,7 +150,7 @@ def clean_empty_obsspaces(config, target, app='var'):
     if app == 'var':
         obs_spaces = config['cost function']['observations']['observers']
     else:
-        logger.error(f"Error: {app} case not implemented yet!")
+        raise ValueError(f"FATAL ERROR: obs space cleaning not implemented for {app}")
 
     # remove obs spaces that point to a non existant file
     cleaned_obs_spaces = []
@@ -158,8 +159,7 @@ def clean_empty_obsspaces(config, target, app='var'):
         if os.path.isfile(fname):
             cleaned_obs_spaces.append(obs_space)
         else:
-            logger.info(f"{fname} does not exist, removing obs space")
-            print("File does not exist")
+            logger.info(f"WARNING: {fname} does not exist, removing obs space")
 
     # update obs spaces
     config['cost function']['observations']['observers'] = cleaned_obs_spaces

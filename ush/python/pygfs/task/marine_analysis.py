@@ -19,6 +19,7 @@ from wxflow import (AttrDict,
                     logit,
                     Executable,
                     Task,
+                    save_as_yaml,
                     Template, TemplateConstants, YAMLFile)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -211,8 +212,7 @@ class MarineAnalysis(Task):
         envconfig_jcb['obs_list'] = ['adt_rads_all']
 
         # Write obs_list_short
-        with open('obs_list_short.yaml', 'w') as file:
-            yaml.dump(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), file, default_flow_style=False)
+        save_as_yaml(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), 'obs_list_short.yaml')
         os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
 
         # Render the JCB configuration files
@@ -427,8 +427,7 @@ class MarineAnalysis(Task):
         # obs space statistics
         logger.info(f"---------------- Compute basic stats")
         diags_list = glob.glob(os.path.join(os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'diags', '*.nc4')))
-        obsstats_j2yaml = str(os.path.join(os.getenv('HOMEgfs'), 'sorc', 'gdas.cd',
-                                           'parm', 'soca', 'obs', 'obs_stats.yaml.j2'))
+        obsstats_j2yaml = str(os.path.join(self.task_config.PARMgfs, 'gdas', 'soca', 'obs', 'obs_stats.yaml.j2'))
 
         # function to create a minimalist ioda obs sapce
         def create_obs_space(data):
@@ -476,15 +475,11 @@ class MarineAnalysis(Task):
         conf.save(stats_yaml)
 
         # run the application
-        # TODO(GorA): this should be setup properly in the g-w once gdassoca_obsstats is in develop
-        gdassoca_obsstats_exec = os.path.join(os.getenv('HOMEgfs'),
-                                              'sorc', 'gdas.cd', 'build', 'bin', 'gdassoca_obsstats.x')
-        command = f"{os.getenv('launcher')} -n 1 {gdassoca_obsstats_exec} {stats_yaml}"
-        logger.info(f"{command}")
-        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        mdau.link_executable(self.task_config, 'gdassoca_obsstats.x')
+        command = f"{os.getenv('launcher')} -n 1"
+        exec_cmd = Executable(command)
+        exec_name = os.path.join(self.task_config.DATA, 'gdassoca_obsstats.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg(stats_yaml)
 
-        # issue a warning if the process has failed
-        if result.returncode != 0:
-            logger.warning(f"{command} has failed")
-        if result.stderr:
-            logger.warning("STDERR:", result.stderr.decode())
+        mdau.run(exec_cmd)

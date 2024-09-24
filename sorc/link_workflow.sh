@@ -394,6 +394,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "gdas_incr_handler.x" \
                        "gdas_obsprovider2ioda.x" \
                        "gdas_socahybridweights.x" \
+                       "gdassoca_obsstats.x" \
                        "gdasapp_land_ensrecenter.x" \
                        "bufr2ioda.x" \
                        "calcfIMS.exe" \
