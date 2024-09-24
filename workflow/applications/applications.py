@@ -47,7 +47,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         print(f"Generating the XML for a {self.mode}_{self.net} case")
 
     def _init_finalize(self, conf: Configuration):
-        print("Finalizing initialize")
+        '''
+        Finalize object initialization calling subclass methods
+        '''
 
         # Get run-, net-, and mode-based options
         self.run_options = self._get_run_options(conf)
@@ -56,17 +58,11 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.task_names = self.get_task_names()
 
         # Initialize the configs and model_apps dictionaries
-        self.model_apps = dict.fromkeys(self.runs)
         self.configs = dict.fromkeys(self.runs)
 
         # Now configure the experiment for each valid run
         for run in self.runs:
-
             self.configs[run] = self._source_configs(conf, run=run, log=False)
-            self.model_apps[run] = self.configs[run]['base'].get('APP', 'ATM')
-
-            # Update the base config dictionary based on application and RUN
-            self.configs[run]['base'] = self._update_base(self.configs[run]['base'])
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
         '''
@@ -74,11 +70,12 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         for each RUN and collecting the flags into self.run_options
         '''
 
-        run_options = dict.fromkeys(self.runs)
+        run_options = {run: {} for run in dict.fromkeys(self.runs)}
         for run in self.runs:
-            #Read config.base with RUN specified
+            # Read config.base with RUN specified
             run_base = conf.parse_config('config.base', RUN=run)
 
+            run_options[run]['app'] = run_base.get('APP', 'ATM')
             run_options[run]['do_wave_bnd'] = run_base.get('DOBNDPNT_WAVE', False)
             run_options[run]['do_bufrsnd'] = run_base.get('DO_BUFRSND', False)
             run_options[run]['do_gempak'] = run_base.get('DO_GEMPAK', False)
@@ -108,7 +105,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             if not AppConfig.is_monotonic(run_options[run]['fcst_segments']):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
 
-            .wave_runs = None
+            wave_runs = []
             if run_options[run]['do_wave']:
                 wave_run = run_base.get('WAVE_RUN', 'BOTH').lower()
                 if wave_run in ['both']:
@@ -116,10 +113,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 elif wave_run in ['gfs', 'gdas']:
                     wave_runs = [wave_run]
 
-            run_options[run]['do_wave'] = True if run in wave_runs else False
-
-            aero_anl_runs = None
-            aero_fcst_runs = None
+            aero_anl_runs = []
+            aero_fcst_runs = []
             if run_options[run]['do_aero']:
                 aero_anl_run = run_base.get('AERO_ANL_RUN', 'BOTH').lower()
                 if aero_anl_run in ['both']:
@@ -133,8 +128,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 elif aero_fcst_run in ['gfs', 'gdas']:
                     aero_fcst_runs = [aero_fcst_run]
 
-            run_options[run]['do_aero_anl'] = True if run in aero_anl_runs else False
-            run_options[run]['do_aero_fcst'] = True if run in aero_fcst_runs else False
+                run_options[run]['do_aero_anl'] = True if run in aero_anl_runs else False
+                run_options[run]['do_aero_fcst'] = True if run in aero_fcst_runs else False
 
             # Append any MODE-specific options
             run_options = self._netmode_run_options(run_base, run_options)
@@ -195,8 +190,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         Every config depends on "config.base"
         """
 
-        # Include config.base by its lonesome
-        configs{'base': conf.parse_config('config.base', RUN=run)}
+        # Include config.base by its lonesome and update it
+        configs = {'base': conf.parse_config('config.base', RUN=run)}
+        configs['base'] = self._update_base(configs['base'])
 
         # Source the list of all config_files involved in the application
         for config in self._get_app_configs(run):
