@@ -561,9 +561,8 @@ class GEFSTasks(Tasks):
     def cleanup(self):
         deps = []
         if self.app_config.do_extractvars:
-            dep_dict = {'type': 'task', 'name': 'arch'}
+            dep_dict = {'type': 'metatask', 'name': 'extractvars'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
         else:
             dep_dict = {'type': 'metatask', 'name': 'atmos_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
