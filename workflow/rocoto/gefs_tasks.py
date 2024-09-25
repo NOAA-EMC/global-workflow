@@ -1,7 +1,6 @@
 from applications.applications import AppConfig
 from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
-from datetime import datetime, timedelta
 
 
 class GEFSTasks(Tasks):
@@ -560,7 +559,7 @@ class GEFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        if self.app_config.do_extractvars:
+        if self.options['do_extractvars']:
             dep_dict = {'type': 'task', 'name': 'arch'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
