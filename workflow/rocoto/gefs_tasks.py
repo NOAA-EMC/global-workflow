@@ -169,6 +169,59 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def atmos_prod(self):
+        return self._atmosoceaniceprod('atmos')
+
+    def repairf0306(self):
+
+        deps = []
+
+        products_dict = {'atmos': {'config': 'atmos_products',
+                                   'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f006'}}
+        component_dict = products_dict['atmos']
+        config = component_dict['config']
+        history_path_tmpl = component_dict['history_path_tmpl']
+        history_file_tmpl = component_dict['history_file_tmpl']
+        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
+
+        data = f'{history_path}/{history_file_tmpl}'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        repairf0306_envars = self.envars.copy()
+        repairf0306envar_dict = {'ENSMEM': '#member#',
+                                 'MEMDIR': 'mem#member#'
+                                 }
+
+        for key, value in repairf0306envar_dict.items():
+            repairf0306_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('repairf0306')
+        task_name = f'repairf0306_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': repairf0306_envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/repairf0306.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': 'repairf0306',
+                                'task_dict': task_dict,
+                                'var_dict': member_var_dict,
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
     def efcs(self):
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'stage_ic'}
@@ -331,56 +384,6 @@ class GEFSTasks(Tasks):
         member_metatask_dict = {'task_name': f'{component}_prod',
                                 'task_dict': fhr_metatask_dict,
                                 'var_dict': member_var_dict}
-
-        task = rocoto.create_task(member_metatask_dict)
-
-        return task
-
-    def repairf0306(self):
-
-        deps = []
-
-        products_dict = {'atmos': {'config': 'atmos_products',
-                                   'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f006'}}
-        component_dict = products_dict['atmos']
-        config = component_dict['config']
-        history_path_tmpl = component_dict['history_path_tmpl']
-        history_file_tmpl = component_dict['history_file_tmpl']
-        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
-
-        data = f'{history_path}/{history_file_tmpl}'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        repairf0306_envars = self.envars.copy()
-        repairf0306envar_dict = {'ENSMEM': '#member#',
-                                 'MEMDIR': 'mem#member#'
-                                 }
-
-        for key, value in repairf0306envar_dict.items():
-            repairf0306_envars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource('repairf0306')
-        task_name = f'repairf0306_mem#member#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': repairf0306_envars,
-                     'cycledef': 'gefs',
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/repairf0306.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': 'repairf0306',
-                                'task_dict': task_dict,
-                                'var_dict': member_var_dict,
-                                }
 
         task = rocoto.create_task(member_metatask_dict)
 
