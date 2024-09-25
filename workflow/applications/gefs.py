@@ -18,7 +18,6 @@ class GEFSAppConfig(AppConfig):
     def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
 
         run_options[self.run]['nens'] = base.get('NMEM_ENS', 0)
-        print(run_options[self.run]['nens'])
         return run_options
 
     def _get_app_configs(self, run):
@@ -89,7 +88,7 @@ class GEFSAppConfig(AppConfig):
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
 
-        if self.do_extractvars:
+        if options['do_extractvars']:
             tasks += ['extractvars', 'arch']
 
         tasks += ['cleanup']
