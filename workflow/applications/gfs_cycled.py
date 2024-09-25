@@ -171,12 +171,12 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'ocnanalprep', 'marinebmat', 'ocnanalrun']
-                if options['do_hybvar']:
-                    task_names[run] += ['ocnanalecen', 'ocnanalchkpt', 'ocnanalpost']
-                if options['do_vrfy_oceanda']:
-                    task_names[run] += ['ocnanalvrfy']
+                    if options['do_hybvar']:
+                        task_names[run] += ['ocnanalecen', 'ocnanalchkpt', 'ocnanalpost']
+                    if options['do_vrfy_oceanda']:
+                        task_names[run] += ['ocnanalvrfy']
 
-                task_names[run] += ['sfcanl', 'analcalc']
+                    task_names[run] += ['sfcanl', 'analcalc']
 
                 if options['do_jedisnowda']:
                     task_names[run] += ['prepsnowobs', 'snowanl']
