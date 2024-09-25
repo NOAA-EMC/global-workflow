@@ -8,7 +8,7 @@ date
 #############################
 # Source relevant config files
 #############################
-configs="base"
+configs="base sfcprep"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -16,6 +16,13 @@ for config in $configs; do
     status=$?
     [[ $status -ne 0 ]] && exit $status
 done
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env sfcprep
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 
 ##############################################
