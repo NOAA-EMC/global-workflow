@@ -1,0 +1,33 @@
+name: pw-ci-hera
+
+on: [workflow_dispatch]
+
+# TEST_DIR contains 2 directories;
+# 1. HOMEgfs: clone of the global-workflow
+# 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
+# e.g. $> tree ./TEST_DIR
+# ./TEST_DIR
+# ├── HOMEgfs
+# └── RUNTESTS
+#     ├── COMROT
+#     │   └── ${pslot}
+#     └── EXPDIR
+#         └── ${pslot}
+env:
+  TEST_DIR: ${{ github.workspace }}/${{ github.run_id }}
+  MACHINE_ID: hera 
+
+jobs:
+  checkout-build-link:
+    runs-on: [self-hosted, parallel-works, pw]
+    timeout-minutes: 600
+
+    steps:
+    - name: Checkout global-workflow
+      uses: actions/checkout@v3
+      with:
+        repository: owner/repo
+        ssh-key: ${{ secrets.SSH_PW_PRIVATE_KEY }}
+        path: ${{ github.run_id }}/HOMEgfs  # This path needs to be relative
+        submodules: true
+        submodules_recursive: true
