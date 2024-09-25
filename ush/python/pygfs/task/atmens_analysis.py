@@ -128,7 +128,6 @@ class AtmEnsAnalysis(Task):
         ----------
         None
         """
-        super().initialize()
 
         # stage observations
         logger.info(f"Staging list of observation files generated from JEDI config")
@@ -270,8 +269,13 @@ class AtmEnsAnalysis(Task):
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
             inc_copy = {'copy': []}
             for itile in range(6):
-                src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.tile{itile+1}.nc4")
+                src = os.path.join(self.task_config.DATA, 'anl', memchar, f"cubed_sphere_grid_atminc.{cdate_inc}z.tile{itile+1}.nc4")
                 dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.tile{itile+1}.nc")
+                inc_copy['copy'].append([src, dest])
+
+                # Copy the temporary Gaussian increment.
+                #This will be removed when we have JEDI-based recentering.
+                src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.tile{itile+1}.nc4")
                 inc_copy['copy'].append([src, dest])
 
             # copy increments

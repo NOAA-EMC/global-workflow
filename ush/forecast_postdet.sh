@@ -183,7 +183,11 @@ EOF
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
+          else
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          fi
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else

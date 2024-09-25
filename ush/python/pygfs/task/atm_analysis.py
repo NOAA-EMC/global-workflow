@@ -303,7 +303,7 @@ class AtmAnalysis(Task):
         cdate_inc = cdate.replace('.', '_')
         inc_copy = {'copy': []}
         for itile in range(6):
-            src = os.path.join(self.task_config.DATA, 'anl', f"atminc.{cdate_inc}z.tile{itile+1}.nc4")
+            src = os.path.join(self.task_config.DATA, 'anl', f"cubed_sphere_grid_atminc.{cdate_inc}z.tile{itile+1}.nc4")
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f'{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.tile{itile+1}.nc')
             inc_copy['copy'].append([src, dest])
 
