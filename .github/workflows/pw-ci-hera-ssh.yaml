@@ -1,0 +1,97 @@
+name: pw-ci-hera
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to checkout'
+        required: true
+        default: 'main'
+
+# TEST_DIR contains 2 directories;
+# 1. HOMEgfs: clone of the global-workflow
+# 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
+# e.g. $> tree ./TEST_DIR
+# ./TEST_DIR
+# ├── HOMEgfs
+# └── RUNTESTS
+#     ├── COMROT
+#     │   └── ${pslot}
+#     └── EXPDIR
+#         └── ${pslot}
+env:
+  TEST_DIR: ${{ github.workspace }}/${{ github.run_id }}
+  MACHINE_ID: hera 
+
+jobs:
+  checkout-build-link:
+    runs-on: [self-hosted, parallel-works, pw]
+    timeout-minutes: 600
+
+    steps:
+    - name: SSH into remote host and prepare environment
+      run: |
+        ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+         cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR
+         mkdir -p ${{ github.run_id }}
+         cd ${{ github.run_id }}
+        EOF
+
+    - name: Checkout global-workflow
+      uses: actions/checkout@v3
+      with:
+        repository: TerrenceMcGuinness-NOAA/global-workflow
+        ref: ${{ github.event.inputs.branch }}
+        path: ${{ github.run_id }}/HOMEgfs  # This path needs to be relative
+        submodules: true
+        submodules_recursive: true
+
+    - name: Build components
+      run: |
+        ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+          cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}/HOMEgfs/sorc
+          ./build_all.sh
+        EOF
+
+    - name: Link artifacts
+      run: |
+        ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+          cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}/HOMEgfs/sorc
+          ./link_workflow.sh
+        EOF
+
+  create-experiments:
+    needs: checkout-build-link
+    runs-on: [self-hosted, orion-ready]
+    strategy:
+      matrix:
+        case: ["C48_S2S", "C96_atm3DVar"]
+
+    steps:
+      - name: Create Experiments ${{ matrix.case }}
+        env:
+          HOMEgfs_PR: ${{ env.TEST_DIR }}/HOMEgfs
+          RUNTESTS: ${{ env.TEST_DIR }}/RUNTESTS
+          pslot: ${{ matrix.case }}.${{ github.run_id }}
+        run: |
+          ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+            cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}/HOMEgfs
+            source workflow/gw_setup.sh
+            source ci/platforms/orion.sh
+            ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml --dir ${{ env.HOMEgfs_PR }}
+          EOF
+
+  run-experiments:
+    needs: create-experiments
+    runs-on: [self-hosted, orion-ready]
+    strategy:
+      max-parallel: 2
+      matrix:
+        case: ["C48_S2S", "C96_atm3DVar"]
+    steps:
+      - name: Run Experiment ${{ matrix.case }}
+        run: |
+          ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+            cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}/HOMEgfs
+            # Add commands to run the experiment
+          EOF
