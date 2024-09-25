@@ -23,11 +23,17 @@ jobs:
     timeout-minutes: 600
 
     steps:
+
+    - name: SSH into remote host and prepare environment
+      run: |
+        ssh hfe01.fairmont.rdhpcs.noaa.gov
+          cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}
+        EOF
+
     - name: Checkout global-workflow
       uses: actions/checkout@v3
       with:
         repository: TerrenceMcGuinness-NOAA/global-workflow
-        ssh-key: ${{ secrets.SSH_PW_PRIVATE_KEY }}
         path: ${{ github.run_id }}/HOMEgfs  # This path needs to be relative
         submodules: true
         submodules_recursive: true
