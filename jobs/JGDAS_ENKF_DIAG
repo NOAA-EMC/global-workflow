@@ -33,7 +33,7 @@ GPREFIX_DET="${GDUMP}.t${gcyc}z."
 RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_OBS:COM_OBS_TMPL
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_OBS_PREV:COM_OBS_TMPL \
