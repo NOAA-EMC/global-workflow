@@ -1,0 +1,41 @@
+:WATR
+:SNOWC
+:SNOHF
+:DLWRF:surface
+:ULWRF:surface
+:DSWRF:surface
+:USWRF:surface
+:USWRF:top
+:ULWRF:top
+:UFLX:surface
+:VFLX:surface
+:SHTFL:surface
+:LHTFL:surface
+:PRATE:surface:0
+:CPRAT:surface:0
+:ALBDO:surface
+:TCDC:entire
+:TCDC:boundary
+:HCDC:high cloud layer:0-6
+:MCDC:middle cloud layer:0-6
+:LCDC:low cloud layer:0-6
+:GFLUX:surface
+:U-GWD:surface
+:V-GWD:surface
+:APCP:surface
+:ACPCP:surface
+:NCPCP:surface
+:TMP:middle cloud top
+:TMP:low cloud top
+:TMP:high cloud top
+:PRES:high cloud top
+:PRES:middle cloud top
+:PRES:low cloud top
+:PRES:high cloud bottom
+:PRES:middle cloud bottom
+:PRES:low cloud bottom
+:CWORK
+:DUVB
+:CDUVB
+:TMAX
+:TMIN

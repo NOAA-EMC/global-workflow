@@ -5,91 +5,25 @@
 # 8/14/2024, Hong Guan Scripts to repair F0306 for GEFSv13 reforecasts
 #################################################################### 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "repairf0306" -c "base repairf0306"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "repair_replay" -c "base repair_replay"
 
-####################################
-# obtain unique process id (pid) and make temp directory
-####################################
-
-export pid=$$
-export date=${CDATE}
-#yyyymmdd=`echo $date | cut -c1-8`
-#echo `date` $0 `date -u` begin
-
-####################################
-# File To Log Msgs
-####################################
-export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
-#echo $jlogfile
-
-####################################
-# Determine Job Output Name on System
-####################################
-export outid="LL${job}"
-export jobid="${outid}.o${pid}"
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-#echo $outid,$jobid,$pgmout,$pgmerr
-
-####################################
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEgefs=${HOMEgfs}
-export EXECacc=${EXECacc:-${HOMEgefs}/exec}
-export SORCacc=${SORCacc:-${HOMEgefs}/sorc/gefs_postacc.fd}
-export SCRIPTSens_acc=${HOMEgefs}/scripts
-export FIXens_acc=${FIXacc:-${HOMEgefs}/fix}
-
-export PARMgefs=${HOMEgefs}/rocoto/parm
-echo "${PARMgefs}"
+export EXECacc=${EXECacc:-${HOMEgfs}/exec}
 
 # Construct COM variables from templates
-#YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
- YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_MASTER
+ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
 
-
-##############################
-# Run setpdy and initialize PDY variables
-##############################
-#
-#export COMIN_master=${COMIN_master:-$COMROOT/$PSLOT/gefs.$PDY/00/mem001/model_data/atmos/master}
-export COMIN_master=${COMIN_master:-${COM_ATMOS_MASTER}}
-export COMIN_00and03=${HOMEgefs}/anl
-
-####################################
-# Create member list
-####################################
-
-#export homesyndir=$HOMEacc
-
-echo
-#env | sort
-echo
+export COMIN_03=${HOMEgfs}/anl
 
 ########################################################
 # Execute the acc script.
-export cmodel=ens
-export ymdh=${date}
-
-#msg="Begin job for $job"
-#postmsg "$jlogfile" "$msg"
-
-#echo ${ymdh}
-"${SCRIPTSens_acc}/gefs_atmos_f0306.sh"   "${ymdh}" "${DATA}" > "fv3gefsrf_0306acc.${cmodel}.${ymdh}.out"
-
-################################
-#msg="JOB COMPLETED NORMALLY"
-#postmsg "$jlogfile" "$msg"
-
-exit
+"${SCRgfs}/exgefs_atmos_repair_replay.sh"
 
 ##############################
 # Remove the Temporary working directory
 ##############################
-#if [[ $KEEPDATA != "YES" ]]; then
-#	cd $DATAROOT
-#	rm -rf $DATA
-#fi
-
-#echo `date` $job completed
+if [[ "${KEEPDATA}" != "YES" ]] ; then
+  rm -fr "${DATA}"
+fi

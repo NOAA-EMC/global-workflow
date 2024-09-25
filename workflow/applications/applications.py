@@ -71,6 +71,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_goes = _base.get('DO_GOES', False)
         self.do_mos = _base.get('DO_MOS', False)
         self.do_extractvars = _base.get('DO_EXTRACTVARS', False)
+        self.do_repair_replay = _base.get('DO_REPAIR_REPLAY', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 

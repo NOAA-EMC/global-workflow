@@ -14,7 +14,7 @@ class GEFSAppConfig(AppConfig):
         """
         Returns the config_files that are involved in gefs
         """
-        configs = ['stage_ic', 'fcst', 'repairf0306', 'atmos_products', 'arch']
+        configs = ['stage_ic', 'fcst', 'repair_replay', 'atmos_products', 'arch']
 
         if self.nens > 0:
             configs += ['efcs', 'atmos_ensstat']
@@ -59,7 +59,8 @@ class GEFSAppConfig(AppConfig):
         if self.nens > 0:
             tasks += ['efcs']
 
-        tasks += ['repairf0306']
+        if self.do_repair_replay:
+            tasks += ['repair_replay']
 
         tasks += ['atmos_prod']
 
