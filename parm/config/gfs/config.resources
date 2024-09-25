@@ -38,6 +38,7 @@ echo "BEGIN: config.resources"
 case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128
+              # WCOSS2 nodes have 512GB of RAM, but only 500GB are reservable
               # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
@@ -54,12 +55,12 @@ case ${machine} in
   "ORION")
               max_tasks_per_node=40
               # shellcheck disable=SC2034
-              mem_node_max="192GB"
+              mem_node_max="180GB"
     ;;
   "HERCULES")
               max_tasks_per_node=80
               # shellcheck disable=SC2034
-              mem_node_max="512GB"
+              mem_node_max="500GB"
     ;;
   "JET")
     case ${PARTITION_BATCH} in
@@ -145,10 +146,10 @@ export max_tasks_per_node
 case ${step} in
   "prep")
     walltime='00:30:00'
-    ntasks=4
-    tasks_per_node=2
+    ntasks=14
+    tasks_per_node=14
     threads_per_task=1
-    memory="40GB"
+    memory="${mem_node_max}"
     ;;
 
   "prepsnowobs")
