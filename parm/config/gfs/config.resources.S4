@@ -3,6 +3,12 @@
 # S4-specific job resources
 
 case ${step} in
+  "prep")
+    # Run on two nodes for memory requirement
+    # This may not be enough memory.  Decrease tasks/node to 2 if necessary.
+    tasks_per_node=7
+    ;;
+
   "anal")
     case ${CASE} in
       "C384")
