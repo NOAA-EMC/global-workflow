@@ -44,6 +44,9 @@ class Tasks:
         # Get the configs for the specified RUN
         self._configs = self.app_config.configs[run]
 
+        # Get the workflow options for the specified RUN
+        self.options = self.app_config.run_options[run]
+
         # Update the base config for the application
         self._configs['base'] = self.app_config._update_base(self._configs['base'])
 
