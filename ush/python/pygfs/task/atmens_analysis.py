@@ -270,13 +270,14 @@ class AtmEnsAnalysis(Task):
             inc_copy = {'copy': []}
             for itile in range(6):
                 src = os.path.join(self.task_config.DATA, 'anl', memchar, f"cubed_sphere_grid_atminc.{cdate_inc}z.tile{itile+1}.nc4")
-                dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.tile{itile+1}.nc")
+                dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.cubed_sphere_grid_atminc.tile{itile+1}.nc")
                 inc_copy['copy'].append([src, dest])
 
-                # Copy the temporary Gaussian increment.
-                #This will be removed when we have JEDI-based recentering.
-                src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.tile{itile+1}.nc4")
-                inc_copy['copy'].append([src, dest])
+            # Copy the temporary Gaussian increment.
+            # This will be removed when we have JEDI-based recentering.
+            src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.nc4")
+            dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc")
+            inc_copy['copy'].append([src, dest])
 
             # copy increments
             src_list, dest_list = zip(*inc_copy['copy'])
