@@ -169,8 +169,6 @@ for pr in ${pr_list}; do
     if [[ "${rocoto_state}" == "DONE" ]]; then
       #Remove Experment cases that completed successfully
       "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh" cleanup_experiment "${pslot_dir}"
-      rm -Rf "${pslot_dir}"
-      rm -Rf "${pr_dir}/RUNTESTS/COMROOT/${pslot}"
       rm -f "${output_ci_single}"
       # echo "\`\`\`" > "${output_ci_single}"
       DATE=$(date +'%D %r')

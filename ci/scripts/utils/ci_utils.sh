@@ -166,5 +166,8 @@ function cleanup_experiment() {
     local pslot=$(basename "${PSLOT_PATH}")
     local HOMEDIR=$(grep 'export HOMEDIR=' "${PSLOT_PATH}/config.base" | cut -d'=' -f2 | tr -d '[:space:]')
     local ARCHIVEDIR="${HOMEDIR}/archive"
+
     rm -rf "${ARCHIVEDIR}/${pslot}"
+    rm -Rf "${PSLOT_PATH}"
+    rm -Rf "${PSLOT_PATH}/../COMROOT/${pslot}"
     
