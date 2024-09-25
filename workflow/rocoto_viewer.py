@@ -1328,10 +1328,6 @@ def main(screen):
         EXPDIR = entity_values['EXPDIR']
     else:
         EXPDIR = '.'
-    if 'BUCKETDIR' in entity_values:
-        BUCKETDIR = entity_values['BUCKETDIR']
-    else:
-        BUCKETDIR = 'no_bucketdir'
 
     if html_output:
         html_ptr = None
