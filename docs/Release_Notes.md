@@ -4,7 +4,7 @@ GFS V16.3.20 RELEASE NOTES
 PRELUDE
 -------
 
-The upstream OBSPROC package is updated to v1.3. Along with this, the USAF snow file is renamed and a needed change in the GSI code for the saildrone data is made. Additionally, an obsproc update to seaice_analysis_ver is expected.
+The upstream OBSPROC package is updated to v1.3. Along with this, the USAF snow file is renamed.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -26,7 +26,7 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.3.1   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.13 | Andrew.Collard@noaa.gov |
+| GSI       | gfsda.v16.3.12 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
 
@@ -55,7 +55,6 @@ SORC CHANGES
 ------------
 
 * New UFS_UTILS tag for AFWA filename change
-* New GSI tag to update `read_prepbufr.f` for saildrone data
 
 JOBS CHANGES
 ------------
@@ -101,7 +100,7 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * emcsfc_sfc_prep and analysis jobs
+  * emcsfc_sfc_prep job
 * Does this change require a 30-day evaluation?
   * No
 
