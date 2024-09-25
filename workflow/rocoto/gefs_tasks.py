@@ -568,18 +568,18 @@ class GEFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'metatask', 'name': 'atmos_ensstat'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_ice:
+            if self.options['do_ice']:
                 dep_dict = {'type': 'metatask', 'name': 'ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_ocean:
+            if self.options['do_ocean']:
                 dep_dict = {'type': 'metatask', 'name': 'ocean_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_wave:
+            if self.options['do_wave']:
                 dep_dict = {'type': 'metatask', 'name': 'wave_post_grid'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'metatask', 'name': 'wave_post_pnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_wave_bnd:
+                if self.options['do_wave_bnd']:
                     dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt'}
                     deps.append(rocoto.add_dependency(dep_dict))
                     dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
