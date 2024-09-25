@@ -7,7 +7,7 @@ base:
   DO_BUFRSND: "NO"
   DO_GEMPAK: "NO"
   DO_AWIPS: "NO"
-  KEEPDATA: "NO"
+  KEEPDATA: "YES"
   DO_EXTRACTVARS: "NO"
   FHMAX_GFS: 120
   FHMAX_HF_GFS: 0
@@ -21,6 +21,7 @@ base:
 fcst:
   TYPE: "hydro"
   MONO: "mono"
+  reforecast: "YES"
 stage_ic:
   USE_OCN_ENS_PERTURB_FILES: "YES"
   USE_ATM_ENS_PERTURB_FILES: "YES"

@@ -267,9 +267,7 @@ else
   export io_layout="1,1"
 fi
 
-if (( OFFSET_START_HOUR != 0 )); then
-    export reforecast="YES"
-fi
+export reforecast=@reforecast@
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
