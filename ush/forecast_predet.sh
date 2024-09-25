@@ -642,15 +642,8 @@ CICE_predet(){
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
-  if (( $(( ( cyc + FHMIN ) % FHOUT_ICE )) == 0 )); then
-    # shellcheck disable=SC2312
-    mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
-  else
-    CICE_OUTPUT_FH=("${FHMIN}")
-    # shellcheck disable=SC2312
-    mapfile -t -O "${#CICE_OUTPUT_FH[@]}" CICE_OUTPUT_FH < <(seq "$(( FHMIN + $(( ( cyc + FHMIN ) % FHOUT_ICE )) ))" "${FHOUT_ICE}" "${FHMAX}") || exit 10
-    CICE_OUTPUT_FH+=("${FHMAX}")
-  fi
+  # shellcheck disable=SC2312
+  mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
 
   # Fix files
   ${NCP} "${FIXgfs}/cice/${ICERES}/${CICE_GRID}" "${DATA}/"

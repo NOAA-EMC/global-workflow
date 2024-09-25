@@ -89,9 +89,9 @@ class GEFSAppConfig(AppConfig):
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
 
-        if options['do_extractvars']:
-            tasks += ['extractvars']
+        if self.do_extractvars:
+            tasks += ['extractvars', 'arch']
 
-        tasks += ['arch', 'cleanup']
+        tasks += ['cleanup']
 
         return {f"{self.run}": tasks}

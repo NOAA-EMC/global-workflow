@@ -213,21 +213,11 @@ class GEFSTasks(Tasks):
         history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
         deps = []
         data = f'{history_path}/{history_file_tmpl}'
-        if component in ['ocean']:
-            dep_dict = {'type': 'data', 'data': data, 'age': 120}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': 'fcst_mem#member#'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
-        elif component in ['ice']:
-            command = f"{self.HOMEgfs}/ush/check_ice_netcdf.sh @Y @m @d @H #fhr# &ROTDIR; #member# {fhout_ice_gfs}"
-            dep_dict = {'type': 'sh', 'command': command}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
-        else:
-            dep_dict = {'type': 'data', 'data': data, 'age': 120}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
@@ -570,10 +560,32 @@ class GEFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': 'arch'}
-        deps.append(rocoto.add_dependency(dep_dict))
-
-        dependencies = rocoto.create_dependency(dep=deps)
+        if self.app_config.do_extractvars:
+            dep_dict = {'type': 'task', 'name': 'arch'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
+        else:
+            dep_dict = {'type': 'metatask', 'name': 'atmos_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': 'atmos_ensstat'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.app_config.do_ice:
+                dep_dict = {'type': 'metatask', 'name': 'ice_prod'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            if self.app_config.do_ocean:
+                dep_dict = {'type': 'metatask', 'name': 'ocean_prod'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            if self.app_config.do_wave:
+                dep_dict = {'type': 'metatask', 'name': 'wave_post_grid'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'metatask', 'name': 'wave_post_pnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                if self.app_config.do_wave_bnd:
+                    dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    dep_dict = {'type': 'metatask', 'name': 'wave_post_bndpnt_bull'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('cleanup')
         task_name = 'cleanup'
