@@ -14,16 +14,20 @@ on:
 #     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}
-    env:
-      BRANCH_NAME: ${{ github.ref_name }}
-      PR_NUMBER: ${{ github.event.pull_request.number || '' }}
-      TEST_DIR: /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ env.BRANCH_NAME }}/${{ env.PR_NUMBER }}
-      MACHINE_ID: hera 
 
 jobs:
   checkout-build-link:
     runs-on: [self-hosted, parallel-works, pw]
     timeout-minutes: 600
+
+    env:
+      MACHINE_ID: hera
+
+        steps:
+    - name: Set environment variables
+      id: set-env
+      run: |
+        echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
     steps:
     - name: Checkout global-workflow
@@ -31,7 +35,7 @@ jobs:
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
          mkdir -p ${TEST_DIR}/HOMEgfs
          cd ${TEST_DIR}/HOMEgfs
-         git clone --branch ${{ env.BRANCH_NAME }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
+         git clone --branch ${{ githug.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
          git submodule update --init --recursive
         EOF
 
