@@ -18,7 +18,7 @@ class GEFSAppConfig(AppConfig):
 
         if self.nens > 0:
             configs += ['efcs', 'atmos_ensstat']
-            
+
             if self.do_repair_replay:
                 configs += ['repair_replay']
 
