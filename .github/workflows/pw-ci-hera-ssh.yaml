@@ -34,8 +34,8 @@ jobs:
     - name: Checkout global-workflow
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-         mkdir -p ${TEST_DIR}/HOMEgfs
-         cd ${TEST_DIR}/HOMEgfs
+         mkdir -p ${{ env.TEST_DIR }}/HOMEgfs
+         cd ${{ env.TEST_DIR }}/HOMEgfs
          git clone --branch ${{ github.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
          git submodule update --init --recursive
         EOF
@@ -43,14 +43,14 @@ jobs:
     - name: Build components
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-          cd ${TESTDIR}/HOMEgfs/sorc
+          cd ${{ env.TESTDIR }}/HOMEgfs/sorc
           ./build_all.sh
         EOF
 
     - name: Link artifacts
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-          cd ${TESTDIR}/HOMEgfs/sorc
+          cd ${{ env.TESTDIR }}/HOMEgfs/sorc
           ./link_workflow.sh
         EOF
 
