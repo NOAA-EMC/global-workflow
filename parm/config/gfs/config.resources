@@ -26,7 +26,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs marinebmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "marineanlinit prepoceanobs marinebmat marineanlvar ocnanalecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
     exit 1
 
 fi
@@ -506,7 +506,7 @@ case ${step} in
     memory="3072M"
     ;;
 
-  "ocnanalprep")
+  "marineanlinit")
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
@@ -541,7 +541,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "ocnanalrun")
+  "marineanlvar")
     ntasks=16
     case ${OCNRES} in
       "025")
@@ -632,7 +632,7 @@ case ${step} in
     ;;
 
 
-  "ocnanalchkpt")
+  "marineanlchkpt")
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
@@ -656,7 +656,7 @@ case ${step} in
     esac
     ;;
 
-  "ocnanalpost")
+  "marineanlfinal")
     walltime="00:30:00"
     ntasks=${max_tasks_per_node}
     threads_per_task=1
