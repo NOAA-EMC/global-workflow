@@ -14,9 +14,11 @@ on:
 #     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}
-env:
-  TEST_DIR: /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ env.BRANCH_NAME }}/${{ env.PR_NUMBER }}/${{ github.run_id }}
-  MACHINE_ID: hera 
+    env:
+      BRANCH_NAME: ${{ github.event.inputs.branch || github.ref_name }}
+      PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+      TEST_DIR: /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ env.BRANCH_NAME }}${{ env.PR_NUMBER && '-' + env.PR_NUMBER }}
+      MACHINE_ID: hera 
 
 jobs:
   checkout-build-link:
@@ -29,7 +31,7 @@ jobs:
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
          mkdir -p ${TEST_DIR}/HOMEgfs
          cd ${TEST_DIR}/HOMEgfs
-         git clone --branch ${{ github.event.inputs.branch }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
+         git clone --branch ${{ env.BRANCH_NAME }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
          git submodule update --init --recursive
         EOF
 
