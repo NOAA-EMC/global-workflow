@@ -142,7 +142,7 @@ class AnalysisCalc(Task):
 
             if fh == 6:
                 for itile in range(6):
-                    fh_dict['copy'].append([f"{anl_prefix}atminc.tile{itile+1}.nc",
+                    fh_dict['copy'].append([f"{anl_prefix}cubed_sphere_grid_atminc.tile{itile+1}.nc",
                                             f"{self.task_config.AnalCalcDir(fh)}/siginc.06.tile{itile+1}.nc"])
             else:
                 for itile in range(6):

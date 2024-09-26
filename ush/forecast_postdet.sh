@@ -160,7 +160,7 @@ EOF
         done
       else  # "${DOIAU}" == "NO"
         read_increment=".true."
-	if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+	if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PREFIX_ATMINC}" != "r" ]]; then
 	  inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
           res_latlon_dynamics="atminc"
 	  increment_file_on_native_grid=".true."
@@ -183,7 +183,7 @@ EOF
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-          if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+          if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PREFIX_ATMINC}" != "r" ]]; then
             increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
           else
             increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
