@@ -36,7 +36,7 @@ jobs:
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
          mkdir -p ${TEST_DIR}/HOMEgfs
          cd ${TEST_DIR}/HOMEgfs
-         git clone --branch ${{ }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
+         git clone --branch ${{ github.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
          git submodule update --init --recursive
         EOF
 
