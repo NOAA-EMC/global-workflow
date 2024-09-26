@@ -129,7 +129,6 @@ class AtmAnalysis(Task):
         ----------
         None
         """
-        super().initialize()
 
         # stage observations
         logger.info(f"Staging list of observation files generated from JEDI config")
