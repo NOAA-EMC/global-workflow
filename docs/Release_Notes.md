@@ -4,7 +4,7 @@ GFS V16.3.20 RELEASE NOTES
 PRELUDE
 -------
 
-The upstream OBSPROC package is updated to v1.3. Along with this, the USAF snow file is renamed.
+The upstream OBSPROC package is updated to v1.3. Along with this, the GFS is switching to use the AFWA global snow file due to the hemispheric snow files being phased out.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -54,7 +54,7 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* New UFS_UTILS tag for AFWA filename change
+* New UFS_UTILS tag - `emcsfc_snow2mdl` program and associated scripts are updated to process global AFWA snow data
 
 JOBS CHANGES
 ------------
