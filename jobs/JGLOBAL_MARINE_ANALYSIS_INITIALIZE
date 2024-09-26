@@ -1,7 +1,9 @@
 #!/bin/bash
+
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalprep" -c "base ocnanal ocnanalprep"
+export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATA="${DATAjob}/marinevariational"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlinit" -c "base marineanl marineanlinit"
 
 
 ##############################################
@@ -10,42 +12,30 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalprep" -c "base ocnanal ocnanal
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-export GDATE
-export gPDY=${GDATE:0:8}
-export gcyc=${GDATE:8:2}
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
 export GDUMP=${GDUMP:-"gdas"}
-
-export OPREFIX="${RUN}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${RUN}.t${cyc}z."
-
-# Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
-
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-   COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-   COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL \
-   COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
-
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-   COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Add UFSDA to PYTHONPATH
-ufsdaPATH="${HOMEgfs}/sorc/gdas.cd/ush/"
-# shellcheck disable=SC2311
-pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${ufsdaPATH}:${pyiodaPATH}"
-export PYTHONPATH
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL \
+   COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
+   COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNPREPPY:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_prep.py}
+EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_initialize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
