@@ -2,10 +2,6 @@ name: pw-ci-hera
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to checkout'
-        required: true
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
