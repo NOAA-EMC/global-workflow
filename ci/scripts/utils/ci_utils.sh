@@ -162,10 +162,15 @@ function cleanup_experiment() {
     # gets HOMEDIR value from config.base to
     # clean up the archived files on disk.
 
-    local PSLOT_PATH="$1"
-    local pslot=$(basename "${PSLOT_PATH}")
-    local HOMEDIR=$(grep 'export HOMEDIR=' "${PSLOT_PATH}/config.base" | cut -d'=' -f2 | tr -d '[:space:]')
-    local ARCHIVEDIR="${HOMEDIR}/archive"
+    local PSLOT_PATH
+    local pslot
+    local HOMEDIR
+    local ARCHIVEDIR
+
+    PSLOT_PATH="$1"
+    pslot=$(basename "${PSLOT_PATH}")
+    HOMEDIR=$(grep 'export HOMEDIR=' "${PSLOT_PATH}/config.base" | cut -d'=' -f2 | tr -d '[:space:]')
+    ARCHIVEDIR="${HOMEDIR}/archive"
 
     rm -rf "${ARCHIVEDIR}/${pslot}"
     rm -Rf "${PSLOT_PATH}"
