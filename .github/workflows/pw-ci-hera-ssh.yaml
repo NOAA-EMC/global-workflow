@@ -1,3 +1,16 @@
+name: pw-ci-hera
+
+on:
+  workflow_dispatch:
+
+# TEST_DIR contains 2 directories;
+# 1. HOMEgfs: clone of the global-workflow
+# 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
+# e.g. $> tree ./TEST_DIR
+# ./TEST_DIR
+# ├── HOMEgfs
+# └── RUNTESTS
+
 jobs:
 
   checkout-build-link:
