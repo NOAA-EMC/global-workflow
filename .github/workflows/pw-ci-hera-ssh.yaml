@@ -43,14 +43,14 @@ jobs:
     - name: Build components
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-          cd ${{ env.TESTDIR }}/HOMEgfs/sorc
+          cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
           ./build_all.sh
         EOF
 
     - name: Link artifacts
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-          cd ${{ env.TESTDIR }}/HOMEgfs/sorc
+          cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
           ./link_workflow.sh
         EOF
 
