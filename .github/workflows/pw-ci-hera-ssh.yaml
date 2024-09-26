@@ -16,6 +16,7 @@ on:
 #         └── ${pslot}
 
 jobs:
+
   checkout-build-link:
     runs-on: [self-hosted, parallel-works, pw]
     timeout-minutes: 600
@@ -23,19 +24,19 @@ jobs:
     env:
       MACHINE_ID: hera
 
-        steps:
+    steps:
+
     - name: Set environment variables
       id: set-env
       run: |
         echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
-    steps:
     - name: Checkout global-workflow
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
          mkdir -p ${TEST_DIR}/HOMEgfs
          cd ${TEST_DIR}/HOMEgfs
-         git clone --branch ${{ githug.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
+         git clone --branch ${{ }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
          git submodule update --init --recursive
         EOF
 
