@@ -21,4 +21,6 @@ base:
   LOCALARCH: "NO"
 fcst:
   reforecast: "YES"
+  FHZER: 6
+  POST_SFS: "NO"
 
