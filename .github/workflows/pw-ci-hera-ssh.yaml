@@ -6,7 +6,7 @@ on:
       branch:
         description: 'Branch to checkout'
         required: true
-        default: 'main'
+        default: ${{ github.ref_name }}
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -20,7 +20,7 @@ on:
 #     └── EXPDIR
 #         └── ${pslot}
 env:
-  TEST_DIR: ${{ github.workspace }}/${{ github.run_id }}
+  TEST_DIR: /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ env.BRANCH_NAME }}/${{ env.PR_NUMBER }}/${{ github.run_id }}
   MACHINE_ID: hera 
 
 jobs:
@@ -29,34 +29,26 @@ jobs:
     timeout-minutes: 600
 
     steps:
-    - name: SSH into remote host and prepare environment
+    - name: Checkout global-workflow
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-         cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR
-         mkdir -p ${{ github.run_id }}
-         cd ${{ github.run_id }}
+         mkdir -p ${TEST_DIR}/HOMEgfs
+         cd ${TEST_DIR}/HOMEgfs
+         git clone --branch ${{ github.event.inputs.branch }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
+         git submodule update --init --recursive
         EOF
-
-    - name: Checkout global-workflow
-      uses: actions/checkout@v3
-      with:
-        repository: TerrenceMcGuinness-NOAA/global-workflow
-        ref: ${{ github.event.inputs.branch }}
-        path: ${{ github.run_id }}/HOMEgfs  # This path needs to be relative
-        submodules: true
-        submodules_recursive: true
 
     - name: Build components
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-          cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}/HOMEgfs/sorc
+          cd ${TESTDIR}/HOMEgfs/sorc
           ./build_all.sh
         EOF
 
     - name: Link artifacts
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-          cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}/HOMEgfs/sorc
+          cd ${TESTDIR}/HOMEgfs/sorc
           ./link_workflow.sh
         EOF
 
@@ -75,10 +67,10 @@ jobs:
           pslot: ${{ matrix.case }}.${{ github.run_id }}
         run: |
           ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-            cd /scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}/HOMEgfs
+            cd ${HOMEgfs_PR}
             source workflow/gw_setup.sh
             source ci/platforms/orion.sh
-            ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml --dir ${{ env.HOMEgfs_PR }}
+            ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
           EOF
 
   run-experiments:
