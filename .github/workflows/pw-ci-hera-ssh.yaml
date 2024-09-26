@@ -6,7 +6,6 @@ on:
       branch:
         description: 'Branch to checkout'
         required: true
-        default: ${{ github.ref_name }}
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
