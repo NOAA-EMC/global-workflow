@@ -26,25 +26,23 @@ jobs:
       id: set-env
 
       run: |
-        #echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-        #echo "::set-output name=TEST_DIR::/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}"
-        echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/11076014062-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-        echo "::set-output name=TEST_DIR::/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/11076014062-${{ github.ref_name }}/${{ github.event.pull_request.number }}"
+        echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+        echo "::set-output name=TEST_DIR::/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}"
 
     - name: Checkout global-workflow
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
          mkdir -p ${{ env.TEST_DIR }}/HOMEgfs
          cd ${{ env.TEST_DIR }}/HOMEgfs
-         #git clone --branch ${{ github.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
-         #git submodule update --init --recursive
+         git clone --branch ${{ github.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
+         git submodule update --init --recursive
         EOF
 
     - name: Build components
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
           cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
-          #./build_all.sh
+          ./build_all.sh
         EOF
 
     - name: Link artifacts
