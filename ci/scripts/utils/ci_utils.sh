@@ -177,4 +177,3 @@ function cleanup_experiment() {
     rm -Rf "${PSLOT_PATH}"
     rm -Rf "${PSLOT_PATH}/../COMROOT/${pslot}"
 }
-    
