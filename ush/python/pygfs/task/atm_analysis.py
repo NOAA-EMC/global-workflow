@@ -129,8 +129,24 @@ class AtmAnalysis(Task):
         ----------
         None
         """
-        super().initialize()
 
+        # stage observations
+        logger.info(f"Staging list of observation files generated from JEDI config")
+        jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
+        jcb_config.update(parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config))
+        jcb_config['algorithm'] = 'atm_obs_staging'
+        obs_dict = render(jcb_config)
+        FileHandler(obs_dict).sync()
+        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
+
+        # Test
+        jcb_config = {}
+        jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
+        jcb_config.update(parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config))
+        jcb_config['algorithm'] = 'atm_bias_staging'
+        bias_dict = render(jcb_config)
+        logger.debug(f"foo:\n{pformat(bias_dict)}")
+        
         # stage observations
         logger.info(f"Staging list of observation files generated from JEDI config")
         obs_dict = self.jedi.get_obs_dict(self.task_config)
