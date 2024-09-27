@@ -59,10 +59,6 @@ jobs:
     needs: checkout-build-link
     runs-on: [self-hosted, parallel-works, pw]
 
-    env:
-      TEST_DIR: ${{ needs.checkout-build-link.outputs.TEST_DIR }}
-      MACHINE_ID: hera
-
     strategy:
       matrix:
         case: ["C48_S2S", "C96_atm3DVar"]
@@ -73,9 +69,10 @@ jobs:
           HOMEgfs_PR: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
           RUNTESTS: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/RUNTESTS
           pslot: ${{ matrix.case }}.${{ github.run_id }}
+          MACHINE_ID: hera
         run: |
           ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-            cd ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
+            cd ${{ env.HOMEgfs_PR }}
             source workflow/gw_setup.sh
             source ci/platforms/${{ env.MACHINE_ID }}.sh
             workflow/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
