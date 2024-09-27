@@ -17,9 +17,6 @@ jobs:
     runs-on: [self-hosted, parallel-works, pw]
     timeout-minutes: 600
 
-    env:
-      MACHINE_ID: hera
-
     outputs:
       TEST_DIR: ${{ steps.set-env.outputs.TEST_DIR }}
 
@@ -66,13 +63,13 @@ jobs:
     steps:
       - name: Create Experiments ${{ matrix.case }}
         env:
-          HOMEgfs_PR: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
+          HOMEgfs: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
           RUNTESTS: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/RUNTESTS
           pslot: ${{ matrix.case }}.${{ github.run_id }}
           MACHINE_ID: hera
         run: |
           ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-            cd ${{ env.HOMEgfs_PR }}
+            cd ${{ env.HOMEgfs }}
             source workflow/gw_setup.sh
             source ci/platforms/${{ env.MACHINE_ID }}.sh
             workflow/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
@@ -86,12 +83,11 @@ jobs:
       matrix:
         case: ["C48_S2S", "C96_atm3DVar"]
 
+    steps:
+      - name: Run Experiment ${{ matrix.case }}
       env:
         TEST_DIR: ${{ steps.set-env.outputs.TEST_DIR }}
         MACHINE_ID: hera
-
-    steps:
-      - name: Run Experiment ${{ matrix.case }}
         run: |
           ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
             cd ${{ env.TEST_DIR }}/HOMEgfs
