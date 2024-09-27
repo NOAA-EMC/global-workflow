@@ -1,13 +1,15 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
-export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalrun"
-
+export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATA="${DATAjob}/marinevariational"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl marineanlvar"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -17,7 +19,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalr
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNRUNSH:-${HOMEgfs}/sorc/gdas.cd/scripts/exgdas_global_marine_analysis_run.sh}
+EXSCRIPT=${GDASMARINERUNSH:-${SCRgfs}/exglobal_marine_analysis_variational.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
@@ -32,10 +34,5 @@ status=$?
 if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
-
-##########################################
-# Do not remove the Temporary working directory (do this in POST)
-##########################################
-cd "${DATAROOT}" || exit 1
 
 exit 0
