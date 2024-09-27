@@ -34,15 +34,15 @@ jobs:
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
          mkdir -p ${{ env.TEST_DIR }}/HOMEgfs
          cd ${{ env.TEST_DIR }}/HOMEgfs
-         git clone --branch ${{ github.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
-         git submodule update --init --recursive
+         #git clone --branch ${{ github.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
+         #git submodule update --init --recursive
         EOF
 
     - name: Build components
       run: |
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
           cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
-          ./build_all.sh
+          #./build_all.sh
         EOF
 
     - name: Link artifacts
@@ -58,7 +58,7 @@ jobs:
 
     strategy:
       matrix:
-        case: ["C48_S2S", "C96_atm3DVar"]
+        case: ["C48_ATM", "C96_atm3DVar"]
 
     steps:
       - name: Create Experiments ${{ matrix.case }}
@@ -71,8 +71,8 @@ jobs:
           ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
             cd ${{ env.HOMEgfs }}
             source workflow/gw_setup.sh
-            source ci/platforms/${{ env.MACHINE_ID }}.sh
-            workflow/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
+            source ci/platforms/config.${{ env.MACHINE_ID }}
+            workflow/create_experiment.py --yaml ci/cases/pr/${{ matrix.case }}.yaml
           EOF
 
   run-experiments:
@@ -81,7 +81,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        case: ["C48_S2S", "C96_atm3DVar"]
+        case: ["C48_ATM", "C96_atm3DVar"]
 
     steps:
       - name: Run Experiment ${{ matrix.case }}
