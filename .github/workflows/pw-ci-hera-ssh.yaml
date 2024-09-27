@@ -74,7 +74,7 @@ jobs:
             cd ${{ env.HOMEgfs }}
             source workflow/gw_setup.sh
             source ci/platforms/config.${{ env.MACHINE_ID }}
-            workflow/create_experiment.py --yaml ci/cases/pr/${{ matrix.case }}.yaml
+            workflow/create_experiment.py --overwrite --yaml ci/cases/pr/${{ matrix.case }}.yaml
           EOF
 
   run-experiments:
