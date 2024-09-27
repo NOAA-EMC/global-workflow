@@ -28,6 +28,7 @@ jobs:
 
     - name: Set environment variables
       id: set-env
+
       run: |
         echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
@@ -61,6 +62,10 @@ jobs:
       matrix:
         case: ["C48_S2S", "C96_atm3DVar"]
 
+    env:
+      TEST_DIR: ${{ steps.set-env.outputs.TEST_DIR }}
+      MACHINE_ID: hera
+
     steps:
       - name: Create Experiments ${{ matrix.case }}
         env:
@@ -72,7 +77,7 @@ jobs:
             cd ${{ env.TEST_DIR }}/HOMEgfs
             source workflow/gw_setup.sh
             source ci/platforms/${{ env.MACHINE_ID }}.sh
-            ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
+            workflow/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
           EOF
 
   run-experiments:
@@ -82,10 +87,15 @@ jobs:
       max-parallel: 2
       matrix:
         case: ["C48_S2S", "C96_atm3DVar"]
+
+      env:
+        TEST_DIR: ${{ steps.set-env.outputs.TEST_DIR }}
+        MACHINE_ID: hera
+
     steps:
       - name: Run Experiment ${{ matrix.case }}
         run: |
           ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-            cd 
-            # Add commands to run the experiment
+            cd ${{ env.TEST_DIR }}/HOMEgfs
+            echo "$PWD: Skipping Run Experiment ${{ matrix.case }} for now"
           EOF
