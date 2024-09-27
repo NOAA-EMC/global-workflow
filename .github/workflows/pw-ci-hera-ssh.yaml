@@ -10,10 +10,6 @@ on:
 # ./TEST_DIR
 # ├── HOMEgfs
 # └── RUNTESTS
-#     ├── COMROT
-#     │   └── ${pslot}
-#     └── EXPDIR
-#         └── ${pslot}
 
 jobs:
 
@@ -24,6 +20,9 @@ jobs:
     env:
       MACHINE_ID: hera
 
+    outputs:
+      TEST_DIR: ${{ steps.set-env.outputs.TEST_DIR }}
+
     steps:
 
     - name: Set environment variables
@@ -31,6 +30,7 @@ jobs:
 
       run: |
         echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+        echo "::set-output name=TEST_DIR::/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}"
 
     - name: Checkout global-workflow
       run: |
@@ -69,12 +69,12 @@ jobs:
     steps:
       - name: Create Experiments ${{ matrix.case }}
         env:
-          HOMEgfs_PR: ${{ env.TEST_DIR }}/HOMEgfs
-          RUNTESTS: ${{ env.TEST_DIR }}/RUNTESTS
+          HOMEgfs_PR: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
+          RUNTESTS: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/RUNTESTS
           pslot: ${{ matrix.case }}.${{ github.run_id }}
         run: |
           ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-            cd ${{ env.TEST_DIR }}/HOMEgfs
+            cd ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
             source workflow/gw_setup.sh
             source ci/platforms/${{ env.MACHINE_ID }}.sh
             workflow/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
