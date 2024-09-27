@@ -58,13 +58,14 @@ jobs:
   create-experiments:
     needs: checkout-build-link
     runs-on: [self-hosted, parallel-works, pw]
-    strategy:
-      matrix:
-        case: ["C48_S2S", "C96_atm3DVar"]
 
     env:
       TEST_DIR: ${{ steps.set-env.outputs.TEST_DIR }}
       MACHINE_ID: hera
+
+    strategy:
+      matrix:
+        case: ["C48_S2S", "C96_atm3DVar"]
 
     steps:
       - name: Create Experiments ${{ matrix.case }}
