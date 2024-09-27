@@ -1,6 +1,6 @@
 #!/bin/bash
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalprep" -c "base ocnanal ocnanalprep"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlinit" -c "base ocnanal marineanlinit"
 
 
 ##############################################
