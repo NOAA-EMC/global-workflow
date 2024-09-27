@@ -1,0 +1,20 @@
+#!/bin/bash
+
+########## config.marineanl ##########
+# configuration common to all ocean analysis tasks
+
+echo "BEGIN: config.marineanl"
+
+export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
+export MARINE_OBS_LIST_YAML=@SOCA_OBS_LIST@
+export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
+export SOCA_NINNER=@SOCA_NINNER@
+export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
+export SOCA_ENS_BKG_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_ens_bkg_stage.yaml.j2"
+export SOCA_FIX_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage_${OCNRES}.yaml.j2"
+export MARINE_UTILITY_YAML_TMPL="${PARMgfs}/gdas/soca/soca_utils_stage.yaml.j2"
+export MARINE_ENSDA_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/ensda/stage_ens_mem.yaml.j2"
+export MARINE_DET_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_bkg_stage.yaml.j2"
+export MARINE_JCB_GDAS_ALGO="${PARMgfs}/gdas/jcb-gdas/algorithm/marine"
+
+echo "END: config.marineanl"
