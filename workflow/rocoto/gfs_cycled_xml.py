@@ -27,7 +27,7 @@ class GFSCycledRocotoXML(RocotoXML):
         if self._app_config.do_jedisnowda:
             sdate_snocvr = self._base['SDATE']
             edate_snocvr = self._base['EDATE']
-            interval_snocvr = to_timedelta(f"24:00:00H")
+            interval_snocvr = to_timedelta('24H')
             sdate_snocvr = sdate_snocvr + interval_snocvr
             sdate_snocvr_str = sdate_snocvr.replace(hour=0, minute=0, second=0).strftime("%Y%m%d%H%M")
             edate_snocvr_str = edate_snocvr.strftime("%Y%m%d%H%M")
