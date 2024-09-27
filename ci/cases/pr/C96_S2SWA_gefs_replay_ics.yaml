@@ -16,4 +16,4 @@ arguments:
   idate: 2020110100
   edate: 2020110100
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_replay_ci.yaml
-  icsdir: {{ 'TOPICDIR' | getenv }}/REPLAY_ICs/CI
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
