@@ -85,11 +85,11 @@ jobs:
 
     steps:
       - name: Run Experiment ${{ matrix.case }}
-      env:
-        TEST_DIR: ${{ steps.set-env.outputs.TEST_DIR }}
-        MACHINE_ID: hera
+        env:
+          HOMEgfs: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
+          MACHINE_ID: hera
         run: |
           ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
-            cd ${{ env.TEST_DIR }}/HOMEgfs
+            cd ${{ env.HOMEgfs }}
             echo "$PWD: Skipping Run Experiment ${{ matrix.case }} for now"
           EOF
