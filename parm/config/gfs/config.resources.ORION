@@ -23,6 +23,16 @@ case ${step} in
     # Remove this block once the GSI issue is resolved.
     export walltime="00:45:00"
   ;;
+  "atmanlvar")
+    # Run on 8 nodes for memory requirement
+    export tasks_per_node=8
+    export walltime="00:45:00"
+  ;;
+  "atmensanlobs")
+    # Run on 8 nodes for memory requirement
+    export tasks_per_node=8
+    export walltime="00:45:00"
+  ;;
   *)
   ;;
 esac
