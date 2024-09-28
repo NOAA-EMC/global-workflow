@@ -1861,7 +1861,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': metpenvars,
-                     'cycledef': 'metp',
+                     'cycledef': 'metp,last_gfs',
                      'command': f'{self.HOMEgfs}/jobs/rocoto/metp.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
