@@ -28,7 +28,7 @@ class GFSCycledRocotoXML(RocotoXML):
 
         if interval_gfs > to_timedelta("0H"):
             sdate_gfs = self._base['SDATE_GFS']
-            edate_gfs = sdate_gfs + (edate - sdate_gfs)//interval_gfs * interval_gfs
+            edate_gfs = sdate_gfs + ((edate - sdate_gfs) // interval_gfs) * interval_gfs
             sdate_gfs_str = sdate_gfs.strftime("%Y%m%d%H%M")
             edate_gfs_str = edate_gfs.strftime("%Y%m%d%H%M")
             interval_gfs_str = timedelta_to_HMS(interval_gfs)
