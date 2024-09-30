@@ -286,7 +286,7 @@ elif [ $step = "ediag" ]; then
 
 elif [ $step = "eupd" ]; then
 
-    export wtime_eupd="00:30:00"
+    export wtime_eupd="00:35:00"
     export npe_eupd=315
     export nth_eupd=14
     export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
