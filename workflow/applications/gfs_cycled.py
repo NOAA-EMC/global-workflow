@@ -148,13 +148,8 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_jediocnvar:
             gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
             if self.do_hybvar:
-<<<<<<< HEAD
                 gdas_gfs_common_tasks_before_fcst += ['marineanlletkf', 'ocnanalecen']
-            gdas_gfs_common_tasks_before_fcst += ['ocnanalchkpt', 'ocnanalpost']
-=======
-                gdas_gfs_common_tasks_before_fcst += ['ocnanalecen']
             gdas_gfs_common_tasks_before_fcst += ['marineanlchkpt', 'marineanlfinal']
->>>>>>> develop
             if self.do_vrfy_oceanda:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 

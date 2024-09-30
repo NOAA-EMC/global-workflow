@@ -97,7 +97,7 @@ class MarineLETKF(Analysis):
         letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, stageconf)
         FileHandler(letkf_stage_list).sync()
 
-        obs_list = parse_j2yaml(self.task_config.OBS_YAML, self.task_config)
+        obs_list = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)
 
         # get the list of observations
         obs_files = []
