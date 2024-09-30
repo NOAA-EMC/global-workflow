@@ -35,8 +35,9 @@ jobs:
       with:
         path: ${{ env.CHECKOUT_DIR_PW }}/HOMEgfs
         submodules: true
+        submodules-depth: 1
         fetch-depth: 1
-        lsf: true
+        lfs: true
 
     - name: Build components
       run: |
