@@ -28,7 +28,7 @@ jobs:
       run: |
         echo "CHECKOUT_DIR_PW=${{ github.workspace }}/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
         echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/pw/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-        echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/pw/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+        echo "TEST_DIR=${TEST_DIR}" >> $GITHUB_OUTPUT
 
     - name: Set Git postBuffer size
       run: |
