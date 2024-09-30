@@ -37,7 +37,6 @@ jobs:
         submodules: true
         submodules-depth: 1
         fetch-depth: 1
-        lfs: false
 
     - name: Build components
       run: |
