@@ -172,33 +172,40 @@ class GFSCycledAppConfig(AppConfig):
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'ocnanalprep', 'marinebmat', 'ocnanalrun']
                     if options['do_hybvar']:
-                        task_names[run] += ['ocnanalecen', 'ocnanalchkpt', 'ocnanalpost']
+                        task_names[run] += ['ocnanalecen']
+                    task_names[run] += ['ocnanalchkpt', 'ocnanalpost']
                     if options['do_vrfy_oceanda']:
                         task_names[run] += ['ocnanalvrfy']
 
-                    task_names[run] += ['sfcanl', 'analcalc']
+                task_names[run] += ['sfcanl', 'analcalc']
 
                 if options['do_jedisnowda']:
                     task_names[run] += ['prepsnowobs', 'snowanl']
 
-                if options['do_wave'] and run in self.wave_runs:
-                    task_names[run] += ['waveinit', 'waveprep']
+                wave_prep_tasks = ['waveinit', 'waveprep']
+                wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
+                wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
 
-                # gdas-specific analysis tasks
+                # gdas- and gfs-specific analysis tasks
                 if run == 'gdas':
                     if not options['do_jediatmvar']:
                         task_names[run] += ['analdiag']
 
+                    if options['do_wave'] and run in self.wave_runs:
+                        task_names[run] += wave_prep_tasks
+
                     if options['do_aero'] and run in options['aero_anl_runs']:
                         task_names[run] += ['aeroanlgenb']
+
+                else:
+                    if options['do_wave'] and run in self.wave_runs:
+                        task_names[run] += wave_prep_tasks
 
                 if options['do_aero'] and run in options['aero_anl_runs']:
                     task_names[run] = ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
 
-                    if options['do_aero'] and run in options['aero_anl_runs']:
-                        task_names[run] += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-                        if options['do_prep_obs_aero']:
-                            task_names[run] += ['prepobsaero']
+                    if options['do_prep_obs_aero']:
+                        task_names[run] += ['prepobsaero']
 
                 # Staging is gdas-specific
                 if run == 'gdas':
@@ -223,17 +230,19 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_goes']:
                         task_names[run] += ['goesupp']
 
-                if options['do_vminmon']:
-                    task_names[run] += ['vminmon']
-
                 if options['do_fit2obs']:
                     task_names[run] += ['fit2obs']
 
-                if options['do_verfozn']:
-                    task_names[run] += ['verfozn']
+                # Only verify ozone and radiance during gdas cycles
+                if run == "gdas":
+                    if options['do_verfozn']:
+                        task_names[run] += ['verfozn']
 
-                if options['do_verfrad']:
-                    task_names[run] += ['verfrad']
+                    if options['do_verfrad']:
+                        task_names[run] += ['verfrad']
+
+                if options['do_vminmon']:
+                    task_names[run] += ['vminmon']
 
                 # gfs-only verification/tracking
                 if run == 'gfs':
@@ -251,8 +260,8 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_wave'] and run in options['wave_runs']:
                     if options['do_wave_bnd']:
-                        task_names[run] += ['wavepostbndpnt', 'wavepostbndpntbll']
-                    task_names[run] += ['wavepostsbs', 'wavepostpnt']
+                        task_names[run] += wave_bndpnt_tasks
+                    task_names[run] += wave_post_tasks
                     # wave gempak and awips jobs are gfs-specific
                     if run == 'gfs':
                         if options['do_gempak']:
@@ -260,13 +269,11 @@ class GFSCycledAppConfig(AppConfig):
                         if options['do_awips']:
                             task_names[run] += ['waveawipsbulls', 'waveawipsgridded']
 
-                # gdas-specific gempak jobs
+                # gdas- and gfs-specific downstream products
                 if run == 'gdas':
                     if options['do_gempak']:
                         task_names[run] += ['gempak', 'gempakmetancdc']
-
-                # gfs-specific post products
-                if run == 'gfs':
+                else:
                     if options['do_bufrsnd']:
                         task_names[run] += ['postsnd']
 
