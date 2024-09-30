@@ -26,8 +26,8 @@ jobs:
       id: set-env
 
       run: |
-        echo "CHECKOUT_DIR_PW=$HOME/pw/clusters/noaaheracluster/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-        echo "::set-output name=TEST_DIR::/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}"
+        echo "CHECKOUT_DIR_PW=${{ github.workspace }}/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+        echo "::set-output name=TEST_DIR::/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/pw/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}"
 
     - name: Checkout global-workflow
       uses: actions/checkout@v3
