@@ -12,6 +12,10 @@ export BASE_IC="@BASE_IC@" # Platform home for staged ICs
 
 export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gfs.yaml.j2"
 
+if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
+  export DOIAU="NO" # Force it off for cold-start
+fi
+
 # Set ICSDIR (if not defined)
 if [[ -z "${ICSDIR}" ]] ; then
 

@@ -25,6 +25,9 @@ UFS_det(){
     DOIAU="NO"
     IAU_OFFSET=0
     model_atmos_start_date_current_cycle=${current_cycle}
+    model_ice_start_date_current_cycle=${current_cycle}
+    model_med_start_date_current_cycle=${current_cycle}
+    model_ocean_start_date_current_cycle=${current_cycle}
 
     # It is still possible that a restart is available from a previous forecast attempt
     # So we have to continue checking for restarts

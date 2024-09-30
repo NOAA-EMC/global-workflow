@@ -400,7 +400,6 @@ export ENKF_SPREAD="YES"
 
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
-  export DOIAU="NO" # Force it off for cold-start
   export IAU_OFFSET=0
   export IAU_FHROT=0
   export IAUFHRS="6,"

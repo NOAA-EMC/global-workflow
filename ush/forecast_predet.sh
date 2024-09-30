@@ -91,7 +91,11 @@ common_predet(){
 
   # Define model start date for current_cycle and next_cycle as the time the forecast will start
   if [[ "${DOIAU:-NO}" == "YES" ]]; then
-    model_start_date_current_cycle="${current_cycle_begin}"
+    if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
+      model_start_date_current_cycle="${current_cycle}"
+    else
+      model_start_date_current_cycle="${current_cycle_begin}"
+    fi
     model_start_date_next_cycle="${next_cycle_begin}"
   else
     if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
@@ -105,11 +109,11 @@ common_predet(){
   model_atmos_start_date_current_cycle="${model_start_date_current_cycle}"
   model_atmos_start_date_next_cycle="${model_start_date_next_cycle}"
   model_ice_start_date_current_cycle="${model_start_date_current_cycle}"
-  model_ice_start_date_next_cycle="${next_cycle}"
+  model_ice_start_date_next_cycle="${model_start_date_next_cycle}"
   model_med_start_date_current_cycle="${model_start_date_current_cycle}"
-  model_med_start_date_next_cycle="${next_cycle}"
+  model_med_start_date_next_cycle="${model_start_date_next_cycle}"
   model_ocean_start_date_current_cycle="${model_start_date_current_cycle}"
-  model_ocean_start_date_next_cycle="${next_cycle}"
+  model_ocean_start_date_next_cycle="${model_start_date_next_cycle}"
   model_wave_start_date_current_cycle="${current_cycle}"
 
   FHMIN=${FHMIN:-0}
