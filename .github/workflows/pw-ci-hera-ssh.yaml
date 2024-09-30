@@ -30,12 +30,19 @@ jobs:
         echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/pw/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
         echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/pw/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
 
+    - name: Set Git postBuffer size
+      run: |
+        git config --global http.postBuffer 524288000
+        git config --global http.maxRequestBuffer 100M
+        git config --global core.compression 0
+        git config --global submodule.fetchJobs 1
+        git config --global submodule.'gdas.cd'.shallow true
+
     - name: Checkout global-workflow
       uses: actions/checkout@v3
       with:
         path: ${{ env.CHECKOUT_DIR_PW }}/HOMEgfs
         submodules: true
-        submodules-depth: 1
         fetch-depth: 1
 
     - name: Build components
