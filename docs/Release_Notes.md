@@ -1,4 +1,4 @@
-GFS V16.3.19 RELEASE NOTES
+GFS V16.3.21 RELEASE NOTES
 
 -------
 PRELUDE
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.19
-cd gfs.v16.3.19
-git clone -b EMC-v16.3.19 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.21
+cd gfs.v16.3.21
+git clone -b EMC-v16.3.21 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -26,7 +26,7 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.3.1   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.12 | Andrew.Collard@noaa.gov |
+| GSI       | gfsda.v16.3.19 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
 
@@ -49,7 +49,7 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.19` and `gfs_ver=v16.3.19`
+* `versions/run.ver` - change `version=v16.3.21` and `gfs_ver=v16.3.21`
 
 SORC CHANGES
 ------------
@@ -155,7 +155,7 @@ and are being retired from the WAFS package:
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.20
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -168,22 +168,22 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.20
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.20
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.20
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.20
 
 PREPARED BY
 -----------
