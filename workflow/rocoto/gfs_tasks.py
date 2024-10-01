@@ -855,8 +855,8 @@ class GFSTasks(Tasks):
         try:
             task = fcst_map[self.app_config.mode]()
         except KeyError:
-            raise NotImplementedError(f'{self.app_config.mode} is not a valid type.\n' +
-                                      'Currently supported forecast types are:\n' +
+            raise NotImplementedError(f'{self.app_config.mode} is not a valid type.\n'
+                                      f'Currently supported forecast types are:\n'
                                       f'{" | ".join(fcst_map.keys())}')
 
         return task
@@ -2329,6 +2329,10 @@ class GFSTasks(Tasks):
                     deps.append(rocoto.add_dependency(dep_dict))
                     dep_dict = {'type': 'task', 'name': f'{self.run}npoess_pgrb2_0p5deg'}
                     deps.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_metp and self.run in ['gfs']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}metp'}
+            deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

@@ -139,9 +139,16 @@ class AtmAnalysis(Task):
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files generated from JEDI config")
-        bias_dict = self.jedi.get_bias_dict(self.task_config)
+        self.task_config.VarBcDir = f"{self.task_config.COM_ATMOS_ANALYSIS_PREV}"
+        bias_file = f"rad_varbc_params.tar"
+        bias_dict = self.jedi.get_bias_dict(self.task_config, bias_file)
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+
+        # extract bias corrections
+        tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
+        logger.info(f"Extract bias correction files from {tar_file}")
+        self.jedi.extract_tar(tar_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
@@ -265,37 +272,34 @@ class AtmAnalysis(Task):
             }
             FileHandler(yaml_copy).sync()
 
-        # copy bias correction files to ROTDIR
-        logger.info("Copy bias correction files from DATA/ to COM/")
-        biasdir = os.path.join(self.task_config.DATA, 'bc')
-        biasls = os.listdir(biasdir)
-        biaslist = []
-        for bfile in biasls:
-            src = os.path.join(biasdir, bfile)
-            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, bfile)
-            biaslist.append([src, dest])
+        # path of output radiance bias correction tarfile
+        bfile = f"{self.task_config.APREFIX}rad_varbc_params.tar"
+        radtar = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, bfile)
 
-        gprefix = f"{self.task_config.GPREFIX}"
-        gsuffix = f"{to_YMDH(self.task_config.previous_cycle)}" + ".txt"
-        aprefix = f"{self.task_config.APREFIX}"
-        asuffix = f"{to_YMDH(self.task_config.current_cycle)}" + ".txt"
-
-        logger.info(f"Copying {gprefix}*{gsuffix} from DATA/ to COM/ as {aprefix}*{asuffix}")
-        obsdir = os.path.join(self.task_config.DATA, 'obs')
-        obsls = os.listdir(obsdir)
-        for ofile in obsls:
-            if ofile.endswith(".txt"):
-                src = os.path.join(obsdir, ofile)
-                tfile = ofile.replace(gprefix, aprefix)
-                tfile = tfile.replace(gsuffix, asuffix)
-                dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, tfile)
-                biaslist.append([src, dest])
-
-        bias_copy = {
-            'mkdir': [self.task_config.COM_ATMOS_ANALYSIS],
-            'copy': biaslist,
+        # rename and copy tlapse radiance bias correction files from obs to bc
+        tlapobs = glob.glob(os.path.join(self.task_config.DATA, 'obs', '*tlapse.txt'))
+        copylist = []
+        for tlapfile in tlapobs:
+            obsfile = os.path.basename(tlapfile).split('.', 2)
+            newfile = f"{self.task_config.APREFIX}{obsfile[2]}"
+            copylist.append([tlapfile, os.path.join(self.task_config.DATA, 'bc', newfile)])
+        tlapse_dict = {
+            'copy': copylist
         }
-        FileHandler(bias_copy).sync()
+        FileHandler(tlapse_dict).sync()
+
+        # get lists of radiance bias correction files to add to tarball
+        satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
+        tlaplist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*tlapse.txt'))
+
+        # tar radiance bias correction files to ROTDIR
+        logger.info(f"Creating radiance bias correction tar file {radtar}")
+        with tarfile.open(radtar, 'w') as radbcor:
+            for satfile in satlist:
+                radbcor.add(satfile, arcname=os.path.basename(satfile))
+            for tlapfile in tlaplist:
+                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile))
+            logger.info(f"Add {radbcor.getnames()}")
 
         # Copy FV3 atm increment to comrot directory
         logger.info("Copy UFS model readable atm increment file")
