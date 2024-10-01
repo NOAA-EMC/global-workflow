@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
@@ -9,11 +8,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="ocnanalprep"
+export job="marineanlvar"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_PREP
+"${HOMEgfs}/jobs/JGLOBAL_MARINE_ANALYSIS_VARIATIONAL"
 status=$?
 exit "${status}"

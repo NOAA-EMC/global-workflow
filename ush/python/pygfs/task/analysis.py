@@ -41,10 +41,6 @@ class Analysis(Task):
         obs_dict = self.get_obs_dict()
         FileHandler(obs_dict).sync()
 
-        # some analyses need to stage bias corrections
-        bias_dict = self.get_bias_dict()
-        FileHandler(bias_dict).sync()
-
         # link jedi executable to run directory
         self.link_jediexe()
 
@@ -126,47 +122,6 @@ class Analysis(Task):
             'copy': copylist
         }
         return obs_dict
-
-    @logit(logger)
-    def get_bias_dict(self) -> Dict[str, Any]:
-        """Compile a dictionary of observation files to copy
-
-        This method extracts 'observers' from the JEDI yaml and from that list, extracts a list of
-        observation bias correction files that are to be copied to the run directory
-        from the component directory.
-        TODO: COM_ATMOS_ANALYSIS_PREV is hardwired here and this method is not appropriate in
-        `analysis.py` and should be implemented in the component where this is applicable.
-
-        Parameters
-        ----------
-
-        Returns
-        ----------
-        bias_dict: Dict
-            a dictionary containing the list of observation bias files to copy for FileHandler
-        """
-
-        logger.info(f"Extracting a list of bias correction files from Jedi config file")
-        observations = find_value_in_nested_dict(self.task_config.jedi_config, 'observations')
-        logger.debug(f"observations:\n{pformat(observations)}")
-
-        copylist = []
-        for ob in observations['observers']:
-            if 'obs bias' in ob.keys():
-                obfile = ob['obs bias']['input file']
-                obdir = os.path.dirname(obfile)
-                basename = os.path.basename(obfile)
-                prefix = '.'.join(basename.split('.')[:-2])
-                for file in ['satbias.nc', 'satbias_cov.nc', 'tlapse.txt']:
-                    bfile = f"{prefix}.{file}"
-                    copylist.append([os.path.join(self.task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
-                    # TODO: Why is this specific to ATMOS?
-
-        bias_dict = {
-            'mkdir': [os.path.join(self.task_config.DATA, 'bc')],
-            'copy': copylist
-        }
-        return bias_dict
 
     @logit(logger)
     def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:
