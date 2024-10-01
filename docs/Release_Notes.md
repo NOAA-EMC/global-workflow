@@ -29,6 +29,7 @@ The checkout script extracts the following GFS components:
 | GSI       | gfsda.v16.3.12 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
+| WAFS      | gfs_wafs.v6.3.2 | Yali.Mao@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash
