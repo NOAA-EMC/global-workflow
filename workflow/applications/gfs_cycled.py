@@ -14,10 +14,8 @@ class GFSCycledAppConfig(AppConfig):
         # Re-read config.base without RUN specified to get the basic settings for
         # cycled cases to be able to determine valid runs
         base = conf.parse_config('config.base')
-        self.runs = ["gdas"]
-        self.runs.append("gfs") if base['gfs_cyc'] > 0 else 0
 
-        self.ens_runs = None
+        self.ens_runs = []
 
         if base.get('DOHYBVAR', False):
             ens_run = base.get('EUPD_CYC', 'gdas').lower()
@@ -26,8 +24,11 @@ class GFSCycledAppConfig(AppConfig):
             elif ens_run in ['gfs', 'gdas']:
                 self.ens_runs = [ens_run]
 
-            for ens_run in self.ens_runs:
-                self.runs.append(f"enkf{ens_run}") if ens_run in self.runs else 0
+        # Now construct self.runs the desired XML order (gdas, enkfgdas, gfs, enkfgfs)
+        self.runs = ["gdas"]  # We always have a 'gdas' run
+        self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
+        self.runs.append("gfs") if base['gfs_cyc'] > 0 else 0
+        self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and "gfs" in self.runs else 0
 
     def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
 
@@ -230,14 +231,12 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_goes']:
                         task_names[run] += ['goesupp']
 
-                if options['do_fit2obs']:
-                    task_names[run] += ['fit2obs']
-
-                # Only verify ozone and radiance during gdas cycles
+                # Only fit to obs and verify ozone and radiance during gdas cycles
                 if run == "gdas":
+                    if options['do_fit2obs']:
+                        task_names[run] += ['fit2obs']
                     if options['do_verfozn']:
                         task_names[run] += ['verfozn']
-
                     if options['do_verfrad']:
                         task_names[run] += ['verfrad']
 
@@ -311,7 +310,7 @@ class GFSCycledAppConfig(AppConfig):
 
                 else:
                     task_names[run] += ['eobs', 'eupd']
-                    task_names[run] += ['echgres'] if 'gdas' in run else 0
+                    task_names[run].append('echgres') if 'gdas' in run else 0
                     task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
 
                 task_names[run] += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
