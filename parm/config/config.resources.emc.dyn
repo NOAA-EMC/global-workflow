@@ -350,7 +350,7 @@ elif [ $step = "ediag" ]; then
 
 elif [ $step = "eupd" ]; then
 
-    export wtime_eupd="00:30:00"
+    export wtime_eupd="00:35:00"
     if [ $CASE = "C768" ]; then
       export npe_eupd=480
       export nth_eupd=6
