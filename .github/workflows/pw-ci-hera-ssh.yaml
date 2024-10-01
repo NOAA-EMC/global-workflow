@@ -48,6 +48,8 @@ jobs:
 
     - name: Build components
       run: |
+        mkdir -p $HOME/GFS_CI_ROOT/pw/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}
+        rsync -av ${{ env.CHECKOUT_DIR_PW }}/HOMEgfs $HOME/GFS_CI_ROOT/pw/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
           cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
           ./build_all.sh
