@@ -2334,8 +2334,12 @@ class GFSTasks(Tasks):
                     deps.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_metp and self.run in ['gfs']:
+            deps2 = []
+            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}metp', 'condition': 'not'}
+            deps2.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'metatask', 'name': f'{self.run}metp'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            deps2.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
