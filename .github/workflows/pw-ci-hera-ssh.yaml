@@ -50,7 +50,7 @@ jobs:
       run: |
         TARGET_DIR=$HOME/pw/clusters/noaaheracluster/GFS_CI_ROOT/pw/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}
         mkdir -p $TARGET_DIR
-        rsync -av ${{ env.CHECKOUT_DIR_PW }}/HOMEgfs/ $TARGET_DIR/HOMEgfs
+        rsync -a --no-o --no-g --no-perms ${{ env.CHECKOUT_DIR_PW }}/HOMEgfs/ $TARGET_DIR/HOMEgfs
         ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
           cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
           ./build_all.sh
