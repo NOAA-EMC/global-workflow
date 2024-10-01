@@ -1,5 +1,6 @@
 BASE_GIT: '/work/noaa/global/glopara/git_rocky9'
 DMPDIR: '/work/noaa/rstprod/dump'
+BASE_DATA: '/work/noaa/global/glopara/data'
 BASE_IC: '/work/noaa/global/glopara/data/ICSDIR'
 PACKAGEROOT: '/work/noaa/global/glopara/nwpara'
 COMINsyn: '/work/noaa/global/glopara/com/gfs/prod/syndat'

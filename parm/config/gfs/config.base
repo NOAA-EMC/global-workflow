@@ -63,6 +63,9 @@ export NOSCRUB="@NOSCRUB@"
 # Base directories for various builds
 export BASE_GIT="@BASE_GIT@"
 
+# Base directory for staged data
+export BASE_DATA="@BASE_DATA@"
+
 # Toggle to turn on/off GFS downstream processing.
 export DO_GOES="@DO_GOES@"               # GOES products
 export DO_BUFRSND="@DO_BUFRSND@"         # BUFR sounding products

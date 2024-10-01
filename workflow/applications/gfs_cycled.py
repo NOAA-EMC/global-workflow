@@ -62,10 +62,10 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['anal', 'analdiag']
 
         if options['do_jediocnvar']:
-            configs += ['prepoceanobs', 'ocnanalprep', 'marinebmat', 'ocnanalrun']
+            configs += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
             if options['do_hybvar']:
                 configs += ['ocnanalecen']
-            configs += ['ocnanalchkpt', 'ocnanalpost']
+            configs += ['marineanlchkpt', 'marineanlfinal']
             if options['do_vrfy_oceanda']:
                 configs += ['ocnanalvrfy']
 
@@ -171,10 +171,10 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['anal']
 
                 if options['do_jediocnvar']:
-                    task_names[run] += ['prepoceanobs', 'ocnanalprep', 'marinebmat', 'ocnanalrun']
+                    task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
                     if options['do_hybvar']:
                         task_names[run] += ['ocnanalecen']
-                    task_names[run] += ['ocnanalchkpt', 'ocnanalpost']
+                    task_names[run] += ['marineanlchkpt', 'marineanlfinal']
                     if options['do_vrfy_oceanda']:
                         task_names[run] += ['ocnanalvrfy']
 

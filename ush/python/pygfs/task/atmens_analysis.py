@@ -138,9 +138,16 @@ class AtmEnsAnalysis(Task):
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files generated from JEDI config")
-        bias_dict = self.jedi.get_bias_dict(self.task_config)
+        self.task_config.VarBcDir = f"{self.task_config.COM_ATMOS_ANALYSIS_PREV}"
+        bias_file = f"rad_varbc_params.tar"
+        bias_dict = self.jedi.get_bias_dict(self.task_config, bias_file)
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+
+        # extract bias corrections
+        tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
+        logger.info(f"Extract bias correction files from {tar_file}")
+        self.jedi.extract_tar(tar_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
