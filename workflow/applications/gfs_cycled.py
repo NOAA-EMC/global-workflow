@@ -164,7 +164,7 @@ class GFSCycledAppConfig(AppConfig):
 
             # Common gdas and gfs tasks before fcst
             if run in ['gdas', 'gfs']:
-                task_names[run] = ['prep']
+                task_names[run] += ['prep']
                 if options['do_jediatmvar']:
                     task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
                 else:
@@ -203,7 +203,7 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += wave_prep_tasks
 
                 if options['do_aero'] and run in options['aero_anl_runs']:
-                    task_names[run] = ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
+                    task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
 
                     if options['do_prep_obs_aero']:
                         task_names[run] += ['prepobsaero']
@@ -312,6 +312,7 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['eobs', 'eupd']
                     task_names[run].append('echgres') if 'gdas' in run else 0
                     task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
+                    task_names[run].append('esnowrecen') if options['do_jedisnowda'] and 'gdas' in run else 0
 
                 task_names[run] += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
