@@ -1,6 +1,6 @@
 from applications.applications import AppConfig
 from rocoto.tasks import Tasks
-from wxflow import timedelta_to_HMS
+from wxflow import timedelta_to_HMS, to_timedelta
 import rocoto.rocoto as rocoto
 import numpy as np
 
@@ -58,7 +58,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and self.interval_gfs != 6:
+        if self.run in ['gfs'] and gfs_enkf and self.app_config.interval_gfs != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('prep')
@@ -1834,13 +1834,22 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}arch'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in "gfs":
-            deps2 = []
-            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}arch', 'condition': 'not'}
-            deps2.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'gdasarch'}
-            deps2.append(rocoto.add_dependency(dep_dict))
-            deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
+        if self.app_config.interval_gfs < to_timedelta('24H'):
+            n_lookback = self.app_config.interval_gfs // to_timedelta('6H')
+            for lookback in range(1,n_lookback+1):
+                deps2 = []
+                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}arch', 'condition': 'not'}
+                deps2.append(rocoto.add_dependency(dep_dict))
+                for lookback2 in range(1,lookback):
+                    offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback2}H'))
+                    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
+                    deps2.append(rocoto.add_dependency(dep_dict))
+
+                offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback}H'))
+                dep_dict = {'type': 'task', 'name': f'{self.run}arch', 'offset': offset}
+                deps2.append(rocoto.add_dependency(dep_dict))
+                deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
+
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         metpenvars = self.envars.copy()

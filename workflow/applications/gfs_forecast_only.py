@@ -42,6 +42,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
             if self.do_genesis_fsu:
                 configs += ['genesis_fsu']
 
+            if self.do_metp:
+                configs += ['metp']
+
             if self.do_bufrsnd:
                 configs += ['postsnd']
 
@@ -118,6 +121,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
             if self.do_genesis_fsu:
                 tasks += ['genesis_fsu']
+
+            if self.do_metp:
+                tasks += ['metp']
 
             if self.do_bufrsnd:
                 tasks += ['postsnd']
