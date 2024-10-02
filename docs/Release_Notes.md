@@ -6,6 +6,8 @@ PRELUDE
 
 The upstream OBSPROC package is updated to v1.3. Along with this, the GFS is switching to use the AFWA global snow file due to the hemispheric snow files being phased out.
 
+Also included in this update is an improvement to the resource configuration for the enkfgdas_update job.
+
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
 
@@ -95,7 +97,12 @@ Now ingest:
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.19
+The enkfgdas_update job resource settings and configuration are updated.
+The `ecf/scripts/enkfgdas/analysis/create/jenkfgdas_update.ecf` script and
+`parm/config/config.resources` config are updated to now use 320 tasks
+and 12 threads, which results in 10 mpiprocs and 32 nodes (a reduction of
+three nodes). The `env/WCOSS2.env` env file is also updated to use
+`--cpu-bind core` instead of `--cpu-bind depth` for improved performance.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
