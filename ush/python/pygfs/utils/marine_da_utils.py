@@ -166,3 +166,25 @@ def clean_empty_obsspaces(config, target, app='var'):
 
     # save cleaned yaml
     save_as_yaml(config, target)
+
+@logit(logger)
+def get_mom6_levels(ocnres: str) -> int:
+    """
+    Temporary function that returns the number of vertical levels in MOM6 given the horizontal resolution.
+    This is requiered by the diffusion saber block that now makes use of oops::util::FieldSetHelpers::writeFieldSet
+    and requires the number of levels in the configuration. I have been told this will be changed in the future.
+    """
+
+    # get the number of vertical levels in MOM6 according to the horizontal resolution
+    if ocnres == '500':
+        nlev = 25
+    elif ocnres == '100':
+        nlev = 75
+    elif ocnres == '050':
+        nlev = 75
+    elif ocnres == '025':
+        nlev = 75
+    else:
+        raise ValueError("FATAL ERROR: Invalid ocnres value. Aborting.")
+
+    return nlev
