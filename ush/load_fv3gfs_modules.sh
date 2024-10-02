@@ -13,9 +13,6 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
-# Source versions file for runtime
-source "${HOMEgfs}/versions/run.ver"
-
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
@@ -27,6 +24,9 @@ case "${MACHINE_ID}" in
     echo "WARNING: UNKNOWN PLATFORM"
     ;;
 esac
+
+# Source versions file for runtime
+source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
 
 module list
 
