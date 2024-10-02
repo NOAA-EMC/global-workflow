@@ -1836,11 +1836,11 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.interval_gfs < to_timedelta('24H'):
             n_lookback = self.app_config.interval_gfs // to_timedelta('6H')
-            for lookback in range(1,n_lookback+1):
+            for lookback in range(1, n_lookback + 1):
                 deps2 = []
                 dep_dict = {'type': 'taskvalid', 'name': f'{self.run}arch', 'condition': 'not'}
                 deps2.append(rocoto.add_dependency(dep_dict))
-                for lookback2 in range(1,lookback):
+                for lookback2 in range(1, lookback):
                     offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback2}H'))
                     dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
                     deps2.append(rocoto.add_dependency(dep_dict))
