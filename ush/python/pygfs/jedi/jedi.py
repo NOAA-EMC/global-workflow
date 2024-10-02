@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import os
+import tarfile
 from logging import getLogger
 from typing import List, Dict, Any, Optional
 from jcb import render
 from wxflow import (AttrDict,
+                    FileHandler,
                     chdir, rm_p,
                     parse_j2yaml,
                     logit,
@@ -188,19 +190,19 @@ class Jedi:
         return obs_dict
 
     @logit(logger)
-    def get_bias_dict(self, task_config: AttrDict) -> Dict[str, Any]:
+    def get_bias_dict(self, task_config: AttrDict, bias_file) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
-        This method extracts 'observers' from the JEDI yaml and from that list, extracts a list of
-        observation bias correction files that are to be copied to the run directory
+        This method extracts 'observers' from the JEDI yaml and determines from that list
+        if bias correction tar files are to be copied to the run directory
         from the component directory.
-        TODO: COM_ATMOS_ANALYSIS_PREV is hardwired here and this method is not appropriate in
-        `analysis.py` and should be implemented in the component where this is applicable.
 
         Parameters
         ----------
         task_config: AttrDict
             Attribute-dictionary of all configuration variables associated with a GDAS task.
+        bias_file
+            name of bias correction tar file
 
         Returns
         ----------
@@ -216,17 +218,51 @@ class Jedi:
                 obfile = ob['obs bias']['input file']
                 obdir = os.path.dirname(obfile)
                 basename = os.path.basename(obfile)
-                prefix = '.'.join(basename.split('.')[:-2])
-                for file in ['satbias.nc', 'satbias_cov.nc', 'tlapse.txt']:
-                    bfile = f"{prefix}.{file}"
-                    copylist.append([os.path.join(task_config.COM_ATMOS_ANALYSIS_PREV, bfile), os.path.join(obdir, bfile)])
-                    # TODO: Why is this specific to ATMOS?
+                prefix = '.'.join(basename.split('.')[:-3])
+                bfile = f"{prefix}.{bias_file}"
+                tar_file = os.path.join(obdir, bfile)
+                copylist.append([os.path.join(task_config.VarBcDir, bfile), tar_file])
+                break
 
         bias_dict = {
             'mkdir': [os.path.join(task_config.DATA, 'bc')],
             'copy': copylist
         }
+
         return bias_dict
+
+    @staticmethod
+    @logit(logger)
+    def extract_tar(tar_file: str) -> None:
+        """Extract files from a tarball
+
+        This method extract files from a tarball
+
+        Parameters
+        ----------
+        tar_file
+            path/name of tarball
+
+        Returns
+        ----------
+        None
+        """
+
+        # extract files from tar file
+        tar_path = os.path.dirname(tar_file)
+        try:
+            with tarfile.open(tar_file, "r") as tarball:
+                tarball.extractall(path=tar_path)
+                logger.info(f"Extract {tarball.getnames()}")
+        except tarfile.ReadError as err:
+            if tarfile.is_tarfile(tar_file):
+                logger.error(f"FATAL ERROR: {tar_file} could not be read")
+                raise tarfile.ReadError(f"FATAL ERROR: unable to read {tar_file}")
+            else:
+                logger.info()
+        except tarfile.ExtractError as err:
+            logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
+            raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
 
 
 @logit(logger)
