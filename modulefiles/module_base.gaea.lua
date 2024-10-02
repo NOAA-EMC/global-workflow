@@ -38,10 +38,8 @@ load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 setenv("WGRIB2","wgrib2")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
---prepend_path("MODULEPATH", pathJoin("/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
---load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
-prepend_path("MODULEPATH", pathJoin("/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git/prepobs/v1.1.0", "modulefiles"))
-load(pathJoin("prepobs", "1.1.0"))
+prepend_path("MODULEPATH", pathJoin("/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 prepend_path("MODULEPATH", pathJoin("/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))

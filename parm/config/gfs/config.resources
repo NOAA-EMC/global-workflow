@@ -26,7 +26,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs marinebmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "marineanlinit prepoceanobs marinebmat marineanlvar ocnanalecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
     exit 1
 
 fi
@@ -38,6 +38,7 @@ echo "BEGIN: config.resources"
 case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128
+              # WCOSS2 nodes have 512GB of RAM, but only 500GB are reservable
               # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
@@ -54,12 +55,12 @@ case ${machine} in
   "ORION")
               max_tasks_per_node=40
               # shellcheck disable=SC2034
-              mem_node_max="192GB"
+              mem_node_max="180GB"
     ;;
   "HERCULES")
               max_tasks_per_node=80
               # shellcheck disable=SC2034
-              mem_node_max="512GB"
+              mem_node_max="500GB"
     ;;
   "JET")
     case ${PARTITION_BATCH} in
@@ -145,10 +146,10 @@ export max_tasks_per_node
 case ${step} in
   "prep")
     walltime='00:30:00'
-    ntasks=4
-    tasks_per_node=2
+    ntasks=14
+    tasks_per_node=14
     threads_per_task=1
-    memory="40GB"
+    memory="${mem_node_max}"
     ;;
 
   "prepsnowobs")
@@ -505,7 +506,7 @@ case ${step} in
     memory="3072M"
     ;;
 
-  "ocnanalprep")
+  "marineanlinit")
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
@@ -540,7 +541,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "ocnanalrun")
+  "marineanlvar")
     ntasks=16
     case ${OCNRES} in
       "025")
@@ -631,7 +632,7 @@ case ${step} in
     ;;
 
 
-  "ocnanalchkpt")
+  "marineanlchkpt")
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
@@ -655,7 +656,7 @@ case ${step} in
     esac
     ;;
 
-  "ocnanalpost")
+  "marineanlfinal")
     walltime="00:30:00"
     ntasks=${max_tasks_per_node}
     threads_per_task=1
@@ -987,8 +988,8 @@ case ${step} in
     threads_per_task=1
     walltime_gdas="03:00:00"
     walltime_gfs="06:00:00"
-    ntasks=1
-    tasks_per_node=1
+    ntasks=4
+    tasks_per_node=4
     export memory="80G"
     ;;
 
