@@ -6,7 +6,7 @@ export jasper_ver=2.0.32
 export libpng_ver=1.6.37
 export zlib_ver=1.2.13
 export esmf_ver=8.5.0
-export fms_ver=2023.02.01
+export fms_ver=2023.04
 export cdo_ver=2.2.0
 export nco_ver=5.0.6
 
