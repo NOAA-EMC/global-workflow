@@ -167,6 +167,7 @@ def clean_empty_obsspaces(config, target, app='var'):
     # save cleaned yaml
     save_as_yaml(config, target)
 
+
 @logit(logger)
 def get_mom6_levels(ocnres: str) -> int:
     """
