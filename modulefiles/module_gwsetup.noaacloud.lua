@@ -4,13 +4,13 @@ Load environment to run GFS workflow setup scripts on noaacloud
 
 load(pathJoin("rocoto"))
 
-prepend_path("MODULEPATH", "/contrib/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/contrib/spack-stack-rocky8/spack-stack-1.6.0/envs/ue-intel/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/apps/modules/modulefiles")
+load("gnu")
+load("stack-intel")
+load("stack-intel-oneapi-mpi")
+unload("gnu")
 
-local stack_intel_ver=os.getenv("stack_intel_ver") or "2021.3.0"
-local python_ver=os.getenv("python_ver") or "3.10.3"
-
-load(pathJoin("stack-intel", stack_intel_ver))
-load(pathJoin("python", python_ver))
 load("py-jinja2")
 load("py-pyyaml")
 load("py-numpy")
