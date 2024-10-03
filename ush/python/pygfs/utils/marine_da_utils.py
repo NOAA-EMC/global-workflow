@@ -176,16 +176,16 @@ def get_mom6_levels(ocnres: str) -> int:
     and requires the number of levels in the configuration. I have been told this will be changed in the future.
     """
 
-    # get the number of vertical levels in MOM6 according to the horizontal resolution
-    if ocnres == '500':
-        nlev = 25
-    elif ocnres == '100':
-        nlev = 75
-    elif ocnres == '050':
-        nlev = 75
-    elif ocnres == '025':
-        nlev = 75
-    else:
-        raise ValueError("FATAL ERROR: Invalid ocnres value. Aborting.")
+    # Currently implemented resolutions
+    ocnres_to_nlev = {
+        '500': 25,
+        '100': 75,
+        '050': 75,
+        '025': 75
+    }
+    try:
+        nlev = ocnres_to_nlev.get(ocnres)
+    except KeyError:
+        raise KeyError("FATAL ERROR: Invalid ocnres value. Aborting.")
 
     return nlev
