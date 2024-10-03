@@ -1,0 +1,10 @@
+--- ufs_noaacloud.intel.lua	2024-10-03 15:54:33.334583588 +0000
++++ ufs_model.fd/modulefiles/ufs_noaacloud.intel.lua	2024-10-03 16:11:28.534275972 +0000
+@@ -3,7 +3,6 @@
+ ]])
+ 
+ prepend_path("MODULEPATH", "/contrib/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core")
+-prepend_path("MODULEPATH", "/contrib/spack-stack/spack-stack-1.6.0/envs/upp-addon-env/install/modulefiles/Core")
+ 
+ stack_intel_ver=os.getenv("stack_intel_ver") or "2021.3.0"
+ load(pathJoin("stack-intel", stack_intel_ver))
