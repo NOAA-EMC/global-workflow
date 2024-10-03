@@ -43,6 +43,8 @@ class MarineLETKF(Analysis):
                             'soca',
                             'localensembleda',
                             _letkf_yaml_file]
+       # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
+        _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
 
         self.task_config.WINDOW_MIDDLE = self.task_config.current_cycle
         self.task_config.WINDOW_BEGIN = self.task_config.current_cycle - _half_assim_freq
@@ -50,8 +52,9 @@ class MarineLETKF(Analysis):
         self.task_config.letkf_yaml_file = _letkf_yaml_file
         self.task_config.mom_input_nml_tmpl = os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
         self.task_config.mom_input_nml = os.path.join(self.task_config.DATA, 'mom_input.nml')
-        self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs')
-
+        self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs') 
+        self.task_config.ENSPERT_RELPATH = _enspert_relpath
+ 
     @logit(logger)
     def initialize(self):
         """Method initialize for ocean and sea ice LETKF task
@@ -80,6 +83,8 @@ class MarineLETKF(Analysis):
                 'COMOUT_ICE_LETKF',
                 'COMOUT_OCEAN_LETKF',
                 'DATA',
+                'ENSPERT_RELPATH',
+                'GDUMP_ENS',
                 'NMEM_ENS',
                 'PARMgfs',
                 'ROTDIR',
@@ -90,7 +95,7 @@ class MarineLETKF(Analysis):
         stageconf.RUN = 'enkfgdas'
 
         # stage ensemble background files
-        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.SOCA_ENS_BKG_STAGE_YAML_TMPL, stageconf)
+        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, stageconf)
         FileHandler(soca_ens_bkg_stage_list).sync()
 
         # stage letkf-specific files
