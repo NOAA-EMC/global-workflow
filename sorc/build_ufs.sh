@@ -43,7 +43,10 @@ CLEAN_AFTER=NO
 
 #TODO temp patch for build update for noaacload in advance of updating ufs_module.fd repo for global-workflow building
 if [[ "${MACHINE_ID}" == "noaacloud" ]] ; then
-    patch -R ufs_model.fd/modulefiles/ufs_noaacloud.intel.lua ufs_noaacloud.intel.diff
+    patched=$(grep upp-addon-env modulefiles/ufs_noaacloud.intel.lua; echo $?)
+    if [[ ${patched} == "1" ]] ; then
+       patch -R modulefiles/ufs_noaacloud.intel.lua ../ufs_noaacloud.intel.diff
+    fi   
 fi
 
 BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
