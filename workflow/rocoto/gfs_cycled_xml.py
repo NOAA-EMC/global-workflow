@@ -50,9 +50,9 @@ class GFSCycledRocotoXML(RocotoXML):
                     interval_metp_str = timedelta_to_HMS(interval_metp)
                 else:
                     # Use same cycledef as gfs if there is no more than one per day
-                    sdate_metp_str = sdate_gfs.strftime("%Y%m%d%H%M")
-                    edate_metp_str = edate_gfs.strftime("%Y%m%d%H%M")
-                    interval_metp_str = timedelta_to_HMS(interval_gfs)
+                    sdate_metp_str = sdate_gfs_str
+                    edate_metp_str = edate_gfs_str
+                    interval_metp_str = interval_gfs_str
 
                 strings.append(f'\t<cycledef group="metp">{sdate_metp_str} {edate_metp_str} {interval_metp_str}</cycledef>')
                 strings.append(f'\t<cycledef group="last_gfs">{edate_gfs_str} {edate_gfs_str} 24:00:00</cycledef>')
