@@ -16,6 +16,9 @@ source "${HOMEgfs}/ush/module-setup.sh"
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
+# Source versions file for runtime
+source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
+
 case "${MACHINE_ID}" in
   "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4" | "noaacloud")
     module load "module_base.${MACHINE_ID}"
@@ -24,9 +27,6 @@ case "${MACHINE_ID}" in
     echo "WARNING: UNKNOWN PLATFORM"
     ;;
 esac
-
-# Source versions file for runtime
-source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
 
 module list
 
