@@ -6,3 +6,4 @@ source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/contrib/spack-stack/spack-stack-${spack_stack_ver}/envs/gsi-addon-env/install/modulefiles/Core"
 
 export cdo_ver=2.2.0
+export g2tmpl_ver=1.10.2
