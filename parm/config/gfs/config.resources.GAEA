@@ -3,6 +3,11 @@
 # Gaea-specific job resources
 
 case ${step} in
+  "prep")
+    # Run on two nodes (requires ~400GB total)
+    tasks_per_node=7
+    ;;
+
   "eobs")
     # The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details

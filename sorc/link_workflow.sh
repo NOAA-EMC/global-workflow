@@ -73,7 +73,7 @@ case "${machine}" in
   "hera")     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
   "orion")    FIX_DIR="/work/noaa/global/glopara/fix" ;;
   "hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
-  "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
+  "jet")      FIX_DIR="/lfs5/HFIP/hfv3gfs/glopara/FIX/fix" ;;
   "s4")       FIX_DIR="/data/prod/glopara/fix" ;;
   "gaea")     FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
   "noaacloud") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
@@ -275,7 +275,6 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   done
 fi
 
-
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
 #------------------------------
@@ -372,6 +371,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "gdas_incr_handler.x" \
                        "gdas_obsprovider2ioda.x" \
                        "gdas_socahybridweights.x" \
+                       "gdassoca_obsstats.x" \
                        "gdasapp_land_ensrecenter.x" \
                        "bufr2ioda.x" \
                        "calcfIMS.exe" \
