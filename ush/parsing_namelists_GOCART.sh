@@ -44,6 +44,7 @@ GOCART_namelists() {
         cat "${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none}" ; \
         echo "%%" ; \
       } > "${DATA}/AERO_ExtData.rc"
+      # shellcheck disable=SC2320
       status=$?
       if (( status != 0 )); then exit "${status}"; fi
     fi
