@@ -8,6 +8,7 @@ echo "BEGIN: config.repair_replay"
 
 export varlist_FLXacc03="${PARMgfs}/product/gefs_parmlist_FLXacc03.parm" # Parameter table for f03 acc/ave/min/max variables (PSL data)
 export varlist_masteracc06="${PARMgfs}/product/gefs_parmlist_masteracc06.parm" # Parameter table for f06 acc/ave/min/max variables
+export varlist_masteracc03="${PARMgfs}/product/gefs_parmlist_masteracc03.parm" # Parameter table for f06 acc/ave/min/max variables
 
 . "${EXPDIR}/config.resources" repair_replay
 
