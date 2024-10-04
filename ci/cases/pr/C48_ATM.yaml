@@ -8,6 +8,6 @@ arguments:
   resdetatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2021032312
-  edate: 2021032312
+  idate: 2024010112
+  edate: 2024010112
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
