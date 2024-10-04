@@ -23,4 +23,6 @@ fcst:
   reforecast: "YES"
   FHZER: 6
   POST_SFS: "NO"
+  TYPE: "nh"
+  MONO: "non-mono"
 

@@ -98,13 +98,13 @@ case "${fv3_res}" in
         export DELTIM=600
         export layout_x=2
         export layout_y=2
-        export layout_x_gfs=2
-        export layout_y_gfs=2
+        export layout_x_gfs=4
+        export layout_y_gfs=4
         export nthreads_fv3=1
         export nthreads_fv3_gfs=1
         export nthreads_ufs=1
         export nthreads_ufs_gfs=1
-        export xr_cnvcld=".false."  # Do not pass conv. clouds to Xu-Randall cloud fraction
+        export xr_cnvcld=".true."  # Pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="20.0,2.5,1.0,1.0"   # settings for GSL drag suite
         export knob_ugwp_tauamp=3.0e-3      # setting for UGWPv1 non-stationary GWD
@@ -131,6 +131,7 @@ case "${fv3_res}" in
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="10.0,3.5,1.0,1.0"   # settings for GSL drag suite
         export knob_ugwp_tauamp=1.5e-3      # setting for UGWPv1 non-stationary GWD
+        export xr_cnvcld=".true."  # Pass conv. clouds to Xu-Randall cloud fraction
         export k_split=2
         export n_split=4
         export tau=6.0
