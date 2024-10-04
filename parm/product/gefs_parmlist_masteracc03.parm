@@ -1,0 +1,42 @@
+:TSNOWP
+:DLWRF:surface
+:ULWRF:surface
+:DSWRF:surface
+:USWRF:surface
+:USWRF:top
+:ULWRF:top
+:UFLX
+:VFLX
+:SHTFL
+:LHTFL
+:PRATE
+:CPRAT
+:ALBDO
+:GFLUX
+:U-GWD
+:V-GWD
+:TCDC:entire
+:TCDC:boundary
+:HCDC:high cloud layer:182-185 min
+:LCDC:low cloud layer:182-185 min
+:MCDC:middle cloud layer:182-185 min
+:APCP
+:ACPCP
+:NCPCP
+:TMIN
+:TMAX
+:DUVB
+:CDUVB
+:CWORK
+:SNOHF
+:SNOWC
+:WATR
+:TMP:middle cloud top
+:TMP:low cloud top
+:TMP:high cloud top
+:PRES:high cloud top
+:PRES:middle cloud top
+:PRES:low cloud top
+:PRES:high cloud bottom
+:PRES:middle cloud bottom
+:PRES:low cloud bottom
