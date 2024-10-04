@@ -21,5 +21,5 @@ if __name__ == '__main__':
     AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlsol')
 
     # Initialize and execute JEDI ensemble DA analysis in solver mode
-    AtmEnsAnl.initialize_jedi()
+    AtmEnsAnl.jedi.initialize(AtmEnsAnl.task_config)
     AtmEnsAnl.execute(config.APRUN_ATMENSANLSOL, ['fv3jedi', 'localensembleda'])

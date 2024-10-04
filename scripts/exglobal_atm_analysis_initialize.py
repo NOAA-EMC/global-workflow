@@ -23,5 +23,5 @@ if __name__ == '__main__':
     AtmAnl = AtmAnalysis(config, 'atmanlvar')
 
     # Initialize JEDI variational analysis
-    AtmAnl.initialize_jedi()
-    AtmAnl.initialize_analysis()
+    AtmAnl.jedi.initialize(AtmAnl.task_config)
+    AtmAnl.initialize()

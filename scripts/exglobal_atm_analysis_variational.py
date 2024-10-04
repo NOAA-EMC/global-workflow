@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmAnl = AtmAnalysis(config, 'atmanlvar')
 
     # Execute JEDI variational analysis
-    AtmAnl.execute(config.APRUN_ATMANLVAR, ['fv3jedi', 'variational'])
+    AtmAnl.jedi.execute(config.APRUN_ATMANLVAR, ['fv3jedi', 'variational'])

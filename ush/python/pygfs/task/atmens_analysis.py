@@ -74,45 +74,15 @@ class AtmEnsAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create JEDI object
-        self.jedi = Jedi(self.task_config, yaml_name)
+        self.jedi = Jedi(self.task_config.DATA, self.task_config.JEDIEXE, yaml_name)
 
     @logit(logger)
-    def initialize_jedi(self):
-        """Initialize JEDI application
-
-        This method will initialize a JEDI application used in the global atmens analysis.
-        This includes:
-        - generating and saving JEDI YAML config
-        - linking the JEDI executable
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        # get JEDI config and save to YAML file
-        logger.info(f"Generating JEDI config: {self.jedi.yaml}")
-        self.jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
-
-        # save JEDI config to YAML file
-        logger.info(f"Writing JEDI config to YAML file: {self.jedi.yaml}")
-        save_as_yaml(self.jedi.config, self.jedi.yaml)
-
-        # link JEDI-to-FV3 increment converter executable
-        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
-        self.jedi.link_exe(self.task_config)
-
-    @logit(logger)
-    def initialize_analysis(self) -> None:
+    def initialize(self) -> None:
         """Initialize a global atmens analysis
 
         This method will initialize a global atmens analysis.
         This includes:
+        - initialize JEDI ensemble DA application
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -128,19 +98,21 @@ class AtmEnsAnalysis(Task):
         ----------
         None
         """
-        super().initialize()
+
+        # initialize JEDI ensemble DA application
+        logger.info(f"Initializing JEDI ensemble DA application")
+        self.jedi.initialize(self.task_config)
 
         # stage observations
-        logger.info(f"Staging list of observation files generated from JEDI config")
-        obs_dict = self.jedi.get_obs_dict(self.task_config)
+        logger.info(f"Staging list of observation files")
+        obs_dict = self.jedi.get_config(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
-        logger.info(f"Staging list of bias correction files generated from JEDI config")
-        self.task_config.VarBcDir = f"{self.task_config.COM_ATMOS_ANALYSIS_PREV}"
-        bias_file = f"rad_varbc_params.tar"
-        bias_dict = self.jedi.get_bias_dict(self.task_config, bias_file)
+        logger.info(f"Staging list of bias correction files")
+        bias_dict = self.jedi.get_config(self.task_config, 'atm_bias_staging')
+        bias_dict['copy'] = jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
@@ -174,30 +146,6 @@ class AtmEnsAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
-
-    @logit(logger)
-    def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
-        """Run JEDI executable
-
-        This method will run JEDI executables for the global atmens analysis
-
-        Parameters
-        ----------
-        aprun_cmd : str
-           Run command for JEDI application on HPC system
-        jedi_args : List
-           List of additional optional arguments for JEDI application
-        Returns
-        ----------
-        None
-        """
-
-        if jedi_args:
-            logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
-        else:
-            logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
-
-        self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
 
     @logit(logger)
     def finalize(self) -> None:

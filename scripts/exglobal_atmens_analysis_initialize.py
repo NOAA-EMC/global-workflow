@@ -26,5 +26,5 @@ if __name__ == '__main__':
         AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlobs')
 
     # Initialize JEDI ensemble DA analysis
-    AtmEnsAnl.initialize_jedi()
-    AtmEnsAnl.initialize_analysis()
+    AtmEnsAnl.jedi.initialize(AtmEnsAnl.task_config)
+    AtmEnsAnl.initialize()

@@ -6,8 +6,7 @@ import gzip
 import tarfile
 from logging import getLogger
 from pprint import pformat
-from typing import Optional, Dict, Any
-
+from typing import Any, Dict, List, Optional
 from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
@@ -74,45 +73,15 @@ class AtmAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create JEDI object
-        self.jedi = Jedi(self.task_config, yaml_name)
+        self.jedi = Jedi(self.task_config.DATA, self.task_config.JEDIEXE, yaml_name)
 
     @logit(logger)
-    def initialize_jedi(self):
-        """Initialize JEDI application
-
-        This method will initialize a JEDI application used in the global atm analysis.
-        This includes:
-        - generating and saving JEDI YAML config
-        - linking the JEDI executable
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        # get JEDI-to-FV3 increment converter config and save to YAML file
-        logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
-        self.jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
-
-        # save JEDI config to YAML file
-        logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
-        save_as_yaml(self.jedi.config, self.jedi.yaml)
-
-        # link JEDI executable
-        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
-        self.jedi.link_exe(self.task_config)
-
-    @logit(logger)
-    def initialize_analysis(self) -> None:
+    def initialize(self) -> None:
         """Initialize a global atm analysis
 
         This method will initialize a global atm analysis.
         This includes:
+        - initializing JEDI variational application
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -130,28 +99,22 @@ class AtmAnalysis(Task):
         None
         """
 
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI ensemble DA application")
+        self.jedi.initialize(self.task_config)
+        
         # stage observations
-        logger.info(f"Staging list of observation files generated from JEDI config")
-        jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
-        jcb_config.update(parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config))
-        jcb_config['algorithm'] = 'atm_obs_staging'
-        obs_dict = render(jcb_config)
+        logger.info(f"Staging list of observation files")
+        obs_dict = self.jedi.get_config(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
-        # Test
-        jcb_config = {}
-        jcb_config = parse_j2yaml(self.task_config.JCB_BASE_YAML, self.task_config)
-        jcb_config.update(parse_j2yaml(self.task_config.JCB_ALGO_YAML, self.task_config))
-        jcb_config['algorithm'] = 'atm_bias_staging'
-        bias_dict = render(jcb_config)
-        logger.debug(f"foo:\n{pformat(bias_dict)}")
-        
-        # stage observations
-        logger.info(f"Staging list of observation files generated from JEDI config")
-        obs_dict = self.jedi.get_obs_dict(self.task_config)
-        FileHandler(obs_dict).sync()
-        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
+        # stage bias corrections
+        logger.info(f"Staging list of bias correction files")
+        bias_dict = self.jedi.get_config(self.task_config, 'atm_bias_staging')
+        bias_dict['copy'] = jedi.remove_redundant(bias_dict['copy'])
+        FileHandler(bias_dict).sync()
+        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files generated from JEDI config")
@@ -159,7 +122,7 @@ class AtmAnalysis(Task):
         bias_file = f"rad_varbc_params.tar"
         bias_dict = self.jedi.get_bias_dict(self.task_config, bias_file)
         FileHandler(bias_dict).sync()
-        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        logger.debug(f"Bias correction files bar2:\n{pformat(bias_dict)}")
 
         # extract bias corrections
         tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
@@ -207,31 +170,6 @@ class AtmAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
-
-    @logit(logger)
-    def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
-        """Run JEDI executable
-
-        This method will run JEDI executables for the global atm analysis
-
-        Parameters
-        ----------
-        aprun_cmd : str
-           Run command for JEDI application on HPC system
-        jedi_args : List
-           List of additional optional arguments for JEDI application
-
-        Returns
-        ----------
-        None
-        """
-
-        if jedi_args:
-            logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
-        else:
-            logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
-
-        self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
 
     @logit(logger)
     def finalize(self) -> None:
