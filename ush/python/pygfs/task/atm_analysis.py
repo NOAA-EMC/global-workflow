@@ -98,10 +98,6 @@ class AtmAnalysis(Task):
         ----------
         None
         """
-
-        # initialize JEDI variational application
-        logger.info(f"Initializing JEDI ensemble DA application")
-        self.jedi.initialize(self.task_config)
         
         # stage observations
         logger.info(f"Staging list of observation files")
@@ -115,14 +111,6 @@ class AtmAnalysis(Task):
         bias_dict['copy'] = jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
-
-        # stage bias corrections
-        logger.info(f"Staging list of bias correction files generated from JEDI config")
-        self.task_config.VarBcDir = f"{self.task_config.COM_ATMOS_ANALYSIS_PREV}"
-        bias_file = f"rad_varbc_params.tar"
-        bias_dict = self.jedi.get_bias_dict(self.task_config, bias_file)
-        FileHandler(bias_dict).sync()
-        logger.debug(f"Bias correction files bar2:\n{pformat(bias_dict)}")
 
         # extract bias corrections
         tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")

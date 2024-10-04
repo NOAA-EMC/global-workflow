@@ -82,7 +82,6 @@ class AtmEnsAnalysis(Task):
 
         This method will initialize a global atmens analysis.
         This includes:
-        - initialize JEDI ensemble DA application
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -98,10 +97,6 @@ class AtmEnsAnalysis(Task):
         ----------
         None
         """
-
-        # initialize JEDI ensemble DA application
-        logger.info(f"Initializing JEDI ensemble DA application")
-        self.jedi.initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
