@@ -21,6 +21,46 @@ case ${step} in
     esac
     ;;
 
+  "eupd")
+    # update ntasks to 80 and threads_per_task to 20
+    case ${CASE} in
+      "C768")
+        export ntasks=80
+        export threads_per_task=20
+        ;;
+    esac
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "analcalc")
+    # decrease tasks_per_node 127 to 64
+    case ${CASE} in
+      "C768")
+        export tasks_per_node=64
+        ;;
+    esac
+    ;;
+
+  "upp")
+    # decrease tasks_per_node 120 to 60
+    case ${CASE} in
+      "C768")
+        export tasks_per_node=60
+        ;;
+    esac
+    ;;
+
+  "fcst")
+    # increase WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_{GDAS,GFS}
+    case ${CASE} in
+      "C768")
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GDAS=20
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=25
+        ;;
+      *)
+        ;;
+    esac
+    ;;
   *)
     ;;
 
