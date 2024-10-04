@@ -682,23 +682,8 @@ GOCART_rc() {
     [[ ${status} -ne 0 ]] && exit "${status}"
   fi
 
-  # copying GOCART configuration files
-  if [[  -n "${AERO_CONFIG_DIR}" ]]; then
-    ${NCP} "${AERO_CONFIG_DIR}"/*.rc "${DATA}"
-    status=$?
-    [[ ${status} -ne 0 ]] && exit "${status}"
-    # attempt to generate ExtData configuration file if not provided
-    if [[ ! -f "${DATA}/AERO_ExtData.rc" ]]; then
-      { \
-        echo "PrimaryExports%%" ; \
-        cat "${AERO_CONFIG_DIR}/ExtData.other" ; \
-        cat "${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none}" ; \
-        echo "%%" ; \
-      } > "${DATA}/AERO_ExtData.rc"
-      status=$?
-      if (( status != 0 )); then exit "${status}"; fi
-    fi
-  fi
+  source "${USHgfs}/parsing_namelists_GOCART.sh"
+  GOCART_namelists
 }
 
 GOCART_postdet() {
