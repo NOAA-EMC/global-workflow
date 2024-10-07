@@ -23,7 +23,7 @@ class AtmAnalysis(Task):
     Class for JEDI-based global atm analysis tasks
     """
     @logit(logger, name="AtmAnalysis")
-    def __init__(self, config: Dict[str, Any], yaml_name: Optional[str] = None):
+    def __init__(self, config: Dict[str, Any]):
         """Constructor global atm analysis task
 
         This method will construct a global atm analysis task.
@@ -35,8 +35,6 @@ class AtmAnalysis(Task):
         ----------
         config: Dict
             dictionary object containing task configuration
-        yaml_name: str, optional
-            name of YAML file for JEDI configuration
 
         Returns
         ----------
@@ -72,8 +70,35 @@ class AtmAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
-        # Create JEDI object
-        self.jedi = Jedi(self.task_config.DATA, self.task_config.JEDIEXE, yaml_name)
+        # Create JEDI variational object
+        jedi_config = AttrDict(
+            {
+                'exe_src': self.task_config.JEDIEXE_VAR,
+                'jcb_base_yaml': self.task_config.jcb_base_yaml,
+                'jcb_algo': None,
+                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_VAR,
+                'rundir': self.task_config.DATA,
+                'aprun_cmd': self.task_config.APRUN_ATMANLVAR,
+                'yaml_name': 'atmanlvar',
+                'jedi_args': ['fv3jedi', 'variational']
+            }
+        )
+        self.jedi_var = Jedi(jedi_config)
+
+        # Create JEDI FV3 increment converter object
+        jedi_config = AttrDict(
+            {
+                'exe_src': self.task_config.JEDIEXE_FV3INC,
+                'jcb_base_yaml': self.task_config.jcb_base_yaml,
+                'jcb_algo': self.task_config.JCB_ALGO_FV3INC
+                'jcb_algo_yaml': None,
+                'rundir': self.task_config.DATA,
+                'aprun_cmd': self.task_config.APRUN_ATMANLFV3INC,
+                'yaml_name': 'atmanlfv3inc',
+                'jedi_args': None
+            }
+        )
+        self.jedi_fv3inc = Jedi(jedi_config)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -81,7 +106,7 @@ class AtmAnalysis(Task):
 
         This method will initialize a global atm analysis.
         This includes:
-        - initializing JEDI variational application
+        - initialize JEDI applications
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -98,16 +123,24 @@ class AtmAnalysis(Task):
         ----------
         None
         """
+
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_var.initialize()
+
+        # initialize JEDI FV3 increment conversion application
+        logger.info(f"Initializing JEDI FV3 increment conversion application")
+        self.jedi_fv3inc.initialize()        
         
         # stage observations
         logger.info(f"Staging list of observation files")
-        obs_dict = self.jedi.get_config(self.task_config, 'atm_obs_staging')
+        obs_dict = self.jedi_var.render_jcb(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi.get_config(self.task_config, 'atm_bias_staging')
+        bias_dict = self.jedi_var.render_jcb(self.task_config, 'atm_bias_staging')
         bias_dict['copy'] = jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
@@ -115,7 +148,7 @@ class AtmAnalysis(Task):
         # extract bias corrections
         tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
         logger.info(f"Extract bias correction files from {tar_file}")
-        self.jedi.extract_tar(tar_file)
+        self.jedi_var.extract_tar(tar_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")

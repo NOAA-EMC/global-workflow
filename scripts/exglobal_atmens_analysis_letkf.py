@@ -18,7 +18,12 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis task
-    AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlletkf')
+    AtmEnsAnl = AtmEnsAnalysis(config)
 
+    # Initalize JEDI ensemble DA application
+    # Note: This is normally done in AtmEnsAnl.initialize(), but the that now
+    #       initializes the split observer-solver. This case is just for testing.
+    AtmEnsAnl.jedi_letkf.initialize()
+    
     # Execute the JEDI ensemble DA analysis
-    AtmEnsAnl.execute(config.APRUN_ATMENSANLLETKF, ['fv3jedi', 'localensembleda'])
+    AtmEnsAnl.jedi_letkf.execute()

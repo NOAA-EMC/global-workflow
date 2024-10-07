@@ -20,8 +20,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atm analysis task
-    AtmAnl = AtmAnalysis(config, 'atmanlvar')
+    AtmAnl = AtmAnalysis(config)
 
     # Initialize JEDI variational analysis
-    AtmAnl.jedi.initialize(AtmAnl.task_config)
     AtmAnl.initialize()

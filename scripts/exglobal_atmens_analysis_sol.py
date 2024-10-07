@@ -18,8 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis task
-    AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlsol')
+    AtmEnsAnl = AtmEnsAnalysis(config)
 
     # Initialize and execute JEDI ensemble DA analysis in solver mode
-    AtmEnsAnl.jedi.initialize(AtmEnsAnl.task_config)
-    AtmEnsAnl.execute(config.APRUN_ATMENSANLSOL, ['fv3jedi', 'localensembleda'])
+    AtmEnsAnl.jedi_letkf_sol.execute()

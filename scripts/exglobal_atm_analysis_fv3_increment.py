@@ -18,7 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atm analysis object
-    AtmAnl = AtmAnalysis(config, 'atmanlfv3inc')
+    AtmAnl = AtmAnalysis(config)
 
     # Initialize and execute FV3 increment converter
-    AtmAnl.jedi.execute(config.APRUN_ATMANLFV3INC)
+    AtmAnl.jedi_fv3inc.execute()

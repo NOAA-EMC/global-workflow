@@ -20,12 +20,11 @@ class Jedi:
     Class for initializing and executing JEDI applications
     """
     @logit(logger, name="Jedi")
-    def __init__(self, DATA: str, JEDIEXE: str, yaml_name: Optional[str]) -> None:
+    def __init__(self, config) -> None:
         """Constructor for JEDI objects
 
         This method will construct a Jedi object.
         This includes:
-        - save a copy of task_config for provenance
         - set the default JEDI YAML and executable names
         - set an empty AttrDict for the JEDI config
         - set the default directory for J2-YAML templates
@@ -34,28 +33,23 @@ class Jedi:
         ----------
         task_config: AttrDict
             Attribute-dictionary of all configuration variables associated with a GDAS task.
-        yaml_name: str, optional
-            Name of YAML file for JEDI configuration
 
         Returns
         ----------
         None
         """
-
-        _exe_name = os.path.basename(JEDIEXE)
-
-        self.exe_src = JEDIEXE
-        self.rundir = DATA
-        self.exe = os.path.join(DATA, _exe_name)
-        if yaml_name:
-            self.yaml = os.path.join(DATA, yaml_name + '.yaml')
-        else:
-            self.yaml = os.path.join(DATA, os.path.splitext(_exe_name)[0] + '.yaml')
-
-        # Initialize empty JEDI input config attribute-dictionary
-        self.config = AttrDict()
         
-#        self.j2tmpl_dir = os.path.join(task_config.PARMgfs, 'gdas')
+        # Create the configuration dictionary for JEDI object
+        self.jedi_config = config.deepcopy()
+        
+        local_dict = AttrDict(
+            {
+                'exe': os.path.join(self.config.run_dir, os.path.basename(self.config.exe_src)),
+                'yaml': os.path.join(DATA, config.yaml_name + '.yaml'),
+                'input_config': None
+            }
+        )
+        self.jedi_config.update(local_dict)
 
     @logit(logger)
     def initialize(self, task_config: AttrDict) -> None:
@@ -69,16 +63,16 @@ class Jedi:
         """
 
         # Render JEDI config dictionary
-        logger.info(f"Generating JEDI YAML config: {self.yaml}")
-        self.config = self.get_config(task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.config)}")
+        logger.info(f"Generating JEDI YAML config: {self.jedi_config.yaml}")
+        self.jedi_config.input_config = self.render_jcb(task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.jedi_config.input_config)}")
 
         # Save JEDI config dictionary to YAML in run directory
-        logger.debug(f"Writing JEDI YAML config to: {self.yaml}")
-        save_as_yaml(self.config, self.yaml)
+        logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.yaml}")
+        save_as_yaml(self.jedi_config.input_config, self.jedi_config.yaml)
 
         # Link JEDI executable to run directory
-        logger.info(f"Linking JEDI executable {self.exe_src} to {self.exe}")
+        logger.info(f"Linking JEDI executable {self.jedi_config.exe_src} to {self.jedi_config.exe}")
         self.link_exe()
         
     @logit(logger)
@@ -100,12 +94,12 @@ class Jedi:
 
         chdir(self.rundir)
 
-        exec_cmd = Executable(aprun_cmd)
-        exec_cmd.add_default_arg(self.exe)
-        if jedi_args:
-            for arg in jedi_args:
+        exec_cmd = Executable(self.jedi_config.aprun_cmd)
+        exec_cmd.add_default_arg(self.jedi_config.exe)
+        if self.jedi_config.jedi_args:
+            for arg in self.jedi_config.jedi_args:
                 exec_cmd.add_default_arg(arg)
-        exec_cmd.add_default_arg(self.yaml)
+        exec_cmd.add_default_arg(self.jedi_config.yaml)
 
         logger.info(f"Executing {exec_cmd}")    
         try:
@@ -116,7 +110,7 @@ class Jedi:
             raise WorkflowException(f"FATAL ERROR: An error occurred during execution of {exec_cmd}")
 
     @logit(logger)
-    def get_config(self, task_config: AttrDict, algorithm: Optional[str] = None) -> AttrDict:
+    def render_jcb(self, task_config: AttrDict, algorithm: Optional[str] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
         Parameters
@@ -125,19 +119,24 @@ class Jedi:
             Dictionary of all configuration variables associated with a GDAS task.
         algorithm (optional) : str
             Name of the algorithm used to generate the JEDI configuration dictionary.
-            It will override the algorithm set in the task_config.JCB_ALGO_YAML file.
+            It will override the algorithm set in the jedi_config.jcb_algo_yaml file.
 
         Returns
         ----------
         None
-        """
+        """       
 
+        if not self.jedi_config.jcb_algo_yaml and not.algorithm:
+            logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
+            logger.error(f"FATAL ERROR: JEDI config must contain jcb_algo_yaml or algorithm be
+                          specified as an input to jedi.render_jcb")
+        
         # Fill JCB base YAML template and build JCB config dictionary
-        jcb_config = parse_j2yaml(task_config.JCB_BASE_YAML, task_config)
+        jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
-        if 'JCB_ALGO_YAML' in task_config.keys():
-            jcb_config.update(parse_j2yaml(task_config.JCB_ALGO_YAML, task_config))
+        if self.jedi_config.jcb_algo_yaml:
+            jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
 
         # Set algorithm in JCB config dictionary or override the one set by JCB_ALGO_YAML
         if algorithm:
@@ -164,9 +163,8 @@ class Jedi:
         # TODO: linking is not permitted per EE2.
         # Needs work in JEDI to be able to copy the exec. [NOAA-EMC/GDASApp#1254]
         logger.warn("Linking is not permitted per EE2.")
-        if os.path.exists(self.exe):
-            rm_p(self.exe)
-        os.symlink(self.exe_src, self.exe)
+        if not os.path.exists(self.jedi_config.exe):
+            os.symlink(self.jedi_config.exe_src, self.jedi_config.exe)
 
     @staticmethod
     @logit(logger)
@@ -224,6 +222,7 @@ class Jedi:
             logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
             raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
 
+# TODO: remove since no longer used 
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """

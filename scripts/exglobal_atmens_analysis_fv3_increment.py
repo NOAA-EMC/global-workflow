@@ -18,8 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis object
-    AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlfv3inc')
+    AtmEnsAnl = AtmEnsAnalysis(config)
 
     # Initialize and execute JEDI FV3 increment converter
-    AtmEnsAnl.initialize_jedi()
-    AtmEnsAnl.execute(config.APRUN_ATMENSANLFV3INC)
+    AtmEnsAnl.jedi_fv3inc.execute()
