@@ -174,6 +174,16 @@ def get_mom6_levels(ocnres: str) -> int:
     Temporary function that returns the number of vertical levels in MOM6 given the horizontal resolution.
     This is requiered by the diffusion saber block that now makes use of oops::util::FieldSetHelpers::writeFieldSet
     and requires the number of levels in the configuration. I have been told this will be changed in the future.
+    
+    Parameters
+    -----------
+    ocnres: str
+        Input resolution for ocean in str format. e.g. '500', '100', '050', '025'
+        
+   Returns
+   -------
+   nlev: int
+       number of levels in the ocean model given an input resolution
     """
 
     # Currently implemented resolutions
