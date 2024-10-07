@@ -21,4 +21,4 @@ aero_emissions:
         {% endfor %}
     data_out:
       copy:
-        - ["{{ DATA }}/gefs_blended_emissions.{{ current_cycle | strftime('%Y%m%d') }}.nc", "{{ COMOUT_CHEM_HISTORY }}/{{ RUN }}.{{ current_cycle | strftime('%Y%m%d') }}.gefs_blended_emissions.nc"]
+        - ["{{ DATA }}/{{ RUN }}_blended_emissions.{{ current_cycle | to_YMD }}.nc", "{{ COMOUT_CHEM_HISTORY }}/{{ RUN }}.{{ current_cycle | to_YMD }}.{{ RUN }}_blended_emissions.nc"]
