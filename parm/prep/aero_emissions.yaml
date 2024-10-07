@@ -8,7 +8,7 @@ aero_emissions:
     qfed_version: '006'                            # qfed version
     species: [ 'so2','oc','bc' ]                   # species to be used
     historical: False                              # set to true to just use true data for the given day
-    data:
+    data_in:
       mkdir:
         - "{{ DATA }}"
         - "{{ COMOUT_CHEM_HISTORY}}"
