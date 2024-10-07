@@ -4,7 +4,9 @@ GFS V16.3.20 RELEASE NOTES
 PRELUDE
 -------
 
-The upstream OBSPROC package is updated to v1.3. Along with this, the GFS is switching to use the AFWA global snow file due to the hemispheric snow files being phased out.
+The upstream OBSPROC package is updated to v1.3. Along with this are the following companion updates:
+* workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
+* updated GSI code and convinfo file for saildrone observations
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -26,7 +28,7 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.3.1   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.19 | Andrew.Collard@noaa.gov |
+| GSI       | gfsda.v16.3.20 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
 | WAFS      | gfs_wafs.v6.3.3 | Yali.Mao@noaa.gov |
@@ -56,6 +58,7 @@ SORC CHANGES
 ------------
 
 * New UFS_UTILS tag - `emcsfc_snow2mdl` program and associated scripts are updated to process global AFWA snow data
+* New GSI tag - `src/gsi/read_prepbufr.f90` code update for new saildrone subtype
 
 JOBS CHANGES
 ------------
@@ -75,7 +78,7 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.19
+* GSI `global_convinfo.txt` fix update for saildrone
 
 MODULE CHANGES
 --------------
@@ -101,7 +104,7 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * emcsfc_sfc_prep job
+  * emcsfc_sfc_prep and analysis
 * Does this change require a 30-day evaluation?
   * No
 
@@ -129,3 +132,4 @@ PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
 George.Gayno@noaa.gov
+Andrew.Collard@noaa.gov
