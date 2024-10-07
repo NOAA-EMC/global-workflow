@@ -129,7 +129,7 @@ class Jedi:
         if not self.jedi_config.jcb_algo_yaml and not algorithm:
             logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
             logger.error(f"FATAL ERROR: JEDI config must contain jcb_algo_yaml or algorithm be
-                          specified as an input to jedi.render_jcb()")
+                         specified as an input to jedi.render_jcb()")
 
         # Fill JCB base YAML template and build JCB config dictionary
         jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
