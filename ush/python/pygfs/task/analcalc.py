@@ -134,12 +134,8 @@ class AnalysisCalc(Task):
         anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
         for fh in self.task_config.IAUFHRS:
             fh_dict['mkdir'].append(self.task_config.AnalCalcDir(fh))
-
             fh_dict['copy'].append([f"{hist_prefix}cubed_sphere_grid_atmf{format(fh, '03')}.nc",
-                                    f"{self.task_config.AnalCalcDir(fh)}/ges.atm.{format(fh, '02')}.nc"])
-            fh_dict['copy'].append([f"{hist_prefix}cubed_sphere_grid_sfcf{format(fh, '03')}.nc",
-                                    f"{self.task_config.AnalCalcDir(fh)}/ges.sfc.{format(fh, '02')}.nc"])
-
+                                    f"{self.task_config.AnalCalcDir(fh)}/ges.{format(fh, '02')}.nc"])
             if fh == 6:
                 for itile in range(6):
                     fh_dict['copy'].append([f"{anl_prefix}cubed_sphere_grid_atminc.tile{itile+1}.nc",
