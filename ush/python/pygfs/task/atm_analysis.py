@@ -130,8 +130,8 @@ class AtmAnalysis(Task):
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi_fv3inc.initialize()        
-        
+        self.jedi_fv3inc.initialize()
+
         # stage observations
         logger.info(f"Staging list of observation files")
         obs_dict = self.jedi_var.render_jcb(self.task_config, 'atm_obs_staging')

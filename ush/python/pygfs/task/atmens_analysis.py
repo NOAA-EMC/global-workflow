@@ -118,7 +118,7 @@ class AtmEnsAnalysis(Task):
 
         # Note: Since we now use the split observer-solvers, the following
         #       is only for testing.
-        
+
         # Create JEDI LETKF object
         jedi_config = AttrDict(
             {
@@ -133,7 +133,7 @@ class AtmEnsAnalysis(Task):
             }
         )
         self.jedi_letkf = Jedi(jedi_config)
-        
+
     @logit(logger)
     def initialize(self) -> None:
         """Initialize a global atmens analysis
@@ -157,11 +157,11 @@ class AtmEnsAnalysis(Task):
         None
         """
 
-        # initialize JEDI LETKF observer application 
+        # initialize JEDI LETKF observer application
         logger.info(f"Initializing JEDI LETKF observer application")
         self.jedi_letkf_obs.initialize()
 
-        # initialize JEDI LETKF solver application 
+        # initialize JEDI LETKF solver application
         logger.info(f"Initializing JEDI LETKF solver application")
         self.jedi_letkf_sol.initialize()
 

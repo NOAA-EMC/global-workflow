@@ -38,10 +38,10 @@ class Jedi:
         ----------
         None
         """
-        
+
         # Create the configuration dictionary for JEDI object
         self.jedi_config = config.deepcopy()
-        
+
         local_dict = AttrDict(
             {
                 'exe': os.path.join(self.config.run_dir, os.path.basename(self.config.exe_src)),
@@ -74,7 +74,7 @@ class Jedi:
         # Link JEDI executable to run directory
         logger.info(f"Linking JEDI executable {self.jedi_config.exe_src} to {self.jedi_config.exe}")
         self.link_exe()
-        
+
     @logit(logger)
     def execute(self, aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
         """Execute JEDI application
@@ -101,7 +101,7 @@ class Jedi:
                 exec_cmd.add_default_arg(arg)
         exec_cmd.add_default_arg(self.jedi_config.yaml)
 
-        logger.info(f"Executing {exec_cmd}")    
+        logger.info(f"Executing {exec_cmd}")
         try:
             exec_cmd()
         except OSError:
@@ -124,16 +124,16 @@ class Jedi:
         Returns
         ----------
         None
-        """       
+        """
 
-        if not self.jedi_config.jcb_algo_yaml and not.algorithm:
+        if not self.jedi_config.jcb_algo_yaml and not algorithm:
             logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
             logger.error(f"FATAL ERROR: JEDI config must contain jcb_algo_yaml or algorithm be
-                          specified as an input to jedi.render_jcb")
-        
+                          specified as an input to jedi.render_jcb()")
+
         # Fill JCB base YAML template and build JCB config dictionary
         jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
-        
+
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
         if self.jedi_config.jcb_algo_yaml:
             jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
@@ -146,7 +146,7 @@ class Jedi:
         jedi_config = render(jcb_config)
 
         return jedi_config
-        
+
     @logit(logger)
     def link_exe(self) -> None:
         """Link JEDI executable to run directory
@@ -185,10 +185,10 @@ class Jedi:
         output_list = []
         for item in input_list:
             if item not in output_list:
-                output_list.append(item);
+                output_list.append(item)
 
         return output_list
-        
+
     @staticmethod
     @logit(logger)
     def extract_tar(tar_file: str) -> None:
@@ -222,7 +222,8 @@ class Jedi:
             logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
             raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
 
-# TODO: remove since no longer used 
+
+# TODO: remove since no longer used
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
