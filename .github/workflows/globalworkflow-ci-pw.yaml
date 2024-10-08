@@ -1,0 +1,80 @@
+name: gw-ci-aws
+
+on: [workflow_dispatch]
+
+# TEST_DIR contains 2 directories;
+# 1. HOMEgfs: clone of the global-workflow
+# 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
+# e.g. $> tree ./TEST_DIR
+# ./TEST_DIR
+# ├── HOMEgfs
+# └── RUNTESTS
+#     ├── COMROT
+#     │   └── ${pslot}
+#     └── EXPDIR
+#         └── ${pslot}
+env:
+  TEST_DIR: ${{ github.workspace }}/${{ github.run_id }}
+  MACHINE_ID: noaacloud
+
+jobs:
+  checkout-build-link:
+    runs-on: [self-hosted, aws, pw]
+    timeout-minutes: 600
+
+    steps:
+    - name: Checkout global-workflow
+      uses: actions/checkout@v4
+      with:
+        path: ${{ github.run_id }}/HOMEgfs  # This path needs to be relative
+
+    - name: Build components
+      run: |
+        cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
+        ./build_all.sh -j 8
+
+    - name: Link artifacts
+      run: |
+        cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
+        ./link_workflow.sh
+
+  create-experiments:
+    needs: checkout-build-link
+    runs-on: [self-hosted, aws, pw]
+    strategy:
+      matrix:
+        case: ["C48_ATM"]
+
+    steps:
+      - name: Create Experiments ${{ matrix.case }}
+        env:
+          HOMEgfs_PR: ${{ env.TEST_DIR }}/HOMEgfs
+          RUNTESTS: ${{ env.TEST_DIR }}/RUNTESTS
+          pslot: ${{ matrix.case }}.${{ github.run_id }}
+        run: |
+          cd ${{ env.TEST_DIR }}/HOMEgfs
+          source workflow/gw_setup.sh
+          source ci/platforms/config.noaacloud
+          ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
+
+  run-experiments:
+    needs: create-experiments
+    runs-on: [self-hosted, aws, pw]
+    strategy:
+      max-parallel: 2
+      matrix:
+        case: ["C48_ATM"]
+    steps:
+      - name: Run Experiment ${{ matrix.case }}
+        run: |
+          cd ${{ env.TEST_DIR }}/HOMEgfs
+          ./ci/scripts/run-check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }}
+
+  clean-up:
+    needs: run-experiments
+    runs-on: [self-hosted, aws, pw]
+    steps:
+      - name: Clean-up
+        run: |
+          cd ${{ github.workspace }}
+          rm -rf ${{ github.run_id }}

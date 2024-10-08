@@ -1,0 +1,91 @@
+name: pw-ci-hera
+
+on:
+  workflow_dispatch:
+
+# TEST_DIR contains 2 directories;
+# 1. HOMEgfs: clone of the global-workflow
+# 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
+# e.g. $> tree ./TEST_DIR
+# ./TEST_DIR
+# ├── HOMEgfs
+# └── RUNTESTS
+
+jobs:
+
+  checkout-build-link:
+    runs-on: [self-hosted, parallel-works, pw]
+    timeout-minutes: 600
+
+    env:
+      MACHINE_ID: hera
+
+    outputs:
+      TEST_DIR: ${{ steps.set-env.outputs.TEST_DIR }}
+
+    steps:
+
+    - name: Set environment variables
+      id: set-env
+      run: |
+        echo "TEST_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+        echo "::set-output name=TEST_DIR::/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/${{ github.run_id }}-${{ github.ref_name }}/${{ github.event.pull_request.number }}"
+
+    - name: Checkout global-workflow
+      run: |
+        ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+         mkdir -p ${{ env.TEST_DIR }}/HOMEgfs
+         cd ${{ env.TEST_DIR }}/HOMEgfs
+         git clone --branch ${{ github.ref_name }} https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git .
+         git submodule update --init --recursive
+        EOF
+
+    - name: Build components
+      run: |
+        ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+          cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
+          ./build_all.sh
+        EOF
+
+    - name: Link artifacts
+      run: |
+        ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+          cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
+          ./link_workflow.sh
+        EOF
+
+  create-experiments:
+    needs: checkout-build-link
+    runs-on: [self-hosted, parallel-works, pw]
+    strategy:
+      matrix:
+        case: ["C48_S2S", "C96_atm3DVar"]
+
+    steps:
+      - name: Create Experiments ${{ matrix.case }}
+        env:
+          HOMEgfs_PR: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
+          RUNTESTS: ${{ needs.checkout-build-link.outputs.TEST_DIR }}/RUNTESTS
+          pslot: ${{ matrix.case }}.${{ github.run_id }}
+        run: |
+          ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+            cd ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
+            source workflow/gw_setup.sh
+            source ci/platforms/${{ env.MACHINE_ID }}.sh
+            ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
+          EOF
+
+  run-experiments:
+    needs: create-experiments
+    runs-on: [self-hosted, parallel-works, pw]
+    strategy:
+      max-parallel: 2
+      matrix:
+        case: ["C48_S2S", "C96_atm3DVar"]
+    steps:
+      - name: Run Experiment ${{ matrix.case }}
+        run: |
+          ssh -t hfe01.fairmont.rdhpcs.noaa.gov << 'EOF'
+            cd ${{ needs.checkout-build-link.outputs.TEST_DIR }}/HOMEgfs
+            ./ci/scripts/run_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
+          EOF
