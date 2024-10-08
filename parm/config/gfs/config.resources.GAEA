@@ -4,15 +4,12 @@
 
 case ${step} in
   "prep")
-    # Run on two nodes (requires ~400GB total)
     tasks_per_node=7
     ;;
 
   "eobs")
-    # The number of tasks and cores used must be the same for eobs
-    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     case ${CASE} in
-      "C768" | "C384")
+      "C768")
         export tasks_per_node=50
         ;;
       *)
@@ -28,6 +25,8 @@ case ${step} in
         export ntasks=80
         export threads_per_task=20
         ;;
+      *)
+        ;;
     esac
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
@@ -38,6 +37,8 @@ case ${step} in
       "C768")
         export tasks_per_node=64
         ;;
+      *)
+        ;;
     esac
     ;;
 
@@ -47,6 +48,8 @@ case ${step} in
       "C768")
         export tasks_per_node=60
         ;;
+      *)
+        ;;
     esac
     ;;
 
@@ -54,8 +57,6 @@ case ${step} in
     # increase WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_{GDAS,GFS}
     case ${CASE} in
       "C768")
-        #export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GDAS=20
-        #export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=25
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GDAS=20
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=25
         (( WRTTASK_PER_GROUP_PER_THREAD_GDAS = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GDAS * 6 ))
@@ -64,9 +65,10 @@ case ${step} in
         export WRTTASK_PER_GROUP_PER_THREAD_GFS
         ;;
       *)
-        ;;
+        ;;  
     esac
     ;;
+
   *)
     ;;
 
