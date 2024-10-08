@@ -208,9 +208,9 @@ class Jedi:
     def extract_tar_from_fh_dict(fh_dict) -> None:
         """Extract tarballs from FileHandler input dictionary
 
-        This method extracts files from tarballs specified in a FileHander 
+        This method extracts files from tarballs specified in a FileHander
         input dictionary for the 'copy' action.
-        
+
         Parameters
         ----------
         fh_dict
@@ -220,7 +220,7 @@ class Jedi:
         ----------
         None
         """
-        
+
         for item in fh_dict['copy']:
             # Use the filename from the destination entry if it's a file path
             # Otherwise, it's a directory, so use the source entry filename
@@ -238,6 +238,8 @@ class Jedi:
                 else:
                     logger.error(f"FATAL ERROR: {tar_file} could not be read")
                     logger.error(f"FATAL ERROR: {tar_file} does not exist!")
+
+
 @logit(logger)
 def extract_tar(tar_file: str) -> None:
     """Extract files from a tarball
@@ -254,7 +256,7 @@ def extract_tar(tar_file: str) -> None:
     None
     """
 
-    # extract files from tar file        
+    # extract files from tar file
     tar_path = os.path.dirname(tar_file)
     try:
         with tarfile.open(tar_file, "r") as tarball:
