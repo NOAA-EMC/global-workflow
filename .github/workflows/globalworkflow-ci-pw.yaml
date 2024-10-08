@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - name: Checkout global-workflow
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
       with:
         path: ${{ github.run_id }}/HOMEgfs  # This path needs to be relative
 
