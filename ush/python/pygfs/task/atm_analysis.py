@@ -29,7 +29,7 @@ class AtmAnalysis(Task):
         This method will construct a global atm analysis task.
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
-        - instantiate the Jedi attribute object
+        - instantiate the Jedi attribute objects
 
         Parameters
         ----------
@@ -144,12 +144,7 @@ class AtmAnalysis(Task):
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # extract bias corrections
-        for item in bias_dict['copy']:
-            bias_file = os.path.basename(item[0])
-            if os.path.splitext(bias_file)[1] == '.tar':
-                tar_file = f"{os.path.dirname(item[1])}/{bias_file}"
-                logger.info(f"Extract bias correction files from {tar_file}")
-                Jedi.extract_tar(tar_file)
+        Jedi.extract_tar_from_fh_dict(bias_dict)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")

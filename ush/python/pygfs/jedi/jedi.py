@@ -25,14 +25,13 @@ class Jedi:
 
         This method will construct a Jedi object.
         This includes:
-        - set the default JEDI YAML and executable names
-        - set an empty AttrDict for the JEDI config
-        - set the default directory for J2-YAML templates
+        - create the jedi_config AttrDict and extend it with additional required entries
+        - save a coy of jedi_config
 
         Parameters
         ----------
-        task_config: AttrDict
-            Attribute-dictionary of all configuration variables associated with a GDAS task.
+        config: AttrDict
+            Attribute-dictionary of all configuration variables required for the Jedi class
 
         Returns
         ----------
@@ -58,9 +57,18 @@ class Jedi:
 
         This method will initialize a JEDI application.
         This includes:
-        - generating JEDI YAML config
-        - saving JEDI YAML config to run directory
+        - generating JEDI input YAML config
+        - saving JEDI input YAML config to run directory
         - linking the JEDI executable to run directory
+
+        Parameters
+        ----------
+        task_config: AttrDict
+            Attribute-dictionary of all configuration variables associated with a GDAS task.
+
+        Returns
+        ----------
+        None
         """
 
         # Render JEDI config dictionary
@@ -87,8 +95,7 @@ class Jedi:
 
         Returns
         ----------
-        jedi_config: AttrDict
-            Attribute-dictionary of JEDI configuration rendered from a template.
+        None
         """
 
         chdir(self.jedi_config.rundir)
@@ -122,7 +129,8 @@ class Jedi:
 
         Returns
         ----------
-        None
+        jedi_input_config: AttrDict
+            Attribute-dictionary of JEDI configuration rendered from a template.
         """
 
         # Fill JCB base YAML template and build JCB config dictionary
@@ -149,9 +157,9 @@ class Jedi:
                          "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
 
         # Generate JEDI YAML config by rendering JCB config dictionary
-        jedi_config = render(jcb_config)
+        jedi_input_config = render(jcb_config)
 
-        return jedi_config
+        return jedi_input_config
 
     @logit(logger)
     def link_exe(self) -> None:
@@ -197,37 +205,70 @@ class Jedi:
 
     @staticmethod
     @logit(logger)
-    def extract_tar(tar_file: str) -> None:
-        """Extract files from a tarball
+    def extract_tar_from_fh_dict(fh_dict) -> None:
+        """Extract tarballs from FileHandler input dictionary
 
-        This method extract files from a tarball
-
+        This method extracts files from tarballs specified in a FileHander 
+        input dictionary for the 'copy' action.
+        
         Parameters
         ----------
-        tar_file
-            path/name of tarball
+        fh_dict
+            Input dictionary for FileHandler
 
         Returns
         ----------
         None
         """
-
-        # extract files from tar file
-        tar_path = os.path.dirname(tar_file)
-        try:
-            with tarfile.open(tar_file, "r") as tarball:
-                tarball.extractall(path=tar_path)
-                logger.info(f"Extract {tarball.getnames()}")
-        except tarfile.ReadError as err:
-            if tarfile.is_tarfile(tar_file):
-                logger.error(f"FATAL ERROR: {tar_file} could not be read")
-                raise tarfile.ReadError(f"FATAL ERROR: unable to read {tar_file}")
+        
+        for item in fh_dict['copy']:
+            # Use the filename from the destination entry if it's a file path
+            # Otherwise, it's a directory, so use the source entry filename
+            if os.path.isfile(item[1]):
+                filename = os.path.basename(item[1])
             else:
-                logger.info()
-        except tarfile.ExtractError as err:
-            logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
-            raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
+                filename = os.path.basename(item[0])
 
+            # Extract if file is a tarball    
+            if os.path.splitext(filename)[1] == '.tar':
+                tar_file = f"{os.path.dirname(item[1])}/{filename}"
+                if os.path.isfile(tar_file):
+                    logger.info(f"Extract files from {tar_file}")
+                    extract_tar(tar_file)
+                else:
+                    logger.error(f"FATAL ERROR: {tar_file} could not be read")
+                    logger.error(f"FATAL ERROR: {tar_file} does not exist!")
+@logit(logger)
+def extract_tar(tar_file: str) -> None:
+    """Extract files from a tarball
+
+    This method extract files from a tarball
+
+    Parameters
+    ----------
+    tar_file
+        path/name of tarball
+
+    Returns
+    ----------
+    None
+    """
+
+    # extract files from tar file        
+    tar_path = os.path.dirname(tar_file)
+    try:
+        with tarfile.open(tar_file, "r") as tarball:
+            tarball.extractall(path=tar_path)
+            logger.info(f"Extract {tarball.getnames()}")
+    except tarfile.ReadError as err:
+        if tarfile.is_tarfile(tar_file):
+            logger.error(f"FATAL ERROR: {tar_file} could not be read")
+            raise tarfile.ReadError(f"FATAL ERROR: unable to read {tar_file}")
+        else:
+            logger.info()
+    except tarfile.ExtractError as err:
+        logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
+        raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
 
 # TODO: remove since no longer used
 @logit(logger)
