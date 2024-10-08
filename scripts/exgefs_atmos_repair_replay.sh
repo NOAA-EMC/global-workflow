@@ -15,27 +15,22 @@ oufile=${DATA}/gefs.t00z.master.grb2f0${fnh}
 infile=${COMIN_03}/GFSPRS.GrbF03
 if [[ -f "${infile}" ]]; then #check if input file exists before extraction
 
-  ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp ||true
-  ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null || true 
+  ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp || (err=1;err_chk)
+  ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null || (err=1;err_chk)
  
-  ${WGRIB2} "${infile}" | grep ":APCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp ||true
-  ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || true
+  ${WGRIB2} "${infile}" | grep ":APCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp || (err=1;err_chk)
+  ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || (err=1;err_chk)
 
-  ${WGRIB2} "${infile}" | grep ":ACPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp ||true
-  ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || true
+  ${WGRIB2} "${infile}" | grep ":ACPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp || (err=1;err_chk)
+  ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || (err=1;err_chk)
 
-  ${WGRIB2} "${infile}" | grep ":NCPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp ||true
-  ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || true
+  ${WGRIB2} "${infile}" | grep ":NCPCP:surface" | ${WGRIB2} -i "${infile}" -grib tmp || (err=1;err_chk)
+  ${WGRIB2} tmp -for "1:1" -append -grib  "${oufile}">/dev/null || (err=1;err_chk)
 
-  ${WGRIB2} "${infile}" | grep ":HCDC:high cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
-  ${WGRIB2} "${infile}" | grep ":MCDC:middle cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
-  ${WGRIB2} "${infile}" | grep ":LCDC:low cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+  ${WGRIB2} "${infile}" | grep ":HCDC:high cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || (err=1;err_chk)
+  ${WGRIB2} "${infile}" | grep ":MCDC:middle cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || (err=1;err_chk)
+  ${WGRIB2} "${infile}" | grep ":LCDC:low cloud layer:0" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || (err=1;err_chk)
 
-  count=$(${WGRIB2} "${oufile}" | wc -l) ||true
-  if [[ "${count}" -lt 7 ]] ; then
-    echo "FATAL ERROR: missing input variables"
-    export err=1; err_chk
-  fi
   rm tmp
 else
   echo "FATAL ERROR: ${infile} does not exist"
@@ -45,7 +40,7 @@ fi
 varlist=${varlist_FLXacc03} # Parameter table for f03 acc/ave/min/max variables (PSL data)
 infile=${COMIN_03}/GFSFLX.GrbF03
 if [[ -f "${infile}" ]]; then #check if input file exists before extraction
-    ${WGRIB2} "${infile}" | grep -F -f  "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || true
+	${WGRIB2} "${infile}" | grep -F -f  "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${oufile}">/dev/null || (err=1;err_chk)
 else
   echo "FATAL ERROR: ${infile} does not exist"
   export err=1; err_chk
