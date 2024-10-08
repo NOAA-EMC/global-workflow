@@ -8,8 +8,8 @@ echo "BEGIN: config.fit2obs"
 # Get task specific resources
 . "${EXPDIR}/config.resources" fit2obs
 
-export PRVT=${HOMEgfs}/fix/gsi/prepobs_errtable.global
-export HYBLEVS=${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt
+export PRVT=${FIXgfs}/gsi/prepobs_errtable.global
+export HYBLEVS=${FIXgfs}/am/global_hyblev.l${LEVS}.txt
 
 export VBACKUP_FITS=24
 export OUTPUT_FILETYPE="netcdf"

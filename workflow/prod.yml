@@ -113,17 +113,6 @@ suites:
                 jgfs_atmos_awips_f( 3,27,6 ):
                   edits:
                     TRDRUN: 'NO'
-            awips_g2:
-              tasks:
-                jgfs_atmos_awips_g2_f( 0,64,6 ):
-                  template: jgfs_atmos_awips_g2_master
-                  triggers:
-                  - task: jgfs_atmos_post_f( )
-                  edits:
-                    FHRGRP: '( )'
-                    FHRLST: 'f( )'
-                    FCSTHR: '( )'
-                    TRDRUN: 'YES'
             gempak:
               tasks:
                 jgfs_atmos_gempak:

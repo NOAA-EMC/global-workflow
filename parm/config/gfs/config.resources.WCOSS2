@@ -1,0 +1,70 @@
+#! /usr/bin/env bash
+
+# WCOSS2-specific job resources
+
+case ${step} in
+  "prep")
+    export is_exclusive=True
+    export memory="480GB"
+    ;;
+
+  "anal")
+    if [[ "${CASE}" == "C768" ]]; then
+        export threads_per_task=8
+        # Make ntasks a multiple of 16
+        export ntasks_gdas=784
+        export ntasks_gfs=832
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
+    ;;
+
+  "atmanlvar")
+    export tasks_per_node_gdas=48
+    export tasks_per_node_gfs=48   
+    export memory="400GB"
+    ;;
+
+  "atmensanlobs")
+    export tasks_per_node=48
+    export memory="400GB"
+    ;;
+
+  "fit2obs")
+    export tasks_per_node=3
+    ;;
+
+  "echgres")
+    export memory="200GB"
+    ;;
+
+  "arch" | "earc" | "getic")
+    declare -x "memory"="50GB"
+    ;;
+
+  "eupd")
+    case ${CASE} in
+      "C768" | "C384")
+        export ntasks=315
+        export threads_per_task=14
+        ;;
+      *)
+      ;;
+    esac
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "eobs")
+    case ${CASE} in
+      "C768" | "C384")
+        export tasks_per_node=50
+        ;;
+      *)
+        export tasks_per_node=40
+        ;;
+    esac
+    ;;
+
+  *)
+  ;;
+
+esac

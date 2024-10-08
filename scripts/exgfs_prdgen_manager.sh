@@ -6,7 +6,7 @@
 #  This script monitors the progress of the gfs_fcst job
 #
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 hour=00
 TEND=384

@@ -3,6 +3,14 @@ Common Errors Known Issues
 ==========================
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: Reserved Variables Causing Workflow Issues
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Several variables are reserved in the workflow and should not be used as environment variables in your shell. Some of the common ones include (but are not limited to):
+``HOMEgfs``, ``machine``, ``ROTDIR``, ``COMROT``, ``COMROOT``, ``COMOUT``, ``COMIN``, ``STMP``, ``PTMP``, ``DATAROOT``, ``DATA``, ``ACCOUNT``, ``PDY``, ``cyc``, ``RUN``, etc.
+If you are using any of these variables in your shell, you may encounter unexpected behavior in the workflow.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Error: "ImportError" message when running setup script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -36,10 +44,9 @@ Example::
 **Solution:** set TERM to "xterm" (bash: export TERM=xterm ; csh/tcsh: setenv TERM xterm)
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Issue: Directory name change for EnKF folder in COMROT
+Issue: Directory name change for EnKF folder in ROTDIR
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Issue:** The EnKF COMROT folders were renamed during the GFS v15 development process to remove the period between "enkf" and "gdas": enkf.gdas.$PDY → enkfgdas.$PDY
+**Issue:** The EnKF ROTDIR folders were renamed during the GFS v15 development process to remove the period between "enkf" and "gdas": enkf.gdas.$PDY → enkfgdas.$PDY
 
 **Fix:** Older tarballs on HPSS will have the older directory name with the period between 'enkf' and 'gdas'. Make sure to rename folder to 'enkfgdas.$PDY' after obtaining. Only an issue for the initial cycle.
-

@@ -18,17 +18,10 @@
 # Imported variables that must be passed in:
 #   DATA         - path to working directory
 #   pgmout       - string indicating path to for standard output file
-#   EXECSYND     - path to syndat executable directory
 #   TANK_TROPCY  - path to home directory containing tropical cyclone record
 #                  data base
 
-# Imported variables that can be passed in:
-#   jlogfile  - path to job log file (skipped over by this script if not
-#                 passed in)
-
-source "$HOMEgfs/ush/preamble.sh"
-
-EXECSYND=${EXECSYND:-${HOMESYND}/exec}
+source "${USHgfs}/preamble.sh"
 
 cd $DATA
 
@@ -51,8 +44,6 @@ hour=$(echo $CDATE10 | cut -c9-10)
 
 echo $PDYm1
 pdym1=$PDYm1
-
-#pdym1=$(sh $utilscript/finddate.sh $pdy d-1)
 
 echo " " >> $pgmout
 echo "Entering sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
@@ -123,7 +114,7 @@ fi
 
 [ -s jtwcbul ] && echo "Processing JTWC bulletin halfs into tcvitals records" >> $pgmout
 
-pgm=$(basename $EXECSYND/syndat_getjtbul.x)
+pgm=$(basename ${EXECgfs}/syndat_getjtbul.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -138,7 +129,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p ${EXECSYND}/${pgm} >> $pgmout 2> errfile
+time -p ${EXECgfs}/${pgm} >> $pgmout 2> errfile
 errget=$?
 ###cat errfile
 cat errfile >> $pgmout

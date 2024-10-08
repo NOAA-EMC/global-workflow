@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
+
+"${SCRgfs}/exglobal_cleanup.sh"
+status=$?
+(( status != 0 )) && exit "${status}"
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+# DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"
+# is removed in exglobal_cleanup.sh, nothing to do here.
+
+exit 0
+

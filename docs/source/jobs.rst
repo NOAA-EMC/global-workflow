@@ -18,9 +18,9 @@ An experimental run is different from operations in the following ways:
 
 * Addition steps in experimental mode:
 
-  - verification (vrfy)
-
   - archive (arch)
+
+  - cleanup (cleanup)
 
 Downstream jobs (e.g. awips, gempak, etc.) are not included in the diagram. Those jobs are not normally run in developmental tests.
 
@@ -70,8 +70,6 @@ Jobs in the GFS Configuration
 | prep              | Runs the data preprocessing prior to the analysis (storm relocation if needed and generation of prepbufr file).       |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | postN             | Runs the post processor.                                                                                              |
-+-------------------+-----------------------------------------------------------------------------------------------------------------------+
-| vrfy              | Runs the verification tasks.                                                                                          |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | waveinit          | Runs wave initialization step.                                                                                        |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+

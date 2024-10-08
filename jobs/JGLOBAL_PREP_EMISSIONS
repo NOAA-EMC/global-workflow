@@ -1,0 +1,35 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_emissions" -c "base prep_emissions"
+
+##############################################
+# Set variables used in the script
+##############################################
+# TODO: Set local variables used in this script e.g. GDATE may be needed for previous cycle
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# Generate COM variables from templates
+# TODO: Add necessary COMIN, COMOUT variables for this job
+
+###############################################################
+# Run relevant script
+EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRgfs}/exglobal_prep_emissions.py}
+${EXSCRIPT}
+status=$?
+(( status != 0 )) && ( echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}" )
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+exit 0

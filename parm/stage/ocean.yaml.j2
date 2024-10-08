@@ -1,0 +1,18 @@
+ocean:
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_OCEAN_RESTART_PREV_MEM = COMOUT_OCEAN_RESTART_PREV_MEM_list[imem] %}
+        - "{{ COMOUT_OCEAN_RESTART_PREV_MEM }}"
+        {% endfor %} # mem loop
+    copy:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_OCEAN_RESTART_PREV_MEM = COMOUT_OCEAN_RESTART_PREV_MEM_list[imem] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.MOM.res.nc", "{{ COMOUT_OCEAN_RESTART_PREV_MEM }}"]
+        {% if OCNRES == "025" %}
+        {% for nn in range(1, 4) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.MOM.res_{{ nn }}.nc", "{{ COMOUT_OCEAN_RESTART_PREV_MEM }}"]
+        {% endfor %}
+        {% endif %}
+        {% endfor %} # mem loop

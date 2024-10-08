@@ -1,0 +1,65 @@
+#! /usr/bin/env bash
+
+# S4-specific job resources
+
+case ${step} in
+  "prep")
+    # Run on two nodes for memory requirement
+    # This may not be enough memory.  Decrease tasks/node to 2 if necessary.
+    tasks_per_node=7
+    ;;
+
+  "anal")
+    case ${CASE} in
+      "C384")
+        #Some of the intermediate data can be lost if the number of tasks
+        #per node does not match the number of reserved cores/node.
+        #On the S4-s4 partition, this is accomplished by increasing the task
+        #count to a multiple of 32
+        if [[ ${PARTITION_BATCH} = "s4" ]]; then
+          export ntasks_gdas=416
+          export ntasks_gfs=416
+        fi
+        #S4 is small, so run this task with just 1 thread
+        export threads_per_task=1
+        export walltime_gdas="02:00:00"
+        export walltime_gfs="02:00:00"
+        ;;
+      "C192" | "C96" | "C48")
+        export threads_per_task=4
+        if [[ ${PARTITION_BATCH} == "s4" ]]; then
+          export ntasks_gdas=88
+          export ntasks_gfs=88
+        elif [[ ${PARTITION_BATCH} == "ivy" ]]; then
+          export ntasks_gdas=90
+          export ntasks_gfs=90
+        fi
+        ;;
+      *)
+        ;;
+    esac
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "eobs")
+    # The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+    # For S4, this is accomplished by running 10 tasks/node
+    export tasks_per_node=10
+    ;;
+
+  "eupd")
+    if [[ "${CASE}" == "C384" ]]; then
+      export ntasks=160
+      export threads_per_task=2
+    fi
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "ediag")
+     export memory="${mem_node_max}"
+  ;;
+
+  *)
+    ;;
+esac

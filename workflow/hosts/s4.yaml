@@ -1,9 +1,9 @@
 BASE_GIT: '/data/prod/glopara/git'
 DMPDIR: '/data/prod/glopara/dump'
-BASE_CPLIC: '/data/prod/glopara/coupled_ICs'
+BASE_DATA: '/data/prod/glopara'
+BASE_IC: '/data/prod/glopara/coupled_ICs'
 PACKAGEROOT: '/data/prod/glopara/nwpara'
-COMROOT: '/data/prod/glopara/com'
-COMINsyn: '${COMROOT}/gfs/prod/syndat'
+COMINsyn: '/data/prod/glopara/com/gfs/prod/syndat'
 HOMEDIR: '/data/users/${USER}'
 STMP: '/scratch/users/${USER}'
 PTMP: '/scratch/users/${USER}'
@@ -14,7 +14,9 @@ QUEUE: s4
 QUEUE_SERVICE: serial
 PARTITION_BATCH: s4
 PARTITION_SERVICE: serial
+RESERVATION: ''
 CHGRP_RSTPROD: 'NO'
+CLUSTERS: ''
 CHGRP_CMD: 'ls'
 HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global

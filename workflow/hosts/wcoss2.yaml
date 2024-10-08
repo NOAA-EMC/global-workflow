@@ -1,9 +1,9 @@
 BASE_GIT: '/lfs/h2/emc/global/save/emc.global/git'
 DMPDIR: '/lfs/h2/emc/dump/noscrub/dump'
-BASE_CPLIC: '/lfs/h2/emc/couple/noscrub/Jiande.Wang/IC'
+BASE_DATA: '/lfs/h2/emc/global/noscrub/emc.global/data'
+BASE_IC: '/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR'
 PACKAGEROOT: '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
-COMROOT: '${COMROOT:-"/lfs/h1/ops/prod/com"}'
-COMINsyn: '${COMROOT}/gfs/v16.3/syndat'
+COMINsyn: '/lfs/h1/ops/prod/com/gfs/v16.3/syndat'
 HOMEDIR: '/lfs/h2/emc/global/noscrub/${USER}'
 STMP: '/lfs/h2/emc/stmp/${USER}'
 PTMP: '/lfs/h2/emc/ptmp/${USER}'
@@ -14,7 +14,9 @@ QUEUE: 'dev'
 QUEUE_SERVICE: 'dev_transfer'
 PARTITION_BATCH: ''
 PARTITION_SERVICE: ''
+RESERVATION: ''
 CHGRP_RSTPROD: 'YES'
+CLUSTERS: ''
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global
@@ -22,4 +24,7 @@ LOCALARCH: 'NO'
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-SUPPORTED_RESOLUTIONS: ['C768', 'C384', 'C192', 'C96', 'C48']
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
+COMINecmwf: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ecmwf
+COMINnam: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam
+COMINukmet: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ukmet

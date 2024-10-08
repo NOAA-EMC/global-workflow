@@ -5,20 +5,34 @@
 
 echo "BEGIN: config.atmanl"
 
-export CASE_ANL=${CASE}
-export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/config/
-export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype_3d.yaml
-export ATMVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/variational/3dvar_dripcg.yaml
-export STATICB_TYPE="gsibec"
-export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
+export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
+export JCB_ALGO_YAML=@JCB_ALGO_YAML@
+
+export STATICB_TYPE=@STATICB_TYPE@
+export LOCALIZATION_TYPE="bump"
 export INTERP_METHOD='barycentric'
 
-export layout_x=1
-export layout_y=1
+if [[ ${DOHYBVAR} = "YES" ]]; then
+    # shellcheck disable=SC2153
+    export CASE_ANL=${CASE_ENS}
+    export BERROR_YAML="atmosphere_background_error_hybrid_${STATICB_TYPE}_${LOCALIZATION_TYPE}"
+else
+    export CASE_ANL=${CASE}
+    export BERROR_YAML="atmosphere_background_error_static_${STATICB_TYPE}"
+fi
 
-export io_layout_x=1
-export io_layout_y=1
+export CRTM_FIX_YAML="${PARMgfs}/gdas/atm_crtm_coeff.yaml.j2"
+export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
+export VAR_BKG_STAGING_YAML="${PARMgfs}/gdas/staging/atm_var_bkg.yaml.j2"
+export BERROR_STAGING_YAML="${PARMgfs}/gdas/staging/atm_berror_${STATICB_TYPE}.yaml.j2"
+export FV3ENS_STAGING_YAML="${PARMgfs}/gdas/staging/atm_var_fv3ens.yaml.j2"
 
-export JEDIEXE=${HOMEgfs}/exec/fv3jedi_var.x
+export layout_x_atmanl=@LAYOUT_X_ATMANL@
+export layout_y_atmanl=@LAYOUT_Y_ATMANL@
+
+export io_layout_x=@IO_LAYOUT_X@
+export io_layout_y=@IO_LAYOUT_Y@
+
+export JEDIEXE=${EXECgfs}/gdas.x
 
 echo "END: config.atmanl"

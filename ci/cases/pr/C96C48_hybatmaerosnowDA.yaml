@@ -1,0 +1,23 @@
+experiment:
+  system: gfs
+  mode: cycled
+
+arguments:
+  pslot: {{ 'pslot' | getenv }}
+  app: ATMA
+  resdetatmos: 96
+  resensatmos: 48
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20240610
+  idate: 2021122012
+  edate: 2021122100
+  nens: 2
+  gfs_cyc: 1
+  start: cold
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - orion
+  - gaea
+  - hercules

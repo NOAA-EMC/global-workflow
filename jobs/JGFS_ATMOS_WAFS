@@ -1,0 +1,96 @@
+#!/bin/sh
+
+########################################
+# GFS AWIPS PRODUCT GENERATION
+########################################
+date
+export PS4='$SECONDS + ' 
+set -xa
+
+export KEEPDATA=${KEEPDATA:-NO}
+
+############################################
+# Working Directory
+############################################
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+############################################
+# Output for executables
+############################################
+export pgmout=OUTPUT.$$
+
+############################################
+# Load the UTILITIES module
+############################################
+#### module load prod_util
+#### module load grib_util
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=t${cyc}z 
+setpdy.sh
+. ./PDY
+
+export RERUN=${RERUN:-NO}
+
+############################################
+# Set up the NET and RUN
+############################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
+
+############################################
+# Specify HOME Directory
+############################################
+export gfs_ver=${gfs_ver:-v16.3.0}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=$HOMEgfs/exec
+export FIXgfs=$HOMEgfs/fix/wafs
+export PARMgfs=$HOMEgfs/parm/wafs
+export USHgfs=$HOMEgfs/ush
+export SCRIPTSgfs=$HOMEgfs/scripts
+
+################################################
+# Set up the input/output directory
+################################################
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT} 
+export PCOM=${PCOM:-$COMOUT/wmo}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+############################################
+# print current environment
+############################################
+env
+
+############################################
+# Execute the script.
+############################################
+
+${SCRIPTSgfs}/exgfs_atmos_wafs_grib.sh $fcsthrs
+export err=$?; err_chk
+
+echo "JOB $job HAS COMPLETED NORMALLY!"
+
+############################################
+# print exec output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+############################################
+# remove temporary working directory
+############################################
+if [ $KEEPDATA != YES ] ; then
+    rm -rf $DATA
+fi
+
+date

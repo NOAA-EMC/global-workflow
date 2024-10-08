@@ -5,8 +5,6 @@ export cray_mpich_ver=8.1.9
 
 export cmake_ver=3.20.2
 
-export python_ver=3.8.6
-export gempak_ver=7.14.1
 export jasper_ver=2.0.25
 export libpng_ver=1.6.37
 export zlib_ver=1.2.11
@@ -29,8 +27,7 @@ export ip_ver=3.3.3
 export wrf_io_ver=1.2.0
 export ncio_ver=1.1.2
 export ncdiag_ver=1.0.0
-export g2tmpl_ver=1.10.0
-export crtm_ver=2.4.0
-export wgrib2_ver=2.0.8
+export g2tmpl_ver=1.10.2
+export crtm_ver=2.4.0.1
 
 export upp_ver=10.0.8

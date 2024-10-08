@@ -1,0 +1,57 @@
+#! /usr/bin/env bash
+
+# Jet-specific job resources
+
+case ${step} in
+  "prep")
+    # Run on 7 nodes for memory requirement
+    tasks_per_node=2
+    ;;
+
+  "anal")
+    if [[ "${CASE}" == "C384" ]]; then
+      export ntasks=270
+      export threads_per_task=8
+      export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
+    ;;
+
+  "eobs")
+    if [[ "${PARTITION_BATCH}" == "xjet" ]]; then
+      # The number of tasks and cores used must be the same for eobs
+      # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+      # This would also be an issues for vjet and sjet if anyone runs on those nodes.
+      export tasks_per_node=10
+    fi
+    ;;
+
+  "eupd")
+    case ${CASE} in
+      "C384")
+        export ntasks=80
+        ;;
+      "C192" | "C96" | "C48")
+        export threads_per_task=4
+        ;;
+      *)
+        ;;
+    esac
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "ecen")
+    if [[ "${CASE}" == "C768" ]]; then export threads_per_task=6; fi
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "upp")
+    export memory="${mem_node_max}"
+    ;;
+
+  "esfc")
+    export memory="${mem_node_max}"
+    ;;
+
+  *)
+    ;;
+esac

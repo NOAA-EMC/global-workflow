@@ -1,0 +1,140 @@
+#!/bin/sh
+
+############################################
+# GFS GCIP PRODUCT GENERATION
+############################################
+
+date
+export PS4='$SECONDS + ' 
+set -xa
+
+# keep the working directory or not
+export KEEPDATA=${KEEPDATA:-NO}
+
+############################################
+# Working Directory
+############################################
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+############################################
+# Output for executables
+############################################
+export pgmout=OUTPUT.$$
+
+############################################
+# Load the UTILITIES module
+############################################
+#### module load prod_util
+#### module load grib_util
+
+############################################
+# Run setpdy and initialize PDY variables
+############################################
+export cycle=t${cyc}z 
+setpdy.sh
+. ./PDY
+
+############################################
+# Set up the NET and RUN
+############################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
+
+############################################
+# Specify HOME Directory
+############################################
+export gfs_ver=${gfs_ver:-v16.3.0}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=$HOMEgfs/exec
+export FIXgfs=$HOMEgfs/fix/wafs
+export PARMgfs=$HOMEgfs/parm/wafs
+export USHgfs=$HOMEgfs/ush
+export SCRIPTSgfs=$HOMEgfs/scripts
+
+# For BUFR dump, TMPDIR must be defined
+export TMPDIR=$DATA  # will be overwritten in exgfs script for parallel runs on ffhr
+# For BUFR dump, these two environment variables are defined by module load
+# HOMEobsproc_shared_bufr_dumplist <= module load bufr_dumplist/1.5.0
+# HOMEobsproc_dump   <= module load dumpjb/4.0.0
+
+
+################################################
+# Set up the input/output directory
+################################################
+# model data
+export COMINgfs=${COMINgfs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+
+# satellite data
+#ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
+# Have to change IP address to digital ones, which BSUB can identify
+#export COMINsat=${COMINsat:-ftp://140.90.213.161/2day/gmosaic}
+export COMINsat=${COMINsat:-$DCOMROOT/$PDY/mcidas}
+
+#  radar data
+export radarl2_ver=${radarl2_ver:-v1.2}
+export COMINradar=${COMINradar:-$(compath.py ${envir}/radarl2/$radarl2_ver)/radar.$PDY}
+
+# metar/ships/lightning/pireps
+# data are dumped by $USHobsproc_dump/dumpjb
+#
+
+# COMOUT
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
+
+mkdir -p $COMOUT
+
+###############################################
+# Specify Timeout Behavior of WAFS GCIP
+#
+# SLEEP_TIME - how long to wait for inputs before exiting
+# SLEEP_INT  - time interval for checking for inputs
+###############################################
+# JY export SLEEP_TIME=300
+export SLEEP_TIME=600
+export SLEEP_INT=10
+
+############################################
+# Execute the script, parallel run for 000 003
+############################################
+export MPIRUN=${MPIRUN:-"mpiexec -l -np 2 --cpu-bind verbose,core cfp"}
+
+# GCIP runs f000 f003 for each cycle, 4 times/day,
+# to make the output valid every 3 hours 
+if [ `echo $MPIRUN | cut -d " " -f1` = 'srun' ] ; then
+  echo 0 ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 000 >> gcip.cmdfile
+  echo 1 ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 003 >> gcip.cmdfile
+else
+  echo ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 000 >> gcip.cmdfile
+  echo ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 003 >> gcip.cmdfile
+  export MP_PGMMODEL=mpmd
+fi
+
+$MPIRUN gcip.cmdfile
+
+export err=$?
+if [ $err -eq 0 ] ; then
+  echo "JOB $job HAS COMPLETED NORMALLY!"
+elif [ $err -eq 1 ] ; then
+  echo "WARNING!!! JOB $job incomplete.  Missing satellite data."
+else
+  echo "JOB $job FAILED!!!!"
+fi
+
+############################################
+# print exec output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+############################################
+# remove temporary working directory
+############################################
+if [ $KEEPDATA != YES ] ; then
+    rm -rf $DATA
+fi
+
+date

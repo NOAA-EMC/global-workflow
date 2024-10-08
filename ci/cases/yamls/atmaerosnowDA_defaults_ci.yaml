@@ -1,0 +1,5 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
+base:
+  DO_JEDISNOWDA: "YES"
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}

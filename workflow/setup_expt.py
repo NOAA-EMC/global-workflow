@@ -29,213 +29,6 @@ def makedirs_if_missing(dirname):
         os.makedirs(dirname)
 
 
-def fill_COMROT(host, inputs):
-    """
-    Method to populate the COMROT for supported modes.
-    INPUTS:
-        host: host object from class Host
-        inputs: user inputs to setup_expt.py
-    """
-
-    fill_modes = {
-        'cycled': fill_COMROT_cycled,
-        'forecast-only': fill_COMROT_forecasts
-    }
-
-    try:
-        fill_modes[inputs.mode](host, inputs)
-    except KeyError:
-        raise NotImplementedError(f'{inputs.mode} is not a supported mode.\n' +
-                                  'Currently supported modes are:\n' +
-                                  f'{" | ".join(fill_modes.keys())}')
-
-    return
-
-
-def fill_COMROT_cycled(host, inputs):
-    """
-    Implementation of 'fill_COMROT' for cycled mode
-    """
-
-    comrot = os.path.join(inputs.comrot, inputs.pslot)
-
-    do_ocean = do_ice = do_med = False
-
-    if 'S2S' in inputs.app:
-        do_ocean = do_ice = do_med = True
-
-    if inputs.icsdir is None:
-        warnings.warn("User did not provide '--icsdir' to stage initial conditions")
-        return
-
-    rdatestr = datetime_to_YMDH(inputs.idate - to_timedelta('T06H'))
-    idatestr = datetime_to_YMDH(inputs.idate)
-
-    if os.path.isdir(os.path.join(inputs.icsdir, f'{inputs.cdump}.{rdatestr[:8]}', rdatestr[8:], 'model_data', 'atmos')):
-        flat_structure = False
-    else:
-        flat_structure = True
-
-    # Destination always uses the new COM structure
-    # These should match the templates defined in config.com
-    if inputs.start in ['warm']:
-        dst_atm_dir = os.path.join('model_data', 'atmos', 'restart')
-        dst_med_dir = os.path.join('model_data', 'med', 'restart')
-    else:
-        dst_atm_dir = os.path.join('model_data', 'atmos', 'input')
-        dst_med_dir = ''  # no mediator files for a "cold start"
-        do_med = False
-    dst_ocn_rst_dir = os.path.join('model_data', 'ocean', 'restart')
-    dst_ocn_anl_dir = os.path.join('analysis', 'ocean')
-    dst_ice_rst_dir = os.path.join('model_data', 'ice', 'restart')
-    dst_atm_anl_dir = os.path.join('analysis', 'atmos')
-
-    if flat_structure:
-        # ICs are in the old flat COM structure
-        if inputs.start in ['warm']:  # This is warm start experiment
-            src_atm_dir = os.path.join('atmos', 'RESTART')
-            src_med_dir = os.path.join('med', 'RESTART')
-        elif inputs.start in ['cold']:  # This is a cold start experiment
-            src_atm_dir = os.path.join('atmos', 'INPUT')
-            src_med_dir = ''  # no mediator files for a "cold start"
-            do_med = False
-        # ocean and ice have the same filenames for warm and cold
-        src_ocn_rst_dir = os.path.join('ocean', 'RESTART')
-        src_ocn_anl_dir = 'ocean'
-        src_ice_rst_dir = os.path.join('ice', 'RESTART')
-        src_atm_anl_dir = 'atmos'
-    else:
-        src_atm_dir = dst_atm_dir
-        src_med_dir = dst_med_dir
-        src_ocn_rst_dir = dst_ocn_rst_dir
-        src_ocn_anl_dir = dst_ocn_anl_dir
-        src_ice_rst_dir = dst_ice_rst_dir
-        src_atm_anl_dir = dst_atm_anl_dir
-
-    def link_files_from_src_to_dst(src_dir, dst_dir):
-        files = os.listdir(src_dir)
-        for fname in files:
-            os.symlink(os.path.join(src_dir, fname),
-                       os.path.join(dst_dir, fname))
-        return
-
-    # Link ensemble member initial conditions
-    if inputs.nens > 0:
-        previous_cycle_dir = f'enkf{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-        current_cycle_dir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-
-        for ii in range(1, inputs.nens + 1):
-            memdir = f'mem{ii:03d}'
-            # Link atmospheric files
-            if inputs.start in ['warm']:
-                dst_dir = os.path.join(comrot, previous_cycle_dir, memdir, dst_atm_dir)
-                src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, memdir, src_atm_dir)
-            elif inputs.start in ['cold']:
-                dst_dir = os.path.join(comrot, current_cycle_dir, memdir, dst_atm_dir)
-                src_dir = os.path.join(inputs.icsdir, current_cycle_dir, memdir, src_atm_dir)
-            makedirs_if_missing(dst_dir)
-            link_files_from_src_to_dst(src_dir, dst_dir)
-
-            # Link ocean files
-            if do_ocean:
-                dst_dir = os.path.join(comrot, previous_cycle_dir, memdir, dst_ocn_rst_dir)
-                src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, memdir, src_ocn_rst_dir)
-                makedirs_if_missing(dst_dir)
-                link_files_from_src_to_dst(src_dir, dst_dir)
-
-                # First 1/2 cycle needs a MOM6 increment
-                incfile = f'enkf{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
-                src_file = os.path.join(inputs.icsdir, current_cycle_dir, memdir, src_ocn_anl_dir, incfile)
-                dst_file = os.path.join(comrot, current_cycle_dir, memdir, dst_ocn_anl_dir, incfile)
-                makedirs_if_missing(os.path.join(comrot, current_cycle_dir, memdir, dst_ocn_anl_dir))
-                os.symlink(src_file, dst_file)
-
-            # Link ice files
-            if do_ice:
-                dst_dir = os.path.join(comrot, previous_cycle_dir, memdir, dst_ice_rst_dir)
-                src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, memdir, src_ice_rst_dir)
-                makedirs_if_missing(dst_dir)
-                link_files_from_src_to_dst(src_dir, dst_dir)
-
-            # Link mediator files
-            if do_med:
-                dst_dir = os.path.join(comrot, previous_cycle_dir, memdir, dst_med_dir)
-                src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, memdir, src_med_dir)
-                makedirs_if_missing(dst_dir)
-                link_files_from_src_to_dst(src_dir, dst_dir)
-
-    # Link deterministic initial conditions
-    previous_cycle_dir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-    current_cycle_dir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-
-    # Link atmospheric files
-    if inputs.start in ['warm']:
-        dst_dir = os.path.join(comrot, previous_cycle_dir, dst_atm_dir)
-        src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_atm_dir)
-    elif inputs.start in ['cold']:
-        dst_dir = os.path.join(comrot, current_cycle_dir, dst_atm_dir)
-        src_dir = os.path.join(inputs.icsdir, current_cycle_dir, src_atm_dir)
-
-    makedirs_if_missing(dst_dir)
-    link_files_from_src_to_dst(src_dir, dst_dir)
-
-    # Link ocean files
-    if do_ocean:
-        dst_dir = os.path.join(comrot, previous_cycle_dir, dst_ocn_rst_dir)
-        src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_ocn_rst_dir)
-        makedirs_if_missing(dst_dir)
-        link_files_from_src_to_dst(src_dir, dst_dir)
-
-        # First 1/2 cycle needs a MOM6 increment
-        incfile = f'{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
-        src_file = os.path.join(inputs.icsdir, current_cycle_dir, src_ocn_anl_dir, incfile)
-        dst_file = os.path.join(comrot, current_cycle_dir, dst_ocn_anl_dir, incfile)
-        makedirs_if_missing(os.path.join(comrot, current_cycle_dir, dst_ocn_anl_dir))
-        os.symlink(src_file, dst_file)
-
-    # Link ice files
-    if do_ice:
-        dst_dir = os.path.join(comrot, previous_cycle_dir, dst_ice_rst_dir)
-        src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_ice_rst_dir)
-        makedirs_if_missing(dst_dir)
-        link_files_from_src_to_dst(src_dir, dst_dir)
-
-    # Link mediator files
-    if do_med:
-        dst_dir = os.path.join(comrot, previous_cycle_dir, dst_med_dir)
-        src_dir = os.path.join(inputs.icsdir, previous_cycle_dir, src_med_dir)
-        makedirs_if_missing(dst_dir)
-        link_files_from_src_to_dst(src_dir, dst_dir)
-
-    # Link bias correction and radiance diagnostics files
-    src_dir = os.path.join(inputs.icsdir, current_cycle_dir, src_atm_anl_dir)
-    dst_dir = os.path.join(comrot, current_cycle_dir, dst_atm_anl_dir)
-    makedirs_if_missing(dst_dir)
-    for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat']:
-        fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
-        src_file = os.path.join(src_dir, fname)
-        if os.path.exists(src_file):
-            os.symlink(src_file, os.path.join(dst_dir, fname))
-
-    return
-
-
-def fill_COMROT_forecasts(host, inputs):
-    """
-    Implementation of 'fill_COMROT' for forecast-only mode
-    """
-    if inputs.system in ['gfs']:
-        print('forecast-only mode treats ICs differently and cannot be staged here')
-    elif inputs.system in ['gefs']:  # Temporarily copy ICs from icsdir into COM for      testing
-        print('temporary hack to stage gefs ICs for testing')
-        comrot = os.path.join(inputs.comrot, inputs.pslot)
-        idatestr = datetime_to_YMDH(inputs.idate)
-        current_cycle_dir = f"gefs.{idatestr[:8]}"
-        cmd = f"cp -as {inputs.icsdir}/{current_cycle_dir} {comrot}/{current_cycle_dir}"
-        os.system(cmd)
-    return
-
-
 def fill_EXPDIR(inputs):
     """
     Method to copy config files from workflow to experiment directory
@@ -246,12 +39,6 @@ def fill_EXPDIR(inputs):
     expdir = os.path.join(inputs.expdir, inputs.pslot)
 
     configs = glob.glob(f'{configdir}/config.*')
-    exclude_configs = ['base', 'base.emc.dyn', 'base.nco.static', 'fv3.nco.static']
-    for exclude in exclude_configs:
-        try:
-            configs.remove(f'{configdir}/config.{exclude}')
-        except ValueError:
-            pass
     if len(configs) == 0:
         raise IOError(f'no config files found in {configdir}')
     for config in configs:
@@ -271,12 +58,24 @@ def update_configs(host, inputs):
     data = AttrDict(host.info, **inputs.__dict__)
     data.HOMEgfs = _top
     yaml_path = inputs.yaml
+    if not os.path.exists(yaml_path):
+        raise IOError(f'YAML file does not exist, check path:' + yaml_path)
     yaml_dict = _update_defaults(AttrDict(parse_j2yaml(yaml_path, data)))
 
     # First update config.base
     edit_baseconfig(host, inputs, yaml_dict)
 
-    # loop over other configs and update them
+    # Update stage config
+    stage_dict = {
+        "@ICSDIR@": inputs.icsdir
+    }
+    host_dict = get_template_dict(host.info)
+    stage_dict = dict(stage_dict, **host_dict)
+    stage_input = f'{inputs.configdir}/config.stage_ic'
+    stage_output = f'{inputs.expdir}/{inputs.pslot}/config.stage_ic'
+    edit_config(stage_input, stage_output, stage_dict)
+
+    # Loop over other configs and update them with defaults
     for cfg in yaml_dict.keys():
         if cfg == 'base':
             continue
@@ -289,7 +88,8 @@ def update_configs(host, inputs):
 
 def edit_baseconfig(host, inputs, yaml_dict):
     """
-    Parses and populates the templated `config.base.emc.dyn` to `config.base`
+    Parses and populates the templated `HOMEgfs/parm/config/<gfs|gefs>/config.base`
+    to `EXPDIR/pslot/config.base`
     """
 
     tmpl_dict = {
@@ -310,21 +110,22 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@PSLOT@": inputs.pslot,
         "@SDATE@": datetime_to_YMDH(inputs.idate),
         "@EDATE@": datetime_to_YMDH(inputs.edate),
-        "@CASECTL@": f'C{inputs.resdet}',
+        "@CASECTL@": f'C{inputs.resdetatmos}',
+        "@OCNRES@": f"{int(100.*inputs.resdetocean):03d}",
         "@EXPDIR@": inputs.expdir,
-        "@ROTDIR@": inputs.comrot,
+        "@COMROOT@": inputs.comroot,
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
-        "@APP@": inputs.app
+        "@APP@": inputs.app,
+        "@NMEM_ENS@": getattr(inputs, 'nens', 0)
     }
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     extend_dict = dict()
     if getattr(inputs, 'nens', 0) > 0:
         extend_dict = {
-            "@CASEENS@": f'C{inputs.resens}',
-            "@NMEM_ENS@": inputs.nens,
+            "@CASEENS@": f'C{inputs.resensatmos}',
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
@@ -335,16 +136,12 @@ def edit_baseconfig(host, inputs, yaml_dict):
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    # All apps and modes now use the same physics and CCPP suite by default
-    extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
-
     try:
         tmpl_dict = dict(tmpl_dict, **get_template_dict(yaml_dict['base']))
     except KeyError:
         pass
 
-    base_input = f'{inputs.configdir}/config.base.emc.dyn'
+    base_input = f'{inputs.configdir}/config.base'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
     edit_config(base_input, base_output, tmpl_dict)
 
@@ -387,26 +184,31 @@ def input_args(*argv):
     Method to collect user arguments for `setup_expt.py`
     """
 
-    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW']
+    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW', 'S2SWA']
 
     def _common_args(parser):
         parser.add_argument('--pslot', help='parallel experiment name',
                             type=str, required=False, default='test')
-        parser.add_argument('--resdet', help='resolution of the deterministic model forecast',
+        parser.add_argument('--resdetatmos', help='atmosphere resolution of the deterministic model forecast',
                             type=int, required=False, default=384)
-        parser.add_argument('--comrot', help='full path to COMROT',
+        parser.add_argument('--resdetocean', help='ocean resolution of the deterministic model forecast',
+                            type=float, required=False, default=0.0)  # 0.0 (or lower) means determine from resdetatmos (limited combinations will be available)
+        parser.add_argument('--comroot', help='full path to COMROOT',
                             type=str, required=False, default=os.getenv('HOME'))
         parser.add_argument('--expdir', help='full path to EXPDIR',
                             type=str, required=False, default=os.getenv('HOME'))
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
         parser.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
+        parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
+        parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
+                            action='store_true', required=False)
         return parser
 
     def _gfs_args(parser):
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
-        parser.add_argument('--cdump', help='CDUMP to start the experiment',
+        parser.add_argument('--run', help='RUN to start the experiment',
                             type=str, required=False, default='gdas')
         # --configdir is hidden from help
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False, default=os.path.join(_top, 'parm/config/gfs'))
@@ -415,7 +217,6 @@ def input_args(*argv):
         return parser
 
     def _gfs_cycled_args(parser):
-        parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
         parser.add_argument('--app', help='UFS application', type=str,
                             choices=ufs_apps, required=False, default='ATM')
         parser.add_argument('--gfs_cyc', help='cycles to run forecast', type=int,
@@ -423,7 +224,7 @@ def input_args(*argv):
         return parser
 
     def _gfs_or_gefs_ensemble_args(parser):
-        parser.add_argument('--resens', help='resolution of the ensemble model forecast',
+        parser.add_argument('--resensatmos', help='atmosphere resolution of the ensemble model forecast',
                             type=int, required=False, default=192)
         parser.add_argument('--nens', help='number of ensemble members',
                             type=int, required=False, default=20)
@@ -431,25 +232,24 @@ def input_args(*argv):
 
     def _gfs_or_gefs_forecast_args(parser):
         parser.add_argument('--app', help='UFS application', type=str,
-                            choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
+                            choices=ufs_apps, required=False, default='ATM')
         parser.add_argument('--gfs_cyc', help='Number of forecasts per day', type=int,
                             choices=[1, 2, 4], default=1, required=False)
         return parser
 
     def _gefs_args(parser):
-        parser.add_argument('--start', help=SUPPRESS, type=str, required=False, default='cold')
+        parser.add_argument('--start', help='restart mode: warm or cold', type=str,
+                            choices=['warm', 'cold'], required=False, default='cold')
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
                             default=os.path.join(_top, 'parm/config/gefs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
                             default=os.path.join(_top, 'parm/config/gefs/yaml/defaults.yaml'))
-        parser.add_argument('--icsdir', help='full path to initial condition directory [temporary hack in place for testing]',
-                            type=str, required=False, default=None)
         return parser
 
     description = """
         Setup files and directories to start a GFS parallel.\n
         Create EXPDIR, copy config files.\n
-        Create COMROT experiment directory structure,
+        Create ROTDIR experiment directory structure,
         """
 
     parser = ArgumentParser(description=description,
@@ -494,17 +294,19 @@ def input_args(*argv):
     return parser.parse_args(list(*argv) if len(argv) else None)
 
 
-def query_and_clean(dirname):
+def query_and_clean(dirname, force_clean=False):
     """
     Method to query if a directory exists and gather user input for further action
     """
 
     create_dir = True
     if os.path.exists(dirname):
-        print()
-        print(f'directory already exists in {dirname}')
-        print()
-        overwrite = input('Do you wish to over-write [y/N]: ')
+        print(f'\ndirectory already exists in {dirname}')
+        if force_clean:
+            overwrite = True
+            print(f'removing directory ........ {dirname}\n')
+        else:
+            overwrite = input('Do you wish to over-write [y/N]: ')
         create_dir = True if overwrite in [
             'y', 'yes', 'Y', 'YES'] else False
         if create_dir:
@@ -516,13 +318,28 @@ def query_and_clean(dirname):
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
-    for attr in ['resdet', 'resens']:
+    for attr in ['resdetatmos', 'resensatmos']:
         try:
             expt_res = f'C{getattr(inputs, attr)}'
         except AttributeError:
             continue
         if expt_res not in supp_res:
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
+
+
+def get_ocean_resolution(resdetatmos):
+    """
+    Method to determine the ocean resolution based on the atmosphere resolution
+    Limited options are going to be available
+    """
+    atmos_to_ocean_map = {
+        1152: 0.25, 768: 0.25, 384: 0.25,
+        192: 1.0,
+        96: 5.0, 48: 5.0}
+    try:
+        return atmos_to_ocean_map[resdetatmos]
+    except KeyError:
+        raise KeyError(f"Ocean resolution for {resdetatmos} is not implemented")
 
 
 def main(*argv):
@@ -532,20 +349,28 @@ def main(*argv):
 
     validate_user_request(host, user_inputs)
 
-    comrot = os.path.join(user_inputs.comrot, user_inputs.pslot)
+    # Determine ocean resolution if not provided
+    if user_inputs.resdetocean <= 0:
+        user_inputs.resdetocean = get_ocean_resolution(user_inputs.resdetatmos)
+
+    rotdir = os.path.join(user_inputs.comroot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
 
-    create_comrot = query_and_clean(comrot)
-    create_expdir = query_and_clean(expdir)
+    create_rotdir = query_and_clean(rotdir, force_clean=user_inputs.overwrite)
+    create_expdir = query_and_clean(expdir, force_clean=user_inputs.overwrite)
 
-    if create_comrot:
-        makedirs_if_missing(comrot)
-        fill_COMROT(host, user_inputs)
+    if create_rotdir:
+        makedirs_if_missing(rotdir)
 
     if create_expdir:
         makedirs_if_missing(expdir)
         fill_EXPDIR(user_inputs)
         update_configs(host, user_inputs)
+
+    print(f"*" * 100)
+    print(f'EXPDIR: {expdir}')
+    print(f'ROTDIR: {rotdir}')
+    print(f"*" * 100)
 
 
 if __name__ == '__main__':

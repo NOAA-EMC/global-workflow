@@ -6,11 +6,15 @@ cd "${script_dir}" || exit 1
 
 # Default settings
 APP="S2SWA"
+PDLIB="ON"
 
-while getopts "a:v" option; do
+while getopts ":j:a:dvw" option; do
   case "${option}" in
-    a) APP="${OPTARG}" ;;
+    a) APP="${OPTARG}";;
+    d) BUILD_TYPE="Debug";;
+    j) BUILD_JOBS="${OPTARG}";;
     v) export BUILD_VERBOSE="YES";;
+    w) PDLIB="OFF";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
@@ -22,14 +26,16 @@ while getopts "a:v" option; do
   esac
 done
 
-
 # Determine which switch to use
 if [[ "${APP}" == "ATMW" ]]; then
   ww3switch="model/esmf/switch"
 else
-  ww3switch="model/bin/switch_meshcap"
+  if [[ "${PDLIB}" == "ON" ]]; then
+    ww3switch="model/bin/switch_meshcap_pdlib"
+  else
+    ww3switch="model/bin/switch_meshcap"
+  fi
 fi
-
 
 # Check final exec folder exists
 if [[ ! -d "../exec" ]]; then
@@ -58,9 +64,12 @@ post_exes="ww3_outp ww3_outf ww3_outp ww3_gint ww3_ounf ww3_ounp ww3_grib"
 
 #create build directory:
 path_build="${WW3_DIR}/build_SHRD"
+[[ -d "${path_build}" ]] && rm -rf "${path_build}"
 mkdir -p "${path_build}" || exit 1
 cd "${path_build}" || exit 1
 echo "Forcing a SHRD build"
+
+buildswitch="${path_build}/switch"
 
 cat "${SWITCHFILE}" > "${path_build}/tempswitch"
 
@@ -71,21 +80,28 @@ sed -e "s/DIST/SHRD/g"\
     -e "s/MPI / /g"\
     -e "s/B4B / /g"\
     -e "s/PDLIB / /g"\
+    -e "s/SCOTCH / /g"\
+    -e "s/METIS / /g"\
     -e "s/NOGRB/NCEP2/g"\
        "${path_build}/tempswitch" > "${path_build}/switch"
 rm "${path_build}/tempswitch"
 
-echo "Switch file is ${path_build}/switch with switches:"
-cat "${path_build}/switch"
+echo "Switch file is ${buildswitch} with switches:"
+cat "${buildswitch}"
+
+#define cmake build options
+MAKE_OPT="-DCMAKE_INSTALL_PREFIX=install"
+[[ ${BUILD_TYPE:-"Release"} = "Debug" ]] && MAKE_OPT+=" -DCMAKE_BUILD_TYPE=Debug"
 
 #Build executables:
-cmake "${WW3_DIR}" -DSWITCH="${path_build}/switch" -DCMAKE_INSTALL_PREFIX=install
+# shellcheck disable=SC2086
+cmake "${WW3_DIR}" -DSWITCH="${buildswitch}" ${MAKE_OPT}
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in cmake."
   exit "${rc}"
 fi
-make -j 8
+make -j "${BUILD_JOBS:-8}"
 rc=$?
 if (( rc != 0 )); then
   echo "Fatal error in make."

@@ -22,7 +22,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
   bloc=$1
@@ -31,6 +31,7 @@ source "$HOMEgfs/ush/preamble.sh"
   workdir=$4
 
   YMDHE=$($NDATE $FHMAX_WAV_PNT $CDATE)
+  model_start_date=$(${NDATE} ${OFFSET_START_HOUR} "${PDY}${cyc}")
 
   cd $workdir
 
@@ -73,21 +74,7 @@ source "$HOMEgfs/ush/preamble.sh"
     exit 1
   else
     buoy=$bloc
-    grep $buoy ${DATA}/buoy_log.ww3 > tmp_list.loc
-    while read line
-    do
-      buoy_name=$(echo $line | awk '{print $2}')
-      if [ $buoy = $buoy_name ]
-      then
-        point=$(echo $line | awk '{ print $1 }')
-        set +x
-        echo "              Location ID/#   : $buoy (${point})"
-        echo "   Spectral output start time : $ymdh "
-        echo ' '
-        set_trace
-        break
-      fi
-    done < tmp_list.loc
+    point=$(awk "{if (\$2 == \"${buoy}\"){print \$1; exit} }" "${DATA}/buoy_log.ww3")
     if [ -z "$point" ]
     then
       set +x
@@ -97,6 +84,11 @@ source "$HOMEgfs/ush/preamble.sh"
       echo ' '
       set_trace
       exit 2
+    else
+      set +x
+      echo "              Location ID/#   : $buoy (${point})"
+      echo "   Spectral output start time : $ymdh "
+      echo ' '
     fi
   fi
 
@@ -104,7 +96,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$CDATE" ] || [ -z "$dtspec" ] || [ -z "$EXECwave" ] || \
+  if [ -z "$CDATE" ] || [ -z "$dtspec" ] || [ -z "${EXECgfs}" ] || \
      [ -z "$WAV_MOD_TAG" ] || [ -z "${STA_DIR}" ]
   then
     set +x
@@ -135,8 +127,8 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 0.f Links to mother directory
 
-  ln -s ${DATA}/output_${ymdh}0000/mod_def.${waveuoutpGRD} ./mod_def.ww3
-  ln -s ${DATA}/output_${ymdh}0000/out_pnt.${waveuoutpGRD} ./out_pnt.ww3
+  ${NLN} ${DATA}/output_${ymdh}0000/mod_def.${waveuoutpGRD} ./mod_def.ww3
+  ${NLN} ${DATA}/output_${ymdh}0000/out_pnt.${waveuoutpGRD} ./out_pnt.ww3
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate spectral data file
@@ -170,11 +162,11 @@ source "$HOMEgfs/ush/preamble.sh"
 # 2.b Run the postprocessor
 
   set +x
-  echo "   Executing $EXECwave/ww3_outp"
+  echo "   Executing ${EXECgfs}/ww3_outp"
   set_trace
 
   export pgm=ww3_outp;. prep_step
-  $EXECwave/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
+  ${EXECgfs}/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
   export err=$?;err_chk
 
 
@@ -196,31 +188,31 @@ source "$HOMEgfs/ush/preamble.sh"
 
   if [ -f $outfile ]
   then
-   if [ "${ymdh}" = "${CDATE}" ]
+   if [ "${ymdh}" = "${model_start_date}" ]
    then
      if [ "$specdir" = "bull" ]
      then
-       cat $outfile | sed -e '9,$d' >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
-       cat $coutfile | sed -e '8,$d' >> ${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
+       sed '9,$d' "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.bull"
+       sed '8,$d' "${coutfile}" >> "${STA_DIR}/c${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.cbull"
      else
-       cat $outfile >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
+       cat $outfile >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.spec"
      fi
    elif [ "${ymdh}" = "${YMDHE}" ]
    then
      if [ "$specdir" = "bull" ]
      then
-       cat $outfile | sed -e '1,7d' >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
-       cat $coutfile | sed -e '1,6d' >> ${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
+       sed '1,7d' "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.bull"
+       sed '1,6d' "${coutfile}" >> "${STA_DIR}/c${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.cbull"
      else
-       cat $outfile | sed -n "/^${YMD} ${HMS}$/,\$p" >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
+       sed -n "/^${YMD} ${HMS}$/,\$p" "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.spec"
      fi
    else
      if [ "$specdir" = "bull" ]
      then
-       cat $outfile | sed -e '1,7d' | sed -e '2,$d' >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
-       cat $coutfile | sed -e '1,6d' | sed -e '2,$d' >> ${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
+       sed '8q;d' "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.bull"
+       sed '7q;d' "${coutfile}" >> "${STA_DIR}/c${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.cbull"
      else
-       cat $outfile | sed -n "/^${YMD} ${HMS}$/,\$p" >> ${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
+       sed -n "/^${YMD} ${HMS}$/,\$p" "${outfile}" >> "${STA_DIR}/${specdir}fhr/${WAV_MOD_TAG}.${ymdh}.${buoy}.spec"
      fi
    fi
   else
@@ -237,6 +229,6 @@ source "$HOMEgfs/ush/preamble.sh"
 # 3.b Clean up the rest
 
 cd ..
-rm -rf ${specdir}_${bloc}
+rm -rf "${specdir}_${bloc}"
 
 # End of ww3_outp_spec.sh ---------------------------------------------------- #

@@ -1,41 +1,37 @@
 #! /usr/bin/env bash
 
 ###################################################################
-# echo "----------------------------------------------------"
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
-# echo "----------------------------------------------------"
-# echo "History: Mar 2000 - First implementation of this new script."
-# echo "S Lilly: May 2008 - add logic to make sure that all of the "
-# echo "                    data produced from the restricted ECMWF"
-# echo "                    data on the CCS is properly protected."
-# echo "C. Magee: 10/2013 - swap X and Y for rtgssthr Atl and Pac."
-#####################################################################
+###################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
-cd $DATA
+cd "${DATA}" || exit 1
+fhr3=$1
 
-cp $FIXgempak/g2varswmo2.tbl g2varswmo2.tbl
-cp $FIXgempak/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
-cp $FIXgempak/g2varsncep1.tbl g2varsncep1.tbl
-cp $FIXgempak/g2vcrdncep1.tbl g2vcrdncep1.tbl
+# "Import" functions used in this script
+source "${USHgfs}/product_functions.sh"
 
-#
-# NAGRIB_TABLE=$FIXgempak/nagrib.tbl
-NAGRIB=$GEMEXE/nagrib2
-#
+for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
+  cp "${HOMEgfs}/gempak/fix/${table}" "${table}" || \
+    ( echo "FATAL ERROR: ${table} is missing" && exit 2 )
+done
 
-entry=$(grep "^$RUN2 " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}')
+NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
+NAGRIB="${GEMEXE}/nagrib2"
 
-if [ "$entry" != "" ] ; then
-  cpyfil=$(echo $entry  | awk 'BEGIN {FS="|"} {print $2}')
-  garea=$(echo $entry   | awk 'BEGIN {FS="|"} {print $3}')
-  gbtbls=$(echo $entry  | awk 'BEGIN {FS="|"} {print $4}')
-  maxgrd=$(echo $entry  | awk 'BEGIN {FS="|"} {print $5}')
-  kxky=$(echo $entry    | awk 'BEGIN {FS="|"} {print $6}')
-  grdarea=$(echo $entry | awk 'BEGIN {FS="|"} {print $7}')
-  proj=$(echo $entry    | awk 'BEGIN {FS="|"} {print $8}')
-  output=$(echo $entry  | awk 'BEGIN {FS="|"} {print $9}')
+# shellcheck disable=SC2312
+entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}')
+
+if [[ "${entry}" != "" ]] ; then
+  cpyfil=$(echo "${entry}"  | awk 'BEGIN {FS="|"} {print $2}')
+  garea=$(echo "${entry}"   | awk 'BEGIN {FS="|"} {print $3}')
+  gbtbls=$(echo "${entry}"  | awk 'BEGIN {FS="|"} {print $4}')
+  maxgrd=$(echo "${entry}"  | awk 'BEGIN {FS="|"} {print $5}')
+  kxky=$(echo "${entry}"    | awk 'BEGIN {FS="|"} {print $6}')
+  grdarea=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $7}')
+  proj=$(echo "${entry}"    | awk 'BEGIN {FS="|"} {print $8}')
+  output=$(echo "${entry}"  | awk 'BEGIN {FS="|"} {print $9}')
 else
   cpyfil=gds
   garea=dset
@@ -48,76 +44,49 @@ else
 fi  
 pdsext=no
 
-maxtries=180
-fhcnt=$fstart
-while [ $fhcnt -le $fend ] ; do
-  fhr=$(printf "%03d" $fhcnt)
-  fhcnt3=$(expr $fhr % 3)
 
-  fhr3=$(printf "03d" $fhcnt)
-  GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
-  GEMGRD=${RUN2}_${PDY}${cyc}f${fhr3}
 
-  GRIBIN_chk=$GRIBIN
+GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
+GRIBIN="${COM_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
+GRIBIN_chk="${GRIBIN}"
 
-  icnt=1
-  while [ $icnt -lt 1000 ]
-  do
-    if [ -r $GRIBIN_chk ] ; then
-      break
-    else
-      sleep 20
-      let "icnt=icnt+1"
-    fi
-    if [ $icnt -ge $maxtries ]
-    then
-      echo "ABORTING after 1 hour of waiting for F$fhr to end."
-      export err=7 ; err_chk
-      exit $err
-    fi
-  done
+if [[ ! -r "${GRIBIN_chk}" ]]; then
+  echo "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
+  export err=7 ; err_chk
+  exit "${err}"
+fi
 
-  cp $GRIBIN grib$fhr
+cp "${GRIBIN}" "grib${fhr3}"
 
-  export pgm="nagrib_nc F$fhr"
-  startmsg
+export pgm="nagrib_nc F${fhr3}"
+startmsg
 
-   $NAGRIB << EOF
-   GBFILE   = grib$fhr
-   INDXFL   = 
-   GDOUTF   = $GEMGRD
-   PROJ     = $proj
-   GRDAREA  = $grdarea
-   KXKY     = $kxky
-   MAXGRD   = $maxgrd
-   CPYFIL   = $cpyfil
-   GAREA    = $garea
-   OUTPUT   = $output
-   GBTBLS   = $gbtbls
-   GBDIAG   = 
-   PDSEXT   = $pdsext
-  l
-  r
+${NAGRIB} << EOF
+GBFILE   = grib${fhr3}
+INDXFL   = 
+GDOUTF   = ${GEMGRD}
+PROJ     = ${proj}
+GRDAREA  = ${grdarea}
+KXKY     = ${kxky}
+MAXGRD   = ${maxgrd}
+CPYFIL   = ${cpyfil}
+GAREA    = ${garea}
+OUTPUT   = ${output}
+GBTBLS   = ${gbtbls}
+GBDIAG   = 
+PDSEXT   = ${pdsext}
+l
+r
 EOF
-  export err=$?;err_chk
 
-  $GEMEXE/gpend
+export err=$?; err_chk
 
-  if [ $SENDCOM = "YES" ] ; then
-     cp $GEMGRD $COMOUT/.$GEMGRD
-     mv $COMOUT/.$GEMGRD $COMOUT/$GEMGRD
-     if [ $SENDDBN = "YES" ] ; then
-         $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-           $COMOUT/$GEMGRD
-     else
-       echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
-     fi
-  fi
+cpfs "${GEMGRD}" "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+if [[ ${SENDDBN} == "YES" ]] ; then
+  "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+    "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+fi
 
-  let fhcnt=fhcnt+finc
-done
-
-#####################################################################
-
+"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################

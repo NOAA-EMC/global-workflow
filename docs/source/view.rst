@@ -2,7 +2,7 @@
 View Experiment output
 ======================
 
-The output from your run will be found in the ``COMROT/ROTDIR`` you established. This is also where you placed your initial conditions. Within your ``COMROT`` you will have the following directory structure (based on the type of experiment you run):
+The output from your run will be found in the ``ROTDIR`` you established. This is also where you placed your initial conditions. Within your ``ROTDIR`` you will have the following directory structure (based on the type of experiment you run):
 
 ^^^^^^^^^^^^^
 Forecast-only
@@ -29,11 +29,11 @@ Cycled
    logs/                                <- logs for each cycle in the run
    vrfyarch/                            <- contains files related to verification and archival
 
-Here is an example ``COMROT`` for a cycled run as it may look several cycles in (note the archival steps remove older cycle folders as the run progresses):
+Here is an example ``ROTDIR`` for a cycled run as it may look several cycles in (note the archival steps remove older cycle folders as the run progresses):
 
 ::
 
-   -bash-4.2$ ll /scratch1/NCEPDEV/stmp4/Joe.Schmo/comrot/testcyc192
+   -bash-4.2$ ll /scratch1/NCEPDEV/stmp4/Joe.Schmo/comroot/testcyc192
    total 88
    drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 04:50 enkfgdas.20190529
    drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 07:20 enkfgdas.20190530

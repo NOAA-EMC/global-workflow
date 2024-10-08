@@ -1,0 +1,8 @@
+#====== BIOMASS BURNING EMISSIONS =======================================
+
+# GBBEPx
+#--------------------------------------------------------------------------------------------------------------------------------
+SU_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 SO2 ExtData/nexus/GBBEPx/GBBEPx_all01GRID.emissions_v003_%y4%m2%d2.nc
+OC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 OC ExtData/nexus/GBBEPx/GBBEPx_all01GRID.emissions_v003_%y4%m2%d2.nc
+BC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 BC ExtData/nexus/GBBEPx/GBBEPx_all01GRID.emissions_v003_%y4%m2%d2.nc
+# EMI_NH3_BB NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 NH3 ExtData/nexus/GBBEPx/GBBEPx_all01GRID.emissions_v003_%y4%m2%d2.nc

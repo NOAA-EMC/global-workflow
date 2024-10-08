@@ -1,25 +1,64 @@
 base:
+  DOIAU: "YES"
   DO_JEDIATMVAR: "NO"
   DO_JEDIATMENS: "NO"
   DO_JEDIOCNVAR: "NO"
-  DO_JEDILANDDA: "NO"
+  DO_JEDISNOWDA: "NO"
   DO_MERGENSST: "NO"
+  DO_GOES: "NO"
+  DO_BUFRSND: "NO"
+  DO_GEMPAK: "NO"
+  DO_AWIPS: "NO"
+  DO_NPOESS: "NO"
+  DO_TRACKER: "YES"
+  DO_GENESIS: "YES"
+  DO_GENESIS_FSU: "NO"
+  DO_METP: "YES"
+  FHMAX_GFS: 120
+  FHMAX_HF_GFS: 0
+  FCST_BREAKPOINTS: ""
+  DO_VRFY_OCEANDA: "NO"
+  GSI_SOILANAL: "NO"
+  EUPD_CYC: "gdas"
+  FHMAX_ENKF_GFS: 12
+
+atmanl:
+  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
+  STATICB_TYPE: "gsibec"
+  LAYOUT_X_ATMANL: 8
+  LAYOUT_Y_ATMANL: 8
+  IO_LAYOUT_X: 1
+  IO_LAYOUT_Y: 1
+
+atmensanl:
+  JCB_ALGO_YAML_LETKF: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf.yaml.j2"
+  JCB_ALGO_YAML_OBS: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2"
+  LAYOUT_X_ATMENSANL: 8
+  LAYOUT_Y_ATMENSANL: 8
+  IO_LAYOUT_X: 1
+  IO_LAYOUT_Y: 1
+
+atmensanlobs:
+  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2"
+
+atmensanlsol:
+  JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_solver.yaml.j2"
+  
 aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
-landanl:
+snowanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
-ocnanal:
-  SOCA_INPUT_FIX_DIR: '/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25'
-  CASE_ANL: 'C48'
-  SOCA_OBS_LIST: ''
-  COMIN_OBS: '/scratch2/NCEPDEV/marineda/r2d2'
-  SABER_BLOCKS_YAML: ''
-  SOCA_NINNER: 50
-  R2D2_OBS_SRC: 'gdas_marine'
-  R2D2_OBS_DUMP: 's2s_v1'
-  NICAS_RESOL: 1
-  NICAS_GRID_SIZE: 15000
+marineanl:
+  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
+  SOCA_NINNER: 100
+
+prepoceanobs:
+  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in ocnanal
+  OBSPREP_YAML: "${PARMgfs}/gdas/soca/obsprep/obsprep_config.yaml"
+  DMPDIR: "${BASE_DATA}/experimental_obs"

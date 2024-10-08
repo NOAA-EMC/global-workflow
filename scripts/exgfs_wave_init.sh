@@ -26,7 +26,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -83,27 +83,27 @@ source "${HOMEgfs}/ush/preamble.sh"
   grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
   for grdID in ${grdALL}; do
-    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
+      echo " Mod def file for ${grdID} found in ${COMOUT_WAVE_PREP}. copying ...."
       set_trace
-      cp "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
 
     else
       set +x
-      echo " Mod def file for ${grdID} not found in ${COM_WAVE_PREP}. Setting up to generate ..."
+      echo " Mod def file for ${grdID} not found in ${COMOUT_WAVE_PREP}. Setting up to generate ..."
       echo ' '
       set_trace
-      if [ -f $FIXwave/ww3_grid.inp.$grdID ]
+      if [ -f ${FIXgfs}/wave/ww3_grid.inp.$grdID ]
       then
-        cp $FIXwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
+        cp ${FIXgfs}/wave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
       fi
 
       if [ -f ww3_grid.inp.$grdID ]
       then
         set +x
         echo ' '
-        echo "   ww3_grid.inp.$grdID copied ($FIXwave/ww3_grid.inp.$grdID)."
+        echo "   ww3_grid.inp.$grdID copied (${FIXgfs}/wave/ww3_grid.inp.$grdID)."
         echo ' '
         set_trace
       else
@@ -118,11 +118,17 @@ source "${HOMEgfs}/ush/preamble.sh"
         err=2;export err;${errchk}
       fi
 
-      [[ ! -d "${COM_WAVE_PREP}" ]] && mkdir -m 775 -p "${COM_WAVE_PREP}"
+
+      if [ -f ${FIXgfs}/wave/${grdID}.msh ]
+      then
+        cp "${FIXgfs}/wave/${grdID}.msh" "${grdID}.msh"
+      fi
+      #TO DO: how do we say "it's unstructured, and therefore need to have error check here" 
+
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
-        echo "$nmoddef $USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+        echo "$nmoddef ${USHgfs}/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
       else
-        echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+        echo "${USHgfs}/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
       fi
 
       nmoddef=$(expr $nmoddef + 1)
@@ -166,7 +172,7 @@ source "${HOMEgfs}/ush/preamble.sh"
       exit=$?
     fi
 
-    if [ "$exit" != '0' ]
+    if [[ "$exit" != '0' ]]
     then
       set +x
       echo ' '
@@ -183,7 +189,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 # 1.a.3 File check
 
   for grdID in ${grdALL}; do
-    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
       echo ' '
       echo " mod_def.$grdID succesfully created/copied "
@@ -195,13 +201,24 @@ source "${HOMEgfs}/ush/preamble.sh"
       echo '********************************************** '
       echo '*** FATAL ERROR : NO MODEL DEFINITION FILE *** '
       echo '********************************************** '
-      echo "                                grdID = $grdID"
+      echo "                                grdID = ${grdID}"
       echo ' '
-      sed "s/^/$grdID.out : /g"  $grdID.out
+      sed "s/^/${grdID}.out : /g"  "${grdID}.out"
       set_trace
       err=3;export err;${errchk}
     fi
   done
+
+# Copy to other members if needed
+if (( NMEM_ENS > 0 )); then
+  for mem in $(seq -f "%03g" 1 "${NMEM_ENS}"); do
+    MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
+    mkdir -p "${COMOUT_WAVE_PREP_MEM}"
+    for grdID in ${grdALL}; do
+      ${NLN} "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "${COMOUT_WAVE_PREP_MEM}/${RUN}wave.mod_def.${grdID}"
+    done
+  done
+fi
 
 # --------------------------------------------------------------------------- #
 # 2.  Ending

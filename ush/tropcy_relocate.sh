@@ -84,20 +84,13 @@
 #     envir         String indicating environment under which job runs ('prod'
 #                   or 'test')
 #                   Default is "prod"
-#     HOMEALL       String indicating parent directory path for some or 
-#                   all files under which job runs.
-#                   If the imported variable MACHINE!=sgi, then the default is
-#                   "/nw${envir}"; otherwise the default is
-#                   "/disk1/users/snake/prepobs"
-#     HOMERELO      String indicating parent directory path for relocation
-#                   specific files.  (May be under HOMEALL)
 #     envir_getges  String indicating environment under which GETGES utility
-#                   ush runs (see documentation in $USHGETGES/getges.sh for
+#                   ush runs (see documentation in ${USHgfs}/getges.sh for
 #                   more information)
 #                   Default is "$envir"
 #     network_getges
 #                   String indicating job network under which GETGES utility
-#                   ush runs (see documentation in $USHGETGES/getges.sh for
+#                   ush runs (see documentation in ${USHgfs}/getges.sh for
 #                   more information)
 #                   Default is "global" unless the center relocation processing
 #                   date/time is not a multiple of 3-hrs, then the default is
@@ -122,36 +115,20 @@
 #     POE_OPTS      String indicating options to use with poe command
 #                   Default is "-pgmmodel mpmd -ilevel 2 -labelio yes \
 #                   -stdoutmode ordered"
-#     USHGETGES     String indicating directory path for GETGES utility ush
-#                   file
-#     USHRELO       String indicating directory path for RELOCATE ush files
-#                   Default is "${HOMERELO}/ush"
-#     EXECRELO      String indicating directory path for RELOCATE executables
-#                   Default is "${HOMERELO}/exec"
-#     FIXRELO       String indicating directory path for RELOCATE data fix-
-#                   field files
-#                   Default is "${HOMERELO}/fix"
-#     EXECUTIL      String indicating directory path for utility program
-#                   executables
-#                   If the imported variable MACHINE!=sgi, then the default is
-#                   "/nwprod/util/exec"; otherwise the default is
-#                   "${HOMEALL}/util/exec"
 #     RELOX         String indicating executable path for RELOCATE_MV_NVORTEX
 #                   program 
-#                   Default is "$EXECRELO/relocate_mv_nvortex"
+#                   Default is "${EXECgfs}/relocate_mv_nvortex"
 #     SUPVX         String indicating executable path for SUPVIT utility
 #                   program
-#                   Default is "$EXECUTIL/supvit.x"
+#                   Default is "${EXECgfs}/supvit.x"
 #     GETTX         String indicating executable path for GETTRK utility
 #                   program
-#                   Default is "$EXECUTIL/gettrk"
+#                   Default is "${EXECgfs}/gettrk"
 #     BKGFREQ       Frequency of background files for relocation
 #                   Default is "3" 
-#     SENDCOM       String when set to "YES" copies output files to $COMSP
-#                   Default is "YES"
 #     SENDDBN       String when set to "YES" alerts output files to $COMSP
 #     NDATE         String indicating executable path for NDATE utility program
-#                   Default is "$EXECUTIL/ndate"
+#                   Default is "${EXECgfs}/ndate"
 #
 #     These do not have to be exported to this script.  If they are, they will
 #      be used by the script.  If they are not, they will be skipped
@@ -168,18 +145,18 @@
 #
 #   Modules and files referenced:
 #                  Herefile: RELOCATE_GES
-#                  $USHRELO/tropcy_relocate_extrkr.sh
-#                  $USHGETGES/getges.sh
+#                  ${USHgfs}/tropcy_relocate_extrkr.sh
+#                  ${USHgfs}/getges.sh
 #                  $NDATE (here and in child script
-#                        $USHRELO/tropcy_relocate_extrkr.sh)
+#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  /usr/bin/poe
 #                  postmsg
 #                  $DATA/prep_step (here and in child script
-#                        $USHRELO/tropcy_relocate_extrkr.sh)
+#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  $DATA/err_exit (here and in child script
-#                        $USHRELO/tropcy_relocate_extrkr.sh)
+#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  $DATA/err_chk (here and in child script
-#                        $USHRELO/tropcy_relocate_extrkr.sh)
+#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #          NOTE: The last three scripts above are NOT REQUIRED utilities.
 #                If $DATA/prep_step not found, a scaled down version of it is
 #                executed in-line.  If $DATA/err_exit or $DATA/err_chk are not
@@ -190,7 +167,7 @@
 #     programs   :
 #          RELOCATE_MV_NVORTEX - executable $RELOX
 #                                 T126 GRIB global land/sea mask:
-#                                          $FIXRELO/global_slmask.t126.grb
+#                                          ${FIXgfs}/am/global_slmask.t126.grb
 #          SUPVIT               - executable $SUPVX
 #          GETTRK               - executable $GETTX
 #
@@ -206,11 +183,10 @@
 #
 ####
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 
-SENDCOM=${SENDCOM:-YES}
 export OPSROOT=${OPSROOT:-/lfs/h1/ops/prod}
 GRIBVERSION=${GRIBVERSION:-"grib2"}
 
@@ -278,14 +254,6 @@ set_trace
 
 envir=${envir:-prod}
 
-if [ $MACHINE != sgi ]; then
-   HOMEALL=${HOMEALL:-$OPSROOT}
-else
-   HOMEALL=${HOMEALL:-/disk1/users/snake/prepobs}
-fi
-
-HOMERELO=${HOMERELO:-${shared_global_home}}
-
 envir_getges=${envir_getges:-$envir}
 if [ $modhr -eq 0 ]; then
    network_getges=${network_getges:-global}
@@ -298,21 +266,12 @@ pgmout=${pgmout:-/dev/null}
 tstsp=${tstsp:-/tmp/null/}
 tmmark=${tmmark:-tm00}
 
-USHRELO=${USHRELO:-${HOMERELO}/ush}
-##USHGETGES=${USHGETGES:-/nwprod/util/ush}
-##USHGETGES=${USHGETGES:-${HOMERELO}/ush}
-USHGETGES=${USHGETGES:-${USHRELO}}
-
-EXECRELO=${EXECRELO:-${HOMERELO}/exec}
-
-FIXRELO=${FIXRELO:-${HOMERELO}/fix}
-
-RELOX=${RELOX:-$EXECRELO/relocate_mv_nvortex}
+RELOX=${RELOX:-${EXECgfs}/relocate_mv_nvortex}
 
 export BKGFREQ=${BKGFREQ:-1}
 
-SUPVX=${SUPVX:-$EXECRELO/supvit.x}
-GETTX=${GETTX:-$EXECRELO/gettrk}
+SUPVX=${SUPVX:-${EXECgfs}/supvit.x}
+GETTX=${GETTX:-${EXECgfs}/gettrk}
 
 ################################################
 # EXECUTE TROPICAL CYCLONE RELOCATION PROCESSING
@@ -358,7 +317,7 @@ echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
-      $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
+      ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -f $fhr -t tcvges tcvitals.m${fhr}
       set +x
       echo
@@ -408,7 +367,7 @@ echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
-      $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
+      ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -t $stype $sges
       errges=$?
       if test $errges -ne 0; then
@@ -442,7 +401,7 @@ to center relocation date/time;"
 #  ----------------------------------------------------------------------------
 
       if [ $fhr = "0"  ]; then
-         "${USHGETGES}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${CDATE10}" \
+         "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${CDATE10}" \
           -t "${stype}" > "${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
          cp "${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
           "${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
@@ -462,7 +421,7 @@ echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
-      $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
+      ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -t $ptype $pges
       errges=$?
       if test $errges -ne 0; then
@@ -544,7 +503,7 @@ else
 #   $DATA/$RUN.$cycle.relocate.model_track.tm00
 #  --------------------------------------------
 
-   $USHRELO/tropcy_relocate_extrkr.sh
+   ${USHgfs}/tropcy_relocate_extrkr.sh
    err=$?
    if [ $err -ne 0 ]; then
 
@@ -553,12 +512,12 @@ else
 
       set +x
       echo
-      echo "$USHRELO/tropcy_relocate_extrkr.sh failed"
+      echo "${USHgfs}/tropcy_relocate_extrkr.sh failed"
       echo "ABNORMAL EXIT!!!!!!!!!!!"
       echo
       set_trace
       if [ -s $DATA/err_exit ]; then
-         $DATA/err_exit "Script $USHRELO/tropcy_relocate_extrkr.sh failed"
+         $DATA/err_exit "Script ${USHgfs}/tropcy_relocate_extrkr.sh failed"
       else
          exit 555
       fi
@@ -572,10 +531,10 @@ else
      rm fort.*
    fi
 
-   ln -sf $DATA/tcvitals.now1      fort.11
-   ln -sf $DATA/model_track.all    fort.30
-   ln -sf $DATA/rel_inform1        fort.62
-   ln -sf $DATA/tcvitals.relocate0 fort.65
+   ${NLN} $DATA/tcvitals.now1      fort.11
+   ${NLN} $DATA/model_track.all    fort.30
+   ${NLN} $DATA/rel_inform1        fort.62
+   ${NLN} $DATA/tcvitals.relocate0 fort.65
 
    i1=20
    i2=53
@@ -589,8 +548,8 @@ else
        tpref=p$fhr
      fi
 
-     ln -sf $DATA/sg${tpref}prep          fort.$i1
-     ln -sf $DATA/sg${tpref}prep.relocate fort.$i2
+     ${NLN} $DATA/sg${tpref}prep          fort.$i1
+     ${NLN} $DATA/sg${tpref}prep.relocate fort.$i2
 
      i1=$((i1+1))
      i2=$((i2+BKGFREQ))
@@ -687,21 +646,20 @@ else
    fi
    rm -f RELOCATE_GES cmd
 
-   if [ "$SENDCOM" = "YES" ]; then
-      cp "rel_inform1" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-      cp "tcvitals" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
-      if [ "$SENDDBN" = "YES" ]; then
-         if test "$RUN" = "gdas1"
-         then
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
-         fi
-         if test "$RUN" = "gfs"
-         then
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-            "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
-         fi
-      fi
+
+   cp "rel_inform1" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+   cp "tcvitals" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+   if [ "$SENDDBN" = "YES" ]; then
+       if test "$RUN" = "gdas1"
+       then
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+       fi
+       if test "$RUN" = "gfs"
+       then
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+       fi
    fi
 
 #  --------------------------------------------------------------------------

@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 # Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${RUN/enkf}
+export rCDUMP=${RUN/enkf}
 export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
@@ -25,19 +25,19 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export OPREFIX="${CDUMP}.t${cyc}z."
+export OPREFIX="${rCDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${rCDUMP}.t${cyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_ATMOS_ANALYSIS
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
     COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
-MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COM_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
 
 mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
@@ -79,7 +79,7 @@ export PREPQCPF="${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
 # Copy fix file for obsproc  # TODO: Why is this necessary?
 if [[ ${RUN} = "gfs" ]]; then
     mkdir -p ${ROTDIR}/fix
-    cp ${FIXgsi}/prepobs_errtable.global ${ROTDIR}/fix/
+    cp ${FIXgfs}/gsi/prepobs_errtable.global ${ROTDIR}/fix/
 fi
 
 

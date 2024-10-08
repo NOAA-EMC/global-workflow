@@ -8,6 +8,10 @@
 # Remarks :                                                                   #
 # - Supplemental error output is witten to the gfswave_prdgbulls.log file.    #
 #                                                                             #
+# COM inputs:                                                                 #
+#  - ${COMIN_WAVE_STATION}/${RUNwave}.${cycle}.cbull_tar                      #
+# COM outputs:                                                                #
+#  - ${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}                         #
 #                                                                             #
 # Origination  : 05/02/2007                                                   #
 # Last update  : 08/20/2020                                                   # 
@@ -18,7 +22,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -29,12 +33,6 @@ source "$HOMEgfs/ush/preamble.sh"
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
- #export CODEwave=${CODEwave:-${PACKAGEROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
- export EXECwave=${EXECwave:-$HOMEgfs/exec}
- export FIXwave=${FIXwave:-$HOMEgfs/fix}
- export PARMwave=${PARMwave:-$HOMEgfs/parm/parm_wave}
- export USHwave=${USHwave:-$HOMEgfs/ush}
- #export EXECcode=${EXECcode:-CODEwave/exec}
 
  mkdir -p $DATA
  cd $DATA
@@ -58,11 +56,11 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 1.  Get necessary files
  set +x
- echo "   Copying bulletins from ${COM_WAVE_STATION}"
+ echo "   Copying bulletins from ${COMIN_WAVE_STATION}"
  set_trace
 
 # 1.a Link the input file and untar it
- BullIn="${COM_WAVE_STATION}/${RUNwave}.${cycle}.cbull_tar"
+ BullIn="${COMIN_WAVE_STATION}/${RUNwave}.${cycle}.cbull_tar"
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else
@@ -117,8 +115,8 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '   --------------------------'
   echo ' '
 # 1.c Get the datat cards
- if [ -f $PARMwave/bull_awips_gfswave ]; then
-   cp $PARMwave/bull_awips_gfswave awipsbull.data
+ if [ -f ${PARMgfs}/wave/bull_awips_gfswave ]; then
+   cp ${PARMgfs}/wave/bull_awips_gfswave awipsbull.data
  else
    msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    set +x
@@ -176,7 +174,7 @@ source "$HOMEgfs/ush/preamble.sh"
    set_trace
    
    formbul.pl -d "${headr}" -f "${fname}" -j "${job}" -m "${RUNwave}" \
-              -p "${COM_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
+              -p "${COMOUT_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
    OK=$?
 
    if [ "$OK" != '0' ] || [ ! -f $oname ]; then
@@ -202,18 +200,16 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 3. Send output files to the proper destination
 set_trace
-if [ "$SENDCOM" = YES ]; then
-  cp "awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
-  if [ "$SENDDBN_NTC" = YES ]; then
+cp "awipsbull.${cycle}.${RUNwave}" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
+if [ "$SENDDBN_NTC" = YES ]; then
     make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" "${DATA}/awipsbull.${cycle}.${RUNwave}" \
-      "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
-  else
+		     "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
+else
     if [ "${envir}" = "para" ] || [ "${envir}" = "test" ] || [ "${envir}" = "dev" ]; then
-      echo "Making NTC bulletin for parallel environment, but do not alert."
-      (export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
-          "${DATA}/awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}")
+	echo "Making NTC bulletin for parallel environment, but do not alert."
+	(export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
+					     "${DATA}/awipsbull.${cycle}.${RUNwave}" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}")
     fi
-  fi
 fi
 
 # --------------------------------------------------------------------------- #

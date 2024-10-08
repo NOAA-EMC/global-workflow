@@ -17,9 +17,19 @@
 # 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
 # 2018-05-30  Guang Ping Lou: Make sure all files are available.
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
+# 2024-03-03 Bo Cui: Add options to use different bufr table for different resolution NetCDF files
+# 2024-08-08 Bo Cui: Update to handle one forecast at a time
 # echo "History: February 2003 - First implementation of this utility script"
 #
-source "${HOMEgfs:?}/ush/preamble.sh"
+fhr="$1"
+fhr_p="$2"
+FINT="$3"
+F00FLAG="$4"
+workdir="$5"
+
+cd "${workdir}" || exit 2
+
+source "${USHgfs}/preamble.sh"
 
 if [[ "${F00FLAG}" == "YES" ]]; then
    f00flag=".true."
@@ -36,58 +46,70 @@ else
    bufrflag=".false."
 fi
 
-##fformat="nc"
-##fformat="nemsio"
+# check if read in bufr_ij_gfs_${CASE}.txt 
+
+if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt"  ]]; then
+  # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt 
+  ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
+  np1=0
+else
+  # find the nearest neighbor grid point(i,j) in the code
+  np1=1
+  echo "No bufr_ij_gfs_${CASE}.txt For CASE ${CASE}"
+  echo "Find the nearest neighbor grid (i,j) in the code"
+fi   
+
+##fformat="netcdf"
 
 CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
   levs=${LEVS},makebufr=${bufrflag},
   dird="${COM_ATMOS_BUFR}/bufr",
-  nstart=${FSTART},nend=${FEND},nint=${FINT},
+  nstart=${fhr},nend=${fhr},nint=${FINT},
   nend1=${NEND1},nint1=${NINT1},nint3=${NINT3},
-  nsfc=80,f00=${f00flag},fformat=${fformat},np1=0
+  nsfc=80,f00=${f00flag},fformat=${fformat},np1=${np1},
+  fnsig="sigf${fhr}",
+  fngrib="flxf${fhr}", 
+  fngrib2="flxf${fhr_p}" 
 /
 EOF
 
-for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
-   hh2=$(printf %02i "${hr}")
-   hh3=$(printf %03i "${hr}")
+#---------------------------------------------------------
+# Make sure all files are available:
 
-   #---------------------------------------------------------
-   # Make sure all files are available:
-   ic=0
-   while (( ic < 1000 )); do
-      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${hh3}.${logfm}" ]]; then
-          sleep 10
-          ic=$((ic + 1))
-      else
-          break
-      fi
+filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
+if [[ -z ${filename} ]]; then
+  echo "FATAL ERROR: COULD NOT LOCATE logf${fhr} file"
+  exit 2
+fi
 
-      if (( ic >= 360 )); then
-         echo "FATAL: COULD NOT LOCATE logf${hh3} file AFTER 1 HOUR"
-         exit 2
-      fi
-   done
-   #------------------------------------------------------------------
-   ln -sf "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}" 
-   ln -sf "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
-done
+filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr_p}.${logfm}"
+if [[ -z ${filename} ]]; then
+  echo "FATAL ERROR: COULD NOT LOCATE logf${fhr_p} file"
+  exit 2
+fi
+
+#------------------------------------------------------------------
+${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}" "sigf${fhr}"
+${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}" "flxf${fhr}"
+${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr_p}.${atmfm}" "flxf${fhr_p}"
 
 #  define input BUFR table file.
-ln -sf "${PARMbufrsnd}/bufr_gfs_${CLASS}.tbl" fort.1
-ln -sf "${STNLIST:-${PARMbufrsnd}/bufr_stalist.meteo.gfs}" fort.8
-ln -sf "${PARMbufrsnd}/bufr_ij13km.txt" fort.7
+${NLN} "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
+${NLN} "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
 
-${APRUN_POSTSND} "${EXECbufrsnd}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
+
+#------------------------------------------------------------------
+"${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${fhr}"
+
 export err=$?
 
-if [ $err -ne 0 ]; then
+if [[ "${err}" -ne 0 ]]; then
    echo "GFS postsnd job error, Please check files "
-   echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${hh2}.${atmfm}"
-   echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${hh2}.${atmfm}"
+   echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}"
+   echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}"
    err_chk
 fi
 
-exit ${err}
+exit "${err}"

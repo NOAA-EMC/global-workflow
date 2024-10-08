@@ -10,7 +10,7 @@
 # Log:									#
 # K. Brill/HPC		04/12/05					#
 #########################################################################  
-source "${HOMEgfs}/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # Set GEMPAK paths.
 

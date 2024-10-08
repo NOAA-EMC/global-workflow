@@ -88,14 +88,6 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
         print("FATAL ERROR: Inconsistent size of B(k) arrays: src=", bk.size, ", dst=", bi.size)
         sys.exit(108)
 
-    if not np.array_equal(ak, ai):
-        print("FATAL ERROR: A(k) coefficients must be identical")
-        sys.exit(109)
-
-    if not np.array_equal(bk, bi):
-        print("FATAL ERROR: B(k) coefficients must be identical")
-        sys.exit(110)
-
     dp = np.zeros(delp.shape)
     for k in range(0, dp.shape[0]):
         dp[k, :, :] = ak[k + 1] - ak[k] + psfc * (bk[k + 1] - bk[k])

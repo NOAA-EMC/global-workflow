@@ -1,0 +1,124 @@
+#!/bin/sh
+
+########################################
+# GFS AWIPS PRODUCT GENERATION
+########################################
+
+date
+export PS4='$SECONDS + ' 
+set -x
+
+# keep the working directory or not
+export KEEPDATA=${KEEPDATA:-NO}
+
+############################################
+# Working Directory
+############################################
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+############################################
+# Output for executables
+############################################
+export pgmout=OUTPUT.$$
+
+############################################
+# Load the UTILITIES module
+############################################
+#### module load prod_util
+#### module load grib_util
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=t${cyc}z 
+setpdy.sh
+. ./PDY
+
+############################################
+# Set up the NET and RUN
+############################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
+
+############################################
+# Specify HOME Directory 
+############################################
+export gfs_ver=${gfs_ver:-v16.3.0}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=$HOMEgfs/exec
+export FIXgfs=$HOMEgfs/fix/wafs
+export PARMgfs=$HOMEgfs/parm/wafs
+export USHgfs=$HOMEgfs/ush
+export SCRIPTSgfs=$HOMEgfs/scripts
+
+################################################
+# Set up the input/output directory
+################################################
+#### if [ $envir = "prod" ] || [ $envir = "para" ] ; then
+####  export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+#### else
+####   export COMIN=${COMIN:-$COMROOT/${NET}/prod/$RUN.$PDY}
+#### fi
+
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
+export PCOM=${PCOM:-$COMOUT/wmo}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+############################################
+# print current environment
+############################################
+env
+
+##############################################
+# Set up the forecast hours
+##############################################
+export FHOURS=${FHOURS:-"00 06 09 12 15 18 21 24 27 30 33 36 42 48 54 60 66 72"}
+
+############################################
+# Execute the script.
+############################################
+
+NP=`echo $FHOURS | wc -w`
+export MPIRUN=${MPIRUN:-"mpiexec -np $NP -cpu-bind verbose,core cfp"}
+
+rm wafsgrib2.cmdfile
+ic=0
+for fcsthrs in $FHOURS ; do
+  if [ `echo $MPIRUN | cut -d " " -f1` = 'srun' ] ; then
+    echo $ic ${SCRIPTSgfs}/exgfs_atmos_wafs_grib2.sh $fcsthrs >> wafsgrib2.cmdfile
+  else
+    echo ${SCRIPTSgfs}/exgfs_atmos_wafs_grib2.sh $fcsthrs >> wafsgrib2.cmdfile
+    export MP_PGMMODEL=mpmd
+  fi
+  ic=`expr $ic + 1`
+done
+
+$MPIRUN wafsgrib2.cmdfile
+
+export err=$?; err_chk
+
+echo "JOB $job HAS COMPLETED NORMALLY!"
+
+############################################
+# print exec output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+############################################
+# remove temporary working directory
+############################################
+if [ $KEEPDATA != YES ] ; then
+    rm -rf $DATA
+fi
+
+date
+

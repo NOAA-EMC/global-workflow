@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+########## config.vminmon ##########
+echo "BEGIN: config.vminmon"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" vminmon
+
+export MINMON_SUFFIX=${MINMON_SUFFIX:-${NET}}
+export CYCLE_INTERVAL=${assim_freq:-6}
+
+export mm_gnormfile=${PARMgfs}/monitor/${RUN}_minmon_gnorm.txt
+export mm_costfile=${PARMgfs}/monitor/${RUN}_minmon_cost.txt
+
+echo "END: config.vminmon"

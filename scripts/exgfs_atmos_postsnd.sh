@@ -18,11 +18,16 @@
 #   7) 2018-07-18       Guang Ping Lou Generalize this version to other platforms
 #   8) 2019-10-18       Guang Ping Lou Transition to reading in NetCDF model data
 #   9) 2019-12-18       Guang Ping Lou generalizing to reading in NetCDF or nemsio
+#  10) 2024-08-08       Bo Cui Update to handle one forecast at a time
+#                          For GFSv17 bufr, total number of forecast hours is 141(num_hours=141) 
+#                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
-cd $DATA
+runscript=${USHgfs}/gfs_bufr.sh 
+
+cd "${DATA}" || exit 2
 
 ########################################
 
@@ -44,55 +49,108 @@ export NINT3=${FHOUT_GFS:-3}
 
 rm -f -r "${COM_ATMOS_BUFR}"
 mkdir -p "${COM_ATMOS_BUFR}"
-GETDIM="${HOMEgfs}/ush/getncdimlen"
+
+GETDIM="${USHgfs}/getncdimlen"
 LEVS=$(${GETDIM} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
 declare -x LEVS
 
-### Loop for the hour and wait for the sigma and surface flux file:
-export FSTART=$STARTHOUR
-#
-while [ $FSTART -lt $ENDHOUR ]
-do
-export FINT=$NINT1
-   # Define the end hour for the input
-   export FEND=$(expr $FSTART + $INCREMENT) 
-   if test $FEND -lt 100; then FEND=0$FEND; fi 
-   if [ $FSTART -eq 00 ]
-   then 
-       export F00FLAG=YES
-   else
-       export F00FLAG=NO
-   fi
-   
-   if [ $FEND -eq $ENDHOUR ]
-   then
-       export MAKEBUFR=YES
-   fi
+# Initialize an empty list to store the hours
+hour_list=()
 
-   ic=0
-   while [ $ic -lt 1000 ]; do
-      if [[ ! -f "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${FEND}.${logfm}" ]]; then
-          sleep 10
-          ic=$(expr $ic + 1)
-      else
-          break
-      fi
-
-      if [ $ic -ge 360 ]
-      then
-         err_exit "COULD NOT LOCATE logf$FEND file AFTER 1 HOUR"
-      fi
-   done
-
-## 1-hourly output before $NEND1, 3-hourly output after
-   if [ $FEND -gt $NEND1 ]; then
-     export FINT=$NINT3
-   fi
-##   $USHbufrsnd/gfs_bufr.sh
-   $USHbufrsnd/gfs_bufr.sh
-  
-   export FSTART=$FEND
+# Generate hours from 0 to NEND1 with interval NINT1
+for (( hour=0; hour<=NEND1 && hour<=ENDHOUR; hour+=NINT1 )); do
+  hour_list+=("$(printf "%03d" "$hour")")
 done
+
+# Generate hours from NEND1 + NINT3 to ENDHOUR with interval NINT3
+for (( hour=NEND1+NINT3; hour<=ENDHOUR; hour+=NINT3 )); do
+  hour_list+=("$(printf "%03d" "$hour")")
+done
+
+# Print the hour list
+echo "Hour List:" "${hour_list[@]}"
+
+# Count the number of elements in the hour_list
+export ntasks="${#hour_list[@]}"
+
+# Print the total number of hours
+echo "Total number of hours: $ntasks"
+
+# allocate 21 processes per node
+# don't allocate more processes, or it might have memory issue
+#export tasks_per_node=21
+#export APRUN="mpiexec -np ${ntasks} -ppn ${tasks_per_node} --cpu-bind core cfp "
+
+if [ -s "${DATA}/poescript_bufr" ]; then
+  rm ${DATA}/poescript_bufr
+fi
+
+for fhr in "${hour_list[@]}"; do
+
+  if [ ! -s "${DATA}/${fhr}" ]; then mkdir -p ${DATA}/${fhr}; fi
+  export FINT=${NINT1}
+  ## 1-hourly output before $NEND1, 3-hourly output after
+  if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
+    export FINT=${NINT3}
+  fi
+  if [[ $((10#${fhr})) -eq 0 ]]; then 
+     export F00FLAG="YES"
+  else
+     export F00FLAG="NO"
+  fi
+
+  # Convert fhr to integer
+  fhr_int=$((10#$fhr))
+
+  # Get previous hour
+  if (( fhr_int == STARTHOUR )); then
+    fhr_p=${fhr_int}
+  else
+    fhr_p=$(( fhr_int - FINT ))
+  fi
+
+  # Format fhr_p with leading zeros
+  fhr_p="$(printf "%03d" "$fhr_p")" 
+
+  filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
+  if [[ -z ${filename} ]]; then
+    echo "File ${filename} is required but not found."
+    err_exit "FATAL ERROR: logf${fhr} not found."
+  else
+    echo "${runscript} \"${fhr}\" \"${fhr_p}\" \"${FINT}\" \"${F00FLAG}\" \"${DATA}/${fhr}\"" >> "${DATA}/poescript_bufr"
+  fi
+done
+
+# Run with MPMD 
+"${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr"
+
+cd "${DATA}" || exit 2
+
+# Initialize fortnum
+fortnum=20
+
+# Loop through each element in the array
+for fhr in "${hour_list[@]}"; do
+    # Increment fortnum
+    fortnum=$((fortnum + 1))
+    ${NLN} "${DATA}/${fhr}/fort.${fortnum}" "fort.${fortnum}"
+done
+
+# start to generate bufr products at fhr=${ENDHOUR}
+
+export MAKEBUFR=YES
+export fhr="$(printf "%03d" "$ENDHOUR")" 
+export FINT=${NINT1}
+## 1-hourly output before $NEND1, 3-hourly output after
+if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
+  export FINT=${NINT3}
+fi
+if [[ $((10#${fhr})) -eq 0 ]]; then
+  export F00FLAG="YES"
+else
+  export F00FLAG="NO"
+fi
+${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}" 
 
 ##############################################################
 # Tar and gzip the individual bufr files and send them to /com
@@ -114,8 +172,8 @@ fi
 # add appropriate WMO Headers.
 ########################################
 rm -rf poe_col
-for (( m = 1; m <10 ; m++ )); do
-    echo "sh ${USHbufrsnd}/gfs_sndp.sh ${m} " >> poe_col
+for (( m = 1; m <= NUM_SND_COLLECTIVES; m++ )); do
+    echo "sh ${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
 done
 
 if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
@@ -129,7 +187,8 @@ chmod +x cmdfile
 
 ${APRUN_POSTSNDCFP} cmdfile
 
-sh "${USHbufrsnd}/gfs_bfr2gpk.sh"
+sh "${USHgfs}/gfs_bfr2gpk.sh"
+
 
 
 ############## END OF SCRIPT #######################

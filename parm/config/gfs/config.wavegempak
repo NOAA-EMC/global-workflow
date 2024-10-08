@@ -8,6 +8,5 @@ echo "BEGIN: config.wavegempak"
 # Get task specific resources
 . $EXPDIR/config.resources wavegempak
 
-export SENDCOM="YES"
 
 echo "END: config.wavegempak"

@@ -1,0 +1,80 @@
+# Set variables/lists needed to parse the enkf templates
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+
+# Determine which data to archive
+datasets:
+{% if ENSGRP == 0 %}
+    {% filter indent(width=4) %}
+        # Archive the ensemble means and spreads
+{% include "enkf.yaml.j2" %}
+    {% endfilter %}
+{% else %}
+
+    # Archive individual member data
+    # First, construct individual member directories from templates
+    #    COMIN_ATMOS_ANALYSIS_MEM, COMIN_ATMOS_HISTORY_MEM, and COMIN_ATMOS_RESTART_MEM
+
+    # Declare to-be-filled lists of member COM directories
+    {% set COMIN_ATMOS_ANALYSIS_MEM_list = [] %}
+    {% set COMIN_ATMOS_RESTART_MEM_list = [] %}
+    {% set COMIN_ATMOS_HISTORY_MEM_list = [] %}
+
+    # Determine which ensemble members belong to this group
+    {% set first_group_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
+    {% set last_group_mem = [ ENSGRP * NMEM_EARCGRP, nmem_ens ] | min %}
+
+    # Construct member COM directories for the group
+    {% for mem in range(first_group_mem, last_group_mem + 1) %}
+
+        # Declare a dict of search and replace terms to run on each template
+        {% set mem_char = 'mem%03d' | format(mem) %}
+        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}': mem_char }) %}
+
+        {% set COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
+
+        # Append the member COM directories
+        {% do COMIN_ATMOS_ANALYSIS_MEM_list.append(COMIN_ATMOS_ANALYSIS_MEM)%}
+        {% do COMIN_ATMOS_HISTORY_MEM_list.append(COMIN_ATMOS_HISTORY_MEM)%}
+        {% do COMIN_ATMOS_RESTART_MEM_list.append(COMIN_ATMOS_RESTART_MEM)%}
+
+    {% endfor %}
+
+    # Archive member data
+    {% filter indent(width=4) %}
+{% include "enkf_grp.yaml.j2" %}
+    {% endfilter %}
+
+    # Determine if restarts should be saved
+    {% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}
+
+    # Save the increments and restarts every ARCH_WARMICFREQ days
+    # The ensemble increments (group a) should be saved on the ARCH_CYC
+    {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
+        {% if ARCH_CYC == cycle_HH | int %}
+            {% filter indent(width=4) %}
+{% include "enkf_restarta_grp.yaml.j2" %}
+            {% endfilter %}
+        {% endif %}
+    {% endif %}
+
+    # The ensemble ICs (group b) are restarts and always lag increments by assim_freq
+    {% set ics_offset = (assim_freq | string + "H") | to_timedelta %}
+    {% if (current_cycle | add_to_datetime(ics_offset) - SDATE).days % ARCH_WARMICFREQ == 0 %}
+        {% if (ARCH_CYC - assim_freq) % 24 == cycle_HH | int %}
+            {% filter indent(width=4) %}
+{% include "enkf_restartb_grp.yaml.j2" %}
+            {% endfilter %}
+        {% endif %}
+    {% endif %}
+
+    # End of individual member archiving
+{% endif %}

@@ -8,7 +8,4 @@ echo "BEGIN: config.prepatmiodaobs"
 # Get task specific resources
 . "${EXPDIR}/config.resources" prepatmiodaobs
 
-export BUFR2IODASH="${HOMEgfs}/ush/run_bufr2ioda.py"
-export IODAPARM="${HOMEgfs}/sorc/gdas.cd/parm/ioda/bufr2ioda"
-
 echo "END: config.prepatmiodaobs"

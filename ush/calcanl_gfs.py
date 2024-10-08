@@ -11,13 +11,16 @@ import sys
 import gsi_utils
 from collections import OrderedDict
 import datetime
+from wxflow import cast_as_dtype
+
+python2fortran_bool = {True: '.true.', False: '.false.'}
 
 
 # function to calculate analysis from a given increment file and background
 def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 ComIn_Ges, GPrefix,
                 FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
-                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, Cdump):
+                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, run, JEDI):
     print('calcanl_gfs beginning at: ', datetime.datetime.utcnow())
 
     IAUHH = IAUHrs
@@ -36,7 +39,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 gsi_utils.link_file(RunDir + '/siganl', CalcAnlDir + '/anl.06')
                 gsi_utils.copy_file(ExecChgresInc, CalcAnlDir + '/chgres_inc.x')
                 # for ensemble res analysis
-                if Cdump in ["gdas", "gfs"]:
+                if Run in ["gdas", "gfs"]:
                     CalcAnlDir = RunDir + '/calcanl_ensres_' + format(fh, '02')
                     if not os.path.exists(CalcAnlDir):
                         gsi_utils.make_dir(CalcAnlDir)
@@ -133,7 +136,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
     ExecCMDMPI1 = ExecCMDMPI.replace("$ncmd", str(1))
     ExecCMDMPI = ExecCMDMPI.replace("$ncmd", str(nFH))
     ExecCMDLevs = ExecCMDMPI.replace("$ncmd", str(levs))
-    ExecCMDMPI10 = ExecCMDMPI.replace("$ncmd", str(10))
+    ExecCMDMPI13 = ExecCMDMPI.replace("$ncmd", str(13))
 
     # are we using mpirun with lsf, srun, or aprun with Cray?
     launcher = ExecCMDMPI.split(' ')[0]
@@ -154,7 +157,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             ExecCMDMPILevs_host = 'mpirun -np ' + str(levs) + ' --hostfile hosts'
             ExecCMDMPILevs_nohost = 'mpirun -np ' + str(levs)
         ExecCMDMPI1_host = 'mpirun -np 1 --hostfile hosts'
-        ExecCMDMPI10_host = 'mpirun -np 10 --hostfile hosts'
+        ExecCMDMPI13_host = 'mpirun -np 13 --hostfile hosts'
     elif launcher == 'mpiexec':
         hostfile = os.getenv('PBS_NODEFILE', '')
         with open(hostfile) as f:
@@ -164,7 +167,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         [hosts.append(x) for x in hosts_tmp if x not in hosts]
         nhosts = len(hosts)
         ExecCMDMPI_host = 'mpiexec -l -n ' + str(nFH)
-        tasks = int(os.getenv('ntasks', 1))
+        tasks = int(os.getenv('ntasks_calcanl', 1))
         print('nhosts,tasks=', nhosts, tasks)
         if levs > tasks:
             ExecCMDMPILevs_host = 'mpiexec -l -n ' + str(tasks)
@@ -173,7 +176,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             ExecCMDMPILevs_host = 'mpiexec -l -n ' + str(levs)
             ExecCMDMPILevs_nohost = 'mpiexec -l -n ' + str(levs)
         ExecCMDMPI1_host = 'mpiexec -l -n 1 --cpu-bind depth --depth ' + str(NThreads)
-        ExecCMDMPI10_host = 'mpiexec -l -n 10 --cpu-bind depth --depth ' + str(NThreads)
+        ExecCMDMPI13_host = 'mpiexec -l -n 13 --cpu-bind depth --depth ' + str(NThreads)
     elif launcher == 'srun':
         nodes = os.getenv('SLURM_JOB_NODELIST', '')
         hosts_tmp = subprocess.check_output('scontrol show hostnames ' + nodes, shell=True)
@@ -198,7 +201,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             ExecCMDMPILevs_host = 'srun -n ' + str(levs) + ' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
             ExecCMDMPILevs_nohost = 'srun -n ' + str(levs) + ' --verbose --export=ALL'
         ExecCMDMPI1_host = 'srun -n 1 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
-        ExecCMDMPI10_host = 'srun -n 10 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
+        ExecCMDMPI13_host = 'srun -n 13 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
     elif launcher == 'aprun':
         hostfile = os.getenv('LSB_DJOB_HOSTFILE', '')
         with open(hostfile) as f:
@@ -211,7 +214,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         ExecCMDMPILevs_host = 'aprun -l hosts -d ' + str(NThreads) + ' -n ' + str(levs)
         ExecCMDMPILevs_nohost = 'aprun -d ' + str(NThreads) + ' -n ' + str(levs)
         ExecCMDMPI1_host = 'aprun -l hosts -d ' + str(NThreads) + ' -n 1'
-        ExecCMDMPI10_host = 'aprun -l hosts -d ' + str(NThreads) + ' -n 10'
+        ExecCMDMPI13_host = 'aprun -l hosts -d ' + str(NThreads) + ' -n 13'
     else:
         print('unknown MPI launcher. Failure.')
         sys.exit(1)
@@ -246,13 +249,13 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                         ihost += 1
                         for a in range(0, 5):
                             hostfile.write(hosts[ihost] + '\n')
-                    for a in range(0, 9):  # need 9 more of the same host for the 10 tasks for chgres_inc
+                    for a in range(0, 12):  # need 12 more of the same host for the 13 tasks for chgres_inc
                         hostfile.write(hosts[ihost] + '\n')
             if launcher == 'srun':
                 os.environ['SLURM_HOSTFILE'] = CalcAnlDir + '/hosts'
             print('interp_inc', fh, namelist)
-            job = subprocess.Popen(ExecCMDMPI10_host + ' ' + CalcAnlDir + '/chgres_inc.x', shell=True, cwd=CalcAnlDir)
-            print(ExecCMDMPI10_host + ' ' + CalcAnlDir + '/chgres_inc.x submitted on ' + hosts[ihost])
+            job = subprocess.Popen(ExecCMDMPI13_host + ' ' + CalcAnlDir + '/chgres_inc.x', shell=True, cwd=CalcAnlDir)
+            print(ExecCMDMPI13_host + ' ' + CalcAnlDir + '/chgres_inc.x submitted on ' + hosts[ihost])
             sys.stdout.flush()
             ec = job.wait()
             if ec != 0:
@@ -273,6 +276,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                          "firstguess_filename": "'ges'",
                          "increment_filename": "'inc.fullres'",
                          "fhr": 6,
+                         "jedi": python2fortran_bool[JEDI],
                          }
 
     gsi_utils.write_nml(namelist, CalcAnlDir6 + '/calc_analysis.nml')
@@ -295,7 +299,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         sys.exit(exit_fullres)
 
     # compute determinstic analysis on ensemble resolution
-    if Cdump in ["gdas", "gfs"]:
+    if Run in ["gdas", "gfs"]:
         chgres_jobs = []
         for fh in IAUHH:
             # first check to see if guess file exists
@@ -311,6 +315,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                                      "firstguess_filename": "'ges.ensres'",
                                      "increment_filename": "'siginc.nc'",
                                      "fhr": fh,
+                                     "jedi": python2fortran_bool[JEDI],
                                      }
 
                 gsi_utils.write_nml(namelist, CalcAnlDir6 + '/calc_analysis.nml')
@@ -346,7 +351,7 @@ if __name__ == '__main__':
     ComOut = os.getenv('COM_ATMOS_ANALYSIS', './')
     APrefix = os.getenv('APREFIX', '')
     NThreads = os.getenv('NTHREADS_CHGRES', 1)
-    FixDir = os.getenv('FIXgsm', './')
+    FixDir = os.path.join(os.getenv('FIXgfs', './'), 'am')
     atmges_ens_mean = os.getenv('ATMGES_ENSMEAN', './atmges_ensmean')
     RunDir = os.getenv('DATA', './')
     ExecCMD = os.getenv('APRUN_CALCANL', '')
@@ -354,12 +359,13 @@ if __name__ == '__main__':
     ExecAnl = os.getenv('CALCANLEXEC', './calc_analysis.x')
     ExecChgresInc = os.getenv('CHGRESINCEXEC', './interp_inc.x')
     NEMSGet = os.getenv('NEMSIOGET', 'nemsio_get')
-    IAUHrs = list(map(int, os.getenv('IAUFHRS', '6').split(',')))
-    Cdump = os.getenv('CDUMP', 'gdas')
+    IAUHrs = cast_as_dtype(os.getenv('IAUFHRS', '6,'))
+    Run = os.getenv('RUN', 'gdas')
+    JEDI = gsi_utils.isTrue(os.getenv('DO_JEDIATMVAR', 'YES'))
 
     print(locals())
     calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 ComIn_Ges, GPrefix,
                 FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
                 ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc,
-                Cdump)
+                Run, JEDI)

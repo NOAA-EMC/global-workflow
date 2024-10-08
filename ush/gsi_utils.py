@@ -78,7 +78,7 @@ def get_ncdims(ncfile):
     try:
         import netCDF4 as nc
     except ImportError as err:
-        raise ImportError(f"Unable to import netCDF4 module\n{err}")
+        raise ImportError(f"Unable to import netCDF4 module")
     ncf = nc.Dataset(ncfile)
     ncdims = {}
     for d in ncf.dimensions.keys():

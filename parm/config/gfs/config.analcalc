@@ -6,10 +6,6 @@
 echo "BEGIN: config.analcalc"
 
 # Get task specific resources
-. $EXPDIR/config.resources analcalc
-
-if [[ "$CDUMP" == "gfs" ]]; then
-   export nth_echgres=$nth_echgres_gfs
-fi
+. ${EXPDIR}/config.resources analcalc
 
 echo "END: config.analcalc"

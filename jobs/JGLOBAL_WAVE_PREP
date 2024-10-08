@@ -6,8 +6,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-export CDUMP=${RUN/enkf}
-
 # Set rtofs PDY
 export RPDY=${PDY}
 
@@ -16,19 +14,16 @@ export MP_PULSE=0
 # CDO required for processing RTOFS currents
 export CDO=${CDO_ROOT}/bin/cdo
 
-# Path to HOME Directory
-export FIXwave=${FIXwave:-${HOMEgfs}/fix/fix_wave_${NET}}
-export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
-export USHwave=${USHwave:-${HOMEgfs}/ush}
-export EXECwave=${EXECwave:-${HOMEgfs}/exec}
-
 # Set COM Paths and GETGES environment
-YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_WAVE_PREP
-generate_com -rx COM_RTOFS
-[[ ! -d ${COM_WAVE_PREP} ]] && mkdir -m 775 -p "${COM_WAVE_PREP}"
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+	COMIN_OBS:COM_OBS_TMPL \
+	COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+	COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
+	COMIN_RTOFS:COM_RTOFS_TMPL
+if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 
 # Execute the Script
-${HOMEgfs}/scripts/exgfs_wave_prep.sh
+${SCRgfs}/exgfs_wave_prep.sh
 
 ##########################################
 # Remove the Temporary working directory

@@ -16,14 +16,14 @@ Start your run from within your EXPDIR
 
 The first jobs of your run should now be queued or already running (depending on machine traffic). How exciting!
 
-You'll now have a "logs" folder in both your COMROT and EXPDIR. The EXPDIR log folder contains workflow log files (e.g. rocoto command results) and the COMROT log folder will contain logs for each job (previously known as dayfiles).
+You'll now have a "logs" folder in both your ``ROTDIR`` and ``EXPDIR``. The EXPDIR log folder contains workflow log files (e.g. rocoto command results) and the ``ROTDIR`` log folder will contain logs for each job (previously known as dayfiles).
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Set up your experiment cron
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
-   Orion currently only supports cron on Orion-login-1. Cron support for other login nodes is coming in the future.
+   Orion and Hercules currently only support cron on Orion-login-1 and Hercules-login-1, respectively. Cron support for other login nodes is coming in the future.
 
 ::
 

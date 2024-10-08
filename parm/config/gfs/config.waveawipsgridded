@@ -9,6 +9,5 @@ echo "BEGIN: config.waveawipsgridded"
 . $EXPDIR/config.resources waveawipsgridded
 
 export DBNROOT=/dev/null
-export SENDCOM="YES"
 
 echo "END: config.waveawipsgridded"

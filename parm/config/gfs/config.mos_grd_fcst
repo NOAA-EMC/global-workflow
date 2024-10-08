@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+########## config.mos_grd_fcst ##########
+echo "BEGIN: config.mos_grd_fcst"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" mos_grd_fcst
+
+# Get MOS settings
+. "${EXPDIR}/config.mos"
+
+echo "END: config.mos_grd_fcst"

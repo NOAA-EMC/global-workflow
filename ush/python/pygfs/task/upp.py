@@ -22,6 +22,8 @@ class UPP(Task):
     """Unified Post Processor Task
     """
 
+    VALID_UPP_RUN = ['analysis', 'forecast', 'goes', 'wafs']
+
     @logit(logger, name="UPP")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the UPP task
@@ -31,6 +33,7 @@ class UPP(Task):
         analysis: process analysis output
         forecast: process UFS-weather-model forecast output
         goes: process UFS-weather-model forecast output for simulated satellite imagery
+        wafs: process UFS-weather-model forecast output for WAFS products
 
         Parameters
         ----------
@@ -43,21 +46,27 @@ class UPP(Task):
         """
         super().__init__(config)
 
-        valid_datetime = add_to_datetime(self.runtime_config.current_cycle, to_timedelta(f"{self.config.FORECAST_HOUR}H"))
+        if self.task_config.UPP_RUN not in self.VALID_UPP_RUN:
+            raise NotImplementedError(f'{self.task_config.UPP_RUN} is not a valid UPP run type.\n' +
+                                      'Valid UPP_RUN values are:\n' +
+                                      f'{", ".join(self.VALID_UPP_RUN)}')
 
+        valid_datetime = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.FORECAST_HOUR}H"))
+
+        # Extend task_config with localdict
         localdict = AttrDict(
-            {'upp_run': self.config.UPP_RUN,
-             'forecast_hour': self.config.FORECAST_HOUR,
+            {'upp_run': self.task_config.UPP_RUN,
+             'forecast_hour': self.task_config.FORECAST_HOUR,
              'valid_datetime': valid_datetime,
              'atmos_filename': f"atm_{valid_datetime.strftime('%Y%m%d%H%M%S')}.nc",
              'flux_filename': f"sfc_{valid_datetime.strftime('%Y%m%d%H%M%S')}.nc"
              }
         )
-        self.task_config = AttrDict(**self.config, **self.runtime_config, **localdict)
+        self.task_config = AttrDict(**self.task_config, **localdict)
 
         # Read the upp.yaml file for common configuration
-        logger.info(f"Read the UPP configuration yaml file {self.config.UPP_CONFIG}")
-        self.task_config.upp_yaml = parse_j2yaml(self.config.UPP_CONFIG, self.task_config)
+        logger.info(f"Read the UPP configuration yaml file {self.task_config.UPP_CONFIG}")
+        self.task_config.upp_yaml = parse_j2yaml(self.task_config.UPP_CONFIG, self.task_config)
         logger.debug(f"upp_yaml:\n{pformat(self.task_config.upp_yaml)}")
 
     @staticmethod
@@ -193,7 +202,7 @@ class UPP(Task):
 
         template = f"GFS{{file_type}}.GrbF{forecast_hour:02d}"
 
-        for ftype in ['PRS', 'FLX']:
+        for ftype in ['PRS', 'FLX', 'GOES']:
             grbfile = template.format(file_type=ftype)
             grbfidx = f"{grbfile}.idx"
 
@@ -240,7 +249,7 @@ class UPP(Task):
     @logit(logger)
     def finalize(upp_run: Dict, upp_yaml: Dict) -> None:
         """Perform closing actions of the task.
-        Copy data back from the DATA/ directory to COM/
+        Copy data back from the DATA/ directory to COMOUT/
 
         Parameters
         ----------
@@ -250,6 +259,6 @@ class UPP(Task):
             Fully resolved upp.yaml dictionary
         """
 
-        # Copy "upp_run" specific generated data to COM/ directory
-        logger.info(f"Copy '{upp_run}' processed data to COM/ directory")
+        # Copy "upp_run" specific generated data to COMOUT/ directory
+        logger.info(f"Copy '{upp_run}' processed data to COMOUT/ directory")
         FileHandler(upp_yaml[upp_run].data_out).sync()

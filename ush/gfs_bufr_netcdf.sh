@@ -19,7 +19,7 @@
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
 # echo "History: February 2003 - First implementation of this utility script"
 #
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 if test "$F00FLAG" = "YES"
 then
@@ -66,6 +66,9 @@ hh=$FSTART
       hh1=$(echo "${hh#"${hh%??}"}")
       hh=$hh1
    fi
+
+sleep_interval=10
+max_tries=360   
 while  test $hh -le $FEND
 do  
    if test $hh -lt 100
@@ -75,27 +78,14 @@ do
       hh2=$hh
    fi
 
-#---------------------------------------------------------
-# Make sure all files are available:
-   ic=0
-   while [ $ic -lt 1000 ]
-   do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.txt ]
-      then
-          sleep 10
-          ic=$(expr $ic + 1)
-      else
-          break
-      fi
+   filename="${COMIN}/${RUN}.${cycle}.logf${hh2}.txt"
+   if ! wait_for_file "${filename}" "${sleep_interval}" "${max_tries}" ; then
+     err_exit "FATAL ERROR COULD NOT LOCATE logf${hh2} file"
+   fi
 
-      if [ $ic -ge 360 ]
-      then
-         err_exit "COULD NOT LOCATE logf${hh2} file AFTER 1 HOUR"
-      fi
-   done
 #------------------------------------------------------------------
-   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.nc sigf${hh} 
-   ln -sf $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
+   ${NLN} $COMIN/${RUN}.${cycle}.atmf${hh2}.nc sigf${hh}
+   ${NLN} $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
 
    hh=$( expr $hh + $FINT )
    if test $hh -lt 10
@@ -105,11 +95,11 @@ do
 done  
 
 #  define input BUFR table file.
-ln -sf $PARMbufrsnd/bufr_gfs_${CLASS}.tbl fort.1
-ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
-ln -sf $PARMbufrsnd/bufr_ij13km.txt fort.7
+${NLN} ${PARMgfs}/product/bufr_gfs_${CLASS}.tbl fort.1
+${NLN} ${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs} fort.8
+${NLN} ${PARMgfs}/product/bufr_ij13km.txt fort.7
 
-${APRUN_POSTSND} "${EXECbufrsnd}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
+${APRUN_POSTSND} "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
 export err=$?
 
 exit ${err}

@@ -17,15 +17,13 @@
 #
 ################################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
-CDUMP=${CDUMP:-"enkfgdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
@@ -37,11 +35,8 @@ bPDY=$(echo $BDATE | cut -c1-8)
 bcyc=$(echo $BDATE | cut -c9-10)
 
 # Utilities
-export NCP=${NCP:-"/bin/cp"}
-export NMV=${NMV:-"/bin/mv"}
-export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 
 # IAU
 DOIAU=${DOIAU:-"NO"}
@@ -49,7 +44,7 @@ export IAUFHRS=${IAUFHRS:-"6"}
 
 # Dependent Scripts and Executables
 export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-$HOMEgfs/exec/enkf_chgres_recenter_nc.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 APRUNCFP=${APRUNCFP:-""}
 
@@ -59,7 +54,7 @@ SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
 
 # level info file
-SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
+SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS}.txt}
 
 # forecast files
 APREFIX=${APREFIX:-""}
@@ -129,7 +124,7 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
       $NLN $ATMF09ENS  fcst.ensres.09
    fi
    export OMP_NUM_THREADS=$NTHREADS_CHGRES
-   SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS_ENKF}.txt}
+   SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS_ENKF}.txt}
 
    if [ $USE_CFP = "YES" ]; then
       [[ -f $DATA/mp_chgres.sh ]] && rm $DATA/mp_chgres.sh
@@ -168,7 +163,7 @@ EOF
       chmod 755 $DATA/mp_chgres.sh
       ncmd=$(cat $DATA/mp_chgres.sh | wc -l)
       if [ $ncmd -gt 0 ]; then
-         ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
+         ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
          APRUNCFP_CHGRES=$(eval echo $APRUNCFP)
 
          export pgm=$CHGRESNCEXEC

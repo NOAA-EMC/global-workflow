@@ -1,4 +1,0 @@
-cost_target:cost,grad,step,b,step?:
-cost_number:4:
-costterms_target:costterms Jb,Jo,Jc,Jl:
-

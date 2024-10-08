@@ -20,6 +20,8 @@
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 # 2020-07-31  Jessica Meixner: Removing points, now gridded data only
 #
+# COM inputs:
+#
 # $Id$
 #
 # Attributes:
@@ -30,7 +32,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -103,12 +105,12 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 1.a.1 Copy model definition files
   for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
-    if [[ -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
       set +x
-      echo " Mod def file for ${grdID} found in ${COM_WAVE_PREP}. copying ...."
+      echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f "${COM_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
     fi
   done
 
@@ -139,9 +141,9 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     for intGRD in $waveinterpGRD
     do
-      if [ -f $PARMwave/${intGRD}_interp.inp.tmpl ]
+      if [ -f ${PARMgfs}/wave/${intGRD}_interp.inp.tmpl ]
       then
-        cp -f $PARMwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
+        cp -f ${PARMgfs}/wave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
       fi
 
       if [ -f ${intGRD}_interp.inp.tmpl ]
@@ -168,9 +170,9 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     for grbGRD in $waveinterpGRD $wavepostGRD
     do
-      if [ -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ]
+      if [ -f ${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl ]
       then
-        cp -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
+        cp -f ${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
       fi
 
       if [ -f ww3_grib2.${grbGRD}.inp.tmpl ]
@@ -231,6 +233,7 @@ source "$HOMEgfs/ush/preamble.sh"
     fhr=$FHMIN_WAV
   fi
   fhrg=$fhr
+  sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
 
@@ -253,33 +256,27 @@ source "$HOMEgfs/ush/preamble.sh"
     export GRDIDATA=${DATA}/output_$YMDHMS
 
 # Gridded data (main part, need to be run side-by-side with forecast
-
+    
     if [ $fhr = $fhrg ]
     then
-      iwait=0
-      for wavGRD in ${waveGRD} ; do
-        gfile=${COM_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
-        while [ ! -s ${gfile} ]; do sleep 10; let iwait=iwait+1; done
-        if [ $iwait -eq $iwaitmax ]; then
-          echo '*************************************************** '
-          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
-          echo '*************************************************** '
-          echo ' '
-          set_trace
+      for wavGRD in ${waveGRD}; do
+        gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
+        if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
+          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"
           echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
-          err=3; export err;${errchk}
-          exit $err
+          err=3; export err; "${errchk}"
+          exit "${err}"
         fi
-        ln -s ${gfile} ./out_grd.${wavGRD}
+        ${NLN} "${gfile}" "./out_grd.${wavGRD}"
       done
-
+      
       if [ "$DOGRI_WAV" = 'YES' ]
       then
         nigrd=1
         for grdID in $waveinterpGRD
         do
           ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
-          echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           if [ "$DOGRB_WAV" = 'YES' ]
           then
             gribFL=\'$(echo ${OUTPARS_WAV})\'
@@ -287,6 +284,7 @@ source "$HOMEgfs/ush/preamble.sh"
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
+              glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
               glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
               glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
@@ -296,7 +294,7 @@ source "$HOMEgfs/ush/preamble.sh"
               wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
               ak_10m) GRDNAME='alaska' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
             esac
-            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+            echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           fi
           echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
@@ -321,11 +319,12 @@ source "$HOMEgfs/ush/preamble.sh"
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
               reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
               glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
+              glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
+	      glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
               glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
               gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
           esac
-          echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+          echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
         done
       fi
 
@@ -407,7 +406,7 @@ source "$HOMEgfs/ush/preamble.sh"
       ENSTAG=""
       if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
       gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-      if [ ! -s ${COM_WAVE_GRID}/${gribchk} ]; then
+      if [ ! -s ${COMOUT_WAVE_GRID}/${gribchk} ]; then
         set +x
         echo ' '
         echo '********************************************'

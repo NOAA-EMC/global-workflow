@@ -27,7 +27,7 @@ echo "--> radmon_diag_ck.sh"
 #  Process input arguments
 #
    nargs=$#
-   if [[ $nargs -ne 6 ]]; then
+   if [[ ${nargs} -ne 6 ]]; then
       usage
       exit 1
    fi
@@ -35,9 +35,9 @@ echo "--> radmon_diag_ck.sh"
    while [[ $# -ge 1 ]]
    do
       key="$1"
-      echo $key
+      echo "${key}"
 
-      case $key in
+      case ${key} in
          -r|--rad)
             radstat_file="$2"
             shift # past argument
@@ -52,7 +52,7 @@ echo "--> radmon_diag_ck.sh"
          ;;
          *)
             #unspecified key 
-            echo " unsupported key = $key"
+            echo " unsupported key = ${key}"
          ;;
       esac
 
@@ -71,7 +71,7 @@ echo "--> radmon_diag_ck.sh"
    #---------------------------------------------
    #  get list of diag files in the radstat file 
    #
-   radstat_contents=`tar -tf ${radstat_file} | grep '_ges' |  
+   radstat_contents=`tar -tf "${radstat_file}" | grep '_ges' |
 		gawk -F"diag_" '{print $2}' | 
 		gawk -F"_ges" '{print $1}'`
 
@@ -79,17 +79,17 @@ echo "--> radmon_diag_ck.sh"
    #---------------------------------------------
    #  load contents of satype_file into an array
    #
-   satype_contents=`cat ${satype_file}`
+   satype_contents=$(cat "${satype_file}")
 
  
    #-------------------------------------------------
    #  compare $satype_contents and $radstat_contents
    #    report anything missing 
    #
-   for sat in $satype_contents; do
-     test=`echo $radstat_contents | grep $sat`
-     
-     if [[ ${#test} -le 0 ]]; then
+   for sat in ${satype_contents}; do
+     content_count=$(echo "${radstat_contents}" | grep -c "${sat}")
+
+     if (( content_count <= 0 )); then
         missing_diag="${missing_diag} ${sat}"
      fi
 
@@ -117,10 +117,10 @@ echo "--> radmon_diag_ck.sh"
    # TODO Rewrite these array parsing commands to avoid using Bash's sloppy word splitting
    # File sizes contain only digits and immediately precede the date
    # shellcheck disable=SC2207
-   sizes=($(tar -vtf ${radstat_file} --wildcards '*_ges*' | grep -P -o '(\d)+(?= \d{4}-\d{2}-\d{2})'))
+   sizes=($(tar -vtf "${radstat_file}" --wildcards '*_ges*' | grep -P -o '(\d)+(?= \d{4}-\d{2}-\d{2})'))
    # Filenames are the last group of non-whitespace characters
    # shellcheck disable=SC2207
-   filenames=($(tar -vtf ${radstat_file} --wildcards '*_ges*' | grep -P -o '\S+$'))
+   filenames=($(tar -vtf "${radstat_file}" --wildcards '*_ges*' | grep -P -o '\S+$'))
    # shellcheck disable=
 
 
@@ -144,7 +144,7 @@ echo "--> radmon_diag_ck.sh"
             zero_len_diag="${zero_len_diag} ${sat}"
          fi
 
-         rm -f ${uz_file_name}
+         rm -f "${uz_file_name}"
       fi
 
    done
@@ -159,13 +159,13 @@ echo "--> radmon_diag_ck.sh"
    #
    if [[ ${#zero_len_diag} -gt 0 ]]; then
       for zld in ${zero_len_diag}; do
-         echo "  Zero Length diagnostic file:    $zld" >> $output_file
+         echo "  Zero Length diagnostic file:    ${zld}" >> "${output_file}"
       done
    fi
 
    if [[ ${#missing_diag} -gt 0 ]]; then
       for md in ${missing_diag}; do
-         echo "  Missing diagnostic file    :    $md" >> $output_file
+         echo "  Missing diagnostic file    :    ${md}" >> "${output_file}"
       done
    fi
 

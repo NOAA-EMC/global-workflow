@@ -1,0 +1,23 @@
+############################# sorted pgrb2a 201408
+:HGT:surface:
+:HGT:1000 mb:
+:HGT:500 mb:
+:PRMSL:mean sea level:
+:RH:700 mb:
+:TMP:2 m above ground:
+:TMP:850 mb:
+:UGRD:10 m above ground:
+:UGRD:200 mb:
+:UGRD:250 mb:
+:UGRD:850 mb:
+:VGRD:10 m above ground:
+:VGRD:200 mb:
+:VGRD:250 mb:
+:VGRD:850 mb:
+:APCP:surface
+:CSNOW:surface
+:CRAIN:surface
+:CICEP:surface
+:CFRZR:surface
+:ULWRF:top
+;############################ do not leave a blank line at the end

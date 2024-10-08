@@ -3,7 +3,7 @@ set -eux
 
 #####################################################################################
 #
-# Script description: BASH script for checking for cases in a given PR and 
+# Script description: BASH script for checking for cases in a given PR and
 #                     simply running rocotorun on each.  This script is intended
 #                     to run from within a cron job in the CI Managers account
 # Abstract TODO
@@ -20,9 +20,9 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion)
+  hera | orion | hercules | wcoss2 | gaea)
    echo "Running Automated Testing on ${MACHINE_ID}"
-   source "${HOMEgfs}/ci/platforms/${MACHINE_ID}.sh"
+   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
    ;;
  *)
    echo "Unsupported platform. Exiting with error."
@@ -30,6 +30,7 @@ case ${MACHINE_ID} in
    ;;
 esac
 set +x
+export HOMEgfs
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
@@ -47,7 +48,8 @@ pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/pr_list_database.py" --display --dbfile "${pr_list_dbfile}" | grep -v Failed | grep Open | grep Running | awk '{print $1}' | head -"${max_concurrent_pr}") || true
+  pr_list=$("${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Running) || true
+  pr_list=$(echo "${pr_list}" |  tr ' ' '\n' | head -n "${max_concurrent_pr}" | tr '\n' ' ') || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no open and built PRs that are ready for the cases to advance with rocotorun .. exiting"

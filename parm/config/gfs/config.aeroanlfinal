@@ -6,5 +6,5 @@
 echo "BEGIN: config.aeroanlfinal"
 
 # Get task specific resources
-. $EXPDIR/config.resources aeroanlfinal
+source "${EXPDIR}/config.resources" aeroanlfinal
 echo "END: config.aeroanlfinal"

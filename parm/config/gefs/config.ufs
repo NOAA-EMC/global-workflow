@@ -8,14 +8,15 @@
 
 echo "BEGIN: config.ufs"
 
-if [ $# -le 1 ]; then
+if (( $# <= 1 )); then
 
     echo "Must specify an input resolution argument to set variables!"
     echo "argument can be any one of the following:"
     echo "--fv3 C48|C96|C192|C384|C768|C1152|C3072"
     echo "--mom6 500|100|025"
     echo "--cice6 500|100|025"
-    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_200|glo_500|mx025"
+    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_200|glo_500|mx025|glo_100"
+    echo "--gocart"
 
     exit 1
 
@@ -25,26 +26,34 @@ fi
 skip_mom6=true
 skip_cice6=true
 skip_ww3=true
+skip_gocart=true
 skip_mediator=true
 
 # Loop through named arguments
-while [[ $# -gt 0 ]]; do
+while (( $# > 0 )); do
   key="$1"
   case "${key}" in
     "--fv3")
       fv3_res="$2"
+      shift
       ;;
     "--mom6")
       mom6_res="$2"
       skip_mom6=false
+      shift
       ;;
     "--cice6")
       cice6_res="$2"
       skip_cice6=false
+      shift
       ;;
     "--ww3")
       ww3_res="$2"
       skip_ww3=false
+      shift
+      ;;
+    "--gocart")
+      skip_gocart=false
       ;;
     *)    # unknown option
       echo "FATAL ERROR: Unknown option: ${key}, ABORT!"
@@ -52,54 +61,12 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
   shift
-  shift
 done
 
 # Mediator is required if any of the non-ATM components are used
 if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${skip_ww3}" == "false" ]]; then
   skip_mediator=false
 fi
-
-case "${machine}" in
-  "WCOSS2")
-    npe_node_max=128
-    ;;
-  "HERA" | "ORION")
-    npe_node_max=40
-    ;;
-  "JET")
-    case "${PARTITION_BATCH}" in
-      "xjet")
-        npe_node_max=24
-        ;;
-      "vjet" | "sjet")
-        npe_node_max=16
-        ;;
-      "kjet")
-        npe_node_max=40
-        ;;
-      *)
-        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
-        exit 1
-        ;;
-    esac
-    ;;
-  "S4")
-    case "${PARTITION_BATCH}" in
-      "s4")
-        npe_node_max=32
-        ;;
-      "ivy")
-        npe_node_max=20
-        ;;
-      *)
-        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
-        exit 1
-        ;;
-    esac
-    ;;
-esac
-export npe_node_max
 
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
@@ -111,7 +78,17 @@ case "${fv3_res}" in
         export layout_y_gfs=1
         export nthreads_fv3=1
         export nthreads_fv3_gfs=1
+        export nthreads_ufs=1
+        export nthreads_ufs_gfs=1
+        export xr_cnvcld=.false. # Do not pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="40.0,1.77,1.0,1.0"   # settings for GSL drag suite
+        export k_split=1
+        export n_split=4
+        export tau=10.0
+        export rf_cutoff=100.0
+        export fv_sg_adj=3600
+        export knob_ugwp_tauamp=6.0e-3      # setting for UGWPv1 non-stationary GWD
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
         export WRITE_GROUP_GFS=1
@@ -125,21 +102,40 @@ case "${fv3_res}" in
         export layout_y_gfs=2
         export nthreads_fv3=1
         export nthreads_fv3_gfs=1
+        export nthreads_ufs=1
+        export nthreads_ufs_gfs=1
+        export xr_cnvcld=".false."  # Do not pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="20.0,2.5,1.0,1.0"   # settings for GSL drag suite
+        export knob_ugwp_tauamp=3.0e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=1
+        export n_split=4
+        export tau=8.0
+        export rf_cutoff=100.0
+        export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
         ;;
     "C192")
-        export DELTIM=450
+        export DELTIM=600
         export layout_x=4
         export layout_y=6
         export layout_x_gfs=4
         export layout_y_gfs=6
         export nthreads_fv3=1
         export nthreads_fv3_gfs=2
+        export nthreads_ufs=1
+        export nthreads_ufs_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="10.0,3.5,1.0,1.0"   # settings for GSL drag suite
+        export knob_ugwp_tauamp=1.5e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=4
+        export tau=6.0
+        export rf_cutoff=100.0
+        export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
         export WRITE_GROUP_GFS=2
@@ -153,7 +149,16 @@ case "${fv3_res}" in
         export layout_y_gfs=8
         export nthreads_fv3=1
         export nthreads_fv3_gfs=2
+        export nthreads_ufs=1
+        export nthreads_ufs_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="5.0,5.0,1.0,1.0"   # settings for GSL drag suite
+        export knob_ugwp_tauamp=0.8e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=4
+        export tau=4.0
+        export rf_cutoff=100.0
+        export fv_sg_adj=900
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
         export WRITE_GROUP_GFS=2
@@ -167,25 +172,43 @@ case "${fv3_res}" in
         export layout_y_gfs=16
         export nthreads_fv3=4
         export nthreads_fv3_gfs=4
+        export nthreads_ufs=4
+        export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="2.5,7.5,1.0,1.0"   # settings for GSL drag suite
+        export knob_ugwp_tauamp=0.5e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=4
+        export tau=3.0
+        export rf_cutoff=100.0
+        export fv_sg_adj=450
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20 #Note this should be 10 for WCOSS2
         ;;
     "C1152")
-        export DELTIM=120
+        export DELTIM=150
         export layout_x=8
         export layout_y=16
         export layout_x_gfs=8
         export layout_y_gfs=16
         export nthreads_fv3=4
         export nthreads_fv3_gfs=4
+        export nthreads_ufs=4
+        export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="1.67,8.8,1.0,1.0"   # settings for GSL drag suite
+        export knob_ugwp_tauamp=0.35e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=6
+        export tau=2.5
+        export rf_cutoff=100.0
+        export fv_sg_adj=450
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10  # TODO: refine these numbers when a case is available
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20  # TODO: refine these numbers when a case is available
         ;;
     "C3072")
         export DELTIM=90
@@ -195,7 +218,16 @@ case "${fv3_res}" in
         export layout_y_gfs=32
         export nthreads_fv3=4
         export nthreads_fv3_gfs=4
+        export nthreads_ufs=4
+        export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="0.625,14.1,1.0,1.0"   # settings for GSL drag suite
+        export knob_ugwp_tauamp=0.13e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=4
+        export n_split=5
+        export tau=0.5
+        export rf_cutoff=100.0
+        export fv_sg_adj=300
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
@@ -222,26 +254,57 @@ export ntasks_fv3_gfs
 export ntasks_quilt
 export ntasks_quilt_gfs
 
-# Determine whether to use parallel NetCDF based on resolution
+# Determine whether to use compression in the write grid component
+# and whether to use parallel NetCDF based on resolution
 case ${fv3_res} in
-  "C48" | "C96" | "C192" | "C384")
+  "C48" | "C96" | "C192")
+    zstandard_level=0
+    ideflate=0
+    quantize_nsd=0
     OUTPUT_FILETYPE_ATM="netcdf"
     OUTPUT_FILETYPE_SFC="netcdf"
     ;;
-  "C768" | "C1152" | "C3072")
+  "C384" | "C768" | "C1152" | "C3072")
+    zstandard_level=0
+    ideflate=1
+    quantize_nsd=5
     OUTPUT_FILETYPE_ATM="netcdf_parallel"
-    OUTPUT_FILETYPE_SFC="netcdf_parallel"
+    if [[ "${fv3_res}" == "C384" ]]; then
+      OUTPUT_FILETYPE_SFC="netcdf"  # For C384, the write grid component is better off with serial netcdf
+    else
+      OUTPUT_FILETYPE_SFC="netcdf_parallel"
+    fi
+    ;;
+  *)
+    echo "FATAL ERROR: Unrecognized FV3 resolution ${fv3_res}"
+    exit 15
     ;;
 esac
+export zstandard_level ideflate quantize_nsd
 export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
+
+# cpl defaults
+export cpl=".false."
+export cplflx=".false."
+export cplice=".false."
+export cplchm=".false."
+export cplwav=".false."
+export cplwav2atm=".false."
+export CCPP_SUITE="FV3_GFS_v17_p8_ugwpv1"
+model_list="atm"
 
 # Mediator specific settings
 if [[ "${skip_mediator}" == "false" ]]; then
+  export cpl=".true."
   export nthreads_mediator=${nthreads_fv3}  # Use same threads as FV3
+  export CCPP_SUITE="FV3_GFS_v17_coupled_p8_ugwpv1"  # TODO: Does this include FV3_GFS_v17_p8?  Can this be used instead of FV3_GFS_v17_p8?
 fi
 
 # MOM6 specific settings
 if [[ "${skip_mom6}" == "false" ]]; then
+  source "${EXPDIR}/config.ocn"
+  export cplflx=".true."
+  model_list="${model_list}.ocean"
   nthreads_mom6=1
   case "${mom6_res}" in
     "500")
@@ -255,7 +318,15 @@ if [[ "${skip_mom6}" == "false" ]]; then
       CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
+      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
+        MOM6_DIAG_MISVAL="-1e34"
+      else
+        MOM6_DIAG_MISVAL="0.0"
+      fi
       eps_imesh="4.0e-1"
+      MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
+      MOM6_ALLOW_LANDMASK_CHANGES='False'
+      TOPOEDITS=""
       ;;
     "100")
       ntasks_mom6=20
@@ -264,13 +335,22 @@ if [[ "${skip_mom6}" == "false" ]]; then
       NY_GLB=320
       DT_DYNAM_MOM6='1800'
       DT_THERM_MOM6='3600'
-      FRUNOFF=""
+      FRUNOFF="runoff.daitren.clim.1deg.nc"
       CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
-      MOM6_RESTART_SETTING='n'
+      MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="2.5e-1"
+      TOPOEDITS="ufs.topo_edits_011818.nc"
+      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      fi
+      MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
-    "50")
+    "050")
       ntasks_mom6=60
       OCNTIM=3600
       NX_GLB=720
@@ -282,6 +362,15 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='True'
       eps_imesh="1.0e-1"
+      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      fi
+      MOM6_ALLOW_LANDMASK_CHANGES='False'
+      TOPOEDITS=""
       ;;
     "025")
       ntasks_mom6=220
@@ -295,6 +384,15 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
+      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
+        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+        MOM6_DIAG_MISVAL="-1e34"
+      else
+        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+        MOM6_DIAG_MISVAL="0.0"
+      fi
+      MOM6_ALLOW_LANDMASK_CHANGES='False'
+      TOPOEDITS=""
       ;;
     *)
       echo "FATAL ERROR: Unsupported MOM6 resolution = ${mom6_res}, ABORT!"
@@ -308,18 +406,26 @@ if [[ "${skip_mom6}" == "false" ]]; then
   export DT_DYNAM_MOM6 DT_THERM_MOM6
   export FRUNOFF
   export CHLCLIM
+  export TOPOEDITS
   export MOM6_RIVER_RUNOFF
   export MOM6_RESTART_SETTING
   export eps_imesh
+  export MOM6_DIAG_COORD_DEF_Z_FILE
+  export MOM6_DIAG_MISVAL
+  export MOM6_ALLOW_LANDMASK_CHANGES
 fi
 
 # CICE6 specific settings
 if [[ "${skip_cice6}" == "false" ]]; then
+  source "${EXPDIR}/config.ice"
+  export cplice=".true."
+  model_list="${model_list}.ice"
   # Ensure we sourced the MOM6 section
   if [[ "${skip_mom6}" == "true" ]]; then
     echo "FATAL ERROR: CICE6 cannot be configured without MOM6, ABORT!"
     exit 1
   fi
+
   nthreads_cice6=${nthreads_mom6}  # CICE6 needs to run on same threads as MOM6
   case "${cice6_res}" in
     "500")
@@ -351,6 +457,10 @@ fi
 
 # WW3 specific settings
 if [[ "${skip_ww3}" == "false" ]]; then
+  source "${EXPDIR}/config.wave"
+  export cplwav=".true."
+  export cplwav2atm=".true."
+  model_list="${model_list}.wave"
   nthreads_ww3=2
   case "${ww3_res}" in
     "gnh_10m;aoc_9km;gsh_15m")
@@ -361,6 +471,10 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ;;
     "glo_025")
       ntasks_ww3=262
+      ;;
+    "glo_100")
+      ntasks_ww3=20
+      nthreads_ww3=1
       ;;
     "glo_200")
       ntasks_ww3=30
@@ -379,6 +493,55 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ;;
   esac
   export ntasks_ww3 nthreads_ww3
+fi
+
+# GOCART specific settings
+if [[ "${skip_gocart}" == "false" ]]; then
+  source "${EXPDIR}/config.aero"
+  export cplchm=".true."
+  model_list="${model_list}.aero"
+fi
+
+# Set the name of the UFS (previously nems) configure template to use
+# Default ufs.configure templates for supported model configurations
+if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+  tmpl_suffix="_esmf"
+fi
+case "${model_list}" in
+  atm)
+    default_template="${PARMgfs}/ufs/ufs.configure.atm${tmpl_suffix:-}.IN"
+    ;;
+  atm.aero)
+    default_template="${PARMgfs}/ufs/ufs.configure.atmaero${tmpl_suffix:-}.IN"
+    ;;
+  atm.wave)
+    default_template="${PARMgfs}/ufs/ufs.configure.leapfrog_atm_wav${tmpl_suffix:-}.IN"
+    ;;
+  atm.ocean.ice)
+    default_template="${PARMgfs}/ufs/ufs.configure.s2s${tmpl_suffix:-}.IN"
+    ;;
+  atm.ocean.ice.aero)
+    default_template="${PARMgfs}/ufs/ufs.configure.s2sa${tmpl_suffix:-}.IN"
+    ;;
+  atm.ocean.ice.wave)
+    default_template="${PARMgfs}/ufs/ufs.configure.s2sw${tmpl_suffix:-}.IN"
+    ;;
+  atm.ocean.ice.wave.aero)
+    default_template="${PARMgfs}/ufs/ufs.configure.s2swa${tmpl_suffix:-}.IN"
+    ;;
+  *)
+    echo "FATAL ERROR: Unsupported UFSWM configuration for ${model_list}"
+    exit 16
+    ;;
+esac
+
+# Allow user to override the default template
+export ufs_configure_template=${ufs_configure_template:-${default_template:-"/dev/null"}}
+unset model_list default_template
+
+if [[ ! -r "${ufs_configure_template}" ]]; then
+  echo "FATAL ERROR: ${ufs_configure_template} either doesn't exist or is not readable."
+  exit 17
 fi
 
 echo "END: config.ufs"

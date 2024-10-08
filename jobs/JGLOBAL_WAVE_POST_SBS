@@ -8,16 +8,16 @@ export errchk=${errchk:-err_chk}
 
 export MP_PULSE=0
 
-# Path to HOME Directory
-export FIXwave=${FIXwave:-${HOMEgfs}/fix/fix_wave_${NET}}
-export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
-export USHwave=${USHwave:-${HOMEgfs}/ush}
-export EXECwave=${EXECwave:-${HOMEgfs}/exec}
-
 # Set COM Paths and GETGES environment
-YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP COM_WAVE_HISTORY COM_WAVE_GRID
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
+    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
 
-mkdir -p "${COM_WAVE_GRID}"
+for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
+    if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
+done
 
 
 # Set wave model ID tag to include member number
@@ -32,7 +32,7 @@ export WAV_MOD_TAG=${RUN}wave${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script
-${HOMEgfs}/scripts/exgfs_wave_post_gridded_sbs.sh
+${SCRgfs}/exgfs_wave_post_gridded_sbs.sh
 err=$?
 if [ ${err} -ne 0 ]; then
   echo "FATAL ERROR: ex-script of GWES_POST failed!"
