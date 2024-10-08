@@ -77,8 +77,8 @@ class AtmEnsAnalysis(Task):
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.jcb_base_yaml,
-                'jcb_algo': None
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF_OBS
+                'jcb_algo': None,
+                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF_OBS,
                 'aprun_cmd': self.task_config.APRUN_ATMENSANLOBS,
                 'yaml_name': 'atmensanlobs',
                 'jedi_args': ['fv3jedi', 'localensembleda']
@@ -92,8 +92,8 @@ class AtmEnsAnalysis(Task):
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.jcb_base_yaml,
-                'jcb_algo': None
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF_SOL
+                'jcb_algo': None,
+                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF_SOL,
                 'aprun_cmd': self.task_config.APRUN_ATMENSANLSOL,
                 'yaml_name': 'atmensanlsol',
                 'jedi_args': ['fv3jedi', 'localensembleda']
@@ -107,8 +107,8 @@ class AtmEnsAnalysis(Task):
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
                 'jcb_base_yaml': self.task_config.jcb_base_yaml,
-                'jcb_algo': self.task_config.JCB_ALGO_FV3INC
-                'jcb_algo_yaml': None
+                'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
+                'jcb_algo_yaml': None,
                 'aprun_cmd': self.task_config.APRUN_ATMENSANLFV3INC,
                 'yaml_name': 'atmensanlfv3inc',
                 'jedi_args': None
@@ -124,8 +124,8 @@ class AtmEnsAnalysis(Task):
             {
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.jcb_base_yaml,
-                'jcb_algo': None
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF
+                'jcb_algo': None,
+                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF,
                 'rundir': self.task_config.DATA,
                 'aprun_cmd': self.task_config.APRUN_ATMENSANLLETKF,
                 'yaml_name': 'atmensanlletkf',
@@ -185,7 +185,7 @@ class AtmEnsAnalysis(Task):
         # extract bias corrections
         tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
         logger.info(f"Extract bias correction files from {tar_file}")
-        self.jedi_letkf_obs..extract_tar(tar_file)
+        self.jedi_letkf_obs.extract_tar(tar_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")

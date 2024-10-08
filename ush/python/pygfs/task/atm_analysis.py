@@ -90,7 +90,7 @@ class AtmAnalysis(Task):
             {
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
                 'jcb_base_yaml': self.task_config.jcb_base_yaml,
-                'jcb_algo': self.task_config.JCB_ALGO_FV3INC
+                'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
                 'jcb_algo_yaml': None,
                 'rundir': self.task_config.DATA,
                 'aprun_cmd': self.task_config.APRUN_ATMANLFV3INC,

@@ -126,13 +126,12 @@ class Jedi:
         None
         """
 
-        if not self.jedi_config.jcb_algo_yaml and not algorithm:
-            logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
-            logger.error(f"FATAL ERROR: JEDI config must contain jcb_algo_yaml or algorithm be
-                         specified as an input to jedi.render_jcb()")
-
         # Fill JCB base YAML template and build JCB config dictionary
-        jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
+        if self.jedi_config.jcb_base_yaml:
+            jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
+        else:
+            logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
+            logger.error(f"FATAL ERROR: JEDI config must contain jcb_base_yaml.")
 
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
         if self.jedi_config.jcb_algo_yaml:
@@ -141,6 +140,14 @@ class Jedi:
         # Set algorithm in JCB config dictionary or override the one set by JCB_ALGO_YAML
         if algorithm:
             jcb_config['algorithm'] = algorithm
+        elif self.jedi_config.jcb_algo:
+            jcb_config['algorithm'] = self.jedi_config.jcb_algo
+        elif 'algorithm' in jcb_config:
+            pass
+        else:
+            logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
+            logger.error(f"FATAL ERROR: algorithm must be specified in JEDI config, " +
+                         "JCB algorithm YAML, or as input to jedi.render_jcb()")
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         jedi_config = render(jcb_config)
