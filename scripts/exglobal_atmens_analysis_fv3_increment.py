@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmEnsAnl = AtmEnsAnalysis(config)
 
     # Initialize and execute JEDI FV3 increment converter
-    AtmEnsAnl.jedi_fv3inc.execute()
+    AtmEnsAnl.jedi_fv3inc.execute(config.APRUN_ATMENSANLFV3INC)

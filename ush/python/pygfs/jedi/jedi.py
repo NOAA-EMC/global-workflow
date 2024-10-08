@@ -40,16 +40,17 @@ class Jedi:
         """
 
         # Create the configuration dictionary for JEDI object
-        self.jedi_config = config.deepcopy()
-
         local_dict = AttrDict(
             {
-                'exe': os.path.join(self.config.run_dir, os.path.basename(self.config.exe_src)),
-                'yaml': os.path.join(DATA, config.yaml_name + '.yaml'),
+                'exe': os.path.join(config.rundir, os.path.basename(config.exe_src)),
+                'yaml': os.path.join(config.rundir, config.yaml_name + '.yaml'),
                 'input_config': None
             }
         )
-        self.jedi_config.update(local_dict)
+        self.jedi_config = AttrDict(**config, **local_dict)
+
+        # Save a copy of jedi_config
+        self._jedi_config = self.jedi_config.deepcopy()
 
     @logit(logger)
     def initialize(self, task_config: AttrDict) -> None:
@@ -76,15 +77,13 @@ class Jedi:
         self.link_exe()
 
     @logit(logger)
-    def execute(self, aprun_cmd: str, jedi_args: Optional[List] = None) -> None:
+    def execute(self, aprun_cmd: str) -> None:
         """Execute JEDI application
 
         Parameters
         ----------
         aprun_cmd: str
             String comprising the run command for the JEDI executable.
-        jedi_args (optional): List
-            List of strings comprising optional input arguments for the JEDI executable.
 
         Returns
         ----------
@@ -92,9 +91,9 @@ class Jedi:
             Attribute-dictionary of JEDI configuration rendered from a template.
         """
 
-        chdir(self.rundir)
+        chdir(self.jedi_config.rundir)
 
-        exec_cmd = Executable(self.jedi_config.aprun_cmd)
+        exec_cmd = Executable(aprun_cmd)
         exec_cmd.add_default_arg(self.jedi_config.exe)
         if self.jedi_config.jedi_args:
             for arg in self.jedi_config.jedi_args:
@@ -131,13 +130,13 @@ class Jedi:
             jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         else:
             logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
-            logger.error(f"FATAL ERROR: JEDI config must contain jcb_base_yaml.")
+            logger.error(f"FATAL ERROR: JEDI configuration dictionary must contain jcb_base_yaml.")
 
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
         if self.jedi_config.jcb_algo_yaml:
             jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
 
-        # Set algorithm in JCB config dictionary or override the one set by JCB_ALGO_YAML
+        # Set algorithm in JCB config dictionary
         if algorithm:
             jcb_config['algorithm'] = algorithm
         elif self.jedi_config.jcb_algo:
@@ -146,8 +145,8 @@ class Jedi:
             pass
         else:
             logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
-            logger.error(f"FATAL ERROR: algorithm must be specified in JEDI config, " +
-                         "JCB algorithm YAML, or as input to jedi.render_jcb()")
+            logger.error(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
+                         "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         jedi_config = render(jcb_config)

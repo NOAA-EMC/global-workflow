@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmAnl = AtmAnalysis(config)
 
     # Initialize and execute FV3 increment converter
-    AtmAnl.jedi_fv3inc.execute()
+    AtmAnl.jedi_fv3inc.execute(config.APRUN_ATMANLFV3INC)

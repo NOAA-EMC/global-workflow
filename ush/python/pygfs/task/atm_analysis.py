@@ -74,11 +74,10 @@ class AtmAnalysis(Task):
         jedi_config = AttrDict(
             {
                 'exe_src': self.task_config.JEDIEXE_VAR,
-                'jcb_base_yaml': self.task_config.jcb_base_yaml,
+                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_VAR,
                 'rundir': self.task_config.DATA,
-                'aprun_cmd': self.task_config.APRUN_ATMANLVAR,
                 'yaml_name': 'atmanlvar',
                 'jedi_args': ['fv3jedi', 'variational']
             }
@@ -89,11 +88,10 @@ class AtmAnalysis(Task):
         jedi_config = AttrDict(
             {
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
-                'jcb_base_yaml': self.task_config.jcb_base_yaml,
+                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
                 'jcb_algo_yaml': None,
                 'rundir': self.task_config.DATA,
-                'aprun_cmd': self.task_config.APRUN_ATMANLFV3INC,
                 'yaml_name': 'atmanlfv3inc',
                 'jedi_args': None
             }
@@ -126,11 +124,11 @@ class AtmAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_var.initialize()
+        self.jedi_var.initialize(self.task_config)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi_fv3inc.initialize()
+        self.jedi_fv3inc.initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
@@ -141,14 +139,17 @@ class AtmAnalysis(Task):
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
         bias_dict = self.jedi_var.render_jcb(self.task_config, 'atm_bias_staging')
-        bias_dict['copy'] = jedi.remove_redundant(bias_dict['copy'])
+        bias_dict['copy'] = self.jedi_var.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # extract bias corrections
-        tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
-        logger.info(f"Extract bias correction files from {tar_file}")
-        self.jedi_var.extract_tar(tar_file)
+        for item in bias_dict['copy']:
+            bias_file = os.path.basename(item[0])
+            if os.path.splitext(bias_file)[1] == '.tar':
+                tar_file = f"{os.path.dirname(item[1])}/{bias_file}"
+                logger.info(f"Extract bias correction files from {tar_file}")
+                self.jedi_var.extract_tar(tar_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")

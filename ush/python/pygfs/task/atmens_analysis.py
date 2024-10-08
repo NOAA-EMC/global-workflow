@@ -76,10 +76,9 @@ class AtmEnsAnalysis(Task):
             {
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
-                'jcb_base_yaml': self.task_config.jcb_base_yaml,
+                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF_OBS,
-                'aprun_cmd': self.task_config.APRUN_ATMENSANLOBS,
+                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_OBS,
                 'yaml_name': 'atmensanlobs',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
@@ -91,10 +90,9 @@ class AtmEnsAnalysis(Task):
             {
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
-                'jcb_base_yaml': self.task_config.jcb_base_yaml,
+                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF_SOL,
-                'aprun_cmd': self.task_config.APRUN_ATMENSANLSOL,
+                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_SOL,
                 'yaml_name': 'atmensanlsol',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
@@ -106,10 +104,9 @@ class AtmEnsAnalysis(Task):
             {
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
-                'jcb_base_yaml': self.task_config.jcb_base_yaml,
+                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
                 'jcb_algo_yaml': None,
-                'aprun_cmd': self.task_config.APRUN_ATMENSANLFV3INC,
                 'yaml_name': 'atmensanlfv3inc',
                 'jedi_args': None
             }
@@ -123,11 +120,10 @@ class AtmEnsAnalysis(Task):
         jedi_config = AttrDict(
             {
                 'exe_src': self.task_config.JEDIEXE_LETKF,
-                'jcb_base_yaml': self.task_config.jcb_base_yaml,
+                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF,
                 'rundir': self.task_config.DATA,
-                'aprun_cmd': self.task_config.APRUN_ATMENSANLLETKF,
                 'yaml_name': 'atmensanlletkf',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
@@ -159,15 +155,15 @@ class AtmEnsAnalysis(Task):
 
         # initialize JEDI LETKF observer application
         logger.info(f"Initializing JEDI LETKF observer application")
-        self.jedi_letkf_obs.initialize()
+        self.jedi_letkf_obs.initialize(self.task_config)
 
         # initialize JEDI LETKF solver application
         logger.info(f"Initializing JEDI LETKF solver application")
-        self.jedi_letkf_sol.initialize()
+        self.jedi_letkf_sol.initialize(self.task_config)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi_fv3inc.initialize()
+        self.jedi_fv3inc.initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
@@ -183,9 +179,12 @@ class AtmEnsAnalysis(Task):
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # extract bias corrections
-        tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
-        logger.info(f"Extract bias correction files from {tar_file}")
-        self.jedi_letkf_obs.extract_tar(tar_file)
+        for item in bias_dict['copy']:
+            bias_file = os.path.basename(item[0])
+            if os.path.splitext(bias_file)[1] == '.tar':
+                tar_file = f"{os.path.dirname(item[1])}/{bias_file}"
+                logger.info(f"Extract bias correction files from {tar_file}")
+                self.jedi_var.extract_tar(tar_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
