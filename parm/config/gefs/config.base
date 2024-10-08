@@ -64,6 +64,7 @@ export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
 export MODE="@MODE@" # cycled/forecast-only
+export SFS_POST=@SFS_POST@ # TODO, place holder until RUN=SFS is developed
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -244,7 +245,7 @@ export FHMAX_GFS="@FHMAX_GFS@"
 breakpnts="@FCST_BREAKPOINTS@"
 export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
 
-export FHOUT_GFS=6
+export FHOUT_GFS=@FHOUT_GFS@
 export FHMAX_HF_GFS=@FHMAX_HF_GFS@
 export FHOUT_HF_GFS=@FHOUT_HF_GFS@
 export FHOUT_OCN_GFS=@FHOUT_OCN_GFS@

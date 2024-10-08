@@ -26,11 +26,11 @@ export FLXGF="NO"  # Create interpolated sflux.1p00 file
 
 # paramlist files for the different forecast hours and downsets
 if [[ ${SFS_POST} == "YES" ]]; then
-    local post_prefix='sfs'
+    export post_prefix='sfs'
 else
-    local post_prefix='gefs'
+    export post_prefix='gefs'
 fi
-export paramlista="${PARMgfs}/product/${post_preix}.0p25.fFFF.paramlist.a.txt"
+export paramlista="${PARMgfs}/product/${post_prefix}.0p25.fFFF.paramlist.a.txt"
 export paramlista_anl="${PARMgfs}/product/${post_prefix}.0p25.anl.paramlist.a.txt"
 export paramlista_f000="${PARMgfs}/product/${post_prefix}.0p25.f000.paramlist.a.txt"
 export paramlistb="${PARMgfs}/product/${post_prefix}.0p25.fFFF.paramlist.b.txt"
