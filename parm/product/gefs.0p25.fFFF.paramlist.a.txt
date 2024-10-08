@@ -20,6 +20,7 @@
 :CIN:surface:
 :HLCY:3000-0 m above ground:
 :TCDC:entire atmosphere (considered as a single layer):
+:PEVPR:surface:
 :WEASD:surface:
 :SNOD:surface:
 :ULWRF:top of atmosphere:
