@@ -174,7 +174,7 @@ class AtmEnsAnalysis(Task):
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
         bias_dict = self.jedi_letkf_obs.render_jcb(self.task_config, 'atm_bias_staging')
-        bias_dict['copy'] = jedi_letkf_obs.remove_redundant(bias_dict['copy'])
+        bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
@@ -184,7 +184,7 @@ class AtmEnsAnalysis(Task):
             if os.path.splitext(bias_file)[1] == '.tar':
                 tar_file = f"{os.path.dirname(item[1])}/{bias_file}"
                 logger.info(f"Extract bias correction files from {tar_file}")
-                self.jedi_var.extract_tar(tar_file)
+                Jedi.extract_tar(tar_file)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
