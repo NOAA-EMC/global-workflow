@@ -175,7 +175,6 @@ class GEFSTasks(Tasks):
     def repair_replay(self):
 
         deps = []
-#        history_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'MEMDIR': 'mem#member#'})
         history_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"], {'MEMDIR': 'mem#member#'})
         data = f'{history_path}/{self.run}.t@Hz.master.grb2f006'
         dep_dict = {'type': 'data', 'data': data}
