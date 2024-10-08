@@ -19,7 +19,7 @@ env:
 
 jobs:
   checkout-build-link:
-    runs-on: [self-hosted, aws, pw]
+    runs-on: [self-hosted, aws, parallelworks]
     timeout-minutes: 600
 
     steps:
@@ -40,7 +40,7 @@ jobs:
 
   create-experiments:
     needs: checkout-build-link
-    runs-on: [self-hosted, aws, pw]
+    runs-on: [self-hosted, aws, parallelworks]
     strategy:
       matrix:
         case: ["C48_ATM"]
@@ -59,7 +59,7 @@ jobs:
 
   run-experiments:
     needs: create-experiments
-    runs-on: [self-hosted, aws, pw]
+    runs-on: [self-hosted, aws, parallelworks]
     strategy:
       max-parallel: 2
       matrix:
@@ -72,7 +72,7 @@ jobs:
 
   clean-up:
     needs: run-experiments
-    runs-on: [self-hosted, aws, pw]
+    runs-on: [self-hosted, aws, parallelworks]
     steps:
       - name: Clean-up
         run: |
