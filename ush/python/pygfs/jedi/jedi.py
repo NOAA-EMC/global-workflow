@@ -229,7 +229,7 @@ class Jedi:
             else:
                 filename = os.path.basename(item[0])
 
-            # Extract if file is a tarball    
+            # Extract if file is a tarball
             if os.path.splitext(filename)[1] == '.tar':
                 tar_file = f"{os.path.dirname(item[1])}/{filename}"
                 if os.path.isfile(tar_file):
@@ -271,6 +271,7 @@ def extract_tar(tar_file: str) -> None:
     except tarfile.ExtractError as err:
         logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
         raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
+
 
 # TODO: remove since no longer used
 @logit(logger)
