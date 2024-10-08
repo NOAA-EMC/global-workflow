@@ -14,7 +14,7 @@ unload("gnu")
 load("py-jinja2")
 load("py-pyyaml")
 load("py-numpy")
-local git_ver=os.getenv("git_ver") or "1.8.3.1"
-load(pathJoin("git", git_ver))
+--local git_ver=os.getenv("git_ver") or "1.8.3.1"
+--load(pathJoin("git", git_ver))
 
 whatis("Description: GFS run setup environment")
