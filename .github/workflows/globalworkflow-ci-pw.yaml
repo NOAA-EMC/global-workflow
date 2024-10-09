@@ -22,7 +22,8 @@ jobs:
     runs-on: [self-hosted, aws, parallelworks]
     timeout-minutes: 600
 
-  steps:
+    steps:
+
     - name: Checkout global-workflow
       uses: actions/checkout@v4
       with:
