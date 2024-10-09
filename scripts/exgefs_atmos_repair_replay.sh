@@ -17,6 +17,7 @@ oufile=${DATA}/gefs.t00z.master.grb2f0${fnh}
 infile=${COMIN_03}/GFSPRS.GrbF03
 if [[ -f "${infile}" ]]; then #check if input file exists before extraction
   ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp
+  export err=$?; err_chk
 
   ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null
   export err=$?; err_chk
