@@ -8,6 +8,7 @@ cd "${DATA}" || exit 1
 #COMIN_03 and {COMIN_ATMOS_MASTER} are directory containing the files that we want to extract
 #Extract c00 files for f003 from PSL reanalysis data
 
+
 fnh=03
 echo "extracting f${fnh}"
 oufile=${DATA}/gefs.t00z.master.grb2f0${fnh}
