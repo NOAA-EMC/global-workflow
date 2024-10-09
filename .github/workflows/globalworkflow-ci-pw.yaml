@@ -58,7 +58,7 @@ jobs:
           cd ${{ env.TEST_DIR }}/HOMEgfs
           source workflow/gw_setup.sh
           source ci/platforms/config.noaacloud
-          ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
+          ./workflow/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml
 
   run-experiments:
     needs: create-experiments
