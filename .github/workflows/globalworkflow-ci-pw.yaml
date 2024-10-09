@@ -28,11 +28,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: ${{ github.run_id }}/HOMEgfs
-        submodules: true
-        fetch-depth: 0
-        persist-credentials: false
-        submodules-recursive: true
-        submodules-fetch-jobs: 8
+        submodules: 'recursive'
 
     - name: Build components
       run: |
