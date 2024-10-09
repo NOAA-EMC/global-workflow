@@ -63,6 +63,14 @@ case ${step} in
         (( WRTTASK_PER_GROUP_PER_THREAD_GFS = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS * 6 ))
         export WRTTASK_PER_GROUP_PER_THREAD_GDAS
         export WRTTASK_PER_GROUP_PER_THREAD_GFS
+        (( ntasks_quilt_gdas = WRITE_GROUP_GDAS * WRTTASK_PER_GROUP_PER_THREAD_GDAS ))
+        (( ntasks_quilt_gfs = WRITE_GROUP_GFS * WRTTASK_PER_GROUP_PER_THREAD_GFS ))
+        export ntasks_quilt_gdas
+        export ntasks_quilt_gfs
+        if [[ "${gaea_sourced_resources:-false}" == false ]]; then
+            export gaea_sourced_resources=true
+            source "${EXPDIR}/config.resources" "${step}"
+        fi
         ;;
       *)
         ;;  
