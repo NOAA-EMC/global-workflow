@@ -29,8 +29,7 @@ jobs:
       with:
         path: ${{ github.run_id }}/HOMEgfs
         submodules: true
-        submodules-depth: 1
-        fetch-depth: 1
+        fetch-depth: 0
         persist-credentials: false
         submodules-recursive: true
         submodules-fetch-jobs: 8
