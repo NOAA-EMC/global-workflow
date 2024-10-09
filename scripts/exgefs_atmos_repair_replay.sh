@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=SC2312
 
 
 source "${USHgfs}/preamble.sh"
@@ -15,7 +16,7 @@ oufile=${DATA}/gefs.t00z.master.grb2f0${fnh}
 
 infile=${COMIN_03}/GFSPRS.GrbF03
 if [[ -f "${infile}" ]]; then #check if input file exists before extraction
-  ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp || exit 1
+  ${WGRIB2} "${infile}" | grep "TSNOWP" | ${WGRIB2} -i "${infile}" -grib tmp
 
   ${WGRIB2} tmp -for "2:2" -append -grib  "${oufile}">/dev/null
   export err=$?; err_chk
