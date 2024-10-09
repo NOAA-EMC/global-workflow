@@ -70,7 +70,7 @@ jobs:
       - name: Run Experiment ${{ matrix.case }}
         run: |
           cd ${{ env.TEST_DIR }}/HOMEgfs
-          ./ci/scripts/run-check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }}
+          ./ci/scripts/run-check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }} HOMEgfs
 
   clean-up:
     needs: run-experiments
