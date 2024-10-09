@@ -116,7 +116,7 @@
 
 {% if REPLAY_ICS %}
 {% filter indent(width=4) %}
-{% include "atmosphere_perturbation.yaml.j2" %}
+{% include "atmosphere_ens_perturbations.yaml.j2" %}
 {% endfilter %}
 {% endif %}
 
@@ -137,7 +137,7 @@
 {% endif %}
 {% if REPLAY_ICS %}
 {% filter indent(width=4) %}
-{% include "ocean_replay.yaml.j2" %}
+{% include "ocean_ens_perturbations.yaml.j2" %}
 {% endfilter %}
 {% endif %}
 {% if EXP_WARM_START %}
