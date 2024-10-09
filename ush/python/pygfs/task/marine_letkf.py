@@ -108,6 +108,9 @@ class MarineLETKF(Analysis):
         obs_files = []
         for ob in obs_list['observers']:
             obs_name = ob['obs space']['name'].lower()
+            # TODO(AFE) - this should be removed when the obs config yamls are jinjafied
+            if 'distribution' not in ob['obs space']:
+                ob['obs space']['distribution'] = {'name': 'Halo', 'halo size': self.task_config['DIST_HALO_SIZE']}
             obs_filename = f"{self.task_config.RUN}.t{self.task_config.cyc}z.{obs_name}.{to_YMDH(self.task_config.current_cycle)}.nc4"
             obs_files.append((obs_filename, ob))
 
