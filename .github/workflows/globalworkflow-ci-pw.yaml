@@ -50,7 +50,6 @@ jobs:
     steps:
       - name: Create Experiments ${{ matrix.case }}
         env:
-          HOMEgfs: ${{ env.TEST_DIR }}/HOMEgfs
           RUNTESTS: ${{ env.TEST_DIR }}/RUNTESTS
           pslot: ${{ matrix.case }}.${{ github.run_id }}
         run: |
