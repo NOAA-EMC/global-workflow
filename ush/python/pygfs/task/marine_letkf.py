@@ -167,7 +167,6 @@ class MarineLETKF(Analysis):
             raise OSError(f"Failed to execute {exec_cmd_gridgen}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd_gridgen}")
-        pass
 
         exec_cmd_letkf = Executable(self.task_config.APRUN_MARINEANLLETKF)
         for letkf_exec_arg in self.task_config.letkf_exec_args:
@@ -180,7 +179,6 @@ class MarineLETKF(Analysis):
             raise OSError(f"Failed to execute {exec_cmd_letkf}")
         except Exception:
             raise WorkflowException(f"An error occured during execution of {exec_cmd_letkf}")
-        pass
 
     @logit(logger)
     def finalize(self):
