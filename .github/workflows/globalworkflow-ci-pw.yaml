@@ -22,11 +22,17 @@ jobs:
     runs-on: [self-hosted, aws, parallelworks]
     timeout-minutes: 600
 
-    steps:
+  steps:
     - name: Checkout global-workflow
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
-        path: ${{ github.run_id }}/HOMEgfs  # This path needs to be relative
+        path: ${{ github.run_id }}/HOMEgfs
+        submodules: true
+        submodules-depth: 1
+        fetch-depth: 1
+        persist-credentials: false
+        submodules-recursive: true
+        submodules-fetch-jobs: 8
 
     - name: Build components
       run: |
