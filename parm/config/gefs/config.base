@@ -229,6 +229,15 @@ export FHOUT_ICE=3
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
+# set variables needed for use with REPLAY ICs
+export REPLAY_ICS=@REPLAY_ICS@
+if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+    export OFFSET_START_HOUR=$(( assim_freq / 2 ))
+else
+    export OFFSET_START_HOUR=0
+fi
+
+
 # GFS output and frequency
 export FHMIN_GFS=0
 export FHMAX_GFS="@FHMAX_GFS@"
@@ -238,10 +247,10 @@ export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
 
 export FHOUT_GFS=6
 export FHMAX_HF_GFS=@FHMAX_HF_GFS@
-export FHOUT_HF_GFS=1
-export FHOUT_OCN_GFS=6
-export FHOUT_ICE_GFS=6
-export FHMIN_WAV=0
+export FHOUT_HF_GFS=@FHOUT_HF_GFS@
+export FHOUT_OCN_GFS=@FHOUT_OCN_GFS@
+export FHOUT_ICE_GFS=@FHOUT_ICE_GFS@
+export FHMIN_WAV=${OFFSET_START_HOUR:-0}
 export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
@@ -290,20 +299,9 @@ export NMEM_ENS=@NMEM_ENS@
 export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
 
-# initialize ocean ensemble members with perturbations
-#   if true, only occurs for members greater than zero
-export REPLAY_ICS=@REPLAY_ICS@
-if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-    export OFFSET_START_HOUR=$(( assim_freq / 2 ))
-else
-    export OFFSET_START_HOUR=0
-fi
-
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
-# Check if cycle is cold starting
-if [[ "${EXP_WARM_START}" = ".false." ]]; then
-  export IAU_FHROT=${OFFSET_START_HOUR}
-else
+# Check if cycle is warm starting with IAU
+if [[ "${EXP_WARM_START}" = ".true." ]]; then
   if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
   else
