@@ -155,6 +155,7 @@ export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
 # APP settings; configurable by RUN
+# If a component (WAVES, etc) needs to be turned on/off by RUN, set it here
 case "${RUN}" in
     "gfs")
         export APP=@APP@
@@ -193,9 +194,11 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-export AERO_FCST_RUN="" # When to run aerosol forecast: gdas, gfs, or both
-export AERO_ANL_RUN="" # When to run aerosol analysis: gdas, gfs, or both
-export WAVE_RUN="" # When to include wave suite: gdas, gfs, or both
+aero_fcst_runs="gdas" # When to run aerosol forecast: gdas, gfs, or both
+aero_anl_runs="gdas gfs" # When to run aerosol analysis: gdas, gfs, or both
+wave_runs="gdas gfs" # When to include wave suite: gdas, gfs, or both
+export DO_AERO_FCST="NO"
+export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -246,13 +249,10 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
-    export AERO_ANL_RUN="both"
-    export AERO_FCST_RUN="gdas"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
-    export WAVE_RUN="both"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -266,13 +266,10 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export AERO_ANL_RUN="both"
-        export AERO_FCST_RUN="gdas"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_RUN="both"
     fi
     ;;
   *)
@@ -280,6 +277,22 @@ case "${APP}" in
     exit 3
     ;;
 esac
+
+# Aerosol forecasts and analyses may be RUN-dependent
+if [[ "${DO_AERO}" == "YES" ]]; then
+   for aero_run in ${aero_anl_runs}; do
+      if [[ "${aero_run}" == "${RUN}" ]]; then
+         export DO_AERO_ANL="YES"
+         break
+      fi
+   done
+   for aero_run in ${aero_fcst_runs}; do
+      if [[ "${aero_run}" == "${RUN}" ]]; then
+         export DO_AERO_FCST="YES"
+         break
+      fi
+   done
+fi
 
 # Surface cycle update frequency
 if [[ "${RUN}" =~ "gdas" ]] ; then

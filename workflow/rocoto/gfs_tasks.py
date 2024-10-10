@@ -867,14 +867,12 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_wave'] and self.run in self.options['wave_runs']:
+        if self.options['do_wave']:
             wave_job = 'waveprep' if self.options['app'] in ['ATMW'] else 'waveinit'
             dep_dict = {'type': 'task', 'name': f'{self.run}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_aero'] and \
-           self.run in self.options['aero_fcst_runs'] and \
-           not self._base['EXP_WARM_START']:
+        if self.options['do_aero_fcst'] and not self._base['EXP_WARM_START']:
             # Calculate offset based on RUN = gfs | gdas
             interval = None
             if self.run in ['gfs']:
@@ -935,7 +933,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}marineanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_aero'] and self.run in self.options['aero_anl_runs']:
+        if self.options['do_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{self.run}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
@@ -950,7 +948,7 @@ class GFSTasks(Tasks):
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
-        if self.options['do_wave'] and self.run in self.options['wave_runs']:
+        if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}waveprep'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)

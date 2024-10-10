@@ -98,43 +98,14 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_ice'] = run_base.get('DO_ICE', False)
             run_options[run]['do_aero'] = run_base.get('DO_AERO', False)
             run_options[run]['do_prep_obs_aero'] = run_base.get('DO_PREP_OBS_AERO', False)
+            run_options[run]['do_aero_anl'] = run_base.get('DO_AERO_ANL', False)
+            run_options[run]['do_aero_fcst'] = run_base.get('DO_AERO_FCST', False)
 
             run_options[run]['do_hpssarch'] = run_base.get('HPSSARCH', False)
             run_options[run]['fcst_segments'] = run_base.get('FCST_SEGMENTS', None)
 
             if not AppConfig.is_monotonic(run_options[run]['fcst_segments']):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
-
-            wave_runs = []
-            if run_options[run]['do_wave']:
-                wave_run = run_base.get('WAVE_RUN', 'BOTH').lower()
-                if wave_run in ['both']:
-                    wave_runs = ['gfs', 'gdas']
-                elif wave_run in ['gfs', 'gdas']:
-                    wave_runs = [wave_run]
-
-            run_options[run]['wave_runs'] = wave_runs
-
-            aero_anl_runs = []
-            aero_fcst_runs = []
-            if run_options[run]['do_aero']:
-                aero_anl_run = run_base.get('AERO_ANL_RUN', 'BOTH').lower()
-                if aero_anl_run in ['both']:
-                    aero_anl_runs = ['gfs', 'gdas']
-                elif aero_anl_run in ['gfs', 'gdas']:
-                    aero_anl_runs = [aero_anl_run]
-
-                aero_fcst_run = run_base.get('AERO_FCST_RUN', None).lower()
-                if aero_fcst_run in ['both']:
-                    aero_fcst_runs = ['gfs', 'gdas']
-                elif aero_fcst_run in ['gfs', 'gdas']:
-                    aero_fcst_runs = [aero_fcst_run]
-
-                run_options[run]['do_aero_anl'] = True if run in aero_anl_runs else False
-                run_options[run]['do_aero_fcst'] = True if run in aero_fcst_runs else False
-
-            run_options[run]['aero_anl_runs'] = aero_anl_runs
-            run_options[run]['aero_fcst_runs'] = aero_fcst_runs
 
             # Append any MODE-specific options
             run_options = self._netmode_run_options(run_base, run_options)

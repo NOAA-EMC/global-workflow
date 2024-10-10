@@ -8,17 +8,10 @@ echo "BEGIN: config.fcst"
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
 export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
-# Turn off waves if not used for this RUN
-case ${WAVE_RUN} in
-  both | "${RUN/enkf}" ) ;; # Don't change
-  *) DO_WAVE="NO" ;; # Turn waves off
-esac
-
-# Turn off aerosols if not used for this RUN
-case ${AERO_FCST_RUN} in
-  both | "${RUN/enkf}" ) ;; # Don't change
-  *) DO_AERO="NO" ;; # Turn aerosols off
-esac
+# Turn off aerosols if they are not being forecasted
+if [[ "${DO_AERO_FCST}" == "NO" ]]; then
+   DO_AERO="NO"
+fi
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"

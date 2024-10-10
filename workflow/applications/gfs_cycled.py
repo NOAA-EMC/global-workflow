@@ -192,17 +192,17 @@ class GFSCycledAppConfig(AppConfig):
                     if not options['do_jediatmvar']:
                         task_names[run] += ['analdiag']
 
-                    if options['do_wave'] and run in self.wave_runs:
+                    if options['do_wave']:
                         task_names[run] += wave_prep_tasks
 
-                    if options['do_aero'] and run in options['aero_anl_runs']:
+                    if options['do_aero_anl']:
                         task_names[run] += ['aeroanlgenb']
 
                 else:
-                    if options['do_wave'] and run in self.wave_runs:
+                    if options['do_wave']:
                         task_names[run] += wave_prep_tasks
 
-                if options['do_aero'] and run in options['aero_anl_runs']:
+                if options['do_aero_anl']:
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
 
                     if options['do_prep_obs_aero']:
@@ -257,7 +257,7 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_metp']:
                         task_names[run] += ['metp']
 
-                if options['do_wave'] and run in options['wave_runs']:
+                if options['do_wave']:
                     if options['do_wave_bnd']:
                         task_names[run] += wave_bndpnt_tasks
                     task_names[run] += wave_post_tasks

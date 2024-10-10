@@ -99,11 +99,8 @@ class GFSForecastOnlyAppConfig(AppConfig):
         tasks = ['stage_ic']
         options = self.run_options[self.run]
 
-        if options['do_aero']:
-            aero_fcst_run = options['aero_fcst_run']
-            if self.run in aero_fcst_run or aero_fcst_run == "both":
-                if not options['exp_warm_start']:
-                    tasks += ['aerosol_init']
+        if options['do_aero_fcst'] and not options['exp_warm_start']:
+            tasks += ['aerosol_init']
 
         if options['do_wave']:
             tasks += ['waveinit']
