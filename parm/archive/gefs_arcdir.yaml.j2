@@ -17,11 +17,17 @@
 
 {% set COMIN_ATMOS_ENSSTAT_1p00 = COM_ATMOS_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
 
+{% if REPLAY_ICS %}
+    {% set ofst_hr = FHOUT_GFS %}
+{% else %}
+    {% set ofst_hr = FHMIN_GFS %}
+{% endif %}
+
 # Select ensstat files to copy to the arcdir
 {% if RUN == "gefs" %}
     {% set ensstat_files = [] %}
     {% if path_exists(COMIN_ATMOS_ENSSTAT_1p00) %}
-        {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+        {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
             {% do ensstat_files.append([COMIN_ATMOS_ENSSTAT_1p00 ~ "/" ~ head ~ "mean.pres_." ~
                                         "1p00" ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2",
                                         GEFS_ARCH]) %}
