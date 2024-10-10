@@ -237,6 +237,7 @@ class Jedi:
                 logger.info(f"Extract files from {tar_file}")
                 extract_tar(tar_file)
 
+
 @logit(logger)
 def extract_tar(tar_file: str) -> None:
     """Extract files from a tarball
