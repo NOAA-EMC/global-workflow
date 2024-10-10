@@ -346,6 +346,7 @@
 :TMP:surface:
 :TMP:tropopause:
 :TOZNE:entire atmosphere (considered as a single layer):
+:TSNOWP:surface:
 :TSOIL:0.1-0.4 m below ground:
 :TSOIL:0.4-1 m below ground:
 :TSOIL:1-2 m below ground:
