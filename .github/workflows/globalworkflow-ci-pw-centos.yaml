@@ -1,4 +1,4 @@
-name: gw-ci-aws
+name: gw-ci-aws-centos
 
 on: [workflow_dispatch]
 
@@ -19,7 +19,7 @@ env:
 
 jobs:
   checkout-build-link:
-    runs-on: [self-hosted, aws, parallelworks]
+    runs-on: [self-hosted, aws, parallelworks, centos]
     timeout-minutes: 600
 
     steps:
@@ -42,7 +42,7 @@ jobs:
 
   create-experiments:
     needs: checkout-build-link
-    runs-on: [self-hosted, aws, parallelworks]
+    runs-on: [self-hosted, aws, parallelworks, centos]
     strategy:
       matrix:
         case: ["C48_ATM"]
@@ -61,7 +61,7 @@ jobs:
 
   run-experiments:
     needs: create-experiments
-    runs-on: [self-hosted, aws, parallelworks]
+    runs-on: [self-hosted, aws, parallelworks, centos]
     strategy:
       max-parallel: 2
       matrix:
@@ -74,7 +74,7 @@ jobs:
 
   clean-up:
     needs: run-experiments
-    runs-on: [self-hosted, aws, parallelworks]
+    runs-on: [self-hosted, aws, parallelworks, centos]
     steps:
       - name: Clean-up
         run: |

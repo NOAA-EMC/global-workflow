@@ -1,4 +1,4 @@
-name: pw-ci-hera
+name: pw-ci-hera-ssh
 
 on:
   workflow_dispatch:

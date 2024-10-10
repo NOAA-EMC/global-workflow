@@ -1,4 +1,4 @@
-name: gw-ci-aws
+name: gw-ci-aws-rocky
 
 on: [workflow_dispatch]
 
