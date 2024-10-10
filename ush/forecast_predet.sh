@@ -548,7 +548,6 @@ FV3_predet(){
       ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
     fi
   fi
-
 }
 
 # Disable variable not used warnings

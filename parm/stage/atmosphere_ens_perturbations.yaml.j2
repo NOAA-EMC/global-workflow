@@ -1,12 +1,12 @@
-atmosphere_perturbation:
+atmosphere_ens_perturbation:
     mkdir:
-        {% for mem in range(first_mem, last_mem + 1) %}
+        {% for mem in range(first_mem + 1, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
         {% endfor %} # mem loop
     copy:
-        {% for mem in range(first_mem, last_mem + 1) %}
+        {% for mem in range(first_mem + 1, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.fv3_perturbation.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.atminc.nc"]
