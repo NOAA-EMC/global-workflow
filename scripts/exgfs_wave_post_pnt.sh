@@ -252,7 +252,9 @@ source "${USHgfs}/preamble.sh"
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
     ${NLN} mod_def.$waveuoutpGRD mod_def.ww3
-    HMS="${cyc}0000"
+    #export OFFSET_START_HOUR=$( printf "%02d" ${half_assim} )
+    hh=$( printf "%02d" $(( cyc + OFFSET_START_HOUR )) )
+    HMS="${hh}0000"
     if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
       ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
         "./out_pnt.${waveuoutpGRD}"
