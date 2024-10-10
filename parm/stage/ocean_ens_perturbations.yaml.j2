@@ -1,12 +1,12 @@
-ocean_replay:
+ocean_ens_perturbation:
     mkdir:
-        {% for mem in range(first_mem, last_mem + 1) %}
+        {% for mem in range(first_mem + 1, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_OCEAN_ANALYSIS_MEM = COMOUT_OCEAN_ANALYSIS_MEM_list[imem] %}
         - "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"
         {% endfor %} # mem loop
     copy:
-        {% for mem in range(first_mem, last_mem + 1) %}
+        {% for mem in range(first_mem + 1, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_OCEAN_ANALYSIS_MEM = COMOUT_OCEAN_ANALYSIS_MEM_list[imem] %}
         - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.mom6_perturbation.nc", "{{ COMOUT_OCEAN_ANALYSIS_MEM }}/mom6_increment.nc"]
