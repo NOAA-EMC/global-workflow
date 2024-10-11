@@ -92,7 +92,6 @@ class MarineLETKF(Analysis):
                 'WINDOW_MIDDLE']
         for key in keys:
             stageconf[key] = self.task_config[key]
-        stageconf.RUN = 'enkfgdas'
 
         # stage ensemble background files
         soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, stageconf)
@@ -194,10 +193,9 @@ class MarineLETKF(Analysis):
         logger.info("finalize")
 
         letkfsaveconf = AttrDict()
-        keys = ['current_cycle', 'DATA', 'NMEM_ENS', 'WINDOW_BEGIN',
+        keys = ['current_cycle', 'DATA', 'NMEM_ENS', 'WINDOW_BEGIN', 'GDUMP_ENS',
                 'PARMgfs', 'ROTDIR', 'COM_OCEAN_LETKF_TMPL', 'COM_ICE_LETKF_TMPL']
         for key in keys:
             letkfsaveconf[key] = self.task_config[key]
-        letkfsaveconf.RUN = 'enkfgdas'
         letkf_save_list = parse_j2yaml(self.task_config.MARINE_LETKF_SAVE_YAML_TMPL, letkfsaveconf)
         FileHandler(letkf_save_list).sync()
