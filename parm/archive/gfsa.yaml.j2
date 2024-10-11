@@ -6,7 +6,7 @@ gfsa:
         # Logs
         # TODO explicitly name all logs to include
         {% for log in glob("logs/" ~ cycle_YMDH ~ "/gfs*.log") %}
-        {% if not "gfsarch.log" in log %}
+        {% if not "gfs_arch.log" in log %}
         - "{{ log }}"
         {% endif %}
         {% endfor %}
