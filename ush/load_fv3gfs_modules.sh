@@ -13,11 +13,11 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
-# Load our modules:
-module use "${HOMEgfs}/modulefiles"
-
 # Source versions file for runtime
 source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
+
+# Load our modules:
+module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
   "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4" | "noaacloud")
