@@ -196,7 +196,6 @@ export DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
 aero_fcst_runs="gdas" # When to run aerosol forecast: gdas, gfs, or both
 aero_anl_runs="gdas gfs" # When to run aerosol analysis: gdas, gfs, or both
-wave_runs="gdas gfs" # When to include wave suite: gdas, gfs, or both
 export DO_AERO_FCST="NO"
 export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
