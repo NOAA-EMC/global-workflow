@@ -548,12 +548,15 @@ FV3_predet(){
     ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}" "${DATA}/params_grib2_tbl_new"
     ${NCP} "${PARMgfs}/ufs/post_itag_gfs"                         "${DATA}/itag"  # TODO: Need a GEFS version when available in the UFS-weather-model
     # TODO: These should be replaced with ones from the ufs-weather-model when available there
-    if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gfs" || "${SFS_POST:-NO}" == "YES" ]]; then  # RUN = gdas | enkfgdas | gfs | enkfgfs
+    if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gfs" ]]; then  # RUN = gdas | enkfgdas | gfs | enkfgfs
       ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
       ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
-    elif [[ "${RUN}" == "gefs" ]]; then  # RUN = gefs
+    elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "NO" ]]; then  # RUN = gefs
       ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
       ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
+    elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "YES" ]]; then  # RUN = sfs output
+      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
+      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
     fi
   fi
 
