@@ -1878,6 +1878,7 @@ class GFSTasks(Tasks):
                      }
 
         metatask_dict = {'task_name': f'{self.run}_metp',
+                         'is_serial': True,
                          'task_dict': task_dict,
                          'var_dict': var_dict,
                          }
