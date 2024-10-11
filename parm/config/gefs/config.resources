@@ -77,6 +77,14 @@ case ${step} in
     export memory="1GB"
     ;;
 
+  "repair_replay")
+    export walltime="00:10:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export memory="2GB"
+    ;;
+
   "fcst" | "efcs")
     export is_exclusive=True
 
@@ -193,6 +201,7 @@ case ${step} in
 
     unset NTASKS_TOT
     ;;
+
 
   "atmos_products")
     export walltime="00:15:00"
