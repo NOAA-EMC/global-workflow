@@ -43,10 +43,6 @@ class GEFSTasks(Tasks):
         return task
 
     def prep_emissions(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'gefs_stage_ic'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('prep_emissions')
         task_name = 'gefs_prep_emissions'
