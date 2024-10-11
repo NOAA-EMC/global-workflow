@@ -1214,12 +1214,10 @@ case ${step} in
       "C768")
         tasks_per_node=21
         threads_per_task=6
-        memory="23GB"
         ;;
       "C1152")
         tasks_per_node=9
         threads_per_task=14
-        memory="50GB"
         ;;
       *)
         tasks_per_node=21
