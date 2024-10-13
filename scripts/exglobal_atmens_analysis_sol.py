@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # exglobal_atmens_analysis_sol.py
 # This script creates an AtmEnsAnalysis object
-# and runs the execute method
+# and runs the execute method of its Jedi object attribute
 # which executes the global atm local ensemble analysis in solver mode
 import os
 
@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmEnsAnl = AtmEnsAnalysis(config)
 
     # Initialize and execute JEDI ensemble DA analysis in solver mode
-    AtmEnsAnl.jedi_letkf_sol.execute(config.APRUN_ATMENSANLSOL)
+    AtmEnsAnl.jedi['atmensanlsol'].execute(config.APRUN_ATMENSANLSOL)

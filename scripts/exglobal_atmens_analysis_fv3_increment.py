@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # exglobal_atmens_analysis_fv3_increment.py
 # This script creates an AtmEnsAnalysis object
-# and runs the initialize_fv3inc and execute methods
+# and runs the execute method of its Jedi object attribute
 # which convert the JEDI increment into an FV3 increment
 import os
 
@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmEnsAnl = AtmEnsAnalysis(config)
 
     # Initialize and execute JEDI FV3 increment converter
-    AtmEnsAnl.jedi_fv3inc.execute(config.APRUN_ATMENSANLFV3INC)
+    AtmEnsAnl.jedi['atmensanlfv3inc'].execute(config.APRUN_ATMENSANLFV3INC)
