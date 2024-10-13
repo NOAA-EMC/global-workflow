@@ -70,33 +70,34 @@ class AtmAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
-        # Create JEDI variational object
-        jedi_config = AttrDict(
+        # Create dictionary of JEDI objects
+        self.jedi = AttrDict()
+
+        # atmanlvar
+        self.jedi['atmanlvar'] = Jedi(AttrDict(
             {
+                'yaml_name': 'atmanlvar',
+                'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_VAR,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_VAR,
-                'rundir': self.task_config.DATA,
-                'yaml_name': 'atmanlvar',
                 'jedi_args': ['fv3jedi', 'variational']
             }
-        )
-        self.jedi_var = Jedi(jedi_config)
+        ))
 
-        # Create JEDI FV3 increment converter object
-        jedi_config = AttrDict(
+        # atmanlfv3inc
+        self.jedi['atmanlfv3inc'] = Jedi(AttrDict(
             {
+                'yaml_name': 'atmanlfv3inc',
+                'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
                 'jcb_algo_yaml': None,
-                'rundir': self.task_config.DATA,
-                'yaml_name': 'atmanlfv3inc',
                 'jedi_args': None
             }
-        )
-        self.jedi_fv3inc = Jedi(jedi_config)
+        ))
 
     @logit(logger)
     def initialize(self) -> None:
@@ -124,27 +125,27 @@ class AtmAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_var.initialize(self.task_config)
+        self.jedi['atmanlvar'].initialize(self.task_config)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi_fv3inc.initialize(self.task_config)
+        self.jedi['atmanlfv3inc'].initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
-        obs_dict = self.jedi_var.render_jcb(self.task_config, 'atm_obs_staging')
+        obs_dict = self.jedi['atmanlvar'].render_jcb(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi_var.render_jcb(self.task_config, 'atm_bias_staging')
+        bias_dict = self.jedi['atmanlvar'].render_jcb(self.task_config, 'atm_bias_staging')
         bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # extract bias corrections
-        Jedi.extract_tar_from_fh_dict(bias_dict)
+        Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")

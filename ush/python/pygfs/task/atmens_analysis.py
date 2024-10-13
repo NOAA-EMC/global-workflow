@@ -71,64 +71,63 @@ class AtmEnsAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
-        # Create JEDI LETKF observer object
-        jedi_config = AttrDict(
+        # Create dictionary of JEDI objects
+        self.jedi = AttrDict()
+
+        # atmensanlobs
+        self.jedi['atmensanlobs'] = Jedi(AttrDict(
             {
+                'yaml_name': 'atmensanlobs',
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_OBS,
-                'yaml_name': 'atmensanlobs',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
-        )
-        self.jedi_letkf_obs = Jedi(jedi_config)
+        ))
 
-        # Create JEDI LETKF solver object
-        jedi_config = AttrDict(
+        # atmensanlsol
+        self.jedi['atmensanlsol'] = Jedi(AttrDict(
             {
+                'yaml_name': 'atmensanlsol',
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_SOL,
-                'yaml_name': 'atmensanlsol',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
-        )
-        self.jedi_letkf_sol = Jedi(jedi_config)
+        ))
 
-        # Create JEDI FV3 increment converter
-        jedi_config = AttrDict(
+        # atmensanlfv3inc
+        self.jedi['atmensanlfv3inc'] = Jedi(AttrDict(
             {
+                'yaml_name': 'atmensanlfv3inc',
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
                 'jcb_algo_yaml': None,
-                'yaml_name': 'atmensanlfv3inc',
                 'jedi_args': None
             }
-        )
-        self.jedi_fv3inc = Jedi(jedi_config)
+        ))
 
         # Note: Since we now use the split observer-solvers, the following
         #       is only for testing.
 
-        # Create JEDI LETKF object
-        jedi_config = AttrDict(
+        # atmensanlletkf
+        self.jedi['atmensanlletkf'] = Jedi(AttrDict(
             {
+                'yaml_name': 'atmensanlletkf',
+                'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF,
-                'rundir': self.task_config.DATA,
-                'yaml_name': 'atmensanlletkf',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
-        )
-        self.jedi_letkf = Jedi(jedi_config)
+        ))
 
     @logit(logger)
     def initialize(self) -> None:
@@ -155,31 +154,31 @@ class AtmEnsAnalysis(Task):
 
         # initialize JEDI LETKF observer application
         logger.info(f"Initializing JEDI LETKF observer application")
-        self.jedi_letkf_obs.initialize(self.task_config)
+        self.jedi['atmensanlobs'].initialize(self.task_config)
 
         # initialize JEDI LETKF solver application
         logger.info(f"Initializing JEDI LETKF solver application")
-        self.jedi_letkf_sol.initialize(self.task_config)
+        self.jedi['atmensanlsol'].initialize(self.task_config)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi_fv3inc.initialize(self.task_config)
+        self.jedi['atmensanlfv3inc'].initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
-        obs_dict = self.jedi_letkf_obs.render_jcb(self.task_config, 'atm_obs_staging')
+        obs_dict = self.jedi['atmensanlobs'].render_jcb(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi_letkf_obs.render_jcb(self.task_config, 'atm_bias_staging')
+        bias_dict = self.jedi['atmensanlobs'].render_jcb(self.task_config, 'atm_bias_staging')
         bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # extract bias corrections
-        Jedi.extract_tar_from_fh_dict(bias_dict)
+        Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")

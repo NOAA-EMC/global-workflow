@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # exglobal_atm_analysis_variational.py
 # This script creates an AtmAnalysis object
-# and runs the execute method
+# and runs the execute method of its Jedi object attribute
 # which executes the global atm variational analysis
 import os
 
@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmAnl = AtmAnalysis(config)
 
     # Execute JEDI variational analysis
-    AtmAnl.jedi_var.execute(config.APRUN_ATMANLVAR)
+    AtmAnl.jedi['atmanlvar'].execute(config.APRUN_ATMANLVAR)

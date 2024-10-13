@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # exglobal_atmens_analysis_obs.py
 # This script creates an AtmEnsAnalysis object
-# and runs the execute method
+# and runs the execute method of its Jedi object attribute
 # which executes the global atm local ensemble analysis in observer mode
 import os
 
@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmEnsAnl = AtmEnsAnalysis(config)
 
     # Initialize and execute JEDI ensembler DA analysis in observer mode
-    AtmEnsAnl.jedi_letkf_obs.execute(config.APRUN_ATMENSANLOBS)
+    AtmEnsAnl.jedi['atmensanlobs'].execute(config.APRUN_ATMENSANLOBS)

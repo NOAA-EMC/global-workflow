@@ -38,6 +38,11 @@ class Jedi:
         None
         """
 
+        _key_list = ['yaml_name', 'rundir', 'exe_src', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml', 'jedi_args']
+        for key in _key_list:
+            if key not in config:
+                raise KeyError(f"Key '{key}' not found in the nested dictionary")
+
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {
@@ -205,7 +210,7 @@ class Jedi:
 
     @staticmethod
     @logit(logger)
-    def extract_tar_from_fh_dict(fh_dict) -> None:
+    def extract_tar_from_filehandler_dict(filehandler_dict) -> None:
         """Extract tarballs from FileHandler input dictionary
 
         This method extracts files from tarballs specified in a FileHander
@@ -213,7 +218,7 @@ class Jedi:
 
         Parameters
         ----------
-        fh_dict
+        filehandler_dict
             Input dictionary for FileHandler
 
         Returns
@@ -221,7 +226,7 @@ class Jedi:
         None
         """
 
-        for item in fh_dict['copy']:
+        for item in filehandler_dict['copy']:
             # Use the filename from the destination entry if it's a file path
             # Otherwise, it's a directory, so use the source entry filename
             if os.path.isfile(item[1]):
@@ -229,15 +234,13 @@ class Jedi:
             else:
                 filename = os.path.basename(item[0])
 
-            # Extract if file is a tarball
+            # Check if file is a tar ball
             if os.path.splitext(filename)[1] == '.tar':
                 tar_file = f"{os.path.dirname(item[1])}/{filename}"
-                if os.path.isfile(tar_file):
-                    logger.info(f"Extract files from {tar_file}")
-                    extract_tar(tar_file)
-                else:
-                    logger.error(f"FATAL ERROR: {tar_file} could not be read")
-                    logger.error(f"FATAL ERROR: {tar_file} does not exist!")
+
+                # Extract tarball
+                logger.info(f"Extract files from {tar_file}")
+                extract_tar(tar_file)
 
 
 @logit(logger)
@@ -262,6 +265,9 @@ def extract_tar(tar_file: str) -> None:
         with tarfile.open(tar_file, "r") as tarball:
             tarball.extractall(path=tar_path)
             logger.info(f"Extract {tarball.getnames()}")
+    except tarfile.FileExistsError as err:
+        logger.exception(f"FATAL ERROR: {tar_file} does not exist")
+        raise tarfile.FileExistsError(f"FATAL ERROR: {tar_file} does not exist")
     except tarfile.ReadError as err:
         if tarfile.is_tarfile(tar_file):
             logger.error(f"FATAL ERROR: {tar_file} could not be read")
