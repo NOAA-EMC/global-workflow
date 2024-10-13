@@ -72,63 +72,59 @@ class AtmEnsAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create JEDI LETKF observer object
-        jedi_config = AttrDict(
+        self.jedi_letkf_obs = Jedi(AttrDict(
             {
+                'yaml_name': 'atmensanlobs',
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_OBS,
-                'yaml_name': 'atmensanlobs',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
         )
-        self.jedi_letkf_obs = Jedi(jedi_config)
 
         # Create JEDI LETKF solver object
-        jedi_config = AttrDict(
+        self.jedi_letkf_sol = Jedi(AttrDict(
             {
+                'yaml_name': 'atmensanlsol',
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_SOL,
-                'yaml_name': 'atmensanlsol',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
         )
-        self.jedi_letkf_sol = Jedi(jedi_config)
 
         # Create JEDI FV3 increment converter
-        jedi_config = AttrDict(
+        self.jedi_fv3inc = Jedi(AttrDict(
             {
+                'yaml_name': 'atmensanlfv3inc',
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
                 'jcb_algo_yaml': None,
-                'yaml_name': 'atmensanlfv3inc',
                 'jedi_args': None
             }
         )
-        self.jedi_fv3inc = Jedi(jedi_config)
 
         # Note: Since we now use the split observer-solvers, the following
         #       is only for testing.
 
         # Create JEDI LETKF object
-        jedi_config = AttrDict(
+        self.jedi_letkf = Jedi(AttrDict(
             {
+                'yaml_name': 'atmensanlletkf',
                 'exe_src': self.task_config.JEDIEXE_LETKF,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF,
                 'rundir': self.task_config.DATA,
-                'yaml_name': 'atmensanlletkf',
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
         )
-        self.jedi_letkf = Jedi(jedi_config)
 
     @logit(logger)
     def initialize(self) -> None:

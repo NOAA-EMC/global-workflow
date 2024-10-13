@@ -71,32 +71,30 @@ class AtmAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create JEDI variational object
-        jedi_config = AttrDict(
+        self.jedi_var = Jedi(AttrDict(
             {
+                'yaml_name': 'atmanlvar',
+                'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_VAR,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': None,
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_VAR,
-                'rundir': self.task_config.DATA,
-                'yaml_name': 'atmanlvar',
                 'jedi_args': ['fv3jedi', 'variational']
             }
         )
-        self.jedi_var = Jedi(jedi_config)
 
         # Create JEDI FV3 increment converter object
-        jedi_config = AttrDict(
+        self.jedi_fv3inc = Jedi(AttrDict(
             {
+                'yaml_name': 'atmanlfv3inc',
+                'rundir': self.task_config.DATA,                
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
                 'jcb_algo_yaml': None,
-                'rundir': self.task_config.DATA,
-                'yaml_name': 'atmanlfv3inc',
                 'jedi_args': None
             }
         )
-        self.jedi_fv3inc = Jedi(jedi_config)
 
     @logit(logger)
     def initialize(self) -> None:
