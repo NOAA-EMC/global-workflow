@@ -90,7 +90,7 @@ class AtmAnalysis(Task):
         self.jedi['atmanlfv3inc'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmanlfv3inc',
-                'rundir': self.task_config.DATA,                
+                'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_FV3INC,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
                 'jcb_algo': self.task_config.JCB_ALGO_FV3INC,

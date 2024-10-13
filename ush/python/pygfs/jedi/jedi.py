@@ -42,7 +42,7 @@ class Jedi:
         for key in _key_list:
             if key not in config.keys:
                 raise KeyError(f"Key '{key}' not found in the nested dictionary")
-        
+
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {

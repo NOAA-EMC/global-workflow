@@ -73,7 +73,7 @@ class AtmEnsAnalysis(Task):
 
         # Create dictionary of JEDI objects
         self.jedi = AttrDict()
-        
+
         # atmensanlobs
         self.jedi['atmensanlobs'] = Jedi(AttrDict(
             {
