@@ -74,7 +74,7 @@ class AtmEnsAnalysis(Task):
         # Create dictionary of JEDI objects
         self.jedi = AttrDict()
         
-        # Create JEDI LETKF observer object
+        # atmensanlobs
         self.jedi['atmensanlobs'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmensanlobs',
@@ -85,9 +85,9 @@ class AtmEnsAnalysis(Task):
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_OBS,
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
-        )
+        ))
 
-        # Create JEDI LETKF solver object
+        # atmensanlsol
         self.jedi['atmensanlsol'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmensanlsol',
@@ -98,9 +98,9 @@ class AtmEnsAnalysis(Task):
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_SOL,
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
-        )
+        ))
 
-        # Create JEDI FV3 increment converter
+        # atmensanlfv3inc
         self.jedi['atmensanlfv3inc'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmensanlfv3inc',
@@ -111,12 +111,12 @@ class AtmEnsAnalysis(Task):
                 'jcb_algo_yaml': None,
                 'jedi_args': None
             }
-        )
+        ))
 
         # Note: Since we now use the split observer-solvers, the following
         #       is only for testing.
 
-        # Create JEDI LETKF object
+        # atmensanlletkf
         self.jedi['atmensanlletkf'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmensanlletkf',
@@ -127,7 +127,7 @@ class AtmEnsAnalysis(Task):
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF,
                 'jedi_args': ['fv3jedi', 'localensembleda']
             }
-        )
+        ))
 
     @logit(logger)
     def initialize(self) -> None:

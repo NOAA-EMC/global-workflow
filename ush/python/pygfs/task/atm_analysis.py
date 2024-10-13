@@ -73,7 +73,7 @@ class AtmAnalysis(Task):
         # Create dictionary of JEDI objects
         self.jedi = AttrDict()
 
-        # Create JEDI variational object
+        # atmanlvar
         self.jedi['atmanlvar'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmanlvar',
@@ -84,9 +84,9 @@ class AtmAnalysis(Task):
                 'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_VAR,
                 'jedi_args': ['fv3jedi', 'variational']
             }
-        )
+        ))
 
-        # Create JEDI FV3 increment converter object
+        # atmanlfv3inc
         self.jedi['atmanlfv3inc'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmanlfv3inc',
@@ -97,7 +97,7 @@ class AtmAnalysis(Task):
                 'jcb_algo_yaml': None,
                 'jedi_args': None
             }
-        )
+        ))
 
     @logit(logger)
     def initialize(self) -> None:
