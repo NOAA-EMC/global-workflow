@@ -70,8 +70,11 @@ class AtmAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
+        # Create dictionary of JEDI objects
+        self.jedi = AttrDict()
+
         # Create JEDI variational object
-        self.jedi_var = Jedi(AttrDict(
+        self.jedi['atmanlvar'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmanlvar',
                 'rundir': self.task_config.DATA,
@@ -84,7 +87,7 @@ class AtmAnalysis(Task):
         )
 
         # Create JEDI FV3 increment converter object
-        self.jedi_fv3inc = Jedi(AttrDict(
+        self.jedi['atmanlfv3inc'] = Jedi(AttrDict(
             {
                 'yaml_name': 'atmanlfv3inc',
                 'rundir': self.task_config.DATA,                
@@ -122,21 +125,21 @@ class AtmAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_var.initialize(self.task_config)
+        self.jedi['atmanlvar'].initialize(self.task_config)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi_fv3inc.initialize(self.task_config)
+        self.jedi['atmanlfv3inc'].initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
-        obs_dict = self.jedi_var.render_jcb(self.task_config, 'atm_obs_staging')
+        obs_dict = self.jedi['atmanlvar'].render_jcb(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi_var.render_jcb(self.task_config, 'atm_bias_staging')
+        bias_dict = self.jedi['atmanlvar'].render_jcb(self.task_config, 'atm_bias_staging')
         bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")

@@ -38,6 +38,11 @@ class Jedi:
         None
         """
 
+        _key_list = ['yaml_name', 'rundir', 'exe_src', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml', 'jedi_args']
+        for key in _key_list:
+            if key not in config.keys:
+                raise KeyError(f"Key '{key}' not found in the nested dictionary")
+        
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {
@@ -46,7 +51,7 @@ class Jedi:
                 'input_config': None
             }
         )
-        self.jedi_config = AttrDict(**config, **local_dict)
+        self.jedi_config.update(local_dict)
 
         # Save a copy of jedi_config
         self._jedi_config = self.jedi_config.deepcopy()
