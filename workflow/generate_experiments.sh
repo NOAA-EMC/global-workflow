@@ -116,8 +116,8 @@ while getopts ":H:bB:uy:Y:GESA:ce:vVdh" option; do
     H)
        HOMEgfs="${OPTARG}"
        _specified_home=true
-       if [[ ! -d "${HOMEGFS}" ]]; then
-          echo "Specified HOMEgfs directory (${HOMEGFS}) does not exist"
+       if [[ ! -d "${HOMEgfs}" ]]; then
+          echo "Specified HOMEgfs directory (${HOMEgfs}) does not exist"
           exit 2
        fi
        ;;
@@ -221,7 +221,7 @@ source "${HOMEgfs}/workflow/gw_setup.sh"
 [[ "${_debug}" == "true" ]] && set -x
 set -eu
 machine=${MACHINE_ID}
-. "${HOMEgfs}/ci/platforms/config.$machine"
+. "${HOMEgfs}/ci/platforms/config.${machine}"
 
 # If _yaml_dir is not set, set it to $HOMEgfs/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
@@ -231,7 +231,7 @@ fi
 # Update submodules if requested
 if [[ "${_update_submods}" == "true" ]]; then
    echo "Updating submodules..."
-   #shellcheck disable=SC2086
+   #shellcheck disable=SC2086,SC2248
    git submodule update --init --recursive -j 10 ${_redirect}
 fi
 
@@ -261,7 +261,7 @@ for _yaml in ${_yaml_list}; do
          echo "WARNING ${_yaml} is unsupported on ${machine}, removing from test list"
          # Sleep so the user has a moment to notice
          sleep 2s
-         yaml_list=$(echo "${_yaml_list}" | sed "s/ ${_yaml}//")
+         _yaml_list="${_yaml_list// ${_yaml}/}"
          break
       fi
    done
@@ -273,7 +273,7 @@ done
 # Create the experiments
 rm -f "tests.cron" "${_verbose_flag}"
 for _case in ${_yaml_list}; do
-   #shellcheck disable=SC2086
+   #shellcheck disable=SC2086,SC2248
    pslot=${_case} ./create_experiment.py -y "../ci/cases/pr/${_case}.yaml" --overwrite ${_redirect}
    crontab_entry=$(grep "${_case}" "${RUNTESTS}/EXPDIR/${_case}/${_case}.crontab")
    echo "${crontab_entry}" >> tests.cron
@@ -299,7 +299,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 
    if [[ "${_set_email}" == "true" ]]; then
       # Replace the existing email in the crontab
-      [[ "${_verbose}" ]] && echo "Updating crontab email to ${_email}"
+      [[ "${_verbose}" == "true" ]] && echo "Updating crontab email to ${_email}"
       sed -i "/^MAILTO/d" existing.cron
       echo "MAILTO=\"${_email}\"" >> final.cron
    fi
@@ -313,7 +313,7 @@ if [[ "${_update_cron}" == "true" ]]; then
       echo "#######################"
    fi
 
-   cat final.cron | crontab -
+   crontab final.cron
 else
    echo "Experiment setup complete!"
    echo "Add the following to your crontab or scrontab to start running:"
