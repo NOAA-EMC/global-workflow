@@ -113,7 +113,14 @@ _redirect='>/dev/null'  # Redirect stdout to /dev/null; stderr to terminal
 
 while getopts ":H:bB:uy:Y:GESA:ce:vVdh" option; do
   case "${option}" in
-    H) HOMEgfs="${OPTARG}" && _specified_home=true ;;
+    H)
+       HOMEgfs="${OPTARG}"
+       _specified_home=true
+       if [[ ! -d "${HOMEGFS}" ]]; then
+          echo "Specified HOMEgfs directory (${HOMEGFS}) does not exist"
+          exit 2
+       fi
+       ;;
     b) _build=true ;;
     B) _build_flags="${OPTARG}" && _explicit_build_flags=true ;;
     u) _update_submods=true ;;
@@ -158,7 +165,7 @@ if [[ ! -d "${RUNTESTS}" ]]; then
    if ! mkdir -p "${RUNTESTS}" "${_verbose_flag}"; then
       echo "Unable to create RUNTESTS directory: ${RUNTESTS}"
       echo "Rerun with -h for usage examples."
-      exit 2
+      exit 3
    fi
    set -e
 fi
@@ -172,7 +179,7 @@ _count_run_alls=0
 if (( _count_run_alls > 1 )) ; then
    echo "Only one run all option (-G -E -S) may be specified"
    echo "Rerun with just one option and/or with -h for usage examples"
-   exit 3
+   exit 4
 fi
 
 # Append -w to build_all.sh flags if -E was specified
@@ -197,9 +204,9 @@ if [[ "${_run_all_sfs}" == "true" ]]; then
    exit 0
 fi
 
-# If HOMEgfs is not set, get the path to this script to set HOMEgfs
-if [[ "${_specified_home}" != "true" ]]; then
-   script_dir=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && echo $(pwd))
+# If HOMEgfs is set, head to that path before sourcing gw_setup.sh
+if [[ "${_specified_home}" == "true" ]]; then
+   script_dir=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && "$(pwd)")
    HOMEgfs=$(cd "${script_dir}/.." && "$(pwd)")
    [[ "${_verbose}" == "true" ]] && echo "Setting HOMEgfs to ${HOMEgfs}"
 fi
