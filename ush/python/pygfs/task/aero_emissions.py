@@ -114,7 +114,6 @@ class AerosolEmissions(Task):
         ratio = Config_dict.ratio
         climfiles = sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
         coarsen_scale = Config_dict.coarsen_scale
-        print(Config_dict.data_out['copy'][0][0])
 
         if emistype.lower() == "qfed":
             basefile = glob("qfed2.emis_*.nc4")
@@ -130,7 +129,6 @@ class AerosolEmissions(Task):
             scale_climo=True,
             coarsen_scale=coarsen_scale,
             obsfile=basefile)
-        print(dset)
 
         AerosolEmissions.write_ncf(dset, Config_dict.data_out['copy'][0][0])
 
@@ -318,7 +316,7 @@ class AerosolEmissions(Task):
         dsets = []
         climo_scaled = {}
         for tslice in np.arange(len(climos)):
-            print(tslice)
+            # print(tslice)
             # make copy of original data
             if tslice == 0:
                 dset = g.copy()
@@ -359,6 +357,6 @@ class AerosolEmissions(Task):
         """Perform closing actions of the task.
         Copy data back from the DATA/ directory to COM/
         """
-        print(Config_dict.data_out)
+        # print(Config_dict.data_out)
         logger.info(f"Copy '{Config_dict.data_out}' processed data to COM/ directory")
         FileHandler(Config_dict.data_out).sync()
