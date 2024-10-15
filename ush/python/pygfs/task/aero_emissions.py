@@ -81,6 +81,10 @@ class AerosolEmissions(Task):
             Fully resolved aero_emissions.yaml dictionary
         """
         logger.info("Copy Static Data to run directory")
+        logger.info(
+            f"Copy '{aero_emission_yaml.aero_emissions.config.data_in}' data to run directory"
+        )
+        FileHandler(aero_emission_yaml.aero_emissions.config.data_in).sync()
 
     @staticmethod
     @logit(logger)
@@ -88,11 +92,8 @@ class AerosolEmissions(Task):
         """Configure the artifacts in the work directory.
         Copy run specific data to run directory
         """
-        # need to add climatology files to copy over dynamically
-        logger.info(
-            f"Copy '{aero_emission_yaml.aero_emissions.config.data}' data to run directory"
-        )
-        FileHandler(aero_emission_yaml.aero_emissions.config.data).sync()
+        
+        
 
     @staticmethod
     @logit(logger)
