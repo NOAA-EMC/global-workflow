@@ -81,7 +81,6 @@ class AerosolEmissions(Task):
             Fully resolved aero_emissions.yaml dictionary
         """
         logger.info("Copy Static Data to run directory")
-        # FileHandler(aero_emission_yaml.aero_emissions.fix_data).sync()
 
     @staticmethod
     @logit(logger)
