@@ -200,7 +200,7 @@ class MarineAnalysis(Task):
 
         # Add the things to the envconfig in order to template JCB files
         envconfig_jcb['PARMgfs'] = self.task_config.PARMgfs
-        envconfig_jcb['nmem_ens'] = self.task_config.NMEM_ENS
+        envconfig_jcb['NMEM_ENS'] = self.task_config.NMEM_ENS
         envconfig_jcb['berror_model'] = 'marine_background_error_static_diffusion'
         if self.task_config.NMEM_ENS > 3:
             envconfig_jcb['berror_model'] = 'marine_background_error_hybrid_diffusion_diffusion'

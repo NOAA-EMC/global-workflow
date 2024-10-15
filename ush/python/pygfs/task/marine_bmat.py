@@ -14,6 +14,8 @@ from wxflow import (AttrDict,
                     Executable,
                     Task)
 
+from pygfs.jedi import Jedi
+
 logger = getLogger(__name__.split('.')[-1])
 
 
@@ -90,7 +92,7 @@ class MarineBMat(Task):
                 'jcb_algo_yaml': None,
                 'jedi_args': None
             }
-        )
+        ))
         
         # soca_setcorscales
         self.jedi['soca_setcorscales'] = Jedi(AttrDict(
@@ -103,7 +105,7 @@ class MarineBMat(Task):
                 'jcb_algo_yaml': None,
                 'jedi_args': None
             }
-        )
+        ))
 
         # soca_parameters_diffusion_hz
         self.jedi['soca_parameters_diffusion_hz'] = Jedi(AttrDict(
@@ -116,7 +118,7 @@ class MarineBMat(Task):
                 'jcb_algo_yaml': None,
                 'jedi_args': None
             }
-        )
+        ))
 
         # soca_ensb
         self.jedi['soca_ensb'] = Jedi(AttrDict(
@@ -129,7 +131,7 @@ class MarineBMat(Task):
                 'jcb_algo_yaml': None,
                 'jedi_args': None
             }
-        )
+        ))
         
         # soca_ensweights
         self.jedi['soca_ensb'] = Jedi(AttrDict(
@@ -142,7 +144,7 @@ class MarineBMat(Task):
                 'jcb_algo_yaml': None,
                 'jedi_args': None
             }
-        )
+        ))
 
     @logit(logger)
     def initialize(self: Task) -> None:
@@ -172,8 +174,8 @@ class MarineBMat(Task):
         FileHandler(bkg_list).sync()
 
         # initialize vtscales python script
-        vtscales_config = self.render_jcb(task_config, 'vtscales')
-        save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml')
+        vtscales_config = self.jedi['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
+        save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
         FileHandler({'copy': [[os.path.join(self.task_config.CALC_SCALE_EXEC),
                                os.path.join(self.task_config.DATA, 'calc_scales.x')]]}).sync()
                                       
@@ -184,7 +186,7 @@ class MarineBMat(Task):
         self.jedi['soca_setcorscales'].initialize(self.task_config)
         self.jedi['soca_parameters_diffusion_hz'].initialize(self.task_config)            
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-            self.jedi['soca_ensb'.initialize(self.task_config)
+            self.jedi['soca_ensb'].initialize(self.task_config)
             self.jedi['soca_ensweights'].initialize(self.task_config)
 
         # stage ensemble members for the hybrid background error
