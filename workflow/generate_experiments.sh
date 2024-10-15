@@ -189,7 +189,7 @@ if [[ "${_run_all_gefs}" == "true" && "${_explicit_build_flags}" == "false" && \
 fi
 
 # Append -g -u to build_all.sh flags if -G was specified
-if [[ "${_run_all_gefs}" == "true" && "${_explicit_build_flags}" == "false" && \
+if [[ "${_run_all_gfs}" == "true" && "${_explicit_build_flags}" == "false" && \
       "${_build}" == "true" ]]; then
    _build_flags="-g -u"
 fi
@@ -204,15 +204,13 @@ if [[ "${_run_all_sfs}" == "true" ]]; then
    exit 0
 fi
 
-# If HOMEgfs is set, head to that path before sourcing gw_setup.sh
-if [[ "${_specified_home}" == "true" ]]; then
-   script_dir=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && "$(pwd)")
-   HOMEgfs=$(cd "${script_dir}/.." && "$(pwd)")
+# Set HOMEgfs if it wasn't set by the user
+if [[ "${_specified_home}" == "false" ]]; then
+   script_relpath="$(dirname "${BASH_SOURCE[0]}")"
+   HOMEgfs="$(cd "${script_relpath}/.." && pwd)"
    [[ "${_verbose}" == "true" ]] && echo "Setting HOMEgfs to ${HOMEgfs}"
 fi
 
-# Head into HOMEgfs and perform housekeeping
-cd "${HOMEgfs}"
 # Loading modules sometimes raises unassigned errors, so disable checks
 set +eu
 [[ "${_verbose}" == "true" ]] && echo "Loading modules"
