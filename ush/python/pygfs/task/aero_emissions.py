@@ -140,7 +140,7 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_qfed(fname) -> xr.Dataset:
+    def open_qfed(fname: Union[str, os.PathLike], out_vars: list = None, qfed_vars: list = None) -> xr.Dataset:
         """
         Open QFED2 fire emissions data
 
@@ -162,14 +162,25 @@ class AerosolEmissions(Task):
             files = sort(fname)
         else:
             files = sort(glob(fname))
-
+        
+        try:
+            if files.size == 0:
+                raise FileNotFoundError
+        except FileNotFoundError:
+            logger.info("FATAL ERROR: QFED files not found.")
+            raise WorkflowException(f"open_qfed")
         found_species = []
         dset_dict = {}
         for f in files:
             index_good = [[i, v] for i, v in enumerate(qfed_vars) if v in f]
             good = index_good[0][0]
             found_species.append(index_good[0][1])
-            da = xr.open_dataset(f, decode_cf=False).biomass
+            try:
+                logger.info("Opening QFED file: '{f}'")
+                da = xr.open_dataset(f, decode_cf=False).biomass
+            except FileNotFoundError:
+                logger.info("FATAL ERROR: QFED FILE NOT FOUND '{f}")
+                raise WorkflowException(f"xarray.open_dataset")
             da.name = vrs[good]
             dset_dict[vrs[good]] = da
 
@@ -179,6 +190,15 @@ class AerosolEmissions(Task):
     @staticmethod
     @logit(logger)
     def open_climatology(fname) -> xr.Dataset:
+        """
+        Open climatology files and concatenate them along the time dimension.
+
+        Parameters:
+        - fname (str or list of str): Path(s) to the climatology files.
+
+        Returns:
+        - xr.Dataset: Concatenated dataset containing the climatology data.
+        """
         # array to house datasets
         das = []
         # print("")
@@ -189,9 +209,11 @@ class AerosolEmissions(Task):
         else:
             files = sort(glob(fname))
         # print(files)
+        logger.info("Process Climatlogy Files")
+        logger.info("  Opening Climatology File: '{fname[0]}'")
         xr.open_dataset(files[0])
         for i, f in enumerate(files):
-            # print("  opening:", f)
+            logger.info("  Opening Climatology File: '{f}'")
             das.append(xr.open_dataset(f, engine="netcdf4"))
 
         return xr.concat(das, dim="time")
