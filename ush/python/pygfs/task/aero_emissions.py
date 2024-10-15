@@ -45,8 +45,8 @@ class AerosolEmissions(Task):
         super().__init__(config)
 
         current_datetime = add_to_datetime(
-            self.task_config.current_cycle,
-            to_timedelta(f"{self.task_config.STARTHOUR}H"),
+            self.task_config.PDY,
+            to_timedelta(f"0H"),
         )
         nforecast_hours = self.task_config["FHMAX_GFS"]
         nforecast_days = nforecast_hours // 24 + 1
@@ -73,7 +73,13 @@ class AerosolEmissions(Task):
     @staticmethod
     @logit(logger)
     def initialize(aero_emission_yaml: Dict) -> None:
-        """Initialize the work directory"""
+        """Initialize the work directory by copying all the common fix data
+
+        Parameters
+        ----------
+        upp_yaml: Dict
+            Fully resolved aero_emissions.yaml dictionary
+        """
         logger.info("Copy Static Data to run directory")
         # FileHandler(aero_emission_yaml.aero_emissions.fix_data).sync()
 
