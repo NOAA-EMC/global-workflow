@@ -6,7 +6,7 @@ gfsa:
         # Logs
         # TODO explicitly name all logs to include
         {% for log in glob("logs/" ~ cycle_YMDH ~ "/gfs*.log") %}
-        {% if not "gfsarch.log" in log %}
+        {% if not "gfs_arch.log" in log %}
         - "{{ log }}"
         {% endif %}
         {% endfor %}
@@ -32,7 +32,8 @@ gfsa:
 
         # State data
         {% if DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmvar.yaml"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanlvar.yaml"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanlfv3inc.yaml"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
