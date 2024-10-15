@@ -5,33 +5,33 @@ gdas:
     required:
         {% if MODE == "cycled" %}
         # Cycled logs
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}prep.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlprod.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_prep.log"
             {% if DO_JEDIATMVAR %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}prepatmiodaobs.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlinit.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlprod.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlfinal.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlfv3inc.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlvar.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_prepatmiodaobs.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlinit.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlprod.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlfinal.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlfv3inc.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlvar.log"
             {% else %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}anal.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}analdiag.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_anal.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_analdiag.log"
             {% endif %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmanlupp.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlupp.log"
             {% if DO_JEDIOCNVAR %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}prepoceanobs.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalprep.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}marinebmat.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalrun.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalpost.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalchkpt.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_prepoceanobs.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlinit.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_marinebmat.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlvar.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlfinal.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlchkpt.log"
                 {% if DOHYBVAR %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalecen.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_ocnanalecen.log"
                 {% endif %}
             {% endif %}
             {% if DO_VRFY_OCEANDA %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ocnanalvrfy.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_ocnanalvrfy.log"
             {% endif %}
 
         # Analysis GRIB2 (sub-sampled) data
@@ -85,7 +85,7 @@ gdas:
         - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
         - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
         - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}verfozn.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_verfozn.log"
             {% endif %}
 
         # Radiance verification
@@ -94,7 +94,7 @@ gdas:
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcoef.tar.gz"
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcor.tar.gz"
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_time.tar.gz"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}verfrad.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_verfrad.log"
             {% endif %}
 
         # Minimization monitor
@@ -104,18 +104,18 @@ gdas:
         - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
         - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
         - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}vminmon.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_vminmon.log"
             {% endif %}
         {% endif %}  # End of cycled data
 
         # Forecast and post logs
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_seg0.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_seg0.log"
 
         {% for fhr in range(0, FHMAX + 1, 3) %}
             {% set fhr3 = '%03d' % fhr %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_prod_f{{ fhr3 }}.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmos_prod_f{{ fhr3 }}.log"
             {% if not WRITE_DOPOST %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}atmos_upp_f{{ fhr3 }}.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmos_upp_f{{ fhr3 }}.log"
             {% endif %}  ## not WRITE_DOPOST
         # Forecast GRIB2 data
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ fhr3 }}"
