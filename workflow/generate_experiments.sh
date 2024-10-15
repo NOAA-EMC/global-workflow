@@ -173,7 +173,7 @@ fi
 # Test if multiple "run_all" options were set
 _count_run_alls=0
 [ "${_run_all_gfs}" = true ] && ((_count_run_alls+=1))
-[ "${_run_all_gefs}" = true ] && ((_count_run_alls+=1)
+[ "${_run_all_gefs}" = true ] && ((_count_run_alls+=1))
 [ "${_run_all_sfs}" = true ] && ((_count_run_alls+=1))
 
 if (( _count_run_alls > 1 )) ; then
