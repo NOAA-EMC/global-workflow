@@ -10,17 +10,10 @@ analysis:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
-        {% for ftype in ["abias", "abias_air", "abias_int", "abias_pc", "atminc.nc", "atmi009.nc", "atmi003.nc", "radstat", "ratminc.nc", "ratmi009.nc", "ratmi003.nc"] %}
+        {% for ftype in ["abias", "abias_air", "abias_int", "abias_pc", "atminc.nc", "atmi009.nc", "atmi003.nc", "radstat", "ratminc.nc", "ratmi009.nc", "ratmi003.nc", "rad_varbc_params.tar"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
         {% endfor %}
-        {% if DO_JEDIATMVAR %}
-        {% for ftype in ["satbias.nc", "satbias_cov.nc", "tlapse.txt"] %}
-        {% for file in glob(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.atms_*." ~ ftype) %}
-        - ["{{ file }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
-        {% endfor %}
-        {% endfor %}
-        {% endif %}
         {% endfor %} # mem loop
 {% endif %}
