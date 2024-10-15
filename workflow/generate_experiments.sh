@@ -238,7 +238,7 @@ fi
 if [[ ${BUILD} =~ "Y" ]]; then
     echo "Building via build_all.sh ${_build_flags}..."
     # Let the output of build_all.sh go to stdout regardless of verbose options
-    #shellcheck disable=SC2086
+    #shellcheck disable=SC2086,SC2248
     ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
 fi
 
