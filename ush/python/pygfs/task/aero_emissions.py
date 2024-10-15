@@ -113,6 +113,7 @@ class AerosolEmissions(Task):
         emistype = Config_dict.emistype
         ratio = Config_dict.ratio
         climfiles = sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
+        coarsen_scale = Config_dict.coarsen_scale
         print(Config_dict.data_out['copy'][0][0])
 
         if emistype.lower() == "qfed":
@@ -127,6 +128,7 @@ class AerosolEmissions(Task):
             climos=climfiles,
             ratio=ratio,
             scale_climo=True,
+            coarsen_scale=coarsen_scale,
             obsfile=basefile)
         print(dset)
 
@@ -274,6 +276,7 @@ class AerosolEmissions(Task):
         climos=None,
         ratio=0.9,
         scale_climo=True,
+        coarsen_scale=150,
         obsfile="GBBEPx_all01GRID.emissions_v004_20190601.nc",
     ):
         """
@@ -310,7 +313,7 @@ class AerosolEmissions(Task):
         climo = climo.sel(lat=g["lat"], lon=g["lon"], method="nearest")
 
         # make weighted climo
-        gc = g.coarsen(lat=150, lon=150, boundary="trim").sum()
+        gc = g.coarsen(lat=coarsen_scale, lon=coarsen_scale, boundary="trim").sum()
 
         dsets = []
         climo_scaled = {}
