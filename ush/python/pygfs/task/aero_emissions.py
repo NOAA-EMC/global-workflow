@@ -165,10 +165,10 @@ class AerosolEmissions(Task):
         
         try:
             if files.size == 0:
-                raise FileNotFoundError
-        except FileNotFoundError:
-            logger.info("FATAL ERROR: QFED files not found.")
-            raise WorkflowException(f"open_qfed")
+                raise Exception
+        except Exception as ee:
+            logger.exception("FATAL ERROR: QFED files not found.")
+            raise Exception(f"FATAL ERROR: Unable to find files, ABORT")
         found_species = []
         dset_dict = {}
         for f in files:
@@ -178,9 +178,9 @@ class AerosolEmissions(Task):
             try:
                 logger.info("Opening QFED file: '{f}'")
                 da = xr.open_dataset(f, decode_cf=False).biomass
-            except FileNotFoundError:
-                logger.info("FATAL ERROR: QFED FILE NOT FOUND '{f}")
-                raise WorkflowException(f"xarray.open_dataset")
+            except Exception as ee:
+                logger.exception("FATAL ERROR: unable to read dataset {ee}")
+                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
             da.name = vrs[good]
             dset_dict[vrs[good]] = da
 
@@ -189,7 +189,7 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_climatology(fname) -> xr.Dataset:
+    def open_climatology(fname: list = None) -> xr.Dataset:
         """
         Open climatology files and concatenate them along the time dimension.
 
@@ -214,13 +214,17 @@ class AerosolEmissions(Task):
         xr.open_dataset(files[0])
         for i, f in enumerate(files):
             logger.info("  Opening Climatology File: '{f}'")
-            das.append(xr.open_dataset(f, engine="netcdf4"))
+            try:
+                das.append(xr.open_dataset(f, engine="netcdf4"))
+            except Exception as ee: 
+                logger.exception("Encountered an error reading climatology file, {ee}")
+                raise Exception("FATAL ERROR: Unable to read file, ABORT!")
 
         return xr.concat(das, dim="time")
 
     @staticmethod
     @logit(logger)
-    def write_ncf(dset, outfile) -> None:
+    def write_ncf(dset: xr.Dataset, outfile: str) -> None:
         """
         Write the given dataset to a NetCDF file with specified encoding.
 
@@ -243,12 +247,16 @@ class AerosolEmissions(Task):
             encoding["lon_b"] = dict(zlib=True, complevel=4)
         if "time" in dset:
             encoding["time"] = dict(dtype="i4")
-        dset.load().to_netcdf(outfile, encoding=encoding)
+        try: 
+            dset.load().to_netcdf(outfile, encoding=encoding)
+        except Exception as ee:
+            logger.exception(f"Encountered an exception in writing dataset, {ee}")
+            raise Exception("FATAL ERROR: Unable to write dataset, ABORT!")
 
     @staticmethod
     @logit(logger)
     def create_climatology(
-        emissions, climatology, lat_coarse=50, lon_coarse=50
+        emissions: xr.DataArray, climatology: xr.DataArray, lat_coarse: int=50, lon_coarse: int=50
     ) -> xr.Dataset:
         """
         Create scaled climatology data based on emission data.

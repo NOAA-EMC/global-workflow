@@ -31,7 +31,7 @@ if __name__ == '__main__':
     emissions = AerosolEmissions(config)
 
     # get local keys for configuration
-    keys = ['DATA', 'forecast_dates', 'cdate', 'aero_emission_yaml']
+    keys = ['DATA', 'forecast_dates', 'PDY', 'cyc', 'aero_emission_yaml']
     edict = AttrDict()
     for key in keys:
         edict[key] = emissions.task_config[key]
@@ -41,5 +41,5 @@ if __name__ == '__main__':
     # print(aero_emission_yaml.aero_emissions['fix_data'])
     emissions.initialize(edict.aero_emission_yaml)
     emissions.configure(edict.aero_emission_yaml)
-    emissions.run(workdir=edict.DATA, current_date=edict.cdate, forecast_dates=edict.forecast_dates, Config_dict=edict.CONFIG)
+    emissions.run(workdir=edict.DATA, current_date=edict.PDY, forecast_dates=edict.forecast_dates, Config_dict=edict.CONFIG)
     emissions.finalize(edict['CONFIG'])
