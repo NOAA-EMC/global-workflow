@@ -9,7 +9,7 @@ from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_timedelta,
                     chdir,
-                    parse_j2yaml,
+                    parse_j2yaml, save_as_yaml,
                     logit,
                     Executable,
                     Task)
@@ -40,12 +40,14 @@ class MarineBMat(Task):
         local_dict = AttrDict(
             {
                 'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'soca'),
-                'MARINE_WINDOW_BEGIN': _window_begin,
-                'MARINE_WINDOW_END': _window_end,
-                'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
-                'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
+                'MARINE_WINDOW_BEGIN': _window_begin,
+                'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
+                'MARINE_WINDOW_END': _window_end,
+                'MARINE_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
+                'ENSPERT_RELPATH': _enspert_relpath,
+                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
             }
         )
 
