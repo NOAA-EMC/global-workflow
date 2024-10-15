@@ -298,16 +298,12 @@ class AerosolEmissions(Task):
         # dd = pd.Timestamp(d)
 
         # open fire emission
-        if len(obsfile) > 1:
-            if "QFED".lower() in obsfile[0].lower():
-                g = AerosolEmissions.open_qfed(obsfile)
-            else:
-                g = xr.open_mfdataset(obsfile, decode_cf=False)
+        if isinstance(obsfile, (str, bytes)):
+            obsfile = [obsfile]
+        if "QFED".lower() in obsfile[0].lower():
+            g = AerosolEmissions.open_qfed(obsfile)
         else:
-            if "QFED".lower() in obsfile.lower():
-                g = AerosolEmissions.open_qfed(obsfile)
-            else:
-                g = xr.open_mfdataset(obsfile, decode_cf=False)
+            g = xr.open_mfdataset(obsfile, decode_cf=False)
 
         # open climotology
         climo = AerosolEmissions.open_climatology(climos)
