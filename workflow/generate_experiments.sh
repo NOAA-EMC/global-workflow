@@ -150,16 +150,16 @@ while getopts ":H:bB:uy:Y:GESA:ce:vVdh" option; do
 done
 
 # Nullify the redirect if we are in verbose mode
-[ "${_verbose}" = true ] && _redirect=""
+[[ "${_verbose}" == "true" ]] && _redirect=""
 
 # Turn on logging if running in debug mode
-if [ "${_debug}" = true ]; then
+if [[ "${_debug}" == "true" ]]; then
    set -x
 fi
 
 # Create the RUNTESTS directory
 export RUNTESTS=$1
-[ "${_verbose}" = true ] && echo "Creating RUNTESTS in ${RUNTESTS}"
+[[ "${_verbose}" == "true" ]] && echo "Creating RUNTESTS in ${RUNTESTS}"
 if [[ ! -d "${RUNTESTS}" ]]; then
    set +e
    if ! mkdir -p "${RUNTESTS}" "${_verbose_flag}"; then
@@ -172,9 +172,9 @@ fi
 
 # Test if multiple "run_all" options were set
 _count_run_alls=0
-[ "${_run_all_gfs}" = true ] && ((_count_run_alls+=1))
-[ "${_run_all_gefs}" = true ] && ((_count_run_alls+=1))
-[ "${_run_all_sfs}" = true ] && ((_count_run_alls+=1))
+[[ "${_run_all_gfs}" == "true" ]] && ((_count_run_alls+=1))
+[[ "${_run_all_gefs}" == "true" ]] && ((_count_run_alls+=1))
+[[ "${_run_all_sfs}" == "true" ]] && ((_count_run_alls+=1))
 
 if (( _count_run_alls > 1 )) ; then
    echo "Only one run all option (-G -E -S) may be specified"
@@ -183,20 +183,20 @@ if (( _count_run_alls > 1 )) ; then
 fi
 
 # Append -w to build_all.sh flags if -E was specified
-if [[ "${_run_all_gefs}" == true && "${_explicit_build_flags}" == false && \
-      "${_build}" == true ]]; then
+if [[ "${_run_all_gefs}" == "true" && "${_explicit_build_flags}" == "false" && \
+      "${_build}" == "true" ]]; then
    _build_flags="-w"
 fi
 
 # Append -g -u to build_all.sh flags if -G was specified
-if [[ "${_run_all_gfs}" == true && "${_explicit_build_flags}" == false && \
-      "${_build}" == true ]]; then
+if [[ "${_run_all_gfs}" == "true" && "${_explicit_build_flags}" == "false" && \
+      "${_build}" == "true" ]]; then
    _build_flags="-g -u"
 fi
 
 # If -S is specified, exit (for now).
 # TODO when SFS tests come online, enable this option.
-if [ "${_run_all_sfs}" = true ]; then
+if [[ "${_run_all_sfs}" == "true" ]]; then
    echo "There are no known SFS tests at this time.  Aborting."
    echo "If you have prepared YAMLs for SFS cases, specify their"
    echo "location and names without '-S', e.g."
@@ -205,18 +205,20 @@ if [ "${_run_all_sfs}" = true ]; then
 fi
 
 # Set HOMEgfs if it wasn't set by the user
-if [ "${_specified_home}" = false ]; then
+if [[ "${_specified_home}" == "true" ]]; then
    script_relpath="$(dirname "${BASH_SOURCE[0]}")"
    HOMEgfs="$(cd "${script_relpath}/.." && pwd)"
-   [ "${_verbose}" = true ] && echo "Setting HOMEgfs to ${HOMEgfs}"
+   [[ "${_verbose}" == "true" ]] && echo "Setting HOMEgfs to ${HOMEgfs}"
 fi
 
+# Head into HOMEgfs and perform housekeeping
+cd "${HOMEgfs}"
 # Loading modules sometimes raises unassigned errors, so disable checks
 set +eu
-[ "${_verbose}" = true ] && echo "Loading modules"
-[ "${_debug}" = true ] && set +x
+[[ "${_verbose}" == "true" ]] && echo "Loading modules"
+[[ "${_debug}" == "true" ]] && set +x
 source "${HOMEgfs}/workflow/gw_setup.sh"
-[ "${_debug}" = true ] && set -x
+[[ "${_debug}" == "true" ]] && set -x
 set -eu
 machine=${MACHINE_ID}
 . "${HOMEgfs}/ci/platforms/config.$machine"
@@ -227,7 +229,7 @@ if [[ -z ${_yaml_dir} ]]; then
 fi
 
 # Update submodules if requested
-if [ "${_update_submods}" = true ]; then
+if [[ "${_update_submods}" == "true" ]]; then
    echo "Updating submodules..."
    #shellcheck disable=SC2086
    git submodule update --init --recursive -j 10 ${_redirect}
@@ -266,7 +268,7 @@ for _yaml in ${_yaml_list}; do
 done
 
 # Update the account if specified
-[ "${_set_account}" = true ] && export HPC_ACCOUNT=${_hpc_account}
+[[ "${_set_account}" == "true" ]] && export HPC_ACCOUNT=${_hpc_account}
 
 # Create the experiments
 rm -f "tests.cron" "${_verbose_flag}"
@@ -278,7 +280,7 @@ for _case in ${_yaml_list}; do
 done
 
 # Update the cron
-if [ "${_update_cron}" = true ]; then
+if [[ "${_update_cron}" == "true" ]]; then
    echo "Updating the existing crontab"
    rm -f existing.cron final.cron "${_verbose_flag}"
    touch existing.cron final.cron
@@ -288,14 +290,14 @@ if [ "${_update_cron}" = true ]; then
    crontab -l > existing.cron
    set -e
 
-   if [ "${_debug}" == true ]; then
+   if [[ "${_debug}" == "true" ]]; then
       echo "Existing crontab: "
       echo "#######################"
       cat existing.cron
       echo "#######################"
    fi
 
-   if [ "${_set_email}" = true ]; then
+   if [[ "${_set_email}" == "true" ]]; then
       # Replace the existing email in the crontab
       [[ "${_verbose}" ]] && echo "Updating crontab email to ${_email}"
       sed -i "/^MAILTO/d" existing.cron
@@ -304,7 +306,7 @@ if [ "${_update_cron}" = true ]; then
 
    cat existing.cron tests.cron >> final.cron
 
-   if [ "${_verbose}" = true ]; then
+   if [[ "${_verbose}" == "true" ]]; then
       echo "Setting crontab to:"
       echo "#######################"
       cat final.cron
@@ -319,6 +321,6 @@ else
 fi
 
 # Cleanup
-[ "${_debug}" = false ] && rm -f final.cron existing.cron tests.cron "${_verbose_flag}"
+[[ "${_debug}" == "false" ]] && rm -f final.cron existing.cron tests.cron "${_verbose_flag}"
 
 echo "Success!!"
