@@ -137,7 +137,7 @@ while getopts ":H:bB:uy:Y:GESA:ce:vVdh" option; do
     v) _verbose=true ;;
     V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
     d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v";;
-    h) _usage ;;
+    h) _usage && exit 0;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       _usage
@@ -211,8 +211,6 @@ if [[ "${_specified_home}" == "true" ]]; then
    [[ "${_verbose}" == "true" ]] && echo "Setting HOMEgfs to ${HOMEgfs}"
 fi
 
-# Head into HOMEgfs and perform housekeeping
-cd "${HOMEgfs}"
 # Loading modules sometimes raises unassigned errors, so disable checks
 set +eu
 [[ "${_verbose}" == "true" ]] && echo "Loading modules"
