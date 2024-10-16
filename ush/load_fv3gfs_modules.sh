@@ -14,7 +14,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
 # Source versions file for runtime
-source "${HOMEgfs}/versions/run.ver"
+source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
 
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"

@@ -108,6 +108,9 @@ fi
 #------------------------------------
 # TODO: Commented out until components aligned for build
 #source ../versions/build.ver
+if [[ "${MACHINE_ID}" == "noaacloud" ]] ; then
+   source "../versions/build.${MACHINE_ID}.ver"
+fi
 
 #------------------------------------
 # Exception Handling Init
