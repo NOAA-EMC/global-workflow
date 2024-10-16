@@ -77,8 +77,12 @@ class AerosolEmissions(Task):
 
         Parameters
         ----------
-        upp_yaml: Dict
+        aero_emission_yaml: Dict
             Fully resolved aero_emissions.yaml dictionary
+            
+         Returns
+        -------
+        None
         """
         logger.info("Copy Static Data to run directory")
         logger.info(
@@ -92,30 +96,28 @@ class AerosolEmissions(Task):
         """Configure the artifacts in the work directory.
         Copy run specific data to run directory
         """
-        
-        
-
-    @staticmethod
-    @logit(logger)
-    def execute(workdir: Union[str, os.PathLike], aprun_cmd: str) -> None:
-        """Run the executable (if any)
-
-        Parameters
-        ----------
-        workdir : str | os.PathLike
-            work directory with the staged data, parm files, namelists, etc.
-        aprun_cmd : str
-            launcher command for executable.x
-
-        Returns
-        -------
-        None
-        """
-        AerosolEmissions.run(workdir)
 
     @classmethod
     @logit(logger)
     def run(cls, workdir: Union[str, os.PathLike], current_date: str = None, forecast_dates: list = None, Config_dict: Dict = {}) -> None:
+        """
+        Run the AerosolEmissions task with the given parameters.
+
+        Parameters:
+        -----------
+        workdir : Union[str, os.PathLike])
+            The working directory path.
+        current_date: (str, optional)
+            The current date for fire emissions generation.
+        forecast_dates: list, optional
+            List of forecast dates.
+        Config_dict:  Dict
+            Configuration dictionary for the task.
+
+        Returns:
+        --------
+        None
+        """
         emistype = Config_dict.emistype
         ratio = Config_dict.ratio
         climfiles = sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
@@ -176,10 +178,10 @@ class AerosolEmissions(Task):
             good = index_good[0][0]
             found_species.append(index_good[0][1])
             try:
-                logger.info("Opening QFED file: '{f}'")
+                logger.info("Opening QFED file: {filename}".format(filename=f))
                 da = xr.open_dataset(f, decode_cf=False).biomass
             except Exception as ee:
-                logger.exception("FATAL ERROR: unable to read dataset {ee}")
+                logger.exception("FATAL ERROR: unable to read dataset {error}".format(error=ee))
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
             da.name = vrs[good]
             dset_dict[vrs[good]] = da
@@ -194,10 +196,13 @@ class AerosolEmissions(Task):
         Open climatology files and concatenate them along the time dimension.
 
         Parameters:
-        - fname (str or list of str): Path(s) to the climatology files.
+        -----------
+        fname: str or list of str
+            Path(s) to the climatology files.
 
         Returns:
-        - xr.Dataset: Concatenated dataset containing the climatology data.
+        --------
+            xr.Dataset: Concatenated dataset containing the climatology data.
         """
         # array to house datasets
         das = []
@@ -210,14 +215,14 @@ class AerosolEmissions(Task):
             files = sort(glob(fname))
         # print(files)
         logger.info("Process Climatlogy Files")
-        logger.info("  Opening Climatology File: '{fname[0]}'")
+        logger.info("  Opening Climatology File: {filename}".format(filename=fname[0]))
         xr.open_dataset(files[0])
         for i, f in enumerate(files):
-            logger.info("  Opening Climatology File: '{f}'")
+            logger.info("  Opening Climatology File: {filename}".format(filename=f))
             try:
                 das.append(xr.open_dataset(f, engine="netcdf4"))
             except Exception as ee: 
-                logger.exception("Encountered an error reading climatology file, {ee}")
+                logger.exception("Encountered an error reading climatology file, {error}".format(error=ee))
                 raise Exception("FATAL ERROR: Unable to read file, ABORT!")
 
         return xr.concat(das, dim="time")
@@ -229,10 +234,14 @@ class AerosolEmissions(Task):
         Write the given dataset to a NetCDF file with specified encoding.
 
         Parameters:
-        - dset (xarray.Dataset): The dataset to be written to the NetCDF file.
-        - outfile (str): The path and filename of the output NetCDF file.
+        -----------
+        dset: xarray.Dataset
+            The dataset to be written to the NetCDF file.
+        outfile: str
+            The path and filename of the output NetCDF file.
 
         Returns:
+        --------
         None
         """
         # print("Output File:", outfile)
@@ -262,10 +271,14 @@ class AerosolEmissions(Task):
         Create scaled climatology data based on emission data.
 
         Parameters:
-        emissions (xarray.DataArray): Emission data.
-        climatology (xarray.Dataset): Input climatology data.
-        lat_coarse (int, optional): Coarsening factor for latitude. Defaults to 50.
-        lon_coarse (int, optional): Coarsening factor for longitude. Defaults to 50.
+        emissions: xarray.DataArray
+            Emission data.
+        climatology:  xarray.Dataset
+            Input climatology data.
+        lat_coarse: int, optional)
+            Coarsening factor for latitude. Defaults to 50.
+        lon_coarse: int, optional)
+            Coarsening factor for longitude. Defaults to 50.
 
         Returns:
         xarray.Dataset: Scaled climatology data.
@@ -312,21 +325,30 @@ class AerosolEmissions(Task):
         scale_climo=True,
         coarsen_scale=150,
         obsfile="GBBEPx_all01GRID.emissions_v004_20190601.nc",
-    ):
+    ) -> xr.Dataset:
         """
         Generate fire emissions data for a given date and forecast period.
 
         Parameters:
-        - d (str or pd.Timestamp): The date for which fire emissions are generated.
-        - climos (dict): Dictionary containing pre-calculated climatology data for scaling.
-        - ratio (float): The ratio of original data to climatology data for blending.
-        - scale_climo (bool): Flag indicating whether to scale the climatology data.
-        - n_forecast_days (int): Number of forecast days.
-        - obsfile (str): Path to the file containing observed fire emissions data.
-        - climo_directory (str): Directory containing climatology files.
+        d: str or pd.Timestamp
+            The date for which fire emissions are generated.
+        climos: dict    
+            Dictionary containing pre-calculated climatology data for scaling.
+        ratio: float
+            The ratio of original data to climatology data for blending.
+        scale_climo: bool
+            Flag indicating whether to scale the climatology data.
+        n_forecast_days: int
+            Number of forecast days.
+        obsfile: str
+            Path to the file containing observed fire emissions data.
+        climo_directory: str
+            Directory containing climatology files.
 
         Returns:
-        - list: A list of xarray.Dataset objects representing fire emissions data for each forecast day.
+        --------
+        xr.Dataset: 
+           xarray.Dataset object representing fire emissions data for each forecast day.
         """
         # import pandas as pd
         import numpy as np
@@ -392,6 +414,15 @@ class AerosolEmissions(Task):
     def finalize(Config_dict: Dict) -> None:
         """Perform closing actions of the task.
         Copy data back from the DATA/ directory to COM/
+        
+        Paramaters:
+        -----------
+        config : Dict[str, Any]
+            Incoming configuration for the task from the environment
+            
+        Returns
+        -------
+        None
         """
         # print(Config_dict.data_out)
         logger.info(f"Copy '{Config_dict.data_out}' processed data to COM/ directory")
