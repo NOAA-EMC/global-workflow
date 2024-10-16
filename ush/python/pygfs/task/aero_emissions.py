@@ -374,7 +374,6 @@ class AerosolEmissions(Task):
         dsets = []
         climo_scaled = {}
         for tslice in np.arange(len(climos)):
-            # print(tslice)
             # make copy of original data
             if tslice == 0:
                 dset = g.copy()
@@ -397,8 +396,6 @@ class AerosolEmissions(Task):
                             gc[v], climo[v], lon_coarse=150, lat_coarse=150
                         )
                     else:
-                        # cn = create_climdata(gc[v],climo[v])
-                        # print(cn)
                         if tslice > 5:
                             dset[v].data = (
                                 ratio * dset[v] + (1 - ratio) * climo_scaled[v].data[tslice, :, :]
