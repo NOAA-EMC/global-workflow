@@ -48,6 +48,9 @@ export NOSCRUB="@NOSCRUB@"
 # Base directories for various builds
 export BASE_GIT="@BASE_GIT@"
 
+# Base directory for staged data
+export BASE_DATA="@BASE_DATA@"
+
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="@DO_BUFRSND@"     # BUFR sounding products
 export DO_GEMPAK="@DO_GEMPAK@"       # GEMPAK products
@@ -297,9 +300,7 @@ export MEMDIR="mem${ENSMEM}"
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 # Check if cycle is cold starting
-if [[ "${EXP_WARM_START}" = ".false." ]]; then
-    export OFFSET_START_HOUR=$(( assim_freq / 2 ))
-else
+if [[ "${EXP_WARM_START}" = ".true." ]]; then
   if [[ "${DOIAU}" = "YES" ]]; then
     export IAU_FHROT=3
   else

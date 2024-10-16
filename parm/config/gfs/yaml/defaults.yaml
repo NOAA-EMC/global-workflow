@@ -52,7 +52,7 @@ snowanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
-ocnanal:
+marineanl:
   SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
   SOCA_NINNER: 100
@@ -61,4 +61,4 @@ prepoceanobs:
   SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in ocnanal
   OBSPREP_YAML: "${PARMgfs}/gdas/soca/obsprep/obsprep_config.yaml"
-  DMPDIR: "/scratch1/NCEPDEV/global/glopara/data/experimental_obs"
+  DMPDIR: "${BASE_DATA}/experimental_obs"

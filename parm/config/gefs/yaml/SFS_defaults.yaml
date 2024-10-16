@@ -9,7 +9,7 @@ base:
   DO_AWIPS: "NO"
   KEEPDATA: "NO"
   DO_EXTRACTVARS: "NO"
-  FHMAX_GFS: 120
+  FHMAX_GFS: 2976
   FHMAX_HF_GFS: 0
   FHOUT_HF_GFS: 1
   FHOUT_OCN_GFS: 24
@@ -21,6 +21,9 @@ base:
 fcst:
   TYPE: "hydro"
   MONO: "mono"
+  reforecast: "YES"
+  FHZER: 12
+  POST_SFS: "YES"
 stage_ic:
   USE_OCN_ENS_PERTURB_FILES: "YES"
   USE_ATM_ENS_PERTURB_FILES: "YES"

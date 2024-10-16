@@ -19,3 +19,8 @@ base:
   FHOUT_ICE_GFS: 6
   HPSSARCH: "NO"
   LOCALARCH: "NO"
+fcst:
+  reforecast: "YES"
+  FHZER: 6
+  POST_SFS: "NO"
+

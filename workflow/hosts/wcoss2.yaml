@@ -1,5 +1,6 @@
 BASE_GIT: '/lfs/h2/emc/global/save/emc.global/git'
 DMPDIR: '/lfs/h2/emc/dump/noscrub/dump'
+BASE_DATA: '/lfs/h2/emc/global/noscrub/emc.global/data'
 BASE_IC: '/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR'
 PACKAGEROOT: '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
 COMINsyn: '/lfs/h1/ops/prod/com/gfs/v16.3/syndat'
