@@ -182,7 +182,8 @@ class MarineBMat(Task):
                                os.path.join(self.task_config.DATA, 'calc_scales.x')]]}).sync()
                                       
         # initialize JEDI applications
-        self.jedi['gridgen'].initialize(self.task_config)        
+        self.jedi['gridgen'].initialize(self.task_config)
+        logger.error('foobar') # Test
         self.jedi['soca_diagb'].initialize(self.task_config)        
         self.jedi['soca_parameters_diffusion_vt'].initialize(self.task_config)        
         self.jedi['soca_setcorscales'].initialize(self.task_config)
@@ -221,10 +222,11 @@ class MarineBMat(Task):
         This method will generate the full B-matrix according to the configuration.
         """
         self.jedi['gridgen'].execute(aprun_cmd) # TODO: This should be optional in case the geometry file was staged
-        self.execute_vtscales()
-        self.jedi['soca_parameters_diffusion_vt'].execute(aprun_cmd)
+        self.jedi['soca_diagb'].execute(aprun_cmd)
         self.jedi['soca_setcorscales'].execute(aprun_cmd) # TODO: Make this optional once we've converged on an acceptable set of scales
         self.jedi['soca_parameters_diffusion_hz'].execute(aprun_cmd) # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.execute_vtscales()
+        self.jedi['soca_parameters_diffusion_vt'].execute(aprun_cmd)
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
             self.jedi['soca_ensb'].execute(self.task_config)       # TODO: refactor this from the old scripts
             self.jedi['soca_ensweights'].execute(self.task_config) # TODO: refactor this from the old scripts
