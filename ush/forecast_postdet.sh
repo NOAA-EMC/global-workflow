@@ -340,7 +340,7 @@ WW3_postdet() {
     echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     local ww3_restart_file
     for ww3_grid in ${waveGRD} ; do
-      ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.${ww3_grid}"
+      ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
       if [[ ! -f "${ww3_restart_file}" ]]; then
         echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
         if [[ "${RERUN}" == "YES" ]]; then
@@ -360,6 +360,15 @@ WW3_postdet() {
   else  # cold start
     echo "WW3 will start from rest!"
   fi  # [[ "${warm_start}" == ".true." ]]
+
+  # Link restart files
+  local restart_file
+  # Use restart_date if it was determined above, otherwise use initialization date
+  for (( vdate = "${restart_date:-${PDY}${cyc}}";  vdate <= forecast_end_cycle;
+         vdate = $(date --utc -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H) )); do
+    restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3"
+    ${NLN} "${DATArestart}/WW3_RESTART/${restart_file}" "${restart_file}"
+  done
 
   # Link output files
   local wavprfx="${RUN}wave${WAV_MEMBER:-}"
