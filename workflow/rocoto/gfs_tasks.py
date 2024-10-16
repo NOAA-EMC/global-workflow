@@ -670,9 +670,9 @@ class GFSTasks(Tasks):
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}prepoceanobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prepoceanobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
