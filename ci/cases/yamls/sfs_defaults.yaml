@@ -26,6 +26,7 @@ fcst:
   MONO: "mono"
   reforecast: "YES"
   FHZER: 24
+  SFS_POST: "YES"
 stage_ic:
   USE_OCN_ENS_PERTURB_FILES: "YES"
   USE_ATM_ENS_PERTURB_FILES: "YES"

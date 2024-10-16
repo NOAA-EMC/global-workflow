@@ -117,6 +117,7 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
+        export DO_SKEB="NO"
         ;;
     "C192")
         export DELTIM=600
