@@ -19,7 +19,7 @@ if [[ "${running}" -gt 0 ]]; then
    exit
 fi
 
-cp "/contrib/${CI_USER}/SETUP/actions-runner_${OS_NAME}.tar.gz ${HOME}"
+cp "/contrib/${CI_USER}/SETUP/actions-runner_${OS_NAME}.tar.gz" "${HOME}"
 cd $HOME || exit
 tar -xf "actions-runner_${OS_NAME}.tar.gz"
 cd actions-runner || exit
