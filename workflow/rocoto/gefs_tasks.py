@@ -68,7 +68,7 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'gefs_wave_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_aero']:
+        if self.options['do_aero_fcst']:
             dep_dict = {'type': 'task', 'name': f'gefs_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
@@ -114,7 +114,7 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'gefs_wave_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_aero']:
+        if self.options['do_aero_fcst']:
             dep_dict = {'type': 'task', 'name': f'gefs_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 

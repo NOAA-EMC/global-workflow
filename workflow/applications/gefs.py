@@ -15,9 +15,12 @@ class GEFSAppConfig(AppConfig):
         self.run = base.get('RUN', 'gefs')
         self.runs = [self.run]
 
-    def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
+    def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
 
-        run_options[self.run]['nens'] = base.get('NMEM_ENS', 0)
+        run_options = super()._get_run_options(conf)
+
+        run_options[self.run]['nens'] = conf.parse_config('config.base').get('NMEM_ENS', 0)
+
         return run_options
 
     def _get_app_configs(self, run):
@@ -38,7 +41,7 @@ class GEFSAppConfig(AppConfig):
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        if options['do_aero']:
+        if options['do_aero_fcst']:
             configs += ['prep_emissions']
 
         if options['do_extractvars']:
@@ -63,7 +66,7 @@ class GEFSAppConfig(AppConfig):
         if options['do_wave']:
             tasks += ['waveinit']
 
-        if options['do_aero']:
+        if options['do_aero_fcst']:
             tasks += ['prep_emissions']
 
         tasks += ['fcst']

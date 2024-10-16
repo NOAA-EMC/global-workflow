@@ -64,10 +64,13 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         for run in self.runs:
             self.configs[run] = self._source_configs(conf, run=run, log=False)
 
+    @abstractmethod
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
         '''
         Determine the do_* and APP options for each RUN by sourcing config.base
-        for each RUN and collecting the flags into self.run_options
+        for each RUN and collecting the flags into self.run_options.  Note that
+        this method is overloaded so additional NET- and MODE-dependent flags
+        can be set.
         '''
 
         run_options = {run: {} for run in dict.fromkeys(self.runs)}
@@ -96,7 +99,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_wave'] = run_base.get('DO_WAVE', False)
             run_options[run]['do_ocean'] = run_base.get('DO_OCN', False)
             run_options[run]['do_ice'] = run_base.get('DO_ICE', False)
-            run_options[run]['do_aero'] = run_base.get('DO_AERO', False)
             run_options[run]['do_prep_obs_aero'] = run_base.get('DO_PREP_OBS_AERO', False)
             run_options[run]['do_aero_anl'] = run_base.get('DO_AERO_ANL', False)
             run_options[run]['do_aero_fcst'] = run_base.get('DO_AERO_FCST', False)
@@ -107,34 +109,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             if not AppConfig.is_monotonic(run_options[run]['fcst_segments']):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
 
-            # Append any MODE-specific options
-            run_options = self._netmode_run_options(run_base, run_options)
-
         # Return the dictionary of run options
         return run_options
-
-    @abstractmethod
-    def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
-        '''
-        Defines run-based options for a given NET_MODE case.
-
-        Parameters
-        ----------
-        base: Dict
-              Parsed config.base settings
-
-        run_options: Dict
-              A dictionary with valid RUN-based sub-dictionaries containing generic options.
-
-        Returns
-        -------
-        run_options: Dict
-              Output dictionary with additional options valid for the given NET and MODE.
-        '''
-
-        # Valid NET_MODE options are defined in the appropriate subclass.
-
-        pass
 
     @abstractmethod
     def _get_app_configs(self):

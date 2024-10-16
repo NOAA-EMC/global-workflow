@@ -30,9 +30,13 @@ class GFSCycledAppConfig(AppConfig):
         self.runs.append("gfs") if base['gfs_cyc'] > 0 else 0
         self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and "gfs" in self.runs else 0
 
-    def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
+    def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
+
+        run_options = super()._get_run_options(conf)
 
         for run in self.runs:
+            base = conf.parse_config('config.base', RUN=run)
+
             run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             if run_options[run]['do_hybvar']:
@@ -126,7 +130,7 @@ class GFSCycledAppConfig(AppConfig):
             if options['do_awips']:
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
-        if options['do_aero']:
+        if options['do_aero_anl']:
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             if options['do_prep_obs_aero']:
                 configs += ['prepobsaero']

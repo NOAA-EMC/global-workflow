@@ -15,9 +15,11 @@ class GFSForecastOnlyAppConfig(AppConfig):
         self.run = base.get('RUN', 'gfs')
         self.runs = [self.run]
 
-    def _netmode_run_options(self, base: Dict[str, Any], run_options: Dict[str, Any]) -> Dict[str, Any]:
+    def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
 
-        run_options[self.run]['exp_warm_start'] = base.get('EXP_WARM_START', False)
+        run_options = super()._get_run_options(conf)
+
+        run_options[self.run]['exp_warm_start'] = conf.parse_config('config.base').get('EXP_WARM_START', False)
 
         return run_options
 
@@ -36,7 +38,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
             configs += ['atmos_products']
 
-            if options['do_aero']:
+            if options['do_aero_fcst']:
                 if not options['exp_warm_start']:
                     configs += ['aerosol_init']
 
