@@ -79,7 +79,7 @@ class AerosolEmissions(Task):
         ----------
         aero_emission_yaml: Dict
             Fully resolved aero_emissions.yaml dictionary
-            
+
          Returns
         -------
         None
@@ -164,7 +164,7 @@ class AerosolEmissions(Task):
             files = sort(fname)
         else:
             files = sort(glob(fname))
-        
+
         try:
             if files.size == 0:
                 raise Exception
@@ -221,7 +221,7 @@ class AerosolEmissions(Task):
             logger.info("  Opening Climatology File: {filename}".format(filename=f))
             try:
                 das.append(xr.open_dataset(f, engine="netcdf4"))
-            except Exception as ee: 
+            except Exception as ee:
                 logger.exception("Encountered an error reading climatology file, {error}".format(error=ee))
                 raise Exception("FATAL ERROR: Unable to read file, ABORT!")
 
@@ -256,16 +256,16 @@ class AerosolEmissions(Task):
             encoding["lon_b"] = dict(zlib=True, complevel=4)
         if "time" in dset:
             encoding["time"] = dict(dtype="i4")
-        try: 
+        try:
             dset.load().to_netcdf(outfile, encoding=encoding)
         except Exception as ee:
-            logger.exception(f"Encountered an exception in writing dataset, {ee}")
+            logger.exception("Encountered an exception in writing dataset, {}".format(ee))
             raise Exception("FATAL ERROR: Unable to write dataset, ABORT!")
 
     @staticmethod
     @logit(logger)
     def create_climatology(
-        emissions: xr.DataArray, climatology: xr.DataArray, lat_coarse: int=50, lon_coarse: int=50
+        emissions: xr.DataArray, climatology: xr.DataArray, lat_coarse: int = 50, lon_coarse: int = 50
     ) -> xr.Dataset:
         """
         Create scaled climatology data based on emission data.
@@ -332,7 +332,7 @@ class AerosolEmissions(Task):
         Parameters:
         d: str or pd.Timestamp
             The date for which fire emissions are generated.
-        climos: dict    
+        climos: dict
             Dictionary containing pre-calculated climatology data for scaling.
         ratio: float
             The ratio of original data to climatology data for blending.
@@ -347,7 +347,7 @@ class AerosolEmissions(Task):
 
         Returns:
         --------
-        xr.Dataset: 
+        xr.Dataset:
            xarray.Dataset object representing fire emissions data for each forecast day.
         """
         # import pandas as pd
@@ -414,12 +414,12 @@ class AerosolEmissions(Task):
     def finalize(Config_dict: Dict) -> None:
         """Perform closing actions of the task.
         Copy data back from the DATA/ directory to COM/
-        
+
         Paramaters:
         -----------
         config : Dict[str, Any]
             Incoming configuration for the task from the environment
-            
+
         Returns
         -------
         None
