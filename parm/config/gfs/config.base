@@ -154,29 +154,9 @@ export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
-# APP settings; configurable by RUN
-# If a component (WAVES, etc) needs to be turned on/off by RUN, set it here
-case "${RUN}" in
-    "gfs")
-        export APP=@APP@
-        ;;
-    "gdas")
-        export APP=@APP@
-        ;;
-    "enkfgfs")
-        export APP=@APP@
-        ;;
-    "enkfgdas")
-        export APP=@APP@
-        ;;
-    *)
-        echo "FATAL ERROR: Unrecognized RUN (${RUN})!"
-        exit 1
-        ;;
-esac
-
 shopt -s extglob
 # Adjust APP based on RUN
+# If a component (WAVES, etc) needs to be turned on/off by RUN, set it here
 case "${RUN}" in
     enkf*) # Turn off aerosols and waves
         APP="${APP/%+([WA])}"
