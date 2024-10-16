@@ -18,7 +18,7 @@ env:
   MACHINE_ID: noaacloud
 
 jobs:
-  checkout-build-link:
+  checkout:
     runs-on: [self-hosted, aws, parallelworks, centos]
     timeout-minutes: 600
 
@@ -29,6 +29,12 @@ jobs:
       with:
         path: ${{ github.run_id }}/HOMEgfs
         submodules: 'recursive'
+
+  build-link:      
+    runs-on: [self-hosted, aws, parallelworks, centos]
+    needs: checkout
+
+    steps:
 
     - name: Build components
       run: |
@@ -41,7 +47,7 @@ jobs:
         ./link_workflow.sh
 
   create-experiments:
-    needs: checkout-build-link
+    needs: checkout
     runs-on: [self-hosted, aws, parallelworks, centos]
     strategy:
       matrix:
