@@ -73,7 +73,7 @@ case "${machine}" in
   "hera")     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
   "orion")    FIX_DIR="/work/noaa/global/glopara/fix" ;;
   "hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
-  "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
+  "jet")      FIX_DIR="/lfs5/HFIP/hfv3gfs/glopara/FIX/fix" ;;
   "s4")       FIX_DIR="/data/prod/glopara/fix" ;;
   "gaea")     FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
   "noaacloud") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
@@ -166,7 +166,7 @@ for file in params_grib2_tbl_new nam_micro_lookup.dat
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
 done
-for dir in gfs gefs
+for dir in gfs gefs sfs
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
