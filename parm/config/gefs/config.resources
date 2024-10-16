@@ -144,7 +144,7 @@ case ${step} in
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
     CHMPETS=0; CHMTHREADS=0
-    if [[ "${DO_AERO}" == "YES" ]]; then
+    if [[ "${DO_AERO_FCST}" == "YES" ]]; then
       # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
       (( CHMTHREADS = ATMTHREADS ))
       (( CHMPETS = FV3PETS ))

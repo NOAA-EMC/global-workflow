@@ -133,7 +133,6 @@ export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
-export DO_AERO="NO"
 export DO_EXTRACTVARS="@DO_EXTRACTVARS@" # Option to process and extract a subset of products to save on disk
 export DO_AERO_FCST="NO"
 export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
@@ -180,7 +179,6 @@ case "${APP}" in
   ATM)
     ;;
   ATMA)
-    export DO_AERO="YES"
     export DO_AERO_FCST="NO"
     ;;
   ATMW)
@@ -198,7 +196,6 @@ case "${APP}" in
     export DO_ICE="YES"
 
     if [[ "${APP}" =~ A$ ]]; then
-        export DO_AERO="YES"
         export DO_AERO_FCST="NO"
     fi
 
