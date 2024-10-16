@@ -171,11 +171,6 @@ ush/bufr2ioda_insitu*
 versions/build.ver
 versions/run.ver
 
-# wxflow checkout and symlinks
-ush/python/wxflow
-workflow/wxflow
-ci/scripts/wxflow
-
 # jcb checkout and symlinks
 ush/python/jcb
 workflow/jcb
