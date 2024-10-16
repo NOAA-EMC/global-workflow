@@ -556,7 +556,7 @@ FV3_predet(){
       ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
     elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "YES" ]]; then  # RUN = sfs output
       ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
-      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
+      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
     fi
   fi
 }
