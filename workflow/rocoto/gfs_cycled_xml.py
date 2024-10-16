@@ -43,7 +43,7 @@ class GFSCycledRocotoXML(RocotoXML):
                 if interval_gfs < to_timedelta('24H'):
                     # Run verification at 18z, no matter what if there is more than one gfs per day
                     sdate_metp = sdate_gfs.replace(hour=18)
-                    edate_metp = (edate_gfs - to_timedelta('24H')).replace(hour=18)
+                    edate_metp = edate_gfs.replace(hour=18)
                     interval_metp = to_timedelta('24H')
                     sdate_metp_str = sdate_metp.strftime("%Y%m%d%H%M")
                     edate_metp_str = edate_metp.strftime("%Y%m%d%H%M")
