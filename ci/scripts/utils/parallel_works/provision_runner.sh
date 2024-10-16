@@ -20,8 +20,8 @@ if [[ "${running}" -gt 0 ]]; then
 fi
 
 cp "/contrib/${CI_USER}/SETUP/actions-runner_${OS_NAME}.tar.gz" "${HOME}"
-cd $HOME || exit
+cd "${HOME}" || exit
 tar -xf "actions-runner_${OS_NAME}.tar.gz"
 cd actions-runner || exit
 d=$(date +%Y-%m-%d-%H:%M)
-nohup ./run.sh >& "run_noup${d}.log" &
+nohup ./run.sh >& "run_nohup${d}.log" &
