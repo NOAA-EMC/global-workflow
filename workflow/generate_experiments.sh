@@ -8,7 +8,9 @@ function _usage() {
    specific build flags), specicy which YAMLs and YAML directory to run, and
    whether to automatically update your crontab.
 
-   Usage: generage_experiments.sh [OPTIONS] /path/to/RUNTESTS
+   Usage: generate_experiments.sh [OPTIONS] /path/to/RUNTESTS
+          or
+          RUNTESTS=/path/to/RUNTESTS generate_experiments.sh [OPTIONS]
 
     -H Root directory of the global workflow.
        If not specified, then the directory is assumed to be one parent
@@ -79,12 +81,7 @@ function _usage() {
 EOF
 }
 
-set -eu
-
-if [[ $# -ne 1 ]]; then
-   _usage
-   exit 1
-fi
+set -eux
 
 # Set default options
 HOMEgfs=""
@@ -106,48 +103,73 @@ _email=""
 _set_email=false
 _verbose=false
 _very_verbose=false
-_verbose_flag=""
+_verbose_flag="--"
 _debug="false"
 _cwd=$(pwd)
 _redirect='>/dev/null'  # Redirect stdout to /dev/null; stderr to terminal
+runtests="${RUNTESTS:-${_runtests:-}}"
+_nonflag_option_count=0
 
-while getopts ":H:bB:uy:Y:GESA:ce:vVdh" option; do
-  case "${option}" in
-    H)
-       HOMEgfs="${OPTARG}"
-       _specified_home=true
-       if [[ ! -d "${HOMEgfs}" ]]; then
-          echo "Specified HOMEgfs directory (${HOMEgfs}) does not exist"
-          exit 2
-       fi
-       ;;
-    b) _build=true ;;
-    B) _build_flags="${OPTARG}" && _explicit_build_flags=true ;;
-    u) _update_submods=true ;;
-    y) _yaml_list="${OPTARG}"
-       # strip .yaml from the end of each
-       _yaml_list=${_yaml_list//".yaml"/}
-       ;;
-    Y) _yaml_dir="${OPTARG}" && _specified_yaml_dir=true ;;
-    G) _run_all_gfs=true ;;
-    E) _run_all_gefs=true ;;
-    S) _run_all_sfs=true ;;
-    c) _update_cron=true ;;
-    e) _email="${OPTARG}" && _set_email=true ;;
-    v) _verbose=true ;;
-    V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
-    d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v";;
-    h) _usage && exit 0;;
-    :)
-      echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-      _usage
-      ;;
-    *)
-      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-      _usage
-      ;;
-  esac
+while [[ $# -gt 0 && "$1" != "--" ]]; do
+   while getopts ":H:bB:uy:Y:GESA:ce:vVdh" option; do
+      case "${option}" in
+        H)
+           HOMEgfs="${OPTARG}"
+           _specified_home=true
+           if [[ ! -d "${HOMEgfs}" ]]; then
+              echo "Specified HOMEgfs directory (${HOMEgfs}) does not exist"
+              exit 2
+           fi
+           ;;
+        b) _build=true ;;
+        B) _build_flags="${OPTARG}" && _explicit_build_flags=true ;;
+        u) _update_submods=true ;;
+        y) _yaml_list="${OPTARG}"
+           # strip .yaml from the end of each
+           _yaml_list=${_yaml_list//".yaml"/}
+           ;;
+        Y) _yaml_dir="${OPTARG}" && _specified_yaml_dir=true ;;
+        G) _run_all_gfs=true ;;
+        E) _run_all_gefs=true ;;
+        S) _run_all_sfs=true ;;
+        c) _update_cron=true ;;
+        e) _email="${OPTARG}" && _set_email=true ;;
+        v) _verbose=true ;;
+        V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
+        d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
+        h) _usage && exit 0 ;;
+        :)
+          echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+          _usage
+          ;;
+        *)
+          echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
+          _usage
+          ;;
+      esac
+   done
+
+   if [[ ${OPTIND:-0} -gt 0 ]]; then
+      shift $((OPTIND-1))
+   fi
+
+   while [[ $# -gt 0 && ! "$1" =~ ^- ]]; do
+      _runtests=${1}
+      (( _nonflag_option_count += 1 ))
+      if [[ ${_nonflag_option_count} -gt 1 ]]; then
+         echo "Too many arguments specified."
+         _usage
+         exit 3
+      fi
+      shift
+   done
 done
+
+if [[ -z "${_runtests}" ]]; then
+   echo "Mising run directory (RUNTESTS) argument/environment variable."
+   _usage
+   exit 4
+fi
 
 # Nullify the redirect if we are in verbose mode
 [[ "${_verbose}" == "true" ]] && _redirect=""
@@ -158,14 +180,13 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 
 # Create the RUNTESTS directory
-export RUNTESTS=$1
-[[ "${_verbose}" == "true" ]] && echo "Creating RUNTESTS in ${RUNTESTS}"
-if [[ ! -d "${RUNTESTS}" ]]; then
+[[ "${_verbose}" == "true" ]] && echo "Creating RUNTESTS in ${_runtests}"
+if [[ ! -d "${_runtests}" ]]; then
    set +e
-   if ! mkdir -p "${RUNTESTS}" "${_verbose_flag}"; then
-      echo "Unable to create RUNTESTS directory: ${RUNTESTS}"
+   if ! mkdir -p "${_runtests}" "${_verbose_flag}"; then
+      echo "Unable to create RUNTESTS directory: ${_runtests}"
       echo "Rerun with -h for usage examples."
-      exit 3
+      exit 5
    fi
    set -e
 fi
@@ -179,7 +200,7 @@ _count_run_alls=0
 if (( _count_run_alls > 1 )) ; then
    echo "Only one run all option (-G -E -S) may be specified"
    echo "Rerun with just one option and/or with -h for usage examples"
-   exit 4
+   exit 6
 fi
 
 # Append -w to build_all.sh flags if -E was specified
@@ -205,19 +226,19 @@ if [[ "${_run_all_sfs}" == "true" ]]; then
 fi
 
 # Set HOMEgfs if it wasn't set by the user
-if [[ "${_specified_home}" == "true" ]]; then
+if [[ "${_specified_home}" == "false" ]]; then
    script_relpath="$(dirname "${BASH_SOURCE[0]}")"
    HOMEgfs="$(cd "${script_relpath}/.." && pwd)"
    [[ "${_verbose}" == "true" ]] && echo "Setting HOMEgfs to ${HOMEgfs}"
 fi
 
 # Loading modules sometimes raises unassigned errors, so disable checks
-set +eu
+set +u
 [[ "${_verbose}" == "true" ]] && echo "Loading modules"
 [[ "${_debug}" == "true" ]] && set +x
 source "${HOMEgfs}/workflow/gw_setup.sh"
 [[ "${_debug}" == "true" ]] && set -x
-set -eu
+set -u
 machine=${MACHINE_ID}
 . "${HOMEgfs}/ci/platforms/config.${machine}"
 
@@ -233,12 +254,16 @@ if [[ "${_update_submods}" == "true" ]]; then
    git submodule update --init --recursive -j 10 ${_redirect}
 fi
 
-if [[ ${BUILD} =~ "Y" ]]; then
+# Build the system if requested
+if [[ "${_build}" == "true" ]]; then
     echo "Building via build_all.sh ${_build_flags}..."
     # Let the output of build_all.sh go to stdout regardless of verbose options
     #shellcheck disable=SC2086,SC2248
     ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
 fi
+
+# Link the workflow
+${HOMEgfs}/sorc/link_workflow.sh
 
 # Configure the environment for running create_experiment.py
 
@@ -248,7 +273,7 @@ for _yaml in ${_yaml_list}; do
    if [[ ! -s "${_yaml_file}" ]]; then
       echo "The YAML file ${_yaml_file} does not exist!"
       echo "Please check the input yaml list and directory."
-      exit 4
+      exit 7
    fi
 
    # Strip any unsupported tests
@@ -272,8 +297,8 @@ done
 rm -f "tests.cron" "${_verbose_flag}"
 for _case in ${_yaml_list}; do
    #shellcheck disable=SC2086,SC2248
-   pslot=${_case} ./create_experiment.py -y "../ci/cases/pr/${_case}.yaml" --overwrite ${_redirect}
-   crontab_entry=$(grep "${_case}" "${RUNTESTS}/EXPDIR/${_case}/${_case}.crontab")
+   pslot=${_case} RUNTESTS=${_runtests} ./create_experiment.py -y "../ci/cases/pr/${_case}.yaml" --overwrite ${_redirect}
+   crontab_entry=$(grep "${_case}" "${_runtests}/EXPDIR/${_case}/${_case}.crontab")
    echo "${crontab_entry}" >> tests.cron
 done
 
