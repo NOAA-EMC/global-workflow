@@ -65,7 +65,7 @@ case ${step} in
     export ntasks=1
     export tasks_per_node=1
     export threads_per_task=1
-    export is_exclusive=True
+    export memory="4096M"
     ;;
 
   "waveinit")
@@ -144,7 +144,7 @@ case ${step} in
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
     CHMPETS=0; CHMTHREADS=0
-    if [[ "${DO_AERO}" == "YES" ]]; then
+    if [[ "${DO_AERO_FCST}" == "YES" ]]; then
       # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
       (( CHMTHREADS = ATMTHREADS ))
       (( CHMPETS = FV3PETS ))
