@@ -675,7 +675,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('marineanlletkf')
-        task_name = f'{self.run}marineanlletkf'
+        task_name = f'{self.run}_marineanlletkf'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,

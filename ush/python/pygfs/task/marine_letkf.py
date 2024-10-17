@@ -54,7 +54,7 @@ class MarineLETKF(Analysis):
         self.task_config.mom_input_nml = os.path.join(self.task_config.DATA, 'mom_input.nml')
         self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs') 
         self.task_config.ENSPERT_RELPATH = _enspert_relpath
- 
+    
     @logit(logger)
     def initialize(self):
         """Method initialize for ocean and sea ice LETKF task
@@ -86,8 +86,10 @@ class MarineLETKF(Analysis):
                 'ENSPERT_RELPATH',
                 'GDUMP_ENS',
                 'NMEM_ENS',
+                'OPREFIX',
                 'PARMgfs',
                 'ROTDIR',
+                'RUN',
                 'WINDOW_BEGIN',
                 'WINDOW_MIDDLE']
         for key in keys:
