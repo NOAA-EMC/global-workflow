@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-########## config.prepsnowobs ##########
+########## config.prepsnowcover ##########
 # Snow Obs Prep specific
 
-echo "BEGIN: config.prepsnowobs"
+echo "BEGIN: config.prepsnowcover"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" prepsnowobs
+. "${EXPDIR}/config.resources" prepsnowcover
 
 export IMS_OBS_LIST="${PARMgfs}/gdas/snow/prep/prep_ims.yaml.j2"
 
@@ -15,4 +15,4 @@ export FIMS_NML_TMPL="${PARMgfs}/gdas/snow/prep/fims.nml.j2"
 
 export IMS2IODACONV="${USHgfs}/imsfv3_scf2ioda.py"
 
-echo "END: config.prepsnowobs"
+echo "END: config.prepsnowcover"

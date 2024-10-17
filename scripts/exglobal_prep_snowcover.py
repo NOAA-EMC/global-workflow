@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# exglobal_prep_snow_obs.py
+# exglobal_prep_snowcover.py
 # This script creates a SnowAnalysis object
-# and runs the prepare_GTS and prepare_IMS method
-# which perform the pre-processing for GTS and IMS data
+# and runs the prepare_IMS method which perform
+# the pre-processing for IMS data
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -20,5 +20,4 @@ if __name__ == '__main__':
 
     # Instantiate the snow prepare task
     SnowAnl = SnowAnalysis(config)
-    if SnowAnl.task_config.cyc == 0:
-        SnowAnl.prepare_IMS()
+    SnowAnl.prepare_IMS()
