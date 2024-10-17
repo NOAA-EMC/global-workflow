@@ -64,7 +64,7 @@ export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
 export MODE="@MODE@" # cycled/forecast-only
-export SFS_POST=@SFS_POST@ # TODO, place holder until RUN=SFS is developed
+export SFS_POST="@SFS_POST@" # TODO, place holder until RUN=SFS is developed
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE

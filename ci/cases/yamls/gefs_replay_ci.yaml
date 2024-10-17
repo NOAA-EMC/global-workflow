@@ -11,4 +11,5 @@ base:
   FHOUT_OCN_GFS: 24
   FHOUT_ICE_GFS: 24
   HOMEDIR: {{ 'RUNTESTS' | getenv }}/GLOBAL
+  SFS_POST: "NO"
 
