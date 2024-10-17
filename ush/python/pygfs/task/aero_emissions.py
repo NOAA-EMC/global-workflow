@@ -93,24 +93,8 @@ class AerosolEmissions(Task):
                 f"Copy Climatology '{aero_emission_yaml.data_in.climo}' data to run directory"
             )
             FileHandler(aero_emission_yaml.data_in.climo).sync()
-        if aero_emission_yaml.emistype.lower() == 'qfed':
-            # Copy QFED and climatology
-            logger.info(
-                f"Copy QFED '{aero_emission_yaml.data_in.qfed}' data to run directory"
-            )
-            FileHandler(aero_emission_yaml.data_in.qfed).sync()
-        elif aero_emission_yaml.emistype.lower() == 'gbbepx':
-            # Copy GBBEPx and climatology
-            logger.info(
-                f"Copy GBBEPx '{aero_emission_yaml.data_in.gbbepx}' data to run directory"
-            )
-            FileHandler(aero_emission_yaml.data_in.gbbepx).sync()
-        elif aero_emission_yaml.emistype.lower() == 'hfed':
-            # Copy HFED and climatology
-            logger.info(
-                f"Copy HFED '{aero_emission_yaml.data_in.hfed}' data to run directory"
-            )
-            FileHandler(aero_emission_yaml.data_in.hfed).sync()
+        logger.info(f"Copy {aero_emission_yaml.emistype} data to run directory")
+        FileHandler(aero_emission_yaml.data_in[aero_emission_yaml.emistype.lower()]).sync()
 
     @staticmethod
     @logit(logger)
