@@ -314,7 +314,7 @@ class GEFSTasks(Tasks):
 
     def wavepostsbs(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': f'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
