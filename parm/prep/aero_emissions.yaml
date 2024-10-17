@@ -15,13 +15,25 @@ aero_emissions:
       mkdir:
         - "{{ DATA }}"
         - "{{ COMOUT_CHEM_HISTORY}}"
-      copy:
-        - ["{{ AERO_INPUTS_DIR }}/nexus/QFED/{{ current_cycle | strftime('%Y/%m') }}/qfed2.emis_oc.006.{{ current_cycle | to_YMD }}.nc4", "{{ DATA }}/"]
-        - ["{{ AERO_INPUTS_DIR }}/nexus/QFED/{{ current_cycle | strftime('%Y/%m') }}/qfed2.emis_so2.006.{{ current_cycle | to_YMD }}.nc4", "{{ DATA }}/"]
-        - ["{{ AERO_INPUTS_DIR }}/nexus/QFED/{{ current_cycle | strftime('%Y/%m') }}/qfed2.emis_bc.006.{{ current_cycle | to_YMD }}.nc4", "{{ DATA }}/"]
-        {% for fdate in forecast_dates %}
-        - ["{{ AERO_INPUTS_DIR }}/nexus/GBBEPx/v4/climMean/GBBEPx-all01GRID_v4r0_climMean_{{ fdate | strftime('%m%d') }}.nc", "{{ DATA }}/"] # copy climo files
-        {% endfor %}
+      qfed: # copy qfed
+        copy:
+          - ["{{ AERO_INPUTS_DIR }}/nexus/QFED/{{ current_cycle | strftime('%Y/%m') }}/qfed2.emis_oc.006.{{ current_cycle | to_YMD }}.nc4", "{{ DATA }}/"]
+          - ["{{ AERO_INPUTS_DIR }}/nexus/QFED/{{ current_cycle | strftime('%Y/%m') }}/qfed2.emis_so2.006.{{ current_cycle | to_YMD }}.nc4", "{{ DATA }}/"]
+          - ["{{ AERO_INPUTS_DIR }}/nexus/QFED/{{ current_cycle | strftime('%Y/%m') }}/qfed2.emis_bc.006.{{ current_cycle | to_YMD }}.nc4", "{{ DATA }}/"]
+      hfed: # copy hfed
+        copy:
+          - ["{{ AERO_INPUTS_DIR }}/nexus/HFED/{{ current_cycle | strftime('%Y/M%m') }}/hfed.emis_oc.x576_y361.{{ current_cycle | strftime('%Y%j') }}.nc4", "{{ DATA }}/"]
+          - ["{{ AERO_INPUTS_DIR }}/nexus/HFED/{{ current_cycle | strftime('%Y/M%m') }}/hfed.emis_bc.x576_y361.{{ current_cycle | strftime('%Y%j') }}.nc4", "{{ DATA }}/"]
+          - ["{{ AERO_INPUTS_DIR }}/nexus/HFED/{{ current_cycle | strftime('%Y/M%m') }}/hfed.emis_so2.x576_y361.{{ current_cycle | strftime('%Y%j') }}.nc4", "{{ DATA }}/"]
+      gbbepx:
+        copy:
+          - ["{{ AERO_INPUTS_DIR }}/nexus/GBBEPx/v4/GBBEPx_all01GRID_v4r0_climMean_{{ current_cycle | strftime('%m%d') }}.nc", "{{ DATA }}/"] # copy climo files
+      climo: # copy climatology
+        copy:
+          - ["{{ AERO_INPUTS_DIR }}/nexus/GBBEPx/v4/climMean/GBBEPx-all01GRID_v4r0_climMean_{{ current_cycle | strftime('%m%d') }}.nc", "{{ DATA }}/"] # copy climo files
+          {% for fdate in forecast_dates %}
+          - ["{{ AERO_INPUTS_DIR }}/nexus/GBBEPx/v4/climMean/GBBEPx-all01GRID_v4r0_climMean_{{ fdate | strftime('%m%d') }}.nc", "{{ DATA }}/"] # copy climo files
+          {% endfor %}
     data_out:
       copy:
         - ["{{ DATA }}/{{ RUN }}_blended_emissions.{{ current_cycle | to_YMD }}.nc", "{{ COMOUT_CHEM_HISTORY }}/{{ RUN }}.{{ current_cycle | to_YMD }}.{{ RUN }}_blended_emissions.nc"]

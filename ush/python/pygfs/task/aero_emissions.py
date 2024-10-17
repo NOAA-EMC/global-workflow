@@ -85,10 +85,32 @@ class AerosolEmissions(Task):
         None
         """
         logger.info("Copy Static Data to run directory")
-        logger.info(
-            f"Copy '{aero_emission_yaml.aero_emissions.config.data_in}' data to run directory"
-        )
-        FileHandler(aero_emission_yaml.aero_emissions.config.data_in).sync()
+
+        print(aero_emission_yaml)
+        # Copy climatology files to run directory except for HFED
+        if aero_emission_yaml.emistype.lower() != 'hfed':
+            logger.info(
+                f"Copy Climatology '{aero_emission_yaml.data_in.climo}' data to run directory"
+            )
+            FileHandler(aero_emission_yaml.data_in.climo).sync()
+        if aero_emission_yaml.emistype.lower() == 'qfed':
+            # Copy QFED and climatology
+            logger.info(
+                f"Copy QFED '{aero_emission_yaml.data_in.qfed}' data to run directory"
+            )
+            FileHandler(aero_emission_yaml.data_in.qfed).sync()
+        elif aero_emission_yaml.emistype.lower() == 'gbbepx':
+            # Copy GBBEPx and climatology
+            logger.info(
+                f"Copy GBBEPx '{aero_emission_yaml.data_in.gbbepx}' data to run directory"
+            )
+            FileHandler(aero_emission_yaml.data_in.gbbepx).sync()
+        elif aero_emission_yaml.emistype.lower() == 'hfed':
+            # Copy HFED and climatology
+            logger.info(
+                f"Copy HFED '{aero_emission_yaml.data_in.hfed}' data to run directory"
+            )
+            FileHandler(aero_emission_yaml.data_in.hfed).sync()
 
     @staticmethod
     @logit(logger)
@@ -135,17 +157,70 @@ class AerosolEmissions(Task):
             except KeyError as err:
                 raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!")
 
-        dset = AerosolEmissions.make_fire_emission(
-            d=current_date,
-            climos=climfiles,
-            ratio=ratio,
-            scale_climo=True,
-            coarsen_scale=coarsen_scale,
-            obsfile=basefile,
-            output_vars=output_vars,
-            input_vars=input_vars)
+        if emistype.lower() == 'hfed':
+            AerosolEmissions.process_hfed(files=basefile, out_name=Config_dict.data_out['copy'][0][0], out_vars=output_vars, input_vars=input_vars)
+        else:
+            dset = AerosolEmissions.make_fire_emission(
+                d=current_date,
+                climos=climfiles,
+                ratio=ratio,
+                scale_climo=True,
+                coarsen_scale=coarsen_scale,
+                obsfile=basefile,
+                output_vars=output_vars,
+                input_vars=input_vars)
 
-        AerosolEmissions.write_ncf(dset, Config_dict.data_out['copy'][0][0])
+            AerosolEmissions.write_ncf(dset, Config_dict.data_out['copy'][0][0])
+
+    @staticmethod
+    @logit(logger)
+    def process_hfed(files: list, out_name: str, out_vars: list = None, input_vars: list = None) -> None:
+        """
+        Process HFED files to generate fire emissions data.
+
+        Parameters:
+        -----------
+        files: list
+            List of HFED files to process.
+        out_name: str
+            Name of the output file to save the processed data.
+        out_vars: list, optional
+            List of output variables. Default is None.
+        input_vars: list, optional
+            List of input variables. Default is None.
+
+        Returns:
+        --------
+        None
+        """
+        vrs = out_vars
+        invars = input_vars
+
+        try:
+            if np.sort(files).size == 0:
+                raise Exception
+        except Exception as ee:
+            logger.exception("FATAL ERROR: HFED files not found.")
+            raise Exception(f"FATAL ERROR: Unable to find files, ABORT")
+
+        found_species = []
+        dset_dict = {}
+        for f in files:
+            index_good = [[i, v] for i, v in enumerate(invars) if v in f]
+            good = index_good[0][0]
+            found_species.append(index_good[0][1])
+            try:
+                logger.info("Opening HFED file: {filename}".format(filename=f))
+                da = xr.open_dataset(f, decode_cf=False).biomass
+            except Exception as ee:
+                logger.exception("FATAL ERROR: unable to read dataset {error}".format(error=ee))
+                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
+            da.name = vrs[good]
+            dset_dict[vrs[good]] = da
+
+        dset = xr.Dataset(dset_dict)
+
+        AerosolEmissions.write_ncf(dset, out_name)
 
     @staticmethod
     @logit(logger)
@@ -167,9 +242,9 @@ class AerosolEmissions(Task):
         qfed_vars = input_vars  # ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
 
         if len(fname) > 1:
-            files = sort(fname)
+            files = np.sort(fname)
         else:
-            files = sort(glob(fname))
+            files = np.sort(glob(fname))
 
         try:
             if files.size == 0:
@@ -274,6 +349,7 @@ class AerosolEmissions(Task):
         Create scaled climatology data based on emission data.
 
         Parameters:
+        -----------
         emissions: xarray.DataArray
             Emission data.
         climatology:  xarray.Dataset
@@ -284,6 +360,7 @@ class AerosolEmissions(Task):
             Coarsening factor for longitude. Defaults to 50.
 
         Returns:
+        --------
         xarray.Dataset: Scaled climatology data.
 
         """
