@@ -158,8 +158,8 @@ class AerosolEmissions(Task):
             Dataset containing the fire emissions data
         """
 
-        vrs = out_vars # ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
-        qfed_vars = input_vars # ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
+        vrs = out_vars  # ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
+        qfed_vars = input_vars  # ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
 
         if len(fname) > 1:
             files = sort(fname)
