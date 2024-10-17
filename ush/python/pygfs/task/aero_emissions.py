@@ -123,12 +123,13 @@ class AerosolEmissions(Task):
         climfiles = sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
         coarsen_scale = Config_dict.coarsen_scale
 
-        if emistype.lower() == "qfed":
-            basefile = glob("qfed2.emis_*.nc4")
-        elif emistype.lower() == "gbbepx":
-            basefile = glob("GBBEPx_all01GRID.emissions_v*.nc")
-        elif emistype.lower() == "hfed":
-            basefile = glob("hfed.emis_*.x576_y361.*nc4")
+        emission_map = {'qfed': 'qfed2.emis_*.nc4',
+            'gbbepx': 'GBBEPx_all01GRID.emissions_v*.nc',
+            'hfed': 'hfed.emis_*.x576_y361.*nc4'}
+        try:
+            basefile = glob(emission_map[emistype.lower()])
+        except KeyError as err:
+            raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!")
 
         dset = AerosolEmissions.make_fire_emission(
             d=current_date,
