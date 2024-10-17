@@ -614,9 +614,9 @@ class GFSTasks(Tasks):
     def esnowrecen(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepsnowobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_prepsnowobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_snowanl'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_snowanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2356,7 +2356,7 @@ class GFSTasks(Tasks):
     # Start of ensemble tasks
     def eobs(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2466,7 +2466,7 @@ class GFSTasks(Tasks):
 
     def atmensanlinit(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepatmiodaobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2647,7 +2647,7 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
@@ -2693,7 +2693,7 @@ class GFSTasks(Tasks):
         # eupd_run = 'gdas' if 'gdas' in self.app_config.eupd_runs else 'gfs'
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
@@ -2771,7 +2771,7 @@ class GFSTasks(Tasks):
         self._is_this_a_gdas_task(self.run, 'echgres')
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run.replace("enkf","")}_fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run.replace("enkf", "")}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem001'}
         deps.append(rocoto.add_dependency(dep_dict))

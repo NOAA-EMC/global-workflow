@@ -124,8 +124,8 @@ class AerosolEmissions(Task):
         coarsen_scale = Config_dict.coarsen_scale
 
         emission_map = {'qfed': 'qfed2.emis_*.nc4',
-            'gbbepx': 'GBBEPx_all01GRID.emissions_v*.nc',
-            'hfed': 'hfed.emis_*.x576_y361.*nc4'}
+                        'gbbepx': 'GBBEPx_all01GRID.emissions_v*.nc',
+                        'hfed': 'hfed.emis_*.x576_y361.*nc4'}
         try:
             basefile = glob(emission_map[emistype.lower()])
         except KeyError as err:
