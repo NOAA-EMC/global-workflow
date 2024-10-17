@@ -78,7 +78,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
     def _update_base(base_in):
 
         base_out = base_in.copy()
-        base_out['INTERVAL_GFS'] = AppConfig.get_gfs_interval(base_in['gfs_cyc'])
+        base_out['RUN'] = 'gfs'
 
         return base_out
 

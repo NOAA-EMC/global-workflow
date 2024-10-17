@@ -8,7 +8,7 @@ arguments:
   resdetatmos: 384
   resdetocean: 0.25
   nens: 0
-  gfs_cyc: 4
+  interval: 6
   start: cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR

@@ -13,7 +13,7 @@ arguments:
   idate: 2021032412
   edate: 2021032418
   nens: 0
-  gfs_cyc: 0
+  interval: 0
   start: warm
   yaml: {{ HOMEgfs }}/ci/cases/yamls/soca_gfs_defaults_ci.yaml
 

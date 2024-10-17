@@ -12,7 +12,7 @@ arguments:
   idate: 2021122018
   edate: 2021122118
   nens: 0
-  gfs_cyc: 4
+  interval: 6
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_extended_ci.yaml
 

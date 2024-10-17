@@ -117,7 +117,7 @@ if [[ "${RUN}" == "gdas" ]]; then
   export WAVNCYC=4
   export WAVHCYC=${assim_freq:-6}
   export FHMAX_WAV_CUR=48 # RTOFS forecasts only out to 8 days
-elif [[ ${gfs_cyc} -ne 0 ]]; then
+elif (( INTERVAL_GFS > 0 )); then
   export WAVHCYC=${assim_freq:-6}
   export FHMAX_WAV_CUR=192 # RTOFS forecasts only out to 8 days
 else

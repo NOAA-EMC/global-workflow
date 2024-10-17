@@ -16,12 +16,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
 ## METPCASE : METplus verification use case (g2g1 | g2o1 | pcp1)
 ###############################################################
 
-# TODO: This should not be permitted as DATAROOT is set at the job-card level.
-# TODO: DATAROOT is being used as DATA in metp jobs.  This should be rectified in metp.
-# TODO: The temporary directory is DATA and is created at the top of the J-Job.
-# TODO: remove this line
-export DATAROOT=${DATA}
-
 VDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${VRFYBACK_HRS} hours")
 export VDATE=${VDATE:0:8}
 
