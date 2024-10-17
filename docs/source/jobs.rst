@@ -33,7 +33,7 @@ Jobs in the GFS Configuration
 | anal              | Runs the analysis. 1) Runs the atmospheric analysis (global_gsi) to produce analysis increments; 2) Update surface    |
 |                   | guess file via global_cycle to create surface analysis on tiles.                                                      |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
-| analcalc          | Adds the analysis increments to previous cycle’s forecasts to produce atmospheric analysis files. Produces surface    |
+| analcalc_gsi      | Adds the analysis increments to previous cycle’s forecasts to produce atmospheric analysis files. Produces surface    |
 |                   | analysis file on Gaussian grid.                                                                                       |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | analdiag          | Creates netCDF diagnostic files containing observation values, innovation (O-F), error, quality control, as well as   |

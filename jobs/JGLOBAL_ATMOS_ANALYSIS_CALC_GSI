@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc_gsi" -c "base anal analcalc_gsi"
 
 
 ##############################################
@@ -56,7 +56,7 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 ###############################################################
 # Run relevant script
 
-${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh}
+${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc_gsi.sh}
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 

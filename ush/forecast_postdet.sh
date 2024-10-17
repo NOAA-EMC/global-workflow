@@ -95,6 +95,7 @@ FV3_postdet() {
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
       fi
+      increment_file_on_native_grid=".false."
       local increment_file
       for inc_file in "${inc_files[@]}"; do
         increment_file="${COMIN_ATMOS_INPUT}/${RUN}.t${cyc}z.${inc_file}"
@@ -158,9 +159,16 @@ EOF
           delimiter=","
         done
       else  # "${DOIAU}" == "NO"
-        inc_files=("atminc.nc")
-        read_increment=".true."
-        res_latlon_dynamics="atminc.nc"
+        read_increment=".true."  
+	if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PREFIX_ATMINC}" != "r" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
+	  inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
+          res_latlon_dynamics="atminc"
+	  increment_file_on_native_grid=".true."
+	else
+	  inc_files=("atminc.nc")
+          res_latlon_dynamics="atminc.nc"
+          increment_file_on_native_grid=".false."
+	fi    
         if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
           IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
           # Control member has no perturbation
@@ -169,12 +177,17 @@ EOF
             read_increment=".false."
             res_latlon_dynamics='""'
           fi
+	  increment_file_on_native_grid=".false."
         fi
       fi
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PREFIX_ATMINC}" != "r" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
+          else
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          fi
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
