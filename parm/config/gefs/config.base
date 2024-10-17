@@ -179,7 +179,7 @@ case "${APP}" in
   ATM)
     ;;
   ATMA)
-    export DO_AERO_FCST="NO"
+    export DO_AERO_FCST="YES"
     ;;
   ATMW)
     export DO_COUPLED="YES"
@@ -196,7 +196,7 @@ case "${APP}" in
     export DO_ICE="YES"
 
     if [[ "${APP}" =~ A$ ]]; then
-        export DO_AERO_FCST="NO"
+        export DO_AERO_FCST="YES"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
