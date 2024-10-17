@@ -133,8 +133,11 @@ FV3_nml
 [[ ${cplice} = .true. ]] && CICE_nml
 [[ ${cplchm} = .true. ]] && GOCART_rc
 UFS_configure
-echo "MAIN: Name lists and model configuration written"
 
+#export global_template='/scratch1/NCEPDEV/stmp2/Daniel.Sarmiento/global-workflow/global_control.nml.IN'
+#atparse < "${global_template}" >> "input.nml"
+echo "MAIN: Name lists and model configuration written"
+exit 0
 #------------------------------------------------------------------
 # run the executable
 
@@ -148,6 +151,8 @@ if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
 else
   export OMP_NUM_THREADS=${UFS_THREADS:-1}
 fi
+
+exit 0
 
 ${NCP} "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2

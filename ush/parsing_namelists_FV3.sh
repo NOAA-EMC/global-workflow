@@ -80,690 +80,531 @@ else
   ${NCP} "${FIELD_TABLE}" field_table
 fi
 
-cat > input.nml <<EOF
-&atmos_model_nml
-  blocksize = ${blocksize}
-  chksum_debug = ${chksum_debug}
-  dycore_only = ${dycore_only}
-  ccpp_suite = ${CCPP_SUITE}
-  ${atmos_model_nml:-}
-/
+# Set variables for global_control.nml template
 
-&diag_manager_nml
-  prepend_date = .false.
-  max_output_fields = 300
-  ${diag_manager_nml:-}
-/
+local BLOCKSIZE=${blocksize}
+local CHKSUM_DEBUG=${chksum_debug}
+local DYCORE_ONLY=${dycore_only}
+local CCPP_SUITE=${CCPP_SUITE}
 
-&fms_nml
-  clock_grain = 'ROUTINE'
-  domains_stack_size = ${domains_stack_size:-3000000}
-  print_memory_usage = ${print_memory_usage:-".false."}
-  ${fms_nml:-}
-/
+local MAX_OUTPUT_FIELDS=300
 
-&fms2_io_nml
-  netcdf_default_format = "netcdf4"
-/
+local DOMAINS_STACK_SIZE=${domains_stack_size:-3000000}
+local PRINT_MEMORY_USAGE=${print_memory_usage:-".false."}
 
-&fv_core_nml
-  layout = ${layout_x},${layout_y}
-  io_layout = ${io_layout}
-  npx = ${npx}
-  npy = ${npy}
-  ntiles = ${ntiles}
-  npz = ${npz}
-  dz_min =  ${dz_min:-"6"}
-  psm_bc = ${psm_bc:-"0"}
-  grid_type = -1
-  make_nh = ${make_nh}
-  fv_debug = ${fv_debug:-".false."}
-  range_warn = ${range_warn:-".true."}
-  reset_eta = .false.
-  n_sponge = ${n_sponge:-"10"}
-  nudge_qv = ${nudge_qv:-".false."}
-  nudge_dz = ${nudge_dz:-".false."}
-  tau = ${tau:-10.}
-  rf_cutoff = ${rf_cutoff:-"7.5e2"}
-  d2_bg_k1 = ${d2_bg_k1:-"0.15"}
-  d2_bg_k2 = ${d2_bg_k2:-"0.02"}
-  kord_tm = ${kord_tm:-"-9"}
-  kord_mt = ${kord_mt:-"9"}
-  kord_wz = ${kord_wz:-"9"}
-  kord_tr = ${kord_tr:-"9"}
-  hydrostatic = ${hydrostatic}
-  phys_hydrostatic = ${phys_hydrostatic}
-  use_hydro_pressure = ${use_hydro_pressure}
-  pass_full_omega_to_physics_in_non_hydrostatic_mode = ${pass_full_omega_to_physics_in_non_hydrostatic_mode:-".false."}
-  beta = 0.
-  a_imp = 1.
-  p_fac = 0.1
-  k_split = ${k_split}
-  n_split = ${n_split}
-  nwat = ${nwat:-2}
-  na_init = ${na_init}
-  d_ext = 0.
-  dnats = ${dnats}
-  fv_sg_adj = ${fv_sg_adj:-"450"}
-  d2_bg = 0.
-  nord = ${nord:-3}
-  dddmp = ${dddmp:-0.1}
-  d4_bg = ${d4_bg:-0.15}
-  vtdm4 = ${vtdm4}
-  delt_max = ${delt_max:-"0.002"}
-  ke_bg = 0.
-  do_vort_damp = ${do_vort_damp}
-  external_ic = ${external_ic}
-  external_eta = ${external_eta:-.true.}
-  gfs_phil = ${gfs_phil:-".false."}
-  nggps_ic = ${nggps_ic}
-  mountain = ${mountain}
-  ncep_ic = ${ncep_ic}
-  d_con = ${d_con}
-  hord_mt = ${hord_mt}
-  hord_vt = ${hord_xx}
-  hord_tm = ${hord_xx}
-  hord_dp = -${hord_xx}
-  hord_tr = ${hord_tr:-"8"}
-  adjust_dry_mass = ${adjust_dry_mass:-".true."}
-  dry_mass=${dry_mass:-98320.0}
-  consv_te = ${consv_te}
-  do_sat_adj = ${do_sat_adj:-".false."}
-  fast_tau_w_sec = ${fast_tau_w_sec:-"0.2"}
-  consv_am = .false.
-  fill = .true.
-  dwind_2d = .false.
-  print_freq = ${print_freq}
-  warm_start = ${warm_start}
-  no_dycore = ${no_dycore}
-  z_tracer = .true.
-  agrid_vel_rst = ${agrid_vel_rst:-".true."}
-  read_increment = ${read_increment}
-  res_latlon_dynamics = ${res_latlon_dynamics}
-  ${fv_core_nml-}
-/
+local INPES=${layout_x}
+local JNPES=${layout_y}
+local IO_LAYOUT=${io_layout}
+local NPX=${npx}
+local NPY=${npy}
+local NTILES=${ntiles}
+local NPZ=${npz}
+local DZ_MIN=${dz_min:-"6"}
+local PSM_BC=${psm_bc:-"0"}
+local MAKE_NH=${make_nh}
+local FV_DEBUG=${fv_debug:-".false."}
+local RANGE_WARN=${range_warn:-".true."}
+local N_SPONGE=${n_sponge:-"10"}
+local NUDGE_QV=${nudge_qv:-".false."}
+local NUDGE_DZ=${nudge_dz:-".false."}
+local TAU=${tau:-10.}
+local FAST_TAU_W_SEC=${fast_tau_w_sec:-"0.2"}
+local RF_CUTOFF=${rf_cutoff:-"7.5e2"}
+local D2_BG_K1=${d2_bg_k1:-"0.15"}
+local D2_BG_K2=${d2_bg_k2:-"0.02"}
+local KORD_TM=${kord_tm:-"-9"}
+local KORD_MT=${kord_mt:-"9"}
+local KORD_WZ=${kord_wz:-"9"}
+local KORD_TR=${kord_tr:-"9"}
+local HYDROSTATIC=${hydrostatic}
+local PHYS_HYDROSTATIC=${phys_hydrostatic}
+local USE_HYDRO_PRESSURE=${use_hydro_pressure}
+local UPDATE_FULL_OMEGA=${pass_full_omega_to_physics_in_non_hydrostatic_mode:-".false."}
+local K_SPLIT=${k_split}
+local N_SPLIT=${n_split}
+local NWAT=${nwat:-2}
+local NA_INIT=${na_init}
+local DNATS=${dnats}
+local FV_SG_ADJ=${fv_sg_adj:-"450"}
+local NORD=${nord:-3}
+local DDDMP=${dddmp:-0.1}
+local D4_BG=${d4_bg:-0.15}
+local VTDM4=${vtdm4}
+local DELT_MAX=${delt_max:-"0.002"}
+local DO_VORT_DAMP=${do_vort_damp}
+local EXTERNAL_IC=${external_ic}
+local EXTERNAL_ETA=${external_eta:-.true.}
+local GFS_PHIL=${gfs_phil:-".false."}
+local NGGPS_IC=${nggps_ic}
+local MOUNTAIN=${mountain}
+local NCEP_IC=${ncep_ic}
+local D_CON=${d_con}
+local HORD_MT=${hord_mt}
+local HORD_VT=${hord_xx}
+local HORD_TM=${hord_xx}
+local HORD_DP=-${hord_xx}
+local HORD_TR=${hord_tr:-"8"}
+local ADJUST_DRY_MASS=${adjust_dry_mass:-".true."}
+local DRY_MASS=${dry_mass:-98320.0}
+local CONSV_TE=${consv_te}
+local DO_SAT_ADJ=${do_sat_adj:-".false."}
+local PRINT_FREQ=${print_freq}
+local WARM_START=${warm_start}
+local NO_DYCORE=${no_dycore}
+local AGRID_VEL_RST=${agrid_vel_rst:-".true."}
+local READ_INCREMENT=${read_increment}
+local RES_LATLON_DYNAMICS=${res_latlon_dynamics}
+local INCREMENT_FILE_ON_NATIVE_GRID=.true.
 
-&external_ic_nml
-  filtered_terrain = ${filtered_terrain}
-  levp = ${LEVS}
-  gfs_dwinds = ${gfs_dwinds}
-  checker_tr = .false.
-  nt_checker = 0
-  ${external_ic_nml-}
-/
+local FILTERED_TERRAIN=${filtered_terrain}
+local NPZP=${LEVS} #levp
+local GFS_DWINDS=${gfs_dwinds}
 
-&gfs_physics_nml
-  fhzero       = ${FHZER}
-  h2o_phys     = ${h2o_phys:-".true."}
-  ldiag3d      = ${ldiag3d:-".false."}
-  qdiag3d      = ${qdiag3d:-".false."}
-  print_diff_pgr = ${print_diff_pgr:-".false."}
-  fhcyc        = ${FHCYC}
-  use_ufo      = ${use_ufo:-".true."}
-  pre_rad      = ${pre_rad:-".false."}
-  imp_physics  = ${imp_physics:-"99"}
-EOF
+local FHZERO=${FHZER}
+local H2O_PHYS=${h2o_phys:-".true."}
+local LDIAG3D=${ldiag3d:-".false."}
+local QDIAG3D=${qdiag3d:-".false."}
+local PRINT_DIFF_PGR=${print_diff_pgr:-".false."}
+local FHCYC=${FHCYC}
+local USE_UFO=${use_ufo:-".true."}
+local PRE_RAD=${pre_rad:-".false."}
+local IMP_PHYSICS=${imp_physics:-"99"}
+
 
 case "${CCPP_SUITE:-}" in
   "FV3_GFS_v15p2_coupled")
-  cat >> input.nml << EOF
-  oz_phys      = .false.
-  oz_phys_2015 = .true.
-EOF
+    local OZ_PHYS_NEW=.false. #oz_phys
+    local OZ_PHYS_OLD=.true. #oz_phys_2015
   ;;
   "FV3_GSD_v0")
-  cat >> input.nml << EOF
-  iovr         = ${iovr:-"3"}
-  ltaerosol    = ${ltaerosol:-".false."}
-  lradar       = ${lradar:-".false."}
-  ttendlim     = ${ttendlim:-0.005}
-  oz_phys      = ${oz_phys:-".false."}
-  oz_phys_2015 = ${oz_phys_2015:-".true."}
-  lsoil_lsm    = ${lsoil_lsm:-"4"}
-  do_mynnedmf  = ${do_mynnedmf:-".false."}
-  do_mynnsfclay = ${do_mynnsfclay:-".false."}
-  icloud_bl    = ${icloud_bl:-"1"}
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
-  bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}
-  bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}
-  min_lakeice  = ${min_lakeice:-"0.15"}
-  min_seaice   = ${min_seaice:-"0.15"}
-  use_cice_alb = ${use_cice_alb:-".false."}
-EOF
+    local IOVR=${iovr:-"3"}
+    local LTAEROSOL=${ltaerosol:-".false."}
+    local LRADAR=${lradar:-".false."}
+    local TTENDLIM=${ttendlim:-0.005}
+    local OZ_PHYS_NEW=${oz_phys:-".false."}
+    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
+    local LSOIL_LSM=${lsoil_lsm:-"4"}
+    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
+    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
+    local ICLOUD_BL=${icloud_bl:-"1"}
+    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
+    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
+    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+    local MIN_LAKEICE=${min_lakeice:-"0.15"}
+    local MIN_SEAICE=${min_seaice:-"0.15"}
+    local USE_CICE_ALB=${use_cice_alb:-".false."}
   ;;
   FV3_GFS_v16_coupled*)
-  cat >> input.nml << EOF
-  iovr         = ${iovr:-"3"}
-  ltaerosol    = ${ltaerosol:-".false."}
-  lradar       = ${lradar:-".false."}
-  ttendlim     = ${ttendlim:-"0.005"}
-  oz_phys      = ${oz_phys:-".false."}
-  oz_phys_2015 = ${oz_phys_2015:-".true."}
-  do_mynnedmf  = ${do_mynnedmf:-".false."}
-  do_mynnsfclay = ${do_mynnsfclay:-".false."}
-  icloud_bl    = ${icloud_bl:-"1"}
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
-  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
-  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
-  min_lakeice  = ${min_lakeice:-"0.15"}
-  min_seaice   = ${min_seaice:-"0.15"}
-EOF
+    local IOVR=${iovr:-"3"}
+    local LTAEROSOL=${ltaerosol:-".false."}
+    local LRADAR=${lradar:-".false."}
+    local TTENDLIM=${ttendlim:-"0.005"}
+    local OZ_PHYS_NEW=${oz_phys:-".false."}
+    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
+    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
+    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
+    local ICLOUD_BL=${icloud_bl:-"1"}
+    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
+    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
+    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+    local MIN_LAKEICE=${min_lakeice:-"0.15"}
+    local MIN_SEAICE=${min_seaice:-"0.15"}
   ;;
   FV3_GFS_v16*)
-  cat >> input.nml << EOF
-  iovr         = ${iovr:-"3"}
-  ltaerosol    = ${ltaerosol:-".false."}
-  lradar       = ${lradar:-".false."}
-  ttendlim     = ${ttendlim:-"0.005"}
-  oz_phys      = ${oz_phys:-".false."}
-  oz_phys_2015 = ${oz_phys_2015:-".true."}
-  lsoil_lsm    = ${lsoil_lsm:-"4"}
-  do_mynnedmf  = ${do_mynnedmf:-".false."}
-  do_mynnsfclay = ${do_mynnsfclay:-".false."}
-  icloud_bl    = ${icloud_bl:-"1"}
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
-  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
-  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
-  min_lakeice  = ${min_lakeice:-"0.15"}
-  min_seaice   = ${min_seaice:-"0.15"}
-EOF
+    local IOVR=${iovr:-"3"}
+    local LTAEROSOL=${ltaerosol:-".false."}
+    local LRADAR=${lradar:-".false."}
+    local TTENDLIM=${ttendlim:-"0.005"}
+    local OZ_PHYS_NEW=${oz_phys:-".false."}
+    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
+    local LSOIL_LSM=${lsoil_lsm:-"4"}
+    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
+    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
+    local ICLOUD_BL=${icloud_bl:-"1"}
+    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
+    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
+    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+    local MIN_LAKEICE=${min_lakeice:-"0.15"}
+    local MIN_SEAICE=${min_seaice:-"0.15"}
   ;;
   FV3_GFS_v17*)
-  local default_dt_inner=$(( DELTIM/2 ))
-  cat >> input.nml << EOF
-  iovr         = ${iovr:-"3"}
-  ltaerosol    = ${ltaerosol:-".false."}
-  lradar       = ${lradar:-".true."}
-  ttendlim     = ${ttendlim:-"-999"}
-  dt_inner     = ${dt_inner:-"${default_dt_inner}"}
-  sedi_semi    = ${sedi_semi:-".true."}
-  decfl        = ${decfl:-"10"}
-  oz_phys      = ${oz_phys:-".false."}
-  oz_phys_2015 = ${oz_phys_2015:-".true."}
-  lsoil_lsm    = ${lsoil_lsm:-"4"}
-  do_mynnedmf  = ${do_mynnedmf:-".false."}
-  do_mynnsfclay = ${do_mynnsfclay:-".false."}
-  icloud_bl    = ${icloud_bl:-"1"}
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
-  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
-  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
-  do_ugwp      = ${do_ugwp:-".false."}
-  do_tofd      = ${do_tofd:-".false."}
-  gwd_opt      = ${gwd_opt:-"2"}
-  do_ugwp_v0   = ${do_ugwp_v0:-".false."}
-  do_ugwp_v1   = ${do_ugwp_v1:-".true."}
-  do_ugwp_v0_orog_only = ${do_ugwp_v0_orog_only:-".false."}
-  do_ugwp_v0_nst_only  = ${do_ugwp_v0_nst_only:-".false."}
-  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
-  do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
-  do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
-  do_gwd_opt_psl       = ${do_gwd_opt_psl:-".false."}
-  do_ugwp_v1_orog_only = ${do_ugwp_v1_orog_only:-".false."}
-  min_lakeice  = ${min_lakeice:-"0.15"}
-  min_seaice   = ${min_seaice:-"0.15"}
-  use_cice_alb = ${use_cice_alb:-".false."}
-EOF
+    local DT_INNER=$(( DELTIM/2 ))
+    local IOVR=${iovr:-"3"}
+    local LTAEROSOL=${ltaerosol:-".false."}
+    local LRADAR=${lradar:-".true."}
+    local TTENDLIM=${ttendlim:-"-999"}
+    local DT_INNER=${dt_inner:-"${default_dt_inner}"}
+    local SEDI_SEMI=${sedi_semi:-".true."}
+    local DECFL=${decfl:-"10"}
+    local OZ_PHYS_NEW=${oz_phys:-".false."}
+    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
+    local LSOIL_LSM=${lsoil_lsm:-"4"}
+    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
+    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
+    local ICLOUD_BL=${icloud_bl:-"1"}
+    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
+    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
+    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+    local DO_UGWP=${do_ugwp:-".false."}
+    local DO_TOFD=${do_tofd:-".false."}
+    local GWD_OPT=${gwd_opt:-"2"}
+    local DO_UGWP_V0=${do_ugwp_v0:-".false."}
+    local DO_UGWP_V1=${do_ugwp_v1:-".true."}
+    local DO_UGWP_V0_OROG_ONLY=${do_ugwp_v0_orog_only:-".false."}
+    local DO_UGWP_V0_NST_ONLY=${do_ugwp_v0_nst_only:-".false."}
+    local DO_GSL_DRAG_LS_BL=${do_gsl_drag_ls_bl:-".true."}
+    local DO_GSL_DRAG_SS=${do_gsl_drag_ss:-".true."}
+    local DO_GSL_DRAG_TOFD=${do_gsl_drag_tofd:-".true."}
+    local DO_GWD_OPT_PSL=${do_gwd_opt_psl:-".false."}
+    local DO_UGWP_V1_OROG_ONLY=${do_ugwp_v1_orog_only:-".false."}
+    local MIN_LAKEICE=${min_lakeice:-"0.15"}
+    local MIN_SEAICE=${min_seaice:-"0.15"}
+    local USE_CICE_ALB=${use_cice_alb:-".false."}
   ;;
   FV3_global_nest*)
-  local default_dt_inner=$(( DELTIM/2 ))
-  cat >> input.nml << EOF
-  iovr         = ${iovr:-"3"}
-  lcnorm       = ${lcnorm:-".false."}
-  ltaerosol    = ${ltaerosol:-".false."}
-  lradar       = ${lradar:-".true."}
-  ttendlim     = ${ttendlim:-"-999"}
-  dt_inner     = ${dt_inner:-"${default_dt_inner}"}
-  sedi_semi    = ${sedi_semi:-".true."}
-  decfl        = ${decfl:-"10"}
-  oz_phys      = ${oz_phys:-".false."}
-  oz_phys_2015 = ${oz_phys_2015:-".true."}
-  lsoil_lsm    = ${lsoil_lsm:-"4"}
-  do_mynnedmf  = ${do_mynnedmf:-".false."}
-  do_mynnsfclay = ${do_mynnsfclay:-".false."}
-  icloud_bl    = ${icloud_bl:-"1"}
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
-  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
-  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
-  do_ugwp      = ${do_ugwp:-".false."}
-  do_tofd      = ${do_tofd:-".false."}
-  gwd_opt      = ${gwd_opt:-"2"}
-  do_ugwp_v0   = ${do_ugwp_v0:-".false."}
-  do_ugwp_v1   = ${do_ugwp_v1:-".true."}
-  do_ugwp_v0_orog_only = ${do_ugwp_v0_orog_only:-".false."}
-  do_ugwp_v0_nst_only  = ${do_ugwp_v0_nst_only:-".false."}
-  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
-  do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
-  do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
-  do_ugwp_v1_orog_only = ${do_ugwp_v1_orog_only:-".false."}
-  min_lakeice  = ${min_lakeice:-"0.15"}
-  min_seaice   = ${min_seaice:-"0.15"}
-  use_cice_alb = ${use_cice_alb:-".false."}
-EOF
+    local DT_INNER=$(( DELTIM/2 ))
+    local IOVR=${iovr:-"3"}
+    local LCNORM=${lcnorm:-".false."}
+    local LTAEROSOL=${ltaerosol:-".false."}
+    local LRADAR=${lradar:-".true."}
+    local TTENDLIM=${ttendlim:-"-999"}
+    local DT_INNER=${dt_inner:-"${default_dt_inner}"}
+    local SEDI_SEMI=${sedi_semi:-".true."}
+    local DECFL=${decfl:-"10"}
+    local OZ_PHYS_NEW=${oz_phys:-".false."}
+    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
+    local LSOIL_LSM=${lsoil_lsm:-"4"}
+    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
+    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
+    local ICLOUD_BL=${icloud_bl:-"1"}
+    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
+    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
+    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+    local DO_UGWP=${do_ugwp:-".false."}
+    local DO_TOFD=${do_tofd:-".false."}
+    local GWD_OPT=${gwd_opt:-"2"}
+    local DO_UGWP_V0=${do_ugwp_v0:-".false."}
+    local DO_UGWP_V1=${do_ugwp_v1:-".true."}
+    local DO_UGWP_V0_OROG_ONLY=${do_ugwp_v0_orog_only:-".false."}
+    local DO_UGWP_V0_NST_ONLY=${do_ugwp_v0_nst_only:-".false."}
+    local DO_GSL_DRAG_LS_BL=${do_gsl_drag_ls_bl:-".true."}
+    local DO_GSL_DRAG_SS=${do_gsl_drag_ss:-".true."}
+    local DO_GSL_DRAG_TOFD=${do_gsl_drag_tofd:-".true."}
+    local DO_UGWP_V1_OROG_ONLY=${do_ugwp_v1_orog_only:-".false."}
+    local MIN_LAKEICE=${min_lakeice:-"0.15"}
+    local MIN_SEAICE=${min_seaice:-"0.15"}
+    local USE_CICE_ALB=${use_cice_alb:-".false."}
   ;;
   *)
-  cat >> input.nml << EOF
-  iovr         = ${iovr:-"3"}
-EOF
+    local IOVR=${iovr:-"3"}
   ;;
 esac
 
-cat >> input.nml <<EOF
-  pdfcld       = ${pdfcld:-".false."}
-  fhswr        = ${FHSWR:-"3600."}
-  fhlwr        = ${FHLWR:-"3600."}
-  ialb         = ${IALB:-"1"}
-  iems         = ${IEMS:-"1"}
-  iaer         = ${IAER}
-  icliq_sw     = ${icliq_sw:-"2"}
-  ico2         = ${ICO2}
-  isubc_sw     = ${isubc_sw:-"2"}
-  isubc_lw     = ${isubc_lw:-"2"}
-  isol         = ${ISOL:-"2"}
-  lwhtr        = ${lwhtr:-".true."}
-  swhtr        = ${swhtr:-".true."}
-  cnvgwd       = ${cnvgwd:-".true."}
-  shal_cnv     = ${shal_cnv:-".true."}
-  cal_pre      = ${cal_pre:-".true."}
-  redrag       = ${redrag:-".true."}
-  dspheat      = ${dspheat:-".true."}
-  hybedmf      = ${hybedmf:-".false."}
-  satmedmf     = ${satmedmf-".true."}
-  isatmedmf    = ${isatmedmf-"1"}
-  lheatstrg    = ${lheatstrg-".false."}
-  lseaspray    = ${lseaspray:-".true."}
-  random_clds  = ${random_clds:-".true."}
-  trans_trac   = ${trans_trac:-".true."}
-  cnvcld       = ${cnvcld:-".true."}
-  xr_cnvcld    = ${xr_cnvcld:-".true."}
-  imfshalcnv   = ${imfshalcnv:-"2"}
-  imfdeepcnv   = ${imfdeepcnv:-"2"}
-  progsigma    = ${progsigma:-".true."}
-  betascu      = ${betascu:-"8.0"}
-  betamcu      = ${betamcu:-"1.0"}
-  betadcu      = ${betadcu:-"2.0"}
-  ras          = ${ras:-".false."}
-  cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
-  psl_gwd_dx_factor  = ${psl_gwd_dx_factor:-"6.0"}
-  prslrd0      = ${prslrd0:-"0."}
-  ivegsrc      = ${ivegsrc:-"1"}
-  isot         = ${isot:-"1"}
-  lsoil        = ${lsoil:-"4"}
-  lsm          = ${lsm:-"2"}
-  iopt_dveg    = ${iopt_dveg:-"1"}
-  iopt_crs     = ${iopt_crs:-"1"}
-  iopt_btr     = ${iopt_btr:-"1"}
-  iopt_run     = ${iopt_run:-"1"}
-  iopt_sfc     = ${iopt_sfc:-"1"}
-  iopt_frz     = ${iopt_frz:-"1"}
-  iopt_inf     = ${iopt_inf:-"1"}
-  iopt_rad     = ${iopt_rad:-"1"}
-  iopt_alb     = ${iopt_alb:-"2"}
-  iopt_snf     = ${iopt_snf:-"4"}
-  iopt_tbot    = ${iopt_tbot:-"2"}
-  iopt_stc     = ${iopt_stc:-"1"}
-  iopt_trs     = ${iopt_trs:-"2"}
-  iopt_diag    = ${iopt_diag:-"2"}
-  debug        = ${gfs_phys_debug:-".false."}
-  nstf_name    = ${nstf_name}
-  nst_anl      = ${nst_anl}
-  psautco      = ${psautco:-"0.0008,0.0005"}
-  prautco      = ${prautco:-"0.00015,0.00015"}
-  lgfdlmprad   = ${lgfdlmprad:-".false."}
-  effr_in      = ${effr_in:-".false."}
-  ldiag_ugwp   = ${ldiag_ugwp:-".false."}
-  do_RRTMGP          = ${do_RRTMGP:-".false."}
-  active_gases       = ${active_gases:-'h2o_co2_o3_n2o_ch4_o2'}
-  ngases             = ${ngases:-"6"}
-  lw_file_gas        = ${lw_file_gas:-'rrtmgp-data-lw-g128-210809.nc'}
-  lw_file_clouds     = ${lw_file_clouds:-'rrtmgp-cloud-optics-coeffs-lw.nc'}
-  sw_file_gas        = ${sw_file_gas:-'rrtmgp-data-sw-g112-210809.nc'}
-  sw_file_clouds     = ${sw_file_clouds:-'rrtmgp-cloud-optics-coeffs-sw.nc'}
-  rrtmgp_nGptsSW     = ${rrtmgp_nGptsSW:-"112"}
-  rrtmgp_nGptsLW     = ${rrtmgp_nGptsLW:-"128"}
-  rrtmgp_nBandsLW    = ${rrtmgp_nBandsLW:-"16"}
-  rrtmgp_nBandsSW    = ${rrtmgp_nBandsSW:-"14"}
-  doGP_cldoptics_LUT = ${doGP_cldoptics_LUT:-".false."}
-  doGP_lwscat        = ${doGP_lwscat:-".false."}
-EOF
+local PDFCLD=${pdfcld:-".false."}
+local FHSWR=${FHSWR:-"3600."}
+local FHLWR=${FHLWR:-"3600."}
+local IALB=${IALB:-"1"}
+local IEMS=${IEMS:-"1"}
+local IAER=${IAER}
+local ICLIQ_SW=${icliq_sw:-"2"}
+local ICO2=${ICO2}
+local ISUBC_SW=${isubc_sw:-"2"}
+local ISUBC_LW=${isubc_lw:-"2"}
+local ISOL=${ISOL:-"2"}
+local LWHTR=${lwhtr:-".true."}
+local SWHTR=${swhtr:-".true."}
+local CNVGWD=${cnvgwd:-".true."}
+local SHAL_CNV=${shal_cnv:-".true."}
+local CAL_PRE=${cal_pre:-".true."}
+local REDRAG=${redrag:-".true."}
+local DSPHEAT=${dspheat:-".true."}
+local HYBEDMF=${hybedmf:-".false."}
+local SATMEDMF=${satmedmf-".true."}
+local ISATMEDMF=${isatmedmf-"1"}
+local LHEATSTRG=${lheatstrg-".false."}
+local LSEASPRAY=${lseaspray:-".true."}
+local RANDOM_CLDS=${random_clds:-".true."}
+local TRANS_TRAC=${trans_trac:-".true."}
+local CNVCLD=${cnvcld:-".true."}
+local XR_CNVCLD=${xr_cnvcld:-".true."}
+local IMFSHALCNV=${imfshalcnv:-"2"}
+local IMFDEEPCNV=${imfdeepcnv:-"2"}
+local PROGSIGMA=${progsigma:-".true."}
+local BETASCU=${betascu:-"8.0"}
+local BETAMCU=${betamcu:-"1.0"}
+local BETADCU=${betadcu:-"2.0"}
+local RAS=${ras:-".false."}
+local CDMBWD=${cdmbgwd:-"3.5,0.25"}
+local PSL_GWD_DX_FACTOR=${psl_gwd_dx_factor:-"6.0"}
+local PRSLRD0=${prslrd0:-"0."}
+local IVEGSRC=${ivegsrc:-"1"}
+local ISOT=${isot:-"1"}
+local LSOIL=${lsoil:-"4"}
+local LSM=${lsm:-"2"}
+local IOPT_DVEG=${iopt_dveg:-"1"}
+local IOPT_CRS=${iopt_crs:-"1"}
+local IOPT_BTR=${iopt_btr:-"1"}
+local IOPT_RUN=${iopt_run:-"1"}
+local IOPT_SFC=${iopt_sfc:-"1"}
+local IOPT_TRS=${iopt_trs:-"2"}
+local IOPT_DIAG=${iopt_diag:-"2"} 
+local IOPT_FRZ=${iopt_frz:-"1"}
+local IOPT_INF=${iopt_inf:-"1"}
+local IOPT_RAD=${iopt_rad:-"1"}
+local IOPT_ALB=${iopt_alb:-"2"}
+local IOPT_SNF=${iopt_snf:-"4"}
+local IOPT_TBOT=${iopt_tbot:-"2"}
+local IOPT_STC=${iopt_stc:-"1"}
+local DEBUG=${gfs_phys_debug:-".false."}
+local NSTF_NAME=${nstf_name}
+local NST_ANL=${nst_anl}
+local PSAUTCO=${psautco:-"0.0008,0.0005"}
+local PRAUTCO=${prautco:-"0.00015,0.00015"}
+local LGFDLMPRAD=${lgfdlmprad:-".false."}
+local EFFR_IN=${effr_in:-".false."}
+local LDIAG_UGWP=${ldiag_ugwp:-".false."}
+local DO_RRTMGP=${do_RRTMGP:-".false."}
+local ACTIVE_GASES=${active_gases:-'h2o_co2_o3_n2o_ch4_o2'}
+local NGASES=${ngases:-"6"}
+local LW_FILE_GAS=${lw_file_gas:-'rrtmgp-data-lw-g128-210809.nc'}
+local LW_FILE_CLOUDS=${lw_file_clouds:-'rrtmgp-cloud-optics-coeffs-lw.nc'}
+local SW_FILE_GAS=${sw_file_gas:-'rrtmgp-data-sw-g112-210809.nc'}
+local SW_FILE_CLOUDS=${sw_file_clouds:-'rrtmgp-cloud-optics-coeffs-sw.nc'}
+local RRTMGP_NGPTSSW=${rrtmgp_nGptsSW:-"112"}
+local RRTMGP_NGPTSLW=${rrtmgp_nGptsLW:-"128"}
+local RRTMGP_NBANDSLW=${rrtmgp_nBandsLW:-"16"}
+local RRTMGP_NBANDSSW=${rrtmgp_nBandsSW:-"14"}
+local DOGP_CLDOPTICS_LUT=${doGP_cldoptics_LUT:-".false."}
+local DOGP_LWSCAT=${doGP_lwscat:-".false."}
+local DOGP_SGS_CNV=.true.
 
-if [[ ${cplchm} = ".true." ]]; then
-  cat >> input.nml << EOF
-  fscav_aero = ${fscav_aero:-'*:0.0'}
-EOF
-fi
+local DO_SPPT=${do_sppt:-".false."}
+local DO_SHUM=${do_shum:-".false."}
+local DO_SKEB=${do_skeb:-".false."}
+local FRAC_GRID=${FRAC_GRID:-".true."}
+local CPLCHM=${cplchm:-".false."}
+local CPLFLX=${cplflx:-".false."}
+local CPLICE=${cplice:-".false."}
+local CPLWAV=${cplwav:-".false."}
+local CPLWAV2ATM=${cplwav2atm:-".false."}
+local USE_MED_FLUX=${use_med_flux:-".false."}
+local CPLLND=${cpllnd:-".false."}
+local CPLLND2ATM=${cpllnd2atm:-".false."}
 
-cat >> input.nml <<EOF
-  do_sppt      = ${do_sppt:-".false."}
-  do_shum      = ${do_shum:-".false."}
-  do_skeb      = ${do_skeb:-".false."}
-  frac_grid    = ${FRAC_GRID:-".true."}
-  cplchm       = ${cplchm:-".false."}
-  cplflx       = ${cplflx:-".false."}
-  cplice       = ${cplice:-".false."}
-  cplwav       = ${cplwav:-".false."}
-  cplwav2atm   = ${cplwav2atm:-".false."}
-EOF
-
-if [[ ${DO_SPPT} = "YES" ]]; then
-cat >> input.nml <<EOF
-  pert_mp = .false.
-  pert_radtend = .false.
-  pert_clds = .true.
-EOF
-fi
-
-# Add namelist for IAU
-if [[ ${DOIAU} = "YES" ]]; then
-  cat >> input.nml << EOF
-  iaufhrs      = ${IAUFHRS}
-  iau_delthrs  = ${IAU_DELTHRS}
-  iau_inc_files= ${IAU_INC_FILES}
-  iau_drymassfixer = .false.
-  iau_filter_increments = ${IAU_FILTER_INCREMENTS:-".false."}
-EOF
-fi
-
-if [[ ${DO_CA:-"NO"} = "YES" ]]; then
-  cat >> input.nml << EOF
-  do_ca      = .true.
-  ca_global  = ${ca_global:-".false."}
-  ca_sgs     = ${ca_sgs:-".true."}
-  nca        = ${nca:-"1"}
-  ncells     = ${ncells:-"5"}
-  nlives     = ${nlives:-"12"}
-  nseed      = ${nseed:-"1"}
-  nfracseed  = ${nfracseed:-"0.5"}
-  nthresh    = ${nthresh:-"18"}
-  ca_trigger = ${ca_trigger:-".true."}
-  nspinup    = ${nspinup:-"1"}
-  iseed_ca   = ${ISEED_CA:-"12345"}
-EOF
-fi
-
-if [[ "${DO_LAND_PERT:-NO}" == "YES" ]]; then
-  cat >> input.nml << EOF
-  lndp_type = ${lndp_type:-2}
-  n_var_lndp = ${n_var_lndp:-0}
-EOF
-fi
-
-# Close &gfs_physics_nml section
-cat >> input.nml << EOF
-/
-EOF
-
-if [[ ${knob_ugwp_version} -eq 0 ]]; then
-  cat >> input.nml << EOF
-&cires_ugwp_nml
-  knob_ugwp_solver  = ${knob_ugwp_solver:-2}
-  knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
-  knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
-  knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
-  knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
-  knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
-  knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
-  knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
-  knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
-  knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
-  knob_ugwp_version = ${knob_ugwp_version:-0}
-  launch_level      = ${launch_level:-54}
-/
-EOF
-fi
-
-if [[ ${knob_ugwp_version} -eq 1 ]]; then
-  cat >> input.nml << EOF
-&cires_ugwp_nml
-  knob_ugwp_solver  = ${knob_ugwp_solver:-2}
-  knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
-  knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
-  knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
-  knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
-  knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
-  knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
-  knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
-  knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-2}
-  knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-4}
-  knob_ugwp_version = ${knob_ugwp_version:-1}
-  knob_ugwp_palaunch = ${knob_ugwp_palaunch:-275.0e2}
-  knob_ugwp_nslope   = ${knob_ugwp_nslope:-1}
-  knob_ugwp_lzmax    = ${knob_ugwp_lzmax:-15.750e3}
-  knob_ugwp_lzmin    = ${knob_ugwp_lzmin:-0.75e3}
-  knob_ugwp_lzstar   = ${knob_ugwp_lzstar:-2.0e3}
-  knob_ugwp_taumin   = ${knob_ugwp_taumin:-0.25e-3}
-  knob_ugwp_tauamp   = ${knob_ugwp_tauamp:-3.0e-3}
-  knob_ugwp_lhmet    = ${knob_ugwp_lhmet:-200.0e3}
-  knob_ugwp_orosolv  = ${knob_ugwp_orosolv:-'pss-1986'}
-/
-EOF
-fi
-
-echo "" >> input.nml
-
-cat >> input.nml <<EOF
-&gfdl_cloud_microphysics_nml
-  sedi_transport = .true.
-  do_sedi_heat = .false.
-  rad_snow = .true.
-  rad_graupel = .true.
-  rad_rain = .true.
-  const_vi = .false.
-  const_vs = .false.
-  const_vg = .false.
-  const_vr = .false.
-  vi_max = 1.
-  vs_max = 2.
-  vg_max = 12.
-  vr_max = 12.
-  qi_lim = 1.
-  prog_ccn = .false.
-  do_qa = .true.
-  fast_sat_adj = .true.
-  tau_l2v = 225.
-  tau_v2l = 150.
-  tau_g2v = 900.
-  rthresh = 10.e-6  ! This is a key parameter for cloud water
-  dw_land  = 0.16
-  dw_ocean = 0.10
-  ql_gen = 1.0e-3
-  ql_mlt = 1.0e-3
-  qi0_crt = 8.0E-5
-  qs0_crt = 1.0e-3
-  tau_i2s = 1000.
-  c_psaci = 0.05
-  c_pgacs = 0.01
-  rh_inc = 0.30
-  rh_inr = 0.30
-  rh_ins = 0.30
-  ccn_l = 300.
-  ccn_o = 100.
-  c_paut = 0.5
-  c_cracw = 0.8
-  use_ppm = .false.
-  use_ccn = .true.
-  mono_prof = .true.
-  z_slope_liq  = .true.
-  z_slope_ice  = .true.
-  de_ice = .false.
-  fix_negative = .true.
-  icloud_f = 1
-  mp_time = 150.
-  reiflag = ${reiflag:-"2"}
-
-  ${gfdl_cloud_microphysics_nml:-}
-/
-
-&interpolator_nml
-  interp_method = 'conserve_great_circle'
-  ${interpolator_nml:-}
-/
-
-&namsfc
-  FNGLAC   = '${FNGLAC}'
-  FNMXIC   = '${FNMXIC}'
-  FNTSFC   = '${FNTSFC}'
-  FNSNOC   = '${FNSNOC}'
-  FNZORC   = '${FNZORC}'
-  FNALBC   = '${FNALBC}'
-  FNALBC2  = '${FNALBC2}'
-  FNAISC   = '${FNAISC}'
-  FNTG3C   = '${FNTG3C}'
-  FNVEGC   = '${FNVEGC}'
-  FNVETC   = '${FNVETC}'
-  FNSOTC   = '${FNSOTC}'
-  FNSOCC   = '${FNSOCC}'
-  FNSMCC   = '${FNSMCC}'
-  FNMSKH   = '${FNMSKH}'
-  FNTSFA   = '${FNTSFA}'
-  FNACNA   = '${FNACNA:-}'
-  FNSNOA   = '${FNSNOA:-}'
-  FNVMNC   = '${FNVMNC:-}'
-  FNVMXC   = '${FNVMXC:-}'
-  FNSLPC   = '${FNSLPC:-}'
-  FNABSC   = '${FNABSC:-}'
-  LDEBUG = ${LDEBUG:-".false."}
-  FSMCL(2) = ${FSMCL2:-99999}
-  FSMCL(3) = ${FSMCL3:-99999}
-  FSMCL(4) = ${FSMCL4:-99999}
-  LANDICE  = ${landice:-".true."}
-  FTSFS = ${FTSFS:-90}
-  FAISL = ${FAISL:-99999}
-  FAISS = ${FAISS:-99999}
-  FSNOL = ${FSNOL:-99999}
-  FSNOS = ${FSNOS:-99999}
-  FSICL = ${FSICL:-99999}
-  FSICS = ${FSICS:-99999}
-  FTSFL = ${FTSFL:-99999}
-  FVETL = ${FVETL:-99999}
-  FSOTL = ${FSOTL:-99999}
-  FvmnL = ${FvmnL:-99999}
-  FvmxL = ${FvmxL:-99999}
-  FSLPL = ${FSLPL:-99999}
-  FABSL = ${FABSL:-99999}
-  ${namsfc_nml:-}
-/
-
-&fv_grid_nml
-  grid_file = 'INPUT/grid_spec.nc'
-  ${fv_grid_nml:-}
-/
-EOF
-
-# Add namelist for stochastic physics options
-echo "" >> input.nml
-#if [ $MEMBER -gt 0 ]; then
-if [[ "${DO_SPPT}" = "YES" || "${DO_SHUM}" = "YES" || "${DO_SKEB}" = "YES" || "${DO_LAND_PERT}" = "YES" ]]; then
-
-    cat >> input.nml << EOF
-&nam_stochy
-EOF
-
-  if [[ ${DO_SKEB} = "YES" ]]; then
-    cat >> input.nml << EOF
-  skeb = ${SKEB}
-  iseed_skeb = ${ISEED_SKEB:-${ISEED}}
-  skeb_tau = ${SKEB_TAU:-"-999."}
-  skeb_lscale = ${SKEB_LSCALE:-"-999."}
-  skebnorm = ${SKEBNORM:-"1"}
-  skeb_npass = ${SKEB_NPASS:-"30"}
-  skeb_vdof = ${SKEB_VDOF:-"5"}
-EOF
-  fi
-
-  if [[ ${DO_SHUM} = "YES" ]]; then
-    cat >> input.nml << EOF
-  shum = ${SHUM}
-  iseed_shum = ${ISEED_SHUM:-${ISEED}}
-  shum_tau = ${SHUM_TAU:-"-999."}
-  shum_lscale = ${SHUM_LSCALE:-"-999."}
-EOF
-  fi
-
-  if [[ ${DO_SPPT} = "YES" ]]; then
-    cat >> input.nml << EOF
-  sppt = ${SPPT}
-  iseed_sppt = ${ISEED_SPPT:-${ISEED}}
-  sppt_tau = ${SPPT_TAU:-"-999."}
-  sppt_lscale = ${SPPT_LSCALE:-"-999."}
-  sppt_logit = ${SPPT_LOGIT:-".true."}
-  sppt_sfclimit = ${SPPT_SFCLIMIT:-".true."}
-  use_zmtnblck = ${use_zmtnblck:-".true."}
-  pbl_taper = ${pbl_taper:-"0,0,0,0.125,0.25,0.5,0.75"}
-EOF
-  fi
-
-  if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
-    cat >> input.nml <<EOF
-  OCNSPPT=${OCNSPPT}
-  OCNSPPT_LSCALE=${OCNSPPT_LSCALE}
-  OCNSPPT_TAU=${OCNSPPT_TAU}
-  ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
-EOF
-  fi
-
-  if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
-    cat >> input.nml <<EOF
-  EPBL=${EPBL}
-  EPBL_LSCALE=${EPBL_LSCALE}
-  EPBL_TAU=${EPBL_TAU}
-  ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
-EOF
-  fi
-
-  if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
-    cat >> input.nml <<EOF
-  OCNSPPT=${OCNSPPT}
-  OCNSPPT_LSCALE=${OCNSPPT_LSCALE}
-  OCNSPPT_TAU=${OCNSPPT_TAU}
-  ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
-EOF
-  fi
-
-  if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
-    cat >> input.nml <<EOF
-  EPBL=${EPBL}
-  EPBL_LSCALE=${EPBL_LSCALE}
-  EPBL_TAU=${EPBL_TAU}
-  ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
-EOF
-  fi
-
-  cat >> input.nml << EOF
-/
-EOF
-
-  if [[ ${DO_LAND_PERT} = "YES" ]]; then
-    cat >> input.nml << EOF
-&nam_sfcperts
-  lndp_type = ${lndp_type}
-  LNDP_TAU = ${LNDP_TAU}
-  LNDP_SCALE = ${LNDP_SCALE}
-  ISEED_LNDP = ${ISEED_LNDP:-${ISEED}}
-  lndp_var_list = ${lndp_var_list}
-  lndp_prt_list = ${lndp_prt_list}
-/
-EOF
-  else
-    cat >> input.nml << EOF
-&nam_sfcperts
-/
-EOF
-  fi
-
+# FV3 Nesting
+if [[ "${CCPP_SUITE}" == "FV3_global_nest"* ]]; then
+  local HIDE_NEST=" "
 else
-
-  cat >> input.nml << EOF
-&nam_stochy
-/
-&nam_sfcperts
-/
-EOF
-
+  local HIDE_NEST="!"
 fi
 
-# Echo out formatted "input.nml"
-echo "===================================="
-echo "FV3_namelists(): 'input.nml'"
-cat input.nml
-echo "===================================="
+# CPL CHM options
+if [[ ${cplchm} = ".true." ]]; then
+  local FSCAV_AERO=${fscav_aero:-'*:0.0'}
+else
+  local FSCAV_AERO='"*:0.3","so2:0.0","msa:0.0","dms:0.0","nh3:0.4","nh4:0.6","bc1:0.6","bc2:0.6","oc1:0.4","oc2:0.4","dust1:0.6","dust2:0.6","dust3:0.6","dust4:0.6","dust5:0.6","seas1:0.5","seas2:0.5","seas3:0.5","seas4:0.5","seas5:0.5"'
+fi
+
+# SPPT options
+if [[ ${DO_SPPT} = "YES" ]]; then
+  local HIDE_SPPT=" "
+else
+  local HIDE_SPPT="!"
+fi
+local pert_mp=.false.
+local pert_radtend=.false.
+local pert_clds=.true.
+
+# IAU options
+if [[ ${DOIAU} = "YES" ]]; then
+  local HIDE_IAU=" "
+else
+  local HIDE_IAU="!"
+fi
+local IAUFHRS=${IAUFHRS}
+local IAU_DELTHRS=${IAU_DELTHRS}
+local IAU_INC_FILES=${IAU_INC_FILES:-"''"}
+local IAU_DRYMASSFIXER=.false.
+local IAU_FILTER_INCREMENTS=${IAU_FILTER_INCREMENTS:-".false."}
+
+# CA options
+if [[ ${DO_CA:-"NO"} = "YES" ]]; then
+  local HIDE_CA=" "
+else
+  local HIDE_CA="!"
+fi
+local DO_CA=.true.
+local CA_GLOBAL=${ca_global:-".false."}
+local CA_SGS=${ca_sgs:-".true."}
+local NCA=${nca:-"1"}
+local NCELLS=${ncells:-"5"}
+local NLIVES=${nlives:-"12"}
+local NSEED=${nseed:-"1"}
+local NFRACSEED=${nfracseed:-"0.5"}
+local NTHRESH=${nthresh:-"18"}
+local CA_TRIGGER=${ca_trigger:-".true."}
+local NSPINUP=${nspinup:-"1"}
+local ISEED_CA=${ISEED_CA:-"12345"}
+
+# Land pert options
+if [[ "${DO_LAND_PERT:-NO}" == "YES" ]]; then
+  local HIDE_LAND_PERT=" "
+else
+  local HIDE_LAND_PERT="!"
+fi
+local LNDP_TYPE=${lndp_type:-2}
+local N_VAR_LNDP=${n_var_lndp:-0}
+
+local LCNORM=${lcnorm:-".false."}
+local PERT_MP=${PERT_MP:-".false"}
+local PERT_RADTEND=${PERT_RADTEND:-".false."}
+local PERT_CLDS=${PERT_CLDS:-".true."}
+  
+#GWP options  
+if [[ ${knob_ugwp_version} -eq 0 ]]; then
+  local HIDE_UGWPV0=" "
+  local HIDE_UGWPV1="!"
+elif [[ ${knob_ugwp_version} -eq 1 ]]; then
+  local HIDE_UGWPV0="!"
+  local HIDE_UGWPV1=" "
+else
+  local HIDE_UGWPV0="!"
+  local HIDE_UGWPV1="!"
+fi
+# Common GWP options
+local KNOB_UGWP_SOLVER=${knob_ugwp_solver:-2}
+local KNOB_UGWP_SOURCE=${knob_ugwp_source:-1,1,0,0}
+local KNOB_UGWP_WVSPEC=${knob_ugwp_wvspec:-1,25,25,25}
+local KNOB_UGWP_AZDIR=${knob_ugwp_azdir:-2,4,4,4}
+local KNOB_UGWP_STOCH=${knob_ugwp_stoch:-0,0,0,0}
+local KNOB_UGWP_EFFAC=${knob_ugwp_effac:-1,1,1,1}
+local KNOB_UGWP_DOAXYZ=${knob_ugwp_doaxyz:-1}
+local KNOB_UGWP_DOHEAT=${knob_ugwp_doheat:-1}
+# UGWP Version 0 options
+local KNOB_UGWP_DOKDIS=${knob_ugwp_dokdis:-1}
+local KNOB_UGWP_NDX4LH=${knob_ugwp_ndx4lh:-1}
+local KNOB_UGWP_VERSION=${knob_ugwp_version:-0}
+local LAUNCH_LEVEL=${launch_level:-54}
+# UGWP Version 1 options
+local KNOB_UGWP_DOKDIS=${knob_ugwp_dokdis:-2}
+local KNOB_UGWP_NDX4LH=${knob_ugwp_ndx4lh:-4}
+local KNOB_UGWP_VERSION=${knob_ugwp_version:-1}
+local KNOB_UGWP_PALAUNCH=${knob_ugwp_palaunch:-275.0e2}
+local KNOB_UGWP_NSLOPE=${knob_ugwp_nslope:-1}
+local KNOB_UGWP_LZMAX=${knob_ugwp_lzmax:-15.750e3}
+local KNOB_UGWP_LZMIN=${knob_ugwp_lzmin:-0.75e3}
+local KNOB_UGWP_LZSTAR=${knob_ugwp_lzstar:-2.0e3}
+local KNOB_UGWP_TAUMIN=${knob_ugwp_taumin:-0.25e-3}
+local KNOB_UGWP_TAUAMP=${knob_ugwp_tauamp:-3.0e-3}
+local KNOB_UGWP_LHMET=${knob_ugwp_lhmet:-200.0e3}
+local KNOB_UGWP_OROSOLV=${knob_ugwp_orosolv:-'pss-1986'}
+ 
+# gfdl_cloud_microphysics options
+local REIFLAG=${reiflag:-"2"}
+
+# interpolator_nml options
+
+# nam sfc options
+local FNACNA=${FNACNA:-}
+local FNSNOA=${FNSNOA:-}
+local FNVMNC=${FNVMNC:-}
+local FNVMXC=${FNVMXC:-}
+local FNSLPC=${FNSLPC:-}
+local FNABSC=${FNABSC:-}
+local LDEBUG=${LDEBUG:-".false."}
+local FSMCL2=${FSMCL2:-99999}
+local FSMCL3=${FSMCL3:-99999}
+local FSMCL4=${FSMCL4:-99999}
+local LANDICE=${landice:-".true."}
+local FTSFS=${FTSFS:-90}
+local FAISL=${FAISL:-99999}
+local FAISS=${FAISS:-99999}
+local FSNOL=${FSNOL:-99999}
+local FSNOS=${FSNOS:-99999}
+local FSICL=${FSICL:-99999}
+local FSICS=${FSICS:-99999}
+local FTSFL=${FTSFL:-99999}
+local FVETL=${FVETL:-99999}
+local FSOTL=${FSOTL:-99999}
+local FVMNL=${FvmnL:-99999}
+local FVMXL=${FvmxL:-99999}
+local FSLPL=${FSLPL:-99999}
+local FABSL=${FABSL:-99999}
+local FNTSFA=${FNTSFA:-''}
+
+#fv_grid_nml options
+
+#nam stochy options
+if [[ ${DO_SKEB} = "YES" ]]; then 
+  local HIDE_SKEB=" "
+else
+  local HIDE_SKEB="!"
+fi
+if [[ ${DO_SHUM} = "YES" ]]; then
+  local HIDE_SHUM=" "
+else
+  local HIDE_SHUM="!"
+fi
+if [[ ${DO_SPPT} = "YES" ]]; then
+  local HIDE_SPPT=" "
+else
+  local HIDE_SPPT="!"
+fi
+if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
+  local HIDE_OCNSPPT=" "
+else
+  local HIDE_OCNSPPT="!"
+fi
+if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
+  local HIDE_EPBL=" "
+else
+  local HIDE_EPBL="!"
+fi
+if [[ ${DO_LAND_PERT} = "YES" ]]; then
+  local HIDE_LAND_PERT=" "
+else
+  local HIDE_LAND_PERT="!"
+fi
+
+local SKEB=${SKEB:-"-999."}
+local ISEED_SKEB=${ISEED_SKEB:-${ISEED}}
+local SKEB_TAU=${SKEB_TAU:-"-999."}
+local SKEB_LSCALE=${SKEB_LSCALE:-"-999."}
+local SKEBNORM=${SKEBNORM:-"1"}
+local SKEB_NPASS=${SKEB_NPASS:-"30"}
+local SKEB_VDOF=${SKEB_VDOF:-"5"}
+local SHUM=${SHUM:-"0.005"}
+local ISEED_SHUM=${ISEED_SHUM:-${ISEED}}
+local SHUM_TAU=${SHUM_TAU:-"-999."}
+local SHUM_LSCALE=${SHUM_LSCALE:-"-999."}
+local SPPT=${SPPT:-"0.2"}
+local ISEED_SPPT=${ISEED_SPPT:-${ISEED}}
+local SPPT_TAU=${SPPT_TAU:-"-999."}
+local SPPT_LSCALE=${SPPT_LSCALE:-"-999."}
+local SPPT_LOGIT=${SPPT_LOGIT:-".true."}
+local SPPT_SFCLIMIT=${SPPT_SFCLIMIT:-".true."}
+local USE_ZMTNBLCK=${use_zmtnblck:-".true."}
+local PBL_TAPER=${pbl_taper:-"0,0,0,0.125,0.25,0.5,0.75"}
+local OCNSPPT=${OCNSPPT:-"0.8,0.4,0.2,0.08,0.04"}
+local OCNSPPT_LSCALE=${OCNSPPT_LSCALE:-"500.E3,1000.E3,2000.E3,2000.E3,2000.E3"}
+local OCNSPPT_TAU=${OCNSPPT_TAU:-"2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"}
+local ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
+local EPBL=${EPBL:-"0.8,0.4,0.2,0.08,0.04"}
+local EPBL_LSCALE=${EPBL_LSCALE:-"500.E3,1000.E3,2000.E3,2000.E3,2000.E3"}
+local EPBL_TAU=${EPBL_TAU:-"2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"}
+local ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
+local LNDP_TYPE=${lndp_type:-"0"}
+local LNDP_MODEL_TYPE=${lndp_model_type:-"0"}
+local LNDP_TAU=${LNDP_TAU:-"21600"}
+local LNDP_LSCALE=${LNDP_SCALE:-"500000"}
+local ISEED_LNDP=${ISEED_LNDP:-${ISEED}}
+local LNDP_VAR_LIST=${lndp_var_list:-"'XXX'"}
+local LNDP_PRT_LIST=${lndp_prt_list:-"-999"}
+  
+local MOM6_OUTPUT_DIR=" "
+local MOM6_RESTART_SETTING=" "
+local MOM6_RESTART_DIR=" "
+
+local global_template='/scratch1/NCEPDEV/stmp2/Daniel.Sarmiento/global-workflow/global_control.nml.IN'
+atparse < "${global_template}" >> "input.nml"
 }
