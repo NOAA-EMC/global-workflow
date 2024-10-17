@@ -2,11 +2,9 @@ name: gw-ci-aws-centos
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Select the branch to run the workflow on'
-        required: true
-        default: 'main'
+  pull_request:
+    branches:
+      - develop
 
 env:
   TEST_DIR: ${{ github.workspace }}/${{ github.run_id }}
@@ -15,6 +13,8 @@ env:
 jobs:
   fetch-prs:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
     outputs:
       branches: ${{ steps.get-pr-branches.outputs.branches }}
     steps:
