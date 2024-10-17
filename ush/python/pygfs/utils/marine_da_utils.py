@@ -166,3 +166,36 @@ def clean_empty_obsspaces(config, target, app='var'):
 
     # save cleaned yaml
     save_as_yaml(config, target)
+
+
+@logit(logger)
+def get_mom6_levels(ocnres: str) -> int:
+    """
+    Temporary function that returns the number of vertical levels in MOM6 given the horizontal resolution.
+    This is requiered by the diffusion saber block that now makes use of oops::util::FieldSetHelpers::writeFieldSet
+    and requires the number of levels in the configuration. I have been told this will be changed in the future.
+
+    Parameters
+    -----------
+    ocnres: str
+        Input resolution for ocean in str format. e.g. '500', '100', '050', '025'
+
+   Returns
+   -------
+   nlev: int
+       number of levels in the ocean model given an input resolution
+    """
+
+    # Currently implemented resolutions
+    ocnres_to_nlev = {
+        '500': 25,
+        '100': 75,
+        '050': 75,
+        '025': 75
+    }
+    try:
+        nlev = ocnres_to_nlev.get(ocnres)
+    except KeyError:
+        raise KeyError("FATAL ERROR: Invalid ocnres value. Aborting.")
+
+    return nlev
