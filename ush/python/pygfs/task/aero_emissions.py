@@ -214,9 +214,9 @@ class AerosolEmissions(Task):
         das = []
 
         if len(fname) > 1:
-            files = sort(fname)
+            files = np.sort(fname)
         else:
-            files = sort(glob(fname))
+            files = np.sort(glob(fname))
         # print(files)
         logger.info("Process Climatlogy Files")
         logger.info("  Opening Climatology File: {filename}".format(filename=fname[0]))
