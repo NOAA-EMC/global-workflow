@@ -108,7 +108,7 @@ _verbose_flag="--"
 _debug="false"
 _cwd=$(pwd)
 _redirect='>/dev/null'  # Redirect stdout to /dev/null; stderr to terminal
-runtests="${RUNTESTS:-${_runtests:-}}"
+_runtests="${RUNTESTS:-${_runtests:-}}"
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
@@ -250,19 +250,21 @@ function select_all_yamls()
       echo "Running all ${_SYSTEM} cases in ${_yaml_dir}"
       _yaml_count=0
 
-      for _full_path in $(grep -l "system: *${_system}" "${_yaml_dir}/"*.yaml); do
+      for _full_path in "${_yaml_dir}/"*.yaml; do
+         # Skip any YAML that isn't supported
+         if ! grep -l "system: *${_system}" "${_full_path}"; then continue; fi
+
          # Select only cases for the specified system
          _yaml=$(basename "${_full_path}")
          # Strip .yaml from the filename to get the case name
          _yaml="${_yaml//.yaml/}"
          _nameref_yaml_list+=("${_yaml}")
-         printf '%s\n' "${_nameref_yaml_list[@]}"
          [[ "${_verbose}" == true ]] && echo "Found test ${_yaml//.yaml/}"
          (( _yaml_count+=1 ))
       done
 
       if [[ ${_yaml_count} -eq 0 ]]; then
-         echo "No YAMLs or ${_SYSTEM} were found in the directory \'${_yaml_dir}\'!"
+         echo "No YAMLs or ${_SYSTEM} were found in the directory (${_yaml_dir})!"
          echo "Please check the directory/YAMLs and try again"
          exit 6
       fi
@@ -333,9 +335,8 @@ if [[ "${_build}" == "true" ]]; then
 fi
 
 # Link the workflow
-${HOMEgfs}/sorc/link_workflow.sh
+"${HOMEgfs}/sorc/link_workflow.sh"
 
-printf '%s\n' "${_yaml_list[@]}"
 # Configure the environment for running create_experiment.py
 for i in "${!_yaml_list[@]}"; do
    _yaml_file="${_yaml_dir}/${_yaml_list[${i}]}.yaml"
