@@ -163,7 +163,7 @@ cat > input.nml <<EOF
   hord_mt = ${hord_mt}
   hord_vt = ${hord_xx}
   hord_tm = ${hord_xx}
-  hord_dp = -${hord_xx}
+  hord_dp = ${hord_dp}
   hord_tr = ${hord_tr:-"8"}
   adjust_dry_mass = ${adjust_dry_mass:-".true."}
   dry_mass=${dry_mass:-98320.0}

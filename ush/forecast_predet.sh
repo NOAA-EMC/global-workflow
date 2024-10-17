@@ -332,9 +332,11 @@ FV3_predet(){
     if [[ "${TYPE}" == "nh" ]]; then  # monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_mono:-"10"}
       hord_xx=${hord_xx_nh_mono:-"10"}
+      hord_dp=-${hord_xx_nh_nonmono:-"-10"}
     else  # monotonic and hydrostatic
       hord_mt=${hord_mt_hydro_mono:-"10"}
       hord_xx=${hord_xx_hydro_mono:-"10"}
+      hord_dp=-${hord_xx_nh_nonmono:-"-10"}
     fi
   else  # non-monotonic options
     d_con=${d_con_nonmono:-"1."}
@@ -342,9 +344,15 @@ FV3_predet(){
     if [[ "${TYPE}" == "nh" ]]; then  # non-monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_nonmono:-"5"}
       hord_xx=${hord_xx_nh_nonmono:-"5"}
+      hord_dp=${hord_xx_hydro_mono:-"-5"}
     else # non-monotonic and hydrostatic
       hord_mt=${hord_mt_hydro_nonmono:-"10"}
       hord_xx=${hord_xx_hydro_nonmono:-"10"}
+      hord_dp=${hord_xx_hydro_mono:-"10"}
+      kord_tm=${kord_tm_hydro_mono:-"-12"}
+      kord_mt=${kord_mt_hydro_mono:-"12"}
+      kord_wz=${kord_wz_hydro_mono:-"12"}
+      kord_tr=${kord_tr_hydro_mono:-"12"}
     fi
   fi
 
@@ -543,9 +551,12 @@ FV3_predet(){
     if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gfs" ]]; then  # RUN = gdas | enkfgdas | gfs | enkfgfs
       ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
       ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
-    elif [[ "${RUN}" == "gefs" ]]; then  # RUN = gefs
+    elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "NO" ]]; then  # RUN = gefs
       ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
       ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
+    elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "YES" ]]; then  # RUN = sfs output
+      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
+      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
     fi
   fi
 }

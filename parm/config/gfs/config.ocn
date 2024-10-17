@@ -24,6 +24,11 @@ else
   export ODA_INCUPD_NHOURS="3.0"
 fi
 
-
-
+MOM6_INTERP_ICS=@MOM6_INTERP_ICS@
+if [[ "${MOM6_INTERP_ICS}" == "YES" ]]; then
+    export MOM6_RESTART_SETTING='n'
+    export MOM6_WARMSTART_FILE="MOM.res.nc"
+    export MOM6_INIT_FROM_Z='False'
+    export MOM6_INIT_UV='file'
+fi
 echo "END: config.ocn"
