@@ -6,11 +6,11 @@
 echo "BEGIN: config.atmensanl"
 
 export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
-if [[ ${lobsdiag_forenkf} = ".false." ]] ; then
-    export JCB_ALGO_YAML=@JCB_ALGO_YAML_LETKF@
-else
-    export JCB_ALGO_YAML=@JCB_ALGO_YAML_OBS@
-fi    
+
+export JCB_ALGO_YAML_LETKF=@JCB_ALGO_YAML_LETKF@
+export JCB_ALGO_YAML_OBS=@JCB_ALGO_YAML_OBS@
+export JCB_ALGO_YAML_SOL=@JCB_ALGO_YAML_SOL@
+export JCB_ALGO_FV3INC="fv3jedi_fv3inc_lgetkf"
 
 export INTERP_METHOD='barycentric'
 
@@ -24,6 +24,7 @@ export layout_y_atmensanl=@LAYOUT_Y_ATMENSANL@
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE=${EXECgfs}/gdas.x
+export JEDIEXE_LETKF=${EXECgfs}/gdas.x
+export JEDIEXE_FV3INC=${EXECgfs}/fv3jedi_fv3inc.x
 
 echo "END: config.atmensanl"
