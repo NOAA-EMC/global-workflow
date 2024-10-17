@@ -182,7 +182,7 @@ class AerosolEmissions(Task):
 
         try:
             if np.sort(files).size == 0:
-                raise Exception
+                raise Exception("FATAL ERROR: No HFED files were found")
         except Exception as ee:
             logger.exception("FATAL ERROR: HFED files not found.")
             raise Exception(f"FATAL ERROR: Unable to find files, ABORT")
@@ -232,7 +232,7 @@ class AerosolEmissions(Task):
 
         try:
             if files.size == 0:
-                raise Exception
+                raise Exception("FATAL ERROR: No QFED files were found")
         except Exception as ee:
             logger.exception("FATAL ERROR: QFED files not found.")
             raise Exception(f"FATAL ERROR: Unable to find files, ABORT")
