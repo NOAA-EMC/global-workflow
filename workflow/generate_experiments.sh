@@ -81,7 +81,7 @@ function _usage() {
 EOF
 }
 
-set -eux
+set -eu
 
 # Set default options
 HOMEgfs=""
@@ -90,8 +90,9 @@ _build=false
 _build_flags=""
 _explicit_build_flags=false
 _update_submods=false
-_yaml_list="C48_ATM"
-_yaml_dir=""
+declare -a _yaml_list=("C48_ATM")
+_specified_yaml_list=false
+_yaml_dir=""  # Will be set based off of HOMEgfs if not specified explicitly
 _specified_yaml_dir=false
 _run_all_gfs=false
 _run_all_gefs=false
@@ -118,15 +119,19 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
            _specified_home=true
            if [[ ! -d "${HOMEgfs}" ]]; then
               echo "Specified HOMEgfs directory (${HOMEgfs}) does not exist"
-              exit 2
+              exit 1
            fi
            ;;
         b) _build=true ;;
         B) _build_flags="${OPTARG}" && _explicit_build_flags=true ;;
         u) _update_submods=true ;;
-        y) _yaml_list="${OPTARG}"
-           # strip .yaml from the end of each
-           _yaml_list=${_yaml_list//".yaml"/}
+        y) # Start over with an empty _yaml_list
+           declare -a _yaml_list=()
+           for _yaml in ${OPTARG}; do
+              # Strip .yaml from the end of each and append to _yaml_list
+              _yaml_list+=("${_yaml//.yaml/}")
+           done
+           _specified_yaml_list=true
            ;;
         Y) _yaml_dir="${OPTARG}" && _specified_yaml_dir=true ;;
         G) _run_all_gfs=true ;;
@@ -159,7 +164,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
       if [[ ${_nonflag_option_count} -gt 1 ]]; then
          echo "Too many arguments specified."
          _usage
-         exit 3
+         exit 2
       fi
       shift
    done
@@ -168,7 +173,7 @@ done
 if [[ -z "${_runtests}" ]]; then
    echo "Mising run directory (RUNTESTS) argument/environment variable."
    _usage
-   exit 4
+   exit 3
 fi
 
 # Nullify the redirect if we are in verbose mode
@@ -186,7 +191,7 @@ if [[ ! -d "${_runtests}" ]]; then
    if ! mkdir -p "${_runtests}" "${_verbose_flag}"; then
       echo "Unable to create RUNTESTS directory: ${_runtests}"
       echo "Rerun with -h for usage examples."
-      exit 5
+      exit 4
    fi
    set -e
 fi
@@ -200,19 +205,7 @@ _count_run_alls=0
 if (( _count_run_alls > 1 )) ; then
    echo "Only one run all option (-G -E -S) may be specified"
    echo "Rerun with just one option and/or with -h for usage examples"
-   exit 6
-fi
-
-# Append -w to build_all.sh flags if -E was specified
-if [[ "${_run_all_gefs}" == "true" && "${_explicit_build_flags}" == "false" && \
-      "${_build}" == "true" ]]; then
-   _build_flags="-w"
-fi
-
-# Append -g -u to build_all.sh flags if -G was specified
-if [[ "${_run_all_gfs}" == "true" && "${_explicit_build_flags}" == "false" && \
-      "${_build}" == "true" ]]; then
-   _build_flags="-g -u"
+   exit 5
 fi
 
 # If -S is specified, exit (for now).
@@ -230,6 +223,83 @@ if [[ "${_specified_home}" == "false" ]]; then
    script_relpath="$(dirname "${BASH_SOURCE[0]}")"
    HOMEgfs="$(cd "${script_relpath}/.." && pwd)"
    [[ "${_verbose}" == "true" ]] && echo "Setting HOMEgfs to ${HOMEgfs}"
+fi
+
+# Set the _yaml_dir to HOMEgfs/ci/cases/pr if not explicitly set
+[[ "${_specified_yaml_dir}" == false ]] && _yaml_dir="${HOMEgfs}/ci/cases/pr"
+
+function select_all_yamls()
+{
+   # A helper function to select all of the YAMLs for a specified system (gfs, gefs, sfs)
+
+   # This function is called if -G, -E, or -S are specified either with or without a
+   # specified YAML list.  If a YAML list was specified, this function will remove any
+   # YAMLs in that list that are not for the specified system and issue warnings when
+   # doing so.
+
+   _system="${1}"
+   _SYSTEM="${_system^^}"
+
+   # Bash cannot return an array from a function and any edits are descoped at
+   # the end of the function, so use a nameref instead.
+   local -n _nameref_yaml_list='_yaml_list'
+
+   if [[ "${_specified_yaml_list}" == false ]]; then
+      # Start over with an empty _yaml_list
+      _nameref_yaml_list=()
+      echo "Running all ${_SYSTEM} cases in ${_yaml_dir}"
+      _yaml_count=0
+
+      for _full_path in $(grep -l "system: *${_system}" "${_yaml_dir}/"*.yaml); do
+         # Select only cases for the specified system
+         _yaml=$(basename "${_full_path}")
+         # Strip .yaml from the filename to get the case name
+         _yaml="${_yaml//.yaml/}"
+         _nameref_yaml_list+=("${_yaml}")
+         printf '%s\n' "${_nameref_yaml_list[@]}"
+         [[ "${_verbose}" == true ]] && echo "Found test ${_yaml//.yaml/}"
+         (( _yaml_count+=1 ))
+      done
+
+      if [[ ${_yaml_count} -eq 0 ]]; then
+         echo "No YAMLs or ${_SYSTEM} were found in the directory \'${_yaml_dir}\'!"
+         echo "Please check the directory/YAMLs and try again"
+         exit 6
+      fi
+   else
+      # Check if the specified yamls are for the specified system
+      for i in "${!_nameref_yaml_list}"; do
+         _yaml="${_nameref_yaml_list[${i}]}"
+         _found=$(grep -l "system: *${system}" "${_yaml_dir}/${_yaml}.yaml")
+         if [[ -z "${_found}" ]]; then
+            echo "WARNING the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_SYSTEM} system"
+            echo "Removing this yaml from the set of cases to run"
+            unset '_nameref_yaml_list[${i}]'
+            # Sleep 2 seconds to give the user a moment to react
+            sleep 2s
+         fi
+      done
+   fi
+}
+
+# Check if running all GEFS cases
+if [[ "${_run_all_gefs}" == "true" ]]; then
+   # Append -w to build_all.sh flags if -E was specified
+   if [[ "${_explicit_build_flags}" == "false" && "${_build}" == "true" ]]; then
+       _build_flags="-w"
+   fi
+
+   select_all_yamls "gefs"
+fi
+
+# Check if running all SFS cases
+if [[ "${_run_all_gfs}" == "true" ]]; then
+   # Append -g -u to build_all.sh flags if -G was specified
+   if [[ "${_explicit_build_flags}" == "false" && "${_build}" == "true" ]]; then
+      _build_flags="-g -u"
+   fi
+
+   select_all_yamls "gfs"
 fi
 
 # Loading modules sometimes raises unassigned errors, so disable checks
@@ -265,10 +335,10 @@ fi
 # Link the workflow
 ${HOMEgfs}/sorc/link_workflow.sh
 
+printf '%s\n' "${_yaml_list[@]}"
 # Configure the environment for running create_experiment.py
-
-for _yaml in ${_yaml_list}; do
-   _yaml_file="${_yaml_dir}/${_yaml}.yaml"
+for i in "${!_yaml_list[@]}"; do
+   _yaml_file="${_yaml_dir}/${_yaml_list[${i}]}.yaml"
    # Verify that the YAMLs are where we are pointed
    if [[ ! -s "${_yaml_file}" ]]; then
       echo "The YAML file ${_yaml_file} does not exist!"
@@ -284,7 +354,7 @@ for _yaml in ${_yaml_list}; do
          echo "WARNING ${_yaml} is unsupported on ${machine}, removing from test list"
          # Sleep so the user has a moment to notice
          sleep 2s
-         _yaml_list="${_yaml_list// ${_yaml}/}"
+         unset '_yaml_list[${i}]'
          break
       fi
    done
@@ -295,7 +365,7 @@ done
 
 # Create the experiments
 rm -f "tests.cron" "${_verbose_flag}"
-for _case in ${_yaml_list}; do
+for _case in "${_yaml_list[@]}"; do
    #shellcheck disable=SC2086,SC2248
    pslot=${_case} RUNTESTS=${_runtests} ./create_experiment.py -y "../ci/cases/pr/${_case}.yaml" --overwrite ${_redirect}
    crontab_entry=$(grep "${_case}" "${_runtests}/EXPDIR/${_case}/${_case}.crontab")
