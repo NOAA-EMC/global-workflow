@@ -120,7 +120,7 @@ class AerosolEmissions(Task):
         """
         emistype = Config_dict.emistype
         ratio = Config_dict.ratio
-        climfiles = sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
+        climfiles = np.sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
         coarsen_scale = Config_dict.coarsen_scale
         output_vars = Config_dict.output_vars
         input_vars = Config_dict.input_vars
