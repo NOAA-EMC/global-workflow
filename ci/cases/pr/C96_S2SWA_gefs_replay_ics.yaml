@@ -17,3 +17,6 @@ arguments:
   edate: 2020110100
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_replay_ci.yaml
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
+
+skip_ci_on_hosts:
+  - wcoss2
