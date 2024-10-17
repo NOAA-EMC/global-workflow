@@ -144,8 +144,7 @@ class AerosolEmissions(Task):
             coarsen_scale=coarsen_scale,
             obsfile=basefile,
             output_vars=output_vars,
-            input_vars=input_vars,
-            )
+            input_vars=input_vars)
 
         AerosolEmissions.write_ncf(dset, Config_dict.data_out['copy'][0][0])
 
@@ -329,9 +328,9 @@ class AerosolEmissions(Task):
         ratio: float,
         scale_climo: bool,
         coarsen_scale: int,
-        obsfile = str,
-        output_vars: Union[str, list] = None,
-        input_vars: list = None,
+        obsfile: str,
+        output_vars: Union[str, list],
+        input_vars: list,
     ) -> xr.Dataset:
         """
         Generate fire emissions data for a given date and forecast period.
