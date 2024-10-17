@@ -93,5 +93,5 @@ jobs:
     steps:
       - name: Clean up
         run: |
-        echo "Cleaning up workspace"
-        rm -rf ${{ env.TEST_DIR }}
+          echo "Cleaning up workspace"
+          rm -rf ${{ env.TEST_DIR }}
