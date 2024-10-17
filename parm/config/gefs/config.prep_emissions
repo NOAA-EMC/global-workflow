@@ -32,7 +32,6 @@ export AERO_INPUTS_DIR
 echo "BEGIN: config.prep_emissions"
 
 # Get task specific resources
-export STARTHOUR=${STARTHOUR:-00}
 export PREP_EMISSION_CONFIG="${PARMgfs}/prep/aero_emissions.yaml"
 source "${EXPDIR}/config.resources" prep_emissions
 
