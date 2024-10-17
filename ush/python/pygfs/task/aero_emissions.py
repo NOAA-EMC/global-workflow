@@ -5,7 +5,6 @@ from logging import getLogger
 from typing import Dict, Any, Union
 from pprint import pformat
 from glob import glob
-from numpy import sort
 import numpy as np
 import xarray as xr
 from datetime import timedelta
