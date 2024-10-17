@@ -685,7 +685,7 @@ GOCART_rc() {
 
   # Link blending emissions if AERO_EMIS_FIRE == blending
   if [[ "${AERO_EMIS_FIRE}" == 'blending' ]]; then 
-    ${NCP} "${COMOUT_CHEM_HISTORY}/gefs.${vdate:0:8}.gefs.blended_emissions.nc" "${DATA}"
+    ${NCP} "${COMOUT_CHEM_HISTORY}/${RUN}.${vdate:0:8}.${RUN}.blended_emissions.nc" "${DATA}"
   fi 
 
   # copying GOCART configuration files
