@@ -22,13 +22,13 @@ base:
   LOCALARCH: "NO"
   SFS_POST: "NO"
 fcst:
-  reforecast: "YES"
+  reforecast: "NO"
   FHZER: 6
   TYPE: "nh"
   MONO: "non-mono"
 stage_ic:
-  USE_OCN_ENS_PERTURB_FILES: "YES"
-  USE_ATM_ENS_PERTURB_FILES: "YES"
+  USE_OCN_ENS_PERTURB_FILES: "NO"
+  USE_ATM_ENS_PERTURB_FILES: "NO"
 ocn:
   MOM6_INTERP_ICS: "NO"
 
