@@ -90,3 +90,8 @@ jobs:
   clean-up:
     needs: run-experiments
     runs-on: [self-hosted, aws, parallelworks, centos]
+    steps:
+      - name: Clean up
+        run: |
+        echo "Cleaning up workspace"
+        rm -rf ${{ env.TEST_DIR }}
