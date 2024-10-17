@@ -6,6 +6,7 @@ from typing import Dict, Any, Union
 from pprint import pformat
 from glob import glob
 from numpy import sort
+import numpy as np
 import xarray as xr
 from datetime import timedelta
 
@@ -122,14 +123,18 @@ class AerosolEmissions(Task):
         ratio = Config_dict.ratio
         climfiles = sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
         coarsen_scale = Config_dict.coarsen_scale
+        output_vars = Config_dict.output_vars
+        input_vars = Config_dict.input_vars
 
         emission_map = {'qfed': 'qfed2.emis_*.nc4',
                         'gbbepx': 'GBBEPx_all01GRID.emissions_v*.nc',
                         'hfed': 'hfed.emis_*.x576_y361.*nc4'}
-        try:
-            basefile = glob(emission_map[emistype.lower()])
-        except KeyError as err:
-            raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!")
+
+        if emistype.lower() != 'blended':
+            try:
+                basefile = glob(emission_map[emistype.lower()])
+            except KeyError as err:
+                raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!")
 
         dset = AerosolEmissions.make_fire_emission(
             d=current_date,
@@ -137,7 +142,10 @@ class AerosolEmissions(Task):
             ratio=ratio,
             scale_climo=True,
             coarsen_scale=coarsen_scale,
-            obsfile=basefile)
+            obsfile=basefile,
+            output_vars=output_vars,
+            input_vars=input_vars,
+            )
 
         AerosolEmissions.write_ncf(dset, Config_dict.data_out['copy'][0][0])
 
@@ -157,7 +165,6 @@ class AerosolEmissions(Task):
         xr.Dataset
             Dataset containing the fire emissions data
         """
-
         vrs = out_vars  # ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
         qfed_vars = input_vars  # ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
 
@@ -207,8 +214,6 @@ class AerosolEmissions(Task):
         """
         # array to house datasets
         das = []
-        # print("")
-        # print("Opening Climatology Files...")
 
         if len(fname) > 1:
             files = sort(fname)
@@ -245,7 +250,6 @@ class AerosolEmissions(Task):
         --------
         None
         """
-        # print("Output File:", outfile)
         encoding = {}
         for v in dset.data_vars:
             encoding[v] = dict(zlib=True, complevel=4)
@@ -320,12 +324,14 @@ class AerosolEmissions(Task):
     @staticmethod
     @logit(logger)
     def make_fire_emission(
-        d=None,
-        climos=None,
-        ratio=0.9,
-        scale_climo=True,
-        coarsen_scale=150,
-        obsfile="GBBEPx_all01GRID.emissions_v004_20190601.nc",
+        d: str,
+        climos: dict,
+        ratio: float,
+        scale_climo: bool,
+        coarsen_scale: int,
+        obsfile = str,
+        output_vars: Union[str, list] = None,
+        input_vars: list = None,
     ) -> xr.Dataset:
         """
         Generate fire emissions data for a given date and forecast period.
@@ -352,17 +358,11 @@ class AerosolEmissions(Task):
         xr.Dataset:
            xarray.Dataset object representing fire emissions data for each forecast day.
         """
-        # import pandas as pd
-        import numpy as np
-
-        # get the timestamp
-        # dd = pd.Timestamp(d)
-
         # open fire emission
         if isinstance(obsfile, (str, bytes)):
             obsfile = [obsfile]
         if "QFED".lower() in obsfile[0].lower():
-            g = AerosolEmissions.open_qfed(obsfile)
+            g = AerosolEmissions.open_qfed(obsfile, out_vars=output_vars, input_vars=input_vars)
         else:
             g = xr.open_mfdataset(obsfile, decode_cf=False)
 

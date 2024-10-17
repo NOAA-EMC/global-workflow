@@ -8,7 +8,9 @@ aero_emissions:
     qfed_version: '006'                            # qfed version
     species: [ 'so2','oc','bc' ]                   # species to be used
     historical: False                              # set to true to just use true data for the given day
-    coarsen_scale: 150                              # scale for coarsen function to generate weights
+    coarsen_scale: 150                             # scale for coarsen function to generate weights
+    output_vars: ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
+    input_vars: ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
     data_in:
       mkdir:
         - "{{ DATA }}"
