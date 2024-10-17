@@ -46,7 +46,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_jediocnvar:
             configs += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
             if self.do_hybvar:
-                configs += ['ocnanalecen']
+                configs += ['marineanlletkf', 'ocnanalecen']
             configs += ['marineanlchkpt', 'marineanlfinal']
             if self.do_vrfy_oceanda:
                 configs += ['ocnanalvrfy']
@@ -148,7 +148,7 @@ class GFSCycledAppConfig(AppConfig):
         if self.do_jediocnvar:
             gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
             if self.do_hybvar:
-                gdas_gfs_common_tasks_before_fcst += ['ocnanalecen']
+                gdas_gfs_common_tasks_before_fcst += ['marineanlletkf', 'ocnanalecen']
             gdas_gfs_common_tasks_before_fcst += ['marineanlchkpt', 'marineanlfinal']
             if self.do_vrfy_oceanda:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
