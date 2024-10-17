@@ -344,7 +344,7 @@ FV3_predet(){
     if [[ "${TYPE}" == "nh" ]]; then  # non-monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_nonmono:-"5"}
       hord_xx=${hord_xx_nh_nonmono:-"5"}
-      hord_dp=${hord_xx_hydro_mono:-"10"}
+      hord_dp=${hord_xx_hydro_mono:-"-5"}
     else # non-monotonic and hydrostatic
       hord_mt=${hord_mt_hydro_nonmono:-"10"}
       hord_xx=${hord_xx_hydro_nonmono:-"10"}
