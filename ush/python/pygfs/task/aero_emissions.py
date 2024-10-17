@@ -143,9 +143,9 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_qfed(fname: Union[str, os.PathLike], out_vars: list = None, qfed_vars: list = None) -> xr.Dataset:
+    def open_qfed(fname: Union[str, os.PathLike], out_vars: list = None, input_vars: list = None) -> xr.Dataset:
         """
-        Open QFED2 fire emissions data
+        Open QFED2 fire emissions data and renames variables to a standard (using the GBBEPx names to start with).
 
         Parameters
         ----------
@@ -158,8 +158,8 @@ class AerosolEmissions(Task):
             Dataset containing the fire emissions data
         """
 
-        vrs = ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
-        qfed_vars = ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
+        vrs = out_vars # ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
+        qfed_vars = input_vars # ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
 
         if len(fname) > 1:
             files = sort(fname)
