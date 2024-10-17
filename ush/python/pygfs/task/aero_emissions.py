@@ -331,6 +331,7 @@ class AerosolEmissions(Task):
         Generate fire emissions data for a given date and forecast period.
 
         Parameters:
+        -----------
         d: str or pd.Timestamp
             The date for which fire emissions are generated.
         climos: dict
