@@ -145,10 +145,10 @@ export max_tasks_per_node
 case ${step} in
   "prep")
     walltime='00:30:00'
-    ntasks=4
-    tasks_per_node=2
-    threads_per_task=1
-    memory="40GB"
+    ntasks=1
+    threads_per_task=8
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory='96GB'
     ;;
 
   "prepsnowobs")
