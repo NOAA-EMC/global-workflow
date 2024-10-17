@@ -35,7 +35,8 @@ IFS=', ' read -ra segments <<< "${FCST_SEGMENTS}"
 # Determine MIN and MAX based on the forecast segment
 export FHMIN=${segments[${FCST_SEGMENT}]}
 export FHMAX=${segments[${FCST_SEGMENT}+1]}
-# Cap other FHMAX variables at FHMAX for the segment
+# Cap other FH variables at FHMAX for the segment
+export FHMIN_WAV=$(( FHMIN > FHMIN_WAV ? FHMIN : FHMIN_WAV ))
 export FHMAX_HF=$(( FHMAX_HF_GFS > FHMAX ? FHMAX : FHMAX_HF_GFS ))
 export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
 # shellcheck disable=SC2153

@@ -556,10 +556,10 @@ WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
 
   if [[ ! -d "${COMOUT_WAVE_HISTORY}" ]]; then mkdir -p "${COMOUT_WAVE_HISTORY}"; fi
-  if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then mkdir -p "${COMOUT_WAVE_RESTART}" ; fi
+  if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then mkdir -p "${COMOUT_WAVE_RESTART}"; fi
 
-  if [[ ! -d "${DATArestart}/WAVE_RESTART" ]]; then mkdir -p "${DATArestart}/WAVE_RESTART"; fi
-  ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
+  if [[ ! -d "${DATArestart}/WW3_RESTART" ]]; then mkdir -p "${DATArestart}/WW3_RESTART"; fi
+  # Wave restarts are linked in postdet to only create links for files that will be created
 
   # Files from wave prep and wave init jobs
   # Copy mod_def files for wave grids

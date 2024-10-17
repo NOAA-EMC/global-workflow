@@ -93,12 +93,9 @@ UFS_det(){
 
     # Check for WW3 restart availability
     if [[ "${cplwav}" == ".true." ]]; then
-      local ww3_grid
-      for ww3_grid in ${waveGRD} ; do
-        if [[ ! -f "${DATArestart}/WW3_RESTART/${rdate:0:8}.${rdate:8:2}0000.restart.${ww3_grid}" ]]; then
-          ww3_rst_ok="NO"
-        fi
-      done
+      if [[ ! -f "${DATArestart}/WW3_RESTART/${rdate:0:8}.${rdate:8:2}0000.restart.ww3" ]]; then
+        ww3_rst_ok="NO"
+      fi
     fi
 
     # Collective check
