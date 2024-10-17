@@ -107,7 +107,6 @@ _very_verbose=false
 _verbose_flag="--"
 _debug="false"
 _cwd=$(pwd)
-_redirect='>/dev/null'  # Redirect stdout to /dev/null; stderr to terminal
 _runtests="${RUNTESTS:-${_runtests:-}}"
 _nonflag_option_count=0
 
@@ -176,16 +175,13 @@ if [[ -z "${_runtests}" ]]; then
    exit 3
 fi
 
-# Nullify the redirect if we are in verbose mode
-[[ "${_verbose}" == "true" ]] && _redirect=""
-
 # Turn on logging if running in debug mode
 if [[ "${_debug}" == "true" ]]; then
    set -x
 fi
 
 # Create the RUNTESTS directory
-[[ "${_verbose}" == "true" ]] && echo "Creating RUNTESTS in ${_runtests}"
+[[ "${_verbose}" == "true" ]] && printf "Creating RUNTESTS in ${_runtests}\n\n"
 if [[ ! -d "${_runtests}" ]]; then
    set +e
    if ! mkdir -p "${_runtests}" "${_verbose_flag}"; then
@@ -194,6 +190,28 @@ if [[ ! -d "${_runtests}" ]]; then
       exit 4
    fi
    set -e
+else
+   echo "The RUNTESTS directory ${_runtests} already exists."
+   echo "Would you like to remove it?"
+   _attempts=0
+   while read _from_stdin
+   do
+      if [[ "${_from_stdin^^}" =~ Y ]]; then
+         rm -rf "${_runtests}"
+         mkdir -p "${_runtests}"
+         break
+      elif [[ "${_from_stdin^^}" =~ N ]]; then
+         echo "Continuing without removing the directory"
+         break
+      else
+         (( _attempts+=1 ))
+         if [[ ${_attempts} == 3 ]]; then
+            echo "Exiting."
+            exit 99
+         fi
+         echo "'${_from_stdin}' is not a valid choice.  Please type Y or N"
+      fi
+   done
 fi
 
 # Test if multiple "run_all" options were set
@@ -222,7 +240,7 @@ fi
 if [[ "${_specified_home}" == "false" ]]; then
    script_relpath="$(dirname "${BASH_SOURCE[0]}")"
    HOMEgfs="$(cd "${script_relpath}/.." && pwd)"
-   [[ "${_verbose}" == "true" ]] && echo "Setting HOMEgfs to ${HOMEgfs}"
+   [[ "${_verbose}" == "true" ]] && printf "Setting HOMEgfs to ${HOMEgfs}\n\n"
 fi
 
 # Set the _yaml_dir to HOMEgfs/ci/cases/pr if not explicitly set
@@ -247,12 +265,12 @@ function select_all_yamls()
    if [[ "${_specified_yaml_list}" == false ]]; then
       # Start over with an empty _yaml_list
       _nameref_yaml_list=()
-      echo "Running all ${_SYSTEM} cases in ${_yaml_dir}"
+      printf "Running all ${_SYSTEM} cases in ${_yaml_dir}\n\n"
       _yaml_count=0
 
       for _full_path in "${_yaml_dir}/"*.yaml; do
          # Skip any YAML that isn't supported
-         if ! grep -l "system: *${_system}" "${_full_path}"; then continue; fi
+         if ! grep -l "system: *${_system}" "${_full_path}" >& /dev/null ; then continue; fi
 
          # Select only cases for the specified system
          _yaml=$(basename "${_full_path}")
@@ -306,9 +324,15 @@ fi
 
 # Loading modules sometimes raises unassigned errors, so disable checks
 set +u
-[[ "${_verbose}" == "true" ]] && echo "Loading modules"
+[[ "${_verbose}" == "true" ]] && printf "Loading modules\n\n"
 [[ "${_debug}" == "true" ]] && set +x
-source "${HOMEgfs}/workflow/gw_setup.sh"
+if ! source "${HOMEgfs}/workflow/gw_setup.sh" >& stdout; then
+   cat stdout
+   echo "Failed to source ${HOMEgfs}/workflow/gw_setup.sh!"
+   exit 7
+fi
+[[ "${_verbose}" == "true" ]] && cat stdout
+rm -f stdout
 [[ "${_debug}" == "true" ]] && set -x
 set -u
 machine=${MACHINE_ID}
@@ -321,30 +345,48 @@ fi
 
 # Update submodules if requested
 if [[ "${_update_submods}" == "true" ]]; then
-   echo "Updating submodules..."
-   #shellcheck disable=SC2086,SC2248
-   git submodule update --init --recursive -j 10 ${_redirect}
+   printf "Updating submodules\n\n"
+   _git_cmd="git submodule update --init --recursive -j 10"
+   if [[ "${_verbose}" == true ]]; then
+      ${_git_cmd}
+   else
+      if ! ${_git_cmd} 2> stderr 1> stdout; then
+         cat stdout stderr
+         echo "The git command (${_git_cmd}) failed with a non-zero status"
+         rm -f stdout stderr
+         exit 8
+      fi
+      rm -f stdout stderr
+   fi
 fi
 
 # Build the system if requested
 if [[ "${_build}" == "true" ]]; then
-    echo "Building via build_all.sh ${_build_flags}..."
-    # Let the output of build_all.sh go to stdout regardless of verbose options
-    #shellcheck disable=SC2086,SC2248
-    ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
+   printf "Building via build_all.sh ${_build_flags}\n\n"
+   # Let the output of build_all.sh go to stdout regardless of verbose options
+   #shellcheck disable=SC2086,SC2248
+   ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
 fi
 
-# Link the workflow
-"${HOMEgfs}/sorc/link_workflow.sh"
+# Link the workflow silently unless there's an error
+[[ "${_verbose}" == true ]] && printf "Linking the workflow\n\n"
+if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
+   cat stdout
+   rm -f stdout
+   echo "link_workflow.sh failed!"
+   exit 9
+fi
+rm -f stdout
 
 # Configure the environment for running create_experiment.py
+[[ "${_verbose}" == true ]] && printf "Setting up the environment to run create_experiment.py\n\n"
 for i in "${!_yaml_list[@]}"; do
    _yaml_file="${_yaml_dir}/${_yaml_list[${i}]}.yaml"
    # Verify that the YAMLs are where we are pointed
    if [[ ! -s "${_yaml_file}" ]]; then
       echo "The YAML file ${_yaml_file} does not exist!"
       echo "Please check the input yaml list and directory."
-      exit 7
+      exit 10
    fi
 
    # Strip any unsupported tests
@@ -352,9 +394,11 @@ for i in "${!_yaml_list[@]}"; do
 
    for _system in ${_unsupported_systems}; do
       if [[ "${_system}" =~ ${machine} ]]; then
-         echo "WARNING ${_yaml} is unsupported on ${machine}, removing from test list"
-         # Sleep so the user has a moment to notice
-         sleep 2s
+         if [[ "${_specified_yaml_list}" == true ]]; then
+            printf "WARNING ${_yaml} is unsupported on ${machine}, removing from test list\n\n"
+            # Sleep so the user has a moment to notice
+            sleep 2s
+         fi
          unset '_yaml_list[${i}]'
          break
       fi
@@ -362,20 +406,36 @@ for i in "${!_yaml_list[@]}"; do
 done
 
 # Update the account if specified
-[[ "${_set_account}" == "true" ]] && export HPC_ACCOUNT=${_hpc_account}
+[[ "${_set_account}" == true ]] && export HPC_ACCOUNT=${_hpc_account} && \
+   [[ "${_verbose}" == true ]] && printf "Setting HPC account to ${HPC_ACCOUNT}\n\n"
 
 # Create the experiments
 rm -f "tests.cron" "${_verbose_flag}"
+echo "Running create_experiment.py for ${#_yaml_list[@]} cases"
+
+[[ "${_verbose}" == true ]] && printf "Selected cases: ${_yaml_list[*]}\n\n"
 for _case in "${_yaml_list[@]}"; do
-   #shellcheck disable=SC2086,SC2248
-   pslot=${_case} RUNTESTS=${_runtests} ./create_experiment.py -y "../ci/cases/pr/${_case}.yaml" --overwrite ${_redirect}
-   crontab_entry=$(grep "${_case}" "${_runtests}/EXPDIR/${_case}/${_case}.crontab")
-   echo "${crontab_entry}" >> tests.cron
+   [[ "${_verbose}" == false ]] && echo "${_case}"
+   _create_exp_cmd="./create_experiment.py -y ../ci/cases/pr/${_case}.yaml --overwrite"
+   if [[ "${_verbose}" == true ]]; then
+      pslot=${_case} RUNTESTS=${_runtests} ${_create_exp_cmd}
+   else
+      if ! pslot=${_case} RUNTESTS=${_runtests} ${_create_exp_cmd} 2> stderr 1> stdout; then
+         cat stdout stderr
+         echo "The create_experiment command (${_create_exp_cmd}) failed with a non-zero status"
+         rm -f stdout stderr
+         exit 11
+      fi
+      rm -f stdout stderr
+   fi
+   grep "${_case}" "${_runtests}/EXPDIR/${_case}/${_case}.crontab" >> tests.cron
 done
+echo
 
 # Update the cron
 if [[ "${_update_cron}" == "true" ]]; then
-   echo "Updating the existing crontab"
+   printf "Updating the existing crontab\n\n"
+   echo
    rm -f existing.cron final.cron "${_verbose_flag}"
    touch existing.cron final.cron
 
@@ -393,7 +453,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 
    if [[ "${_set_email}" == "true" ]]; then
       # Replace the existing email in the crontab
-      [[ "${_verbose}" == "true" ]] && echo "Updating crontab email to ${_email}"
+      [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to ${_email}\n\n"
       sed -i "/^MAILTO/d" existing.cron
       echo "MAILTO=\"${_email}\"" >> final.cron
    fi
