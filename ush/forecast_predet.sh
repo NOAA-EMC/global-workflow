@@ -336,7 +336,7 @@ FV3_predet(){
     else  # monotonic and hydrostatic
       hord_mt=${hord_mt_hydro_mono:-"10"}
       hord_xx=${hord_xx_hydro_mono:-"10"}
-      hord_dp=-${hord_xx_nh_nonmono:-"10"}
+      hord_dp=-${hord_xx_nh_nonmono:-"-10"}
     fi
   else  # non-monotonic options
     d_con=${d_con_nonmono:-"1."}
