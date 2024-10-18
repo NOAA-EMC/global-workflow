@@ -8,9 +8,9 @@ function _usage() {
    specific build flags), specicy which YAMLs and YAML directory to run, and
    whether to automatically update your crontab.
 
-   Usage: generate_experiments.sh [OPTIONS] /path/to/RUNTESTS
+   Usage: generate_workflows.sh [OPTIONS] /path/to/RUNTESTS
           or
-          RUNTESTS=/path/to/RUNTESTS generate_experiments.sh [OPTIONS]
+          RUNTESTS=/path/to/RUNTESTS generate_workflows.sh [OPTIONS]
 
     -H Root directory of the global workflow.
        If not specified, then the directory is assumed to be one parent
@@ -232,7 +232,7 @@ if [[ "${_run_all_sfs}" == "true" ]]; then
    echo "There are no known SFS tests at this time.  Aborting."
    echo "If you have prepared YAMLs for SFS cases, specify their"
    echo "location and names without '-S', e.g."
-   echo "generate_experiments.sh -y \"C48_S2S_SFS\" -Y \"/path/to/yaml/directory\""
+   echo "generate_workflows.sh -y \"C48_S2S_SFS\" -Y \"/path/to/yaml/directory\""
    exit 0
 fi
 
