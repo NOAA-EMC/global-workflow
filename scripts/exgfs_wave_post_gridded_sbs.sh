@@ -228,7 +228,7 @@ source "${USHgfs}/preamble.sh"
     else
       FHINCG=$FHOUT_WAV
     fi
-    fhr=$(($FORECAST_HOUR + FHINCG))
+    fhr=$((FORECAST_HOUR + FHINCG))
   else
     fhr=$FHMIN_WAV
   fi
