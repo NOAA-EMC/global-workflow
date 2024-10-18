@@ -195,12 +195,12 @@ class AerosolEmissions(Task):
             found_species.append(index_good[0][1])
             try:
                 logger.info("Opening HFED file: {filename}".format(filename=f))
-                da = xr.open_dataset(f, decode_cf=False).biomass
+                with xr.open_dataset(f, decode_cf=False).biomass as da:
+                    da.name = vrs[good]
+                    dset_dict[vrs[good]] = da
             except Exception as ee:
                 logger.exception("FATAL ERROR: unable to read dataset {error}".format(error=ee))
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
-            da.name = vrs[good]
-            dset_dict[vrs[good]] = da
 
         dset = xr.Dataset(dset_dict)
 
@@ -242,14 +242,15 @@ class AerosolEmissions(Task):
             index_good = [[i, v] for i, v in enumerate(qfed_vars) if v in f]
             good = index_good[0][0]
             found_species.append(index_good[0][1])
+
             try:
                 logger.info("Opening QFED file: {filename}".format(filename=f))
-                da = xr.open_dataset(f, decode_cf=False).biomass
+                with xr.open_dataset(f, decode_cf=False).biomass as da:
+                    da.name = vrs[good]
+                    dset_dict[vrs[good]] = da
             except Exception as ee:
                 logger.exception("FATAL ERROR: unable to read dataset {error}".format(error=ee))
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
-            da.name = vrs[good]
-            dset_dict[vrs[good]] = da
 
         dset = xr.Dataset(dset_dict)
         return dset
@@ -283,7 +284,8 @@ class AerosolEmissions(Task):
         for i, f in enumerate(files):
             logger.info("  Opening Climatology File: {filename}".format(filename=f))
             try:
-                das.append(xr.open_dataset(f, engine="netcdf4"))
+                with xr.open_dataset(f, engine="netcdf4") as da:
+                    das.append(da)
             except Exception as ee:
                 logger.exception("Encountered an error reading climatology file, {error}".format(error=ee))
                 raise Exception("FATAL ERROR: Unable to read file, ABORT!")
