@@ -326,7 +326,7 @@ class GEFSTasks(Tasks):
             wave_post_dict = {'ENSMEM': f'{member}',
                               'MEMDIR': f'mem{member}',
                               'FHR3': '#fhr#',
-                               }
+                             }
             for key, value in wave_post_dict.items():
                 wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -340,7 +340,7 @@ class GEFSTasks(Tasks):
                          'job_name': f'{self.pslot}_{task_name}_@H',
                          'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                          'maxtries': '&MAXTRIES;'
-                         }
+                        }
 
             fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
             fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
