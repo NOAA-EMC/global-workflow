@@ -352,8 +352,6 @@ class GEFSTasks(Tasks):
         member_metatask_dict = {'task_name': f'gefs_wave_post_grid',
                                 'task_dict': fhr_metatask_dict,
                                 'var_dict': member_var_dict}
-        task.append(rocoto.create_task(member_metatask_dict))
-
         task = rocoto.create_task(member_metatask_dict)
 
         return task
