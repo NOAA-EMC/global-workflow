@@ -340,7 +340,6 @@ class GEFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
-        task = []
 
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
