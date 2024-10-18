@@ -340,7 +340,7 @@ class GEFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
-        tasks = []
+        task = []
 
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
@@ -353,7 +353,7 @@ class GEFSTasks(Tasks):
         member_metatask_dict = {'task_name': f'gefs_wave_post_grid',
                                 'task_dict': fhr_metatask_dict,
                                 'var_dict': member_var_dict}
-        tasks.append(rocoto.create_task(member_metatask_dict))
+        task.append(rocoto.create_task(member_metatask_dict))
 
         task = rocoto.create_task(member_metatask_dict)
 
