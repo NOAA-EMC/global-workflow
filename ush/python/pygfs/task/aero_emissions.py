@@ -44,10 +44,7 @@ class AerosolEmissions(Task):
         """
         super().__init__(config)
 
-        current_datetime = add_to_datetime(
-            self.task_config.PDY,
-            to_timedelta(f"0H"),
-        )
+        current_datetime = self.task_config.PDY
         nforecast_hours = self.task_config["FHMAX_GFS"]
         nforecast_days = nforecast_hours // 24 + 1
         forecast_dates = [current_datetime + timedelta(days=i) for i in range(nforecast_days)]
