@@ -134,8 +134,6 @@ FV3_nml
 [[ ${cplchm} = .true. ]] && GOCART_rc
 UFS_configure
 
-#export global_template='/scratch1/NCEPDEV/stmp2/Daniel.Sarmiento/global-workflow/global_control.nml.IN'
-#atparse < "${global_template}" >> "input.nml"
 echo "MAIN: Name lists and model configuration written"
 #------------------------------------------------------------------
 # run the executable
