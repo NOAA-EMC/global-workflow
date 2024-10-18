@@ -235,7 +235,7 @@ source "${USHgfs}/preamble.sh"
   fhrg=$fhr
   sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
-  while [ $fhr -le $FHMAX_WAV ]; do
+  if [ $fhr -le $FHMAX_WAV ]; then
 
     ymdh=$($NDATE $fhr ${PDY}${cyc})
     YMD=$(echo $ymdh | cut -c1-8)
@@ -256,7 +256,7 @@ source "${USHgfs}/preamble.sh"
     export GRDIDATA=${DATA}/output_$YMDHMS
 
 # Gridded data (main part, need to be run side-by-side with forecast
-    
+
     if [ $fhr = $fhrg ]
     then
       for wavGRD in ${waveGRD}; do
@@ -269,7 +269,7 @@ source "${USHgfs}/preamble.sh"
         fi
         ${NLN} "${gfile}" "./out_grd.${wavGRD}"
       done
-      
+
       if [ "$DOGRI_WAV" = 'YES' ]
       then
         nigrd=1
@@ -429,7 +429,7 @@ source "${USHgfs}/preamble.sh"
 
     fhr=$fhrg #loop with out_grd stride
 
-  done
+  fi
 
 # --------------------------------------------------------------------------- #
 # 7.  Ending output
