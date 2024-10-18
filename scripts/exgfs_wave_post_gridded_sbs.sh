@@ -230,7 +230,7 @@ source "${USHgfs}/preamble.sh"
     fi
     fhr=$((FORECAST_HOUR + FHINCG))
   else
-    fhr=$FHMIN_WAV
+    fhr=$FORECAST_HOUR
   fi
   fhrg=$fhr
   sleep_interval=10
