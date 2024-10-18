@@ -48,9 +48,7 @@ jobs:
 
   checkout:
     needs: fetch-branch
-    strategy:
-      matrix:
-        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
+    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
     timeout-minutes: 600
     steps:
     - name: Checkout global-workflow
@@ -62,9 +60,7 @@ jobs:
 
   build-link:      
     needs: checkout
-    strategy:
-      matrix:
-        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
+    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
     steps:
     - name: Build components
       run: |
@@ -78,9 +74,9 @@ jobs:
 
   create-experiments:
     needs: build-link
+    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
     strategy:
       matrix:
-        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
         case: ["C48_ATM"]
     steps:
       - name: Create Experiments ${{ matrix.case }}
@@ -96,9 +92,10 @@ jobs:
 
   run-experiments:
     needs: create-experiments
+    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
     strategy:
+      max-parallel: 2
       matrix:
-        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
         case: ["C48_ATM"]
     steps:
       - name: Run Experiment ${{ matrix.case }}
@@ -108,9 +105,7 @@ jobs:
 
   clean-up:
     needs: run-experiments
-    strategy:
-      matrix:
-        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
+    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
     steps:
       - name: Clean up workspace
         run: |
