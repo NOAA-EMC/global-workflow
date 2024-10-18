@@ -14,6 +14,18 @@ on:
         options:
           - rocky
           - centos
+  common-runners: &common-runners
+    - self-hosted
+    - aws
+    - parallelworks
+
+  runs-on-rocky:
+    <<: *common-runners
+    - rocky
+
+  runs-on-centos:
+    <<: *common-runners
+    - centos
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -48,7 +60,11 @@ jobs:
 
   checkout:
     needs: fetch-branch
-    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     timeout-minutes: 600
     steps:
     - name: Checkout global-workflow
@@ -60,7 +76,11 @@ jobs:
 
   build-link:      
     needs: checkout
-    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     steps:
     - name: Build components
       run: |
@@ -74,7 +94,11 @@ jobs:
 
   create-experiments:
     needs: build-link
-    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     strategy:
       matrix:
         case: ["C48_ATM"]
@@ -92,11 +116,11 @@ jobs:
 
   run-experiments:
     needs: create-experiments
-    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
-    strategy:
-      max-parallel: 2
-      matrix:
-        case: ["C48_ATM"]
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     steps:
       - name: Run Experiment ${{ matrix.case }}
         run: |
@@ -105,7 +129,11 @@ jobs:
 
   clean-up:
     needs: run-experiments
-    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     steps:
       - name: Clean up workspace
         run: |
