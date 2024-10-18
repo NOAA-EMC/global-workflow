@@ -7,6 +7,13 @@ on:
         description: 'Pull Request Number'
         required: true
         default: ''
+      os:
+        description: 'Operating System'
+        required: true
+        type: choice
+        options:
+          - rocky
+          - centos
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -36,12 +43,14 @@ jobs:
       run: |
         pr_number=${{ github.event.inputs.pr_number }}
         repo=${{ github.repository }}
-        branch=$(gh pr --repo $repo view $pr_number --json headRefName --jq '.headRefName')
+        branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
         echo "::set-output name=branch::$branch"
 
   checkout:
     needs: fetch-branch
-    runs-on: [self-hosted, aws, parallelworks, rocky]
+    strategy:
+      matrix:
+        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
     timeout-minutes: 600
     steps:
     - name: Checkout global-workflow
@@ -53,7 +62,9 @@ jobs:
 
   build-link:      
     needs: checkout
-    runs-on: [self-hosted, aws, parallelworks, rocky]
+    strategy:
+      matrix:
+        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
     steps:
     - name: Build components
       run: |
@@ -67,9 +78,9 @@ jobs:
 
   create-experiments:
     needs: build-link
-    runs-on: [self-hosted, aws, parallelworks, rocky]
     strategy:
       matrix:
+        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
         case: ["C48_ATM"]
     steps:
       - name: Create Experiments ${{ matrix.case }}
@@ -85,10 +96,9 @@ jobs:
 
   run-experiments:
     needs: create-experiments
-    runs-on: [self-hosted, aws, parallelworks, rocky]
     strategy:
-      max-parallel: 2
       matrix:
+        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
         case: ["C48_ATM"]
     steps:
       - name: Run Experiment ${{ matrix.case }}
@@ -98,7 +108,9 @@ jobs:
 
   clean-up:
     needs: run-experiments
-    runs-on: [self-hosted, aws, parallelworks, rocky]
+    strategy:
+      matrix:
+        os: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
     steps:
       - name: Clean up workspace
         run: |
