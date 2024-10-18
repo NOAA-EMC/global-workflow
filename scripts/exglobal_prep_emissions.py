@@ -37,7 +37,6 @@ if __name__ == '__main__':
         edict[key] = emissions.task_config[key]
     edict['CONFIG'] = edict.aero_emission_yaml.aero_emissions['config']
     edict.aero_emission_yaml['emistype'] = edict['CONFIG'].emistype
-    print(edict)
 
     # print(aero_emission_yaml.aero_emissions['fix_data'])
     emissions.initialize(edict.CONFIG)
