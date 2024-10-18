@@ -48,7 +48,7 @@ jobs:
 
   checkout:
     needs: fetch-branch
-    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
+    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
     timeout-minutes: 600
     steps:
     - name: Checkout global-workflow
@@ -60,7 +60,7 @@ jobs:
 
   build-link:      
     needs: checkout
-    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
+    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
     steps:
     - name: Build components
       run: |
@@ -74,7 +74,7 @@ jobs:
 
   create-experiments:
     needs: build-link
-    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
+    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
     strategy:
       matrix:
         case: ["C48_ATM"]
@@ -92,7 +92,7 @@ jobs:
 
   run-experiments:
     needs: create-experiments
-    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
+    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
     strategy:
       max-parallel: 2
       matrix:
@@ -105,9 +105,10 @@ jobs:
 
   clean-up:
     needs: run-experiments
-    runs-on: [self-hosted, aws, parallelworks, ${{ github.event.inputs.os }}]
+    runs-on: ${{ github.event.inputs.os == 'rocky' && 'self-hosted, aws, parallelworks, rocky' || 'self-hosted, aws, parallelworks, centos' }}
     steps:
       - name: Clean up workspace
         run: |
           echo "Cleaning up workspace"
           rm -rf ${{ env.TEST_DIR }}
+  
