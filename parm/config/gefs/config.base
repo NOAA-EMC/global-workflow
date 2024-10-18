@@ -150,6 +150,10 @@ else
   export ntiles=6
 fi
 
+if [[ "${DO_REPAIR_REPLAY:-NO}" == "YES" ]] ; then
+    export COMIN_03=${NOSCRUB}/anl
+fi
+
 # Set operational resolution
 export OPS_RES="C768" # Do not change
 
