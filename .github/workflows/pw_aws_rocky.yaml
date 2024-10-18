@@ -26,6 +26,8 @@ env:
 jobs:
   fetch-branch:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
     outputs:
       branch: ${{ steps.get-branch.outputs.branch }}
     steps:
