@@ -50,7 +50,7 @@ class Archive(Task):
         Parameters
         ----------
         arch_dict : Dict[str, Any]
-            Task specific keys, e.g. runtime options (DO_AERO, DO_ICE, etc)
+            Task specific keys, e.g. runtime options (DO_AERO_FCST, DO_ICE, etc)
 
         Return
         ------
