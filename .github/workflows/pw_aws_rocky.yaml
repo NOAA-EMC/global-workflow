@@ -14,18 +14,6 @@ on:
         options:
           - rocky
           - centos
-  common-runners: &common-runners
-    - self-hosted
-    - aws
-    - parallelworks
-
-  runs-on-rocky:
-    <<: *common-runners
-    - rocky
-
-  runs-on-centos:
-    <<: *common-runners
-    - centos
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
