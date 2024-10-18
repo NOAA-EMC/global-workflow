@@ -329,7 +329,7 @@ class GEFSTasks(Tasks):
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
 
-        task_name = f'gefs_wave_post_grid_mem#member#_f#fhr#'
+        task_name = f'gefs_wave_post_grid_#member#_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -344,7 +344,7 @@ class GEFSTasks(Tasks):
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
-        fhr_metatask_dict = {'task_name': f'gefs_wave_post_grid_mem#member#',
+        fhr_metatask_dict = {'task_name': f'gefs_wave_post_grid_#member#',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
@@ -352,6 +352,7 @@ class GEFSTasks(Tasks):
         member_metatask_dict = {'task_name': f'gefs_wave_post_grid',
                                 'task_dict': fhr_metatask_dict,
                                 'var_dict': member_var_dict}
+
         task = rocoto.create_task(member_metatask_dict)
 
         return task
