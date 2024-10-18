@@ -204,7 +204,7 @@ else
    echo "The RUNTESTS directory ${_runtests} already exists."
    echo "Would you like to remove it?"
    _attempts=0
-   while read _from_stdin
+   while read -r _from_stdin
    do
       if [[ "${_from_stdin^^}" =~ Y ]]; then
          rm -rf "${_runtests}"
@@ -497,7 +497,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 
    if [[ "${_set_email}" == "true" ]]; then
       # Replace the existing email in the crontab
-      [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to\n\n" "${_email}"
+      [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to %s\n\n" "${_email}"
       sed -i "/^MAILTO/d" existing.cron
       echo "MAILTO=\"${_email}\"" >> final.cron
    fi
