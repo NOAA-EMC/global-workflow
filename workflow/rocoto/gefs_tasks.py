@@ -132,7 +132,7 @@ class GEFSTasks(Tasks):
             repair_replay_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('repair_replay')
-        task_name = f'repair_replay_mem#member#'
+        task_name = f'gefs_repair_replay_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -145,7 +145,7 @@ class GEFSTasks(Tasks):
                      }
 
         member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': 'repair_replay',
+        member_metatask_dict = {'task_name': 'gefs_repair_replay',
                                 'task_dict': task_dict,
                                 'var_dict': member_var_dict,
                                 }
@@ -260,7 +260,7 @@ class GEFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
         if self.app_config.do_repair_replay:
-            dep_dict = {'type': 'task', 'name': 'repair_replay_mem#member#'}
+            dep_dict = {'type': 'task', 'name': 'gefs_repair_replay_mem#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
