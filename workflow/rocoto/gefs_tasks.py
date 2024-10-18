@@ -318,6 +318,7 @@ class GEFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        resources = self.get_resource('wavepostsbs')
         wave_post_envars = self.envars.copy()
         wave_post_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
@@ -327,7 +328,7 @@ class GEFSTasks(Tasks):
         for key, value in wave_post_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        resources = self.get_resource('wavepostsbs')
+
         task_name = f'wave_post_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
