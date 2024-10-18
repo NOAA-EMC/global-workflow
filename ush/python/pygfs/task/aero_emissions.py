@@ -178,7 +178,7 @@ class AerosolEmissions(Task):
         invars = input_vars
 
         try:
-            if np.sort(files).size == 0:
+            if len(files) == 0:
                 raise Exception("FATAL ERROR: No HFED files were found")
         except Exception as ee:
             logger.exception("FATAL ERROR: HFED files not found.")
