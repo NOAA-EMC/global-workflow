@@ -318,6 +318,9 @@ class GEFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        for key, value in wave_post_dict.items():
+            wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('wavepostsbs')
         task_name = f'wave_post_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
@@ -338,8 +341,6 @@ class GEFSTasks(Tasks):
                               'MEMDIR': f'mem{member}',
                               'FHR3': '#fhr#',
                               }
-            for key, value in wave_post_dict.items():
-                wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
             fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
             fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
