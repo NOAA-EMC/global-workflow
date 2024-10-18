@@ -55,7 +55,7 @@ case ${machine} in
   "ORION")
               max_tasks_per_node=40
               # shellcheck disable=SC2034
-              mem_node_max="188GB"
+              mem_node_max="180GB"
     ;;
   "HERCULES")
               max_tasks_per_node=80
