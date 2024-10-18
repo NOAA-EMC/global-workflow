@@ -11,7 +11,7 @@ arguments:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20240610
   idate: 2024022318
-  edate: 2024022400
+  edate: 2024022406
   nens: 2
   gfs_cyc: 1
   start: warm

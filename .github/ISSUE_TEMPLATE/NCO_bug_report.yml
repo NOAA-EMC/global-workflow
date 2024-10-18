@@ -1,4 +1,4 @@
-name: NCO Bug report
+name: NCO Bug Report
 description: Report something that is incorrect or broken
 labels: ["nco-bug", "triage"]
 assignees:

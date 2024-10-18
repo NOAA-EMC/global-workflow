@@ -98,5 +98,6 @@ declare -rx COM_ICE_GRIB_GRID_TMPL=${COM_ICE_GRIB_TMPL}'/${GRID}'
 
 declare -rx COM_CHEM_HISTORY_TMPL=${COM_BASE}'/model/chem/history'
 declare -rx COM_CHEM_ANALYSIS_TMPL=${COM_BASE}'/analysis/chem'
+declare -rx COM_CHEM_BMAT_TMPL=${COM_CHEM_ANALYSIS_TMPL}'/bmatrix'
 
 declare -rx COM_MED_RESTART_TMPL=${COM_BASE}'/model/med/restart'

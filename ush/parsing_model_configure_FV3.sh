@@ -31,16 +31,20 @@ local WRITE_GROUP=${WRITE_GROUP:-1}
 local WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-24}
 local ITASKS=1
 local OUTPUT_HISTORY=${OUTPUT_HISTORY:-".true."}
-local HISTORY_FILE_ON_NATIVE_GRID=".true."
+if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+  local HISTORY_FILE_ON_NATIVE_GRID=".true."
+else
+  local HISTORY_FILE_ON_NATIVE_GRID=".false."
+fi
 local WRITE_DOPOST=${WRITE_DOPOST:-".false."}
 local WRITE_NSFLIP=${WRITE_NSFLIP:-".false."}
 local NUM_FILES=${NUM_FILES:-2}
 local FILENAME_BASE="'atm' 'sfc'"
 # OUTPUT_GRID
 local OUTPUT_FILE="'${OUTPUT_FILETYPE_ATM}' '${OUTPUT_FILETYPE_SFC}'"
-local ZSTANDARD_LEVEL=0
-local IDEFLATE=0  # netCDF zlib lossless compression (0-9); 0: no compression
-local QUANTIZE_NSD=${QUANTIZE_NSD:-0}  # netCDF compression
+local ZSTANDARD_LEVEL=${zstandard_level:-0}
+local IDEFLATE=${ideflate:-0}  # netCDF zlib lossless compression (0-9); 0: no compression
+local QUANTIZE_NSD=${quantize_nsd:-0}  # netCDF compression
 local ICHUNK2D=$((4*restile))
 local JCHUNK2D=$((2*restile))
 local ICHUNK3D=$((4*restile))
@@ -55,7 +59,7 @@ local IAU_OFFSET=${IAU_OFFSET:-0}
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
   local NEST_IMO=${npx_nest}
   local NEST_JMO=${npy_nest}
-  template="${PARMgfs}/ufs/model_configure_nest.IN"
+  template="${PARMgfs}/ufs/input_global_nest.nml.IN"
 else
   template="${PARMgfs}/ufs/model_configure.IN"
 fi

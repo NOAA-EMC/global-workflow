@@ -131,21 +131,21 @@ build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
 build_opts["ufs"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
 
-build_jobs["upp"]=2
+build_jobs["upp"]=1
 build_opts["upp"]="${_build_debug}"
 
-build_jobs["ufs_utils"]=2
+build_jobs["ufs_utils"]=1
 build_opts["ufs_utils"]="${_verbose_opt} ${_build_debug}"
 
 build_jobs["gfs_utils"]=1
 build_opts["gfs_utils"]="${_verbose_opt} ${_build_debug}"
 
-build_jobs["ww3prepost"]=2
+build_jobs["ww3prepost"]=1
 build_opts["ww3prepost"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
 
 # Optional DA builds
 if [[ "${_build_ufsda}" == "YES" ]]; then
-   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" && "${MACHINE_ID}" != "wcoss2" && "${MACHINE_ID}" != "noaacloud" ]]; then
+   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" && "${MACHINE_ID}" != "wcoss2" && "${MACHINE_ID}" != "noaacloud" && "${MACHINE_ID}" != "gaea" ]]; then
       echo "NOTE: The GDAS App is not supported on ${MACHINE_ID}.  Disabling build."
    else
       build_jobs["gdas"]=8
@@ -154,7 +154,7 @@ if [[ "${_build_ufsda}" == "YES" ]]; then
    fi
 fi
 if [[ "${_build_gsi}" == "YES" ]]; then
-   build_jobs["gsi_enkf"]=8
+   build_jobs["gsi_enkf"]=2
    build_opts["gsi_enkf"]="${_verbose_opt} ${_build_debug}"
 fi
 if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then

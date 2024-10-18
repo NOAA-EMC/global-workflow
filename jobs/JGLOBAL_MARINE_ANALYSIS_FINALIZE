@@ -1,0 +1,43 @@
+#!/bin/bash
+source "${HOMEgfs}/ush/preamble.sh"
+export WIPE_DATA="NO"
+export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATA="${DATAjob}/marinevariational"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlfinal" -c "base marineanl marineanlfinal"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
+   COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
+   COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL
+
+mkdir -p "${COMOUT_OCEAN_ANALYSIS}"
+mkdir -p "${COMOUT_ICE_ANALYSIS}"
+mkdir -p "${COMOUT_ICE_RESTART}"
+
+###############################################################
+# Run relevant script
+###############################################################
+
+EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_finalize.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
+
+exit 0

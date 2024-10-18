@@ -3,6 +3,11 @@
 # Jet-specific job resources
 
 case ${step} in
+  "prep")
+    # Run on 7 nodes for memory requirement
+    tasks_per_node=2
+    ;;
+
   "anal")
     if [[ "${CASE}" == "C384" ]]; then
       export ntasks=270

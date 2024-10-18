@@ -63,6 +63,9 @@ export NOSCRUB="@NOSCRUB@"
 # Base directories for various builds
 export BASE_GIT="@BASE_GIT@"
 
+# Base directory for staged data
+export BASE_DATA="@BASE_DATA@"
+
 # Toggle to turn on/off GFS downstream processing.
 export DO_GOES="@DO_GOES@"               # GOES products
 export DO_BUFRSND="@DO_BUFRSND@"         # BUFR sounding products
@@ -95,7 +98,7 @@ export MODE="@MODE@" # cycled/forecast-only
 # Build paths relative to $HOMEgfs
 export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
-export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
+export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -489,6 +492,14 @@ if [[ "${machine}" =~ "PW" ]]; then
    export DO_TRACKER="NO"
    export DO_GENESIS="NO"
    export DO_METP="NO"
+   export DO_WAVE="NO"
+fi
+
+# The tracker and genesis are not installed on Orion/Hercules yet; this requires spack-stack builds of the package.
+# TODO: we should place these in workflow/hosts/[orion|hercules].yaml.
+if [[ "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
+   export DO_TRACKER="NO"
+   export DO_GENESIS="NO"
 fi
 
 echo "END: config.base"

@@ -18,6 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis task
-    AtmEnsAnl = AtmEnsAnalysis(config)
-    AtmEnsAnl.init_observer()
-    AtmEnsAnl.observe()
+    AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlobs')
+
+    # Initialize and execute JEDI ensembler DA analysis in observer mode
+    AtmEnsAnl.execute(config.APRUN_ATMENSANLOBS, ['fv3jedi', 'localensembleda'])

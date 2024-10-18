@@ -1,5 +1,6 @@
 BASE_GIT: '/scratch1/NCEPDEV/global/glopara/git'
 DMPDIR: '/scratch1/NCEPDEV/global/glopara/dump'
+BASE_DATA: '/scratch1/NCEPDEV/global/glopara/data'
 BASE_IC: '/scratch1/NCEPDEV/global/glopara/data/ICSDIR'
 PACKAGEROOT: '/scratch1/NCEPDEV/global/glopara/nwpara'
 COMINsyn: '/scratch1/NCEPDEV/global/glopara/com/gfs/prod/syndat'

@@ -2,17 +2,17 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-if (( 10#${ENSMEM:-0} > 0 )); then
-  export DATAjob="${DATAROOT}/${RUN}marinebmat.${PDY:-}${cyc}"
-  export DATA="${DATAjob}/${jobid}"
-  # Create the directory to hold ensemble perturbations
-  export DATAenspert="${DATAjob}/enspert"
-  if [[ ! -d "${DATAenspert}" ]]; then mkdir -p "${DATAenspert}"; fi
-fi
+export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATA="${DATAjob}/${jobid}"
+# Create the directory to hold ensemble perturbations
+export DATAens="${DATAjob}/ensdata"
+export DATAstaticb="${DATAjob}/staticb"
+if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
+if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
 
 # source config.base, config.ocnanal and config.marinebmat
 # and pass marinebmat to ${machine}.env
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmat" -c "base ocnanal marinebmat"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmat" -c "base marineanl marinebmat"
 
 ##############################################
 # Set variables used in the script

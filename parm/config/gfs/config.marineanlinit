@@ -1,0 +1,10 @@
+#!/bin/bash
+
+########## config.marineanlinit ##########
+# Pre Marine Analysis specific
+
+echo "BEGIN: config.marineanlinit"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" marineanlinit
+echo "END: config.marineanlinit"

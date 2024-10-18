@@ -1,0 +1,50 @@
+######################################
+# set some variables
+######################################
+{% if DOIAU == True %}
+    {% set bkg_times = [] %}
+    {% for fh in range(0, 7, 3) %}
+      {% set offset = fh | string + "H" %}
+      {% set fcst_timedelta = offset | to_timedelta %}
+      {% set fcst_time = AERO_WINDOW_BEGIN | add_to_datetime(fcst_timedelta) %}
+      {% do bkg_times.append(fcst_time) %}
+    {% endfor %}
+{% else %}
+    {% set bkg_times = [] %}
+    {% do bkg_times.append(current_cycle) %}
+{% endif %}
+{% set fvfiles = ['fv_core.res.', 'fv_tracer.res.'] %}
+######################################
+mkdir:
+- "{{ DATA }}/anl"
+- "{{ DATA }}/diags"
+- "{{ DATA }}/berror"
+- "{{ DATA }}/bkg"
+copy:
+######################################
+## copy backgrounds
+{% for bkgtime in bkg_times %}
+- ["{{ COMIN_ATMOS_RESTART_PREV }}/{{ bkgtime | to_fv3time }}.coupler.res", "{{ DATA }}/bkg/{{ bkgtime | to_fv3time }}.coupler.res"]
+  {% for fvfile in fvfiles %}
+    {% for tile in range(1,ntiles+1) %}
+- ["{{ COMIN_ATMOS_RESTART_PREV }}/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc", "{{ DATA }}/bkg/{{ bkgtime | to_fv3time }}.{{ fvfile }}tile{{ tile }}.nc"]
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+######################################
+## copy backgrounds again for fv_tracer to create analysis files later
+{% for tile in range(1,ntiles+1) %}
+- ["{{ COMIN_ATMOS_RESTART_PREV }}/{{ bkg_times[0] | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc", "{{ DATA }}/anl/{{ bkg_times[0] | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc"]
+{% endfor %}
+
+######################################
+## copy berror files from COMIN_CHEM_BMAT_PREV
+## stddev files
+{% for tile in range(1, ntiles+1) %}
+- ["{{ COMIN_CHEM_BMAT_PREV }}/{{ current_cycle | to_fv3time }}.stddev.fv_tracer.res.tile{{ tile }}.nc", "{{ DATA }}/berror/{{ current_cycle | to_fv3time }}.stddev.fv_tracer.res.tile{{ tile }}.nc"]
+{% endfor %}
+### copy coupler file
+- ["{{ COMIN_CHEM_BMAT_PREV }}/{{ current_cycle | to_fv3time }}.stddev.coupler.res", "{{ DATA }}/berror/{{ current_cycle | to_fv3time }}.stddev.coupler.res"]
+### copy diffusion files
+- ["{{ COMIN_CHEM_BMAT_PREV }}/{{ GPREFIX }}aero_diffusion_hz.nc", "{{ DATA }}/berror/diffusion_hz.nc"]
+- ["{{ COMIN_CHEM_BMAT_PREV }}/{{ GPREFIX }}aero_diffusion_vt.nc", "{{ DATA }}/berror/diffusion_vt.nc"]

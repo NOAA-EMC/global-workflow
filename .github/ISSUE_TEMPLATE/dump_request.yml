@@ -1,0 +1,37 @@
+name: Global Observation Dump Request
+description: Request additional dates be added to a machine's global dump archive (GDA) or introduce experimental dump data to the GDA
+labels: ["Static Data Mgmt"]
+assignees:
+  - KateFriedman-NOAA
+  - WalterKolczynski-NOAA
+
+body:
+  - type: dropdown
+    attributes:
+      label: Machine
+      options:
+        - WCOSS2
+        - Hera/Ursa
+        - Orion/Hercules
+        - Jet
+      multiple: true
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Start date
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: End date
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional information
+      placeholder: |
+        Any additional information needed (experimental obs, etc.)

@@ -2,6 +2,5 @@ export stack_intel_ver=2021.9.0
 export stack_impi_ver=2021.9.0
 export intel_mkl_ver=2023.1.0
 export spack_env=gsi-addon-env
-
-source "${HOMEgfs:-}/versions/run.spack.ver"
+source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"

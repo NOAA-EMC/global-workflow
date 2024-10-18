@@ -1,4 +1,4 @@
-name: Feature request
+name: Feature Request
 description: Request new capability
 labels: ["feature", "triage"]
 
@@ -10,8 +10,7 @@ body:
         - Something is wrong or broken
         - It is a request from NCO
         - It is initiating a production update
-        - Files need to be updated or added to fix
-
+        - Files need to be updated in a directory managed by workflow CMs under "glopara"
 
         Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) to make sure the feature has not already been requested to avoid duplicates.
   
@@ -34,7 +33,17 @@ body:
     id: criteria
     attributes:
       label: Acceptance Criteria
-      placeholder: What does it mean for this issue to be complete?
+      description: |
+        A checklist of criteria to be satisfied before this feature is considered complete.
+
+        Examples:
+          - Forecast with option X completes successfully
+          - File X produced
+          - Output unchanged
+      placeholder: |
+        - [ ] Criterion #1
+        - [ ] Criterion #2
+        - [ ] Criterion #3
     validations:
       required: true
   

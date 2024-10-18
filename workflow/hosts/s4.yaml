@@ -1,5 +1,6 @@
 BASE_GIT: '/data/prod/glopara/git'
 DMPDIR: '/data/prod/glopara/dump'
+BASE_DATA: '/data/prod/glopara'
 BASE_IC: '/data/prod/glopara/coupled_ICs'
 PACKAGEROOT: '/data/prod/glopara/nwpara'
 COMINsyn: '/data/prod/glopara/com/gfs/prod/syndat'

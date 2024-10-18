@@ -1,0 +1,54 @@
+#!/bin/bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATA="${DATAjob}/marinevariational"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlinit" -c "base marineanl marineanlinit"
+
+
+##############################################
+# Set variables used in the script
+##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
+export GDUMP=${GDUMP:-"gdas"}
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL \
+   COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
+   COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_initialize.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+exit 0

@@ -17,7 +17,8 @@ check_atmos() {
   done
   mapfile -t requestedvar_in_allgrb2file_arr < "${requestedvar_in_allgrb2file}"
   while read -r vari; do
-    if [[ ! ${requestedvar_in_allgrb2file_arr[*]} =~ ${vari} ]] ;then
+    # shellcheck disable=SC2076
+    if [[ ! ${requestedvar_in_allgrb2file_arr[*]} =~ "${vari}" ]] ;then
       echo "WARNING: PARM VARIABLE (${vari}) is not available in pgrb and pgrb2b for f${fnhl}."
     fi
   done <"${varlistl}"

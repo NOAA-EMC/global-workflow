@@ -63,9 +63,6 @@ class Archive(Task):
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
-        if arch_dict.RUN == "gefs":
-            raise NotImplementedError("FATAL ERROR: Archiving is not yet set up for GEFS runs")
-
         if arch_dict.RUN in ["gdas", "gfs"]:
 
             # Copy the cyclone track files and rename the experiments
@@ -75,7 +72,7 @@ class Archive(Task):
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
 
         # Collect the dataset to archive locally
-        arcdir_j2yaml = os.path.join(archive_parm, "arcdir.yaml.j2")
+        arcdir_j2yaml = os.path.join(archive_parm, f"{arch_dict.NET}_arcdir.yaml.j2")
 
         # Add the glob.glob function for capturing log filenames
         # TODO remove this kludge once log filenames are explicit

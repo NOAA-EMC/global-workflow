@@ -16,7 +16,7 @@ base:
   FHMAX_GFS: 240
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
 
-ocnanal:
+marineanl:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
   SOCA_OBS_LIST: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
   SOCA_NINNER: 100

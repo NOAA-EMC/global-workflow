@@ -3,10 +3,16 @@
 # Hera-specific job resources
 
 case ${step} in
+  "prep")
+    # Run on 7 nodes for memory requirement
+    tasks_per_node=2
+    ;;
+
   "anal")
     if [[ "${CASE}" == "C384" ]]; then
-      export ntasks=270
-      export threads_per_task_anal=8
+      export ntasks_gdas=270
+      export ntasks_gfs=270
+      export threads_per_task=8
       export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
@@ -26,6 +32,10 @@ case ${step} in
 
   "eupd")
     case ${CASE} in
+      "C768")
+        export ntasks=80
+        export threads_per_task=20
+        ;;
       "C384")
         export ntasks=80
         ;;
@@ -41,6 +51,13 @@ case ${step} in
   "ecen")
     if [[ "${CASE}" == "C768" ]]; then export threads_per_task=6; fi
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "upp")
+    if (( "${CASE:1}" >= 768 )); then
+       # Run fewer tasks per node for memory
+       tasks_per_node=20
+    fi
     ;;
 
   *)
