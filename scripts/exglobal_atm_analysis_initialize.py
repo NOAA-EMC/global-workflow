@@ -2,8 +2,8 @@
 # exglobal_atm_analysis_initialize.py
 # This script creates an AtmAnalysis class
 # and runs the initialize method
-# which create and stage the runtime directory
-# and create the YAML configuration
+# which creates and stages the runtime directory
+# and creates the YAML configuration
 # for a global atm variational analysis
 import os
 
@@ -20,8 +20,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atm analysis task
-    AtmAnl = AtmAnalysis(config, 'atmanlvar')
+    AtmAnl = AtmAnalysis(config)
 
     # Initialize JEDI variational analysis
-    AtmAnl.initialize_jedi()
-    AtmAnl.initialize_analysis()
+    AtmAnl.initialize()

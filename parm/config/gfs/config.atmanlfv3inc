@@ -8,7 +8,4 @@ echo "BEGIN: config.atmanlfv3inc"
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmanlfv3inc
 
-export JCB_ALGO=fv3jedi_fv3inc_variational
-export JEDIEXE=${EXECgfs}/fv3jedi_fv3inc.x
-
 echo "END: config.atmanlfv3inc"
