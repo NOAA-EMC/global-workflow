@@ -324,10 +324,8 @@ class GEFSTasks(Tasks):
                           'MEMDIR': 'mem#member#',
                           'FHR3': '#fhr#',
                           }
-
         for key, value in wave_post_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
-
 
         task_name = f'gefs_wave_post_grid_#member#_f#fhr#'
         task_dict = {'task_name': task_name,
