@@ -169,8 +169,18 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
    done
 done
 
+function send_email() {
+   # Send an email to $_email.
+   # Only use this once we get to the long steps (building, etc) and on success.
+   _subject="${_subject:-generate_workflows.sh failure on ${machine}}"
+   _body="${1}"
+
+   echo "${_body}" | mail -s "${_subject}" "${_email}"
+}
+
 if [[ -z "${_runtests}" ]]; then
    echo "Mising run directory (RUNTESTS) argument/environment variable."
+   sleep 2
    _usage
    exit 3
 fi
@@ -181,7 +191,7 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 
 # Create the RUNTESTS directory
-[[ "${_verbose}" == "true" ]] && printf "Creating RUNTESTS in ${_runtests}\n\n"
+[[ "${_verbose}" == "true" ]] && printf "Creating RUNTESTS in %s\n\n" "${_runtests}"
 if [[ ! -d "${_runtests}" ]]; then
    set +e
    if ! mkdir -p "${_runtests}" "${_verbose_flag}"; then
@@ -240,7 +250,7 @@ fi
 if [[ "${_specified_home}" == "false" ]]; then
    script_relpath="$(dirname "${BASH_SOURCE[0]}")"
    HOMEgfs="$(cd "${script_relpath}/.." && pwd)"
-   [[ "${_verbose}" == "true" ]] && printf "Setting HOMEgfs to ${HOMEgfs}\n\n"
+   [[ "${_verbose}" == "true" ]] && printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
 fi
 
 # Set the _yaml_dir to HOMEgfs/ci/cases/pr if not explicitly set
@@ -265,7 +275,7 @@ function select_all_yamls()
    if [[ "${_specified_yaml_list}" == false ]]; then
       # Start over with an empty _yaml_list
       _nameref_yaml_list=()
-      printf "Running all ${_SYSTEM} cases in ${_yaml_dir}\n\n"
+      printf "Running all %s cases in %s\n\n" "${_SYSTEM}" "${_yaml_dir}"
       _yaml_count=0
 
       for _full_path in "${_yaml_dir}/"*.yaml; do
@@ -282,8 +292,14 @@ function select_all_yamls()
       done
 
       if [[ ${_yaml_count} -eq 0 ]]; then
-         echo "No YAMLs or ${_SYSTEM} were found in the directory (${_yaml_dir})!"
-         echo "Please check the directory/YAMLs and try again"
+         read -r -d '' _message << EOM
+            "No YAMLs or ${_SYSTEM} were found in the directory (${_yaml_dir})!"
+            "Please check the directory/YAMLs and try again"
+EOM
+         echo "${_message}"
+         if [[ "${_set_email}" == true ]]; then
+            send_email "${_message}"
+         fi
          exit 6
       fi
    else
@@ -352,7 +368,16 @@ if [[ "${_update_submods}" == "true" ]]; then
    else
       if ! ${_git_cmd} 2> stderr 1> stdout; then
          cat stdout stderr
-         echo "The git command (${_git_cmd}) failed with a non-zero status"
+         read -r -d '' _message << EOM
+The git command (${_git_cmd}) failed with a non-zero status
+Messages from git:
+EOM
+         _newline=$'\n'
+         _message="${_message}${_newline}$(cat stdout stderr)"
+         if [[ "${_set_email}" == true ]]; then
+            send_email "${_message}"
+         fi
+         echo "${_message}"
          rm -f stdout stderr
          exit 8
       fi
@@ -362,7 +387,7 @@ fi
 
 # Build the system if requested
 if [[ "${_build}" == "true" ]]; then
-   printf "Building via build_all.sh ${_build_flags}\n\n"
+   printf "Building via build_all.sh %s\n\n" "${_build_flags}"
    # Let the output of build_all.sh go to stdout regardless of verbose options
    #shellcheck disable=SC2086,SC2248
    ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
@@ -372,8 +397,12 @@ fi
 [[ "${_verbose}" == true ]] && printf "Linking the workflow\n\n"
 if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
    cat stdout
-   rm -f stdout
    echo "link_workflow.sh failed!"
+   if [[ "${_set_email}" == true ]]; then
+      _stdout=$(cat stdout)
+      send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+   fi
+   rm -f stdout
    exit 9
 fi
 rm -f stdout
@@ -386,6 +415,13 @@ for i in "${!_yaml_list[@]}"; do
    if [[ ! -s "${_yaml_file}" ]]; then
       echo "The YAML file ${_yaml_file} does not exist!"
       echo "Please check the input yaml list and directory."
+      if [[ "${_set_email}" == true ]]; then
+         read -r -d '' _message << EOM
+         generate_workflows.sh failed to find one of the specified YAMLs (${_yaml_file})
+         in the specified YAML directory (${_yaml_dir}).
+EOM
+         send_email "${_message}"
+      fi
       exit 10
    fi
 
@@ -395,7 +431,10 @@ for i in "${!_yaml_list[@]}"; do
    for _system in ${_unsupported_systems}; do
       if [[ "${_system}" =~ ${machine} ]]; then
          if [[ "${_specified_yaml_list}" == true ]]; then
-            printf "WARNING ${_yaml} is unsupported on ${machine}, removing from test list\n\n"
+            printf "WARNING %s is unsupported on %s, removing from case list\n\n" "${_yaml}" "${machine}"
+            if [[ "${_set_email}" == true ]]; then
+               _final_message="${_final_message:-}"$'\n'"The specified YAML case ${_yaml} is not supported on ${machine} and was skipped."
+            fi
             # Sleep so the user has a moment to notice
             sleep 2s
          fi
@@ -407,13 +446,13 @@ done
 
 # Update the account if specified
 [[ "${_set_account}" == true ]] && export HPC_ACCOUNT=${_hpc_account} && \
-   [[ "${_verbose}" == true ]] && printf "Setting HPC account to ${HPC_ACCOUNT}\n\n"
+   [[ "${_verbose}" == true ]] && printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
 
 # Create the experiments
 rm -f "tests.cron" "${_verbose_flag}"
 echo "Running create_experiment.py for ${#_yaml_list[@]} cases"
 
-[[ "${_verbose}" == true ]] && printf "Selected cases: ${_yaml_list[*]}\n\n"
+[[ "${_verbose}" == true ]] && printf "Selected cases: %s\n\n" "${_yaml_list[*]}"
 for _case in "${_yaml_list[@]}"; do
    [[ "${_verbose}" == false ]] && echo "${_case}"
    _create_exp_cmd="./create_experiment.py -y ../ci/cases/pr/${_case}.yaml --overwrite"
@@ -421,8 +460,13 @@ for _case in "${_yaml_list[@]}"; do
       pslot=${_case} RUNTESTS=${_runtests} ${_create_exp_cmd}
    else
       if ! pslot=${_case} RUNTESTS=${_runtests} ${_create_exp_cmd} 2> stderr 1> stdout; then
-         cat stdout stderr
-         echo "The create_experiment command (${_create_exp_cmd}) failed with a non-zero status"
+         _output=$(cat stdout stderr)
+         _message="The create_experiment command (${_create_exp_cmd}) failed with a non-zero status.  Output:"
+         _message="${_message}"$'\n'"${_output}"
+         if [[ "${_set_email}" == true ]]; then
+            send_email "${_message}"
+         fi
+         echo "${_message}"
          rm -f stdout stderr
          exit 11
       fi
@@ -453,7 +497,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 
    if [[ "${_set_email}" == "true" ]]; then
       # Replace the existing email in the crontab
-      [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to ${_email}\n\n"
+      [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to\n\n" "${_email}"
       sed -i "/^MAILTO/d" existing.cron
       echo "MAILTO=\"${_email}\"" >> final.cron
    fi
@@ -469,12 +513,20 @@ if [[ "${_update_cron}" == "true" ]]; then
 
    crontab final.cron
 else
-   echo "Experiment setup complete!"
-   echo "Add the following to your crontab or scrontab to start running:"
-   cat tests.cron
+   _message="Add the following to your crontab or scrontab to start running:"
+   _cron_tests=$(cat tests.cron)
+   _message="${_message}"$'\n'"${_cron_tests}"
+   echo "${_message}"
+   if [[ "${_set_email}" == true ]]; then
+      final_message="${final_message:-}"$'\n'"${_message}"
+   fi
 fi
 
 # Cleanup
 [[ "${_debug}" == "false" ]] && rm -f final.cron existing.cron tests.cron "${_verbose_flag}"
 
 echo "Success!!"
+if [[ "${_set_email}" == true ]]; then
+   final_message=$'Success!\n'"${final_message:-}"
+   _subject="generate_workflow.sh completed successfully" send_email "${final_message}"
+fi
