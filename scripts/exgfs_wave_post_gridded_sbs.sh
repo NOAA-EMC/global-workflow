@@ -222,7 +222,7 @@ source "${USHgfs}/preamble.sh"
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
 # Contingency for RERUN=YES
   if [ "${RERUN:-NO}" = "YES" ]; then
-    fhr=$((FHRUN + FORECAST_HOUR + FHMIN_WAV))
+    fhr=$((FHRUN + FHMIN_WAV))
     if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
       FHINCG=$FHOUT_HF_WAV
     else
