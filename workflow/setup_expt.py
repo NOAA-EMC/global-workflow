@@ -336,7 +336,7 @@ def query_and_clean(dirname, force_clean=False):
     if os.path.exists(dirname):
         print(f'\ndirectory already exists in {dirname}')
         if force_clean:
-            overwrite = True
+            overwrite = "YES"
             print(f'removing directory ........ {dirname}\n')
         else:
             overwrite = input('Do you wish to over-write [y/N]: ')
