@@ -109,6 +109,10 @@ jobs:
       - aws
       - parallelworks
       - ${{ github.event.inputs.os }}
+    strategy:
+      matrix:
+        case: ["C48_ATM"]
+    steps:
     steps:
       - name: Run Experiment ${{ matrix.case }}
         run: |
