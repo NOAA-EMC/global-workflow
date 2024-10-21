@@ -43,7 +43,11 @@ jobs:
       run: |
         pr_number=${{ github.event.inputs.pr_number }}
         repo=${{ github.repository }}
-        branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
+        if [ "$pr_number" -eq "0" ]; then
+          branch=${{ github.event.inputs.ref }}
+        else
+          branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
+        fi
         echo "::set-output name=branch::$branch"
 
   checkout:
