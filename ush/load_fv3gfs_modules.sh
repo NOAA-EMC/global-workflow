@@ -13,9 +13,6 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
-# Source versions file for runtime
-source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
-
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
@@ -29,9 +26,15 @@ case "${MACHINE_ID}" in
       /contrib/Terry.McGuinness/SETUP/mount-epic-contrib.sh
       sudo systemctl daemon-reload
     fi
+    # Check if the OS is Rocky or CentOS
+    OS_NAME=$(grep -E '^ID=' /etc/os-release | sed -E 's/ID="?([^"]*)"?/\1/') || true
+    # Source versions file for runtime
+    source "${HOMEgfs}/versions/run.${MACHINE_ID}.${OS_NAME}.ver"
     module load "module_base.${MACHINE_ID}"
     ;;
   "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4")
+    # Source versions file for runtime
+    source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
     module load "module_base.${MACHINE_ID}"
     ;;
   *)
