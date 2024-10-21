@@ -20,6 +20,14 @@ source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
+  "noaacloud")
+    #TODO this is a total kludge to get epic mount point for compute nodes
+    #    to be the same as the login node.  This should be workng from in the
+    #    ALLNODES section of the User Bootstrap of Parllel Works but it doen't
+    #    on the Rokcky Clusters (works fine in the Centos 7 cluster)
+    /contrib/Terry.McGuinness/SETUP/mount-epic-contrib.sh
+    sudo systemctl daemon-reload
+    ;;
   "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4" | "noaacloud")
     module load "module_base.${MACHINE_ID}"
     ;;
