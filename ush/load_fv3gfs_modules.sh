@@ -25,10 +25,13 @@ case "${MACHINE_ID}" in
     #    to be the same as the login node.  This should be workng from in the
     #    ALLNODES section of the User Bootstrap of Parllel Works but it doen't
     #    on the Rokcky Clusters (works fine in the Centos 7 cluster)
-    /contrib/Terry.McGuinness/SETUP/mount-epic-contrib.sh
-    sudo systemctl daemon-reload
+    if [[ ! -d  /contrib-epic/EPIC ]]; then
+      /contrib/Terry.McGuinness/SETUP/mount-epic-contrib.sh
+      sudo systemctl daemon-reload
+    fi
+    module load "module_base.${MACHINE_ID}"
     ;;
-  "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4" | "noaacloud")
+  "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4")
     module load "module_base.${MACHINE_ID}"
     ;;
   *)
