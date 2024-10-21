@@ -113,7 +113,6 @@ jobs:
       matrix:
         case: ["C48_ATM"]
     steps:
-    steps:
       - name: Run Experiment ${{ matrix.case }}
         run: |
           cd ${{ env.TEST_DIR }}/HOMEgfs
