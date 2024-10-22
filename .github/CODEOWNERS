@@ -1,0 +1,213 @@
+# global-workflow is a collaborative space where contributions come from a variety of sources
+# This file is to ensure that new development gets reviewed by the appropriate SME
+
+# global-workflow default owners (not a complete list)
+@KateFriedman-NOAA
+@WalterKolczynski-NOAA
+@DavidHuber-NOAA
+
+# Specific directory owners
+/ci/ @TerrenceMcGuinness-NOAA @WalterKolczynski-NOAA
+
+/ecf/ @lgannoaa
+
+/workflow/ @WalterKolczynski-NOAA @aerorahul @DavidHuber-NOAA
+
+# Specific file owners
+# build scripts
+sorc/build_*.sh @WalterKolczynski-NOAA @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
+sorc/link_workflow.sh @WalterKolczynski-NOAA @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
+
+# jobs
+jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX @CoryMartin-NOAA
+jobs/JGDAS_ATMOS_ANALYSIS_DIAG @RussTreadon-NOAA @CoryMartin-NOAA
+jobs/JGDAS_ATMOS_CHGRES_FORENKF @RussTreadon-NOAA @CoryMartin-NOAA
+jobs/JGDAS_ATMOS_GEMPAK @GwenChen-NOAA
+jobs/JGDAS_ATMOS_GEMPAK_META_NCDC @GwenChen-NOAA
+jobs/JGDAS_ATMOS_VERFOZN @EdwardSafford-NOAA
+jobs/JGDAS_ATMOS_VERFRAD @EdwardSafford-NOAA
+jobs/JGDAS_ENKF_* @RussTreadon-NOAA @CoryMartin-NOAA @CatherineThomas-NOAA
+jobs/JGDAS_FIT2OBS @jack-woollen 
+jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_ECEN @guillaumevernieres
+jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_VRFY @guillaumevernieres
+jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG @GwenChen-NOAA
+jobs/JGFS_ATMOS_CYCLONE_GENESIS @JiayiPeng-NOAA 
+jobs/JGFS_ATMOS_CYCLONE_TRACKER @JiayiPeng-NOAA 
+jobs/JGFS_ATMOS_FBWIND @GwenChen-NOAA
+jobs/JGFS_ATMOS_FSU_GENESIS
+jobs/JGFS_ATMOS_GEMPAK @GwenChen-NOAA
+jobs/JGFS_ATMOS_GEMPAK_META @GwenChen-NOAA
+jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF @GwenChen-NOAA
+jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC @GwenChen-NOAA
+jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS @WenMeng-NOAA
+jobs/JGFS_ATMOS_POSTSND @BoCui-NOAA
+jobs/JGFS_ATMOS_VERIFICATION
+jobs/JGLOBAL_AERO_ANALYSIS_* @CoryMartin-NOAA
+jobs/JGLOBAL_ARCHIVE @DavidHuber-NOAA
+jobs/JGLOBAL_ATMENS_ANALYSIS_* @RussTreadon-NOAA @CoryMartin-NOAA @DavidNew-NOAA
+jobs/JGLOBAL_ATMOS_ANALYSIS @RussTreadon-NOAA @CatherineThomas-NOAA
+jobs/JGLOBAL_ATMOS_ANALYSIS_CALC @RussTreadon-NOAA @CatherineThomas-NOAA @CoryMartin-NOAA
+jobs/JGLOBAL_ATMOS_EMCSFC_SFC_PREP @GeorgeGayno-NOAA
+jobs/JGLOBAL_ATMOS_ENSSTAT
+jobs/JGLOBAL_ATMOS_POST_MANAGER
+jobs/JGLOBAL_ATMOS_PRODUCTS @WenMeng-NOAA
+jobs/JGLOBAL_ATMOS_SFCANL @GeorgeGayno-NOAA
+jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
+jobs/JGLOBAL_ATMOS_UPP @WenMeng-NOAA
+jobs/JGLOBAL_ATMOS_VMINMON @EdwardSafford-NOAA
+jobs/JGLOBAL_ATM_* @RussTreadon-NOAA @DavidNew-NOAA @CoryMartin-NOAA
+jobs/JGLOBAL_CLEANUP @WalterKolczynski-NOAA @DavidHuber-NOAA @KateFriedman-NOAA
+jobs/JGLOBAL_EXTRACTVARS @EricSinsky-NOAA
+jobs/JGLOBAL_FORECAST @aerorahul
+jobs/JGLOBAL_MARINE_* @guillaumevernieres @AndrewEichmann-NOAA
+jobs/JGLOBAL_OCEANICE_PRODUCTS @GwenChen-NOAA
+jobs/JGLOBAL_PREP_EMISSIONS @bbakernoaa
+jobs/JGLOBAL_PREP_OBS_AERO @CoryMartin-NOAA
+jobs/JGLOBAL_PREP_OCEAN_OBS @guillaumevernieres @AndrewEichmann-NOAA
+jobs/JGLOBAL_*SNOW* @jiaruidong2017
+jobs/JGLOBAL_STAGE_IC @KateFriedman-NOAA
+jobs/JGLOBAL_WAVE_* @JessicaMeixner-NOAA @sbanihash
+jobs/rocoto/* @WalterKolczynski-NOAA @KateFriedman-NOAA @DavidHuber-NOAA
+
+# scripts
+scripts/exgdas_aero_analysis_generate_bmatrix.py @CoryMartin-NOAA
+scripts/exgdas_atmos_chgres_forenkf.sh @RussTreadon-NOAA @CoryMartin-NOAA
+scripts/exgdas_atmos_gempak_gif_ncdc.sh @GwenChen-NOAA
+scripts/exgdas_atmos_nawips.sh @GwenChen-NOAA
+scripts/exgdas_atmos_verfozn.sh @EdwardSafford-NOAA
+scripts/exgdas_atmos_verfrad.sh @EdwardSafford-NOAA
+scripts/exgdas_enkf_earc.py @DavidHuber-NOAA
+scripts/exgdas_enkf_ecen.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
+scripts/exgdas_enkf_post.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
+scripts/exgdas_enkf_select_obs.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
+scripts/exgdas_enkf_sfc.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
+scripts/exgdas_enkf_snow_recenter.py @jiaruidong2017
+scripts/exgdas_enkf_update.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
+scripts/exgdas_global_marine_analysis_letkf.py @guillaumevernieres @AndrewEichmann-NOAA
+scripts/exgfs_aero_init_aerosol.py @WalterKolczynski-NOAA
+scripts/exgfs_atmos_awips_20km_1p0deg.sh @GwenChen-NOAA
+scripts/exgfs_atmos_fbwind.sh @GwenChen-NOAA
+scripts/exgfs_atmos_gempak_gif_ncdc_skew_t.sh @GwenChen-NOAA
+scripts/exgfs_atmos_gempak_meta.sh @GwenChen-NOAA
+scripts/exgfs_atmos_goes_nawips.sh @GwenChen-NOAA
+scripts/exgfs_atmos_grib2_special_npoess.sh @WenMeng-NOAA
+scripts/exgfs_atmos_nawips.sh @GwenChen-NOAA
+scripts/exgfs_atmos_postsnd.sh @BoCui-NOAA
+scripts/exgfs_pmgr.sh
+scripts/exgfs_prdgen_manager.sh
+scripts/exgfs_wave_* @JessicaMeixner-NOAA @sbanihash
+scripts/exglobal_aero_analysis_* @CoryMartin-NOAA
+scripts/exglobal_archive.py @DavidHuber-NOAA
+scripts/exglobal_atm_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
+scripts/exglobal_atmens_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
+scripts/exglobal_atmos_analysis*.sh @RussTreadon-NOAA @CoryMartin-NOAA
+scripts/exglobal_atmos_ensstat.sh @RussTreadon-NOAA
+scripts/exglobal_atmos_pmgr.sh
+scripts/exglobal_atmos_products.sh @WenMeng-NOAA
+scripts/exglobal_atmos_sfcanl.sh @GeorgeGayno-NOAA
+scripts/exglobal_atmos_tropcy_qc_reloc.sh
+scripts/exglobal_atmos_upp.py @WenMeng-NOAA
+scripts/exglobal_atmos_vminmon.sh @EdwardSafford-NOAA
+scripts/exglobal_cleanup.sh @DavidHuber-NOAA
+scripts/exglobal_diag.sh @RussTreadon-NOAA @CoryMartin-NOAA
+scripts/exglobal_extractvars.sh @EricSinsky-NOAA
+scripts/exglobal_forecast.py @aerorahul
+scripts/exglobal_forecast.sh @aerorahul @WalterKolczynski-NOAA
+scripts/exglobal_marine_analysis_* @guillaumevernieres @AndrewEichmann-NOAA
+scripts/exglobal_marinebmat.py @guillaumevernieres @AndrewEichmann-NOAA
+scripts/exglobal_oceanice_products.py @GwenChen-NOAA
+scripts/exglobal_prep_emissions.py @bbakernoaa
+scripts/exglobal_prep_obs_aero.py @CoryMartin-NOAA
+scripts/exglobal_prep_snow_obs.py @jiaruidong2017
+scripts/exglobal_snow_analysis.py @jiaruidong2017
+scripts/exglobal_stage_ic.py @KateFriedman-NOAA
+
+# ush
+WAM_XML_to_ASCII.pl
+atmos_ensstat.sh
+atmos_extractvars.sh @EricSinsky-NOAA
+bash_utils.sh @WalterKolczynski-NOAA
+calcanl_gfs.py @CoryMartin-NOAA
+calcinc_gfs.py @CoryMartin-NOAA
+compare_f90nml.py @WalterKolczynski-NOAA @aerorahul
+detect_machine.sh @WalterKolczynski-NOAA
+extractvars_tools.sh @EricSinsky-NOAA
+file_utils.sh @WalterKolczynski-NOAA
+forecast_det.sh @aerorahul @WalterKolczynski-NOAA
+forecast_postdet.sh @aerorahul @WalterKolczynski-NOAA
+forecast_predet.sh @aerorahul @WalterKolczynski-NOAA
+fv3gfs_remap_weights.sh
+gaussian_sfcanl.sh @GeorgeGayno-NOAA
+getdump.sh @WalterKolczynski-NOAA @KateFriedman-NOAA
+getges.sh @WalterKolczynski-NOAA @KateFriedman-NOAA
+getgfsnctime @CoryMartin-NOAA
+getncdimlen @CoryMartin-NOAA
+gfs_bfr2gpk.sh @GwenChen-NOAA
+gfs_bufr.sh @GwenChen-NOAA
+gfs_bufr_netcdf.sh @GwenChen-NOAA
+gfs_sndp.sh @BoCui-NOAA
+gfs_truncate_enkf.sh @CoryMartin-NOAA
+global_savefits.sh
+gsi_utils.py @CoryMartin-NOAA
+interp_atmos_master.sh @aerorahul @WenMeng-NOAA @WalterKolczynski-NOAA
+interp_atmos_sflux.sh @aerorahul @WenMeng-NOAA @WalterKolczynski-NOAA
+jjob_header.sh @WalterKolczynski-NOAA
+link_crtm_fix.sh @WalterKolczynski-NOAA
+load_fv3gfs_modules.sh @WalterKolczynski-NOAA @aerorahul
+load_ufsda_modules.sh @WalterKolczynski-NOAA @aerorahul @CoryMartin-NOAA
+load_ufswm_modules.sh @WalterKolczynski-NOAA @aerorahul @JessicaMeixner-NOAA
+merge_fv3_aerosol_tile.py @WalterKolczynski-NOAA
+minmon_xtrct_*.pl @EdwardSafford-NOAA
+module-setup.sh @WalterKolczynski-NOAA @aerorahul
+oceanice_nc2grib2.sh @GwenChen-NOAA
+ocnice_extractvars.sh @EricSinsky-NOAA
+ozn_xtrct.sh @EdwardSafford-NOAA
+parse-storm-type.pl
+parsing_model_configure_FV3.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa
+parsing_namelists_CICE.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa @DeniseWorthen
+parsing_namelists_FV3.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa
+parsing_namelists_FV3_nest.sh @guoqing-noaa
+parsing_namelists_MOM6.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa @jiandewang
+parsing_namelists_WW3.sh @WalterKolczynski-NOAA @aerorahul @JessicaMeixner-NOAA @sbanihash
+parsing_ufs_configure.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa
+preamble.sh @WalterKolczynski-NOAA
+product_functions.sh @WalterKolczynski-NOAA @aerorahul
+radmon_*.sh @EdwardSafford-NOAA
+rstprod.sh @WalterKolczynski-NOAA @DavidHuber-NOAA
+run_mpmd.sh @WalterKolczynski-NOAA @aerorahul @DavidHuber-NOAA
+syndat_getjtbul.sh @JiayiPeng-NOAA 
+syndat_qctropcy.sh @JiayiPeng-NOAA 
+tropcy_relocate.sh @JiayiPeng-NOAA 
+tropcy_relocate_extrkr.sh @JiayiPeng-NOAA 
+wave_*.sh @JessicaMeixner-NOAA @sbanihash
+
+# ush/python
+ush/python/pygfs/jedi/__init__.py @aerorahul @DavidNew-NOAA
+ush/python/pygfs/jedi/jedi.py @DavidNew-NOAA
+ush/python/pygfs/task/__init__.py @aerorahul
+ush/python/pygfs/task/aero_analysis.py @DavidNew-NOAA @CoryMartin-NOAA
+ush/python/pygfs/task/aero_bmatrix.py @DavidNew-NOAA @CoryMartin-NOAA
+ush/python/pygfs/task/aero_emissions.py @bbakernoaa
+ush/python/pygfs/task/aero_prepobs.py @CoryMartin-NOAA 
+ush/python/pygfs/task/analysis.py @DavidNew-NOAA @RussTreadon-NOAA
+ush/python/pygfs/task/archive.py @DavidHuber-NOAA
+ush/python/pygfs/task/atm_analysis.py @DavidNew-NOAA @RussTreadon-NOAA
+ush/python/pygfs/task/atmens_analysis.py @DavidNew-NOAA @RussTreadon-NOAA
+ush/python/pygfs/task/bmatrix.py @DavidNew-NOAA
+ush/python/pygfs/task/gfs_forecast.py @aerorahul
+ush/python/pygfs/task/marine_analysis.py @guillaumevernieres @AndrewEichmann-NOAA
+ush/python/pygfs/task/marine_bmat.py @guillaumevernieres @AndrewEichmann-NOAA
+ush/python/pygfs/task/marine_letkf.py @guillaumevernieres @AndrewEichmann-NOAA
+ush/python/pygfs/task/oceanice_products.py @aerorahul @GwenChen-NOAA
+ush/python/pygfs/task/snow_analysis.py @jiaruidong2017
+ush/python/pygfs/task/snowens_analysis.py @jiaruidong2017
+ush/python/pygfs/task/stage_ic.py @KateFriedman-NOAA
+ush/python/pygfs/task/upp.py @aerorahul @WenMeng-NOAA
+ush/python/pygfs/ufswm/__init__.py @aerorahul
+ush/python/pygfs/ufswm/gfs.py @aerorahul
+ush/python/pygfs/ufswm/ufs.py @aerorahul
+ush/python/pygfs/utils/__init__.py @aerorahul
+ush/python/pygfs/utils/marine_da_utils.py @guillaumevernieres @AndrewEichmann-NOAA
+
+# Specific workflow scripts
+workflow/generate_workflows.sh @DavidHuber-NOAA
