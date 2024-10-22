@@ -2,7 +2,7 @@
 
 ###
 function _usage() {
-   cat <<-EOF
+   cat << EOF
    This script automates the experiment setup process for the global workflow.
    Options are also available to update submodules, build the workflow (with
    specific build flags), specicy which YAMLs and YAML directory to run, and
@@ -204,8 +204,7 @@ else
    echo "The RUNTESTS directory ${_runtests} already exists."
    echo "Would you like to remove it?"
    _attempts=0
-   while read -r _from_stdin
-   do
+   while read -r _from_stdin; do
       if [[ "${_from_stdin^^}" =~ Y ]]; then
          rm -rf "${_runtests}"
          mkdir -p "${_runtests}"
