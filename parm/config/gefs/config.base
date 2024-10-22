@@ -227,7 +227,8 @@ export FHOUT_OCN=3
 export FHOUT_ICE=3
 
 # GFS cycle info
-export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+export INTERVAL_GFS=@INTERVAL_GFS@ # Frequency of GFS forecast
+export SDATE_GFS=@SDATE_GFS@
 
 # set variables needed for use with REPLAY ICs
 export REPLAY_ICS=@REPLAY_ICS@
@@ -255,11 +256,6 @@ export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX_GFS}
-if (( gfs_cyc != 0 )); then
-    export STEP_GFS=$(( 24 / gfs_cyc ))
-else
-    export STEP_GFS="0"
-fi
 export ILPOST=1           # gempak output frequency up to F120
 
 export FHMIN_ENKF=${FHMIN_GFS}

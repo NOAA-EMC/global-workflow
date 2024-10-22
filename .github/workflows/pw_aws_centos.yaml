@@ -29,6 +29,7 @@ jobs:
       with:
         path: ${{ github.run_id }}/HOMEgfs
         submodules: 'recursive'
+        ref: ${{ github.event.pull_request.head.ref }}
 
   build-link:      
     runs-on: [self-hosted, aws, parallelworks, centos]

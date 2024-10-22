@@ -9,7 +9,7 @@ arguments:
   resdetocean: 1.0
   resensatmos: 96
   nens: 2
-  gfs_cyc: 1
+  interval: 6
   start: warm
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
@@ -17,3 +17,6 @@ arguments:
   edate: 2020110100
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_replay_ci.yaml
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
+
+skip_ci_on_hosts:
+  - wcoss2
