@@ -478,11 +478,7 @@ class GEFSTasks(Tasks):
     def extractvars(self):
         deps = []
         if self.app_config.do_wave:
-<<<<<<< HEAD
             dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_grid_#member#'}
-=======
-            dep_dict = {'type': 'task', 'name': 'gefs_wave_post_grid_mem#member#'}
->>>>>>> 720eb4c06c7ec325b2175ab5f85177225b81da87
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
             dep_dict = {'type': 'metatask', 'name': 'gefs_ocean_prod_#member#'}
