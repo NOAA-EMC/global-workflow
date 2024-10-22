@@ -2,7 +2,7 @@ from applications.applications import AppConfig
 from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
 from datetime import datetime, timedelta
-
+import numpy as np
 
 class GEFSTasks(Tasks):
 
@@ -224,6 +224,32 @@ class GEFSTasks(Tasks):
 
         # return task
 
+    @staticmethod
+    def _get_ufs_postproc_grps(is_replay, run, config, component='atmos'):
+
+        fhrs = Tasks._get_forecast_hours(run, config, component=component)
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        if is_replay and component in ['atmos'] and 0 in fhrs:
+            fhrs.remove(0)
+
+        # ocean/ice components do not have fhr 0 as they are averaged output
+        if component in ['ocean', 'ice'] and 0 in fhrs:
+            fhrs.remove(0)
+
+        nfhrs_per_grp = config.get('NFHRS_PER_GROUP', 1)
+        ngrps = len(fhrs) // nfhrs_per_grp if len(fhrs) % nfhrs_per_grp == 0 else len(fhrs) // nfhrs_per_grp + 1
+
+        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
+        fhrs = np.array_split(fhrs, ngrps)
+        fhrs = [fhr.tolist() for fhr in fhrs]
+
+        grp = ' '.join(f'_{fhr[0]}-{fhr[-1]}' if len(fhr) > 1 else f'_{fhr[0]}' for fhr in fhrs)
+        dep = ' '.join([fhr[-1] for fhr in fhrs])
+        lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
+
+        return grp, dep, lst
+
     def ocean_prod(self):
         return self._atmosoceaniceprod('ocean')
 
@@ -253,9 +279,6 @@ class GEFSTasks(Tasks):
 
         history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
         deps = []
-        data = f'{history_path}/{history_file_tmpl}'
-        dep_dict = {'type': 'data', 'data': data, 'age': 120}
-        deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
@@ -264,15 +287,20 @@ class GEFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
+        is_replay = self._configs[config]['REPLAY_ICS']
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = self._get_ufs_postproc_grps(is_replay, self.run, self._configs[config], component=component)
+        fhr_var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
+
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
-                          'FHR3': '#fhr#',
+                          'FHRLST': '#lst#',
                           'COMPONENT': component}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        task_name = f'gefs_{component}_prod_mem#member#_f#fhr#'
+        task_name = f'gefs_{component}_prod#{varname1}#_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -282,22 +310,6 @@ class GEFSTasks(Tasks):
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
-
-        fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
-
-        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
-        is_replay = self._configs[config]['REPLAY_ICS']
-        if is_replay and component in ['atmos'] and 0 in fhrs:
-            fhrs.remove(0)
-
-        # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice'] and 0 in fhrs:
-            fhrs.remove(0)
-
-        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
-        if component in ['ocean']:
-            fhrs_next = fhrs[1:] + [fhrs[-1] + (fhrs[-1] - fhrs[-2])]
-            fhr_var_dict['fhr_next'] = ' '.join([f"{fhr:03d}" for fhr in fhrs_next])
 
         fhr_metatask_dict = {'task_name': f'gefs_{component}_prod_#member#',
                              'task_dict': task_dict,
@@ -316,20 +328,25 @@ class GEFSTasks(Tasks):
 
         resources = self.get_resource('atmos_ensstat')
 
+        is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = self._get_ufs_postproc_grps(is_replay, self.run, self._configs['atmos_ensstat'], component='atmos')
+        fhr_var_dict = {varname1: varval1, varname2: varval2, varname3: varval3}
+
         deps = []
         for member in range(0, self.nmem + 1):
-            task = f'gefs_atmos_prod_mem{member:03d}_f#fhr#'
+            task = f'gefs_atmos_prod#{varname1}#_mem#member#'
             dep_dict = {'type': 'task', 'name': task}
             deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHR3': '#fhr#'}
+        postenvar_dict = {'FHRLST': '#lst#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        task_name = f'gefs_atmos_ensstat_f#fhr#'
+        task_name = f'gefs_atmos_ensstat#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -339,15 +356,6 @@ class GEFSTasks(Tasks):
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
-
-        fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
-
-        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
-        is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
-        if is_replay and 0 in fhrs:
-            fhrs.remove(0)
-
-        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'gefs_atmos_ensstat',
                              'task_dict': task_dict,

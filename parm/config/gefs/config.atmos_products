@@ -9,7 +9,7 @@ echo "BEGIN: config.atmos_products"
 . "${EXPDIR}/config.resources" atmos_products
 
 # No. of forecast hours to process in a single job
-export NFHRS_PER_GROUP=3
+export NFHRS_PER_GROUP=${FHMAX_GFS}
 
 # Scripts used by this job
 export INTERP_ATMOS_MASTERSH="${USHgfs}/interp_atmos_master.sh"

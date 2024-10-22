@@ -8,4 +8,7 @@ echo "BEGIN: config.atmos_ensstat"
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmos_ensstat
 
+# No. of forecast hours to process in a single job
+export NFHRS_PER_GROUP=${FHMAX_GFS}
+
 echo "END: config.atmos_ensstat"
