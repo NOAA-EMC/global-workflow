@@ -4,6 +4,7 @@ import rocoto.rocoto as rocoto
 from datetime import datetime, timedelta
 import numpy as np
 
+
 class GEFSTasks(Tasks):
 
     def __init__(self, app_config: AppConfig, run: str) -> None:
