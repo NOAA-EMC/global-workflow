@@ -390,7 +390,7 @@ if [[ "${_build}" == "true" ]]; then
    printf "Building via build_all.sh %s\n\n" "${_build_flags}"
    # Let the output of build_all.sh go to stdout regardless of verbose options
    #shellcheck disable=SC2086,SC2248
-   ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
+   ${HOMEgfs}/sorc/build_all.sh ${_build_flags} ${_verbose_flag}
 fi
 
 # Link the workflow silently unless there's an error
