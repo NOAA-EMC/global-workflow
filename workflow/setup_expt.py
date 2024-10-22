@@ -8,7 +8,7 @@ import os
 import glob
 import shutil
 import warnings
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
 
 from hosts import Host
 
@@ -116,7 +116,8 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@COMROOT@": inputs.comroot,
         "@EXP_WARM_START@": is_warm_start,
         "@MODE@": inputs.mode,
-        "@gfs_cyc@": inputs.gfs_cyc,
+        "@INTERVAL_GFS@": inputs.interval,
+        "@SDATE_GFS@": datetime_to_YMDH(inputs.sdate_gfs),
         "@APP@": inputs.app,
         "@NMEM_ENS@": getattr(inputs, 'nens', 0)
     }
@@ -186,6 +187,19 @@ def input_args(*argv):
 
     ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW', 'S2SWA']
 
+    def _validate_interval(interval_str):
+        err_msg = f'must be a non-negative integer multiple of 6 ({interval_str} given)'
+        try:
+            interval = int(interval_str)
+        except ValueError:
+            raise ArgumentTypeError(err_msg)
+
+        # This assumes the gdas frequency (assim_freq) is 6h
+        # If this changes, the modulus needs to as well
+        if interval < 0 or interval % 6 != 0:
+            raise ArgumentTypeError(err_msg)
+        return interval
+
     def _common_args(parser):
         parser.add_argument('--pslot', help='parallel experiment name',
                             type=str, required=False, default='test')
@@ -199,7 +213,8 @@ def input_args(*argv):
                             type=str, required=False, default=os.getenv('HOME'))
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
-        parser.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
+        parser.add_argument('--edate', help='end date experiment', required=False, type=lambda dd: to_datetime(dd))
+        parser.add_argument('--interval', help='frequency of forecast (in hours); must be a multiple of 6', type=_validate_interval, required=False, default=6)
         parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
         parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
                             action='store_true', required=False)
@@ -219,8 +234,7 @@ def input_args(*argv):
     def _gfs_cycled_args(parser):
         parser.add_argument('--app', help='UFS application', type=str,
                             choices=ufs_apps, required=False, default='ATM')
-        parser.add_argument('--gfs_cyc', help='cycles to run forecast', type=int,
-                            choices=[0, 1, 2, 4], default=1, required=False)
+        parser.add_argument('--sdate_gfs', help='date to start GFS', type=lambda dd: to_datetime(dd), required=False, default=None)
         return parser
 
     def _gfs_or_gefs_ensemble_args(parser):
@@ -233,8 +247,6 @@ def input_args(*argv):
     def _gfs_or_gefs_forecast_args(parser):
         parser.add_argument('--app', help='UFS application', type=str,
                             choices=ufs_apps, required=False, default='ATM')
-        parser.add_argument('--gfs_cyc', help='Number of forecasts per day', type=int,
-                            choices=[1, 2, 4], default=1, required=False)
         return parser
 
     def _gefs_args(parser):
@@ -291,7 +303,28 @@ def input_args(*argv):
     for subp in [gefsforecasts]:
         subp = _gefs_args(subp)
 
-    return parser.parse_args(list(*argv) if len(argv) else None)
+    inputs = parser.parse_args(list(*argv) if len(argv) else None)
+
+    # Validate dates
+    if inputs.edate is None:
+        inputs.edate = inputs.idate
+
+    if inputs.edate < inputs.idate:
+        raise ArgumentTypeError(f'edate ({inputs.edate}) cannot be before idate ({inputs.idate})')
+
+    # For forecast-only, GFS starts in the first cycle
+    if not hasattr(inputs, 'sdate_gfs'):
+        inputs.sdate_gfs = inputs.idate
+
+    # For cycled, GFS starts after the half-cycle
+    if inputs.sdate_gfs is None:
+        inputs.sdate_gfs = inputs.idate + to_timedelta("6H")
+
+    if inputs.interval > 0:
+        if inputs.sdate_gfs < inputs.idate or inputs.sdate_gfs > inputs.edate:
+            raise ArgumentTypeError(f'sdate_gfs ({inputs.sdate_gfs}) must be between idate ({inputs.idate}) and edate ({inputs.edate})')
+
+    return inputs
 
 
 def query_and_clean(dirname, force_clean=False):
@@ -303,7 +336,7 @@ def query_and_clean(dirname, force_clean=False):
     if os.path.exists(dirname):
         print(f'\ndirectory already exists in {dirname}')
         if force_clean:
-            overwrite = True
+            overwrite = "YES"
             print(f'removing directory ........ {dirname}\n')
         else:
             overwrite = input('Do you wish to over-write [y/N]: ')
