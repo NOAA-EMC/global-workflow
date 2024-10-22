@@ -9,7 +9,7 @@ Quick Instructions
 Quick clone/build/link instructions (more detailed instructions below).
 
 .. note::
-   Here we are making the assumption that you are using the workflow to run an experiment and so are working from the authoritative repository. If you are using a development branch then follow the instructions in :doc:`development.rst`. Once you do that you can follow the instructions here with the only difference being the repository/fork you are cloning from.
+   Here we are making the assumption that you are using the workflow to run an experiment and so are working from the authoritative repository. If you are using a development branch then follow the instructions in :doc:`development`. Once you do that you can follow the instructions here with the only difference being the repository/fork you are cloning from.
 
 Clone the `global-workflow` and `cd` into the `sorc` directory:
 
