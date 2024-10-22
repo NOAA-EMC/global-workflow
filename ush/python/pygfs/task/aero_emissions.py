@@ -83,7 +83,6 @@ class AerosolEmissions(Task):
         """
         logger.info("Copy Static Data to run directory")
 
-        print(aero_emission_yaml)
         # Copy climatology files to run directory except for HFED
         if aero_emission_yaml.emistype.lower() != 'hfed':
             logger.info(
@@ -274,7 +273,7 @@ class AerosolEmissions(Task):
             files = np.sort(fname)
         else:
             files = np.sort(glob(fname))
-        # print(files)
+        
         logger.info("Process Climatlogy Files")
         logger.info("  Opening Climatology File: {filename}".format(filename=fname[0]))
         xr.open_dataset(files[0])
@@ -368,9 +367,6 @@ class AerosolEmissions(Task):
             # Get the current time slice of the climatology
             clim_slice = clim.data[index, :, :]
 
-            # Calculate the weighted alpha ratio parameter
-            # alpha = 1.0 - 1.0 / (index + 1)
-
             # Scale the current time slice
             scaled_slice = clim_slice * ratio_interp[index, :, :]
 
@@ -451,7 +447,7 @@ class AerosolEmissions(Task):
                         )
                 else:
                     if tslice == 0:
-                        # print("creating climatology scaling for", v)
+                        
                         climo_scaled[v] = AerosolEmissions.create_climatology(
                             gc[v], climo[v], lon_coarse=150, lat_coarse=150
                         )
@@ -462,7 +458,7 @@ class AerosolEmissions(Task):
                             )
                         else:
                             dset[v] = dset[v]
-            # print(dset)
+            
             dsets.append(dset)
         return xr.concat(dsets, dim="time")
 
@@ -481,6 +477,6 @@ class AerosolEmissions(Task):
         -------
         None
         """
-        # print(Config_dict.data_out)
+        
         logger.info(f"Copy '{Config_dict.data_out}' processed data to COM/ directory")
         FileHandler(Config_dict.data_out).sync()
