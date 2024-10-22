@@ -988,8 +988,8 @@ case ${step} in
     threads_per_task=1
     walltime_gdas="03:00:00"
     walltime_gfs="06:00:00"
-    ntasks=4
-    tasks_per_node=4
+    ntasks=1
+    tasks_per_node=1
     export memory="80G"
     ;;
 
@@ -1214,12 +1214,10 @@ case ${step} in
       "C768")
         tasks_per_node=21
         threads_per_task=6
-        memory="23GB"
         ;;
       "C1152")
         tasks_per_node=9
         threads_per_task=14
-        memory="50GB"
         ;;
       *)
         tasks_per_node=21
