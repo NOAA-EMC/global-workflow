@@ -6,7 +6,7 @@ source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/contrib/spack-stack/spack-stack-${spack_stack_ver}/envs/gsi-addon-env/install/modulefiles/Core"
 
 export g2tmpl_ver=1.10.2
-export wgrib2_ver=3.1.2_wmo
-export cdo_ver=2.3.0
-export jasper_ver=4.2.0
-export nco_ver=5.1.6
+export jasper_ver=2.0.32
+export wgrib2_ver=2.0.8
+export cdo_ver=1.9.5
+export nco_ver=4.9.3

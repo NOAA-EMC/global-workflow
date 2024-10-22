@@ -13,14 +13,28 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
-# Source versions file for runtime
-source "${HOMEgfs}/versions/run.ver"
-
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
-  "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4" | "noaacloud")
+  "noaacloud")
+    #TODO this is a total kludge to get epic mount point for compute nodes
+    #    to be the same as the login node.  This should be workng from in the
+    #    ALLNODES section of the User Bootstrap of Parllel Works but it doen't
+    #    on the Rokcky Clusters (works fine in the Centos 7 cluster)
+    if [[ ! -d  /contrib-epic/EPIC ]]; then
+      /contrib/Terry.McGuinness/SETUP/mount-epic-contrib.sh
+      sudo systemctl daemon-reload
+    fi
+    # Check if the OS is Rocky or CentOS
+    OS_NAME=$(grep -E '^ID=' /etc/os-release | sed -E 's/ID="?([^"]*)"?/\1/') || true
+    # Source versions file for runtime
+    source "${HOMEgfs}/versions/run.${MACHINE_ID}.${OS_NAME}.ver"
+    module load "module_base.${MACHINE_ID}"
+    ;;
+  "wcoss2" | "hera" | "orion" | "hercules" | "gaea" | "jet" | "s4")
+    # Source versions file for runtime
+    source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
     module load "module_base.${MACHINE_ID}"
     ;;
   *)

@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+export HPC_ACCOUNT=${USER}
