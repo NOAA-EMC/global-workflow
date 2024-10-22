@@ -2,7 +2,7 @@
 
 ###
 function _usage() {
-   cat <<-EOF
+   cat << EOF
    This script automates the experiment setup process for the global workflow.
    Options are also available to update submodules, build the workflow (with
    specific build flags), specicy which YAMLs and YAML directory to run, and
@@ -204,8 +204,7 @@ else
    echo "The RUNTESTS directory ${_runtests} already exists."
    echo "Would you like to remove it?"
    _attempts=0
-   while read -r _from_stdin
-   do
+   while read -r _from_stdin; do
       if [[ "${_from_stdin^^}" =~ Y ]]; then
          rm -rf "${_runtests}"
          mkdir -p "${_runtests}"
@@ -390,7 +389,7 @@ if [[ "${_build}" == "true" ]]; then
    printf "Building via build_all.sh %s\n\n" "${_build_flags}"
    # Let the output of build_all.sh go to stdout regardless of verbose options
    #shellcheck disable=SC2086,SC2248
-   ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
+   ${HOMEgfs}/sorc/build_all.sh ${_build_flags} ${_verbose_flag}
 fi
 
 # Link the workflow silently unless there's an error
