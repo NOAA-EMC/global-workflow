@@ -283,7 +283,8 @@ export FHOUT_ICE=3
 export EUPD_CYC="@EUPD_CYC@"
 
 # GFS cycle info
-export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+export INTERVAL_GFS=@INTERVAL_GFS@ # Frequency of GFS forecast
+export SDATE_GFS=@SDATE_GFS@
 
 # GFS output and frequency
 export FHMIN_GFS=0
@@ -302,11 +303,7 @@ export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX:-9}
 export FHMAX_WAV_GFS=${FHMAX_GFS}
-if (( gfs_cyc != 0 )); then
-    export STEP_GFS=$(( 24 / gfs_cyc ))
-else
-    export STEP_GFS="0"
-fi
+
 # TODO: Change gempak to use standard out variables (#2348)
 export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
 if (( FHMAX_HF_GFS < 120 )); then
