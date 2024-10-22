@@ -1,7 +1,6 @@
 from applications.applications import AppConfig
 from typing import Dict, Any
 from wxflow import Configuration, to_timedelta
-from datetime import timedelta
 
 
 class GFSCycledAppConfig(AppConfig):
@@ -27,7 +26,7 @@ class GFSCycledAppConfig(AppConfig):
         # Now construct self.runs the desired XML order (gdas, enkfgdas, gfs, enkfgfs)
         self.runs = ["gdas"]  # We always have a 'gdas' run
         self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
-        self.runs.append("gfs") if base['gfs_cyc'] > 0 else 0
+        self.runs.append("gfs") if base['interval_gfs'] > to_timedelta("0H") else 0
         self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and "gfs" in self.runs else 0
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
@@ -151,7 +150,7 @@ class GFSCycledAppConfig(AppConfig):
     @staticmethod
     def _update_base(base_in):
 
-        return GFSCycledAppConfig.get_gfs_cyc_dates(base_in)
+        return base_in
 
     def get_task_names(self):
         """
@@ -321,49 +320,3 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run] += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         return task_names
-
-    @staticmethod
-    def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Generate GFS dates from experiment dates and gfs_cyc choice
-        """
-
-        base_out = base.copy()
-
-        sdate = base['SDATE']
-        edate = base['EDATE']
-        base_out['INTERVAL'] = to_timedelta(f"{base['assim_freq']}H")
-
-        # Set GFS cycling dates
-        gfs_cyc = base['gfs_cyc']
-        if gfs_cyc != 0:
-            interval_gfs = AppConfig.get_gfs_interval(gfs_cyc)
-            hrinc = 0
-            hrdet = 0
-            if gfs_cyc == 1:
-                hrinc = 24 - sdate.hour
-                hrdet = edate.hour
-            elif gfs_cyc == 2:
-                if sdate.hour in [0, 12]:
-                    hrinc = 12
-                elif sdate.hour in [6, 18]:
-                    hrinc = 6
-                if edate.hour in [6, 18]:
-                    hrdet = 6
-            elif gfs_cyc == 4:
-                hrinc = 6
-            sdate_gfs = sdate + timedelta(hours=hrinc)
-            edate_gfs = edate - timedelta(hours=hrdet)
-            if sdate_gfs > edate:
-                print('W A R N I N G!')
-                print('Starting date for GFS cycles is after Ending date of experiment')
-                print(f'SDATE = {sdate.strftime("%Y%m%d%H")},     EDATE = {edate.strftime("%Y%m%d%H")}')
-                print(f'SDATE_GFS = {sdate_gfs.strftime("%Y%m%d%H")}, EDATE_GFS = {edate_gfs.strftime("%Y%m%d%H")}')
-                gfs_cyc = 0
-
-            base_out['gfs_cyc'] = gfs_cyc
-            base_out['SDATE_GFS'] = sdate_gfs
-            base_out['EDATE_GFS'] = edate_gfs
-            base_out['INTERVAL_GFS'] = interval_gfs
-
-        return base_out

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from typing import Dict, List, Any
-from datetime import timedelta
 from hosts import Host
 from wxflow import Configuration, to_timedelta
 from abc import ABC, ABCMeta, abstractmethod
@@ -42,8 +41,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                                       f'{", ".join(self.VALID_MODES)}\n')
 
         self.net = base['NET']
-        self.gfs_cyc = base.get('gfs_cyc')
-
+        self.interval_gfs = to_timedelta(f"{base.get('INTERVAL_GFS')}H")
         print(f"Generating the XML for a {self.mode}_{self.net} case")
 
     def _init_finalize(self, conf: Configuration):
@@ -187,19 +185,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         '''
         pass
-
-    @staticmethod
-    def get_gfs_interval(gfs_cyc: int) -> timedelta:
-        """
-        return interval in hours based on gfs_cyc
-        """
-
-        gfs_internal_map = {'1': '24H', '2': '12H', '4': '6H'}
-
-        try:
-            return to_timedelta(gfs_internal_map[str(gfs_cyc)])
-        except KeyError:
-            raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
 
     @staticmethod
     def is_monotonic(test_list: List, check_decreasing: bool = False) -> bool:
