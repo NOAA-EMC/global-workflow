@@ -5,18 +5,18 @@ BASE_IC: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/ICSDIR'
 PACKAGEROOT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/nwpara'
 COMROOT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/com'
 COMINsyn: '${COMROOT}/gfs/prod/syndat'
-HOMEDIR: '/gpfs/f5/ufs-ard/scratch/${USER}'
-STMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
-PTMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
-NOSCRUB: $HOMEDIR
 ACCOUNT: ufs-ard
+HOMEDIR: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+STMP: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+PTMP: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+NOSCRUB: $HOMEDIR
 SCHEDULER: slurm
 QUEUE: normal
-QUEUE_SERVICE: normal
+QUEUE_SERVICE: hpss
 PARTITION_BATCH: batch
-PARTITION_SERVICE: batch
+PARTITION_SERVICE: dtn_f5_f6
 RESERVATION: ''
-CLUSTERS: 'c5'
+CLUSTERS: 'c5,es'
 CHGRP_RSTPROD: 'NO'
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'NO'
