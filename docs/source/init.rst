@@ -111,7 +111,7 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 
    Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
-   Jet: /lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/C48C48mx500
+   Jet: /lfs5/HFIP/hfv3gfs/glopara/data/ICSDIR/C48C48mx500
    AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C48C48mx500
 
 Start date = 2021032312
@@ -227,7 +227,7 @@ Forecast-only P8 prototype initial conditions are made available to users on sup
     WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
     HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
     ORION/Hercules: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
-    JET: /mnt/lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR/prototype_ICs
+    JET: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/ICSDIR/prototype_ICs
     S4: /data/prod/glopara/coupled_ICs
 
 These locations are known within the workflow via paths set in ``parm/config/config.coupled_ic``.
@@ -301,7 +301,7 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 |                |                                 |                                                                             |                                |
 |                |   gfs.t. ``hh`` z.sfcanl.nc     |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
-| v16.2[3]+ ops  |   gfs.t. ``hh`` z.atmanl.nc     | com_gfs_ ``gfs_ver`` _gfs. ``yyyymmdd`` _ ``hh`` .gfs_nca.tar               | gfs. ``yyyymmdd`` /``hh``/atmos|
+| v16.2[3]+ ops  |   gfs.t. ``hh`` z.atmanl.nc     | com_gfs\_ ``gfs_ver`` _gfs. ``yyyymmdd`` _ ``hh`` .gfs_nca.tar              | gfs. ``yyyymmdd`` /``hh``/atmos|
 |                |                                 |                                                                             |                                |
 |                |   gfs.t. ``hh`` z.sfcanl.nc     |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
