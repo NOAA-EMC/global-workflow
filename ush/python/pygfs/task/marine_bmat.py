@@ -25,7 +25,24 @@ class MarineBMat(Task):
     """
     @logit(logger, name="MarineBMat")
     def __init__(self, config):
+        """Constructor for marine B-matrix task
+
+        This method will construct the marine B-matrix task object
+        This includes:
+        - extending the task_config AttrDict to include parameters required for this task
+        - instantiate the Jedi attribute objects
+        
+        Parameters
+        ----------
+        config: Dict
+            dictionary object containing task configuration
+
+        Returns
+        ----------
+        None
+        """
         super().__init__(config)
+        
         _home_gdas = os.path.join(self.task_config.HOMEgfs, 'sorc', 'gdas.cd')
         _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
         _window_begin = add_to_datetime(self.task_config.current_cycle,
@@ -158,8 +175,17 @@ class MarineBMat(Task):
         - staging SOCA fix files
         - staging static ensemble members (optional)
         - staging ensemble members (optional)
-        - generating the YAML files for the JEDI and GDASApp executables
+        - initializing the soca_vtscales Python script
+        - initializing the JEDI applications
         - creating output directories
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
         """
 
         # stage fix files
@@ -210,7 +236,20 @@ class MarineBMat(Task):
 
     @logit(logger)
     def execute_vtscales(self: Task) -> None:
-        """Generate the vertical diffusion coefficients
+        """Execute vertical diffusion coefficients generator
+
+        This method will execute a Python script which generatres the vertical diffusion coefficients
+        This includes:
+        - constructing the executable object
+        - running the executable object
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
         """
         # compute the vertical correlation scales based on the MLD
         exec_cmd = Executable("python")
@@ -224,7 +263,19 @@ class MarineBMat(Task):
         """Generate the full B-matrix
 
         This method will generate the full B-matrix according to the configuration.
+        This includes:
+        - running all JEDI application and Python scripts required to generate the B-matrix
+
+        Parameters
+        ----------
+        aprun_cmd: str
+            String comprising the run command for the JEDI executable.
+
+        Returns
+        ----------
+        None
         """
+
         self.jedi['gridgen'].execute(aprun_cmd)  # TODO: This should be optional in case the geometry file was staged
         self.jedi['soca_diagb'].execute(aprun_cmd)
         self.jedi['soca_setcorscales'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
@@ -246,6 +297,13 @@ class MarineBMat(Task):
         - keep the re-balanced ensemble perturbation files in DATAenspert
         - ...
 
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
         """
         # Copy the soca grid if it was created
         grid_file = os.path.join(self.task_config.DATA, 'soca_gridspec.nc')
