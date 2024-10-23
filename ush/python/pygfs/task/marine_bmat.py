@@ -56,11 +56,11 @@ class MarineBMat(Task):
 
         # Create dictionary of Jedi objects
         self.jedi = AttrDict()
-        
+
         # gridgen
         self.jedi['gridgen'] = Jedi(AttrDict(
             {
-                'yaml_name': 'gridgen',                
+                'yaml_name': 'gridgen',
                 'rundir': self.task_config.DATA,
                 'exe_src': self.task_config.JEDIEXE_GRIDGEN,
                 'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
@@ -95,7 +95,7 @@ class MarineBMat(Task):
                 'jedi_args': None
             }
         ))
-        
+
         # soca_setcorscales
         self.jedi['soca_setcorscales'] = Jedi(AttrDict(
             {
@@ -134,7 +134,7 @@ class MarineBMat(Task):
                 'jedi_args': None
             }
         ))
-        
+
         # soca_ensweights
         self.jedi['soca_ensb'] = Jedi(AttrDict(
             {
@@ -175,23 +175,23 @@ class MarineBMat(Task):
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
-         # stage the soca utility yamls (fields and ufo mapping yamls)
+        # stage the soca utility yamls (fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files")
         soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
-        
+
         # initialize vtscales python script
         vtscales_config = self.jedi['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
         FileHandler({'copy': [[os.path.join(self.task_config.CALC_SCALE_EXEC),
                                os.path.join(self.task_config.DATA, 'calc_scales.x')]]}).sync()
-                                      
+
         # initialize JEDI applications
         self.jedi['gridgen'].initialize(self.task_config)
-        self.jedi['soca_diagb'].initialize(self.task_config)        
-        self.jedi['soca_parameters_diffusion_vt'].initialize(self.task_config)        
+        self.jedi['soca_diagb'].initialize(self.task_config)
+        self.jedi['soca_parameters_diffusion_vt'].initialize(self.task_config)
         self.jedi['soca_setcorscales'].initialize(self.task_config)
-        self.jedi['soca_parameters_diffusion_hz'].initialize(self.task_config)            
+        self.jedi['soca_parameters_diffusion_hz'].initialize(self.task_config)
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
             self.jedi['soca_ensb'].initialize(self.task_config)
             self.jedi['soca_ensweights'].initialize(self.task_config)
@@ -200,7 +200,7 @@ class MarineBMat(Task):
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
             logger.debug(f"Stage ensemble members for the hybrid background error")
             mdau.stage_ens_mem(self.task_config)
-                      
+
         # create the symbolic link to the static B-matrix directory
         link_target = os.path.join(self.task_config.DATAstaticb)
         link_name = os.path.join(self.task_config.DATA, 'staticb')
@@ -212,28 +212,28 @@ class MarineBMat(Task):
     def execute_vtscales(self: Task) -> None:
         """Generate the vertical diffusion coefficients
         """
-        # compute the vertical correlation scales based on the MLD              
+        # compute the vertical correlation scales based on the MLD
         exec_cmd = Executable("python")
         exec_name = os.path.join(self.task_config.DATA, 'calc_scales.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg('soca_vtscales.yaml')
-        mdau.run(exec_cmd)                      
-                      
+        mdau.run(exec_cmd)
+
     @logit(logger)
     def execute(self, aprun_cmd: str) -> None:
         """Generate the full B-matrix
 
         This method will generate the full B-matrix according to the configuration.
         """
-        self.jedi['gridgen'].execute(aprun_cmd) # TODO: This should be optional in case the geometry file was staged
+        self.jedi['gridgen'].execute(aprun_cmd)  # TODO: This should be optional in case the geometry file was staged
         self.jedi['soca_diagb'].execute(aprun_cmd)
-        self.jedi['soca_setcorscales'].execute(aprun_cmd) # TODO: Make this optional once we've converged on an acceptable set of scales
-        self.jedi['soca_parameters_diffusion_hz'].execute(aprun_cmd) # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.jedi['soca_setcorscales'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.jedi['soca_parameters_diffusion_hz'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
         self.execute_vtscales()
         self.jedi['soca_parameters_diffusion_vt'].execute(aprun_cmd)
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-            self.jedi['soca_ensb'].execute(self.task_config)       # TODO: refactor this from the old scripts
-            self.jedi['soca_ensweights'].execute(self.task_config) # TODO: refactor this from the old scripts
+            self.jedi['soca_ensb'].execute(self.task_config)  # TODO: refactor this from the old scripts
+            self.jedi['soca_ensweights'].execute(self.task_config)  # TODO: refactor this from the old scripts
 
     @logit(logger)
     def finalize(self: Task) -> None:
