@@ -1,3 +1,5 @@
+.. _experiment-setup:
+
 ================
 Experiment Setup
 ================
@@ -178,8 +180,6 @@ where:
    * ``$COMROOT`` is the path to your experiment output directory. Your ``ROTDIR`` (rotating com directory) will be created using ``COMROOT`` and ``PSLOT``. [default: $HOME]
    * ``$EXPDIR`` is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you. [default: $HOME]
    * ``$ICSDIR`` is the path to the ICs for your run if generated separately. [default: None]
-
-.. [#]  More Coupled configurations in cycled mode are currently under development and not yet available
 
 Example:
 
