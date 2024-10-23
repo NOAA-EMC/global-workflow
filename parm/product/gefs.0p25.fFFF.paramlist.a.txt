@@ -19,6 +19,7 @@
 :CIN:180-0 mb above ground:
 :CIN:surface:
 :HLCY:3000-0 m above ground:
+:PEVPR:surface:
 :TCDC:entire atmosphere (considered as a single layer):
 :WEASD:surface:
 :SNOD:surface:
