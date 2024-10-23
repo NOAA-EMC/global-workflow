@@ -175,6 +175,11 @@ class MarineBMat(Task):
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
+         # stage the soca utility yamls (fields and ufo mapping yamls)
+        logger.info(f"Staging SOCA utility yaml files")
+        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
+        FileHandler(soca_utility_list).sync()
+        
         # initialize vtscales python script
         vtscales_config = self.jedi['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
@@ -183,7 +188,6 @@ class MarineBMat(Task):
                                       
         # initialize JEDI applications
         self.jedi['gridgen'].initialize(self.task_config)
-        logger.error('foobar') # Test
         self.jedi['soca_diagb'].initialize(self.task_config)        
         self.jedi['soca_parameters_diffusion_vt'].initialize(self.task_config)        
         self.jedi['soca_setcorscales'].initialize(self.task_config)
