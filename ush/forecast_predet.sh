@@ -548,13 +548,13 @@ FV3_predet(){
       ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
     fi
 
-    memnum=$(echo $ENSMEM | cut -c2-3)
-    if [ $ENSMEM = "000" ]; then
+    memnum=$(echo "${ENSMEM}" | cut -c2-3)
+    if [[ "${ENSMEM}" == "000" ]]; then
       export e1=1
     else
       export e1=3
     fi
-    export e2=$memnum
+    export e2=${memnum}
     export e3=10
 
   fi
