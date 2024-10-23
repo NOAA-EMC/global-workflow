@@ -301,7 +301,7 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 |                |                                 |                                                                             |                                |
 |                |   gfs.t. ``hh`` z.sfcanl.nc     |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
-| v16.2[3]+ ops  |   gfs.t. ``hh`` z.atmanl.nc     | com_gfs_ ``gfs_ver`` _gfs. ``yyyymmdd`` _ ``hh`` .gfs_nca.tar               | gfs. ``yyyymmdd`` /``hh``/atmos|
+| v16.2[3]+ ops  |   gfs.t. ``hh`` z.atmanl.nc     | com_gfs\_ ``gfs_ver`` _gfs. ``yyyymmdd`` _ ``hh`` .gfs_nca.tar              | gfs. ``yyyymmdd`` /``hh``/atmos|
 |                |                                 |                                                                             |                                |
 |                |   gfs.t. ``hh`` z.sfcanl.nc     |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
