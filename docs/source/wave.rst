@@ -79,7 +79,7 @@ While the creation of these files are generally considered out of scope of this 
 * Instructions for creating mesh.${WAVEGRID}.nc can be found at https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#ww3 
 * The ww3_gint.WHTGRIDINT.bin.${WAVEGRID} can be created by running the ww3_gint routine as desired and then saved. 
 
-Once the new fix files have been created, :ref:`open an issue to have the master fix file directory updated<https://github.com/NOAA-EMC/global-workflow/issues/new?assignees=KateFriedman-NOAA%2CWalterKolczynski-NOAA&labels=Fix+Files&projects=&template=fix_file.md>`. This is a separate step than the process to update the workflow below.
+Once the new fix files have been created, `open an issue to have the master fix file directory updated <https://github.com/NOAA-EMC/global-workflow/issues/new?assignees=KateFriedman-NOAA%2CWalterKolczynski-NOAA&labels=Fix+Files&projects=&template=fix_file.md>`. This is a separate step than the process to update the workflow below.
 
 ********************************
 Updating Config and Script Files  
@@ -87,8 +87,8 @@ Updating Config and Script Files
 
 You will need to update the following files: 
  
-* parm/config/*/config.ufs
-* parm/config/*/config.wave
+* parm/config/\*/config.ufs
+* parm/config/\*/config.wave
 * scripts/exgfs_wave_post_gridded_sbs.sh
 
 You will need to add the following files: 
