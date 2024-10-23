@@ -169,8 +169,7 @@ function cleanup_experiment() {
 
     PSLOT_PATH="$1"
     pslot=$(basename "${PSLOT_PATH}")
-    HOMEDIR=$(grep 'export HOMEDIR=' "${PSLOT_PATH}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' || true) || true
-    eval HOMEDIR="${HOMEDIR}"
+    HOMEDIR=$(grep 'export HOMEDIR=' "${PSLOT_PATH}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
     ARCHIVEDIR="${HOMEDIR}/archive"
 
     rm -Rf "${ARCHIVEDIR:?}/${pslot}"
