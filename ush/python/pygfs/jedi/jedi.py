@@ -56,6 +56,14 @@ class Jedi:
         # Save a copy of jedi_config
         self._jedi_config = self.jedi_config.deepcopy()
 
+        # Create a dictionary of dictionaries for saving copies of the jcb_config
+        # associated with each algorithm
+        self._jcb_configs = AttrDict()
+
+        # Create a dictionary of dictionaries for saving copies of the task_config
+        # used to render each JCB template
+        self._task_configs_for_jcb = AttrDict()
+
     @logit(logger)
     def initialize(self, task_config: AttrDict) -> None:
         """Initialize JEDI application
@@ -156,9 +164,13 @@ class Jedi:
         elif 'algorithm' in jcb_config:
             pass
         else:
-            raise KeyError(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
+            raise Exception(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
                            "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
 
+        # Save copies of the task_config and jcb_config used to render this JCB template
+        self._task_configs_for_jcb[jcb_config['algorithm']] = task_config.deepcopy()
+        self._jcb_configs[jcb_config['algorithm']] = jcb_config.deepcopy()
+        
         # Generate JEDI YAML config by rendering JCB config dictionary
         jedi_input_config = render(jcb_config)
 
