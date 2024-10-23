@@ -31,7 +31,7 @@ class MarineBMat(Task):
         This includes:
         - extending the task_config AttrDict to include parameters required for this task
         - instantiate the Jedi attribute objects
-        
+
         Parameters
         ----------
         config: Dict
@@ -42,7 +42,7 @@ class MarineBMat(Task):
         None
         """
         super().__init__(config)
-        
+
         _home_gdas = os.path.join(self.task_config.HOMEgfs, 'sorc', 'gdas.cd')
         _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
         _window_begin = add_to_datetime(self.task_config.current_cycle,
