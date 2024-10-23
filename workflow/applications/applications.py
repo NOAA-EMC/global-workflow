@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Any
 from hosts import Host
-from wxflow import Configuration, to_timedelta
+from wxflow import Configuration
 from abc import ABC, ABCMeta, abstractmethod
 
 __all__ = ['AppConfig']
@@ -41,7 +41,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                                       f'{", ".join(self.VALID_MODES)}\n')
 
         self.net = base['NET']
-        self.interval_gfs = to_timedelta(f"{base.get('INTERVAL_GFS')}H")
         print(f"Generating the XML for a {self.mode}_{self.net} case")
 
     def _init_finalize(self, conf: Configuration):

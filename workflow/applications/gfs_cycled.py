@@ -1,6 +1,6 @@
 from applications.applications import AppConfig
 from typing import Dict, Any
-from wxflow import Configuration, to_timedelta
+from wxflow import Configuration
 
 
 class GFSCycledAppConfig(AppConfig):
@@ -26,7 +26,7 @@ class GFSCycledAppConfig(AppConfig):
         # Now construct self.runs the desired XML order (gdas, enkfgdas, gfs, enkfgfs)
         self.runs = ["gdas"]  # We always have a 'gdas' run
         self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
-        self.runs.append("gfs") if base['interval_gfs'] > to_timedelta("0H") else 0
+        self.runs.append("gfs") if base['INTERVAL_GFS'] > 0 else 0
         self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and "gfs" in self.runs else 0
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:

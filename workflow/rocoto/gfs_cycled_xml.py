@@ -24,7 +24,7 @@ class GFSCycledRocotoXML(RocotoXML):
         sdate_str = sdate.strftime("%Y%m%d%H%M")
         strings.append(f'\t<cycledef group="gdas">{sdate_str} {edate_str} {interval_str}</cycledef>')
 
-        interval_gfs = self._app_config.interval_gfs
+        interval_gfs = to_timedelta("{self._base['INTERVAL_GFS']}H")
 
         if interval_gfs > to_timedelta("0H"):
             sdate_gfs = self._base['SDATE_GFS']

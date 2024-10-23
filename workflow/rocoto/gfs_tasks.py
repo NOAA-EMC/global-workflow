@@ -336,7 +336,7 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep=deps)
 
         interval_gfs = self._base["INTERVAL_GFS"]
-        gfs_enkf = True if self.options['do_hybvar'] and 'gfs' in self.options['ens_runs'] else False
+        gfs_enkf = True if self.options['do_hybvar'] and 'gfs' in self.app_config.ens_runs else False
 
         cycledef = self.run
         if self.run in ['gfs'] and gfs_enkf and interval_gfs != 6:
@@ -875,7 +875,7 @@ class GFSTasks(Tasks):
             # Calculate offset based on RUN = gfs | gdas
             interval = None
             if self.run in ['gfs']:
-                interval = to_timedelta(f"{self._base['INTERVAL_GFS']}H")
+                interval = self._base['INTERVAL_GFS']
             elif self.run in ['gdas']:
                 interval = self._base['assim_freq']
             offset = timedelta_to_HMS(-interval)
@@ -1832,8 +1832,8 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.interval_gfs < to_timedelta('24H'):
-            n_lookback = self.app_config.interval_gfs // to_timedelta('6H')
+        if self._base["interval_gfs"] < to_timedelta("24H"):
+            n_lookback = self._base["interval_gfs"] // to_timedelta("6H")
             for lookback in range(1, n_lookback + 1):
                 deps2 = []
                 dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch', 'condition': 'not'}
