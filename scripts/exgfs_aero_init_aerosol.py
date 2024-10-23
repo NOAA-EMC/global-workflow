@@ -11,13 +11,13 @@ INPUTS
 ---------
 This script requires the following environment variables be set beforehand:
 
-CDATE: 		Initial time in YYYYMMDDHH format
-STEP_GFS: 	Forecast cadence (frequency) in hours
-FHMAX_GFS: 	Forecast length in hours
-RUN: 		Forecast phase (gfs or gdas). Currently always expected to be gfs.
-ROTDIR: 	Rotating (COM) directory
-USHgfs: 	Path to global-workflow `ush` directory
-PARMgfs: 	Path to global-workflow `parm` directory
+CDATE:        Initial time in YYYYMMDDHH format
+INTERVAL_GFS: Forecast cadence (frequency) in hours
+FHMAX_GFS:    Forecast length in hours
+RUN:          Forecast phase (gfs or gdas). Currently always expected to be gfs.
+ROTDIR:       Rotating (COM) directory
+USHgfs:       Path to global-workflow `ush` directory
+PARMgfs:      Path to global-workflow `parm` directory
 
 Additionally, the following data files are used:
 
@@ -66,7 +66,7 @@ tiles = list(map(lambda t: "tile{t}".format(t=t), range(1, n_tiles + 1)))
 def main() -> None:
     # Read in environment variables and make sure they exist
     cdate = get_env_var("CDATE")
-    incr = int(get_env_var('STEP_GFS'))
+    incr = int(get_env_var('INTERVAL_GFS'))
     fcst_length = int(get_env_var('FHMAX_GFS'))
     run = get_env_var("RUN")
     rot_dir = get_env_var("ROTDIR")
