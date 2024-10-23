@@ -571,7 +571,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('prepsnowcover')
-        task_name = f'{self.run}prepsnowcover'
+        task_name = f'{self.run}_prepsnowcover'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -590,14 +590,16 @@ class GFSTasks(Tasks):
     def snowanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prepsnowcover'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prepsnowcover'}
         deps.append(rocoto.add_dependency(dep_dict))
+
         deps2 = []
-        dep_dict = {'type': 'taskvalid', 'name': f'{self.run}prepsnowcover', 'condition': 'not'}
+        dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_prepsnowcover', 'condition': 'not'}
         deps2.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps2.append(rocoto.add_dependency(dep_dict))
         deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
+
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         resources = self.get_resource('snowanl')
