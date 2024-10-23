@@ -14,7 +14,7 @@ class GFSForecastOnlyRocotoXML(RocotoXML):
     def get_cycledefs(self):
         sdate_gfs = self._base['SDATE_GFS']
         edate_gfs = self._base['EDATE']
-        interval_gfs = to_timedelta("{self._base['INTERVAL_GFS']}H")
+        interval_gfs = self._base['interval_gfs']
         strings = []
         sdate_gfs_str = sdate_gfs.strftime("%Y%m%d%H%M")
         edate_gfs_str = edate_gfs.strftime("%Y%m%d%H%M")

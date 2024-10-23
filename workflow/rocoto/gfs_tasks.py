@@ -58,7 +58,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and self.app_config.interval_gfs != 6:
+        if self.run in ['gfs'] and gfs_enkf and self._base['INTERVAL_GFS'] != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('prep')
@@ -148,9 +148,9 @@ class GFSTasks(Tasks):
         # Calculate offset based on RUN = gfs | gdas
         interval = None
         if self.run in ['gfs']:
-            interval = self._base['INTERVAL_GFS']
+            interval = self._base['interval_gfs']
         elif self.run in ['gdas']:
-            interval = self._base['INTERVAL']
+            interval = self._base['interval']
         offset = timedelta_to_HMS(-interval)
 
         # Files from previous cycle
@@ -875,7 +875,7 @@ class GFSTasks(Tasks):
             # Calculate offset based on RUN = gfs | gdas
             interval = None
             if self.run in ['gfs']:
-                interval = self._base['INTERVAL_GFS']
+                interval = self._base['interval_gfs']
             elif self.run in ['gdas']:
                 interval = self._base['assim_freq']
             offset = timedelta_to_HMS(-interval)

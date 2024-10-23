@@ -7,6 +7,7 @@ from collections import OrderedDict
 from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
+from wxflow import to_timedelta
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 
@@ -20,6 +21,8 @@ class RocotoXML(ABC):
 
         # Use the first config.base (sourced with an arbitrary RUN)
         self._base = self._app_config.configs[next(iter(self._app_config.configs))]['base']
+        self._base['interval_gdas'] = to_timedelta(f'{self._base["assim_freq"]}H')
+        self._base['interval_gfs'] = to_timedelta(f'{self._base["INTERVAL_GFS"]}H')
 
         self.preamble = self._get_preamble()
         self.definitions = self._get_definitions()
