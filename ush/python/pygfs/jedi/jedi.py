@@ -56,6 +56,14 @@ class Jedi:
         # Save a copy of jedi_config
         self._jedi_config = self.jedi_config.deepcopy()
 
+        # Create a dictionary of dictionaries for saving copies of the jcb_config
+        # associated with each algorithm
+        self._jcb_config_dict = AttrDict()
+
+        # Create a dictionary of dictionaries for saving copies of the task_config
+        # used to render each JCB template
+        self._task_config_dict = AttrDict()
+
     @logit(logger)
     def initialize(self, task_config: AttrDict) -> None:
         """Initialize JEDI application
@@ -142,8 +150,7 @@ class Jedi:
         if self.jedi_config.jcb_base_yaml:
             jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         else:
-            logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
-            logger.error(f"FATAL ERROR: JEDI configuration dictionary must contain jcb_base_yaml.")
+            raise KeyError(f"FATAL ERROR: JEDI configuration dictionary must contain jcb_base_yaml.")
 
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
         if self.jedi_config.jcb_algo_yaml:
@@ -157,12 +164,15 @@ class Jedi:
         elif 'algorithm' in jcb_config:
             pass
         else:
-            logger.error(f"FATAL ERROR: Unable to compile JEDI configuration dictionary, ABORT!")
-            logger.error(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
-                         "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
+            raise Exception(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
+                            "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         jedi_input_config = render(jcb_config)
+
+        # Save copies of the task_config and jcb_config used to render this JCB template
+        self._task_config_dict[jcb_config['algorithm']] = task_config.deepcopy()
+        self._jcb_config_dict[jcb_config['algorithm']] = jcb_config.deepcopy()
 
         return jedi_input_config
 
