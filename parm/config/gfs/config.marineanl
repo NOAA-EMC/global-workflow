@@ -17,7 +17,6 @@ export MARINE_ENSDA_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/ensda/stage_ens_me
 export MARINE_DET_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_bkg_stage.yaml.j2"
 
 export JCB_BASE_YAML="${PARMgfs}/gdas/soca/marine-jcb-base.yaml"
-#export MARINE_JCB_GDAS_ALGO="${PARMgfs}/gdas/jcb-gdas/algorithm/marine"
 
 export JCB_ALGO_GRIDGEN="soca_gridgen"
 export JCB_ALGO_DIAGB="soca_diagb"
