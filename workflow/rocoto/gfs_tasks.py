@@ -621,7 +621,7 @@ class GFSTasks(Tasks):
     def esnowrecen(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}prepsnowcover'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepsnowcover'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_snowanl'}
         deps.append(rocoto.add_dependency(dep_dict))
