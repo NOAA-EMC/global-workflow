@@ -157,22 +157,20 @@ function publish_logs() {
 }
 
 function cleanup_experiment() {
-    # cleanup_experiment function
-    # This function takes a directory path of an EXPDIR and
-    # gets HOMEDIR value from config.base to
-    # clean up the archived files on disk.
+    # cleanup_experiment function removes:
+    #   1 The directory path of an EXPDIR (given as an argument)
+    #   2 The adjadjacent COMROOT directory (uses basename of EXPDIR for pslot)
+    #   3 The ARCDIR directory (uses ARCDIR from config.base file in EXPDIR)
 
-    local PSLOT_PATH
+    local EXPDIR="$1"
     local pslot
-    local HOMEDIR
-    local ARCHIVEDIR
+    local ARCDIR
 
     PSLOT_PATH="$1"
     pslot=$(basename "${PSLOT_PATH}")
-    HOMEDIR=$(grep 'export HOMEDIR=' "${PSLOT_PATH}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
-    ARCHIVEDIR="${HOMEDIR}/archive"
+    ARCDIR=$(grep 'export ARCDIR=' "${PSLOT_PATH}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
 
-    rm -Rf "${ARCHIVEDIR:?}/${pslot}"
+    rm -Rf "${ARCDIR:?}"
     rm -Rf "${PSLOT_PATH}"
     rm -Rf "${PSLOT_PATH}/../COMROOT/${pslot}"
 }
