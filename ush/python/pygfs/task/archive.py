@@ -88,11 +88,6 @@ class Archive(Task):
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
-        if arch_dict.RUN in ["gdas", "gfs"]:
-
-            # Copy the cyclone track files and rename the experiments
-            Archive._rename_cyclone_expt(arch_dict)
-
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
 
@@ -371,14 +366,14 @@ class Archive(Task):
 
         if run == "gfs":
             in_track_file = (track_dir_in + "/avno.t" +
-                             cycle_HH + "z.cycle.trackatcfunix")
+                             cycle_HH + "z.cyclone.trackatcfunix")
             in_track_p_file = (track_dir_in + "/avnop.t" +
-                               cycle_HH + "z.cycle.trackatcfunixp")
+                               cycle_HH + "z.cyclone.trackatcfunix")
         elif run == "gdas":
             in_track_file = (track_dir_in + "/gdas.t" +
-                             cycle_HH + "z.cycle.trackatcfunix")
+                             cycle_HH + "z.cyclone.trackatcfunix")
             in_track_p_file = (track_dir_in + "/gdasp.t" +
-                               cycle_HH + "z.cycle.trackatcfunixp")
+                               cycle_HH + "z.cyclone.trackatcfunix")
 
         if not os.path.isfile(in_track_file):
             # Do not attempt to archive the outputs
@@ -416,7 +411,7 @@ class Archive(Task):
             with open("/tmp/track_file", "w") as new_file:
                 new_file.writelines(out_lines)
 
-            shutil.move("tmp/track_file", filename_out)
+            shutil.move("/tmp/track_file", filename_out)
 
         replace_string_from_to_file(in_track_file, out_track_file, "AVNO", pslot4)
         replace_string_from_to_file(in_track_p_file, out_track_p_file, "AVNO", pslot4)
