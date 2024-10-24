@@ -225,7 +225,7 @@ class MarineAnalysis(Task):
         jcb_algo_config = YAMLFile(path=jcb_algo_yaml)
         jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
         jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
-        
+
         # Override base with the application specific config
         jcb_config = {**jcb_base_config, **jcb_algo_config}
 
