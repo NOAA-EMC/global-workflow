@@ -388,11 +388,6 @@ FV3_predet(){
       ISEED_SPPT=$((base_seed + 3)),$((base_seed + 4)),$((base_seed + 5)),$((base_seed + 6)),$((base_seed + 7))
     fi
 
-    if [[ "${DO_CA:-}" == "YES" ]]; then
-      do_ca=".true."
-      ISEED_CA=$(( (base_seed + 18) % 2147483647 ))
-    fi
-
     if [[ "${DO_LAND_PERT:-}" == "YES" ]]; then
       lndp_type=${lndp_type:-2}
       ISEED_LNDP=$(( (base_seed + 5) % 2147483647 ))
@@ -404,6 +399,11 @@ FV3_predet(){
     fi
 
   fi  # end of ensemble member specific options
+
+  if [[ "${DO_CA:-}" == "YES" ]]; then
+    do_ca=".true."
+    ISEED_CA=$(( (base_seed + 18) % 2147483647 ))
+  fi
 
   #--------------------------------------------------------------------------
 
