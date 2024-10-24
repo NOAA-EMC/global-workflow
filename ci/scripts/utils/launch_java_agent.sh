@@ -106,7 +106,7 @@ export GH="${HOME}/bin/gh"
 [[ -f "${GH}" ]] || echo "gh is not installed in ${HOME}/bin"
 ${GH} --version
 
-check_mark=$(gh auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
+check_mark=$("${GH}" auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
 if [[ "${check_mark}" != "✓" ]]; then
   echo "gh not authenticating with emcbot token"
   exit 1
