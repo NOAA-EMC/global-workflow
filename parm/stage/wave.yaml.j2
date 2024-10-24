@@ -9,5 +9,5 @@ wave:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_WAVE_RESTART_PREV_MEM = COMOUT_WAVE_RESTART_PREV_MEM_list[imem] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_WAVE_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.restart.{{ waveGRD }}", "{{ COMOUT_WAVE_RESTART_PREV_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_WAVE_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.restart.ww3", "{{ COMOUT_WAVE_RESTART_PREV_MEM }}"]
         {% endfor %} # mem loop
