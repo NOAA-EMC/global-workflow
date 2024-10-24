@@ -34,13 +34,13 @@ source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
 case "${MACHINE_ID}" in
-  ("hera" | "orion" | "hercules" | "wcoss2")
+  ("hera" | "orion" | "gaea" | "hercules" | "wcoss2")
     module load "${MODS}/${MACHINE_ID}"
     ncdump=$( command -v ncdump )
     NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
     export NETCDF
     ;;
-  ("jet" | "gaea" | "s4" | "acorn")
+  ("jet" | "s4" | "acorn")
     echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
     ;;  
   *)
