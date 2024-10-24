@@ -313,21 +313,21 @@ class GEFSTasks(Tasks):
         return task
 
     def wavepostsbs(self):
+        resources = self.get_resource('wavepostsbs')
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         wave_post_envars = self.envars.copy()
-        postenvar_dict = {'ENSMEM': '#member#',
+        wave_post_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
+                          'FHR3': '#fhr#',
                           }
-        for key, value in postenvar_dict.items():
+        for key, value in wave_post_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        resources = self.get_resource('wavepostsbs')
-
-        task_name = f'gefs_wave_post_grid_mem#member#'
+        task_name = f'gefs_wave_post_grid_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -339,11 +339,17 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': 'gefs_wave_post_grid',
-                                'task_dict': task_dict,
-                                'var_dict': member_var_dict
-                                }
+        fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
+        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
+        fhr_metatask_dict = {'task_name': f'gefs_wave_post_grid_#member#',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'gefs_wave_post_grid',
+                                'task_dict': fhr_metatask_dict,
+                                'var_dict': member_var_dict}
 
         task = rocoto.create_task(member_metatask_dict)
 
@@ -472,7 +478,7 @@ class GEFSTasks(Tasks):
     def extractvars(self):
         deps = []
         if self.app_config.do_wave:
-            dep_dict = {'type': 'task', 'name': 'gefs_wave_post_grid_mem#member#'}
+            dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_grid_#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
             dep_dict = {'type': 'metatask', 'name': 'gefs_ocean_prod_#member#'}
