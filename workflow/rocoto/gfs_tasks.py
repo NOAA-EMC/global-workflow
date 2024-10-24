@@ -1,6 +1,6 @@
 from applications.applications import AppConfig
 from rocoto.tasks import Tasks
-from wxflow import timedelta_to_HMS
+from wxflow import timedelta_to_HMS, to_timedelta
 import rocoto.rocoto as rocoto
 import numpy as np
 
@@ -39,7 +39,6 @@ class GFSTasks(Tasks):
     def prep(self):
 
         dump_suffix = self._base["DUMP_SUFFIX"]
-        gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
         dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
@@ -48,10 +47,10 @@ class GFSTasks(Tasks):
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dump_path}/{self.run}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
@@ -59,7 +58,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and gfs_cyc != 4:
+        if self.run in ['gfs'] and gfs_enkf and self.app_config.interval_gfs != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('prep')
@@ -89,7 +88,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.run in ['gdas']:
-                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -189,7 +188,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
@@ -255,7 +254,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar and self.run in ['gdas']:
-            dep_dict = {'type': 'task', 'name': 'enkfgdas_echgres', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'task', 'name': 'enkfgdas_echgres', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -359,17 +358,17 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
 
-        gfs_cyc = self._base["gfs_cyc"]
+        interval_gfs = self._base["INTERVAL_GFS"]
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and gfs_cyc != 4:
+        if self.run in ['gfs'] and gfs_enkf and interval_gfs != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('atmanlinit')
@@ -511,7 +510,7 @@ class GFSTasks(Tasks):
     def aeroanlinit(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': 'gdas_aeroanlgenb', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'task', 'name': 'gdas_aeroanlgenb', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -543,7 +542,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {
             'type': 'task', 'name': f'gdas_aeroanlgenb',
-            'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}",
+            'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}",
         }
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {
@@ -647,7 +646,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_snowanl'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -673,7 +672,7 @@ class GFSTasks(Tasks):
 
         deps = []
         data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -700,7 +699,7 @@ class GFSTasks(Tasks):
 
         deps = []
         data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -728,7 +727,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_marinebmat'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'gdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -907,9 +906,9 @@ class GFSTasks(Tasks):
             # Calculate offset based on RUN = gfs | gdas
             interval = None
             if self.run in ['gfs']:
-                interval = self._base['INTERVAL_GFS']
+                interval = to_timedelta(f"{self._base['INTERVAL_GFS']}H")
             elif self.run in ['gdas']:
-                interval = self._base['INTERVAL']
+                interval = self._base['assim_freq']
             offset = timedelta_to_HMS(-interval)
             deps = []
             dep_dict = {'type': 'task', 'name': f'{self.run}_aerosol_init'}
@@ -1864,14 +1863,27 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        if self.app_config.interval_gfs < to_timedelta('24H'):
+            n_lookback = self.app_config.interval_gfs // to_timedelta('6H')
+            for lookback in range(1, n_lookback + 1):
+                deps2 = []
+                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch', 'condition': 'not'}
+                deps2.append(rocoto.add_dependency(dep_dict))
+                for lookback2 in range(1, lookback):
+                    offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback2}H'))
+                    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
+                    deps2.append(rocoto.add_dependency(dep_dict))
+
+                offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback}H'))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch', 'offset': offset}
+                deps2.append(rocoto.add_dependency(dep_dict))
+                deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
+
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         metpenvars = self.envars.copy()
-        if self.app_config.mode in ['cycled']:
-            metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS').strftime("%Y%m%d%H"),
-                              'EDATE_GFS': self._base.get('EDATE_GFS').strftime("%Y%m%d%H")}
-        elif self.app_config.mode in ['forecast-only']:
-            metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE').strftime("%Y%m%d%H")}
+        metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS').strftime("%Y%m%d%H"),
+                          'EDATE_GFS': self._base.get('EDATE').strftime("%Y%m%d%H")}
         metpenvar_dict['METPCASE'] = '#metpcase#'
         for key, value in metpenvar_dict.items():
             metpenvars.append(rocoto.create_envar(name=key, value=str(value)))
@@ -1887,7 +1899,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': metpenvars,
-                     'cycledef': self.run.replace('enkf', ''),
+                     'cycledef': 'metp,last_gfs',
                      'command': f'{self.HOMEgfs}/jobs/rocoto/metp.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -2360,8 +2372,13 @@ class GFSTasks(Tasks):
                     deps.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_metp and self.run in ['gfs']:
+            deps2 = []
+            # taskvalid only handles regular tasks, so just check the first metp job exists
+            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
+            deps2.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            deps2.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2387,7 +2404,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2497,7 +2514,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2524,7 +2541,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2550,7 +2567,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2576,7 +2593,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2605,7 +2622,7 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlletkf'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
