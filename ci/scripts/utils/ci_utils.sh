@@ -166,7 +166,7 @@ function cleanup_experiment() {
     local pslot
     local ARCDIR
 
-    PSLOT_PATH="$1"
+    EXPDIR="$1"
     pslot=$(basename "${EXPDIR}")
     ARCDIR=$(grep 'export ARCDIR=' "${EXPDIR}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
 
