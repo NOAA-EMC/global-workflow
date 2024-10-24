@@ -155,3 +155,22 @@ function publish_logs() {
     fi
     echo "${URL}"
 }
+
+function cleanup_experiment() {
+    # cleanup_experiment function removes:
+    #   1 The directory path of an EXPDIR (given as an argument)
+    #   2 The adjadjacent COMROOT directory (uses basename of EXPDIR for pslot)
+    #   3 The ARCDIR directory (uses ARCDIR from config.base file in EXPDIR)
+
+    local EXPDIR="$1"
+    local pslot
+    local ARCDIR
+
+    EXPDIR="$1"
+    pslot=$(basename "${EXPDIR}")
+    ARCDIR=$(grep 'export ARCDIR=' "${EXPDIR}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
+
+    rm -Rf "${ARCDIR:?}"
+    rm -Rf "${EXPDIR}"
+    rm -Rf "${EXPDIR}/../COMROOT/${pslot}"
+}

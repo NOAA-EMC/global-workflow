@@ -221,6 +221,7 @@ pipeline {
                                                 sh(script: " rm -f ${error_file}")
                                                 try {
                                                     sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
+                                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cleanup_experiment ${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}")
                                                 } catch (Exception error_experment) {
                                                     sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
                                                     ws(CUSTOM_WORKSPACE) {
